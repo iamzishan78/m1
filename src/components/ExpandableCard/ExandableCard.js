@@ -25,6 +25,7 @@ import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubCo
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 
 import { gql } from "@apollo/client";
+import ContactSearch from "./components/ContactSearch";
 
 export default function ExpandableCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -34,7 +35,7 @@ export default function ExpandableCard(props) {
   const [openBugModal, setOpenBugModal] = useState(false);
   const [toggleExpand, setToggleExpand] = useState(false);
   const [isExpanded, setExpanded] = useState([]);
-  const [title] = useState(props.title);
+  const [title, setTitle] = useState(props.title);
   const [subTitle] = useState(props.subTitle);
   const [parent] = useState(props.parent);
   const [cardWidth] = useState(props.cardWidth);
@@ -84,6 +85,12 @@ export default function ExpandableCard(props) {
 
   const [deleteLoading, setDeleteLoading] = useState(false);
 
+  useEffect(() => {
+    if (props.targetLabel === "activity") {
+      setTitle(props.title);
+    }
+  }, [props.title, props.targetLabel]);
+
   const useStyles = makeStyles((theme) => ({
     card: {
       position: position,
@@ -105,8 +112,8 @@ export default function ExpandableCard(props) {
     title: {
       fontFamily: "Poppins",
       color: "#FFFFFF",
-      fontSize: ["Contact", "Add Activity", "Activity Details"].includes(title)
-        ? "22px"
+      fontSize: ["Contact", "Contact Details", "Add Activity", "Activity Details"].includes(title)
+        ? "20px"
         : "15px",
     },
     headerIcons: {
@@ -146,15 +153,15 @@ export default function ExpandableCard(props) {
   ] = useLazyQuery(TRACKBYOBJECTID);
 
   useEffect(() => {
-    if (stateApp.user && stateApp.user.mongoId && props.targetSourceId) {
+    if (stateApp.user && stateApp.user.mongoId && targetSourceId) {
       trackByObjectId({
         variables: {
           userId: stateApp.user.mongoId,
-          objectId: props.targetSourceId.toLowerCase(),
+          objectId: targetSourceId.toLowerCase(),
         },
       });
     }
-  }, [stateApp.user.mongoId, props.targetSourceId]);
+  }, [stateApp.user.mongoId, targetSourceId]);
 
   useEffect(() => {
     if (dataTrack) {
@@ -184,11 +191,11 @@ export default function ExpandableCard(props) {
     }
     setHeight(cardHeightExpanded);
 
-    if(props.targetLabel == 'well' || props.targetLabel == 'expandedWell'){
-
-      setStateApp((state) => ({ ...state, 
+    if (props.targetLabel == "well" || props.targetLabel == "expandedWell") {
+      setStateApp((state) => ({
+        ...state,
         wellDetailCardOpen: true,
-        popupOpen: false, 
+        popupOpen: false,
       }));
     } else if (props.targetLabel == "expandedParcel" || props.targetLabel == "parcel") {
       setStateApp((state) => ({ ...state, 
@@ -209,7 +216,7 @@ export default function ExpandableCard(props) {
       handleShrink();
     }
   }, [props.expanded]);
-  
+
   const handleShrink = () => {
     if (parent === "map" && $("#popupContainer").length) {
       console.log("jquery shrink");
@@ -237,7 +244,7 @@ export default function ExpandableCard(props) {
         popupOpen: false,
         selectedWell: null,
         selectedParcel: null,
-        expandedCard:false,
+        expandedCard: false,
       }));
     }
     props.handleCloseExpandableCard();
@@ -248,7 +255,20 @@ export default function ExpandableCard(props) {
     if (!title) {
       return "--";
     }
-    return title.length > 30 ? `${title.substr(0, 35)}...` : title;
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-start",
+          width: "100%",
+          marginRight: "48px",
+        }}
+      >
+        <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
+        {targetLabel === "contact" && <ContactSearch />}
+      </div>
+    );
   };
 
   const openConfirmationDialog = () => {
@@ -311,13 +331,11 @@ export default function ExpandableCard(props) {
         </Dialog>
       )}
       <Card className={classes.card}>
-        
-      <ReportBugModal
-       open={openBugModal}
-       onClose={() => setOpenBugModal(false)}
-      />
+        <ReportBugModal
+          open={openBugModal}
+          onClose={() => setOpenBugModal(false)}
+        />
         <CardHeader
-        
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
             <div className={classes.headerIcons}>
@@ -345,20 +363,22 @@ export default function ExpandableCard(props) {
                 />
               )}
 
-              {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact" && (
-              <Tooltip title={"Report Bug"} placement="top">
-                <IconButton
-                  size="medium"
-                  onClick={() => setOpenBugModal(true)}
-                  className={classes.icons}
-                >
-                  <BugsIcon viewBox="0 0 64 64" color="white" />
-                </IconButton>
-              </Tooltip>
-            )} 
+              {stateExpandableCard.expanded &&
+                targetLabel !== "activity" &&
+                targetLabel !== "contact" && (
+                  <Tooltip title={"Report Bug"} placement="top">
+                    <IconButton
+                      size="medium"
+                      onClick={() => setOpenBugModal(true)}
+                      className={classes.icons}
+                    >
+                      <BugsIcon viewBox="0 0 64 64" color="white" />
+                    </IconButton>
+                  </Tooltip>
+                )}
 
               {stateExpandableCard.expanded &&
-                ["activity","parcel"].includes(targetLabel) &&
+                ["activity", "parcel"].includes(targetLabel) &&
                 title !== "Add Activity" && (
                   <Tooltip title={`Delete ${targetLabel}`} placement="top">
                     {isDeletingCustomLayer || deleteLoading ? (
@@ -374,7 +394,6 @@ export default function ExpandableCard(props) {
                     )}
                   </Tooltip>
                 )}
-
 
               {/* {stateExpandableCard.expanded && targetLabel === "parcel" && (
                 <Tooltip title={"Delete Parcel"} placement="top">
@@ -407,46 +426,99 @@ export default function ExpandableCard(props) {
                       <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
                     </IconButton>
                   </Tooltip>
-                    ) 
-                : isExpanded == false && targetLabel !== "activity"  ? 
-                  targetLabel !== "contact" ?
-                  (
-                    <Tooltip title={"Expand"} placement="top">
+                ) : isExpanded == false && targetLabel !== "activity" ? (
+                  <Tooltip title={"Expand"} placement="top">
+                    <IconButton
+                      size="small"
+                      onClick={handleExpand}
+                      aria-label="expand"
+                      className={classes.icons}
+                    >
+                      <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                  ) : (
+                    <Tooltip title={"Shrink"} placement="top">
                       <IconButton
-                        size="small"
+                        color="secondary"
                         onClick={handleExpand}
-                        aria-label="expand"
+                        aria-label="shrink"
                         className={classes.icons}
                       >
-                        <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                        <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
                       </IconButton>
                     </Tooltip>
-                  ) : null
-                  : 
-                      (
-                        <Tooltip title={"Shrink"} placement="top">
-                          <IconButton
-                            color="secondary"
-                            onClick={handleExpand}
-                            aria-label="shrink"
-                            className={classes.icons}
-                          >
-                            <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
-                          </IconButton>
-                        </Tooltip>
-                      )
-                : parent !== "table" && targetLabel !== "activity" &&(
-                    <Tooltip title={"Expand"} placement="top">
-                      <IconButton
-                        size="small"
-                        onClick={handleExpand}
-                        aria-label="expand"
-                        className={classes.icons}
-                      >
-                        <ExpandIcon viewBox="0 0 64 64" color="secondary" />
-                      </IconButton>
-                    </Tooltip>
-                  )}
+                  )
+              : (
+                parent !== "table" &&
+                targetLabel !== "activity" && (
+                  <Tooltip title={"Expand"} placement="top">
+                    <IconButton
+                      size="small"
+                      onClick={handleExpand}
+                      aria-label="expand"
+                      className={classes.icons}
+                    >
+                      <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                )
+              )}
+
+              {stateExpandableCard.expanded && targetLabel !== "activity" ? (
+                parent !== "table" && targetLabel !== "expandedWell" ? (
+                  <Tooltip title={"Shrink"} placement="top">
+                    <IconButton
+                      color="secondary"
+                      onClick={handleShrink}
+                      aria-label="shrink"
+                      className={classes.icons}
+                    >
+                      <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                ) : isExpanded == false && targetLabel !== "activity" ?
+                    targetLabel !== "contact" ? 
+                    (
+                  <Tooltip title={"Expand"} placement="top">
+                    <IconButton
+                      size="small"
+                      onClick={handleExpand}
+                      aria-label="expand"
+                      className={classes.icons}
+                    >
+                      <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                ) : null
+                :
+                (
+                  <Tooltip title={"Shrink"} placement="top">
+                    <IconButton
+                      color="secondary"
+                      onClick={handleExpand}
+                      aria-label="shrink"
+                      className={classes.icons}
+                    >
+                      <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                )
+              ) : (
+                parent !== "table" &&
+                targetLabel !== "activity" && (
+                  <Tooltip title={"Expand"} placement="top">
+                    <IconButton
+                      size="small"
+                      onClick={handleExpand}
+                      aria-label="expand"
+                      className={classes.icons}
+                    >
+                      <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                )
+              )}
 
               <Tooltip title={"Close"} placement="top">
                 <IconButton
@@ -460,7 +532,6 @@ export default function ExpandableCard(props) {
               </Tooltip>
             </div>
           }
-
           title={getTitle()}
           subheader={
             subTitle
@@ -470,13 +541,10 @@ export default function ExpandableCard(props) {
               : ""
           }
         />
-        
-          <CardContent className={classes.content}>
-            <div id="cardContent">
-              {props.component}
-            </div>
-          </CardContent>
-        
+
+        <CardContent className={classes.content}>
+          <div id="cardContent">{props.component}</div>
+        </CardContent>
       </Card>
     </React.Fragment>
   );

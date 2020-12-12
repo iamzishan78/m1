@@ -12,8 +12,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
 import { AppContext } from "../../../AppContext";
-import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
-import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
 import getLaneTitle from "../../Transact/getLaneTitle";
@@ -42,7 +40,43 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import { UPDATEDEAL } from "../../../graphQL/useMutationUpdateDeal";
 import { UPSERTDEALDESCRIPTOR } from "../../../graphQL/useMutationUpsertDealDescriptor";
 import { UPDATESTAGEDEALDESCRIPTOR } from "../../../graphQL/useMutationUpdateStageDealDescriptor";
-import { showErrorMessage, showSuccessMessage } from "../../../actions";
+import {
+  setFlowState,
+  showErrorMessage,
+  showSuccessMessage,
+} from "../../../actions";
+import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
+import PropTypes from "prop-types";
+import NumberFormat from "react-number-format";
+import { toDate } from "date-fns";
+
+function NumberFormatCustom(props) {
+  const { inputRef, onChange, ...other } = props;
+
+  return (
+    <NumberFormat
+      {...other}
+      getInputRef={inputRef}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      thousandSeparator
+      isNumericString
+      prefix="$"
+    />
+  );
+}
+
+NumberFormatCustom.propTypes = {
+  inputRef: PropTypes.func.isRequired,
+  name: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -131,7 +165,6 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "12px",
     fontSize: 12,
     letterSpacing: 2,
-    // fontWeight: "bold",
     textAlign: "center",
   },
   dialog: {
@@ -168,12 +201,10 @@ const openStyle = { borderColor: "#EBC253" };
 function AddDealDialog(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
-  // const { transactData, handleDataChange } = props;
   const { selectedPipe, pipelines, pipeToShow } = useSelector(
     ({ Flow }) => Flow
   );
   const [stateApp, setStateApp] = useContext(AppContext);
-  // const [title, setTitle] = useState(props.contact ? props.contact.name : ""); // title change from contact.name to dealName
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [label, setLabel] = useState("");
   const [stageId, setStageId] = useState(null);
@@ -185,9 +216,9 @@ function AddDealDialog(props) {
   const [ownerId, setOwnerId] = useState(null);
   const [cardId, setCardId] = useState("");
   const [users, setUsers] = useState([]);
-  const [closeDate, setCloseDate] = useState(null);
+  const [closeDate, setCloseDate] = useState("");
   const [colaborators, setColaborators] = useState([]);
-  const [originationDate, setOriginationDate] = useState("");
+  const [originationDate, setOriginationDate] = useState(null);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
@@ -197,7 +228,6 @@ function AddDealDialog(props) {
   };
 
   const [openContactDialog, setOpenContactDialog] = useState(false);
-  // const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
 
   const [pageVariables, setPageVariables] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
@@ -205,6 +235,8 @@ function AddDealDialog(props) {
   let [transactData, setTransactData] = useState(
     props.transactData ? { ...props.transactData } : null
   );
+
+  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
   const [
     addContact,
@@ -219,11 +251,8 @@ function AddDealDialog(props) {
     fetchPolicy: "cache-and-network",
   });
 
-  // const [getTransactionData, { data: tdata }] = useLazyQuery(TRANSACTIONDATA);
-  const [addDeal, { data: addDealData, loading: addDealLoading }] = useMutation(
-    ADDDEAL
-  );
-  const [updateDeal] = useMutation(UPDATEDEAL);
+  const [addDeal] = useMutation(ADDDEAL);
+  const [updateDeal, { loading: updateDealLoading }] = useMutation(UPDATEDEAL);
   const [upsertDealDescriptor] = useMutation(UPSERTDEALDESCRIPTOR);
   const [updateStageDealDescriptor] = useMutation(UPDATESTAGEDEALDESCRIPTOR);
 
@@ -236,9 +265,37 @@ function AddDealDialog(props) {
   const [
     getPaginatedContacts,
     { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts },
-  ] = useLazyQuery(PAGINATEDCONTACTSQUERY);
+  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+  });
 
   const [contact, setContact] = useState({});
+
+  useEffect(() => {
+    getPipelines();
+  }, []);
+
+  useEffect(() => {
+    if (pipelinesData) {
+      //// select first one as default
+      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0)
+        dispatch(
+          setFlowState({
+            selectedPipe: pipelinesData.pipelines[0],
+            pipelines: pipelinesData.pipelines,
+          })
+        );
+      else
+        dispatch(
+          setFlowState({
+            selectedPipe: null,
+            pipelines: [],
+            pipeToShow: false,
+          })
+        );
+    }
+  }, [pipelinesData]);
 
   const settingNewStageAndFindNextAvailablePosition = (
     stageId,
@@ -305,52 +362,10 @@ function AddDealDialog(props) {
       !stateApp.activeDeal?.cardId &&
       selectedPipe?._id
     )
-      // setPipelineId(selectedPipe._id);
       settingNewPipeWithDefaultStage(selectedPipe._id, true);
   }, [selectedPipe, stateApp.dealDialog, stateApp.activeDeal]);
 
-  // useEffect(() => {
-  //   if (pipelines && pipelineId) {
-  //     const i = pipelines.findIndex((pipe) => pipe._id === pipelineId);
-
-  //     if (i >= 0 && pipelines[i] && pipelines[i].stages) {
-  //       setStagesToChoose(pipelines[i].stages);
-
-  //       if (stateApp.dealDialog === "updatingDeal")
-  //         setStateApp((state) => ({ ...state, dealDialog: true }));
-  //       else {
-  //         setStageId(pipelines[i].stages[0]?._id);
-  //       }
-  //     }
-  //   }
-  // }, [pipelineId, pipelines]);
-
-  // useEffect(() => {
-  //   if (stageId)
-  //     if (pipeToShow?._id === pipelineId) {
-  //       let position = -1;
-
-  //       if (pipeToShow.lanes) {
-  //         for (let i = 0; i < pipeToShow.lanes.length; i++) {
-  //           const lane = pipeToShow.lanes[i];
-  //           if (lane.id === stageId && lane.cards) {
-  //             lane.cards.map((card) => {
-  //               if (card.metadata?.position > position)
-  //                 position = card.metadata.position;
-  //             });
-
-  //             break;
-  //           }
-  //         }
-  //       }
-  //       setDealPosition(position + 1);
-  //     } else {
-  //       setDealPosition(null);
-  //     }
-  // }, [stageId, pipeToShow]);
-
   useEffect(() => {
-    // getPaginatedContacts();
     getAllUsers();
   }, []);
 
@@ -368,13 +383,15 @@ function AddDealDialog(props) {
   useEffect(() => {
     console.log("AUTOCOMPLETE INPUT CHANGE: ", nameAutInputValue);
 
-    //will also run during initial mount
-    setIsNextPageLoading(true);
-    getPaginatedContacts({
-      variables: {
-        search: nameAutInputValue,
-      },
-    });
+    if (props.isTransactPage) {
+      //will also run during initial mount
+      setIsNextPageLoading(true);
+      getPaginatedContacts({
+        variables: {
+          search: nameAutInputValue,
+        },
+      });
+    }
   }, [nameAutInputValue]);
 
   const loadNextPage = async (pageVariables) => {
@@ -419,22 +436,6 @@ function AddDealDialog(props) {
   }, [dataTrack]);
   // TRACK END
 
-  // useEffect(() => {
-  //   console.log("CONTACT", contact);
-  //   if (contact?.name) {
-  //     setNameAutValue(contact);
-  //   }
-  // }, [contact]);
-
-  // useEffect(() => {
-  //   console.log("TDATA : ", tdata?.transactionData[props.index]?.allData);
-  //   if (tdata?.transactionData[props.index]?.allData) {
-  //     setTransactData(
-  //       JSON.parse(JSON.stringify(tdata?.transactionData[props.index]?.allData))
-  //     );
-  //   }
-  // }, [tdata, props.index]);
-
   useEffect(() => {
     if (userLists && userLists.allUsers) {
       setUsers(
@@ -445,44 +446,6 @@ function AddDealDialog(props) {
       );
     }
   }, [userLists]);
-
-  const [
-    updateTransaction,
-    {
-      data: updateTransactionData,
-      called: updateTransactionCalled,
-      loading: updateTransactionLoading,
-    },
-  ] = useMutation(UPDATETRANSACTION);
-
-  // const openContact = () => {
-  //   handleClose();
-  //   props.selectRowOpenContact(contact);
-  // };
-
-  // const handleDataChange = async (newData) => {
-  // if (tdata?.transactionData[props.index]?._id) {
-  //   await updateTransaction({
-  //     variables: {
-  //       transactionId: tdata.transactionData[props.index]._id,
-  //       transaction: { allData: newData, user: stateApp.user.mongoId },
-  //     },
-  //     refetchQueries: ["getTransactionData"],
-  //     awaitRefetchQueries: true,
-  //   });
-  // }
-  // };
-
-  // useEffect(() => {
-  //   if (stateApp.user && stateApp.user.mongoId) {
-  //     console.log(stateApp.user);
-  //     getTransactionData({
-  //       variables: {
-  //         userId: stateApp.user.mongoId,
-  //       },
-  //     });
-  //   }
-  // }, [stateApp.user]);
 
   useEffect(() => {
     if (props.contactId) {
@@ -516,29 +479,34 @@ function AddDealDialog(props) {
       setDealState(card.status ? card.status : null);
       setLabel(card.offerPrice ? card.offerPrice : "");
       setDescription(card.notes ? card.notes : "");
-      // setPipelineId(card.pipeline ? card.pipeline : null);
+      // setPipelineId
       settingNewPipeWithDefaultStage(
         card.pipeline ? card.pipeline : null,
         false
       );
-      // setStageId(laneId);
+      // setStageId
       settingNewStageAndFindNextAvailablePosition(laneId, false);
-      setCloseDate(card.closeDate ? card.closeDate : null);
+      setCloseDate(
+        card.closeDate
+          ? moment.parseZone(card.closeDate).format("yyyy-MM-DD")
+          : ""
+      );
       setDealPosition(card.position ? card.position : null);
       // setColaborators(card.colaborators ? card.colaborators : []);
-      // setOriginationDate(card.createdAt ? card.createdAt : "");
+      setOriginationDate(card.ts ? card.ts : null);
       setOwnerId(
         card.owners?.length > 0
           ? card.owners[0]?.relatedObject?._id
           : stateApp.user.mongoId
       );
 
-      if (card.contacts?.length > 0) {
+      if (card.contacts?.length > 0)
+        // setting contact
         setNameAutValue({
           name: card.contacts[0]?.relatedObject?.entity?.name,
           _id: card.contacts[0]?.relatedObject?._id,
-        }); // setting contact
-      }
+        });
+      else setNameAutValue(null);
     } else if (props.contact) {
       setNameAutValue({ name: props.contact.name, _id: props.contact._id });
     } else if (props.contactId) {
@@ -550,28 +518,19 @@ function AddDealDialog(props) {
     }
   }, [stateApp.activeDeal, props.contact, stateApp.dealDialog, stateApp.user]);
 
-  // old
-  // useEffect(() => {
-  //   if (contact?._id) {
-  //     setTitle(contact.name);
-  //   }
-  // }, [contact]);
-
   const handleClose = () => {
-    // if (!updateTransactionLoading && !addContactLoading) {
     setTitle("");
     setLabel("");
     setDescription("");
     setStageId(null);
     setDealState(null);
-    setNameAutValue(null);
+    if (props.isTransactPage) setNameAutValue(null);
     setNameAutInputValue("");
     setPipelineId(null);
     setOwnerId(null);
-    setCloseDate(null);
+    setCloseDate("");
     setColaborators([]);
-    setOriginationDate("");
-    setContact({});
+    setOriginationDate(null);
     setTarget({});
     setCardId("");
     setDealPosition(null);
@@ -581,7 +540,6 @@ function AddDealDialog(props) {
       dealDialog: false,
       activeDeal: { cardId: null, laneId: null },
     }));
-    // }
   };
 
   const handleCloseContactDialog = () => {
@@ -602,50 +560,17 @@ function AddDealDialog(props) {
         variables: {
           deal: { _id: cardId, IsDeleted: true },
         },
-        refetchQueries: ["getPipeline"],
+        refetchQueries: ["getPipeline", "getContactDeals"],
         awaitRefetchQueries: true,
       }).then((result) => {
         const {
           data: { updateDeal },
         } = result;
-        if (updateDeal?.success === true)
+        if (updateDeal?.success === true) {
           dispatch(showSuccessMessage("The Deal was successfully deleted."));
-        else dispatch(showErrorMessage("An error occurred."));
+          handleClose();
+        } else dispatch(showErrorMessage("An error occurred."));
       });
-
-    // if (transactData) {
-    //   const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
-    //   const laneId = stateApp.activeDeal?.laneId;
-    //   const laneIndex = transactData.lanes.findIndex(
-    //     (lane) => lane.id === laneId
-    //   );
-    //   const lane = transactData.lanes[laneIndex];
-    //   const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
-    //   const card = lane.cards[cardIndex];
-    //   const deletedCard = {
-    //     ...card,
-    //     isDeleted: true,
-    //     style: defaultStyle,
-    //   };
-    //   let td = {
-    //     ...transactData,
-    //     lanes: [
-    //       ...transactData.lanes.slice(0, laneIndex),
-    //       {
-    //         ...lane,
-    //         cards: [
-    //           ...lane.cards.slice(0, cardIndex),
-    //           { ...deletedCard },
-    //           ...lane.cards.slice(cardIndex + 1),
-    //         ],
-    //       },
-    //       ...transactData.lanes.slice(laneIndex + 1),
-    //     ],
-    //   };
-    //   setTransactData(td);
-    //   await handleDataChange(td);
-    //   handleClose();
-    // }
   };
 
   const addUpdateDeal = async (newContact = null) => {
@@ -660,10 +585,13 @@ function AddDealDialog(props) {
 
       const deal = {
         name: title ? title.trim() : null,
-        offerPrice: label ? label.trim() : null,
+        offerPrice: label,
         notes: description ? description.trim() : null,
         status: dealState ? dealState : "open",
-        closeDate: closeDate,
+        closeDate:
+          closeDate && closeDate !== ""
+            ? new Date(`${closeDate}T08:00`).toUTCString()
+            : null,
       };
 
       if (cardId) {
@@ -690,7 +618,7 @@ function AddDealDialog(props) {
                   relatedObjectType: "Contact",
                   userId: stateApp.user.mongoId,
                 },
-                refetchQueries: ["getPipeline"],
+                refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -720,7 +648,7 @@ function AddDealDialog(props) {
                   relatedObjectType: "User",
                   userId: stateApp.user.mongoId,
                 },
-                refetchQueries: ["getPipeline"],
+                refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -747,7 +675,7 @@ function AddDealDialog(props) {
                   relatedObject: stageId,
                   position: dealPosition ? dealPosition.toString() : null,
                 },
-                refetchQueries: ["getPipeline"],
+                refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -778,7 +706,7 @@ function AddDealDialog(props) {
                 variables: {
                   deal,
                 },
-                refetchQueries: ["getPipeline"],
+                refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -809,165 +737,51 @@ function AddDealDialog(props) {
             });
       } else {
         //// add a new deal
+        let variables = {
+          deal,
+          stageId,
+          pipelineId,
+          // ownerId,
+          // ownerName,
+          // contactId,
+          // contactName,
+          position: dealPosition?.toString(),
+          userId: stateApp.user.mongoId,
+        };
+
+        if (ownerId) {
+          let user = users.find((user) => user.value === ownerId);
+          variables = user?.text
+            ? { ...variables, ownerId, ownerName: user.text }
+            : { ...variables, ownerId };
+        }
+
+        if (contactId) {
+          variables = tempContact?.name
+            ? { ...variables, contactId, contactName: tempContact.name }
+            : { ...variables, contactId };
+        }
+
         addDeal({
-          variables: {
-            deal,
-            stageId,
-            pipelineId,
-            ownerId,
-            contactId,
-            position: dealPosition?.toString(),
-            userId: stateApp.user.mongoId,
-          },
-          refetchQueries: ["getPipeline"],
+          variables,
+          refetchQueries: [
+            "getPipeline",
+            "getContactDeals",
+            "getContact",
+            "getAllActivities",
+            "getAllActivitiesForSearch",
+            "getOpenDeals",
+            "openDeals",
+          ],
           awaitRefetchQueries: true,
         });
       }
-      //////////////////////////////////////////////////////////
-      // console.log("Contact: ", newContact, contact, tempContact);
-      // let newStage = stageId ? stageId : "lane1";
-      // if (transactData) {
-      //   const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
-      //   const laneId = stateApp.activeDeal?.laneId;
-
-      //   console.log("CARD AND LANE: ", cardId, laneId, stateApp.activeDeal);
-      //   if (cardId && laneId) {
-      //     // update existing
-      //     const laneIndex = transactData.lanes.findIndex(
-      //       (lane) => lane.id === laneId
-      //     );
-      //     const lane = transactData.lanes[laneIndex];
-      //     const cardIndex = lane.cards.findIndex((card) => card.id === cardId);
-      //     const card = lane.cards[cardIndex];
-
-      //     let style;
-
-      //     if (dealState === "won") {
-      //       style = wonStyle;
-      //     } else if (dealState === "lost") {
-      //       style = lostStyle;
-      //     } else {
-      //       style = openStyle;
-      //     }
-
-      //     const updatedCard = {
-      //       // dealName: dealName.trim(),
-      //       // title: contact?.name.trim(),
-      //       ...card,
-      //       isDeleted: false,
-      //       contactName: tempContact ? tempContact.name : "",
-      //       title: title ? title.trim() : "",
-      //       contactId: tempContact ? tempContact._id : "",
-      //       label: label ? label.trim() : "",
-      //       description: description ? description.trim() : "",
-      //       laneId: newStage,
-      //       dealState: dealState,
-      //       pipelineId: pipelineId,
-      //       ownerId: ownerId,
-      //       expectedCloseDate: closeDate,
-      //       colaborators: colaborators,
-      //       style,
-      //     };
-      //     console.log("Update existing: ", updatedCard);
-
-      //     if (card.laneId !== newStage) {
-      //       if (cardIndex > -1) {
-      //         // remove card from current lane
-      //         let td = { ...transactData };
-      //         td.lanes[laneIndex].cards.splice(cardIndex, 1);
-      //         // add card to updated lane
-      //         const stageIndex = td.lanes.findIndex(
-      //           (lane) => lane.id === newStage
-      //         );
-      //         if (stageIndex === -1) {
-      //           td.lanes.push({
-      //             // create lane if doesn't exist
-      //             id: newStage,
-      //             title: getLaneTitle(newStage),
-      //             cards: [updatedCard],
-      //           });
-      //         } else {
-      //           td.lanes[stageIndex].cards.push(updatedCard);
-      //         }
-      //         setTransactData(td);
-      //         await handleDataChange(td);
-      //       }
-      //     } else {
-      //       let td = { ...transactData };
-
-      //       td.lanes[laneIndex].cards[cardIndex] = updatedCard;
-      //       setTransactData(td);
-      //       await handleDataChange(td);
-      //     }
-      //   } else if (!cardId || !laneId) {
-      //     // add new
-
-      //     let td = { ...transactData };
-      //     console.log(td, transactData, stateApp.user.mongoId);
-
-      //     // create lane if doesn't exist
-      //     if (td?.lanes.findIndex((lane) => lane.id === newStage) === -1) {
-      //       td.lanes.push({
-      //         id: newStage,
-      //         title: getLaneTitle(newStage),
-      //         cards: [],
-      //       });
-      //     }
-
-      //     td.lanes.forEach((lane) => {
-      //       if (lane.id === newStage) {
-      //         let cards = [...lane.cards];
-      //         let style;
-      //         if (dealState === "won") {
-      //           style = wonStyle;
-      //         } else if (dealState === "lost") {
-      //           style = lostStyle;
-      //         } else {
-      //           style = openStyle;
-      //         }
-      //         // CARD STRUCTURE
-      //         const newCard = {
-      //           // dealName: dealName.trim(),
-      //           // title: contact?.name,
-      //           isDeleted: false,
-      //           contactName: tempContact ? tempContact.name : "",
-      //           title: title ? title.trim() : "",
-      //           label: label ? label.trim() : "",
-      //           description: description ? description.trim() : "",
-      //           dealState: dealState,
-      //           id: uuid(),
-      //           contactId: tempContact ? tempContact._id : "",
-      //           laneId: newStage,
-      //           // VALUES TO SET
-      //           createdAt: new Date().toISOString(),
-      //           pipelineId: pipelineId,
-      //           ownerId: ownerId,
-      //           expectedCloseDate: closeDate,
-      //           colaborators: colaborators,
-      //           style,
-      //         };
-
-      //         console.log("Add new: ", newCard);
-      //         cards.push(newCard);
-      //         lane.cards = cards;
-      //       }
-      //     });
-
-      //     setTransactData(td);
-      //     await handleDataChange(td);
-      //   }
 
       handleClose();
     }
-    // }
   };
 
-  // console.log("LOADING", addContactLoading, updateTransactionLoading);
-
   const handleUpdate = async () => {
-    // if (title.trim() !== "" && description.trim() !== "") {
-
-    // if (transactData) {
     if (transactData && contact && contact._id === "newEntity") {
       await addContact({
         variables: {
@@ -988,16 +802,7 @@ function AddDealDialog(props) {
     } else {
       await addUpdateDeal();
     }
-    // }
   };
-
-  // useEffect(() => {
-  //   if (tdata?.transactionData?.allData) {
-  //     handleDataChange(transactData);
-  //   }
-  // }, [transactData]);
-
-  // console.log("USERS", users);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -1018,6 +823,7 @@ function AddDealDialog(props) {
       setIsDeleting(false);
     }
   };
+
   const sortedPipelines = [...pipelines].sort((a, b) => {
     let comparison = 0;
     if (a.name.toUpperCase() > b.name.toUpperCase()) {
@@ -1027,12 +833,6 @@ function AddDealDialog(props) {
     }
     return comparison;
   });
-
-  // const locallySelectedPipe =
-  //   pipelines && pipelineId
-  //     ? pipelines.filter((pipe) => pipe._id === pipelineId)[0]
-  //     : null;
-  // const stagesToChoose = locallySelectedPipe?.stages;
 
   return (
     <>
@@ -1051,14 +851,14 @@ function AddDealDialog(props) {
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => {}}
           >
-            Do you want to delete deal?
+            Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
       <RightDialog
         open={props.open}
         handleClickDialogClose={() => {
-          if (!updateTransactionLoading && !addContactLoading) {
+          if (!updateDealLoading && !addContactLoading) {
             setStateApp((stateApp) => ({
               ...stateApp,
               dealDialog: false,
@@ -1105,7 +905,7 @@ function AddDealDialog(props) {
                       dark={true}
                     /> */}
                     <IconButton
-                      disabled={updateTransactionLoading || addContactLoading}
+                      disabled={updateDealLoading || addContactLoading}
                       onClick={openConfirmationDialog}
                       size="small"
                       style={{ margin: "0 8px" }}
@@ -1123,7 +923,7 @@ function AddDealDialog(props) {
                 )}
 
               <IconButton
-                disabled={updateTransactionLoading || addContactLoading}
+                disabled={updateDealLoading || addContactLoading}
                 onClick={handleClose}
                 size="small"
               >
@@ -1253,6 +1053,10 @@ function AddDealDialog(props) {
               margin="dense"
               variant="outlined"
               value={label}
+              error={isNaN(label)}
+              helperText={
+                isNaN(label) ? "Offer Price must be a valid number" : ""
+              }
               label="Offer Price"
               fullWidth
               onChange={(e) => {
@@ -1260,9 +1064,7 @@ function AddDealDialog(props) {
               }}
               className={classes.inputField}
               InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">$</InputAdornment>
-                ),
+                inputComponent: NumberFormatCustom,
               }}
             />
 
@@ -1312,9 +1114,13 @@ function AddDealDialog(props) {
                 {selectedPipe && (
                   <option value={selectedPipe._id}>{selectedPipe.name}</option>
                 )}
-                {sortedPipelines.map((pipeline) => {
+                {sortedPipelines.map((pipeline, i) => {
                   if (selectedPipe && selectedPipe._id === pipeline._id) return;
-                  return <option value={pipeline._id}>{pipeline.name}</option>;
+                  return (
+                    <option value={pipeline._id} key={i}>
+                      {pipeline.name}
+                    </option>
+                  );
                 })}
               </Select>
             </FormControl>
@@ -1343,8 +1149,10 @@ function AddDealDialog(props) {
                 label="Deal Stage"
               >
                 {stagesToChoose &&
-                  stagesToChoose.map((stage) => (
-                    <option value={stage._id}>{stage.name}</option>
+                  stagesToChoose.map((stage, i) => (
+                    <option value={stage._id} key={i}>
+                      {stage.name}
+                    </option>
                   ))}
               </Select>
             </FormControl>
@@ -1407,11 +1215,11 @@ function AddDealDialog(props) {
                 size="medium"
                 disableElevation
                 onClick={() => {
-                  if (!updateTransactionLoading && !addContactLoading) {
+                  if (!updateDealLoading && !addContactLoading) {
                     handleClose();
                   }
                 }}
-                disabled={updateTransactionLoading || addContactLoading}
+                disabled={updateDealLoading || addContactLoading}
                 className={classes.footerButton}
                 style={{
                   margin: "0px 15px 0px 0px",
@@ -1427,9 +1235,11 @@ function AddDealDialog(props) {
                 disableElevation
                 onClick={handleUpdate}
                 className={classes.footerButton}
-                disabled={updateTransactionLoading || addContactLoading}
+                disabled={
+                  updateDealLoading || addContactLoading || isNaN(label)
+                }
               >
-                {updateTransactionLoading || addContactLoading ? (
+                {updateDealLoading || addContactLoading ? (
                   <CircularProgress size={14} />
                 ) : (
                   "Save"

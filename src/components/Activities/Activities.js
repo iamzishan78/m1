@@ -38,7 +38,6 @@ const ActivitiesCalendar = ({
   return (
     <div>
       <Calendar
-        culture="en-GB"
         drilldownView="week"
         popup={true}
         localizer={localizer}
@@ -47,7 +46,8 @@ const ActivitiesCalendar = ({
         startAccessor={"start"}
         view={view}
         defaultDate={new Date()}
-        style={{ height: "calc(100vh - 64px - 80px)" }}
+        //style={{ height: "calc(100vh - 64px - 80px)" }}
+        style={{ height: "calc(100vh - 70px)" }}
         step={60}
         onSelectEvent={(e) => onEventClick(e)}
         showMultiDayTimes
@@ -82,33 +82,45 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
   const filterByTypeCondition =
     e.type === activityFilterByType || activityFilterByType === "all";
   let filterByTimeCondition;
-  const today = moment();
-  const tomorrow = moment().add(1, "d");
-  const nextWeekDay = moment().add(7, "d");
+  const today = new Date();
+  // const tomorrow = moment().add(1, "d");
+  // const nextWeekDay = moment().add(7, "d");
 
   switch (activityFilterByTime) {
-    case "todo":
-      filterByTimeCondition = moment(e.end).isSameOrAfter(today);
+    case "all":
+      filterByTimeCondition = true;
+      break;
+    case "upcoming":
+      filterByTimeCondition = moment(e.start).isSameOrAfter(today, "day");
       break;
     case "overdue":
-      filterByTimeCondition = moment(e.end).isBefore(today);
+      filterByTimeCondition = moment(e.end).isBefore(today, "day");
       break;
-    case "today":
-      filterByTimeCondition = moment(e.end).isSame(today, "day");
+    case "open":
+      filterByTimeCondition = !e.isClosed;
       break;
-    case "tomorrow":
-      filterByTimeCondition = moment(e.end).isSame(tomorrow, "day");
+    case "closed":
+      filterByTimeCondition = e.isClosed;
       break;
-    case "this-week":
-      filterByTimeCondition = moment(e.end).isSame(today, "week");
+      // case "todo":
+      //   filterByTimeCondition = moment(e.end).isSameOrAfter(today);
+      //   break;
+      // case "today":
+      //   filterByTimeCondition = moment(e.end).isSame(today, "day");
+      //   break;
+      // case "tomorrow":
+      //   filterByTimeCondition = moment(e.end).isSame(tomorrow, "day");
+      //   break;
+      // case "this-week":
+      //   filterByTimeCondition = moment(e.end).isSame(today, "week");
 
-      break;
-    case "next-week":
-      filterByTimeCondition = moment(e.end).isSame(nextWeekDay, "week");
+      //   break;
+      // case "next-week":
+      //   filterByTimeCondition = moment(e.end).isSame(nextWeekDay, "week");
 
       break;
     default:
-      filterByTimeCondition = moment(e.end).isSameOrAfter(today, "day");
+      filterByTimeCondition = true;
   }
 
   return filterByTypeCondition && filterByTimeCondition;
@@ -124,15 +136,16 @@ const Activities = () => {
       loading: activitiesLoading,
       error: activitiesError,
     },
-  ] = useLazyQuery(GETALLACTIVITIES);
+  ] = useLazyQuery(GETALLACTIVITIES, {
+    fetchPolicy: `network-only`,
+  });
 
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
-  const [activityDisplayType, setActivityDisplayType] = useState("calender");
   const [activityFilterByType, setActivityFilterByType] = useState("all");
-  const [activityFilterByTime, setActivityFilterByTime] = useState("todo");
+  const [activityFilterByTime, setActivityFilterByTime] = useState("all");
   const [view, setView] = React.useState(Views.WEEK);
   const [selectedActivity, setSelectedActivity] = useState(null);
 
@@ -142,10 +155,13 @@ const Activities = () => {
 
   useEffect(() => {
     if (activitiesData) {
+      console.log("ACTIVITIES", activitiesData);
       setEvents(
         activitiesData?.activities?.map((act) => {
-          const start = new Date(act.dateTime);
-          const end = act.endDateTime ? new Date(act.endDateTime) : start;
+          const start = new Date(Number(act.dateTime));
+          const end = act.endDateTime
+            ? new Date(Number(act.endDateTime))
+            : start;
           return {
             id: uniqueId(),
             ...act,
@@ -186,9 +202,26 @@ const Activities = () => {
     }));
   };
 
+  const setSelectedActivityId = (id) => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedActivityId: id,
+    }));
+  };
+
+  useEffect(() => {
+    if (stateApp.selectedActivityId) {
+      setSelectedActivity(
+        events.find((act) => act._id === stateApp.selectedActivityId)
+      );
+    } else {
+      setSelectedActivity(null);
+    }
+  }, [stateApp.selectedActivityId]);
+
   const onEventClick = (event) => {
     console.log("EVENT", event);
-    setSelectedActivity(event);
+    setSelectedActivityId(event._id);
     onModalOpen();
   };
 
@@ -204,11 +237,9 @@ const Activities = () => {
       ) : (
         <>
           <ActivitiesAppBar
-            activityDisplayType={activityDisplayType}
-            setActivityDisplayType={setActivityDisplayType}
             onAddActivityClick={onModalOpen}
           />
-          {activityDisplayType === "calender" ? (
+          {stateApp.activityDisplayType === "calendar" ? (
             <ActivitiesCalendar
               activityFilterByType={activityFilterByType}
               setActivityFilterByType={setActivityFilterByType}
@@ -224,7 +255,7 @@ const Activities = () => {
           )}
           <ActivitiesModal
             selectedActivity={selectedActivity}
-            setSelectedActivity={setSelectedActivity}
+            setSelectedActivityId={setSelectedActivityId}
             events={events}
           />
         </>

@@ -122,20 +122,22 @@ export default function Deals({ contact, ...props }) {
 
   const sumOpenDeals = () => {
     let sum = 0;
-    activeDeals.forEach(
-      (card) =>
-        (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
-    );
+    activeDeals.forEach((card) => {
+      if (card.offerPrice && !isNaN(card.offerPrice))
+        sum += card.offerPrice
+        // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+    });
     const formatted = formatter.format(sum);
     return formatted.slice(0, formatted.length - 3);
   };
 
   const sumWonDeals = () => {
     let sum = 0;
-    wonDeals.forEach(
-      (card) =>
-        (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
-    );
+    wonDeals.forEach((card) => {
+      if (card.offerPrice && !isNaN(card.offerPrice))
+        sum += card.offerPrice
+        // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+    });
     const formatted = formatter.format(sum);
     return formatted.slice(0, formatted.length - 3);
   };

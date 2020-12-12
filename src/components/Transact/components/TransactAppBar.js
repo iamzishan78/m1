@@ -1,31 +1,19 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import Add from "@material-ui/icons/Add";
-import List from "@material-ui/icons/List";
-import GridOn from "@material-ui/icons/GridOn";
 import OfflineBolt from "@material-ui/icons/OfflineBolt";
+import NotInterested from "@material-ui/icons/NotInterested";
 import CheckBox from "@material-ui/icons/CheckBox";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Divider from "@material-ui/core/Divider";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import AddIcon from "@material-ui/icons/Add";
-import EditIcon from "@material-ui/icons/Edit";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
 import { makeStyles } from "@material-ui/core/styles";
-import { AppContext } from "../../../AppContext";
 import Pipelines from "./Pipelines";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: "50px",
     backgroundColor: "#fff",
-    padding: "0 16px 0px",
+    padding: "0 16px 10px",
   },
   top: {
     display: "flex",
@@ -38,8 +26,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
-    marginTop: "8px",
-    marginBottom: "4px",
+    marginTop: "10px",
     // padding: 20,
   },
   bottomLeft: {
@@ -47,9 +34,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    marginTop: "8px",
-    marginBottom: "4px",
-    //paddingBottom: "6px",
+    paddingBottom: "4px",
     // padding: "0 0 20 0",
   },
   right: {
@@ -58,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 
     "& h1": {
       color: "#0DBBEA",
-      margin: "0 35px 0 0",
+      margin: "0 10px 0 0",
     },
   },
 
@@ -77,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#333",
     transition: "200ms all",
     backgroundColor: "#f5f5f5",
+    width: "100%",
   },
   activeBtn: {
     borderRadius: 5,
@@ -95,7 +81,8 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 8,
     backgroundColor: "#3DD698",
     borderRadius: 5,
-    padding: 6,
+    minWidth: 220,
+    padding: 7.8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -106,7 +93,8 @@ const useStyles = makeStyles((theme) => ({
   activeDeals: {
     backgroundColor: "#E8C059",
     borderRadius: 5,
-    padding: 6,
+    minWidth: 220,
+    padding: 7.8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -114,23 +102,36 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: 4,
     },
   },
+  lostDeals: {
+    backgroundColor: "#011133",
+    borderRadius: 5,
+    minWidth: 220,
+    padding: 7.8,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    "& span": {
+      marginLeft: 4,
+    },
+    marginLeft: 8,
+
+  },
   import: {
     marginLeft: 8,
     backgroundColor: "#F0F0F0",
   },
   addDeal: {
     marginLeft: 8,
-    padding: 6,
-    paddingRight: 10,
+    padding: 9,
     borderRadius: 5,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     "& span": {
       marginleft: 2,
-      marginright:4,
+      marginright: 4,
     },
-    backgroundColor: "#1CB6DA",
+    backgroundColor: "#011133",
     color: "#fff",
     transition: "200ms all",
 
@@ -139,7 +140,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   pipelineControl: {
-    minWidth: 180,
+    minWidth: 200,
     marginBottom: 2,
     borderRadius: 5,
   },
@@ -156,11 +157,10 @@ const sumDeals = (lanes, status) => {
 
   lanes.forEach((deal) => {
     deal.cards.forEach((card) => {
-      if (card.metadata.status === status) {
-        if (card.label)
-          sumAmount += parseFloat(
-            card.label.split("$").join("").split(",").join("")
-          );
+      if (card.metadata.status === status && !card.metadata.IsDeleted) {
+        if (card.label && !isNaN(card.label))
+          sumAmount += card.label
+          // parseFloat(card.label.split("$").join("").split(",").join(""));
         sumCount++;
       }
     });
@@ -174,31 +174,24 @@ const TransactAppBar = ({
   // wonSum,
   // openLength,
   // openSum,
-  dealDisplayType,
-  setDealDisplayType,
   dealFilter,
   setDealFilter,
 }) => {
   const classes = useStyles();
   const { pipeToShow } = useSelector(({ Flow }) => Flow);
-  const [stateApp, setStateApp] = useContext(AppContext);
   const [openDeals, setOpenDeals] = useState({ count: 0, amount: "$0" });
   const [wonDeals, setWonDeals] = useState({ count: 0, amount: "$0" });
+  const [lostDeals, setLostDeals] = useState({ count: 0, amount: "$0" });
 
   useEffect(() => {
     if (pipeToShow?.lanes) {
+      console.log(pipeToShow.lanes)
       setOpenDeals(sumDeals(pipeToShow.lanes, "open"));
       setWonDeals(sumDeals(pipeToShow.lanes, "won"));
+      setLostDeals(sumDeals(pipeToShow.lanes, "lost"));
     }
   }, [pipeToShow]);
 
-  const handleClickAddDeal = () => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      dealDialog: true,
-      activeDeal: { cardId: null, laneId: null },
-    }));
-  };
 
   return (
     <>
@@ -210,26 +203,56 @@ const TransactAppBar = ({
       >
         <div className={classes.top} style={{ marginTop: 15 }}>
           <div className={classes.right}>
-            <h1>DEAL FLOW</h1>
-            <ButtonGroup>
-              <IconButton
+            {/* <h1>DEAL FLOW</h1> */}
+
+            <ButtonGroup style={{ minHeight: 36 }}>
+              <Button
                 size="small"
-                className={`${classes.toggleBtn} ${
-                  dealDisplayType === "table" && classes.activeBtn
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "all" && classes.activeBtn
                 }`}
-                onClick={() => setDealDisplayType("table")}
+                onClick={() => setDealFilter("all")}
               >
-                <List />
-              </IconButton>
-              <IconButton
+                ALL
+              </Button>
+              <Button
                 size="small"
-                className={`${classes.toggleBtn} ${
-                  dealDisplayType === "board" && classes.activeBtn
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "open" && classes.activeBtn
                 }`}
-                onClick={() => setDealDisplayType("board")}
+                onClick={() => setDealFilter("open")}
               >
-                <GridOn />
-              </IconButton>
+                OPEN
+              </Button>
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "won" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("won")}
+              >
+                Won
+              </Button>
+
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "lost" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("lost")}
+              >
+                Lost
+              </Button>
+
+              {/* <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "deleted" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("deleted")}
+              >
+                Deleted
+              </Button> */}
             </ButtonGroup>
           </div>
           <div className={classes.left}>
@@ -249,18 +272,18 @@ const TransactAppBar = ({
                 {wonDeals.amount}
               </span>
             </div>
+            <div className={classes.lostDeals}>
+              <NotInterested />
+              <span>
+                {lostDeals.count}{" "}
+                {lostDeals.count !== 1 ? "LOST DEALS" : "LOST DEAL"} |{" "}
+                {lostDeals.amount}
+              </span>
+            </div>
             {/* <Button className={classes.import} color="default" size="small">
               IMPORT
             </Button> */}
-            <Button
-              className={classes.addDeal}
-              color="primary"
-              size="small"
-              startIcon={<Add/>}
-              onClick={handleClickAddDeal}
-            >
-              New Deal
-            </Button>
+            <Pipelines />
           </div>
         </div>
         {/* <div className={classes.bottom}>
@@ -353,62 +376,13 @@ const TransactAppBar = ({
               </MenuItem>
             </Select>
           </FormControl> */}
-        <div className={classes.top} style={{ marginBottom: 4, marginTop:2 }}>
+        <div className={classes.top} style={{ marginBottom: 4, marginTop: 2 }}>
           {/* <div className={classes.right}> */}
-          <div className={classes.bottomLeft}>
-            <ButtonGroup style={{ minHeight: 36 }}>
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "all" && classes.activeBtn
-                }`}
-                onClick={() => setDealFilter("all")}
-              >
-                ALL
-              </Button>
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "open" && classes.activeBtn
-                }`}
-                onClick={() => setDealFilter("open")}
-              >
-                OPEN
-              </Button>
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "won" && classes.activeBtn
-                }`}
-                onClick={() => setDealFilter("won")}
-              >
-                Won
-              </Button>
-
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "lost" && classes.activeBtn
-                }`}
-                onClick={() => setDealFilter("lost")}
-              >
-                Lost
-              </Button>
-
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "deleted" && classes.activeBtn
-                }`}
-                onClick={() => setDealFilter("deleted")}
-              >
-                Deleted
-              </Button>
-            </ButtonGroup>
-          </div>
-          <div className={classes.bottomRight}>
-            <Pipelines />
-          </div>
+          {/* <div className={classes.bottomLeft}>
+          </div> */}
+          {/* <div className={classes.bottomRight}>
+            
+          </div> */}
           {/* </div> */}
         </div>
       </AppBar>
