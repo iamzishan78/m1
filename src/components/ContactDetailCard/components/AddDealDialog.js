@@ -588,7 +588,10 @@ function AddDealDialog(props) {
         offerPrice: label,
         notes: description ? description.trim() : null,
         status: dealState ? dealState : "open",
-        closeDate: closeDate && closeDate !== "" ? closeDate : null,
+        closeDate:
+          closeDate && closeDate !== ""
+            ? new Date(`${closeDate}T08:00`).toUTCString()
+            : null,
       };
 
       if (cardId) {
