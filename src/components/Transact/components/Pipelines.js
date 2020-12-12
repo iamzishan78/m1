@@ -232,20 +232,56 @@ export default function Pipelines(props) {
 
   useEffect(() => {
     if (pipelineData) {
-      let pipe = pipelineData.pipeline
-        ? {
-            ...pipelineData.pipeline,
-            lanes: pipelineData.pipeline.lanes?.map((lane) => ({
-              ...lane,
-              cards: lane.cards?.map((card) => ({ ...card })),
-            })),
-          }
-        : false;
-      dispatch(
-        setFlowState({
-          pipeToShow: pipe,
-        })
-      );
+      if (pipelineData.pipeline) {
+        let deals = [];
+        let pipe = {
+          ...pipelineData.pipeline,
+          lanes: pipelineData.pipeline.lanes?.map((lane) => ({
+            ...lane,
+            cards: lane.cards?.map((card) => {
+              if (!card.metadata.IsDeleted)
+                deals.push({
+                  cardId: card.id,
+                  laneId: lane.id,
+                  laneName: lane.title,
+                  pipeline: pipelineData.pipeline._id,
+                  pipelineName: pipelineData.pipeline.name,
+                  ownerName:
+                    card?.metadata?.owners &&
+                    card.metadata.owners[0]?.relatedObject?.name
+                      ? card.metadata.owners[0].relatedObject.name
+                      : null,
+                  contactName:
+                    card?.metadata?.contacts &&
+                    card.metadata.contacts[0]?.relatedObject?.entity?.name
+                      ? card.metadata.contacts[0].relatedObject.entity.name
+                      : null,
+                  isContact:
+                    card?.metadata?.contacts &&
+                    card.metadata.contacts[0]?.relatedObject?._id
+                      ? card.metadata.contacts[0].relatedObject._id
+                      : null,
+                  ...card.metadata,
+                });
+
+              return { ...card };
+            }),
+          })),
+        };
+
+        dispatch(
+          setFlowState({
+            pipeToShow: pipe,
+            pipeToShowTab: deals,
+          })
+        );
+      } else
+        dispatch(
+          setFlowState({
+            pipeToShow: null,
+            pipeToShowTab: null,
+          })
+        );
     }
   }, [pipelineData]);
 

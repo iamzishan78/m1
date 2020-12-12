@@ -2035,11 +2035,6 @@ function M1nTable(props) {
   const setWarningShowed = (newState) => {
     setStateIfDeepEqual(WarningShowed, newState);
   };
-  const {
-    searchloading,
-    searchResultData,
-    selectedOwnerWellIntsSummary,
-  } = useSelector(({ MapGridCard }) => MapGridCard);
 
   const [dataContacts, DataContacts] = useState(null);
   const setDataContacts = (newState) => {
@@ -2050,6 +2045,14 @@ function M1nTable(props) {
   const setDataWellInterests = (newState) => {
     setStateIfDeepEqual(DataWellInterests, newState);
   };
+
+  const {
+    searchloading,
+    searchResultData,
+    selectedOwnerWellIntsSummary,
+  } = useSelector(({ MapGridCard }) => MapGridCard);
+
+  const { pipeToShowTab } = useSelector(({ Flow }) => Flow);
 
   ////////////Queries begin///////////////////////////////////////////////
 
@@ -2092,9 +2095,11 @@ function M1nTable(props) {
   //////////
 
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY, {
+    PAGINATEDCONTACTSQUERY,
+    {
       fetchPolicy: "no-cache",
-    });
+    }
+  );
   const [
     getContactsFilterOptions,
     { data: dataContactsFilterOptions },
@@ -2106,10 +2111,8 @@ function M1nTable(props) {
   //   TRANSACTIONDATA
   // );
 
-  const [getContactDeals, { data: dataDeals }] = useLazyQuery(
-    CONTACTDEALS
-  );
-  
+  const [getContactDeals, { data: dataDeals }] = useLazyQuery(CONTACTDEALS);
+
   //////////
   const [removeContact] = useMutation(REMOVECONTACT);
 
@@ -3675,7 +3678,7 @@ function M1nTable(props) {
     if (props.parent && props.parent === "Deals" && stateApp.user) {
       setLoading(true);
       console.log("ue mintable 22 - deals");
-      setTargetLabel("deals");
+      setTargetLabel("deal");
       setHeader("Deals");
       getContactDeals({
         variables: {
@@ -3734,7 +3737,7 @@ function M1nTable(props) {
         currency: "USD",
       });
 
-      let dateFormat = new Intl.DateTimeFormat('en-US', {
+      let dateFormat = new Intl.DateTimeFormat("en-US", {
         year: "numeric",
         day: "numeric",
         month: "numeric",
@@ -3756,7 +3759,7 @@ function M1nTable(props) {
       //   })
       // ]
 
-      setTargetLabel("deals");
+      setTargetLabel("deal");
       setRows([...dataDeals.contactDeals]);
       setColumns([...DealsHeadCells]);
       setLoading(false);
@@ -3767,7 +3770,7 @@ function M1nTable(props) {
       "font-size:20px; color:green;",
       props.contact
     );
-  }, [ dataDeals ]);
+  }, [dataDeals]);
 
   // deals delete
   useEffect(() => {
@@ -3818,6 +3821,55 @@ function M1nTable(props) {
   ]);
 
   ////////////Deals end////////////////////////////////////////////////
+
+  ////////////Transact Deals start////////////////////////////////////////////////
+
+  useEffect(() => {
+    if (props.parent && props.parent === "TransactDeals") {
+      setTargetLabel("deal");
+      setHeader("Deals");
+      setAddAble(false);
+      setUploadIcon(false);
+      setStartPaginationAt(25);
+      setOrderByTracks(false);
+    }
+  }, [props.parent]);
+
+  useEffect(() => {
+    if (props.parent && props.parent === "TransactDeals") {
+      setLoading(props.filteredTabTransactData ? false : true);
+
+      if (props.filteredTabTransactData) {
+        setRows([...props.filteredTabTransactData]);
+        const TransactDealsHeadCells = [
+          ...DealsHeadCells,
+          {
+            name: "contactName",
+            label: "Contact Name",
+          },
+          {
+            name: "isContact",
+            label: " ",
+            options: {
+              filter: false,
+              searchable: false,
+              sort: false,
+              download: false,
+              print: false,
+              viewColumns: false,
+            },
+          },
+        ];
+        // TransactDealsHeadCells.splice(DealsHeadCells.length - 1, 0, {
+        //   name: "contactName",
+        //   label: "Contact Name",
+        // });
+        setColumns(TransactDealsHeadCells);
+      }
+    }
+  }, [props.parent, props.filteredTabTransactData]);
+
+  ////////////Transact Deals end////////////////////////////////////////////////
 
   ////////////Map Viewport Wells begin///////////////////////////////////////////////
 
@@ -4191,8 +4243,8 @@ function M1nTable(props) {
 
   /////////// PRODUCTION DETAILS ////////////////////////////////////////
   useEffect(() => {
-    setLoading(true);
     if (props.parent && props.parent === "production_WellDetails") {
+      setLoading(true);
       setTargetLabel("production_detail");
       setHeader("Monthly Production");
       setColumns(ProductionDetailsHeaders);
