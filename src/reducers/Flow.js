@@ -4,8 +4,8 @@ const INIT_STATE = {
   selectedPipe: null,
   openPipeDialog: false,
   pipeToShow: null,
+  pipeToShowTab: null,
   pipelines: [],
-  selectedCard: null,
 };
 
 export default (state = INIT_STATE, action) => {

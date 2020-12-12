@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery } from "@apollo/client";
-import { Grid, InputAdornment, TextField, IconButton, Tooltip } from "@material-ui/core";
+import {
+  Grid,
+  InputAdornment,
+  TextField,
+  IconButton,
+  Tooltip,
+} from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "react-redux";
 
@@ -10,7 +16,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import List from "@material-ui/icons/List";
 import GridOn from "@material-ui/icons/GridOn";
-import TableChartIcon from '@material-ui/icons/TableChart';
+import TableChartIcon from "@material-ui/icons/TableChart";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 
@@ -40,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#1CB6DA44",
     },
   },
-  
+
   activeBtn: {
     color: "#1CB6DA",
     // "&:hover": {
@@ -94,23 +100,12 @@ const DealSearch = () => {
   //   console.log("PIPELINES DATA: ", pipelinesData);
   // }, [pipelinesData]);
 
-  const { pipeToShow } = useSelector(({ Flow }) => Flow);
+  const { pipeToShow, pipeToShowTab } = useSelector(({ Flow }) => Flow);
 
   useEffect(() => {
-    if (pipeToShow) {
-      let deals = [];
-      pipeToShow.lanes &&
-        pipeToShow.lanes.forEach((lane) => {
-          lane.cards &&
-            lane.cards.forEach((card) => {
-              if(!card.metadata.IsDeleted)
-                deals.push(card);
-            });
-        });
-
-      setAllDeals(deals);
-    }
-  }, [pipeToShow]);
+    if (pipeToShowTab) setAllDeals(pipeToShowTab);
+    else setAllDeals([]);
+  }, [pipeToShowTab]);
 
   // console.log("PIPE TO SHOW: ", pipeToShow);
 
@@ -149,17 +144,11 @@ const DealSearch = () => {
   //   if (allDeals) console.log("ALL DEALS: ", allDeals);
   // }, [allDeals]);
 
-  const handleSelectDeal = (cardId, laneId, metadata) => {
-    if (!cardId || !laneId || !metadata) return;
-
+  const handleSelectDeal = (deal) => {
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,
-      activeDeal: {
-        cardId,
-        laneId,
-        ...metadata,
-      },
+      activeDeal: deal,
     }));
   };
 
@@ -180,25 +169,22 @@ const DealSearch = () => {
         options={allDeals}
         onChange={(e, deal) => {
           console.log("Selected: ", deal);
-          deal &&
-            deal.id &&
-            deal.laneId &&
-            handleSelectDeal(deal.id, deal.laneId, deal.metadata);
+          deal && handleSelectDeal(deal);
         }}
         disableClearable={false}
         forcePopupIcon
         popupIcon={<ArrowDropDownIcon htmlColor="#fff" />}
         closeIcon={<ClearIcon htmlColor="#fff" />}
-        getOptionLabel={(option) => option.title}
+        getOptionLabel={(option) => option.name}
         renderOption={(option) => {
           return (
             <Grid container spacing={0}>
               <Grid container item xs={12} alignItems="center">
                 <Grid item xs>
-                  <span style={{ fontWeight: 400 }}>{option.title}</span>
+                  <span style={{ fontWeight: 400 }}>{option.name}</span>
 
                   <Typography variant="body2" color="textSecondary">
-                    {option.description}
+                    {option.notes}
                   </Typography>
                 </Grid>
               </Grid>
@@ -228,30 +214,32 @@ const DealSearch = () => {
               ),
               endAdornment: (
                 <ButtonGroup variant="text">
-                  <Tooltip title="List View" >
-                  <IconButton
-                    size="small"
-                    htmlColor="#fff"
-                    className={`${classes.toggleBtn} ${
-                      stateApp.dealDisplayType === "table" && classes.activeBtn
-                    }`}
-                     //temporarily commenting out until list view exists
-                    //onClick={() => setDealDisplayType("table")}
-                  >
-                    <List />
-                  </IconButton>
+                  <Tooltip title="List View">
+                    <IconButton
+                      size="small"
+                      htmlColor="#fff"
+                      className={`${classes.toggleBtn} ${
+                        stateApp.dealDisplayType === "table" &&
+                        classes.activeBtn
+                      }`}
+                      //temporarily commenting out until list view exists
+                      onClick={() => setDealDisplayType("table")}
+                    >
+                      <List />
+                    </IconButton>
                   </Tooltip>
-                  <Tooltip title="Board View" >
-                  <IconButton
-                    size="small"
-                    htmlColor="#fff"
-                    className={`${classes.toggleBtn} ${
-                      stateApp.dealDisplayType === "board" && classes.activeBtn
-                    }`}
-                    onClick={() => setDealDisplayType("board")}
-                  >
-                    <TableChartIcon />
-                  </IconButton>
+                  <Tooltip title="Board View">
+                    <IconButton
+                      size="small"
+                      htmlColor="#fff"
+                      className={`${classes.toggleBtn} ${
+                        stateApp.dealDisplayType === "board" &&
+                        classes.activeBtn
+                      }`}
+                      onClick={() => setDealDisplayType("board")}
+                    >
+                      <TableChartIcon />
+                    </IconButton>
                   </Tooltip>
                 </ButtonGroup>
               ),

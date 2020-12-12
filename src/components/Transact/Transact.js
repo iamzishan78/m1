@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setFlowState } from "../../actions";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import CallMadeIcon from "@material-ui/icons/CallMade";
+import M1nTable from "../Shared/M1nTable/M1nTable";
 
 function usePrevious(value) {
   const ref = useRef();
@@ -44,9 +45,11 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
   },
   boardAndTable: {
+    maxHeight: "calc(100vh - 140px) !important",
+    overflowY: "auto",
     maxWidth: "100vw",
     "& .react-trello-board": {
-      height: "calc( 100vh - 143px)",
+      height: "calc( 100vh - 140px)",
       "& >div": {
         height: "100%",
         "& .smooth-dnd-container": {
@@ -58,23 +61,30 @@ const useStyles = makeStyles((theme) => ({
         },
       },
     },
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": { minHeight: "calc(100vh - 258px) !important" },
+      },
+    },
+    "& .MuiToolbar-root": { textAlign: "initial" },
   },
 }));
 
 export default function Transact() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { pipeToShow } = useSelector(({ Flow }) => Flow);
+  const { pipeToShow, pipeToShowTab } = useSelector(({ Flow }) => Flow);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [filteredTransactData, setFilteredTransactData] = useState({
+  const [filteredBoardTransactData, setFilteredBoardTransactData] = useState({
     lanes: [],
   });
+  const [filteredTabTransactData, setFilteredTabTransactData] = useState([]);
   const [dealFilter, setDealFilter] = useState("all");
 
   const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
   const [updateDeal] = useMutation(UPDATEDEAL);
 
-  const filterCards = (lanes, filter) => {
+  const filterBoardCards = (lanes, filter) => {
     return lanes.map((lane) => {
       let cards = [...lane.cards];
 
@@ -100,11 +110,34 @@ export default function Transact() {
 
   useEffect(() => {
     if (pipeToShow?.lanes && dealFilter) {
-      setFilteredTransactData({
-        lanes: [...filterCards(pipeToShow.lanes, dealFilter)],
+      setFilteredBoardTransactData({
+        lanes: [...filterBoardCards(pipeToShow.lanes, dealFilter)],
       });
     }
   }, [pipeToShow, dealFilter]);
+
+  const filterTabCards = (cards, filter) => {
+    return cards.filter((card) => {
+      switch (filter) {
+        case "all":
+          return !card.IsDeleted; // remove deleted cards
+
+        case "deleted":
+          return card.IsDeleted; // get deleted cards
+
+        default:
+          return card.status == filter && !card.IsDeleted;
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (pipeToShowTab && dealFilter) {
+      setFilteredTabTransactData([
+        ...filterTabCards(pipeToShowTab, dealFilter),
+      ]);
+    }
+  }, [pipeToShowTab, dealFilter]);
 
   const handleDataChange = (newData) => {
     console.log("DATA CHANGE", newData);
@@ -141,10 +174,10 @@ export default function Transact() {
       (lane) => lane?.id === targetLaneId
     );
 
-    let filteredSourceLane = filteredTransactData.lanes.find(
+    let filteredSourceLane = filteredBoardTransactData.lanes.find(
       (lane) => lane?.id === sourceLaneId
     );
-    let filteredTargetLane = filteredTransactData.lanes.find(
+    let filteredTargetLane = filteredBoardTransactData.lanes.find(
       (lane) => lane?.id === targetLaneId
     );
 
@@ -158,14 +191,17 @@ export default function Transact() {
     );
     let unfilteredTargetPosition = (() => {
       if (position === 0) return 0;
-      let atEnd = position >= filteredTargetLane?.cards?.length
+      let atEnd = position >= filteredTargetLane?.cards?.length;
       let prevCardFilteredPosition = position - atEnd;
-      let prevCardAtPosition = filteredTargetLane?.cards[prevCardFilteredPosition];
-      let prevCardUnfilteredPosition = unfilteredTargetLane?.cards.findIndex((card) => {
-        return card?.id === prevCardAtPosition?.id
-      })
+      let prevCardAtPosition =
+        filteredTargetLane?.cards[prevCardFilteredPosition];
+      let prevCardUnfilteredPosition = unfilteredTargetLane?.cards.findIndex(
+        (card) => {
+          return card?.id === prevCardAtPosition?.id;
+        }
+      );
 
-      return prevCardUnfilteredPosition += atEnd
+      return (prevCardUnfilteredPosition += atEnd);
     })();
 
     // update moved card descriptor
@@ -267,8 +303,8 @@ export default function Transact() {
             <Board
               className={classes.list}
               style={{ backgroundColor: "#fff" }}
-              // data={filteredTransactData || transactData}
-              data={filteredTransactData}
+              // data={filteredBoardTransactData || transactData}
+              data={filteredBoardTransactData}
               draggable={true}
               laneDraggable={false}
               cardDraggable={true}
@@ -310,7 +346,13 @@ export default function Transact() {
               //onCardMoveAcrossLanes
             />
           )}
-          {stateApp.dealDisplayType === "table" && <TransactTable />}
+          {stateApp.dealDisplayType === "table" && (
+            <M1nTable
+              dense
+              filteredTabTransactData={filteredTabTransactData}
+              parent="TransactDeals"
+            />
+          )}
         </div>
       ) : pipeToShow === false ? (
         <h1 style={{ marginTop: 80 }}>
