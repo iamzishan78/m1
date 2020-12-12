@@ -2424,6 +2424,7 @@ function M1nTable(props) {
   }, [dataTracks]);
 
   useEffect(() => {
+    console.log('-----------------------')
     if (props.parent && props.parent === "trackWells" && dataWells) {
       console.log("ue mintable 7");
       if (
@@ -3466,6 +3467,15 @@ function M1nTable(props) {
       setLoading(false);
     }
   }, [props.parent, props.customLayer, dataTracks, dataCommentsCounter]);
+  
+  useEffect(() => {
+    if (props.parent &&
+      props.parent === "ownersPerParcelWells") {
+        console.log("-----------------");
+        console.log(stateApp);
+        console.log("-----------------");
+      }
+  },[stateApp]);
   ////////////Owners Per Parcel begin//////////Delete//////////////////////////////
 
   useEffect(() => {
