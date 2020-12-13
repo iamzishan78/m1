@@ -2198,8 +2198,11 @@ function SubTable(props) {
 
             filters: filters,
             search: tableState.searchText,
+            userId: stateApp.user.mongoId,
           },
         };
+        console.log('userId---=---', stateApp.user.mongoId);
+        console.log('action', action);
         switch (action) {
           case "changeRowsPerPage":
             console.log("changeRowsPerPage");
@@ -2331,6 +2334,7 @@ function SubTable(props) {
               field: "id",
               value: props.wellInterestsPageProps.ownerId,
             },
+            userId: stateApp.user.mongoId,
             // search: tableState.searchText,
           },
         };
