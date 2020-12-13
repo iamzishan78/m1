@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
   removeIconButton: {
     color: "gray",
     "&:hover": {
-      color: "#454545",
+      color: "red",
     },
   },
   list: {
