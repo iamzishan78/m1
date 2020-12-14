@@ -1585,6 +1585,69 @@ const DealsHeadCells = [
   },
 ];
 
+const TransactDealsHeadCells = [
+  {
+    name: "_id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "name",
+    label: "Deal Name",
+  },
+  {
+    name: "contactName",
+    label: "Contact Name",
+  },
+  {
+    name: "offerPrice",
+    label: "Offer Price",
+  },
+  {
+    name: "closeDate",
+    label: "Expected Close Date",
+  },
+  {
+    name: "pipelineName",
+    label: "Pipeline",
+  },
+  {
+    name: "laneName",
+    label: "Deal Stage",
+  },
+  {
+    name: "status",
+    label: "Deal Status",
+  },
+  {
+    name: "ownerName",
+    label: "Deal Owner",
+  },
+  {
+    name: "notes",
+    label: "Notes",
+  },
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+];
+
 const ParcelInterestsPerContactHeadCells = [
   {
     name: "_id",
@@ -3841,29 +3904,6 @@ function M1nTable(props) {
 
       if (props.filteredTabTransactData) {
         setRows([...props.filteredTabTransactData]);
-        const TransactDealsHeadCells = [
-          ...DealsHeadCells,
-          {
-            name: "contactName",
-            label: "Contact Name",
-          },
-          {
-            name: "isContact",
-            label: " ",
-            options: {
-              filter: false,
-              searchable: false,
-              sort: false,
-              download: false,
-              print: false,
-              viewColumns: false,
-            },
-          },
-        ];
-        // TransactDealsHeadCells.splice(DealsHeadCells.length - 1, 0, {
-        //   name: "contactName",
-        //   label: "Contact Name",
-        // });
         setColumns(TransactDealsHeadCells);
       }
     }

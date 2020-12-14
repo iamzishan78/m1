@@ -90,6 +90,10 @@ var ticksToDateString = function (ticks) {
   return date.toISOString();
 };
 
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
 
 const customStyles = makeStyles((theme) => ({
@@ -1523,6 +1527,12 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   const valueFormatter = (v) => {
+                    if (
+                      column.name === "status" &&
+                      props.targetLabel === "deal"
+                    )
+                      return capitalizeFirstLetter(v);
+
                     if (column.name === "appraisedValue")
                       return formatter.format(v);
 
