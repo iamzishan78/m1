@@ -797,11 +797,11 @@ export default function Pipelines(props) {
                               <TableRow>
                                 <TableCell padding="checkbox"></TableCell>
                                 <TableCell align="left">Stage Name</TableCell>
-                                <TableCell align="left">
+                                {/* ******DO NOT DELETE - TEMPORARILY COMMENTING OUT UNTIL WE BUILD 'PROBABILITY' and 'ROTTENESS' FUCTIONALITY****** */}
+                                {/* <TableCell align="left">
                                   Deal Probability(%)
                                 </TableCell>
-                                {/* ******DO NOT DELETE - TEMPORARILY COMMENTING OUT UNTIL WE BUILD 'ROTTENESS' FUCTIONALITY****** */}
-                                {/* <TableCell align="left">
+                                <TableCell align="left">
                                   Rotting in&nbsp;(days)
                                 </TableCell> */}
                                 <TableCell align="left">Stage Status</TableCell>
@@ -854,7 +854,9 @@ export default function Pipelines(props) {
 
                                           {/* {stage.name} */}
                                         </TableCell>
-                                        <TableCell align="left">
+                                  {/* ******DO NOT DELETE - TEMPORARILY COMMENTING OUT UNTIL WE BUILD 'PROBABILITY' and 'ROTTENESS' FUCTIONALITY****** */}                
+                                       
+                                        {/* <TableCell align="left">
                                           <TextField
                                             variant="outlined"
                                             size="small"
@@ -869,11 +871,9 @@ export default function Pipelines(props) {
                                               );
                                             }}
                                           />
-                                          {/* {stage.dealProbability} */}
                                         </TableCell>
 
-                                        {/* ******DO NOT DELETE - TEMPORARILY COMMENTING OUT UNTIL WE BUILD 'ROTTENESS' FUCTIONALITY****** */}
-                                        {/* <TableCell align="left">
+                                        <TableCell align="left">
                                           <TextField
                                             variant="outlined"
                                             size="small"
@@ -889,6 +889,8 @@ export default function Pipelines(props) {
                                             }}
                                           />
                                         </TableCell> */}
+
+
                                         <TableCell align="left">
                                           <Autocomplete
                                             fullWidth
