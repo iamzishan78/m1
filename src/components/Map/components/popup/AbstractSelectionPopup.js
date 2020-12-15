@@ -211,6 +211,21 @@ export default (props) => {
     });
 
     setTimeout(()=> {
+
+      console.log("----------------------");
+      console.log({
+        "originalProperties": JSON.stringify(abstractShape.properties),
+        "sdType": "parcel",
+        "shapeLabel": parcelName,
+        "projectName": "",
+        "sdNotes": "",
+        "sdGrossAcres": "",
+        "shapeArea": calculateLandArea(abstractShape),
+        "shapeCenter": calculateShapeCenter(abstractShape.geometry.coordinates),
+        "shapeLabelLayer": "",
+        "id": featureId
+      });
+      console.log("----------------------");
       setStateApp((state) => ({
         ...state,
         selectedParcel: {
