@@ -90,6 +90,10 @@ var ticksToDateString = function (ticks) {
   return date.toISOString();
 };
 
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
 
 const customStyles = makeStyles((theme) => ({
@@ -1208,6 +1212,20 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  if (props.targetLabel == "deal" && value === null) {
+                    return (
+                      <p
+                        style={{
+                          color: "#B3B3B3",
+                          padding: "10px",
+                          margin: "0",
+                        }}
+                      >
+                        N/A
+                      </p>
+                    );
+                  }
+
                   return (
                     <Tooltip
                       title={
@@ -1509,6 +1527,12 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   const valueFormatter = (v) => {
+                    if (
+                      column.name === "status" &&
+                      props.targetLabel === "deal"
+                    )
+                      return capitalizeFirstLetter(v);
+
                     if (column.name === "appraisedValue")
                       return formatter.format(v);
 
@@ -1710,7 +1734,7 @@ function SubTable(props) {
     selectableRows:
       props.targetLabel == "production_detail" ? false : "multiple",
     print:
-      props.targetLabel !== "deals" &&
+      props.targetLabel !== "deal" &&
       props.targetLabel !== "usermanagement" &&
       props.targetLabel !== "owner" &&
       props.targetLabel !== "production_detail",
@@ -1890,7 +1914,7 @@ function SubTable(props) {
             }
 
             //// if deals set the multi selection top bar: ////
-            // if (props.targetLabel === "deals") {
+            // if (props.targetLabel === "deal") {
             //   return (
             //     <Tooltip title={"Delete"}>
             //       <IconButton
@@ -2011,7 +2035,7 @@ function SubTable(props) {
       //   setSubTitle(rows[dataIndex].interestType);
       //   handleOpenExpandableCard();
       // }
-      if (props.targetLabel === "deals") {
+      if (props.targetLabel === "deal") {
         console.log("ROW DATA: ", rows[dataIndex]);
         console.log("ROW DATA 0 INDEX: ", rowData[0]);
         let card = { ...rows[dataIndex] };

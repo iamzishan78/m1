@@ -48,6 +48,7 @@ import {
 import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
+import { toDate } from "date-fns";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -587,7 +588,10 @@ function AddDealDialog(props) {
         offerPrice: label,
         notes: description ? description.trim() : null,
         status: dealState ? dealState : "open",
-        closeDate: closeDate && closeDate !== "" ? closeDate : null,
+        closeDate:
+          closeDate && closeDate !== ""
+            ? new Date(`${closeDate}T08:00`).toUTCString()
+            : null,
       };
 
       if (cardId) {
@@ -847,7 +851,7 @@ function AddDealDialog(props) {
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => {}}
           >
-            Do you want to delete deal?
+            Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
