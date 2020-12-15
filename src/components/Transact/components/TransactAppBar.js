@@ -1,29 +1,19 @@
-import React, { useContext } from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import Add from "@material-ui/icons/Add";
-import List from "@material-ui/icons/List";
-import GridOn from "@material-ui/icons/GridOn";
 import OfflineBolt from "@material-ui/icons/OfflineBolt";
+import NotInterested from "@material-ui/icons/NotInterested";
 import CheckBox from "@material-ui/icons/CheckBox";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Divider from "@material-ui/core/Divider";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import AddIcon from "@material-ui/icons/Add";
-import EditIcon from "@material-ui/icons/Edit";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
 import { makeStyles } from "@material-ui/core/styles";
-import { AppContext } from "../../../AppContext";
+import Pipelines from "./Pipelines";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: "50px",
     backgroundColor: "#fff",
-    padding: "0 16px 0px",
+    padding: "0 16px 10px",
   },
   top: {
     display: "flex",
@@ -31,12 +21,21 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  bottom: {
+  bottomRight: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingBottom: 20,
+    justifyContent: "flex-end",
+    marginTop: "10px",
+    // padding: 20,
+  },
+  bottomLeft: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingBottom: "4px",
+    // padding: "0 0 20 0",
   },
   right: {
     display: "flex",
@@ -44,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 
     "& h1": {
       color: "#0DBBEA",
-      marginRight: 16,
+      margin: "0 10px 0 0",
     },
   },
 
@@ -63,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#333",
     transition: "200ms all",
     backgroundColor: "#f5f5f5",
+    width: "100%",
   },
   activeBtn: {
     borderRadius: 5,
@@ -81,7 +81,8 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 8,
     backgroundColor: "#3DD698",
     borderRadius: 5,
-    padding: 8,
+    minWidth: 220,
+    padding: 7.8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -92,13 +93,28 @@ const useStyles = makeStyles((theme) => ({
   activeDeals: {
     backgroundColor: "#E8C059",
     borderRadius: 5,
-    padding: 8,
+    minWidth: 220,
+    padding: 7.8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     "& span": {
       marginLeft: 4,
     },
+  },
+  lostDeals: {
+    backgroundColor: "#011133",
+    borderRadius: 5,
+    minWidth: 220,
+    padding: 7.8,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    "& span": {
+      marginLeft: 4,
+    },
+    marginLeft: 8,
+
   },
   import: {
     marginLeft: 8,
@@ -111,6 +127,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    "& span": {
+      marginleft: 2,
+      marginright: 4,
+    },
     backgroundColor: "#011133",
     color: "#fff",
     transition: "200ms all",
@@ -120,33 +140,58 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   pipelineControl: {
-    minWidth: 180,
+    minWidth: 200,
+    marginBottom: 2,
+    borderRadius: 5,
   },
 }));
 
+let formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+const sumDeals = (lanes, status) => {
+  let sumAmount = 0;
+  let sumCount = 0;
+
+  lanes.forEach((deal) => {
+    deal.cards.forEach((card) => {
+      if (card.metadata.status === status && !card.metadata.IsDeleted) {
+        if (card.label && !isNaN(card.label))
+          sumAmount += card.label
+          // parseFloat(card.label.split("$").join("").split(",").join(""));
+        sumCount++;
+      }
+    });
+  });
+  const formatted = formatter.format(sumAmount);
+  return { count: sumCount, amount: formatted.slice(0, formatted.length - 3) };
+};
+
 const TransactAppBar = ({
-  wonLength,
-  wonSum,
-  openLength,
-  openSum,
-  dealDisplayType,
-  setDealDisplayType,
+  // wonLength,
+  // wonSum,
+  // openLength,
+  // openSum,
   dealFilter,
   setDealFilter,
-  pipelines,
-  setIndex,
-  index,
 }) => {
   const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const { pipeToShow } = useSelector(({ Flow }) => Flow);
+  const [openDeals, setOpenDeals] = useState({ count: 0, amount: "$0" });
+  const [wonDeals, setWonDeals] = useState({ count: 0, amount: "$0" });
+  const [lostDeals, setLostDeals] = useState({ count: 0, amount: "$0" });
 
-  const handleClickAddDeal = () => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      dealDialog: true,
-      activeDeal: { cardId: null, laneId: null },
-    }));
-  };
+  useEffect(() => {
+    if (pipeToShow?.lanes) {
+      console.log(pipeToShow.lanes)
+      setOpenDeals(sumDeals(pipeToShow.lanes, "open"));
+      setWonDeals(sumDeals(pipeToShow.lanes, "won"));
+      setLostDeals(sumDeals(pipeToShow.lanes, "lost"));
+    }
+  }, [pipeToShow]);
+
 
   return (
     <>
@@ -156,60 +201,92 @@ const TransactAppBar = ({
         position="static"
         variant="outlined"
       >
-        <div className={classes.top}>
+        <div className={classes.top} style={{ marginTop: 15 }}>
           <div className={classes.right}>
-            <h1>DEAL FLOW</h1>
-            <ButtonGroup>
-              <IconButton
+            {/* <h1>DEAL FLOW</h1> */}
+
+            <ButtonGroup style={{ minHeight: 36 }}>
+              <Button
                 size="small"
-                className={`${classes.toggleBtn} ${
-                  dealDisplayType === "table" && classes.activeBtn
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "all" && classes.activeBtn
                 }`}
-                onClick={() => setDealDisplayType("table")}
+                onClick={() => setDealFilter("all")}
               >
-                <List />
-              </IconButton>
-              <IconButton
+                ALL
+              </Button>
+              <Button
                 size="small"
-                className={`${classes.toggleBtn} ${
-                  dealDisplayType === "board" && classes.activeBtn
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "open" && classes.activeBtn
                 }`}
-                onClick={() => setDealDisplayType("board")}
+                onClick={() => setDealFilter("open")}
               >
-                <GridOn />
-              </IconButton>
+                OPEN
+              </Button>
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "won" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("won")}
+              >
+                Won
+              </Button>
+
+              <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "lost" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("lost")}
+              >
+                Lost
+              </Button>
+
+              {/* <Button
+                size="small"
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "deleted" && classes.activeBtn
+                }`}
+                onClick={() => setDealFilter("deleted")}
+              >
+                Deleted
+              </Button> */}
             </ButtonGroup>
           </div>
           <div className={classes.left}>
             <div className={classes.activeDeals}>
               <OfflineBolt />
               <span>
-                {openLength} {openLength !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
-                {openSum}
+                {openDeals.count}{" "}
+                {openDeals.count !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
+                {openDeals.amount}
               </span>
             </div>
             <div className={classes.closedDeals}>
               <CheckBox />
               <span>
-                {wonLength} {wonLength !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
-                {wonSum}
+                {wonDeals.count}{" "}
+                {wonDeals.count !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
+                {wonDeals.amount}
+              </span>
+            </div>
+            <div className={classes.lostDeals}>
+              <NotInterested />
+              <span>
+                {lostDeals.count}{" "}
+                {lostDeals.count !== 1 ? "LOST DEALS" : "LOST DEAL"} |{" "}
+                {lostDeals.amount}
               </span>
             </div>
             {/* <Button className={classes.import} color="default" size="small">
               IMPORT
             </Button> */}
-            <Button
-              className={classes.addDeal}
-              color="primary"
-              size="small"
-              startIcon={<Add />}
-              onClick={handleClickAddDeal}
-            >
-              Add Deal
-            </Button>
+            <Pipelines />
           </div>
         </div>
-        <div className={classes.bottom}>
+        {/* <div className={classes.bottom}>
           <ButtonGroup>
             <Button
               size="small"
@@ -298,7 +375,15 @@ const TransactAppBar = ({
                 Edit Pipeline
               </MenuItem>
             </Select>
-          </FormControl>
+          </FormControl> */}
+        <div className={classes.top} style={{ marginBottom: 4, marginTop: 2 }}>
+          {/* <div className={classes.right}> */}
+          {/* <div className={classes.bottomLeft}>
+          </div> */}
+          {/* <div className={classes.bottomRight}>
+            
+          </div> */}
+          {/* </div> */}
         </div>
       </AppBar>
     </>

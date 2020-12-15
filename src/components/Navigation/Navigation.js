@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { borders } from "@material-ui/system";
 import { shadows } from "@material-ui/system";
-import { Paper } from "@material-ui/core";
+import { Grid, Paper, TextField } from "@material-ui/core";
 import { NavigationContext } from "./NavigationContext";
 import { TransactContext } from "../Transact/TransactContext";
 import { AppContext } from "../../AppContext";
@@ -54,6 +54,8 @@ import SupportCenterModal from "./components/SupportCenter";
 //icons
 import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
+import ClearIcon from "@material-ui/icons/Clear";
+
 import HeadsetIcon from "@material-ui/icons/Headset";
 import DesktopWindowsIcon from "@material-ui/icons/DesktopWindows";
 import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
@@ -100,6 +102,7 @@ import FilterFormAI from "./components/FilterFormAI";
 
 import InputBase from "@material-ui/core/InputBase";
 import Search from "./components/Search";
+import DealSearch from "./components/DealSearch";
 import SearchBarWithToggleButton from "./components/SearchBarWithToggleButton";
 
 import Avatar from "react-avatar";
@@ -117,6 +120,9 @@ import {
   createMuiTheme,
   withStyles,
 } from "@material-ui/core/styles";
+import { GETALLACTIVITIESFORSEARCH } from "../../graphQL/useQueryGetAllActivities";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import ActivitySearch from "./components/ActivitySearch";
 
 const theme = createMuiTheme({
   overrides: {
@@ -600,6 +606,23 @@ const useStyles = makeStyles((theme) => ({
     transform: "unset",
     flex: 1,
   },
+  activitySearchField: {
+    color: "#fff",
+
+    "& .MuiOutlinedInput-input": {
+      color: "#ffffff",
+      "&::placeholder": {
+        color: "#788092",
+        textDecoration: "bold",
+      },
+      "&:-ms-input-placeholder": {
+        color: "#788092",
+      },
+      "&::-ms-input-placeholder": {
+        color: "#788092",
+      },
+    },
+  },
 }));
 
 const M1neralLogoDrawer = (props) => (
@@ -699,6 +722,7 @@ export default function Navigation(props) {
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
   );
+  const { pipelines } = useSelector(({ Flow }) => Flow);
   const theme = useTheme();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -793,7 +817,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
       }));
-    } else if (location.pathname === "/transact") {
+    } else if (location.pathname === "/flow") {
       setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
@@ -909,7 +933,7 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (location.pathname === "/transact") {
+    if (location.pathname === "/flow") {
       setMatchTransact(true);
     } else {
       setMatchTransact(false);
@@ -1131,6 +1155,13 @@ export default function Navigation(props) {
     }));
   };
 
+  const handleClickAddActivity = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      activityDialog: true,
+    }));
+  };
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -1174,51 +1205,13 @@ export default function Navigation(props) {
 
             {/*SEARCH UI FOR ACTIVITIES */}
             {location.pathname === "/activities" && (
-              <div
-                className={classes.search}
-                style={{
-                  minWidth: 500,
-                  verticalAlign: "middle",
-                  paddingTop: 4,
-                }}
-              >
-                <div className={classes.searchIcon}>
-                  <SearchIcon style={{ verticalAlign: "middle" }} />
-                </div>
-                <InputBase
-                  placeholder="Search for activities"
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput,
-                  }}
-                  inputProps={{ "aria-label": "search" }}
-                />
-              </div>
+              <>
+                <ActivitySearch />
+              </>
             )}
 
             {/*SEARCH UI FOR DEALS */}
-            {location.pathname === "/transact" && (
-              <div
-                className={classes.search}
-                style={{
-                  minWidth: 500,
-                  verticalAlign: "middle",
-                  paddingTop: 4,
-                }}
-              >
-                <div className={classes.searchIcon}>
-                  <SearchIcon style={{ verticalAlign: "middle" }} />
-                </div>
-                <InputBase
-                  placeholder="Search for deals"
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput,
-                  }}
-                  inputProps={{ "aria-label": "search" }}
-                />
-              </div>
-            )}
+            {location.pathname === "/flow" && <DealSearch />}
 
             {openDrawer ? (
               <div className={classes.toolbar}>
@@ -1247,17 +1240,42 @@ export default function Navigation(props) {
             ) : null}
 
             <div className={classes.grow1} />
-            {matchTransact ? (
+            {matchTransact && pipelines && pipelines.length > 0 ? (
               <div>
-                <div ref={anchorEl} className={classes.filterTabs}>
-                  {/* <Button
+                <div
+                  ref={anchorEl}
+                  className={classes.filterTabs}
+                  style={{ paddingRight: "10px" }}
+                >
+                  <Button
                     onClick={handleClickAddDeal}
                     color="secondary"
                     variant="contained"
                     startIcon={<Add />}
                   >
-                    Add Deal
-                  </Button> */}
+                    New Deal
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: "none" }}></div>
+            )}
+
+            {matchActivities ? (
+              <div>
+                <div
+                  ref={anchorEl}
+                  className={classes.filterTabs}
+                  style={{ paddingRight: "10px" }}
+                >
+                  <Button
+                    onClick={handleClickAddActivity}
+                    color="secondary"
+                    variant="contained"
+                    startIcon={<Add />}
+                  >
+                    Add Activity
+                  </Button>
                 </div>
               </div>
             ) : (
@@ -1676,15 +1694,15 @@ export default function Navigation(props) {
             </div>
           </ListItem>
 
-           <ListItem
+          <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
             }}
             button
             selected={stateNav.selectedMenuIndexTransact === 1}
-            onClick={(event) => handleListItemClick(event, 0, "/transact")}
-            key="transact"
+            onClick={(event) => handleListItemClick(event, 0, "/flow")}
+            key="flow"
           >
             <div className={classes.tabContent}>
               <ListItemIcon className={classes.sideNavIcon}>
@@ -1705,7 +1723,7 @@ export default function Navigation(props) {
                 </Button>
               </ListItemSecondaryAction>
             </div>
-          </ListItem> 
+          </ListItem>
 
           <ListItem
             classes={{

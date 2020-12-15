@@ -19,6 +19,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
+import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLOWNERSQUERY } from "../../../graphQL/useQueryWellOwners";
@@ -40,6 +41,7 @@ import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction
 import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner";
 import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRecords";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
+import { CONTACTDEALS } from "../../../graphQL/useQueryContactDeals";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
 import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
 import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterests";
@@ -1542,7 +1544,7 @@ const UserManagementHeadCells = [
 
 const DealsHeadCells = [
   {
-    name: "id",
+    name: "_id",
     options: {
       display: false,
       filter: false,
@@ -1554,24 +1556,95 @@ const DealsHeadCells = [
     },
   },
   {
-    name: "title",
-    label: "Name",
+    name: "name",
+    label: "Deal Name",
   },
   {
-    name: "contactName",
-    label: "Contact",
+    name: "offerPrice",
+    label: "Offer Price",
   },
   {
-    name: "dealStage",
+    name: "closeDate",
+    label: "Expected Close Date",
+  },
+  {
+    name: "pipelineName",
+    label: "Pipeline",
+  },
+  {
+    name: "laneName",
     label: "Deal Stage",
   },
   {
-    name: "label",
-    label: "Deal Amount",
+    name: "ownerName",
+    label: "Deal Owner",
   },
   {
-    name: "description",
-    label: "Deal Details",
+    name: "notes",
+    label: "Notes",
+  },
+];
+
+const TransactDealsHeadCells = [
+  {
+    name: "_id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "name",
+    label: "Deal Name",
+  },
+  {
+    name: "contactName",
+    label: "Contact Name",
+  },
+  {
+    name: "offerPrice",
+    label: "Offer Price",
+  },
+  {
+    name: "closeDate",
+    label: "Expected Close Date",
+  },
+  {
+    name: "pipelineName",
+    label: "Pipeline",
+  },
+  {
+    name: "laneName",
+    label: "Deal Stage",
+  },
+  {
+    name: "status",
+    label: "Deal Status",
+  },
+  {
+    name: "ownerName",
+    label: "Deal Owner",
+  },
+  {
+    name: "notes",
+    label: "Notes",
+  },
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
   },
 ];
 
@@ -1879,7 +1952,7 @@ const ProductionDetailsHeaders = [
   },
   {
     name: "allocatedOil",
-    label: "Alocated Oil (BBL)",
+    label: "Allocated Oil (BBL)",
     editable: false,
     options: {
       filter: false,
@@ -1894,7 +1967,7 @@ const ProductionDetailsHeaders = [
   },
   {
     name: "allocatedGas",
-    label: "Alocated Gas (MCF)",
+    label: "Allocated Gas (MCF)",
     editable: false,
     options: {
       filter: false,
@@ -1909,7 +1982,7 @@ const ProductionDetailsHeaders = [
   },
   {
     name: "allocatedWater",
-    label: "Alocated Water (BBL)",
+    label: "Allocated Water (BBL)",
     editable: false,
     options: {
       filter: false,
@@ -1996,6 +2069,11 @@ function M1nTable(props) {
   const setTargetLabel = (newState) => {
     setStateIfDeepEqual(TargetLabel, newState);
   };
+  const [targetLabelToExpand, TargetLabelToExpand] = useState(null);
+  const setTargetLabelToExpand = (newState) => {
+    setStateIfDeepEqual(TargetLabelToExpand, newState);
+  };
+
   const [deleteFunc, setDeleteFunc] = useState(null);
   // const setDeleteFunc = (newState) => {
   //   setStateIfDeepEqual(DeleteFunc, newState);
@@ -2020,11 +2098,6 @@ function M1nTable(props) {
   const setWarningShowed = (newState) => {
     setStateIfDeepEqual(WarningShowed, newState);
   };
-  const {
-    searchloading,
-    searchResultData,
-    selectedOwnerWellIntsSummary,
-  } = useSelector(({ MapGridCard }) => MapGridCard);
 
   const [dataContacts, DataContacts] = useState(null);
   const setDataContacts = (newState) => {
@@ -2035,6 +2108,14 @@ function M1nTable(props) {
   const setDataWellInterests = (newState) => {
     setStateIfDeepEqual(DataWellInterests, newState);
   };
+
+  const {
+    searchloading,
+    searchResultData,
+    selectedOwnerWellIntsSummary,
+  } = useSelector(({ MapGridCard }) => MapGridCard);
+
+  const { pipeToShowTab } = useSelector(({ Flow }) => Flow);
 
   ////////////Queries begin///////////////////////////////////////////////
 
@@ -2079,7 +2160,7 @@ function M1nTable(props) {
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
     PAGINATEDCONTACTSQUERY,
     {
-      fetchPolicy: "cache-and-network",
+      fetchPolicy: "no-cache",
     }
   );
   const [
@@ -2089,9 +2170,12 @@ function M1nTable(props) {
     fetchPolicy: "cache-and-network",
   });
   //////////
-  const [getTransactionData, { data: dataDeals }] = useLazyQuery(
-    TRANSACTIONDATA
-  );
+  // const [getTransactionData, { data: dataDeals }] = useLazyQuery(
+  //   TRANSACTIONDATA
+  // );
+
+  const [getContactDeals, { data: dataDeals }] = useLazyQuery(CONTACTDEALS);
+
   //////////
   const [removeContact] = useMutation(REMOVECONTACT);
 
@@ -2870,7 +2954,7 @@ function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "Contacts") {
       setLoading(true);
-      console.log("ue mintable 22");
+      console.log("ue mintable 22- contact");
       setTargetLabel("contact");
       setHeader("Contacts");
       setOrderByTracks(false);
@@ -3654,12 +3738,12 @@ function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "Deals" && stateApp.user) {
       setLoading(true);
-      console.log("ue mintable 22");
-      setTargetLabel("deals");
+      console.log("ue mintable 22 - deals");
+      setTargetLabel("deal");
       setHeader("Deals");
-      getTransactionData({
+      getContactDeals({
         variables: {
-          userId: stateApp.user.mongoId,
+          contactId: props.contact?._id,
         },
       });
       setAddAble({ type: "deals" });
@@ -3667,34 +3751,34 @@ function M1nTable(props) {
       setStartPaginationAt(25);
       setOrderByTracks(false);
     }
-  }, [props.parent, stateApp.user]);
+  }, [props.parent, props.contact]);
 
   useEffect(() => {
     if (
       props.parent &&
       props.parent === "Deals" &&
-      dataDeals &&
+      dataDeals?.contactDeals &&
       props.contact
     ) {
       console.log("DATA DEALS : ", dataDeals);
-      const lanes = dataDeals?.transactionData?.allData?.lanes;
+      // const lanes = dataDeals?.transactionData?.allData?.lanes;
 
-      const all = [];
-      console.log("ALL : ", all, lanes);
-      if (lanes) {
-        lanes.forEach((deal) => {
-          deal.cards.forEach((card) => {
-            if (props.contact?._id === card.contactId && !card.isDeleted)
-              all.push(card);
-          });
-        });
-      }
+      // const all = [];
+      // console.log("ALL : ", all, lanes);
+      // if (lanes) {
+      //   lanes.forEach((deal) => {
+      //     deal.cards.forEach((card) => {
+      //       if (props.contact?._id === card.contactId && !card.isDeleted)
+      //         all.push(card);
+      //     });
+      //   });
+      // }
 
-      const dealsRowsData = all.map((deal) => ({
-        ...deal,
-        id: deal.id,
-        dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
-      }));
+      // const dealsRowsData = all.map((deal) => ({
+      //   ...deal,
+      //   id: deal.id,
+      //   dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
+      // }));
       // all.forEach((deal) => {
       //   console.log("DEAL: ", deal)
       //   let dealData = {
@@ -3709,8 +3793,35 @@ function M1nTable(props) {
       //   dealsRowsData.push(dealData);
       // });
 
-      setTargetLabel("deals");
-      setRows([...dealsRowsData]);
+      let currencyFormat = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+
+      let dateFormat = new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        day: "numeric",
+        month: "numeric",
+      });
+
+      // let contactDealRows = [
+      //   ...dataDeals.contactDeals.map((deal) => {
+      //     return {
+      //       ...deal,
+      //       offerPrice: !isNaN(deal.offerPrice)
+      //         ? currencyFormat.format(deal.offerPrice)
+      //         : deal.offerPrice,
+      //       closeDate: anyToDate(deal.closeDate).toLocaleString("en-US", {
+      //         year: "numeric",
+      //         day: "numeric",
+      //         month: "numeric",
+      //       })
+      //     }
+      //   })
+      // ]
+
+      setTargetLabel("deal");
+      setRows([...dataDeals.contactDeals]);
       setColumns([...DealsHeadCells]);
       setLoading(false);
     }
@@ -3720,7 +3831,7 @@ function M1nTable(props) {
       "font-size:20px; color:green;",
       props.contact
     );
-  }, [props.parent, dataDeals, props.contact]);
+  }, [dataDeals]);
 
   // deals delete
   useEffect(() => {
@@ -3753,9 +3864,9 @@ function M1nTable(props) {
               transaction: { allData: newData, user: stateApp.user.mongoId },
             },
             refetchQueries: [
-              "getTransactionData",
               "getContact",
               "getPaginatedContacts",
+              "getContactDeals",
             ],
             awaitRefetchQueries: true,
           });
@@ -3771,6 +3882,32 @@ function M1nTable(props) {
   ]);
 
   ////////////Deals end////////////////////////////////////////////////
+
+  ////////////Transact Deals start////////////////////////////////////////////////
+
+  useEffect(() => {
+    if (props.parent && props.parent === "TransactDeals") {
+      setTargetLabel("deal");
+      setHeader("Deals");
+      setAddAble(false);
+      setUploadIcon(false);
+      setStartPaginationAt(25);
+      setOrderByTracks(false);
+    }
+  }, [props.parent]);
+
+  useEffect(() => {
+    if (props.parent && props.parent === "TransactDeals") {
+      setLoading(props.filteredTabTransactData ? false : true);
+
+      if (props.filteredTabTransactData) {
+        setRows([...props.filteredTabTransactData]);
+        setColumns(TransactDealsHeadCells);
+      }
+    }
+  }, [props.parent, props.filteredTabTransactData]);
+
+  ////////////Transact Deals end////////////////////////////////////////////////
 
   ////////////Map Viewport Wells begin///////////////////////////////////////////////
 
@@ -4144,8 +4281,8 @@ function M1nTable(props) {
 
   /////////// PRODUCTION DETAILS ////////////////////////////////////////
   useEffect(() => {
-    setLoading(true);
     if (props.parent && props.parent === "production_WellDetails") {
+      setLoading(true);
       setTargetLabel("production_detail");
       setHeader("Monthly Production");
       setColumns(ProductionDetailsHeaders);
@@ -4153,7 +4290,7 @@ function M1nTable(props) {
       setAddAble(false);
       setRows(props.productionDetails);
       setOrderByTracks(false);
-      // setTotal(true);
+      setTotal(true);
     }
   }, [props.props]);
   /////////// PRODUCTION DETAILS ////////////////////////////////////////

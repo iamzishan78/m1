@@ -169,10 +169,10 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
   const getCheckboxItem = (type) => {
     let name = "";
     switch (type) {
-      case "general":
-        name = "General Updates";
+      case "deadline":
+        name = "Deadlines";
         break;
-      case "phone":
+      case "call":
         name = "Calls";
         break;
       case "email":
@@ -181,14 +181,14 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
       case "meeting":
         name = "Meetings";
         break;
-      case "sms":
-        name = "SMS";
+      case "task":
+        name = "Tasks";
         break;
-      case "campaign":
-        name = "Campaigns";
+      case "mailer":
+        name = "Mailer Campaign";
         break;
       default:
-        name = "General Updates";
+        name = "Calls";
     }
 
     return (
@@ -247,12 +247,12 @@ function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
           </h4>
         </Grid>
 
-        {getCheckboxItem("general")}
+        {getCheckboxItem("call")}
         {getCheckboxItem("meeting")}
-        {getCheckboxItem("phone")}
-        {getCheckboxItem("campaign")}
-        {getCheckboxItem("sms")}
+        {getCheckboxItem("task")}
         {getCheckboxItem("email")}
+        {getCheckboxItem("deadline")}
+        {getCheckboxItem("mailer")}
       </div>
     </div>
   );
@@ -269,12 +269,12 @@ function ViewActivities({
   const [stateApp] = useContext(AppContext);
 
   const [activitiesFilter, setActivitiesFilter] = useState([
-    "general",
+    "call",
     "meeting",
-    "phone",
-    "campaign",
-    "sms",
     "email",
+    "task",
+    "deadline",
+    "mailer"
   ]);
 
   const filteredActivities = stateApp.currentContatcAtivities.filter((act) =>
@@ -345,7 +345,7 @@ export default ({
         <AddActivityDialog
           onClose={() => setActivityModalOpen(false)}
           id={props.id}
-          activityLog={props.activityLog}
+          contactData={props.contactData}
           selectedActivity={selectedActivity}
         />
       </RightDialog>

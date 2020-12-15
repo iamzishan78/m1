@@ -23,6 +23,9 @@ import MeetingIcon from "@material-ui/icons/Group";
 import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
+import DefaultIcon from "@material-ui/icons/Event";
+import ContactMailIcon from "@material-ui/icons/ContactMail";
+
 import DotsIcon from "@material-ui/icons/MoreHoriz";
 import DocumentIcon from "@material-ui/icons/DescriptionOutlined";
 import PersonIcon from "@material-ui/icons/Person";
@@ -40,9 +43,15 @@ import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import ActivitiesEvent from "./ActivitiesEvent";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
+import { OPENDEALS } from "../../../graphQL/useQueryOpenDeals";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import Typography from "@material-ui/core/Typography";
+import {
+  ADDACTIVITY,
+  DELETEACTIVITY,
+  UPDATEACTIVITY,
+} from "../../../graphQL/useMutationActivity";
 
 const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
@@ -75,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 16,
   },
   rowIcon: {
-    minWidth: 75,
+    minWidth: 120,
     color: "#B9C5D1",
     display: "flex",
     alignItems: "flex-start",
@@ -93,12 +102,17 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#f9f9f9",
     display: "flex",
     alignItems: "center",
-    padding: "4px 16px",
+    padding: "0px 8px",
     border: "1px solid #fff",
     borderRadius: 3,
     cursor: "pointer",
     userSelect: "none",
     height: 40,
+    fontSize: 14,
+
+    "& .MuiSvgIcon-root": {
+      fontSize: 16,
+    },
 
     "& span": {
       marginLeft: 8,
@@ -188,15 +202,15 @@ const initialErrors = {
   startTime: false,
   endDate: false,
   endTime: false,
-  contact: false,
+  owner: false,
 };
 
 const localizer = momentLocalizer(moment);
 
 export default function ActivitiesModal({
-  setSelectedActivity,
   selectedActivity,
   events,
+  setSelectedActivityId,
 }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -208,15 +222,14 @@ export default function ActivitiesModal({
   const [closed, setClosed] = useState(false);
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
-  const [startTime, setStartTime] = useState("00:00");
-  const [endTime, setEndTime] = useState("00:00");
+  const [calenderDate, setCalenderDate] = useState(new Date());
+  const [startTime, setStartTime] = useState("08:00");
+  const [endTime, setEndTime] = useState("08:00");
   const [notes, setNotes] = useState("");
-  const [ownerId, setOwnerId] = useState("");
-  const [dealId, setDealId] = useState("");
-  const [contactId, setContactId] = useState("");
+  const [owner, setOwner] = useState({ name: "", id: null });
+  const [dealId, setDealId] = useState(null);
   const [contact, setContact] = useState({});
   const [errors, setErrors] = useState({ ...initialErrors });
-  const [allLoading, setAllLoading] = useState(false);
   const [users, setUsers] = useState([]);
 
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
@@ -238,12 +251,36 @@ export default function ActivitiesModal({
     }
   }, [userLists]);
 
-  const [updateContact, { called, loading, data }] = useMutation(
-    UPDATECONTACT,
+  const [addActivityMutation, { loading: addLoading }] = useMutation(
+    ADDACTIVITY,
     {
       onCompleted: () => {
         onModalClose();
       },
+      refetchQueries: ["getAllActivities"],
+      awaitRefetchQueries: true,
+    }
+  );
+
+  const [updateActivityMutation, { loading: updateLoading }] = useMutation(
+    UPDATEACTIVITY,
+    {
+      onCompleted: () => {
+        onModalClose();
+      },
+      refetchQueries: ["getAllActivities"],
+      awaitRefetchQueries: true,
+    }
+  );
+
+  const [deleteActivityMutation, { loading: deleteLoading }] = useMutation(
+    DELETEACTIVITY,
+    {
+      onCompleted: () => {
+        onModalClose();
+      },
+      refetchQueries: ["getAllActivities"],
+      awaitRefetchQueries: true,
     }
   );
 
@@ -252,22 +289,12 @@ export default function ActivitiesModal({
     { data: allContacts, fetchMore: fetchMorePaginatedContacts },
   ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
   });
 
-  const [getContact, { data: cData, cLoading }] = useLazyQuery(CONTACT, {
-    fetchPolicy: "cache-and-network",
-  });
-
-  const [getPrevContact, { data: prevCData, prevCLoading }] = useLazyQuery(
-    CONTACT,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
-
-  const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
+  const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-  const [nameAutInputValue, NameAutInputValue] = useState([]);
+  const [nameAutInputValue, NameAutInputValue] = useState("");
   const setNameAutInputValue = (newState) => {
     setStateIfDeepEqual(NameAutInputValue, newState);
   };
@@ -291,18 +318,6 @@ export default function ActivitiesModal({
     fetchMorePaginatedContacts(pageVariables);
     return null;
   };
-
-  const [prevContactId, setPrevContactId] = useState();
-
-  useEffect(() => {
-    if (prevContactId) {
-      getPrevContact({
-        variables: {
-          contactId: prevContactId,
-        },
-      });
-    }
-  }, [prevContactId]);
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
@@ -329,56 +344,35 @@ export default function ActivitiesModal({
   // }, [addNew]);
 
   useEffect(() => {
-    console.log("SET CDATA 1", addNew, stateApp.activityDialog, cData?.contact);
-
-    if (stateApp.activityDialog) {
-      setNameAutValue((prev) =>
-        cData?.contact
-          ? { name: cData.contact.name, _id: cData.contact._id }
-          : { ...prev }
-      );
-    }
-    if (stateApp.activityDialog && addNew) {
-      setNameAutValue({ name: "", id: 0, _id: 0 });
-    }
-  }, [cData, stateApp.activityDialog, addNew]);
-
-  useEffect(() => {
-    console.log("SET CDATA NAME AUT", nameAutValue);
-    if (nameAutValue?.name) {
-      setContact(nameAutValue);
-    }
-  }, [nameAutValue]);
-
-  useEffect(() => {
-    console.log("SET CDATA CONTACT", contactId);
-
-    if (contactId) {
-      getContact({
-        variables: {
-          contactId: contactId,
-        },
-      });
-    }
-  }, [contactId]);
+    const date = mergeDateAndTime(startDate, startTime);
+    setCalenderDate(new Date(date));
+  }, [startDate, startTime]);
 
   useEffect(() => {
     console.log("set cdata EVENT: SET ACTIVITY:", selectedActivity);
     if (selectedActivity) {
       setAddNew(false);
       setNotes(selectedActivity.notes);
-      setOwnerId(selectedActivity.ownerId);
+      setOwner({
+        name: selectedActivity.ownerName,
+        id: selectedActivity.ownerId,
+      });
       setDealId(selectedActivity.dealId);
       setActivityType(selectedActivity.type);
       setActivityName(selectedActivity.name);
       setClosed(selectedActivity.isClosed);
-      setContactId(selectedActivity.contactId);
-      setPrevContactId(selectedActivity.contactId);
-      setStartDate(moment(selectedActivity.start).format("yyyy-MM-DD"));
-      setStartTime(moment(selectedActivity.start).format("HH:mm"));
+      setNameAutValue({
+        name: selectedActivity.contactName,
+        _id: selectedActivity.contactId,
+      });
+      setStartDate(
+        moment.parseZone(selectedActivity.start).format("yyyy-MM-DD")
+      );
+      setStartTime(moment.parseZone(selectedActivity.start).format("HH:mm"));
+      setCalenderDate(selectedActivity.start);
 
-      setEndDate(moment(selectedActivity.end).format("yyyy-MM-DD"));
-      setEndTime(moment(selectedActivity.end).format("HH:mm"));
+      setEndDate(moment.parseZone(selectedActivity.end).format("yyyy-MM-DD"));
+      setEndTime(moment.parseZone(selectedActivity.end).format("HH:mm"));
       console.log(
         "SELECTED ACTIVITY",
         getDateFromString(selectedActivity.end.toISOString()),
@@ -386,25 +380,34 @@ export default function ActivitiesModal({
       );
     } else {
       setAddNew(true);
-      setNameAutValue({ name: "", id: 0, _id: 0 });
+      setNameAutValue({ name: "", _id: null });
       setClosed(false);
       setNotes("");
-      setOwnerId("");
-      setDealId("");
+      setOwner({
+        name: stateApp.user.fullname || stateApp.user.email,
+        id: stateApp.user.mongoId,
+      });
+      setDealId(null);
       setActivityType("");
       setActivityName("");
-      setContactId("");
-      setPrevContactId(null);
       setStartDate(getCurrentDate());
+      setCalenderDate(new Date());
       setEndDate(getCurrentDate());
-      setStartTime("00:00");
-      setEndTime("00:00");
+      setStartTime("08:00");
+      setEndTime("08:00");
     }
   }, [selectedActivity]);
 
   const [openDeals, setOpenDeals] = useState([]);
-  const [getTransactionData, { loading: tloading, data: tdata }] = useLazyQuery(
-    TRANSACTIONDATA
+  // const [getTransactionData, { loading: tloading, data: tdata }] = useLazyQuery(
+  //   TRANSACTIONDATA
+  // );
+
+  const [getOpenDeals, { loading: tloading, data: dealsData }] = useLazyQuery(
+    OPENDEALS,
+    {
+      fetchPolicy: "cache-and-network",
+    }
   );
 
   console.log("OPEN DEALS", openDeals);
@@ -412,66 +415,73 @@ export default function ActivitiesModal({
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
       console.log("OPEN DEALS GET", stateApp.user);
-      getTransactionData({
-        variables: {
-          userId: stateApp.user.mongoId,
-        },
-      });
+      getOpenDeals();
     }
   }, [stateApp.user]);
 
   useEffect(() => {
-    let open = [];
-
-    if (!tloading && tdata?.transactionData) {
-      tdata.transactionData.forEach((pipeline) => {
-        const lanes = pipeline.allData?.lanes;
-
-        // get all deals
-        const all = [];
-        lanes.forEach((deal) => {
-          deal.cards.forEach((card) => {
-            all.push(card);
-          });
-        });
-
-        all.forEach((card) => {
-          if (card.dealState === "won") {
-            // do nothing
-          } else if (card.dealState === "lost") {
-            // do nothing
-          } else if (card.isDeleted) {
-            // do nothing
-          } else open.push(card);
-        });
-      });
+    if (dealsData) {
+      setOpenDeals(dealsData?.openDeals?.deals);
     }
-    console.log("ALL", open);
-    setOpenDeals(open);
-  }, [tdata]);
+  }, [dealsData]);
+
+  // useEffect(() => {
+  //   let open = [];
+
+  //   if (!tloading && tdata?.transactionData) {
+  //     tdata.transactionData.forEach((pipeline) => {
+  //       const lanes = pipeline.allData?.lanes;
+
+  //       // get all deals
+  //       const all = [];
+  //       lanes.forEach((deal) => {
+  //         deal.cards.forEach((card) => {
+  //           all.push(card);
+  //         });
+  //       });
+
+  //       all.forEach((card) => {
+  //         if (card.dealState === "won") {
+  //           // do nothing
+  //         } else if (card.dealState === "lost") {
+  //           // do nothing
+  //         } else if (card.isDeleted) {
+  //           // do nothing
+  //         } else open.push(card);
+  //       });
+  //     });
+  //   }
+  //   console.log("ALL", open);
+  //   setOpenDeals(open);
+  // }, [tdata]);
 
   const onModalClose = () => {
     clearFields();
-    setSelectedActivity(null);
+    setSelectedActivityId(null);
     setStateApp((stateApp) => ({
       ...stateApp,
       activityDialog: false,
+      selectedActivity: null,
     }));
   };
 
   const clearFields = () => {
     setAddNew(true);
     setNotes("");
-    setOwnerId("");
-    setDealId("");
+    setOwner({
+      name: stateApp.user.fullname || stateApp.user.email,
+      id: stateApp.user.mongoId,
+    });
+    setNameAutValue({ name: "", _id: null });
+    setDealId(null);
     setActivityType("");
     setActivityName("");
     setClosed(false);
     setStartDate(getCurrentDate());
+    setCalenderDate(new Date());
     setEndDate(getCurrentDate());
-    setContactId("");
-    setStartTime("00:00");
-    setEndTime("00:00");
+    setStartTime("08:00");
+    setEndTime("08:00");
     setNameAutInputValue("");
   };
 
@@ -482,7 +492,7 @@ export default function ActivitiesModal({
     let startTimeErr = false;
     let endDateErr = false;
     let endTimeErr = false;
-    let contactErr = false;
+    let ownerErr = false;
 
     if (!activityType || activityType.length === 0) activityTypeErr = true;
     if (!activityName || activityName.length === 0) activityNameErr = true;
@@ -490,7 +500,7 @@ export default function ActivitiesModal({
     if (!startTime) startTimeErr = true;
     if (!endDate) endDateErr = true;
     if (!endTime) endTimeErr = true;
-    if (!nameAutValue || !nameAutValue?.name) contactErr = true;
+    if (!owner.id) ownerErr = true;
 
     const dateTime = mergeDateAndTime(startDate, startTime);
     const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -509,7 +519,17 @@ export default function ActivitiesModal({
       startTime: startTimeErr,
       endDate: endDateErr,
       endTime: endTimeErr,
-      contact: contactErr,
+      owner: ownerErr,
+    });
+
+    console.log("ADD ERROR", {
+      activityType: activityTypeErr,
+      activityName: activityNameErr,
+      startDate: startDataErr,
+      startTime: startTimeErr,
+      endDate: endDateErr,
+      endTime: endTimeErr,
+      owner: ownerErr,
     });
     return (
       activityNameErr ||
@@ -518,169 +538,67 @@ export default function ActivitiesModal({
       startTimeErr ||
       endDateErr ||
       endTimeErr ||
-      contactErr
+      ownerErr
     );
   };
 
   const addActivity = async () => {
     if (updateErrors()) return;
 
-    setAllLoading(true);
-    let activityLog =
-      cData && cData.contact.activityLog
-        ? cData.contact.activityLog.map((a) => a)
-        : [];
-
     const dateTime = mergeDateAndTime(startDate, startTime);
     const endDateTime = mergeDateAndTime(endDate, endTime);
 
-    activityLog.push({
-      type: activityType,
-      name: activityName,
-      notes,
-      ownerId,
-      dealId,
-      dateTime: dateTime,
-      endDateTime: endDateTime,
-      user_id: stateApp.user.email,
-      isClosed: closed,
-    });
-
-    await updateContact({
+    await addActivityMutation({
       variables: {
-        contact: {
-          _id: cData.contact._id,
-          activityLog,
+        activity: {
+          type: activityType,
+          name: activityName,
+          notes,
+          ownerId: owner.id,
+          ownerName: owner.name,
+          contactId: nameAutValue._id,
+          contactName: nameAutValue.name,
+          dealId,
+          dateTime: new Date(dateTime).toUTCString(),
+          endDateTime: new Date(endDateTime).toUTCString(),
+          isClosed: closed,
         },
       },
-      refetchQueries: ["getAllActivities"],
-      awaitRefetchQueries: true,
     });
-    setAllLoading(false);
   };
 
   const updateActivity = async () => {
     if (updateErrors()) return;
 
-    setAllLoading(true);
-
     const dateTime = mergeDateAndTime(startDate, startTime);
     const endDateTime = mergeDateAndTime(endDate, endTime);
 
-    let activityLog =
-      cData && cData.contact.activityLog
-        ? cData.contact.activityLog.map((a) => a)
-        : [];
-
-    let newActLog = [...activityLog];
-    const index =
-      newActLog &&
-      newActLog.findIndex((activity) => activity._id === selectedActivity._id);
-
-    if (index > -1) {
-      newActLog[index] = {
-        user_id: selectedActivity.user_id,
-        _id: selectedActivity._id,
-        fullname: selectedActivity.fullname,
-        type: activityType,
-        name: activityName,
-        dateTime,
-        endDateTime,
-        notes,
-        ownerId,
-        dealId,
-        isClosed: closed,
-      };
-      newActLog.forEach((v) => delete v.__typename);
-
-      await updateContact({
-        variables: {
-          contact: {
-            _id: cData.contact._id,
-            activityLog: [...newActLog],
-          },
+    await updateActivityMutation({
+      variables: {
+        activity: {
+          _id: selectedActivity._id,
+          type: activityType,
+          name: activityName,
+          dateTime: new Date(dateTime).toUTCString(),
+          endDateTime: new Date(endDateTime).toUTCString(),
+          notes,
+          ownerId: owner.id,
+          ownerName: owner.name,
+          contactId: nameAutValue?._id,
+          contactName: nameAutValue?.name,
+          dealId,
+          isClosed: closed,
         },
-        refetchQueries: ["getAllActivities"],
-        awaitRefetchQueries: true,
-      });
-    } else {
-      let prevActivityLog =
-        prevCData && prevCData.contact.activityLog
-          ? prevCData.contact.activityLog.map((a) => a)
-          : [];
-
-      let newActLog = [...prevActivityLog];
-      const index =
-        newActLog &&
-        newActLog.findIndex(
-          (activity) => activity._id === selectedActivity._id
-        );
-
-      newActLog.splice(index, 1);
-
-      activityLog.push({
-        type: activityType,
-        name: activityName,
-        notes,
-        ownerId,
-        dealId,
-        dateTime: dateTime,
-        endDateTime: endDateTime,
-        user_id: stateApp.user.email,
-        isClosed: closed,
-      });
-
-      await updateContact({
-        variables: {
-          contact: {
-            _id: prevContactId,
-            activityLog: [...newActLog],
-          },
-        },
-      });
-
-      await updateContact({
-        variables: {
-          contact: {
-            _id: cData.contact._id,
-            activityLog,
-          },
-        },
-        refetchQueries: ["getAllActivities"],
-        awaitRefetchQueries: true,
-      });
-    }
-
-    setAllLoading(false);
+      },
+    });
   };
 
   const deleteActivity = async () => {
-    let activityLog =
-      cData && cData.contact.activityLog
-        ? cData.contact.activityLog.map((a) => a)
-        : [];
-
-    let newActLog = [...activityLog];
-    const index =
-      newActLog &&
-      newActLog.findIndex((activity) => activity._id === selectedActivity._id);
-
-    if (index > -1) {
-      newActLog.splice(index, 1);
-      newActLog.forEach((v) => delete v.__typename);
-      await updateContact({
-        variables: {
-          contact: {
-            _id: cData.contact._id,
-            activityLog: [...newActLog],
-          },
-        },
-        refetchQueries: ["getAllActivities"],
-        awaitRefetchQueries: true,
-      });
-    }
-
-    onModalClose();
+    await deleteActivityMutation({
+      variables: {
+        id: selectedActivity._id,
+      },
+    });
   };
 
   return (
@@ -690,7 +608,7 @@ export default function ActivitiesModal({
       maxWidth="xl"
       open={stateApp.activityDialog ? true : false}
       onClose={
-        loading && cLoading && allLoading
+        addLoading && updateLoading
           ? () => {}
           : () => {
               onModalClose();
@@ -700,18 +618,13 @@ export default function ActivitiesModal({
       <ExpandableCardProvider
         expanded={true}
         handleCloseExpandableCard={
-          loading && cLoading && allLoading
+          addLoading && updateLoading
             ? () => {}
             : () => {
                 onModalClose();
               }
         }
-        title={`${
-          addNew ? "Add Activity" : "Activity Details"
-          // : activityName
-          //? activityName.toUpperCase()
-          // : activityType.toUpperCase()
-        }`}
+        title={addNew ? "Add Activity" : "Activity Details"}
         subTitle={""}
         parent="calendar"
         mouseX={0}
@@ -733,7 +646,7 @@ export default function ActivitiesModal({
                 <span className={classes.rowIcon}></span>
                 <TextField
                   className={clsx(
-                   // classes.fieldWidth,
+                    // classes.fieldWidth,
                     classes.inputField,
                     activityName === "" && errors.activityName && classes.error
                   )}
@@ -799,6 +712,15 @@ export default function ActivitiesModal({
                   >
                     <EmailIcon /> <span>Email</span>
                   </span>
+                  <span
+                    className={clsx(
+                      classes.filterDisplay,
+                      activityType === "mailer" && classes.active
+                    )}
+                    onClick={() => setActivityType("mailer")}
+                  >
+                    <ContactMailIcon /> <span>Mailer Campaign</span>
+                  </span>
                 </div>
               </div>
               <div className={classes.row}>
@@ -815,8 +737,10 @@ export default function ActivitiesModal({
                     type="date"
                     variant="outlined"
                     onChange={(e) => {
-                      setStartDate(e.target.value);
-                      setEndDate(e.target.value);
+                      if (e.target.value && e.target.value.length > 0) {
+                        setStartDate(e.target.value);
+                        setEndDate(e.target.value);
+                      }
                     }}
                   />
                   <TextField
@@ -829,8 +753,10 @@ export default function ActivitiesModal({
                     type="time"
                     variant="outlined"
                     onChange={(e) => {
-                      setStartTime(e.target.value);
-                      console.log("EVENT: START TIME", e.target.value);
+                      if (e.target.value && e.target.value.length > 0) {
+                        setStartTime(e.target.value);
+                        setEndTime(e.target.value);
+                      }
                     }}
                   />
                   <span className={classes.line} />
@@ -844,7 +770,9 @@ export default function ActivitiesModal({
                     type="date"
                     variant="outlined"
                     onChange={(e) => {
-                      setEndDate(e.target.value);
+                      if (e.target.value && e.target.value.length > 0) {
+                        setEndDate(e.target.value);
+                      }
                     }}
                   />
                   <TextField
@@ -857,8 +785,9 @@ export default function ActivitiesModal({
                     type="time"
                     variant="outlined"
                     onChange={(e) => {
-                      setEndTime(e.target.value);
-                      console.log("EVENT: END TIME", e.target.value);
+                      if (e.target.value && e.target.value.length > 0) {
+                        setEndTime(e.target.value);
+                      }
                     }}
                   />
                 </div>
@@ -905,18 +834,22 @@ export default function ActivitiesModal({
                   <PersonIcon />
                 </span>
                 <div
-                  className={clsx(!contact && errors.contact && classes.error)}
                   style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}
                 >
                   <Autocomplete
-                    className={classes.fieldWidth}
+                    className={clsx(
+                      classes.fieldWidth,
+                      !owner.id && errors.owner && classes.error
+                    )}
                     options={users}
                     onChange={(e, user) => {
-                      setOwnerId(user.value);
+                      setOwner({ name: user.text, id: user.value });
                     }}
-                    value={users.find((user) => user.value === ownerId) || null}
+                    value={
+                      users.find((user) => user.value === owner.id) || null
+                    }
                     getOptionLabel={(option) => option.text}
-                    getOptionSelected={(option) => option.value === ownerId}
+                    getOptionSelected={(option) => option.value === owner.id}
                     renderInput={(params) => (
                       <TextField
                         margin="dense"
@@ -937,18 +870,20 @@ export default function ActivitiesModal({
                     className={classes.fieldWidth}
                     options={openDeals}
                     onChange={(e, deal) => {
-                      setDealId(deal.id);
+                      setDealId(deal?._id);
                     }}
-                    value={openDeals.find((deal) => deal.id === dealId) || null}
+                    value={
+                      openDeals.find((deal) => deal._id === dealId) || null
+                    }
                     getOptionSelected={(option) => option.id === dealId}
-                    getOptionLabel={(option) => option.title}
+                    getOptionLabel={(option) => option.name}
                     renderOption={(option) => {
                       return (
                         <Grid container spacing={0}>
                           <Grid container item xs={12} alignItems="center">
                             <Grid item xs>
                               <span style={{ fontWeight: 400 }}>
-                                {option.title}
+                                {option.name}
                               </span>
 
                               <Typography variant="body2" color="textSecondary">
@@ -986,14 +921,6 @@ export default function ActivitiesModal({
                     />
                   </div>
 
-                  {errors.contact && (
-                    <>
-                      <br />
-                      <small style={{ color: "red" }}>
-                        This is a required field
-                      </small>
-                    </>
-                  )}
                   <br />
 
                   <TextField
@@ -1031,13 +958,13 @@ export default function ActivitiesModal({
                     onClick={() => {
                       onModalClose();
                     }}
-                    disabled={loading || cLoading || allLoading}
+                    disabled={addLoading || updateLoading}
                   >
                     Cancel
                   </Button>
 
                   <Button
-                    disabled={loading || cLoading || allLoading}
+                    disabled={addLoading || updateLoading}
                     className={classes.marginLeft}
                     color="primary"
                     variant="contained"
@@ -1047,7 +974,7 @@ export default function ActivitiesModal({
                       else updateActivity();
                     }}
                   >
-                    {allLoading && (
+                    {(addLoading || updateLoading) && (
                       <CircularProgress
                         style={{ marginRight: 8 }}
                         color="#fff"
@@ -1061,13 +988,15 @@ export default function ActivitiesModal({
             </div>
             <div className={classes.right}>
               <Calendar
+                drilldownView="week"
+                popup={true}
                 localizer={localizer}
                 events={events}
                 startAccessor="start"
                 endAccessor="end"
                 defaultView={"day"}
-                defaultDate={startDate}
-                date={startDate}
+                defaultDate={calenderDate}
+                date={calenderDate}
                 step={60}
                 components={{
                   event: ActivitiesEvent,

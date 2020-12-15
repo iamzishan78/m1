@@ -16,6 +16,7 @@ import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
 import DefaultIcon from "@material-ui/icons/Event";
+import ContactMailIcon from '@material-ui/icons/ContactMail';
 
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
@@ -195,6 +196,17 @@ const ActivitiesToolbar = ({
           >
             <EmailIcon /> <span>Email</span>
           </span>
+          <span
+            className={clsx(
+              classes.filterDisplay,
+              (activityFilterByType === "all" ||
+                activityFilterByType === "mailer") &&
+                classes.active
+            )}
+            onClick={() => setActivityFilterByType("mailer")}
+          >
+            <ContactMailIcon /> <span>Mailer Campaign</span>
+          </span>
         </div>
       </div>
       <div className={classes.centerNav}>
@@ -227,6 +239,51 @@ const ActivitiesToolbar = ({
         <div>
           <ButtonGroup>
             <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
+                activityFilterByTime === "all" && classes.activeBtn
+              }`}
+              onClick={() => setActivityFilterByTime("all")}
+            >
+              All
+            </Button>
+            <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
+                activityFilterByTime === "upcoming" && classes.activeBtn
+              }`}
+              onClick={() => setActivityFilterByTime("upcoming")}
+            >
+              Upcoming
+            </Button>
+            <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
+                activityFilterByTime === "overdue" && classes.activeBtn
+              }`}
+              onClick={() => setActivityFilterByTime("overdue")}
+            >
+              Overdue
+            </Button>
+            <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
+                activityFilterByTime === "open" && classes.activeBtn
+              }`}
+              onClick={() => setActivityFilterByTime("open")}
+            >
+              Open
+            </Button>
+            <Button
+              size="small"
+              className={`${classes.filterToggleBtn} ${
+                activityFilterByTime === "closed" && classes.activeBtn
+              }`}
+              onClick={() => setActivityFilterByTime("closed")}
+            >
+              Closed
+            </Button>
+            {/* <Button
               size="small"
               className={`${classes.filterToggleBtn} ${
                 activityFilterByTime === "todo" && classes.activeBtn
@@ -291,7 +348,7 @@ const ActivitiesToolbar = ({
               }}
             >
               Next week
-            </Button>
+            </Button> */}
             {/* <Button
               size="small"
               className={`${classes.filterToggleBtn} ${
