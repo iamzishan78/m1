@@ -2077,22 +2077,29 @@ function SubTable(props) {
       setPageInd(pageState);
     },
     customSort: (data, colIndex, order) => {
+      let temp_rows = [];
+      let temp_rows_per_page = rowsPerPage ? rowsPerPage : 25;
+      let temp = data.filter((item) => item.data[1] != "Cumulative");
       if (props.parent === "production_WellDetails") {
-        let temp = data.filter((item) => item.data[1] != "Cumulative");
-        let temp_rows_per_page = rowsPerPage ? rowsPerPage : 25;
-        let temp_rows = temp.sort((a, b) => {
-          if (colIndex === 1) {
+        if (colIndex === 1) {
+          temp_rows = temp.sort((a, b) => {
             const dateA = moment(moment(a.data[colIndex], "MM/YYYY")).valueOf();
             const dateB = moment(moment(b.data[colIndex], "MM/YYYY")).valueOf();
             return (dateA < dateB ? -1 : 1) * (order === "desc" ? 1 : -1);
-          } else {
+          });
+        } else {
+          temp_rows = temp.sort((a, b) => {
+            if (isNaN(parseInt(a)) && isNaN(parseInt(b))) {
+              a.data[colIndex] = parseInt(a.data[colIndex]);
+              b.data[colIndex] = parseInt(b.data[colIndex]);
+            }
             return (
               (a.data[colIndex] < b.data[colIndex] ? -1 : 1) *
               (order === "desc" ? 1 : -1)
             );
-          }
-        });
-
+          });
+        }
+  
         let insertInBetween = temp_rows_per_page - 1;
         let cumulative_array = Object.values(cumulative);
         let temp_cumulative_array = [];
@@ -2129,6 +2136,7 @@ function SubTable(props) {
 
         temp_rows.push({ data: temp_cumulative_array });
         return temp_rows;
+
       } else {
         return data.sort((a, b) => {
           return (
@@ -2496,7 +2504,9 @@ function SubTable(props) {
         }
         rows.push(cumulative);
       }
-      rows.push(cumulative);
+      if (rows[rows.length - 1] != cumulative) {
+        rows.push(cumulative);
+      }
     }
     return rows;
   };
