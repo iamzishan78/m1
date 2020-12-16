@@ -51,7 +51,9 @@ export default function Deals({ contact, ...props }) {
   const [allDeals, setAllDeals] = useState([]); // all other deals
   const [stateApp, setStateApp] = useContext(AppContext);
   // const [getTransactionData, { data, loading }] = useLazyQuery(TRANSACTIONDATA);
-  const [getContactDeals, { data, loading }] = useLazyQuery(CONTACTDEALS);
+  const [getContactDeals, { data, loading }] = useLazyQuery(CONTACTDEALS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   const stringData = JSON.stringify(data);
 
@@ -67,30 +69,25 @@ export default function Deals({ contact, ...props }) {
   }, [contact]);
 
   useEffect(() => {
-    if (
-      !loading &&
-      data?.contactDeals
-    ) {
+    if (!loading && data?.contactDeals) {
       // get all deals
       const all = [];
       data.contactDeals.forEach((card) => {
-        if (!card.isDeleted)
-          all.push(card);
+        if (!card.isDeleted) all.push(card);
       });
       setAllDeals(all);
     }
   }, [contact, stringData, data, loading]);
 
   useEffect(() => {
-    if (allDeals &&
-      allDeals.length > 0) {
+    if (allDeals && allDeals.length > 0) {
       let lost = [];
       let won = [];
       let others = [];
       allDeals.forEach((card) => {
-          if (card.status === "lost") lost.push(card);
-          else if (card.status === "won") won.push(card);
-          else others.push(card);
+        if (card.status === "lost") lost.push(card);
+        else if (card.status === "won") won.push(card);
+        else others.push(card);
       });
 
       setWonDeals(won);
@@ -102,9 +99,8 @@ export default function Deals({ contact, ...props }) {
   const sumOpenDeals = () => {
     let sum = 0;
     activeDeals.forEach((card) => {
-      if (card.offerPrice && !isNaN(card.offerPrice))
-        sum += card.offerPrice
-        // sum += parseFloat(card.label.split("$").join("").split(",").join(""))
+      if (card.offerPrice && !isNaN(card.offerPrice)) sum += card.offerPrice;
+      // sum += parseFloat(card.label.split("$").join("").split(",").join(""))
     });
     const formatted = formatter.format(sum);
     return formatted.slice(0, formatted.length - 3);
@@ -113,21 +109,18 @@ export default function Deals({ contact, ...props }) {
   const sumWonDeals = () => {
     let sum = 0;
     wonDeals.forEach((card) => {
-      if (card.offerPrice && !isNaN(card.offerPrice))
-        sum += card.offerPrice
-        // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+      if (card.offerPrice && !isNaN(card.offerPrice)) sum += card.offerPrice;
+      // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     });
     const formatted = formatter.format(sum);
     return formatted.slice(0, formatted.length - 3);
   };
 
-
   const sumLostDeals = () => {
     let sum = 0;
     lostDeals.forEach((card) => {
-      if (card.offerPrice && !isNaN(card.offerPrice))
-        sum += card.offerPrice
-        // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+      if (card.offerPrice && !isNaN(card.offerPrice)) sum += card.offerPrice;
+      // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     });
     const formatted = formatter.format(sum);
     return formatted.slice(0, formatted.length - 3);
@@ -138,7 +131,6 @@ export default function Deals({ contact, ...props }) {
       <div>
         <h4 style={{ marginTop: "0", float: "left" }}>
           Deals ({allDeals.length})
-
         </h4>
         <IconButton
           size="small"
