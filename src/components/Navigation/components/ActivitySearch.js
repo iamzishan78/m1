@@ -17,7 +17,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import List from "@material-ui/icons/List";
 import GridOn from "@material-ui/icons/GridOn";
-import EventIcon from '@material-ui/icons/Event';
+import EventIcon from "@material-ui/icons/Event";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 
 import { GETALLACTIVITIESFORSEARCH } from "../../../graphQL/useQueryGetAllActivities";
@@ -173,32 +173,31 @@ const ActivitySearch = () => {
               endAdornment: (
                 <>
                   <ButtonGroup variant="text">
-                   <Tooltip title="List View" >
-                    <IconButton
-                      size="small"
-                      htmlColor="#fff"
-                      className={`${classes.toggleBtn} ${
-                        stateApp.activityDisplayType === "table" &&
-                        classes.activeBtn
-                      }`}
-                      //temporarily commenting out until list view exists
-                     // onClick={() => setActivityDisplayType("table")}
-                    >
-                      <List />
-                    </IconButton>
+                    <Tooltip title="List View">
+                      <IconButton
+                        size="small"
+                        htmlColor="#fff"
+                        className={`${classes.toggleBtn} ${
+                          stateApp.activityDisplayType === "table" &&
+                          classes.activeBtn
+                        }`}
+                        onClick={() => setActivityDisplayType("table")}
+                      >
+                        <List />
+                      </IconButton>
                     </Tooltip>
-                    <Tooltip title="Calendar" >
-                    <IconButton
-                      size="small"
-                      htmlColor="#fff"
-                      className={`${classes.toggleBtn} ${
-                        stateApp.activityDisplayType === "calendar" &&
-                        classes.activeBtn
-                      }`}
-                      onClick={() => setActivityDisplayType("calendar")}
-                    >
-                      <EventIcon />
-                    </IconButton>
+                    <Tooltip title="Calendar">
+                      <IconButton
+                        size="small"
+                        htmlColor="#fff"
+                        className={`${classes.toggleBtn} ${
+                          stateApp.activityDisplayType === "calendar" &&
+                          classes.activeBtn
+                        }`}
+                        onClick={() => setActivityDisplayType("calendar")}
+                      >
+                        <EventIcon />
+                      </IconButton>
                     </Tooltip>
                   </ButtonGroup>
                 </>

@@ -69,6 +69,9 @@ import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "../../../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
 import moment from "moment";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import CheckIcon from "@material-ui/icons/Check";
 
 var ticksToDateString = function (ticks) {
   var epochTicks = 621355968000000000;
@@ -1212,7 +1215,11 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  if (props.targetLabel == "deal" && value === null) {
+                  if (
+                    (props.targetLabel == "deal" ||
+                      props.targetLabel == "activity") &&
+                    value === null
+                  ) {
                     return (
                       <p
                         style={{
@@ -1528,8 +1535,10 @@ function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   const valueFormatter = (v) => {
                     if (
-                      column.name === "status" &&
-                      props.targetLabel === "deal"
+                      (column.name === "status" &&
+                        props.targetLabel === "deal") ||
+                      (column.name === "type" &&
+                        props.targetLabel === "activity")
                     )
                       return capitalizeFirstLetter(v);
 
@@ -1549,11 +1558,11 @@ function SubTable(props) {
                     if (column.name === "closeDate" && !!v)
                       return moment.parseZone(v).format("MM/DD/yyyy");
 
-                    // anyToDate(v).toLocaleString("en-US", {
-                    //   year: "numeric",
-                    //   day: "numeric",
-                    //   month: "numeric",
-                    // });
+                    if (
+                      (column.name === "end" || column.name === "start") &&
+                      !!v
+                    )
+                      return anyToDate(v).toLocaleString("en-US");
 
                     return v;
                   };
@@ -1563,6 +1572,28 @@ function SubTable(props) {
                   //     value = props.rows[tableMeta.rowIndex].lastUpdateBy?.name;
                   //   }
                   // }
+
+                  if (
+                    column.name === "isClosed" &&
+                    props.targetLabel === "activity" &&
+                    value === true
+                  )
+                    return (
+                      <div style={{ textAlign: "center" }}>
+                        <CheckIcon />
+                      </div>
+                    );
+
+                  if (
+                    column.name === "isClosed" &&
+                    props.targetLabel === "activity" &&
+                    value === false
+                  )
+                    return (
+                      <div style={{ textAlign: "center" }}>
+                        {/* <CheckBoxOutlineBlankIcon /> */}
+                      </div>
+                    );
 
                   ////// if non editable column
                   if (
@@ -2045,6 +2076,15 @@ function SubTable(props) {
           dealDialog: true,
           activeDeal: card,
         }));
+      }
+
+      if (props.targetLabel === "activity") {
+        if (rows[dataIndex]?._id)
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            selectedActivityId: rows[dataIndex]._id,
+            activityDialog: true,
+          }));
       }
 
       // if (props.targetLabel === "well") {

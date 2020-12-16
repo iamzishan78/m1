@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Views, Navigate } from "react-big-calendar";
 import moment from "moment";
 import clsx from "clsx";
@@ -16,7 +16,8 @@ import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
 import DefaultIcon from "@material-ui/icons/Event";
-import ContactMailIcon from '@material-ui/icons/ContactMail';
+import ContactMailIcon from "@material-ui/icons/ContactMail";
+import { AppContext } from "../../../AppContext";
 
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
@@ -94,6 +95,8 @@ const ActivitiesToolbar = ({
   ...toolbar
 }) => {
   const classes = useToolbarStyles();
+  const [stateApp, setStateApp] = useContext(AppContext);
+
   const goToBack = () => {
     toolbar.onNavigate("PREV");
   };
@@ -209,23 +212,25 @@ const ActivitiesToolbar = ({
           </span>
         </div>
       </div>
-      <div className={classes.centerNav}>
-        <IconButton
-          size="small"
-          className={classes.marginLeft}
-          onClick={() => goToBack()}
-        >
-          <NavigateBeforeIcon />
-        </IconButton>
-        <p className={classes.marginLeft}>{toolbar.label}</p>
-        <IconButton
-          size="small"
-          className={classes.marginLeft}
-          onClick={() => goToNext()}
-        >
-          <NavigateNextIcon />
-        </IconButton>
-      </div>
+      {stateApp.activityDisplayType === "calendar" && (
+        <div className={classes.centerNav}>
+          <IconButton
+            size="small"
+            className={classes.marginLeft}
+            onClick={() => goToBack()}
+          >
+            <NavigateBeforeIcon />
+          </IconButton>
+          <p className={classes.marginLeft}>{toolbar.label}</p>
+          <IconButton
+            size="small"
+            className={classes.marginLeft}
+            onClick={() => goToNext()}
+          >
+            <NavigateNextIcon />
+          </IconButton>
+        </div>
+      )}
       <div className={classes.right}>
         <Select
           className={classes.viewSwitcher}
