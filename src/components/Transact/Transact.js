@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   },
   laneHeaderStyle: {
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "flex-start",
     padding: "0px 5px",
     marginBottom: "0px",
@@ -55,6 +55,10 @@ const useStyles = makeStyles((theme) => ({
     color: "#2e4451",
     fontWeight: "bold",
     fontSize: "18px",
+  },
+  laneHeaderTotalStyle: {
+    fontSize: "14px !important",
+    fontWeight: "normal",
   },
   boardAndTable: {
     maxHeight: "calc(100vh - 140px) !important",
@@ -81,6 +85,11 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiToolbar-root": { textAlign: "initial" },
   },
 }));
+
+let formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
 
 export default function Transact() {
   const classes = useStyles();
@@ -125,6 +134,7 @@ export default function Transact() {
       setFilteredBoardTransactData({
         lanes: [...filterBoardCards(pipeToShow.lanes, dealFilter)],
       });
+      console.log("DATA: ", filteredBoardTransactData);
     }
   }, [pipeToShow, dealFilter]);
 
@@ -295,14 +305,24 @@ export default function Transact() {
   };
 
   const getLaneHeader = ({ title, id }) => {
-    const lane = filteredBoardTransactData?.lanes?.find(lane => lane.id === id);
+    const lane = filteredBoardTransactData?.lanes?.find(
+      (lane) => lane.id === id
+    );
     let dealCount = 0;
-    if(lane)
-      dealCount = lane?.cards.length;
+    if (lane) dealCount = lane?.cards.length;
+
+    let priceSum = 0;
+    // eslint-disable-next-line no-unused-expressions
+    lane?.cards.forEach((card) => (priceSum += card?.metadata?.offerPrice))
+    const formatted = formatter.format(priceSum);
+    const formattedTotal = formatted.slice(0, formatted.length - 3);
 
     return (
       <header className={classes.laneHeaderStyle}>
-        <span className={classes.laneHeaderStyle}>{title} ({dealCount})</span>
+        <span className={classes.laneHeaderSpanStyle}>
+          {title} ({dealCount})
+        </span>
+        <span className={classes.laneHeaderTotalStyle}>Total: {formattedTotal}</span>
       </header>
     );
   };
