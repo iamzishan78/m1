@@ -376,7 +376,12 @@ export default function Transact() {
     }
 
     return (
-      <article className={classes.cardStyle}>
+      <article
+        className={classes.cardStyle}
+        onClick={() =>
+          handleCardClick(cardProps.id, cardProps.metadata, cardProps.laneId)
+        }
+      >
         <header className={classes.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span className={classes.cardTitle}>{cardProps.title}</span>
