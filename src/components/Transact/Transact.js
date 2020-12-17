@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     marginBottom: "10px",
     cursor: "pointer",
+    maxWidth: "300px"
   },
   cardHeaderStyle: {
     display: "flex",
@@ -68,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
   cardDescStyle: {
     color: "#2e4451",
     padding: "10px",
+    whiteSpace: "pre-wrap"
   },
   cardTitle: {
     color: "#1CB6DA",
