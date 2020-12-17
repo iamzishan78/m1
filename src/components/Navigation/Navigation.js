@@ -1213,7 +1213,7 @@ export default function Navigation(props) {
             {/*SEARCH UI FOR DEALS */}
             {location.pathname === "/flow" && <DealSearch />}
 
-            {openDrawer ? (
+            {/* {openDrawer ? (
               <div className={classes.toolbar}>
                 <M1neralLogo />
                 <IconButton color="secondary" onClick={handleDrawerClose}>
@@ -1224,7 +1224,7 @@ export default function Navigation(props) {
                   )}
                 </IconButton>
               </div>
-            ) : null}
+            ) : null} */}
 
             {matchTrack ? (
               <CardHeader
