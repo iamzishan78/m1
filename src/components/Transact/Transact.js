@@ -6,7 +6,7 @@ import React, { useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../AppContext";
 import Board from "react-trello";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { TransactContext } from "./TransactContext";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
@@ -27,6 +27,9 @@ import { setFlowState } from "../../actions";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import CallMadeIcon from "@material-ui/icons/CallMade";
 import M1nTable from "../Shared/M1nTable/M1nTable";
+import Avatar from "react-avatar";
+import Badge from "@material-ui/core/Badge";
+import moment from "moment";
 
 function usePrevious(value) {
   const ref = useRef();
@@ -43,6 +46,35 @@ const useStyles = makeStyles((theme) => ({
   list: {
     overflowX: "auto !important",
     height: "100%",
+  },
+  cardStyle: {
+    position: "relative",
+    border: "none",
+    borderLeft: "4px solid #e2e2e2",
+    boxShadow:
+      "rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px",
+    backgroundColor: "rgb(242, 242, 242)",
+    textAlign: "center",
+    marginBottom: "10px",
+    cursor: "pointer",
+  },
+  cardHeaderStyle: {
+    display: "flex",
+    flexDirection: "column",
+    borderBottom: "1px solid #e2e2e2",
+    padding: "10px",
+    textAlign: "left",
+  },
+  cardDescStyle: {
+    color: "#2e4451",
+    padding: "10px",
+  },
+  cardTitle: {
+    color: "#1CB6DA",
+    textTransform: "uppercase",
+  },
+  cardSubheading: {
+    fontSize: "12px",
   },
   laneHeaderStyle: {
     display: "flex",
@@ -304,6 +336,81 @@ export default function Transact() {
     }
   };
 
+  const StyleBadge = withStyles({
+    badge: {
+      transform: "unset",
+      background: "#38c52e",
+      color: "#fff",
+      border: "2px solid",
+      width: "30px",
+      height: "30px",
+      borderRadius: "50%",
+    },
+  })((props) => <Badge {...props} />);
+
+  const getCard = (cardProps) => {
+    console.log("card props", cardProps);
+
+    const cardPrice =
+      cardProps && cardProps.metadata && cardProps.metadata.offerPrice
+        ? cardProps.metadata.offerPrice
+        : 0;
+    const formatted = formatter.format(cardPrice);
+    const formattedPrice = formatted.slice(0, formatted.length - 3);
+
+    let formattedDate = null;
+
+    if (cardProps?.metadata?.closeDate)
+      formattedDate = moment
+        .parseZone(new Date(cardProps.metadata.closeDate))
+        .format("MM-DD-yyyy");
+
+    let owner = null;
+    console.log(cardProps.metadata.owners);
+    let ownerObject = cardProps?.metadata?.owners[0]
+      ? cardProps?.metadata?.owners[0]
+      : null;
+
+    if (ownerObject && ownerObject.relatedObject?.name) {
+      owner = ownerObject.relatedObject.name;
+    }
+
+    return (
+      <article className={classes.cardStyle}>
+        <header className={classes.cardHeaderStyle}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <span className={classes.cardTitle}>{cardProps.title}</span>
+            {owner && (
+              <div className={classes.userIcon}>
+                <StyleBadge>
+                  <Avatar
+                    className={classes.grey}
+                    name={owner}
+                    size="25"
+                    round
+                  />
+                </StyleBadge>
+              </div>
+            )}
+          </div>
+          <div className={classes.cardSubheading}>
+            <span>{formattedPrice}</span>
+            {formattedDate && (
+              <>
+                <br />
+                <span>
+                  Est. Close{" "}
+                  <span style={{ fontWeight: "normal" }}>{formattedDate}</span>
+                </span>
+              </>
+            )}
+          </div>
+        </header>
+        <div className={classes.cardDescStyle}>{cardProps.description}</div>
+      </article>
+    );
+  };
+
   const getLaneHeader = ({ title, id }) => {
     const lane = filteredBoardTransactData?.lanes?.find(
       (lane) => lane.id === id
@@ -313,7 +420,7 @@ export default function Transact() {
 
     let priceSum = 0;
     // eslint-disable-next-line no-unused-expressions
-    lane?.cards.forEach((card) => (priceSum += card?.metadata?.offerPrice))
+    lane?.cards.forEach((card) => (priceSum += card?.metadata?.offerPrice));
     const formatted = formatter.format(priceSum);
     const formattedTotal = formatted.slice(0, formatted.length - 3);
 
@@ -322,7 +429,9 @@ export default function Transact() {
         <span className={classes.laneHeaderSpanStyle}>
           {title} ({dealCount})
         </span>
-        <span className={classes.laneHeaderTotalStyle}>Total: {formattedTotal}</span>
+        <span className={classes.laneHeaderTotalStyle}>
+          Total: {formattedTotal}
+        </span>
       </header>
     );
   };
@@ -373,9 +482,11 @@ export default function Transact() {
                   "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
                 backgroundColor: "#F2F2F2",
                 textAlign: "center",
+                marginBottom: "10px",
               }}
               components={{
                 LaneHeader: (laneProps) => getLaneHeader(laneProps),
+                Card: (cardProps) => getCard(cardProps),
               }}
 
               //onCardAdd = {handleCardAdd}
