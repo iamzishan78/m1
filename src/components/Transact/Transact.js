@@ -44,6 +44,18 @@ const useStyles = makeStyles((theme) => ({
     overflowX: "auto !important",
     height: "100%",
   },
+  laneHeaderStyle: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "flex-start",
+    padding: "0px 5px",
+    marginBottom: "0px",
+  },
+  laneHeaderSpanStyle: {
+    color: "#2e4451",
+    fontWeight: "bold",
+    fontSize: "18px",
+  },
   boardAndTable: {
     maxHeight: "calc(100vh - 140px) !important",
     overflowY: "auto",
@@ -282,6 +294,19 @@ export default function Transact() {
     }
   };
 
+  const getLaneHeader = ({ title, id }) => {
+    const lane = filteredBoardTransactData?.lanes?.find(lane => lane.id === id);
+    let dealCount = 0;
+    if(lane)
+      dealCount = lane?.cards.length;
+
+    return (
+      <header className={classes.laneHeaderStyle}>
+        <span className={classes.laneHeaderStyle}>{title} ({dealCount})</span>
+      </header>
+    );
+  };
+
   return (
     <div className={classes.root}>
       <AddDealDialog
@@ -321,13 +346,16 @@ export default function Transact() {
                 backgroundColor: "#fff",
                 color: "#011133",
                 fontWeight: "bold",
-                textAlign: "left"
+                textAlign: "left",
               }}
               cardStyle={{
                 boxShadow:
                   "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
                 backgroundColor: "#F2F2F2",
-                textAlign: "center"
+                textAlign: "center",
+              }}
+              components={{
+                LaneHeader: (laneProps) => getLaneHeader(laneProps),
               }}
 
               //onCardAdd = {handleCardAdd}
@@ -358,7 +386,8 @@ export default function Transact() {
         </div>
       ) : pipeToShow === false ? (
         <h1 style={{ marginTop: 80 }}>
-          No pipelines currently exist - please setup a new pipeline and corresponding stages.
+          No pipelines currently exist - please setup a new pipeline and
+          corresponding stages.
         </h1>
       ) : (
         <CircularProgress size={80} disableShrink color="secondary" />
