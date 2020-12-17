@@ -131,14 +131,14 @@ function UploadZone(props) {
       if (file_id) {
         fetch(uri, {
           headers: {
-            "Content-Type": "text/plain; charset=UTF-8",
+            // "Content-Type": "text/plain; charset=UTF-8",
             "X-Ms-Blob-Content-Disposition": `attachment; filename="${file_name}"`,
             "X-Ms-Blob-Type": "BlockBlob",
             "X-Ms-Meta-Internalkey": interal_key,
             "X-Ms-Version": "2015-02-21",
           },
           method: "PUT",
-          body: JSON.stringify(inputFile),
+          body: inputFile,
         })
           .then((res) => console.log(res))
           .catch((err) => console.log(err));
