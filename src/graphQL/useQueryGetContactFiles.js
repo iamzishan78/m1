@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const GETRECENTCONTACTFILES = gql`
-  query getRecentContactFiles($userId: ID, $contactId: ID) {
-    getFileDescriptors(userId: $userId, contactId: $contactId, limit: 2) {
+  query getRecentContactFiles($contactId: ID) {
+    getFileDescriptors(contactId: $contactId, limit: 2) {
       fileName
       fileUrl
       fileId
@@ -14,8 +14,8 @@ export const GETRECENTCONTACTFILES = gql`
 `;
 
 export const GETCONTACTFILES = gql`
-  query getContactFiles($userId: ID, $contactId: ID) {
-    getFileDescriptors(userId: $userId, contactId: $contactId) {
+  query getContactFiles($contactId: ID) {
+    getFileDescriptors(contactId: $contactId) {
       fileName
       fileUrl
       fileId

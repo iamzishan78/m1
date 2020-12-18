@@ -153,7 +153,6 @@ export default function ViewDocuments(props) {
   useEffect(() => {
     getAllFiles({
       variables: {
-        userId,
         contactId: props.contactId,
       },
     });
@@ -212,7 +211,7 @@ export default function ViewDocuments(props) {
                 </div>
                 <div className={classes.fileText}>
                   <h4 className={classes.uploadTitle}>{doc.fileName}</h4>
-                  <h5 className={classes.uploadSubtext}>{doc.userName}</h5>
+                  {/* <h5 className={classes.uploadSubtext}>{doc.userName}</h5> */}
                   <h5 className={classes.uploadSubtext}>
                     {moment.utc(doc.dateTime).format("MMM DD, YYYY")}
                   </h5>
