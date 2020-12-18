@@ -13,9 +13,8 @@ import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import { CircularProgress } from "@material-ui/core";
-
+import { DropzoneAreaBase } from "material-ui-dropzone";
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
-
 import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
 import { ADDFILE } from "../../graphQL/useMutationAddFile";
@@ -115,6 +114,28 @@ const useStyles = makeStyles((theme) => ({
   fileDropError: {
     color: "red",
   },
+  dropzoneClass: {
+    "&:hover": { backgroundColor: "#dddddd" },
+    "& .MuiDropzoneArea-text": {
+      fontSize: "0.83em",
+      marginBlockStart: "1.67em",
+      marginBlockEnd: "1.67em",
+      fontWeight: "bold",
+    },
+    "& .MuiDropzoneArea-icon": { display: "none" },
+    minHeight: "125px",
+    width: "100%",
+    padding: "10px 40px",
+    color: "#757575",
+    fontWeight: "normal",
+    backgroundColor: "#eee",
+    textAlign: "center",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    border: "2px dashed rgb(176, 176, 176)",
+    marginBottom: "30px",
+  },
 }));
 
 function UploadZone(props) {
@@ -131,7 +152,6 @@ function UploadZone(props) {
       if (file_id) {
         fetch(uri, {
           headers: {
-            // "Content-Type": "text/plain; charset=UTF-8",
             "X-Ms-Blob-Content-Disposition": `attachment; filename="${file_name}"`,
             "X-Ms-Blob-Type": "BlockBlob",
             "X-Ms-Meta-Internalkey": interal_key,
@@ -146,39 +166,56 @@ function UploadZone(props) {
     }
   }, [props.addFileData]);
 
-  const onDrop = useCallback((acceptedFiles) => {
-    // Do something with the files
+  const handleFileInput = (files) => {
+    if (Array.isArray(files)) {
+      let inputFile = files[0]?.file;
+      let fileName = files[0]?.file?.name;
 
-    const [file] = acceptedFiles;
-    const fileName = file.name;
+      if (inputFile && fileName) {
+        setInputFile(inputFile);
 
-    setInputFile(file);
+        props.addFile({
+          variables: {
+            fileName,
+            userId: props.userId,
+            contactId: props.contactId,
+          },
+        });
+      }
+    }
+  };
 
-    props.addFile({
-      variables: {
-        fileName,
-        userId: props.userId,
-        contactId: props.contactId,
-      },
-    });
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   const classes = useStyles();
 
   return (
     <>
-      <div {...getRootProps()} className={classes.fileDrop}>
-        <input {...getInputProps()} />
-        {isDragActive ? (
-          <h5>Drop the files here ...</h5>
-        ) : (
-          <h5>Drag a file here or click to select a file to upload</h5>
-        )}
-      </div>
-      {/* {props.addFileData && !props.addFileData.addFileDescriptor.success && (
-        <p className={classes.fileDropError}>File could not be uploaded</p>
-      )} */}
+      <DropzoneAreaBase
+        onAdd={handleFileInput}
+        // onDelete={(fileObj) => console.log("Removed File:", fileObj)}
+        onAlert={(message, variant) => {
+          console.log(`${variant}: ${message}`);
+        }}
+        filesLimit={1}
+        dropzoneText={"Drag a file here or click to select a file to upload"}
+        acceptedFiles={[
+          "image/*",
+          "video/*",
+          "application/*",
+          ".*",
+          ".geojson",
+          ".csv",
+          ".pdf",
+          ".docx",
+          ".doc",
+          ".ppt",
+          ".pptx",
+          ".txt",
+          ".xls",
+          ".xlsx",
+        ]}
+        maxFileSize={104857600}
+        dropzoneClass={classes.dropzoneClass}
+      ></DropzoneAreaBase>
     </>
   );
 }
@@ -203,7 +240,6 @@ export default function Documents(props) {
         // setTimeout(() => {
         //   getRecentFiles({
         //     variables: {
-        //       userId,
         //       contactId: props.id,
         //     },
         //   });
@@ -218,7 +254,6 @@ export default function Documents(props) {
   useEffect(() => {
     getRecentFiles({
       variables: {
-        userId,
         contactId: props.id,
       },
     });
@@ -305,7 +340,7 @@ export default function Documents(props) {
               <div className={classes.fileUploadTopSection}>
                 <div>
                   <h4 className={classes.uploadTitle}>{file.fileName}</h4>
-                  <h5 className={classes.uploadSubtext}>{file.userName}</h5>
+                  {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
                   <h5 className={classes.uploadSubtext}>
                     {moment.utc(file.dateTime).format("MMM DD, YYYY")}
                   </h5>
