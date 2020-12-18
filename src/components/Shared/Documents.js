@@ -23,6 +23,8 @@ import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
 import { GETRECENTCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { DELETEDESCRIPTORFILE } from "../../graphQL/useMutationDeleteDescriptorFile";
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
+import { useDispatch } from "react-redux";
+import { showErrorMessage, showWarningMessage } from "../../actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -139,6 +141,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function UploadZone(props) {
+  const dispatch = useDispatch();
   const [inputFile, setInputFile] = useState(null);
 
   useEffect(() => {
@@ -160,7 +163,12 @@ function UploadZone(props) {
           method: "PUT",
           body: inputFile,
         })
-          .then((res) => console.log(res))
+          .then((res) => {
+            console.log(res);
+            if (res?.status == 201) {
+              // props.getRecentFiles();
+            } else dispatch(showErrorMessage("Upload failed"));
+          })
           .catch((err) => console.log(err));
       }
     }
@@ -221,14 +229,50 @@ function UploadZone(props) {
 }
 
 export default function Documents(props) {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
+  const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [stateApp] = React.useContext(AppContext);
   const userId = stateApp.user.mongoId;
   const [getRecentFiles, { data: files }] = useLazyQuery(
     GETRECENTCONTACTFILES,
-    { fetchPolicy: "cache-and-network" }
+    {
+      fetchPolicy: "cache-and-network",
+      onCompleted: ({ getFileDescriptors }) => {
+        let allActive = true;
+
+        if (getFileDescriptors)
+          for (let i = 0; i < getFileDescriptors.length; i++) {
+            if (getFileDescriptors[i].fileState !== "active") {
+              allActive = false;
+              break;
+            }
+          }
+
+        if (!allActive) {
+          if (fileRequestCounter <= 40) {
+            let waitBeforeRequestAgain = setTimeout(() => {
+              setFileRequestCounter(fileRequestCounter + 1);
+              getRecentFiles({
+                variables: {
+                  contactId: props.id,
+                },
+              });
+              clearTimeout(waitBeforeRequestAgain);
+            }, 1000);
+          } else {
+            setFileRequestCounter(1);
+            dispatch(
+              showWarningMessage(
+                "Please wait a few seconds until the uploaded file is ready, then reload the app"
+              )
+            );
+          }
+        } else setFileRequestCounter(1);
+      },
+    }
   );
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
   const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
@@ -236,19 +280,19 @@ export default function Documents(props) {
     {
       refetchQueries: ["getRecentContactFiles"],
       awaitRefetchQueries: true,
-      onCompleted: () => {
-        // setTimeout(() => {
-        //   getRecentFiles({
-        //     variables: {
-        //       contactId: props.id,
-        //     },
-        //   });
-        // }, 3000);
-      },
+      //   onCompleted: () => {
+      //     // setTimeout(() => {
+      //     //   getRecentFiles({
+      //     //     variables: {
+      //     //       contactId: props.id,
+      //     //     },
+      //     //   });
+      //     // }, 3000);
+      //   },
     }
   );
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "network-only",
+    fetchPolicy: "no-cache",
   });
 
   useEffect(() => {
@@ -261,13 +305,13 @@ export default function Documents(props) {
 
   useEffect(() => {
     console.log("VIEW FILE RESULT", viewFileResult);
-    if (viewFileResult) {
+    if (viewFileResult?.viewFile?.uri) {
       let a = document.createElement("a");
       a.href = viewFileResult.viewFile.uri;
       a.download = viewFileResult.viewFile.name;
 
       // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
-      a.target = "_blank";
+      // a.target = "_blank";
 
       // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
       a.click();
@@ -358,6 +402,7 @@ export default function Documents(props) {
                   </IconButton>
 
                   <IconButton
+                    disabled={file.fileState !== "active"}
                     size="small"
                     onClick={() => handleViewFile(file.fileId)}
                   >
@@ -379,6 +424,13 @@ export default function Documents(props) {
             userId={userId}
             addFile={addFile}
             addFileData={addFileData}
+            getRecentFiles={() => {
+              getRecentFiles({
+                variables: {
+                  contactId: props.id,
+                },
+              });
+            }}
           />
           {addFileLoading && (
             <div style={{ display: "flex", justifyContent: "center" }}>
