@@ -57,7 +57,9 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     marginBottom: "10px",
     cursor: "pointer",
-    maxWidth: "300px"
+    maxWidth: "250px",
+    minWidth: "250px",
+    maxHeight: "150px"
   },
   cardHeaderStyle: {
     display: "flex",
@@ -65,11 +67,14 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: "1px solid #e2e2e2",
     padding: "10px",
     textAlign: "left",
+    whiteSpace: "pre-wrap",
+    maxWidth: "245px"
   },
   cardDescStyle: {
     color: "#2e4451",
     padding: "10px",
-    whiteSpace: "pre-wrap"
+    whiteSpace: "pre-wrap",
+    textAlign: "left",
   },
   cardTitle: {
     color: "#1CB6DA",
@@ -365,7 +370,7 @@ export default function Transact() {
     if (cardProps?.metadata?.closeDate)
       formattedDate = moment
         .parseZone(new Date(cardProps.metadata.closeDate))
-        .format("MM-DD-yyyy");
+        .format("MM/DD/yyyy");
 
     let owner = null;
     console.log(cardProps.metadata.owners);
@@ -406,7 +411,7 @@ export default function Transact() {
               <>
                 <br />
                 <span>
-                  Est. Close{" "}
+                  Est. Close {"  "}
                   <span style={{ fontWeight: "normal" }}>{formattedDate}</span>
                 </span>
               </>
