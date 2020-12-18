@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     maxWidth: "250px",
     minWidth: "250px",
-    maxHeight: "150px"
+    maxHeight: "150px",
   },
   cardHeaderStyle: {
     display: "flex",
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px",
     textAlign: "left",
     whiteSpace: "pre-wrap",
-    maxWidth: "245px"
+    maxWidth: "245px",
   },
   cardDescStyle: {
     color: "#2e4451",
@@ -123,12 +123,59 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiToolbar-root": { textAlign: "initial" },
   },
+  customAvatar: {
+    borderRadius: "50%",
+    backgroundColor: "red",
+    padding: "5px",
+    color: "#fff",
+    width: "25px",
+    height: "25px",
+    fontSize: "0.7rem",
+    textAlign: "center",
+  },
 }));
 
 let formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
 });
+
+const CustomAvatar = ({ text = "" }) => {
+  const classes = useStyles();
+
+  const getInitials = (name) => {
+    if(!name || name.length === 0) return "N/A"
+    const split = name ? name.split(" ") : [""];
+    let initials = "";
+    split.forEach((s) => {
+      if (s[0]) initials += s[0];
+      if (initials.length === 2) return;
+    });
+    return initials.toUpperCase();
+  };
+
+  const randomInt = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
+  const getRandomColor = () => {
+    var h = randomInt(0, 360);
+    var s = randomInt(42, 98);
+    var l = randomInt(40, 90);
+    return `hsl(${h},${s}%,${l}%)`;
+  };
+
+  return (
+    <span
+      className={classes.customAvatar}
+      style={{
+        backgroundColor: getRandomColor(),
+      }}
+    >
+      {getInitials(text)}
+    </span>
+  );
+};
 
 export default function Transact() {
   const classes = useStyles();
@@ -343,22 +390,8 @@ export default function Transact() {
     }
   };
 
-  const StyleBadge = withStyles({
-    badge: {
-      transform: "unset",
-      background: "#38c52e",
-      color: "#fff",
-      border: "2px solid",
-      width: "30px",
-      height: "30px",
-      borderRadius: "50%",
-    },
-  })((props) => <Badge {...props} />);
-
   const getCard = ({ metadata, title, description, id, laneId }) => {
-    const cardPrice = metadata && metadata.offerPrice
-        ? metadata.offerPrice
-        : 0;
+    const cardPrice = metadata && metadata.offerPrice ? metadata.offerPrice : 0;
     const formatted = formatter.format(cardPrice);
     const formattedPrice = formatted.slice(0, formatted.length - 3);
 
@@ -371,9 +404,7 @@ export default function Transact() {
 
     let owner = null;
     console.log(metadata.owners);
-    let ownerObject = metadata?.owners[0]
-      ? metadata?.owners[0]
-      : null;
+    let ownerObject = metadata?.owners[0] ? metadata?.owners[0] : null;
 
     if (ownerObject && ownerObject.relatedObject?.name) {
       owner = ownerObject.relatedObject.name;
@@ -381,30 +412,17 @@ export default function Transact() {
 
     let desc = description;
     if (description && description.length > 50)
-      desc = description.slice(0,53)+"..."
+      desc = description.slice(0, 53) + "...";
 
     return (
       <article
         className={classes.cardStyle}
-        onClick={() =>
-          handleCardClick(id, metadata, laneId)
-        }
+        onClick={() => handleCardClick(id, metadata, laneId)}
       >
         <header className={classes.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span className={classes.cardTitle}>{title}</span>
-            {owner && (
-              <div className={classes.userIcon}>
-                <StyleBadge>
-                  <Avatar
-                    className={classes.grey}
-                    name={owner}
-                    size="25"
-                    round
-                  />
-                </StyleBadge>
-              </div>
-            )}
+            {owner && <CustomAvatar text={owner} />}
           </div>
           <div className={classes.cardSubheading}>
             <span>{formattedPrice}</span>
