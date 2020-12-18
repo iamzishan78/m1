@@ -355,43 +355,44 @@ export default function Transact() {
     },
   })((props) => <Badge {...props} />);
 
-  const getCard = (cardProps) => {
-    console.log("card props", cardProps);
-
-    const cardPrice =
-      cardProps && cardProps.metadata && cardProps.metadata.offerPrice
-        ? cardProps.metadata.offerPrice
+  const getCard = ({ metadata, title, description, id, laneId }) => {
+    const cardPrice = metadata && metadata.offerPrice
+        ? metadata.offerPrice
         : 0;
     const formatted = formatter.format(cardPrice);
     const formattedPrice = formatted.slice(0, formatted.length - 3);
 
     let formattedDate = null;
 
-    if (cardProps?.metadata?.closeDate)
+    if (metadata?.closeDate)
       formattedDate = moment
-        .parseZone(new Date(cardProps.metadata.closeDate))
+        .parseZone(new Date(metadata.closeDate))
         .format("MM/DD/yyyy");
 
     let owner = null;
-    console.log(cardProps.metadata.owners);
-    let ownerObject = cardProps?.metadata?.owners[0]
-      ? cardProps?.metadata?.owners[0]
+    console.log(metadata.owners);
+    let ownerObject = metadata?.owners[0]
+      ? metadata?.owners[0]
       : null;
 
     if (ownerObject && ownerObject.relatedObject?.name) {
       owner = ownerObject.relatedObject.name;
     }
 
+    let desc = description;
+    if (description && description.length > 50)
+      desc = description.slice(0,53)+"..."
+
     return (
       <article
         className={classes.cardStyle}
         onClick={() =>
-          handleCardClick(cardProps.id, cardProps.metadata, cardProps.laneId)
+          handleCardClick(id, metadata, laneId)
         }
       >
         <header className={classes.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span className={classes.cardTitle}>{cardProps.title}</span>
+            <span className={classes.cardTitle}>{title}</span>
             {owner && (
               <div className={classes.userIcon}>
                 <StyleBadge>
@@ -418,7 +419,7 @@ export default function Transact() {
             )}
           </div>
         </header>
-        <div className={classes.cardDescStyle}>{cardProps.description}</div>
+        <div className={classes.cardDescStyle}>{desc}</div>
       </article>
     );
   };
