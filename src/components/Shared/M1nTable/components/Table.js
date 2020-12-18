@@ -1562,7 +1562,13 @@ function SubTable(props) {
                       (column.name === "end" || column.name === "start") &&
                       !!v
                     )
-                      return anyToDate(v).toLocaleString("en-US");
+                      return anyToDate(v).toLocaleString("en-US", {
+                        year: "numeric",
+                        day: "numeric",
+                        month: "numeric",
+                        minute: "2-digit",
+                        hour: "2-digit",
+                      });
 
                     return v;
                   };
@@ -2139,7 +2145,7 @@ function SubTable(props) {
             );
           });
         }
-  
+
         let insertInBetween = temp_rows_per_page - 1;
         let cumulative_array = Object.values(cumulative);
         let temp_cumulative_array = [];
@@ -2176,7 +2182,6 @@ function SubTable(props) {
 
         temp_rows.push({ data: temp_cumulative_array });
         return temp_rows;
-
       } else {
         return data.sort((a, b) => {
           return (
