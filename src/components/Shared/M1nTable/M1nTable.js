@@ -1663,7 +1663,7 @@ const ActivitiesHeadCells = [
   },
   {
     name: "name",
-    label: "Deal Name",
+    label: "Activity Name",
   },
   {
     name: "type",

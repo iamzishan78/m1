@@ -13,9 +13,8 @@ import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import { CircularProgress } from "@material-ui/core";
-
+import { DropzoneAreaBase } from "material-ui-dropzone";
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
-
 import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
 import { ADDFILE } from "../../graphQL/useMutationAddFile";
@@ -24,6 +23,8 @@ import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
 import { GETRECENTCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { DELETEDESCRIPTORFILE } from "../../graphQL/useMutationDeleteDescriptorFile";
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
+import { useDispatch } from "react-redux";
+import { showErrorMessage, showWarningMessage } from "../../actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -115,9 +116,32 @@ const useStyles = makeStyles((theme) => ({
   fileDropError: {
     color: "red",
   },
+  dropzoneClass: {
+    "&:hover": { backgroundColor: "#dddddd" },
+    "& .MuiDropzoneArea-text": {
+      fontSize: "0.83em",
+      marginBlockStart: "1.67em",
+      marginBlockEnd: "1.67em",
+      fontWeight: "bold",
+    },
+    "& .MuiDropzoneArea-icon": { display: "none" },
+    minHeight: "125px",
+    width: "100%",
+    padding: "10px 40px",
+    color: "#757575",
+    fontWeight: "normal",
+    backgroundColor: "#eee",
+    textAlign: "center",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    border: "2px dashed rgb(176, 176, 176)",
+    marginBottom: "30px",
+  },
 }));
 
 function UploadZone(props) {
+  const dispatch = useDispatch();
   const [inputFile, setInputFile] = useState(null);
 
   useEffect(() => {
@@ -131,67 +155,124 @@ function UploadZone(props) {
       if (file_id) {
         fetch(uri, {
           headers: {
-            "Content-Type": "text/plain; charset=UTF-8",
             "X-Ms-Blob-Content-Disposition": `attachment; filename="${file_name}"`,
             "X-Ms-Blob-Type": "BlockBlob",
             "X-Ms-Meta-Internalkey": interal_key,
             "X-Ms-Version": "2015-02-21",
           },
           method: "PUT",
-          body: JSON.stringify(inputFile),
+          body: inputFile,
         })
-          .then((res) => console.log(res))
+          .then((res) => {
+            console.log(res);
+            if (res?.status == 201) {
+              // props.getRecentFiles();
+            } else dispatch(showErrorMessage("Upload failed"));
+          })
           .catch((err) => console.log(err));
       }
     }
   }, [props.addFileData]);
 
-  const onDrop = useCallback((acceptedFiles) => {
-    // Do something with the files
+  const handleFileInput = (files) => {
+    if (Array.isArray(files)) {
+      let inputFile = files[0]?.file;
+      let fileName = files[0]?.file?.name;
 
-    const [file] = acceptedFiles;
-    const fileName = file.name;
+      if (inputFile && fileName) {
+        setInputFile(inputFile);
 
-    setInputFile(file);
+        props.addFile({
+          variables: {
+            fileName,
+            userId: props.userId,
+            contactId: props.contactId,
+          },
+        });
+      }
+    }
+  };
 
-    props.addFile({
-      variables: {
-        fileName,
-        userId: props.userId,
-        contactId: props.contactId,
-      },
-    });
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   const classes = useStyles();
 
   return (
     <>
-      <div {...getRootProps()} className={classes.fileDrop}>
-        <input {...getInputProps()} />
-        {isDragActive ? (
-          <h5>Drop the files here ...</h5>
-        ) : (
-          <h5>Drag a file here or click to select a file to upload</h5>
-        )}
-      </div>
-      {/* {props.addFileData && !props.addFileData.addFileDescriptor.success && (
-        <p className={classes.fileDropError}>File could not be uploaded</p>
-      )} */}
+      <DropzoneAreaBase
+        onAdd={handleFileInput}
+        // onDelete={(fileObj) => console.log("Removed File:", fileObj)}
+        onAlert={(message, variant) => {
+          console.log(`${variant}: ${message}`);
+        }}
+        filesLimit={1}
+        dropzoneText={"Drag a file here or click to select a file to upload"}
+        acceptedFiles={[
+          "image/*",
+          "video/*",
+          "application/*",
+          ".*",
+          ".geojson",
+          ".csv",
+          ".pdf",
+          ".docx",
+          ".doc",
+          ".ppt",
+          ".pptx",
+          ".txt",
+          ".xls",
+          ".xlsx",
+        ]}
+        maxFileSize={104857600}
+        dropzoneClass={classes.dropzoneClass}
+      ></DropzoneAreaBase>
     </>
   );
 }
 
 export default function Documents(props) {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
+  const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [stateApp] = React.useContext(AppContext);
   const userId = stateApp.user.mongoId;
   const [getRecentFiles, { data: files }] = useLazyQuery(
     GETRECENTCONTACTFILES,
-    { fetchPolicy: "cache-and-network" }
+    {
+      fetchPolicy: "cache-and-network",
+      onCompleted: ({ getFileDescriptors }) => {
+        let allActive = true;
+
+        if (getFileDescriptors)
+          for (let i = 0; i < getFileDescriptors.length; i++) {
+            if (getFileDescriptors[i].fileState !== "active") {
+              allActive = false;
+              break;
+            }
+          }
+
+        if (!allActive) {
+          if (fileRequestCounter <= 40) {
+            let waitBeforeRequestAgain = setTimeout(() => {
+              setFileRequestCounter(fileRequestCounter + 1);
+              getRecentFiles({
+                variables: {
+                  contactId: props.id,
+                },
+              });
+              clearTimeout(waitBeforeRequestAgain);
+            }, 1000);
+          } else {
+            setFileRequestCounter(1);
+            dispatch(
+              showWarningMessage(
+                "Please wait a few seconds until the uploaded file is ready, then reload the app"
+              )
+            );
+          }
+        } else setFileRequestCounter(1);
+      },
+    }
   );
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
   const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
@@ -199,26 +280,24 @@ export default function Documents(props) {
     {
       refetchQueries: ["getRecentContactFiles"],
       awaitRefetchQueries: true,
-      onCompleted: () => {
-        // setTimeout(() => {
-        //   getRecentFiles({
-        //     variables: {
-        //       userId,
-        //       contactId: props.id,
-        //     },
-        //   });
-        // }, 3000);
-      },
+      //   onCompleted: () => {
+      //     // setTimeout(() => {
+      //     //   getRecentFiles({
+      //     //     variables: {
+      //     //       contactId: props.id,
+      //     //     },
+      //     //   });
+      //     // }, 3000);
+      //   },
     }
   );
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "network-only",
+    fetchPolicy: "no-cache",
   });
 
   useEffect(() => {
     getRecentFiles({
       variables: {
-        userId,
         contactId: props.id,
       },
     });
@@ -226,13 +305,13 @@ export default function Documents(props) {
 
   useEffect(() => {
     console.log("VIEW FILE RESULT", viewFileResult);
-    if (viewFileResult) {
+    if (viewFileResult?.viewFile?.uri) {
       let a = document.createElement("a");
       a.href = viewFileResult.viewFile.uri;
       a.download = viewFileResult.viewFile.name;
 
       // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
-      a.target = "_blank";
+      // a.target = "_blank";
 
       // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
       a.click();
@@ -305,7 +384,7 @@ export default function Documents(props) {
               <div className={classes.fileUploadTopSection}>
                 <div>
                   <h4 className={classes.uploadTitle}>{file.fileName}</h4>
-                  <h5 className={classes.uploadSubtext}>{file.userName}</h5>
+                  {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
                   <h5 className={classes.uploadSubtext}>
                     {moment.utc(file.dateTime).format("MMM DD, YYYY")}
                   </h5>
@@ -323,6 +402,7 @@ export default function Documents(props) {
                   </IconButton>
 
                   <IconButton
+                    disabled={file.fileState !== "active"}
                     size="small"
                     onClick={() => handleViewFile(file.fileId)}
                   >
@@ -344,6 +424,13 @@ export default function Documents(props) {
             userId={userId}
             addFile={addFile}
             addFileData={addFileData}
+            getRecentFiles={() => {
+              getRecentFiles({
+                variables: {
+                  contactId: props.id,
+                },
+              });
+            }}
           />
           {addFileLoading && (
             <div style={{ display: "flex", justifyContent: "center" }}>
