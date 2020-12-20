@@ -96,6 +96,7 @@ export default (props) => {
       }
     }
   );
+
   const [error, setError] = useState(false);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [user, setUser] = useState({ _id: "" });
@@ -211,6 +212,9 @@ export default (props) => {
       variables: { customLayer: customLayerData }
     });
 
+    let layers = [...stateApp.customLayers];
+    layers.push(customLayerData)
+
     setStateApp((state) => ({
       ...state,
       selectedParcel: {
@@ -225,6 +229,7 @@ export default (props) => {
         "shapeLabelLayer": "",
         "id": featureId
       },
+      customLayers: layers,
       expandedCard: true
     }));
   }

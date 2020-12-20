@@ -1148,10 +1148,6 @@ export default function Map() {
 
       const isNormalClick = !isCtrlKeyPressed();
 
-      console.log("IS NORMAL CLICK:", isNormalClick);
-      console.log("FEATURES: ", features);
-      console.log("FEATURES LENGTH:", features.length);
-
       if (isNormalClick && features && features.length > 0) {
         const feature = features[0];
         const layerId = feature.layer.id;
@@ -3422,7 +3418,7 @@ export default function Map() {
         hoveredAbstractId = null;
       });
     }
-  }, [map]);
+  }, [map, stateApp.customLayers]);
 
   useEffect(() => {
     console.log("useEffect 27");
@@ -4310,7 +4306,7 @@ export default function Map() {
         variables: {
           customLayerId: customLayerId,
           customLayer: customLayerData,
-        },
+        }
       });
 
       getCustomLayers({

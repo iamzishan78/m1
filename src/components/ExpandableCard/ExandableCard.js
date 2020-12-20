@@ -322,13 +322,13 @@ export default function ExpandableCard(props) {
           maxWidth="sm"
         >
           <DeleteConfirmationDialogContent
-            header={`Delete ${targetLabel}`}
+            header={`Delete ${targetLabel == "expandedParcel" ? "parcel" : targetLabel }`}
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => {}}
           >
-            Are you sure you want to delete the selected {targetLabel}?
+            Are you sure you want to delete the selected {targetLabel == "expandedParcel" ? "parcel" : targetLabel}?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
