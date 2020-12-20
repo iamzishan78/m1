@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -25,6 +25,7 @@ import ParcelDetailsMap from "./components/ParcelDetailsMap";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
+import { AppContext } from "../../AppContext";
 
 const ENTER_KEY = 13;
 
@@ -135,6 +136,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ParcelsDetailCard(props) {
+  
   const classes = useStyles();
   const dispatch = useDispatch();
   const [parcelObj, setParcelObj] = useState();
@@ -143,6 +145,7 @@ export default function ParcelsDetailCard(props) {
   const [parcelName, setParcelName] = useState();
   const [grossAcres, setGrossAcres] = useState();
   const [legalDescription, setLegalDesc] = useState();
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   const [onChangeFooterLabel, setChangeFooterLabel] = useState({parcelName: false, grossAcres: false, legalDescription: false});
 
@@ -156,6 +159,7 @@ export default function ParcelsDetailCard(props) {
 
   useEffect(() => {
     if (props.id) {
+      console.log("PROPS:", props.id);
       getCustomLayer({
         variables: {
           id: props.id,

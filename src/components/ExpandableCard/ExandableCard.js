@@ -280,8 +280,10 @@ export default function ExpandableCard(props) {
   };
 
   const deleteFunc = async () => {
-    if (targetLabel === "parcel") {
-      deleteParcel();
+    if (targetLabel === "parcel" || targetLabel === "expandedParcel") {
+      setDeleteLoading(true);
+      await deleteParcel();
+      setDeleteLoading(false);
     } else if (targetLabel === "activity") {
       setDeleteLoading(true);
       await deleteActivity();
@@ -298,8 +300,8 @@ export default function ExpandableCard(props) {
           IsDeleted: true,
         },
       },
-      // refetchQueries: ["getCustomLayers"],
-      // awaitRefetchQueries: true,
+      refetchQueries: ["getCustomLayers"],
+      awaitRefetchQueries: true,
     });
 
     handleClose();
@@ -365,7 +367,7 @@ export default function ExpandableCard(props) {
 
               {stateExpandableCard.expanded &&
                 targetLabel !== "activity" &&
-                targetLabel !== "contact" && (
+                targetLabel !== "contact" && targetLabel !== "expandedParcel" &&(
                   <Tooltip title={"Report Bug"} placement="top">
                     <IconButton
                       size="medium"
@@ -378,7 +380,7 @@ export default function ExpandableCard(props) {
                 )}
 
               {stateExpandableCard.expanded &&
-                ["activity", "parcel"].includes(targetLabel) &&
+                ["activity", "parcel", "expandedParcel"].includes(targetLabel) &&
                 title !== "Add Activity" && (
                   <Tooltip title={`Delete ${targetLabel}`} placement="top">
                     {isDeletingCustomLayer || deleteLoading ? (

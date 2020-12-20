@@ -421,9 +421,14 @@ const Login = (props) => {
     // }
 
     const authUser = {}
+    authUser.issuerUserId = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'http://schemas.microsoft.com/identity/claims/objectidentifier'});
+    if (authUser.issuerUserId) { authUser.issuerUserId = authUser.issuerUserId.val }
+    authUser.issuerTenantId = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'http://schemas.microsoft.com/identity/claims/tenantid'});
+    if (authUser.issuerTenantId) { authUser.issuerTenantId = authUser.issuerTenantId.val }
     authUser.b2cEmail = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'emails'});
     if (authUser.b2cEmail) { authUser.b2cEmail = authUser.b2cEmail.val }
-    authUser.b2bEmail = graphQLProfileResponse.user_id;
+    authUser.b2bEmail = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'preferred_username'});
+    if (authUser.b2bEmail) { authUser.b2bEmail = authUser.b2bEmail.val }
     authUser.b2cName = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'displayName'});
     if (authUser.b2cName) { authUser.b2cName = authUser.b2cName.val }
     authUser.b2bName = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'name'})
@@ -431,6 +436,8 @@ const Login = (props) => {
 
     const mongoUser = await getMongoDBUser(
       {
+        // issuerUserId: authUser.issuerUserId,
+        // issuerTenantId: authUser.issuerTenantId,
         email: authUser.b2cEmail ?? authUser.b2bEmail,
         name: authUser.b2cName ?? authUser.b2bName
       },

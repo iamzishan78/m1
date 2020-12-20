@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
   removeIconButton: {
     color: "gray",
     "&:hover": {
-      color: "#454545",
+      color: "red",
     },
   },
   list: {
@@ -797,12 +797,13 @@ export default function Pipelines(props) {
                               <TableRow>
                                 <TableCell padding="checkbox"></TableCell>
                                 <TableCell align="left">Stage Name</TableCell>
-                                <TableCell align="left">
+                                {/* ******DO NOT DELETE - TEMPORARILY COMMENTING OUT UNTIL WE BUILD 'PROBABILITY' and 'ROTTENESS' FUCTIONALITY****** */}
+                                {/* <TableCell align="left">
                                   Deal Probability(%)
                                 </TableCell>
                                 <TableCell align="left">
                                   Rotting in&nbsp;(days)
-                                </TableCell>
+                                </TableCell> */}
                                 <TableCell align="left">Stage Status</TableCell>
                                 <TableCell padding="checkbox"></TableCell>
                                 {/* <TableCell padding="checkbox"></TableCell> */}
@@ -853,7 +854,9 @@ export default function Pipelines(props) {
 
                                           {/* {stage.name} */}
                                         </TableCell>
-                                        <TableCell align="left">
+                                  {/* ******DO NOT DELETE - TEMPORARILY COMMENTING OUT UNTIL WE BUILD 'PROBABILITY' and 'ROTTENESS' FUCTIONALITY****** */}                
+                                       
+                                        {/* <TableCell align="left">
                                           <TextField
                                             variant="outlined"
                                             size="small"
@@ -868,8 +871,8 @@ export default function Pipelines(props) {
                                               );
                                             }}
                                           />
-                                          {/* {stage.dealProbability} */}
                                         </TableCell>
+
                                         <TableCell align="left">
                                           <TextField
                                             variant="outlined"
@@ -885,8 +888,9 @@ export default function Pipelines(props) {
                                               );
                                             }}
                                           />
-                                          {/* {stage.rotting} */}
-                                        </TableCell>
+                                        </TableCell> */}
+
+
                                         <TableCell align="left">
                                           <Autocomplete
                                             fullWidth

@@ -71,7 +71,10 @@ import { useLazyQuery } from "@apollo/client";
 import WellTableStyles from "../customStyles/WellTableStyle";
 import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
 import ProductionTableStyle from '../customStyles/ProductionDetailsStyle';
-import moment from 'moment';
+import moment from "moment";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import CheckIcon from "@material-ui/icons/Check";
 
 var ticksToDateString = function (ticks) {
   var epochTicks = 621355968000000000;
@@ -91,6 +94,10 @@ var ticksToDateString = function (ticks) {
   // output the result in something the human understands
   var date = new Date(millisecondsSinceEpoch);
   return date.toISOString();
+};
+
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
@@ -1213,7 +1220,11 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  if (props.targetLabel == "deal" && value === null) {
+                  if (
+                    (props.targetLabel == "deal" ||
+                      props.targetLabel == "activity") &&
+                    value === null
+                  ) {
                     return (
                       <p
                         style={{
@@ -1528,6 +1539,14 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   const valueFormatter = (v) => {
+                    if (
+                      (column.name === "status" &&
+                        props.targetLabel === "deal") ||
+                      (column.name === "type" &&
+                        props.targetLabel === "activity")
+                    )
+                      return capitalizeFirstLetter(v);
+
                     if (column.name === "appraisedValue")
                       return formatter.format(v);
 
@@ -1544,11 +1563,17 @@ function SubTable(props) {
                     if (column.name === "closeDate" && !!v)
                       return moment.parseZone(v).format("MM/DD/yyyy");
 
-                    // anyToDate(v).toLocaleString("en-US", {
-                    //   year: "numeric",
-                    //   day: "numeric",
-                    //   month: "numeric",
-                    // });
+                    if (
+                      (column.name === "end" || column.name === "start") &&
+                      !!v
+                    )
+                      return anyToDate(v).toLocaleString("en-US", {
+                        year: "numeric",
+                        day: "numeric",
+                        month: "numeric",
+                        minute: "2-digit",
+                        hour: "2-digit",
+                      });
 
                     return v;
                   };
@@ -1558,6 +1583,28 @@ function SubTable(props) {
                   //     value = props.rows[tableMeta.rowIndex].lastUpdateBy?.name;
                   //   }
                   // }
+
+                  if (
+                    column.name === "isClosed" &&
+                    props.targetLabel === "activity" &&
+                    value === true
+                  )
+                    return (
+                      <div style={{ textAlign: "center" }}>
+                        <CheckIcon />
+                      </div>
+                    );
+
+                  if (
+                    column.name === "isClosed" &&
+                    props.targetLabel === "activity" &&
+                    value === false
+                  )
+                    return (
+                      <div style={{ textAlign: "center" }}>
+                        {/* <CheckBoxOutlineBlankIcon /> */}
+                      </div>
+                    );
 
                   ////// if non editable column
                   if (
@@ -2070,6 +2117,15 @@ function SubTable(props) {
         }));
       }
 
+      if (props.targetLabel === "activity") {
+        if (rows[dataIndex]?._id)
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            selectedActivityId: rows[dataIndex]._id,
+            activityDialog: true,
+          }));
+      }
+
       // if (props.targetLabel === "well") {
       //   setStateApp((state) => ({ ...state, selectedWellId: rowData[0] }));
       //   setStateApp((state) => ({ ...state, selectedWell: rows[dataIndex] }));
@@ -2100,21 +2156,28 @@ function SubTable(props) {
       setPageInd(pageState);
     },
     customSort: (data, colIndex, order) => {
+      let temp_rows = [];
+      let temp_rows_per_page = rowsPerPage ? rowsPerPage : 25;
+      let temp = data.filter((item) => item.data[1] != "Cumulative");
       if (props.parent === "production_WellDetails") {
-        let temp = data.filter((item) => item.data[1] != "Cumulative");
-        let temp_rows_per_page = rowsPerPage ? rowsPerPage : 25;
-        let temp_rows = temp.sort((a, b) => {
-          if (colIndex === 1) {
+        if (colIndex === 1) {
+          temp_rows = temp.sort((a, b) => {
             const dateA = moment(moment(a.data[colIndex], "MM/YYYY")).valueOf();
             const dateB = moment(moment(b.data[colIndex], "MM/YYYY")).valueOf();
             return (dateA < dateB ? -1 : 1) * (order === "desc" ? 1 : -1);
-          } else {
+          });
+        } else {
+          temp_rows = temp.sort((a, b) => {
+            if (isNaN(parseInt(a)) && isNaN(parseInt(b))) {
+              a.data[colIndex] = parseInt(a.data[colIndex]);
+              b.data[colIndex] = parseInt(b.data[colIndex]);
+            }
             return (
               (a.data[colIndex] < b.data[colIndex] ? -1 : 1) *
               (order === "desc" ? 1 : -1)
             );
-          }
-        });
+          });
+        }
 
         let insertInBetween = temp_rows_per_page - 1;
         let cumulative_array = Object.values(cumulative);
@@ -2513,7 +2576,9 @@ function SubTable(props) {
         }
         rows.push(cumulative);
       }
-      rows.push(cumulative);
+      if (rows[rows.length - 1] != cumulative) {
+        rows.push(cumulative);
+      }
     }
     return rows;
   };

@@ -10,7 +10,6 @@ import FormLabel from "@material-ui/core/FormLabel";
 
 export default function DeleteConfirmationDialogContent(props) {
   const modalClass = Modals();
-  console.log("SELECTED DEALS TO DELETE: ", props.m1nSelectedRowsIds);
   return (
     <React.Fragment>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">

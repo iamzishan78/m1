@@ -979,9 +979,15 @@ export default function Map() {
     // };
 
     const udLayerClickHandler = (feature) => {
-      console.log("Current Parcel Layer", feature);
+        //     const featureState = map.getFeatureState({
+        //       source: "abstract_geo_source",
+        //       id: "A38D232C-44FD-4255-B69B-4A1D312691E6",
+        //     });
+        // console.log("FEATURE:", featureState);
+        // ON HOLD MUNA ANG HIRAP
       setStateApp((state) => ({
         ...state,
+        expandedCard: false,
         popupOpen: false,
       }));
 
@@ -1086,8 +1092,9 @@ export default function Map() {
                 if (
                   layer.identifier == "Parcels" ||
                   layer.identifier == "Area of Interest"
-                )
+                ) {
                   udLayers.push(layerId);
+                }
               }
             });
           } else {
@@ -1122,8 +1129,6 @@ export default function Map() {
         [e.point.x + 10, e.point.y + 10],
       ];
 
-      console.log("!!!!!!!! checking layers", layers);
-
       let features = map.queryRenderedFeatures(bbox, {
         layers: [...layers],
       });
@@ -1142,6 +1147,10 @@ export default function Map() {
       }
 
       const isNormalClick = !isCtrlKeyPressed();
+
+      console.log("IS NORMAL CLICK:", isNormalClick);
+      console.log("FEATURES: ", features);
+      console.log("FEATURES LENGTH:", features.length);
 
       if (isNormalClick && features && features.length > 0) {
         const feature = features[0];
@@ -3357,7 +3366,6 @@ export default function Map() {
           .features;
 
         if (window.event.ctrlKey || window.event.metaKey) {
-          console.log("1");
           if (featureState && featureState.click) {
             // Unselect feature
             map.setFeatureState(
@@ -3366,7 +3374,6 @@ export default function Map() {
             );
             onAbstactLayerClick(currentFeature, "remove");
           } else {
-            console.log("2");
             let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
             if (!isExisting) {
               map.setFeatureState(
@@ -4654,7 +4661,7 @@ export default function Map() {
                   cardLeft={20}
                   zIndex={99}
                   cardWidthExpanded="50vw"
-                  cardHeightExpanded="95vh"
+                  cardHeightExpanded="90vh"
                   targetSourceId={stateApp.selectedParcel.id}
                   targetLabel="expandedParcel"
                 ></ExpandableCardProvider>

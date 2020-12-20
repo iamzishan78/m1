@@ -172,6 +172,7 @@ export default (props) => {
       return;
     }
     const abstractShape = stateApp.selectedAbstracts[0];
+    console.log("SELECTED ABSTRACT:",stateApp.selectedAbstracts);
     let parcelName, originalProperties;
     if(abstractShape.properties.State === "TX") {
       parcelName = abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
@@ -210,11 +211,10 @@ export default (props) => {
       variables: { customLayer: customLayerData }
     });
 
-    setTimeout(()=> {
-
-      console.log("----------------------");
-      console.log({
-        "originalProperties": JSON.stringify(abstractShape.properties),
+    setStateApp((state) => ({
+      ...state,
+      selectedParcel: {
+        "originalProperties":  abstractShape.properties.State === "TX"?  JSON.stringify(abstractShape.properties) : [],
         "sdType": "parcel",
         "shapeLabel": parcelName,
         "projectName": "",
@@ -224,25 +224,9 @@ export default (props) => {
         "shapeCenter": calculateShapeCenter(abstractShape.geometry.coordinates),
         "shapeLabelLayer": "",
         "id": featureId
-      });
-      console.log("----------------------");
-      setStateApp((state) => ({
-        ...state,
-        selectedParcel: {
-          "originalProperties": JSON.stringify(abstractShape.properties),
-          "sdType": "parcel",
-          "shapeLabel": parcelName,
-          "projectName": "",
-          "sdNotes": "",
-          "sdGrossAcres": "",
-          "shapeArea": calculateLandArea(abstractShape),
-          "shapeCenter": calculateShapeCenter(abstractShape.geometry.coordinates),
-          "shapeLabelLayer": "",
-          "id": featureId
-        },
-        expandedCard: true
-      }));
-    }, 1000)
+      },
+      expandedCard: true
+    }));
   }
 
   const handleClose = function () {
