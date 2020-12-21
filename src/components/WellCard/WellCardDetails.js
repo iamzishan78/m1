@@ -208,8 +208,8 @@ export default function WellCardDetails(props) {
     if (productionDetail) {
       let temp = [];
       productionDetail.productionDetail.forEach(element => {
-        let temp_row = {...element}
-        temp_row.ReportDate = moment(temp_row.ReportDate).format("MM/YYYY");
+        let temp_row = {...element};
+        temp_row.ReportDate = moment.utc(temp_row.ReportDate).format("MM/YYYY");
         temp.push(temp_row)
       });
       setProduction(temp);

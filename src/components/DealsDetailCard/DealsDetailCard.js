@@ -32,8 +32,7 @@ let formatter = new Intl.NumberFormat("en-US", {
 const sumDeals = (deals) => {
   let sum = 0;
   deals.forEach((card) => {
-    if (card.offerPrice && !isNaN(card.offerPrice))
-        sum += card.offerPrice
+    if (card.offerPrice && !isNaN(card.offerPrice)) sum += card.offerPrice;
     // sum += parseFloat(card.label.split("$").join("").split(",").join(""))
   });
   const formatted = formatter.format(sum);
@@ -47,7 +46,9 @@ export default function DealsDetailCard(props) {
   const [allDeals, setAllDeals] = useState([]); // all other deals
   const [stateApp, setStateApp] = useContext(AppContext);
   // const [getTransactionData, { data, loading }] = useLazyQuery(TRANSACTIONDATA);
-  const [getContactDeals, { data, loading }] = useLazyQuery(CONTACTDEALS);
+  const [getContactDeals, { data, loading }] = useLazyQuery(CONTACTDEALS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   useEffect(() => {
     if (props.contact) {
@@ -61,30 +62,25 @@ export default function DealsDetailCard(props) {
   }, [props.contact]);
 
   useEffect(() => {
-    if (
-      !loading &&
-      data?.contactDeals
-    ) {
+    if (!loading && data?.contactDeals) {
       // get all deals
       const all = [];
       data.contactDeals.forEach((card) => {
-        if (!card.isDeleted)
-          all.push(card);
+        if (!card.isDeleted) all.push(card);
       });
       setAllDeals(all);
     }
   }, [data, loading, props.contact]);
 
   useEffect(() => {
-    if (allDeals &&
-      allDeals.length > 0) {
+    if (allDeals && allDeals.length > 0) {
       let lost = [];
       let won = [];
       let others = [];
       allDeals.forEach((card) => {
         if (card.status === "lost") lost.push(card);
-          else if (card.status === "won") won.push(card);
-          else others.push(card);
+        else if (card.status === "won") won.push(card);
+        else others.push(card);
       });
 
       setWonDeals(won);

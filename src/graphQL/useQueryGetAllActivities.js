@@ -10,6 +10,7 @@ export const GETALLACTIVITIES = gql`
       ownerId
       contactId
       dealId
+      dealName
       type
       ownerName
       contactName
