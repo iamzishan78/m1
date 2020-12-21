@@ -83,6 +83,11 @@ const useStyles = makeStyles((theme) => ({
     width: "80px",
     backgroundColor: "#cecece",
   },
+  disabledDownload: {
+    cursor: "auto !important",
+    color: "#d3d3d3ab !important",
+    backgroundColor: "#e9e9e978 !important",
+  },
   fileText: {
     marginLeft: "20px",
     alignSelf: "center",
@@ -121,29 +126,37 @@ export default function ViewDocuments(props) {
   });
 
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "network-only",
+    fetchPolicy: "no-cache",
   });
 
   useEffect(() => {
     console.log("VIEW FILE RESULT", viewFileResult);
-    if (viewFileResult) {
-      fetch(viewFileResult.viewFile.uri, {
-        headers: {
-          "Content-Type": "text/plain; charset=UTF-8",
-          "X-Ms-Blob-Type": "BlockBlob",
-          "X-Ms-Meta-Internalkey": viewFileResult.viewFile.internalKey,
-          "X-Ms-Version": "2015-02-21",
-        },
-        method: "GET",
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          console.log("FILE RESPONSE: ", res);
-        })
-        .catch((e) => {
-          console.log("Could not view file", e);
-        });
+    if (viewFileResult?.viewFile?.uri) {
+      let a = document.createElement("a");
+      a.href = viewFileResult.viewFile.uri;
+      a.download = viewFileResult.viewFile.name;
+
+      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
+      a.click();
     }
+    // if (viewFileResult) {
+    //   fetch(viewFileResult.viewFile.uri, {
+    //     headers: {
+    //       "Content-Type": "text/plain; charset=UTF-8",
+    //       "X-Ms-Blob-Type": "BlockBlob",
+    //       "X-Ms-Meta-Internalkey": viewFileResult.viewFile.internalKey,
+    //       "X-Ms-Version": "2015-02-21",
+    //     },
+    //     method: "GET",
+    //   })
+    //     .then((res) => res.json())
+    //     .then((res) => {
+    //       console.log("FILE RESPONSE: ", res);
+    //     })
+    //     .catch((e) => {
+    //       console.log("Could not view file", e);
+    //     });
+    // }
   }, [viewFileResult]);
 
   const handleViewFile = async (id) => {
@@ -204,7 +217,9 @@ export default function ViewDocuments(props) {
             <li className={classes.document} key={doc.fileUrl}>
               <div className={classes.documentLeft}>
                 <div
-                  className={classes.greySquare}
+                  className={`${classes.greySquare} ${
+                    doc.fileState !== "active" ? classes.disabledDownload : ""
+                  }`}
                   onClick={() => handleViewFile(doc.fileId)}
                 >
                   <GetAppIcon fontSize="large" />
