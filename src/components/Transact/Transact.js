@@ -75,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px",
     whiteSpace: "pre-wrap",
     textAlign: "left",
+    fontSize: "12px",
   },
   cardTitle: {
     color: "#1CB6DA",

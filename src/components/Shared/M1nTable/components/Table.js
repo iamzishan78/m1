@@ -1562,7 +1562,13 @@ function SubTable(props) {
                       (column.name === "end" || column.name === "start") &&
                       !!v
                     )
-                      return anyToDate(v).toLocaleString("en-US");
+                      return anyToDate(v).toLocaleString("en-US", {
+                        year: "numeric",
+                        day: "numeric",
+                        month: "numeric",
+                        minute: "2-digit",
+                        hour: "2-digit",
+                      });
 
                     return v;
                   };
