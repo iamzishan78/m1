@@ -1603,10 +1603,12 @@ function SubTable(props) {
 
                   ////// if non editable column
                   if (
-                    !column.editable &&
-                    props.targetLabel === "Parcel Ownershipship" &&
-                    column.name === "name" &&
-                    tableMeta.rowData[11] !== "false"
+                    (!column.editable &&
+                      props.targetLabel === "Parcel Ownershipship" &&
+                      column.name === "name" &&
+                      tableMeta.rowData[11] !== "false") ||
+                    ((column.name === "end" || column.name === "start") &&
+                      props.targetLabel === "activity")
                   ) {
                     //// if no value
                     if (value === "" || value === null || !value)
@@ -1625,6 +1627,11 @@ function SubTable(props) {
                     //// if value
                     return (
                       <div
+                        style={
+                          props.targetLabel === "activity"
+                            ? { minWidth: "175px" }
+                            : {}
+                        }
                         className={classes.cellDataDiv}
                         onClick={(e) => {
                           e.preventDefault();
@@ -2278,8 +2285,8 @@ function SubTable(props) {
             userId: stateApp.user.mongoId,
           },
         };
-        console.log('userId---=---', stateApp.user.mongoId);
-        console.log('action', action);
+        console.log("userId---=---", stateApp.user.mongoId);
+        console.log("action", action);
         switch (action) {
           case "changeRowsPerPage":
             console.log("changeRowsPerPage");
