@@ -48,6 +48,7 @@ import {
 import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
+import { toDate } from "date-fns";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -587,7 +588,10 @@ function AddDealDialog(props) {
         offerPrice: label,
         notes: description ? description.trim() : null,
         status: dealState ? dealState : "open",
-        closeDate: closeDate && closeDate !== "" ? closeDate : null,
+        closeDate:
+          closeDate && closeDate !== ""
+            ? new Date(`${closeDate}T08:00`).toUTCString()
+            : null,
       };
 
       if (cardId) {
@@ -657,9 +661,10 @@ function AddDealDialog(props) {
           );
         }
 
-        //// checking if stage changed
+        //// checking if stage or pipe changed
         if (
-          stateApp.activeDeal?.laneId !== stageId &&
+          (stateApp.activeDeal?.laneId !== stageId ||
+            stateApp.activeDeal?.pipeline !== pipelineId) &&
           stateApp.activeDeal?.descriptorId
         ) {
           //// updating the stageDealDescriptor
@@ -669,7 +674,11 @@ function AddDealDialog(props) {
                 variables: {
                   descriptorId: stateApp.activeDeal.descriptorId,
                   relatedObject: stageId,
-                  position: dealPosition ? dealPosition.toString() : null,
+                  position: dealPosition ? dealPosition : 0,
+                  pipeline:
+                    stateApp.activeDeal?.pipeline !== pipelineId
+                      ? pipelineId
+                      : null,
                 },
                 refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
@@ -741,7 +750,7 @@ function AddDealDialog(props) {
           // ownerName,
           // contactId,
           // contactName,
-          position: dealPosition?.toString(),
+          position: dealPosition,
           userId: stateApp.user.mongoId,
         };
 
@@ -847,7 +856,7 @@ function AddDealDialog(props) {
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => {}}
           >
-            Do you want to delete deal?
+            Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
@@ -1097,7 +1106,7 @@ function AddDealDialog(props) {
                 Pipeline
               </InputLabel>
               <Select
-                disabled={stateApp.activeDeal?.cardId ? true : false}
+                // disabled={stateApp.activeDeal?.cardId ? true : false}
                 native
                 value={pipelineId}
                 onChange={(e) => {
@@ -1110,7 +1119,7 @@ function AddDealDialog(props) {
                 {selectedPipe && (
                   <option value={selectedPipe._id}>{selectedPipe.name}</option>
                 )}
-                {sortedPipelines.map((pipeline, i) => {
+                {sortedPipelines?.map((pipeline, i) => {
                   if (selectedPipe && selectedPipe._id === pipeline._id) return;
                   return (
                     <option value={pipeline._id} key={i}>

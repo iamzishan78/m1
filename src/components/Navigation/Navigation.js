@@ -817,7 +817,7 @@ export default function Navigation(props) {
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
       }));
-    } else if (location.pathname === "/transact") {
+    } else if (location.pathname === "/flow") {
       setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
@@ -933,7 +933,7 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (location.pathname === "/transact") {
+    if (location.pathname === "/flow") {
       setMatchTransact(true);
     } else {
       setMatchTransact(false);
@@ -1211,9 +1211,9 @@ export default function Navigation(props) {
             )}
 
             {/*SEARCH UI FOR DEALS */}
-            {location.pathname === "/transact" && <DealSearch />}
+            {location.pathname === "/flow" && <DealSearch />}
 
-            {openDrawer ? (
+            {/* {openDrawer ? (
               <div className={classes.toolbar}>
                 <M1neralLogo />
                 <IconButton color="secondary" onClick={handleDrawerClose}>
@@ -1224,7 +1224,7 @@ export default function Navigation(props) {
                   )}
                 </IconButton>
               </div>
-            ) : null}
+            ) : null} */}
 
             {matchTrack ? (
               <CardHeader
@@ -1701,8 +1701,8 @@ export default function Navigation(props) {
             }}
             button
             selected={stateNav.selectedMenuIndexTransact === 1}
-            onClick={(event) => handleListItemClick(event, 0, "/transact")}
-            key="transact"
+            onClick={(event) => handleListItemClick(event, 0, "/flow")}
+            key="flow"
           >
             <div className={classes.tabContent}>
               <ListItemIcon className={classes.sideNavIcon}>

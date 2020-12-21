@@ -5,12 +5,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
 import { uniqueId } from "lodash";
-
 import { useLazyQuery } from "@apollo/client";
 import { GETALLACTIVITIES } from "../../graphQL/useQueryGetAllActivities";
 import ActivitiesToolbar from "./components/ActivitiesToolbar";
 import ActivitiesEvent from "./components/ActivitiesEvent";
-
+import M1nTable from "../Shared/M1nTable/M1nTable";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./index.css";
 import ActivitiesAppBar from "./components/ActivitiesAppbar";
@@ -76,6 +75,16 @@ const useStyles = makeStyles((theme) => ({
     verticalAlign: "middle",
   },
   root: {},
+  table: {
+    borderTop: "solid 1px#E0E0E0",
+    maxHeight: "calc(100vh - 147px) !important",
+    overflowY: "auto",
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": { minHeight: "calc(100vh - 265px) !important" },
+      },
+    },
+  },
 }));
 
 const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
@@ -172,6 +181,7 @@ const Activities = () => {
             ownerId: act.ownerId,
             type: act.type,
             name: act.name,
+            isContact: act.contactId,
           };
         })
       );
@@ -236,9 +246,7 @@ const Activities = () => {
         />
       ) : (
         <>
-          <ActivitiesAppBar
-            onAddActivityClick={onModalOpen}
-          />
+          <ActivitiesAppBar onAddActivityClick={onModalOpen} />
           {stateApp.activityDisplayType === "calendar" ? (
             <ActivitiesCalendar
               activityFilterByType={activityFilterByType}
@@ -251,7 +259,31 @@ const Activities = () => {
               onEventClick={onEventClick}
             />
           ) : (
-            <ActivitiesTable />
+            <div>
+              <div
+                style={{
+                  padding: "8px 0",
+                }}
+              >
+                <ActivitiesToolbar
+                  activityFilterByType={activityFilterByType}
+                  setActivityFilterByType={setActivityFilterByType}
+                  activityFilterByTime={activityFilterByTime}
+                  setActivityFilterByTime={setActivityFilterByTime}
+                  view={view}
+                  setView={setView}
+                  events={filteredEvents}
+                  onEventClick={onEventClick}
+                />
+              </div>
+              <div className={classes.table}>
+                <M1nTable
+                  dense
+                  activities={filteredEvents}
+                  parent="Activities"
+                />
+              </div>
+            </div>
           )}
           <ActivitiesModal
             selectedActivity={selectedActivity}

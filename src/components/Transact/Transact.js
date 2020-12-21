@@ -6,7 +6,7 @@ import React, { useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../AppContext";
 import Board from "react-trello";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { TransactContext } from "./TransactContext";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
@@ -26,6 +26,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { setFlowState } from "../../actions";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import CallMadeIcon from "@material-ui/icons/CallMade";
+import M1nTable from "../Shared/M1nTable/M1nTable";
+import Avatar from "react-avatar";
+import Badge from "@material-ui/core/Badge";
+import moment from "moment";
 
 function usePrevious(value) {
   const ref = useRef();
@@ -43,10 +47,65 @@ const useStyles = makeStyles((theme) => ({
     overflowX: "auto !important",
     height: "100%",
   },
+  cardStyle: {
+    position: "relative",
+    border: "none",
+    borderLeft: "4px solid #e2e2e2",
+    boxShadow:
+      "rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px",
+    backgroundColor: "rgb(242, 242, 242)",
+    textAlign: "center",
+    marginBottom: "10px",
+    cursor: "pointer",
+    maxWidth: "250px",
+    minWidth: "250px",
+    maxHeight: "150px",
+  },
+  cardHeaderStyle: {
+    display: "flex",
+    flexDirection: "column",
+    borderBottom: "1px solid #e2e2e2",
+    padding: "10px",
+    textAlign: "left",
+    whiteSpace: "pre-wrap",
+    maxWidth: "245px",
+  },
+  cardDescStyle: {
+    color: "#2e4451",
+    padding: "10px",
+    whiteSpace: "pre-wrap",
+    textAlign: "left",
+    fontSize: "12px",
+  },
+  cardTitle: {
+    color: "#1CB6DA",
+    textTransform: "uppercase",
+  },
+  cardSubheading: {
+    fontSize: "12px",
+  },
+  laneHeaderStyle: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    padding: "0px 5px",
+    marginBottom: "0px",
+  },
+  laneHeaderSpanStyle: {
+    color: "#2e4451",
+    fontWeight: "bold",
+    fontSize: "18px",
+  },
+  laneHeaderTotalStyle: {
+    fontSize: "14px !important",
+    fontWeight: "normal",
+  },
   boardAndTable: {
+    maxHeight: "calc(100vh - 140px) !important",
+    overflowY: "auto",
     maxWidth: "100vw",
     "& .react-trello-board": {
-      height: "calc( 100vh - 143px)",
+      height: "calc( 100vh - 140px)",
       "& >div": {
         height: "100%",
         "& .smooth-dnd-container": {
@@ -58,23 +117,116 @@ const useStyles = makeStyles((theme) => ({
         },
       },
     },
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": { minHeight: "calc(100vh - 258px) !important" },
+      },
+    },
+    "& .MuiToolbar-root": { textAlign: "initial" },
+  },
+  customAvatar: {
+    borderRadius: "50%",
+    backgroundColor: "red",
+    padding: "5px",
+    color: "#fff",
+    width: "25px",
+    height: "25px",
+    fontSize: "0.7rem",
+    textAlign: "center",
   },
 }));
+
+let formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
+const CustomAvatar = ({ text = "" }) => {
+  const classes = useStyles();
+
+  const getInitials = (name) => {
+    if (!name || name.length === 0) return "N/A";
+    const split = name ? name.split(" ") : [""];
+    let initials = "";
+    split.forEach((s) => {
+      if (s[0]) initials += s[0];
+      if (initials.length === 2) return;
+    });
+    return initials.toUpperCase();
+  };
+
+  return (
+    <span
+      className={classes.customAvatar}
+      style={{
+        backgroundColor: getRandomColor(text),
+      }}
+    >
+      {getInitials(text)}
+    </span>
+  );
+};
+
+const defaultColors = [
+  "#d73d32",
+  "#7e3794",
+  "#4285f4",
+  "#67ae3f",
+  "#d61a7f",
+  "#ff4080",
+];
+
+function _stringAsciiPRNG(value, m) {
+  // Xn+1 = (a * Xn + c) % m
+  // 0 < a < m
+  // 0 <= c < m
+  // 0 <= X0 < m
+
+  const charCodes = [...value].map((letter) => letter.charCodeAt(0));
+  const len = charCodes.length;
+
+  const a = (len % (m - 1)) + 1;
+  const c = charCodes.reduce((current, next) => current + next) % m;
+
+  let random = charCodes[0] % m;
+  for (let i = 0; i < len; i++) random = (a * random + c) % m;
+
+  return random;
+}
+
+export function getRandomColor(value, colors = defaultColors) {
+  // if no value is passed, always return transparent color otherwise
+  // a rerender would show a new color which would will
+  // give strange effects when an interface is loading
+  // and gets rerendered a few consequent times
+  if (!value) return "transparent";
+
+  // value based random color index
+  // the reason we don't just use a random number is to make sure that
+  // a certain value will always get the same color assigned given
+  // a fixed set of colors
+  const colorIndex = _stringAsciiPRNG(value, colors.length);
+  return colors[colorIndex];
+}
 
 export default function Transact() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { pipeToShow } = useSelector(({ Flow }) => Flow);
+  const { pipeToShow, pipeToShowTab } = useSelector(({ Flow }) => Flow);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [filteredTransactData, setFilteredTransactData] = useState({
+  const [filteredBoardTransactData, setFilteredBoardTransactData] = useState({
     lanes: [],
   });
+  const [filteredTabTransactData, setFilteredTabTransactData] = useState([]);
   const [dealFilter, setDealFilter] = useState("all");
+  // const [cardColors, setCardColors] = useState({});
+
+  const cardColors = useRef({});
 
   const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
   const [updateDeal] = useMutation(UPDATEDEAL);
 
-  const filterCards = (lanes, filter) => {
+  const filterBoardCards = (lanes, filter) => {
     return lanes.map((lane) => {
       let cards = [...lane.cards];
 
@@ -100,11 +252,56 @@ export default function Transact() {
 
   useEffect(() => {
     if (pipeToShow?.lanes && dealFilter) {
-      setFilteredTransactData({
-        lanes: [...filterCards(pipeToShow.lanes, dealFilter)],
+      setFilteredBoardTransactData({
+        lanes: [...filterBoardCards(pipeToShow.lanes, dealFilter)],
       });
+      console.log("DATA: ", filteredBoardTransactData);
+
+      filteredBoardTransactData.lanes &&
+        filteredBoardTransactData.lanes.forEach((lane) => {
+          lane &&
+            lane.cards &&
+            lane.cards.forEach((card) => {
+              const ownerId =
+                card &&
+                card.metadata &&
+                card.metadata.owners &&
+                card.metadata.owners[0] &&
+                card.metadata.owners[0].id;
+              if (!(ownerId in cardColors.current)) {
+                cardColors.current = {
+                  ...cardColors.current,
+                  [ownerId]: getRandomColor(ownerId),
+                };
+              }
+              // card.metadata.owners[0].id
+            });
+        });
     }
   }, [pipeToShow, dealFilter]);
+
+  const filterTabCards = (cards, filter) => {
+    return cards.filter((card) => {
+      switch (filter) {
+        case "all":
+          return !card.IsDeleted; // remove deleted cards
+
+        case "deleted":
+          return card.IsDeleted; // get deleted cards
+
+        default:
+          return card.status == filter && !card.IsDeleted;
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (pipeToShowTab && dealFilter) {
+      setFilteredTabTransactData([
+        ...filterTabCards(pipeToShowTab, dealFilter),
+      ]);
+    }
+  }, [pipeToShowTab, dealFilter]);
 
   const handleDataChange = (newData) => {
     console.log("DATA CHANGE", newData);
@@ -141,10 +338,10 @@ export default function Transact() {
       (lane) => lane?.id === targetLaneId
     );
 
-    let filteredSourceLane = filteredTransactData.lanes.find(
+    let filteredSourceLane = filteredBoardTransactData.lanes.find(
       (lane) => lane?.id === sourceLaneId
     );
-    let filteredTargetLane = filteredTransactData.lanes.find(
+    let filteredTargetLane = filteredBoardTransactData.lanes.find(
       (lane) => lane?.id === targetLaneId
     );
 
@@ -158,14 +355,17 @@ export default function Transact() {
     );
     let unfilteredTargetPosition = (() => {
       if (position === 0) return 0;
-      let atEnd = position >= filteredTargetLane?.cards?.length
+      let atEnd = position >= filteredTargetLane?.cards?.length;
       let prevCardFilteredPosition = position - atEnd;
-      let prevCardAtPosition = filteredTargetLane?.cards[prevCardFilteredPosition];
-      let prevCardUnfilteredPosition = unfilteredTargetLane?.cards.findIndex((card) => {
-        return card?.id === prevCardAtPosition?.id
-      })
+      let prevCardAtPosition =
+        filteredTargetLane?.cards[prevCardFilteredPosition];
+      let prevCardUnfilteredPosition = unfilteredTargetLane?.cards.findIndex(
+        (card) => {
+          return card?.id === prevCardAtPosition?.id;
+        }
+      );
 
-      return prevCardUnfilteredPosition += atEnd
+      return (prevCardUnfilteredPosition += atEnd);
     })();
 
     // update moved card descriptor
@@ -246,6 +446,86 @@ export default function Transact() {
     }
   };
 
+  const getCard = ({ metadata, title, description, id, laneId }) => {
+    const cardPrice = metadata && metadata.offerPrice ? metadata.offerPrice : 0;
+    const formatted = formatter.format(cardPrice);
+    const formattedPrice = formatted.slice(0, formatted.length - 3);
+
+    let formattedDate = null;
+
+    if (metadata?.closeDate)
+      formattedDate = moment
+        .parseZone(new Date(metadata.closeDate))
+        .format("MM/DD/yyyy");
+
+    let owner = null;
+    let ownerId = null;
+    console.log(metadata.owners);
+    let ownerObject = metadata?.owners[0] ? metadata?.owners[0] : null;
+
+    if (ownerObject && ownerObject.relatedObject?.name) {
+      owner = ownerObject.relatedObject.name;
+      ownerId = ownerObject.relatedObject.id;
+    }
+
+    let desc = description;
+    if (description && description.length > 50)
+      desc = description.slice(0, 53) + "...";
+
+    return (
+      <article
+        className={classes.cardStyle}
+        onClick={() => handleCardClick(id, metadata, laneId)}
+      >
+        <header className={classes.cardHeaderStyle}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <span className={classes.cardTitle}>{title}</span>
+            {owner && <CustomAvatar text={owner} color={cardColors[ownerId]} />}
+            {/* {owner && <Avatar name={owner} size="30" round />} */}
+          </div>
+          <div className={classes.cardSubheading}>
+            <span>{formattedPrice}</span>
+            {formattedDate && (
+              <>
+                <br />
+                <span>
+                  Est. Close {"  "}
+                  <span style={{ fontWeight: "normal" }}>{formattedDate}</span>
+                </span>
+              </>
+            )}
+          </div>
+        </header>
+        <div className={classes.cardDescStyle}>{desc}</div>
+      </article>
+    );
+  };
+
+  const getLaneHeader = ({ title, id }) => {
+    const lane = filteredBoardTransactData?.lanes?.find(
+      (lane) => lane.id === id
+    );
+    let dealCount = 0;
+    if (lane) dealCount = lane?.cards.length;
+
+    let priceSum = 0;
+    // eslint-disable-next-line no-unused-expressions
+    lane?.cards.forEach((card) => (priceSum += card?.metadata?.offerPrice));
+    const formatted = formatter.format(priceSum);
+    const formattedTotal = formatted.slice(0, formatted.length - 3);
+
+    return (
+      <header className={classes.laneHeaderStyle}>
+        <span className={classes.laneHeaderSpanStyle}>
+          {title} ({dealCount})
+        </span>
+        <span className={classes.laneHeaderTotalStyle}>
+          Total: {formattedTotal}
+        </span>
+      </header>
+    );
+  };
+
   return (
     <div className={classes.root}>
       <AddDealDialog
@@ -267,8 +547,8 @@ export default function Transact() {
             <Board
               className={classes.list}
               style={{ backgroundColor: "#fff" }}
-              // data={filteredTransactData || transactData}
-              data={filteredTransactData}
+              // data={filteredBoardTransactData || transactData}
+              data={filteredBoardTransactData}
               draggable={true}
               laneDraggable={false}
               cardDraggable={true}
@@ -285,11 +565,18 @@ export default function Transact() {
                 backgroundColor: "#fff",
                 color: "#011133",
                 fontWeight: "bold",
+                textAlign: "left",
               }}
               cardStyle={{
                 boxShadow:
                   "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
                 backgroundColor: "#F2F2F2",
+                textAlign: "center",
+                marginBottom: "10px",
+              }}
+              components={{
+                LaneHeader: (laneProps) => getLaneHeader(laneProps),
+                Card: (cardProps) => getCard(cardProps),
               }}
 
               //onCardAdd = {handleCardAdd}
@@ -310,12 +597,18 @@ export default function Transact() {
               //onCardMoveAcrossLanes
             />
           )}
-          {stateApp.dealDisplayType === "table" && <TransactTable />}
+          {stateApp.dealDisplayType === "table" && (
+            <M1nTable
+              dense
+              filteredTabTransactData={filteredTabTransactData}
+              parent="TransactDeals"
+            />
+          )}
         </div>
       ) : pipeToShow === false ? (
         <h1 style={{ marginTop: 80 }}>
-          There are no Pipelines to show. You can create one from the upper
-          right corner of the screen.
+          No pipelines currently exist - please setup a new pipeline and
+          corresponding stages.
         </h1>
       ) : (
         <CircularProgress size={80} disableShrink color="secondary" />
