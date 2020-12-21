@@ -33,7 +33,6 @@ import Notifications from "./components/Notifications/Notifications";
 import { Provider as ReduxProvider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./store";
-import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
 // user management
 const store = configureStore(/ provide initial state if any /);
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
@@ -142,8 +141,7 @@ const SetApolloClient = (props) => {
 const PrivateRoute = ({ component, ...options }) => {
   const [stateApp] = useContext(AppContext);
 
-  if (
-    stateApp.user &&
+  if ( stateApp.user &&
     Date.parse(stateApp.user.authTokenExpires) < Date.now()
   ) {
     sessionStorage.clear();
@@ -152,18 +150,20 @@ const PrivateRoute = ({ component, ...options }) => {
     // setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
   }
 
-  const finalComponent =
-    stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
-      ? component
-      : (() => {
-          return stateApp.myMSALB2CObj ? LoginB2C : Login;
-        })();
+const finalComponent =
+  stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
+    ? component
+    : (() => {
+      return stateApp.myMSALB2CObj
+        ? LoginB2C
+        : Login
+    })();
 
   return (
     <div>
       <Route {...options} component={finalComponent} />
     </div>
-  );
+    );
 };
 
 // seems like this might have broken b2c auth
@@ -179,8 +179,8 @@ const PrivateRoute = ({ component, ...options }) => {
 //     }, 3000);
 //     return ( stateApp.loading === false &&
 //       <div style={{margin: "auto", marginTop:"20%"}}>
-//         <Typography
-//           variant="h6"
+//         <Typography  
+//           variant="h6" 
 //           align="center"
 //           gutterBottom
 //           color="textSecondary"
@@ -214,7 +214,7 @@ function App() {
 
   const updateApolloClient = (endpoint, token) => {
     //uncomment to run against local
-    //endpoint = "http://localhost:7071/api/m1graph";
+    //endpoint = "http://localhost:7071/api/m1graph"
 
     if (!apolloClient) {
       let client = new ApolloClient({
@@ -243,11 +243,7 @@ function App() {
       console.log("endpoint", endpoint);
 
       setApolloClient((state, props) => {
-        return new ApolloClient({
-          ...state.link.options,
-          uri: endpoint,
-          cache: state.cache,
-        });
+        return new ApolloClient({ ...state.link.options, uri: endpoint, cache: state.cache});
       });
     }
 
@@ -290,11 +286,6 @@ function App() {
                         exact
                         path="/flow"
                         component={TransactProvider}
-                      />
-                      <PrivateRoute
-                        exact
-                        path="/activities"
-                        component={ActivitiesProvider}
                       />
                       <PrivateRoute
                         exact

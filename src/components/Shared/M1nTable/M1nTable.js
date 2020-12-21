@@ -3026,9 +3026,11 @@ function M1nTable(props) {
       setHeader("Contacts");
       setOrderByTracks(false);
       setAddAble({ parent: false, type: "contact" });
-      getPaginatedContacts();
+      getPaginatedContacts({ variables: {
+        userId: stateApp.user.mongoId,
+      }});
       getContactsFilterOptions();
-      setUploadIcon(true);
+      setUploadIcon(false);
       setStartPaginationAt(25);
     }
   }, [props.parent]);
