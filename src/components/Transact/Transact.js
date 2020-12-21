@@ -144,7 +144,7 @@ const CustomAvatar = ({ text = "" }) => {
   const classes = useStyles();
 
   const getInitials = (name) => {
-    if(!name || name.length === 0) return "N/A"
+    if (!name || name.length === 0) return "N/A";
     const split = name ? name.split(" ") : [""];
     let initials = "";
     split.forEach((s) => {
@@ -422,7 +422,8 @@ export default function Transact() {
         <header className={classes.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span className={classes.cardTitle}>{title}</span>
-            {owner && <CustomAvatar text={owner} />}
+            {/* {owner && <CustomAvatar text={owner} />} */}
+            {owner && <Avatar name={owner} size="30" round />}
           </div>
           <div className={classes.cardSubheading}>
             <span>{formattedPrice}</span>
