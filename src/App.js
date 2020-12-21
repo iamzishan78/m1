@@ -288,7 +288,7 @@ function App() {
                       />
                       <PrivateRoute
                         exact
-                        path="/transact"
+                        path="/flow"
                         component={TransactProvider}
                       />
                       <PrivateRoute
