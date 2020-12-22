@@ -82,10 +82,15 @@ const useStyles = makeStyles((theme) => ({
     color: "#2e4451",
     fontWeight: "bold",
     fontSize: "18px",
+    marginBottom: "5px",
+  },
+  laneHeaderNotBold: {
+    fontSize: "14px !important",
+    fontWeight: "normal !important",
   },
   laneHeaderTotalStyle: {
     fontSize: "14px !important",
-    fontWeight: "normal",
+    fontWeight: "bold !important",
   },
   boardAndTable: {
     maxHeight: "calc(100vh - 140px) !important",
@@ -409,18 +414,27 @@ export default function Transact() {
       // awaitRefetchQueries: true,
     });
 
-    if (
-      sourceLaneId !== targetLaneId &&
-      unfilteredTargetLane?.metadata?.dealsStatus &&
-      unfilteredTargetLane.metadata.dealsStatus.toLowerCase() !==
-        cardDetails?.metadata?.status?.toLowerCase()
-    ) {
+    if (sourceLaneId !== targetLaneId) {
+      let updatedDeal = {
+        _id: cardId,
+        stageChangeDate: new Date().toUTCString(),
+      };
+
+      if (
+        unfilteredTargetLane?.metadata?.dealsStatus &&
+        unfilteredTargetLane.metadata.dealsStatus.toLowerCase() !==
+          cardDetails?.metadata?.status?.toLowerCase()
+      )
+        updatedDeal = {
+          ...updatedDeal,
+          status: unfilteredTargetLane.metadata.dealsStatus.toLowerCase(),
+        };
+
+      console.log("UPDATED DEAL: ", updatedDeal);
+
       updateDeal({
         variables: {
-          deal: {
-            _id: cardId,
-            status: unfilteredTargetLane.metadata.dealsStatus.toLowerCase(),
-          },
+          deal: { ...updatedDeal },
         },
         refetchQueries: ["getPipeline", "getContactDeals"],
         // awaitRefetchQueries: true,
@@ -434,6 +448,31 @@ export default function Transact() {
         `onCardMoveAcrossLanes: ${fromLaneId}, ${toLaneId}, ${cardId}, ${addedIndex}`
       );
     }
+  };
+
+  const getCardColor = (rotting, stageChangeDate) => {
+    let cardColor = "limegreen";
+    let rottingDate = null;
+    rottingDate = moment(stageChangeDate).add(rotting, "days");
+    // console.log("ROTTING DATE: ", rottingDate);
+    // console.log(
+    //   "ROTTING STAGE CHANGE DIFFERENCE: ",
+    //   rottingDate.diff(moment(metadata.stageChangeDate), "days")
+    // );
+    // console.log(
+    //   "ROTTING CURRENT DIFFERENCE: ",
+    //   rottingDate.diff(new Date(), "days")
+    // );
+
+    let total = rottingDate.diff(moment(stageChangeDate), "days");
+    let current = rottingDate.diff(moment(), "days"); // swap date values if doesn't work as intended
+
+    let percentageDone = ((total - current) / total) * 100;
+
+    if (percentageDone >= 100) cardColor = "red";
+    else if (percentageDone >= 75) cardColor = "yellow";
+
+    return cardColor;
   };
 
   const getCard = ({ metadata, title, description, id, laneId }) => {
@@ -461,16 +500,33 @@ export default function Transact() {
     if (description && description.length > 50)
       desc = description.slice(0, 53) + "...";
 
+    const stageChangeDate =
+      metadata.stageChangeDate && moment.parseZone(metadata.stageChangeDate);
+
+    const lane = filteredBoardTransactData.lanes.find(
+      (lane) => lane.id === laneId
+    );
+
+    // console.log("STAGECHANGEDATE: ", stageChangeDate);
+    // console.log("ROTTING: ", lane.metadata.rotting);
+
+    let cardColor = "limegreen";
+    if (lane?.metadata?.rotting && stageChangeDate) {
+      cardColor = getCardColor(lane.metadata.rotting, stageChangeDate);
+    }
+
     return (
       <article
         className={classes.cardStyle}
         onClick={() => handleCardClick(id, metadata, laneId)}
+        style={{
+          borderLeft: `4px solid ${cardColor}`,
+        }}
       >
         <header className={classes.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span className={classes.cardTitle}>{title}</span>
             {owner && <CustomAvatar text={owner} color={cardColors[ownerId]} />}
-            {/* {owner && <Avatar name={owner} size="30" round />} */}
           </div>
           <div className={classes.cardSubheading}>
             <span>{formattedPrice}</span>
@@ -498,8 +554,14 @@ export default function Transact() {
     if (lane) dealCount = lane?.cards.length;
 
     let priceSum = 0;
-    // eslint-disable-next-line no-unused-expressions
-    lane?.cards.forEach((card) => (priceSum += card?.metadata?.offerPrice));
+    lane &&
+      lane.cards.forEach(
+        (card) =>
+          (priceSum +=
+            card && card.metadata && card.metadata.offerPrice
+              ? card.metadata.offerPrice
+              : 0)
+      );
 
     const formatted = formatter.format(priceSum);
     const formattedTotal = formatted.slice(0, formatted.length - 3);
@@ -507,7 +569,7 @@ export default function Transact() {
     let forecast = null;
     let forecastFormatted = "";
     if (priceSum > 0 && metadata.dealProbability > 0) {
-      forecast = priceSum * (metadata.dealProbability/100);
+      forecast = priceSum * (metadata.dealProbability / 100);
       let formatted2 = formatter.format(forecast);
       forecastFormatted = formatted2.slice(0, formatted2.length - 3);
     }
@@ -518,11 +580,14 @@ export default function Transact() {
           {title} ({dealCount})
         </span>
         <span className={classes.laneHeaderTotalStyle}>
-          Total: {formattedTotal}
+          Total:{" "}
+          <span className={classes.laneHeaderNotBold}>{formattedTotal}</span>
         </span>
         <span className={classes.laneHeaderTotalStyle}>
           Forecast:{" "}
-          {forecast === 0 || forecast === null ? "--" : forecastFormatted}
+          <span className={classes.laneHeaderNotBold}>
+            {forecast === 0 || forecast === null ? "--" : forecastFormatted}
+          </span>
         </span>
       </header>
     );
