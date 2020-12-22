@@ -854,8 +854,8 @@ export default function Pipelines(props) {
 
                                           {/* {stage.name} */}
                                         </TableCell>
-                                  {/* ******DO NOT DELETE - TEMPORARILY COMMENTING OUT UNTIL WE BUILD 'PROBABILITY' and 'ROTTENESS' FUCTIONALITY****** */}                
-                                       
+                                        {/* ******DO NOT DELETE - TEMPORARILY COMMENTING OUT UNTIL WE BUILD 'PROBABILITY' and 'ROTTENESS' FUCTIONALITY****** */}
+
                                         <TableCell align="left">
                                           <TextField
                                             variant="outlined"
@@ -863,6 +863,9 @@ export default function Pipelines(props) {
                                             fullWidth
                                             margin="none"
                                             value={stage.dealProbability}
+                                            InputProps={{
+                                              type: "number",
+                                            }}
                                             onChange={(event) => {
                                               handleCellTextChange(
                                                 event.target.value,
@@ -880,6 +883,9 @@ export default function Pipelines(props) {
                                             fullWidth
                                             margin="none"
                                             value={stage.rotting}
+                                            InputProps={{
+                                              type: "number",
+                                            }}
                                             onChange={(event) => {
                                               handleCellTextChange(
                                                 event.target.value,
@@ -889,7 +895,6 @@ export default function Pipelines(props) {
                                             }}
                                           />
                                         </TableCell>
-
 
                                         <TableCell align="left">
                                           <Autocomplete
