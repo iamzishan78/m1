@@ -1783,6 +1783,39 @@ function SubTable(props) {
       props.targetLabel !== "owner" &&
       props.targetLabel !== "production_detail",
     viewColumns: props.targetLabel !== "usermanagement",
+    onColumnViewChange: (changedColumn, action) => {
+      if (
+        props.parent === "Contacts" &&
+        columns &&
+        (action == "add" || action == "remove") &&
+        changedColumn
+      )
+        props.setColumnsBase([
+          ...columns.map((column) => {
+            if (column.name == changedColumn)
+              if (action == "add")
+                return {
+                  ...column,
+                  options: column.options
+                    ? { ...column.options, display: true }
+                    : {
+                        display: true,
+                      },
+                };
+              else
+                return {
+                  ...column,
+                  options: column.options
+                    ? { ...column.options, display: false }
+                    : {
+                        display: false,
+                      },
+                };
+
+            return column;
+          }),
+        ]);
+    },
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
       // console.log("currentRowsSelected", JSON.stringify(currentRowsSelected));

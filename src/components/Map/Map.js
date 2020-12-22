@@ -109,11 +109,11 @@ const useStyles = makeStyles((theme) => ({
     width: 0,
     height: 0,
     "& div.MuiCardHeader-root": {
-      cursor: 'move',
+      cursor: "move",
       "& .MuiCardHeader-content": {
-        cursor: "text"
-      }
-    }
+        cursor: "text",
+      },
+    },
   },
 }));
 
@@ -180,7 +180,7 @@ export default function Map() {
   const [showExpandableCard, ShowExpandableCard] = useState(false);
 
   const setShowExpandableCard = (state) => {
-      ShowExpandableCard(state);
+    ShowExpandableCard(state);
   };
 
   const [mapStyles, MapStyles] = useState([]);
@@ -388,7 +388,7 @@ export default function Map() {
 
         getWells({
           variables: {
-            wellIdArray: tracksIdArray
+            wellIdArray: tracksIdArray,
           },
         });
       } else {
@@ -410,7 +410,6 @@ export default function Map() {
           ...state,
           owners: objectsIdsArray,
         }));
-
       }
     }
   }, [dataTracksOwner]);
@@ -498,8 +497,6 @@ export default function Map() {
     }
   };
 
-
-
   useEffect(() => {
     if (viewFileResult && viewFileResult.viewFile && stateApp.layers) {
       const result = viewFileResult.viewFile;
@@ -550,7 +547,6 @@ export default function Map() {
       getWellsForLayer({
         variables: {
           wellIdArray: stripped,
-          authToken: stateApp.user.authToken,
         },
       });
     }
@@ -863,8 +859,6 @@ export default function Map() {
     return beforelayer;
   };
 
- 
-
   useEffect(() => {
     if (permitData && permitData.permits && permitData.permits.length > 0) {
       const nextOffset = permits.length + permitData.permits.length;
@@ -927,7 +921,6 @@ export default function Map() {
     // };
 
     const wellPointClick = (feature) => {
-
       if (feature && feature.properties) {
         const objFiledsToLowerCase = (feature) => {
           let newObj = {};
@@ -1185,10 +1178,7 @@ export default function Map() {
       map.on("click", mapClickHandler);
       setMapClick({ mapClickHandler });
     }
-  }, [
-    map,
-    stateApp.layers,
-  ]);
+  }, [map, stateApp.layers]);
 
   useEffect(() => {
     let beforeLayer = null;
@@ -1271,7 +1261,6 @@ export default function Map() {
       }
 
       console.log("after set data", map);
-
     }
   }, [
     stateApp.layers,
@@ -1319,8 +1308,6 @@ export default function Map() {
       dispatch(setMainMapState({ removeLayerFromMap: null }));
     }
   }, [removeLayerFromMap]);
-
- 
 
   useEffect(() => {
     console.log("useEffect 15");
@@ -1457,7 +1444,6 @@ export default function Map() {
         !stateNav.filterWellType &&
         filterArray.length === 0
       ) {
-
         let defaultTypeName = ["typeName", []];
         let defaultStatusName = ["statusName", []];
 
@@ -2829,8 +2815,10 @@ export default function Map() {
         .setMaxWidth("none")
         .setHTML(`<div id="popupContainer"></div>`)
         .addTo(map);
-      setStateApp((state) => ({ ...state, popupOpen: true, 
-        expandedCard: stateApp.activateWellDetailsFromTable ? true : false 
+      setStateApp((state) => ({
+        ...state,
+        popupOpen: true,
+        expandedCard: stateApp.activateWellDetailsFromTable ? true : false,
       }));
       handleOpenExpandableCard();
     },
@@ -2983,20 +2971,18 @@ export default function Map() {
 
   useEffect(() => {
     (async () => {
-      
       // console.log("useEffect 24");
       // console.log("selectedWell", stateApp.selectedWell);
       // console.log("selectedWellId", stateApp.selectedWellId);
       // console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
-      
+
       if (
         map &&
         stateApp.selectedWellId &&
         stateApp.wellSelectedCoordinates &&
-        stateApp.wellSelectedCoordinates.length > 0 
-        && !stateApp.selectedWell
+        stateApp.wellSelectedCoordinates.length > 0 &&
+        !stateApp.selectedWell
       ) {
-
         //console.log('useeffect for well selections that are not map driven (aka grid selections)')
 
         let point = map.project(stateApp.wellSelectedCoordinates);
@@ -3005,8 +2991,6 @@ export default function Map() {
           [point.x - 10, point.y - 10],
           [point.x + 10, point.y + 10],
         ];
-
-
 
         let features = map.queryRenderedFeatures(bbox, {
           layers: ["wellpoints"],
@@ -3076,47 +3060,43 @@ export default function Map() {
           createPopUp(currentFeature.properties);
           map.resize();
 
-                  
-        // var el = document.createElement("div");
-        // el.style.backgroundImage = "url(icons/favicon-inverted.png)";
-        // el.style.width = "28px";
-        // el.style.height = "64px";
-  
-        // new mapboxgl.Marker(el)
-        // .setLngLat([
-        //   stateApp.selectedWell.longitude,
-        //   stateApp.selectedWell.latitude,
-        // ])
-        // .addTo(map);
-        
-        // map.addSource("well-select-point", {
-        //   type: "geojson",
-        //   data: {
-        //     type: "FeatureCollection",
-        //     features: [
-        //       {
-        //         type: "Feature",
-        //         geometry: {
-        //           type: "Point",
-        //           coordinates: stateApp.wellSelectedCoordinates,
-        //         },
-        //       },
-        //     ],
-        //   },
-        // });
+          // var el = document.createElement("div");
+          // el.style.backgroundImage = "url(icons/favicon-inverted.png)";
+          // el.style.width = "28px";
+          // el.style.height = "64px";
 
-        // map.addLayer({
-        //   id: "well-point",
-        //   type: "circle",
-        //   source: "well-select-point",
-        //   paint: {
-        //     "circle-radius": 5,
-        //     "circle-color": "yellow",
-        //   },
-        // });
-      
-    
+          // new mapboxgl.Marker(el)
+          // .setLngLat([
+          //   stateApp.selectedWell.longitude,
+          //   stateApp.selectedWell.latitude,
+          // ])
+          // .addTo(map);
 
+          // map.addSource("well-select-point", {
+          //   type: "geojson",
+          //   data: {
+          //     type: "FeatureCollection",
+          //     features: [
+          //       {
+          //         type: "Feature",
+          //         geometry: {
+          //           type: "Point",
+          //           coordinates: stateApp.wellSelectedCoordinates,
+          //         },
+          //       },
+          //     ],
+          //   },
+          // });
+
+          // map.addLayer({
+          //   id: "well-point",
+          //   type: "circle",
+          //   source: "well-select-point",
+          //   paint: {
+          //     "circle-radius": 5,
+          //     "circle-color": "yellow",
+          //   },
+          // });
         }
       }
     })();
@@ -3670,7 +3650,6 @@ export default function Map() {
       } else {
         console.log("map extra components start");
 
-
         map.on("mousemove", mapMouseMove);
         map.on("zoom", mapZoom);
 
@@ -3890,6 +3869,16 @@ export default function Map() {
     }
   }, [map]);
 
+  // useEffect(() => {
+  //   console.log("1111111111111111111111", createPopUp);
+  // }, [createPopUp]);
+  // useEffect(() => {
+  //   console.log("22222222222222222222222", map);
+  // }, [map]);
+  // useEffect(() => {
+  //   console.log("33333333333333333333333", stateApp.flyTo);
+  // }, [stateApp.flyTo]);
+
   useEffect(() => {
     console.log("useEffect 32");
 
@@ -3906,13 +3895,14 @@ export default function Map() {
         ],
       }));
 
-      !stateApp.activateWellDetailsFromTable && map.flyTo({
-        center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
-        zoom: stateApp.flyTo.zoom ? stateApp.flyTo.zoom : zVal,
-        speed: 0.5,
-      });
+      !stateApp.activateWellDetailsFromTable &&
+        map.flyTo({
+          center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
+          zoom: stateApp.flyTo.zoom ? stateApp.flyTo.zoom : zVal,
+          speed: 0.5,
+        });
     }
-  }, [createPopUp, map, stateApp.flyTo]);
+  }, [map, stateApp.flyTo]); //createPopUp
 
   useEffect(() => {
     console.log("useEffect 33");
@@ -4192,7 +4182,11 @@ export default function Map() {
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
     setAnchorElPoPOver(null);
-    setStateApp((state) => ({ ...state ,expandedCard: false, activateWellDetailsFromTable: false }));
+    setStateApp((state) => ({
+      ...state,
+      expandedCard: false,
+      activateWellDetailsFromTable: false,
+    }));
   };
 
   const handleCloseSpatialDataCard = (complete = true) => {
@@ -4428,7 +4422,6 @@ export default function Map() {
     }
   }, [stateApp.userSnap]);
 
-
   useEffect(() => {
     //console.log("useEffect 41");
 
@@ -4456,14 +4449,11 @@ export default function Map() {
       });
     }
   }, [stateApp.editingUserDefinedLayers]);
-  
-  useEffect(() => {
-  /////// USE EFFECT  to handle the map zoom /  for selected map elements 
 
+  useEffect(() => {
+    /////// USE EFFECT  to handle the map zoom /  for selected map elements
 
     if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
-      
-
       // set and remove map marker
 
       // var el = document.createElement("div");
@@ -4472,36 +4462,36 @@ export default function Map() {
       // el.style.height = "64px";
 
       // if(mapboxgl.Marker()){mapboxgl.Marker(el).remove()}
-      
+
       // var marker = new mapboxgl.Marker(el)
       // .setLngLat([
       //   stateApp.selectedWell.longitude,
       //   stateApp.selectedWell.latitude,
       // ])
       // .addTo(map);
-        
 
-
-      // mathematical formula for screen fit 
+      // mathematical formula for screen fit
       const alpha = 0.01;
       const bbox = [
-                      [stateApp.selectedWell.longitude-1.5*alpha,stateApp.selectedWell.latitude],
-                      [stateApp.selectedWell.longitude+0.5*alpha,stateApp.selectedWell.latitude]
-                  ];
+        [
+          stateApp.selectedWell.longitude - 1.5 * alpha,
+          stateApp.selectedWell.latitude,
+        ],
+        [
+          stateApp.selectedWell.longitude + 0.5 * alpha,
+          stateApp.selectedWell.latitude,
+        ],
+      ];
 
-
-
-
-      map.fitBounds(bbox,{
+      map.fitBounds(bbox, {
         speed: 0.75,
-        linear: true,  
+        linear: true,
         // pitch: 60,
         // bearing: 20,
         // easing: function (t) {
         //           return Math.sin((t * Math.PI) / 2);
         //         }
       });
-
 
       setStateApp({
         ...stateApp,
@@ -4510,7 +4500,7 @@ export default function Map() {
 
       // map.on("moveend", function (e) {
       //   if (
-      //     map.getBearing() === -1 
+      //     map.getBearing() === -1
       //     //&&
       //     // map.getZoom() === 16
       //   ) {
@@ -4530,7 +4520,6 @@ export default function Map() {
       // });
     }
   }, [stateApp.wellDetailCardOpen]);
-
 
   // useEffect(() => {
   //   if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
@@ -4573,7 +4562,6 @@ export default function Map() {
   //   }
   // }, [stateApp.wellDetailCardOpen]);
 
-
   // console.log(
   //   "stateApp.selectedAbstracts",
   //   stateApp.popupOpen,
@@ -4608,32 +4596,32 @@ export default function Map() {
       {mapGridCardActivated && (
         <MapGridCard mapGridCardActivated={mapGridCardActivated} />
       )}
-       
+
       {/* {stateApp.popupOpen === true &&  */}
-      {stateApp.selectedWell !== null && showExpandableCard &&
+      {stateApp.selectedWell !== null &&
+        showExpandableCard &&
         stateApp.expandedCard && (
-            <Draggable cancel={".MuiCardContent-root"} >
-              <div className={classes.draggable}>
-                <ExpandableCardProvider
-                  expanded
-                  handleCloseExpandableCard={handleCloseExpandableCard}
-                  component={<WellCardProvider />}
-                  title={stateApp.selectedWell.wellName}
-                  subTitle={stateApp.selectedWell.api}
-                  parent="map"
-                  cardTop={20}
-                  cardLeft={20}
-                  position="relative"
-                  zIndex={99}
-                  cardWidthExpanded="50vw"
-                  cardHeightExpanded="90vh"
-                  targetSourceId={stateApp.selectedWell.id}
-                  targetLabel="expandedWell"
-                />
-              </div>
-            </Draggable>
-          )
-        }
+          <Draggable cancel={".MuiCardContent-root"}>
+            <div className={classes.draggable}>
+              <ExpandableCardProvider
+                expanded
+                handleCloseExpandableCard={handleCloseExpandableCard}
+                component={<WellCardProvider />}
+                title={stateApp.selectedWell.wellName}
+                subTitle={stateApp.selectedWell.api}
+                parent="map"
+                cardTop={20}
+                cardLeft={20}
+                position="relative"
+                zIndex={99}
+                cardWidthExpanded="50vw"
+                cardHeightExpanded="90vh"
+                targetSourceId={stateApp.selectedWell.id}
+                targetLabel="expandedWell"
+              />
+            </div>
+          </Draggable>
+        )}
       <div id="modalHolder" ref={modalContainer} />
       <Portal container={modalContainer.current}>
         {stateApp.selectedAbstracts.length > 0 && (
@@ -4644,36 +4632,36 @@ export default function Map() {
           />
         )}
       </Portal>
-       
+
       <Portal container={container.current}>
         {stateApp.popupOpen === true ? (
           <div>
-            {stateApp.selectedWell !== null 
+            {stateApp.selectedWell !== null &&
               // && stateApp.popupOpen==true
-              && showExpandableCard && (
-              <PortalD id="popupContainer"> 
-                {!stateApp.expandedCard && (
-                  <ExpandableCardProvider
-                    handleCloseExpandableCard={handleCloseExpandableCard}
-                    component={<WellCardProvider />}
-                    title={stateApp.selectedWell.wellName}
-                    subTitle={stateApp.selectedWell.api}
-                    parent="map"
-                    mouseX={0}
-                    mouseY={0}
-                    position="relative"
-                    cardLeft={0}
-                    cardTop={0}
-                    zIndex={3000}
-                    cardWidth="350px"
-                    cardWidthExpanded="50vw"
-                    cardHeightExpanded="95vh"
-                    targetSourceId={stateApp.selectedWell.id}
-                    targetLabel="well"
-                  ></ExpandableCardProvider>
+              showExpandableCard && (
+                <PortalD id="popupContainer">
+                  {!stateApp.expandedCard && (
+                    <ExpandableCardProvider
+                      handleCloseExpandableCard={handleCloseExpandableCard}
+                      component={<WellCardProvider />}
+                      title={stateApp.selectedWell.wellName}
+                      subTitle={stateApp.selectedWell.api}
+                      parent="map"
+                      mouseX={0}
+                      mouseY={0}
+                      position="relative"
+                      cardLeft={0}
+                      cardTop={0}
+                      zIndex={3000}
+                      cardWidth="350px"
+                      cardWidthExpanded="50vw"
+                      cardHeightExpanded="95vh"
+                      targetSourceId={stateApp.selectedWell.id}
+                      targetLabel="well"
+                    ></ExpandableCardProvider>
                   )}
-              </PortalD>
-            )}
+                </PortalD>
+              )}
             {stateApp.selectedParcel && (
               <PortalD id="popupContainer">
                 {showExpandableCard && !stateApp.expandedCard ? (
