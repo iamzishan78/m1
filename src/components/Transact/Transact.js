@@ -7,10 +7,8 @@ import { useMutation, useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../AppContext";
 import Board from "react-trello";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { TransactContext } from "./TransactContext";
-import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
-import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
 import { UPDATESTAGEDEALDESCRIPTORS } from "../../graphQL/useMutationUpdateStageDealDescriptors";
+import { GETPIPELINES } from "../../graphQL/useQueryPipelines";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Button from "@material-ui/core/Button";
 import Dialog from "./components/dialog";
@@ -25,19 +23,8 @@ import TransactTable from "./components/TransactTable";
 import { useDispatch, useSelector } from "react-redux";
 import { setFlowState } from "../../actions";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
-import CallMadeIcon from "@material-ui/icons/CallMade";
 import M1nTable from "../Shared/M1nTable/M1nTable";
-import Avatar from "react-avatar";
-import Badge from "@material-ui/core/Badge";
 import moment from "moment";
-
-function usePrevious(value) {
-  const ref = useRef();
-  useEffect(() => {
-    ref.current = value;
-  }, [value]);
-  return ref.current;
-}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -219,7 +206,6 @@ export default function Transact() {
   });
   const [filteredTabTransactData, setFilteredTabTransactData] = useState([]);
   const [dealFilter, setDealFilter] = useState("all");
-  // const [cardColors, setCardColors] = useState({});
 
   const cardColors = useRef({});
 
@@ -302,6 +288,10 @@ export default function Transact() {
       ]);
     }
   }, [pipeToShowTab, dealFilter]);
+
+  useEffect(() => {
+    console.log("FILTERED DATA: ", filteredTabTransactData);
+  }, [filteredTabTransactData]);
 
   const handleDataChange = (newData) => {
     console.log("DATA CHANGE", newData);
@@ -460,7 +450,6 @@ export default function Transact() {
 
     let owner = null;
     let ownerId = null;
-    console.log(metadata.owners);
     let ownerObject = metadata?.owners[0] ? metadata?.owners[0] : null;
 
     if (ownerObject && ownerObject.relatedObject?.name) {
@@ -501,7 +490,7 @@ export default function Transact() {
     );
   };
 
-  const getLaneHeader = ({ title, id }) => {
+  const getLaneHeader = ({ title, id, metadata }) => {
     const lane = filteredBoardTransactData?.lanes?.find(
       (lane) => lane.id === id
     );
@@ -511,8 +500,17 @@ export default function Transact() {
     let priceSum = 0;
     // eslint-disable-next-line no-unused-expressions
     lane?.cards.forEach((card) => (priceSum += card?.metadata?.offerPrice));
+
     const formatted = formatter.format(priceSum);
     const formattedTotal = formatted.slice(0, formatted.length - 3);
+
+    let forecast = null;
+    let forecastFormatted = "";
+    if (priceSum > 0 && metadata.dealProbability > 0) {
+      forecast = priceSum * (metadata.dealProbability/100);
+      let formatted2 = formatter.format(forecast);
+      forecastFormatted = formatted2.slice(0, formatted2.length - 3);
+    }
 
     return (
       <header className={classes.laneHeaderStyle}>
@@ -521,6 +519,10 @@ export default function Transact() {
         </span>
         <span className={classes.laneHeaderTotalStyle}>
           Total: {formattedTotal}
+        </span>
+        <span className={classes.laneHeaderTotalStyle}>
+          Forecast:{" "}
+          {forecast === 0 || forecast === null ? "--" : forecastFormatted}
         </span>
       </header>
     );
