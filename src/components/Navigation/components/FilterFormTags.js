@@ -38,8 +38,7 @@ export default function FilterFormProduction() {
 
       getWells({
         variables: {
-          wellIdArray: IdsArray,
-          authToken: stateApp.user.authToken,
+          wellIdArray: IdsArray
         },
       });
 

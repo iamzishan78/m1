@@ -148,7 +148,7 @@ const StyledBreadcrumb = withStyles((theme) => ({
 function formatDecimal(number) {
   let hasDecimal = false;
   const mod = number % 1 !== 0;
-  if (mod !== 0) hasDecimal = true;
+  if (number && mod !== 0) hasDecimal = true;
   const formatted = new Intl.NumberFormat("en-US").format(
     hasDecimal ? number.toFixed(1) : number);
   return formatted ;
