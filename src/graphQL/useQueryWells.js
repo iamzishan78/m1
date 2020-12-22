@@ -2,8 +2,8 @@ import React from "react";
 import gql from "graphql-tag";
 
 export const WELLSQUERY = gql`
-  query getWells($wellIdArray: [String], $authToken: String) {
-    wells(wellIdArray: $wellIdArray, authToken: $authToken) {
+  query getWells($wellIdArray: [String]) {
+    wells(wellIdArray: $wellIdArray) {
       success
       message
       results {

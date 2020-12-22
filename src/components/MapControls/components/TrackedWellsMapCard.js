@@ -84,8 +84,7 @@ export default function TrackedWellsMapCard(props) {
 
         getWells({
           variables: {
-            wellIdArray: tracksIdArray,
-            authToken: stateApp.user.authToken,
+            wellIdArray: tracksIdArray
           },
         });
       } else {
