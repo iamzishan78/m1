@@ -2116,10 +2116,6 @@ function M1nTable(props) {
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
-  const [columnsBase, ColumnsBase] = useState([]);
-  const setColumnsBase = (newState) => {
-    setStateIfDeepEqual(ColumnsBase, newState);
-  };
   const [loading, Loading] = useState(true);
   const setLoading = (newState) => {
     setStateIfDeepEqual(Loading, newState);
@@ -3030,15 +3026,12 @@ function M1nTable(props) {
       setHeader("Contacts");
       setOrderByTracks(false);
       setAddAble({ parent: false, type: "contact" });
-      getPaginatedContacts({
-        variables: {
-          userId: stateApp.user.mongoId,
-        },
-      });
+      getPaginatedContacts({ variables: {
+        userId: stateApp.user.mongoId,
+      }});
       getContactsFilterOptions();
       setUploadIcon(false);
       setStartPaginationAt(25);
-      setColumnsBase(ContactsHeadCells);
     }
   }, [props.parent]);
 
@@ -3148,7 +3141,7 @@ function M1nTable(props) {
         ];
 
         setColumns(
-          columnsBase.map((column) => {
+          ContactsHeadCells.map((column) => {
             switch (column.name) {
               case "tags":
                 return {
@@ -3195,7 +3188,7 @@ function M1nTable(props) {
         // setLoading(false);
       }
     }
-  }, [dataContactsFilterOptions, columnsBase]);
+  }, [dataContactsFilterOptions]);
 
   useEffect(() => {
     if (
@@ -4454,7 +4447,6 @@ function M1nTable(props) {
           setLoading,
         }}
         parent={props.parent}
-        setColumnsBase={setColumnsBase}
       />
     </Container>
   );
