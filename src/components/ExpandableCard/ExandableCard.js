@@ -112,7 +112,12 @@ export default function ExpandableCard(props) {
     title: {
       fontFamily: "Poppins",
       color: "#FFFFFF",
-      fontSize: ["Contact", "Contact Details", "Add Activity", "Activity Details"].includes(title)
+      fontSize: [
+        "Contact",
+        "Contact Details",
+        "Add Activity",
+        "Activity Details",
+      ].includes(title)
         ? "20px"
         : "15px",
     },
@@ -182,12 +187,13 @@ export default function ExpandableCard(props) {
 
     if (toggleExpand == false) {
       setToggleExpand(true);
-      setWidth(cardWidthExpanded);
       setExpanded(false);
+      setWidth(cardWidthExpanded);
     } else {
       setToggleExpand(false);
-      setWidth("95vw");
       setExpanded(true);
+      if (parent === "table" && targetLabel === "well") setWidth("50vw");
+      else setWidth("95vw");
     }
     setHeight(cardHeightExpanded);
 
@@ -459,60 +465,63 @@ export default function ExpandableCard(props) {
                 )
               )} */}
 
-              {stateExpandableCard.expanded && targetLabel !== "activity" ? (
-                parent !== "table" && targetLabel !== "expandedWell" ? (
-                  <Tooltip title={"Shrink"} placement="top">
-                    <IconButton
-                      color="secondary"
-                      onClick={handleShrink}
-                      aria-label="shrink"
-                      className={classes.icons}
-                    >
-                      <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
-                    </IconButton>
-                  </Tooltip>
-                ) : isExpanded == false && targetLabel !== "activity" ?
-                    targetLabel !== "contact" ? 
-                    (
-                  <Tooltip title={"Expand"} placement="top">
-                    <IconButton
-                      size="small"
-                      onClick={handleExpand}
-                      aria-label="expand"
-                      className={classes.icons}
-                    >
-                      <ExpandIcon viewBox="0 0 64 64" color="secondary" />
-                    </IconButton>
-                  </Tooltip>
-                ) : null
-                :
-                (
-                  <Tooltip title={"Shrink"} placement="top">
-                    <IconButton
-                      color="secondary"
-                      onClick={handleExpand}
-                      aria-label="shrink"
-                      className={classes.icons}
-                    >
-                      <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
-                    </IconButton>
-                  </Tooltip>
-                )
-              ) : (
-                parent !== "table" &&
-                targetLabel !== "activity" && (
-                  <Tooltip title={"Expand"} placement="top">
-                    <IconButton
-                      size="small"
-                      onClick={handleExpand}
-                      aria-label="expand"
-                      className={classes.icons}
-                    >
-                      <ExpandIcon viewBox="0 0 64 64" color="secondary" />
-                    </IconButton>
-                  </Tooltip>
-                )
-              )}
+              {!(parent === "table" && targetLabel === "well") &&
+                // temporary no shows exp/shrink icon for well from the table
+                (stateExpandableCard.expanded && targetLabel !== "activity" ? (
+                  parent !== "table" && targetLabel !== "expandedWell" ? (
+                    <Tooltip title={"Shrink"} placement="top">
+                      <IconButton
+                        color="secondary"
+                        onClick={handleShrink}
+                        aria-label="shrink"
+                        className={classes.icons}
+                      >
+                        <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (isExpanded == false &&
+                      targetLabel !== "activity" &&
+                      targetLabel !== "well") ||
+                    (isExpanded && targetLabel === "well") ? (
+                    targetLabel !== "contact" && (
+                      <Tooltip title={"Expand"} placement="top">
+                        <IconButton
+                          size="small"
+                          onClick={handleExpand}
+                          aria-label="expand"
+                          className={classes.icons}
+                        >
+                          <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  ) : (
+                    <Tooltip title={"Shrink"} placement="top">
+                      <IconButton
+                        color="secondary"
+                        onClick={handleExpand}
+                        aria-label="shrink"
+                        className={classes.icons}
+                      >
+                        <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                ) : (
+                  parent !== "table" &&
+                  targetLabel !== "activity" && (
+                    <Tooltip title={"Expand"} placement="top">
+                      <IconButton
+                        size="small"
+                        onClick={handleExpand}
+                        aria-label="expand"
+                        className={classes.icons}
+                      >
+                        <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                ))}
 
               <Tooltip title={"Close"} placement="top">
                 <IconButton
