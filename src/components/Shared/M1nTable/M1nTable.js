@@ -1823,6 +1823,18 @@ const WellInterests = [
     },
   },
   {
+    name: "wellId",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "wellName",
     label: "Well",
     options: {
@@ -4249,8 +4261,8 @@ function M1nTable(props) {
     ) {
       const IdsArray = [];
       dataWellInterests.forEach((well) => {
-        if (well && well.id) {
-          IdsArray.push(well.id);
+        if (well && well.wellId) {
+          IdsArray.push(well.wellId);
         }
       });
 
@@ -4297,27 +4309,27 @@ function M1nTable(props) {
           well.tags = [[], 0];
 
           //// set in the detailCard column
-          well.detailCard = well.id;
+          well.detailCard = well.wellId;
 
           well.coordinates = {};
           if (well.longitude && well.latitude)
             well.coordinates.center = [well.longitude, well.latitude];
 
           for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-            if (well.id === dataTracks.tracksByObjectType[i].trackOn) {
+            if (well.wellId === dataTracks.tracksByObjectType[i].trackOn) {
               well.isTracked = true;
               break;
             }
           }
           for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-            if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+            if (well.wellId === dataCommentsCounter.commentsCounter[i]._id) {
               well.commentsCounter =
                 dataCommentsCounter.commentsCounter[i].total;
               break;
             }
           }
           for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-            if (well.id === dataTagSamples.tagSamples[i]._id) {
+            if (well.wellId === dataTagSamples.tagSamples[i]._id) {
               well.tags = [
                 dataTagSamples.tagSamples[i].tags,
                 dataTagSamples.tagSamples[i].total,
