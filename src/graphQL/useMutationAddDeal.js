@@ -9,7 +9,7 @@ export const ADDDEAL = gql`
     $ownerName: String
     $contactId: ID
     $contactName: String
-    $position: String
+    $position: Int
     $userId: ID
   ) {
     addDeal(

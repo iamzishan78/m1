@@ -65,6 +65,7 @@ const ContactSearch = () => {
   return (
     <div style={{ width: "70%", marginLeft: "20px", maxWidth: "400px" }}>
       <AutocompEntityNamesVirtualizeList
+        darkCard={true}
         mongoEntitiesArray={mongoEntitiesArray}
         setMongoEntitiesArray={setMongoEntitiesArray}
         nameAutValue={nameAutValue}

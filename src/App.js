@@ -18,6 +18,7 @@ import DashboardProvider from "./components/Dashboard/DashboardProvider";
 import StudioProvider from "./components/Studio/StudioProvider";
 import BulkUpload from "./components/BulkUpload/BulkUpload";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
@@ -33,7 +34,6 @@ import Notifications from "./components/Notifications/Notifications";
 import { Provider as ReduxProvider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./store";
-import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
 // user management
 const store = configureStore(/ provide initial state if any /);
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
@@ -101,12 +101,12 @@ const SetApolloClient = (props) => {
     }
   }, [stateApp.user]);
 
-  useEffect(() => {
+  useEffect(()=> {
     let draggableArea = document.getElementById("root");
-    if (window.location.pathname == "/" && stateApp.user != null) {
-      draggableArea.style.overflow = "hidden";
+    if (window.location.pathname == "/") {
+      draggableArea.style.overflow='hidden'
     } else {
-      draggableArea.style.overflow = "visible";
+      draggableArea.style.overflow='visible'
     }
   }, [stateApp]);
 
@@ -214,7 +214,7 @@ function App() {
 
   const updateApolloClient = (endpoint, token) => {
     //uncomment to run against local
-    //endpoint = "http://localhost:7071/api/m1graph";
+    // endpoint = "http://localhost:7071/api/m1graph"
 
     if (!apolloClient) {
       let client = new ApolloClient({

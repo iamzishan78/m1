@@ -67,8 +67,7 @@ export default function OwnerDetailsCardMap(props) {
     if (props.wellsIdsArray) {
       getWells({
         variables: {
-          wellIdArray: props.wellsIdsArray,
-          authToken: stateApp.user.authToken,
+          wellIdArray: props.wellsIdsArray
         },
       });
     }

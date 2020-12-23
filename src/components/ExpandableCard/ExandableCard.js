@@ -112,7 +112,12 @@ export default function ExpandableCard(props) {
     title: {
       fontFamily: "Poppins",
       color: "#FFFFFF",
-      fontSize: ["Contact", "Contact Details", "Add Activity", "Activity Details"].includes(title)
+      fontSize: [
+        "Contact",
+        "Contact Details",
+        "Add Activity",
+        "Activity Details",
+      ].includes(title)
         ? "20px"
         : "15px",
     },
@@ -128,7 +133,7 @@ export default function ExpandableCard(props) {
       fontSize: "11px",
     },
     content: {
-      backgroundColor: "#efefef",
+      backgroundColor: "#fffff",
       transition: "height 0.1s",
       background: "#fff",
       padding: "0 !important",
@@ -182,12 +187,13 @@ export default function ExpandableCard(props) {
 
     if (toggleExpand == false) {
       setToggleExpand(true);
-      setWidth(cardWidthExpanded);
       setExpanded(false);
+      setWidth(cardWidthExpanded);
     } else {
       setToggleExpand(false);
-      setWidth("95vw");
       setExpanded(true);
+      if (parent === "table" && targetLabel === "well") setWidth("50vw");
+      else setWidth("95vw");
     }
     setHeight(cardHeightExpanded);
 

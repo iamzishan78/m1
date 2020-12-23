@@ -264,11 +264,11 @@ export default function Documents(props) {
             }, 1000);
           } else {
             setFileRequestCounter(1);
-            dispatch(
-              showWarningMessage(
-                "Please wait a few seconds until the uploaded file is ready, then reload the app"
-              )
-            );
+            // dispatch(
+            //   showWarningMessage(
+            //     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
+            //   )
+            // );
           }
         } else setFileRequestCounter(1);
       },
@@ -380,7 +380,7 @@ export default function Documents(props) {
         <div className={classes.fileUploadSection}>
           {/* Show two recent docs */}
           {files?.getFileDescriptors?.map((file) => (
-            <>
+            <div key={file.fileId}>
               <div className={classes.fileUploadTopSection}>
                 <div>
                   <h4 className={classes.uploadTitle}>{file.fileName}</h4>
@@ -410,7 +410,7 @@ export default function Documents(props) {
                   </IconButton>
                 </div>
               </div>
-            </>
+            </div>
           ))}
           <DeleteDocumentConfirmation
             open={openDeleteConfirmDialog}

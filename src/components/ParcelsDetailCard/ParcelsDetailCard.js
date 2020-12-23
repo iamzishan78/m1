@@ -23,7 +23,6 @@ import AbstractCard from "./components/AbstractCard";
 import AltSurveyCard from "./components/AltSurveyCard";
 import ParcelDetailsMap from "./components/ParcelDetailsMap";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
-import { ABSTRACTWELLGEOQUERY } from "../../graphQL/useQueryAbstractWellGeo";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 import { AppContext } from "../../AppContext";
@@ -148,11 +147,6 @@ export default function ParcelsDetailCard(props) {
   const [grossAcres, setGrossAcres] = useState();
   const [legalDescription, setLegalDesc] = useState();
   const [stateApp, setStateApp] = useContext(AppContext);
-
-  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(
-    ABSTRACTWELLGEOQUERY
-  );
-
   const [onChangeFooterLabel, setChangeFooterLabel] = useState({parcelName: false, grossAcres: false, legalDescription: false});
 
   const [updateCustomLayer, { data: updatedParcel }] = useMutation(
@@ -174,40 +168,6 @@ export default function ParcelsDetailCard(props) {
     }
   }, [props.id]);
 
-  useEffect(()=> {
-    if (stateApp.selectedPolygonString) {
-      getAbstractWellGeo({
-        variables: {
-          polygon: stateApp.selectedPolygonString,
-        },
-      });
-    }
-  }, [stateApp.selectedPolygonString]);
-
-  useEffect(()=> {
-    if (abstractWellData) {
-      let set_tracked = [];
-      let reconstruct_wells = [];
-      stateApp.trackedwells.forEach(element => {
-        const found = abstractWellData.abstractWellGeo.find(x => x.wellId == element.id);
-        if (found) {
-          set_tracked.push(found);
-        }
-      });
-
-      abstractWellData.abstractWellGeo.forEach(element => {
-        if (element in set_tracked) {
-          reconstruct_wells.push({...element, isTracked: true});
-        } else {
-          reconstruct_wells.push({...element, isTracked: false});
-        }
-      });
-      setStateApp({
-        ...stateApp,
-        selectedBoundaryWell: reconstruct_wells
-      })
-    }
-  }, [abstractWellData]);
 
   useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {

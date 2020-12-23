@@ -61,8 +61,7 @@ const SimpleUserTable = (props) => {
 
         getWells({
           variables: {
-            wellIdArray: tracksIdArray,
-            authToken: stateApp.user.authToken,
+            wellIdArray: tracksIdArray
           },
         });
       } else {

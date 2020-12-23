@@ -1608,10 +1608,12 @@ function SubTable(props) {
 
                   ////// if non editable column
                   if (
-                    !column.editable &&
-                    props.targetLabel === "Parcel Ownershipship" &&
-                    column.name === "name" &&
-                    tableMeta.rowData[11] !== "false"
+                    (!column.editable &&
+                      props.targetLabel === "Parcel Ownershipship" &&
+                      column.name === "name" &&
+                      tableMeta.rowData[11] !== "false") ||
+                    ((column.name === "end" || column.name === "start") &&
+                      props.targetLabel === "activity")
                   ) {
                     //// if no value
                     if (value === "" || value === null || !value)
@@ -1630,6 +1632,11 @@ function SubTable(props) {
                     //// if value
                     return (
                       <div
+                        style={
+                          props.targetLabel === "activity"
+                            ? { minWidth: "175px" }
+                            : {}
+                        }
                         className={classes.cellDataDiv}
                         onClick={(e) => {
                           e.preventDefault();
@@ -1809,6 +1816,39 @@ function SubTable(props) {
       props.targetLabel !== "owner" &&
       props.targetLabel !== "production_detail",
     viewColumns: props.targetLabel !== "usermanagement",
+    onColumnViewChange: (changedColumn, action) => {
+      if (
+        props.parent === "Contacts" &&
+        columns &&
+        (action == "add" || action == "remove") &&
+        changedColumn
+      )
+        props.setColumnsBase([
+          ...columns.map((column) => {
+            if (column.name == changedColumn)
+              if (action == "add")
+                return {
+                  ...column,
+                  options: column.options
+                    ? { ...column.options, display: true }
+                    : {
+                        display: true,
+                      },
+                };
+              else
+                return {
+                  ...column,
+                  options: column.options
+                    ? { ...column.options, display: false }
+                    : {
+                        display: false,
+                      },
+                };
+
+            return column;
+          }),
+        ]);
+    },
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
       // console.log("currentRowsSelected", JSON.stringify(currentRowsSelected));
@@ -2308,8 +2348,11 @@ function SubTable(props) {
 
             filters: filters,
             search: tableState.searchText,
+            userId: stateApp.user.mongoId,
           },
         };
+        console.log("userId---=---", stateApp.user.mongoId);
+        console.log("action", action);
         switch (action) {
           case "changeRowsPerPage":
             console.log("changeRowsPerPage");
@@ -2441,6 +2484,7 @@ function SubTable(props) {
               field: "id",
               value: props.wellInterestsPageProps.ownerId,
             },
+            userId: stateApp.user.mongoId,
             // search: tableState.searchText,
           },
         };
@@ -2594,6 +2638,7 @@ function SubTable(props) {
           className={tableStyle}
           title={props.header}
           data={rows ? rows : []}
+          // data={rows ? rows : []}
           columns={columns ? columns : []}
           options={{
             download:

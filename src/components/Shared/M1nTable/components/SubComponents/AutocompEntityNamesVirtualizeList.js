@@ -141,19 +141,6 @@ ListboxComponent.propTypes = {
   children: PropTypes.node,
 };
 
-const useStyles = makeStyles({
-  inputRoot: {
-    backgroundColor: "#fff",
-  },
-  listbox: {
-    boxSizing: "border-box",
-    "& ul": {
-      padding: 0,
-      margin: 0,
-    },
-  },
-});
-
 export default function AutocompEntityNamesVirtualizeList(props) {
   const {
     mongoEntitiesArray,
@@ -170,6 +157,27 @@ export default function AutocompEntityNamesVirtualizeList(props) {
     loadNextPage,
     ...other
   } = props;
+
+  const useStyles = makeStyles({
+    inputRoot: props.darkCard
+      ? {
+          backgroundColor: "#273551",
+          color: "#ffffff",
+          "& .MuiSvgIcon-root": {
+            fill: "#ffffff",
+          },
+        }
+      : {
+          backgroundColor: "#ffffff",
+        },
+    listbox: {
+      boxSizing: "border-box",
+      "& ul": {
+        padding: 0,
+        margin: 0,
+      },
+    },
+  });
   const classes = useStyles();
 
   const isItemLoaded = (index) => {
