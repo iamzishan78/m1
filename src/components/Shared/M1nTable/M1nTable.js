@@ -2541,7 +2541,7 @@ function M1nTable(props) {
     ) {
       console.log("ue mintable 6");
       if (dataTracks.tracksByObjectType.length !== 0) {
-        setLoading(true);
+        // setLoading(true);
         const tracksIdArray = dataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
