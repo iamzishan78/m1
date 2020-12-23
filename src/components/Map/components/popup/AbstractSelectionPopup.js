@@ -173,15 +173,16 @@ export default (props) => {
       return;
     }
     const abstractShape = stateApp.selectedAbstracts[0];
-    console.log("SELECTED ABSTRACT:",stateApp.selectedAbstracts);
+    
     let parcelName, originalProperties;
     if(abstractShape.properties.State === "TX") {
       parcelName = abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
       originalProperties = [abstractShape.properties];
     } else {
       parcelName = "PLSS Default Name";
-      originalProperties = [];
+      originalProperties = [abstractShape.properties];
     }
+
     const featureId = hat();
     const newShapeFeature = {
       id: featureId,
@@ -213,12 +214,12 @@ export default (props) => {
     });
 
     let layers = [...stateApp.customLayers];
-    layers.push(customLayerData)
+    layers.push(customLayerData);
 
     setStateApp((state) => ({
       ...state,
       selectedParcel: {
-        "originalProperties":  abstractShape.properties.State === "TX"?  JSON.stringify(abstractShape.properties) : [],
+        "originalProperties":  abstractShape.properties.State === "TX" ?  JSON.stringify(abstractShape.properties) : [],
         "sdType": "parcel",
         "shapeLabel": parcelName,
         "projectName": "",

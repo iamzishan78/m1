@@ -1,4 +1,4 @@
-import React, { useContext,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles,useTheme } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography'
 import QuestionIcon from "@material-ui/icons/Help";
@@ -18,6 +18,7 @@ const useStyles = makeStyles(theme => ({
 
 function StateCard(props) {
     let classes = useStyles();
+    const [state, setState] = useState(null);
 
     return (
         <div className={classes.iconContainer}>

@@ -48,6 +48,7 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
+import { ABSTRACTWELLGEOQUERY } from "../../graphQL/useQueryAbstractWellGeo";
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
 import {
@@ -341,6 +342,11 @@ export default function Map() {
   const [getAbstractGeo, { data: abstractData }] = useLazyQuery(
     ABSTRACTGEOQUERY
   );
+
+  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(
+    ABSTRACTWELLGEOQUERY
+  );
+
   const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(
     ABSTRACTGEOCONTAINSQUERY
   );
@@ -3565,6 +3571,11 @@ export default function Map() {
                 polygon: polygonString,
               },
             });
+
+            setStateApp((state) => ({
+              ...state,
+              selectedPolygonString: polygonString
+            }));
           }
         };
 

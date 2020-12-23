@@ -13,9 +13,20 @@ export function getParcelOriginalProperties(parcel) {
   if (originalProperties && (typeof originalProperties === 'string' || originalProperties instanceof String)) {
     originalProperties = JSON.parse(originalProperties);
   }
+
+  // Continue PLSS Data
+  // console.log("---------------------------------------");
+  // console.log(originalProperties[0]);
+  // console.log("---------------------------------------");
+
+
   if (originalProperties && originalProperties.length > 0) {
     originalProperty.county = originalProperties[0].County;
-    originalProperty.state = originalProperties[0].State;
+    if ("State" in originalProperties[0]) {
+      originalProperty.state = originalProperties[0].State;
+    } else {
+      originalProperty.state = originalProperties[0].StateAbbreviation;
+    }
     originalProperty.survey = originalProperties[0].Survey;
     originalProperty.block = originalProperties[0].Block;
     originalProperty.section = originalProperties[0].Section;
