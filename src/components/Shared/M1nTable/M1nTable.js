@@ -3813,6 +3813,7 @@ function M1nTable(props) {
           }
         });
         
+        setHeader("Associated Wells");
         setRows(wells);
         setColumns(
           cleanAvailableTags.length > 0
