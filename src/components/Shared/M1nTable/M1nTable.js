@@ -2542,7 +2542,7 @@ function M1nTable(props) {
       }
       setAddAble(false);
     }
-  }, [props.parent]);
+  }, [props.parent, props.header]);
 
   useEffect(() => {
     if (
@@ -2583,135 +2583,140 @@ function M1nTable(props) {
   }, [dataTracks]);
 
   useEffect(() => {
-    if (props.parent && props.parent === "trackWells" && dataWells) {
-      console.log("ue mintable 7");
-      if (
-        dataWells.wells &&
-        dataWells.wells.results &&
-        dataWells.wells.results.length > 0 &&
-        dataCommentsCounter &&
-        dataCommentsCounter.commentsCounter &&
-        dataTagSamples &&
-        dataTagSamples.tagSamples
-      ) {
-        let wells = [...dataWells.wells.results];
-        wells = wells.map((w) => {
-          let well = { ...w };
-
-          //// temporary to fix the ticks dates fields comming from the rest api
-          if (well.permitApprovedDate && well.permitApprovedDate != "null")
-            well.permitApprovedDate = ticksToDateString(
-              well.permitApprovedDate
-            );
-          if (well.spudDate && well.spudDate != "null")
-            well.spudDate = ticksToDateString(well.spudDate);
-          if (well.completionDate && well.completionDate != "null")
-            well.completionDate = ticksToDateString(well.completionDate);
-          if (well.firstProductionDate && well.firstProductionDate != "null")
-            well.firstProductionDate = ticksToDateString(
-              well.firstProductionDate
-            );
-          //// temporary end
-
-          well.isTracked = true;
-          well.commentsCounter = 0;
-          well.tags = [[], 0];
-
-          well.coordinates = {};
-          if (well.Longitude && well.Latitude)
-            well.coordinates.center = [well.Longitude, well.Latitude];
-          if (well.longitude && well.latitude)
-            well.coordinates.center = [well.longitude, well.latitude];
-
-          for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-            if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
-              well.commentsCounter =
-                dataCommentsCounter.commentsCounter[i].total;
-              break;
-            }
-          }
-          for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-            if (well.id === dataTagSamples.tagSamples[i]._id) {
-              well.tags = [
-                dataTagSamples.tagSamples[i].tags,
-                dataTagSamples.tagSamples[i].total,
-              ];
-
-              break;
-            }
-          }
-          return well;
-        });
-
-        let availableTags = [];
-        dataTagSamples.tagSamples.map((sample) => {
-          availableTags = [...availableTags, ...sample.tags];
-        });
-        const cleanAvailableTags = [...new Set(availableTags)];
-
-        setRows(wells);
-
-        const flyToColumn = {
-          name: "coordinates",
-          label: " ",
-          options: {
-            filter: false,
-            sort: false,
-            searchable: false,
-            download: false,
-            print: false,
-            viewColumns: false,
-          },
-        };
-
-        setColumns([
-          ...(cleanAvailableTags.length > 0
-            ? WellsHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filterOptions: {
-                        ...column.options.filterOptions,
-                        names: cleanAvailableTags,
-                      },
-                    },
-                  };
-                }
-                return column;
-              })
-            : WellsHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filter: false,
-                    },
-                  };
-                }
-                return column;
-              })),
-          flyToColumn,
-        ]);
-
-        setStateApp((state) => ({
-          ...state,
-          trackedwells: wells,
-        }));
-        setLoading(false);
-      } else {
+    if (dataWells?.wells)
+      if (props.parent && props.parent === "trackWells" && dataWells) {
+        console.log("ue mintable 7");
         if (
           dataWells.wells &&
           dataWells.wells.results &&
-          dataWells.wells.results.length === 0
+          dataWells.wells.results.length > 0 &&
+          dataCommentsCounter &&
+          dataCommentsCounter.commentsCounter &&
+          dataTagSamples &&
+          dataTagSamples.tagSamples
         ) {
-          setRows([]);
+          let wells = [...dataWells.wells.results];
+          wells = wells.map((w) => {
+            let well = { ...w };
+
+            //// temporary to fix the ticks dates fields comming from the rest api
+            if (well.permitApprovedDate && well.permitApprovedDate != "null")
+              well.permitApprovedDate = ticksToDateString(
+                well.permitApprovedDate
+              );
+            if (well.spudDate && well.spudDate != "null")
+              well.spudDate = ticksToDateString(well.spudDate);
+            if (well.completionDate && well.completionDate != "null")
+              well.completionDate = ticksToDateString(well.completionDate);
+            if (well.firstProductionDate && well.firstProductionDate != "null")
+              well.firstProductionDate = ticksToDateString(
+                well.firstProductionDate
+              );
+            //// temporary end
+
+            well.isTracked = true;
+            well.commentsCounter = 0;
+            well.tags = [[], 0];
+
+            well.coordinates = {};
+            if (well.Longitude && well.Latitude)
+              well.coordinates.center = [well.Longitude, well.Latitude];
+            if (well.longitude && well.latitude)
+              well.coordinates.center = [well.longitude, well.latitude];
+
+            for (
+              let i = 0;
+              i < dataCommentsCounter.commentsCounter.length;
+              i++
+            ) {
+              if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+                well.commentsCounter =
+                  dataCommentsCounter.commentsCounter[i].total;
+                break;
+              }
+            }
+            for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+              if (well.id === dataTagSamples.tagSamples[i]._id) {
+                well.tags = [
+                  dataTagSamples.tagSamples[i].tags,
+                  dataTagSamples.tagSamples[i].total,
+                ];
+
+                break;
+              }
+            }
+            return well;
+          });
+
+          let availableTags = [];
+          dataTagSamples.tagSamples.map((sample) => {
+            availableTags = [...availableTags, ...sample.tags];
+          });
+          const cleanAvailableTags = [...new Set(availableTags)];
+
+          setRows(wells);
+
+          const flyToColumn = {
+            name: "coordinates",
+            label: " ",
+            options: {
+              filter: false,
+              sort: false,
+              searchable: false,
+              download: false,
+              print: false,
+              viewColumns: false,
+            },
+          };
+
+          setColumns([
+            ...(cleanAvailableTags.length > 0
+              ? WellsHeadCells.map((column) => {
+                  if (column.name === "tags") {
+                    return {
+                      ...column,
+                      options: {
+                        ...column.options,
+                        filterOptions: {
+                          ...column.options.filterOptions,
+                          names: cleanAvailableTags,
+                        },
+                      },
+                    };
+                  }
+                  return column;
+                })
+              : WellsHeadCells.map((column) => {
+                  if (column.name === "tags") {
+                    return {
+                      ...column,
+                      options: {
+                        ...column.options,
+                        filter: false,
+                      },
+                    };
+                  }
+                  return column;
+                })),
+            flyToColumn,
+          ]);
+
+          setStateApp((state) => ({
+            ...state,
+            trackedwells: wells,
+          }));
           setLoading(false);
+        } else {
+          if (
+            dataWells.wells &&
+            dataWells.wells.results &&
+            dataWells.wells.results.length === 0
+          ) {
+            setRows([]);
+            setLoading(false);
+          }
         }
       }
-    }
   }, [dataWells, dataTagSamples, dataCommentsCounter]);
   ////////////Tracked Wells end///////////////////////////////////////////////
 

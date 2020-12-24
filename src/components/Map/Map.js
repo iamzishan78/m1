@@ -49,6 +49,7 @@ import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
+import { OWNERSQUERY } from "../../graphQL/useQueryOwners";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
 import {
   ABSTRACTGEOQUERYCONTAINS,
@@ -306,6 +307,7 @@ export default function Map() {
     }
   };
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
+  const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
   const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
     TRACKSBYOBJECTTYPE
   );
@@ -405,14 +407,29 @@ export default function Map() {
         var objectsIdsArray = dataTracksOwner.tracksByObjectType.map(
           (item) => item.trackOn
         );
-
-        setStateApp((state) => ({
-          ...state,
-          owners: objectsIdsArray,
-        }));
+        getOwners({
+          variables: {
+            ownerIdArray: objectsIdsArray,
+          },
+        });
       }
     }
   }, [dataTracksOwner]);
+
+  useEffect(() => {
+    if (dataOwners) {
+      if (dataOwners.owners?.length >= 0)
+        setStateApp((state) => ({
+          ...state,
+          owners: [...dataOwners.owners],
+        }));
+      else
+        setStateApp((state) => ({
+          ...state,
+          owners: [],
+        }));
+    }
+  }, [dataOwners]);
 
   useEffect(() => {
     console.log("useEffect 3");
