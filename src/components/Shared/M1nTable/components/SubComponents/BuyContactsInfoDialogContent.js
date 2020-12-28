@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { FormLabel } from "@material-ui/core";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { Grid } from "@material-ui/core";
 import { Modals } from "../../../../../styles/Modal";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -102,22 +102,19 @@ export default function BuyContactsInfoDialogContent(props) {
   const dispatch = useDispatch();
   const modalClass = Modals();
 
-  const [getPersonDataQuery, { data: personsData }] = useLazyQuery(
-    GETPERSONDATA,
-    {
-      onCompleted: (data) => {
-        props.onClose();
-        if (data.getPersonData.allSuccess) {
-          if (props.updateMelissaTable) {
-            props.updateMelissaTable();
-          }
-          dispatch(showSuccessMessage("All records saved successfully"));
-        } else {
-          dispatch(showErrorMessage("Error occurred"));
+  const [getPersonData, { data: personsData }] = useMutation(GETPERSONDATA, {
+    onCompleted: (data) => {
+      props.onClose();
+      if (data.getPersonData.allSuccess) {
+        if (props.updateMelissaTable) {
+          props.updateMelissaTable();
         }
-      },
-    }
-  );
+        dispatch(showSuccessMessage("All records saved successfully"));
+      } else {
+        dispatch(showErrorMessage("Error occurred"));
+      }
+    },
+  });
 
   function loadPersonData() {
     let persons = [];
@@ -147,9 +144,12 @@ export default function BuyContactsInfoDialogContent(props) {
       persons.push(person);
     }
 
-    getPersonDataQuery({
+    getPersonData({
       variables: { persons },
-      refetchQueries: ["getLastMelissaRecord"],
+      refetchQueries: [
+        "getLastMelissaRecord",
+        "getMelissaRecordsCountForContactIds",
+      ],
       awaitRefetchQueries: true,
     });
   }
