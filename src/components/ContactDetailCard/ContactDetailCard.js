@@ -258,7 +258,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ContactDetailCard(props) {
-
   const dispatch = useDispatch();
   const shrinkRightColumn = useSelector(
     ({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn
@@ -308,7 +307,7 @@ export default function ContactDetailCard(props) {
     setShowExpandableCard(false);
     setStateApp((state) => ({
       ...state,
-      contactUpdated: null
+      contactUpdated: null,
     }));
   };
   const handleOpenExpandableCard = (subComponent, subComponentTitle) => {
@@ -334,18 +333,14 @@ export default function ContactDetailCard(props) {
   }, [shrinkRightColumn]);
 
   useEffect(() => {
-    console.log("STATE APP", stateApp, stateApp.selectedContact);
     if (stateApp.selectedContact) {
       getContact({
         variables: {
-          contactId:
-            stateApp.contactUpdated !== null
-              ? stateApp.contactUpdated
-              : stateApp.selectedContact,
+          contactId: stateApp.selectedContact,
         },
       });
     }
-  }, [stateApp.selectedContact, stateApp.contactUpdated]);
+  }, [stateApp.selectedContact]);
 
   useEffect(() => {
     if (data && data.contact) {
@@ -401,7 +396,7 @@ export default function ContactDetailCard(props) {
       setTransactId(tData.transactionData._id);
     }
   }, [tData, tLoading]);
-  
+
   return contactData ? (
     <div className={classes.mainGridContainer}>
       {/*/////////// left column //////////// */}
