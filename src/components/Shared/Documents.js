@@ -301,7 +301,7 @@ export default function Documents(props) {
         contactId: props.id,
       },
     });
-  }, []);
+  }, [props.id]);
 
   useEffect(() => {
     console.log("VIEW FILE RESULT", viewFileResult);
