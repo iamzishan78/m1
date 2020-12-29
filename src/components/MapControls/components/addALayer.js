@@ -222,6 +222,7 @@ export default function AddLayer(props) {
   async function handleFileAsync(file) {
     let inputFile = null;
     let fileName = null;
+    console.log("111111111111111111111111111111111111111", file);
     if (Array.isArray(file)) {
       inputFile = file[0].data;
       fileName = file[0].file.name;
@@ -235,8 +236,13 @@ export default function AddLayer(props) {
       console.log("GEOJSON Feature Service Path");
       res = await new Promise((resolve, reject) => {
         fetch(inputFile)
-          .then((response) => response.json())
           .then((response) => {
+            console.log("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr", response);
+            return response.json();
+          })
+          .then((response) => {
+            console.log("22222222222222222222222222222222222", response);
+            
             resolve(response);
           })
           .catch((error) => reject(error));

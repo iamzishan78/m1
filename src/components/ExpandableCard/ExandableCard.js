@@ -128,7 +128,7 @@ export default function ExpandableCard(props) {
       fontSize: "11px",
     },
     content: {
-      backgroundColor: "#efefef",
+      backgroundColor: "#fffff",
       transition: "height 0.1s",
       background: "#fff",
       padding: "0 !important",
