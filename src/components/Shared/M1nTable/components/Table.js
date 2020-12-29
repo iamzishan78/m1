@@ -752,10 +752,17 @@ function SubTable(props) {
 
                           if (selectedWell) {
                             if (props.targetLabel === "well") {
+                              if (props.parent === "owner_WellInterests") {
+                                selectedWell.id = selectedWell.wellId;
+                                delete selectedWell.wellId;
+                              }
                               setSelectedRow(selectedWell);
                               setStateApp((state) => ({
                                 ...state,
-                                selectedWellId: tableMeta.rowData[0],
+                                selectedWellId:
+                                  props.parent === "owner_WellInterests"
+                                    ? tableMeta.rowData[1]
+                                    : tableMeta.rowData[0],
                                 selectedWell: selectedWell,
                               }));
                               setSubComponent(<WellCardProvider />);
@@ -998,6 +1005,8 @@ function SubTable(props) {
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
+                      : props.parent === "owner_WellInterests"
+                      ? tableMeta.rowData[1]
                       : tableMeta.rowData[0];
                   return (
                     <TrackToggleButton
@@ -1044,6 +1053,8 @@ function SubTable(props) {
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
+                      : props.parent === "owner_WellInterests"
+                      ? tableMeta.rowData[1]
                       : tableMeta.rowData[0];
 
                   return (
@@ -1417,6 +1428,8 @@ function SubTable(props) {
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
+                      : props.parent === "owner_WellInterests"
+                      ? tableMeta.rowData[1]
                       : tableMeta.rowData[0];
 
                   return (
@@ -1831,6 +1844,7 @@ function SubTable(props) {
             );
             let selectedRowsIds = selectedRows.map((row) => {
               if (props.parent === "OwnersPerWell") return row.globalOwnerId;
+              if (props.parent === "owner_WellInterests") return row.wellId;
               if (row.id) return row.id;
               if (row.Id) return row.Id;
               if (row._id) return row._id;
