@@ -122,7 +122,8 @@ export default function SendMailersDialogContent(props) {
         recipients: props.rows.map(row => row._id)
       }
     });
-    window.open('https://m1neral.mydirectmailportal.com/uStore/Home','_blank');
+    const mailerPortalUrl = process.env.MAILER_PORTAL || 'https://m1neral.mydirectmailportal.com/uStore/Home';
+    console.log('mailerPortalUrl', mailerPortalUrl);
     props.onClose();
   }
 
