@@ -752,10 +752,17 @@ function SubTable(props) {
 
                           if (selectedWell) {
                             if (props.targetLabel === "well") {
+                              if (props.parent === "owner_WellInterests") {
+                                selectedWell.id = selectedWell.wellId;
+                                delete selectedWell.wellId;
+                              }
                               setSelectedRow(selectedWell);
                               setStateApp((state) => ({
                                 ...state,
-                                selectedWellId: tableMeta.rowData[0],
+                                selectedWellId:
+                                  props.parent === "owner_WellInterests"
+                                    ? tableMeta.rowData[1]
+                                    : tableMeta.rowData[0],
                                 selectedWell: selectedWell,
                               }));
                               setSubComponent(<WellCardProvider />);
@@ -998,6 +1005,8 @@ function SubTable(props) {
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
+                      : props.parent === "owner_WellInterests"
+                      ? tableMeta.rowData[1]
                       : tableMeta.rowData[0];
                   return (
                     <TrackToggleButton
@@ -1044,6 +1053,8 @@ function SubTable(props) {
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
+                      : props.parent === "owner_WellInterests"
+                      ? tableMeta.rowData[1]
                       : tableMeta.rowData[0];
 
                   return (
@@ -1417,6 +1428,8 @@ function SubTable(props) {
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
+                      : props.parent === "owner_WellInterests"
+                      ? tableMeta.rowData[1]
                       : tableMeta.rowData[0];
 
                   return (
@@ -1603,10 +1616,12 @@ function SubTable(props) {
 
                   ////// if non editable column
                   if (
-                    !column.editable &&
-                    props.targetLabel === "Parcel Ownershipship" &&
-                    column.name === "name" &&
-                    tableMeta.rowData[11] !== "false"
+                    (!column.editable &&
+                      props.targetLabel === "Parcel Ownershipship" &&
+                      column.name === "name" &&
+                      tableMeta.rowData[11] !== "false") ||
+                    ((column.name === "end" || column.name === "start") &&
+                      props.targetLabel === "activity")
                   ) {
                     //// if no value
                     if (value === "" || value === null || !value)
@@ -1625,6 +1640,11 @@ function SubTable(props) {
                     //// if value
                     return (
                       <div
+                        style={
+                          props.targetLabel === "activity"
+                            ? { minWidth: "175px" }
+                            : {}
+                        }
                         className={classes.cellDataDiv}
                         onClick={(e) => {
                           e.preventDefault();
@@ -1776,6 +1796,39 @@ function SubTable(props) {
       props.targetLabel !== "owner" &&
       props.targetLabel !== "production_detail",
     viewColumns: props.targetLabel !== "usermanagement",
+    onColumnViewChange: (changedColumn, action) => {
+      if (
+        props.parent === "Contacts" &&
+        columns &&
+        (action == "add" || action == "remove") &&
+        changedColumn
+      )
+        props.setColumnsBase([
+          ...columns.map((column) => {
+            if (column.name == changedColumn)
+              if (action == "add")
+                return {
+                  ...column,
+                  options: column.options
+                    ? { ...column.options, display: true }
+                    : {
+                        display: true,
+                      },
+                };
+              else
+                return {
+                  ...column,
+                  options: column.options
+                    ? { ...column.options, display: false }
+                    : {
+                        display: false,
+                      },
+                };
+
+            return column;
+          }),
+        ]);
+    },
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
       // console.log("currentRowsSelected", JSON.stringify(currentRowsSelected));
@@ -1791,6 +1844,7 @@ function SubTable(props) {
             );
             let selectedRowsIds = selectedRows.map((row) => {
               if (props.parent === "OwnersPerWell") return row.globalOwnerId;
+              if (props.parent === "owner_WellInterests") return row.wellId;
               if (row.id) return row.id;
               if (row.Id) return row.Id;
               if (row._id) return row._id;
@@ -2278,8 +2332,8 @@ function SubTable(props) {
             userId: stateApp.user.mongoId,
           },
         };
-        console.log('userId---=---', stateApp.user.mongoId);
-        console.log('action', action);
+        console.log("userId---=---", stateApp.user.mongoId);
+        console.log("action", action);
         switch (action) {
           case "changeRowsPerPage":
             console.log("changeRowsPerPage");
@@ -2560,95 +2614,95 @@ function SubTable(props) {
     return rows;
   };
 
-  if (props.loading || !(rows && rows.length && columns && columns.length))
-    return (
+  return (
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <div
-        style={{
-          padding: "15px",
-          position: "absolute",
-          top: "95px",
-          left: "30px",
-          zIndex: "150",
-        }}
+        className={`${classes.table} ${
+          rows && !props.loading ? "" : classes.loadingTable
+        } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
       >
-        <CircularProgress size={80} disableShrink color="secondary" />
-      </div>
-    );
-  else
-    return (
-      <div style={{ width: "100%", height: "100%", position: "relative" }}>
-        <div
-          className={`${classes.table} ${
-            rows && !props.loading ? "" : classes.loadingTable
-          } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
-        >
-          <MUIDataTable
-            className={
-              props.targetLabel == "owner"
-                ? customClassess.table
-                : props.targetLabel == "production_detail"
-                ? productionClassess.table
-                : classes.table
-            }
-            title={props.header}
-            data={rows ? rows : []}
-            // data={rows ? rows : []}
-            columns={columns ? columns : []}
-            options={{
-              download:
-                // props.targetLabel == "owner" || props.targetLabel == "well"
-                //   ? true
-                //   :
-                false,
-              ...options,
-            }}
-          />
+        <MUIDataTable
+          className={
+            props.targetLabel == "owner"
+              ? customClassess.table
+              : props.targetLabel == "production_detail"
+              ? productionClassess.table
+              : classes.table
+          }
+          title={props.header}
+          data={rows ? rows : []}
+          // data={rows ? rows : []}
+          columns={columns ? columns : []}
+          options={{
+            download:
+              // props.targetLabel == "owner" || props.targetLabel == "well"
+              //   ? true
+              //   :
+              false,
+            ...options,
+          }}
+        />
 
-          {/* <TransactDialog
+        {/* <TransactDialog
           selectRowOpenContact={selectRowOpenContact}
           contactId={props.contactId}
         /> */}
-          {openDialog && openDialog !== "addDeals" && (
-            <Dialog
-              className={classes.dialog}
-              open={openDialog ? true : false}
-              onClose={handleCloseDialog}
-              fullWidth={
-                openDialog === "comment" ||
-                openDialog === "owner" ||
-                openDialog === "wellsPerOwner" ||
-                openDialog === "buyContactsInfo" ||
-                openDialog === "sendMailers" ||
-                openDialog === "printLabels" ||
-                openDialog === "deleteUser" ||
-                openDialog === "addParcelInterestsToEntity"
-                  ? true
-                  : false
-              }
-              maxWidth={
-                openDialog === "owner" ||
-                openDialog === "wellsPerOwner" ||
-                openDialog === "ownerContacts"
-                  ? "xl"
-                  : openDialog === "owner" ||
-                    openDialog === "ownersPerContacts" ||
-                    openDialog === "wellsPerOwner" ||
-                    openDialog === "owner" ||
-                    openDialog === "wellsPerOwner" ||
-                    openDialog === "addParcelInterestsToEntity"
-                  ? "lg"
-                  : openDialog === "addContact" ||
-                    openDialog === "addOwnerToParcel" ||
-                    openDialog === "deleteOwnersFromContact" ||
-                    openDialog === "deleteContact" ||
-                    openDialog === "deleteUser"
-                  ? "xs"
-                  : "sm"
-              }
-            >
-              {openDialog === "comment" && (
-                <Comments
-                  focus
+        {openDialog && openDialog !== "addDeals" && (
+          <Dialog
+            className={classes.dialog}
+            open={openDialog ? true : false}
+            onClose={handleCloseDialog}
+            fullWidth={
+              openDialog === "comment" ||
+              openDialog === "owner" ||
+              openDialog === "wellsPerOwner" ||
+              openDialog === "buyContactsInfo" ||
+              openDialog === "sendMailers" ||
+              openDialog === "printLabels" ||
+              openDialog === "deleteUser" ||
+              openDialog === "addParcelInterestsToEntity"
+                ? true
+                : false
+            }
+            maxWidth={
+              openDialog === "owner" ||
+              openDialog === "wellsPerOwner" ||
+              openDialog === "ownerContacts"
+                ? "xl"
+                : openDialog === "owner" ||
+                  openDialog === "ownersPerContacts" ||
+                  openDialog === "wellsPerOwner" ||
+                  openDialog === "owner" ||
+                  openDialog === "wellsPerOwner" ||
+                  openDialog === "addParcelInterestsToEntity"
+                ? "lg"
+                : openDialog === "addContact" ||
+                  openDialog === "addOwnerToParcel" ||
+                  openDialog === "deleteOwnersFromContact" ||
+                  openDialog === "deleteContact" ||
+                  openDialog === "deleteUser"
+                ? "xs"
+                : "sm"
+            }
+          >
+            {openDialog === "comment" && (
+              <Comments
+                focus
+                targetSourceId={expandedObject}
+                targetLabel={
+                  trueTargetLabel ? trueTargetLabel : props.targetLabel
+                }
+                multipleIds={
+                  m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
+                  m1nSelectedRowsIndexes.length > 1
+                    ? removeDuplicatesIds(m1nSelectedRowsIds)
+                    : null
+                }
+              />
+            )}
+            {openDialog === "tag" && (
+              <div className={classes.tagsDiv}>
+                <Tags
                   targetSourceId={expandedObject}
                   targetLabel={
                     trueTargetLabel ? trueTargetLabel : props.targetLabel
@@ -2660,261 +2714,271 @@ function SubTable(props) {
                       : null
                   }
                 />
-              )}
-              {openDialog === "tag" && (
-                <div className={classes.tagsDiv}>
-                  <Tags
-                    targetSourceId={expandedObject}
-                    targetLabel={
-                      trueTargetLabel ? trueTargetLabel : props.targetLabel
-                    }
-                    multipleIds={
-                      m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
-                      m1nSelectedRowsIndexes.length > 1
-                        ? removeDuplicatesIds(m1nSelectedRowsIds)
-                        : null
-                    }
-                  />
-                </div>
-              )}
-              {openDialog === "owner" && (
-                <M1nTable
-                  selectedWell={{ id: expandedObject }}
-                  parent="OwnersPerWell"
-                />
-              )}
-              {openDialog === "wellsPerOwner" && (
-                <M1nTable
-                  wellsIdsArray={expandedObject}
-                  parent="WellsPerOwner"
-                />
-              )}
-              {openDialog === "makeOwnerAContact" && (
-                <MakeItAContactConfirmationDialogContent
-                  targetLabel={props.targetLabel}
-                  onClose={handleCloseDialog}
-                  entity={expandedObject}
-                  openContactDetailCard={(contactId) => {
-                    setTargetLabelToExpand("contact");
-                    setSelectedRow({ _id: contactId });
-                    setStateApp((stateApp) => ({
-                      ...stateApp,
-                      selectedContact: contactId,
-                    }));
-                    setSubComponent(
-                      <ContactDetailCard
-                        selectRowOpenContact={selectRowOpenContact}
-                        handleCloseExpandableCard={handleCloseExpandableCard}
-                      />
-                    );
-                    setTitle("Contact Details");
-                    setSubTitle(" ");
-                    handleCloseDialog();
-                    handleOpenExpandableCard();
-                  }}
-                >
-                  {`Do you want to create a new Contact from this Owner?`}
-                </MakeItAContactConfirmationDialogContent>
-              )}
+              </div>
+            )}
+            {openDialog === "owner" && (
+              <M1nTable
+                selectedWell={{ id: expandedObject }}
+                parent="OwnersPerWell"
+              />
+            )}
+            {openDialog === "wellsPerOwner" && (
+              <M1nTable wellsIdsArray={expandedObject} parent="WellsPerOwner" />
+            )}
+            {openDialog === "makeOwnerAContact" && (
+              <MakeItAContactConfirmationDialogContent
+                targetLabel={props.targetLabel}
+                onClose={handleCloseDialog}
+                entity={expandedObject}
+                openContactDetailCard={(contactId) => {
+                  setTargetLabelToExpand("contact");
+                  setSelectedRow({ _id: contactId });
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    selectedContact: contactId,
+                  }));
+                  setSubComponent(
+                    <ContactDetailCard
+                      selectRowOpenContact={selectRowOpenContact}
+                      handleCloseExpandableCard={handleCloseExpandableCard}
+                    />
+                  );
+                  setTitle("Contact Details");
+                  setSubTitle(" ");
+                  handleCloseDialog();
+                  handleOpenExpandableCard();
+                }}
+              >
+                {`Do you want to create a new Contact from this Owner?`}
+              </MakeItAContactConfirmationDialogContent>
+            )}
 
-              {openDialog === "addContact" &&
-                props.targetLabel === "contact" && (
-                  <AddContactDialogContent
-                    onClose={handleCloseDialog}
-                    parent={props.addAble.parent}
-                  />
-                )}
+            {openDialog === "addContact" && props.targetLabel === "contact" && (
+              <AddContactDialogContent
+                onClose={handleCloseDialog}
+                parent={props.addAble.parent}
+              />
+            )}
 
-              {openDialog === "addOwnerToParcel" && (
-                <AddParcelOwnerDialogContent
-                  onClose={handleCloseDialog}
-                  customLayerId={props.addAble.customLayerId}
-                />
-              )}
-              {openDialog === "addParcelInterestsToEntity" && (
-                <AddParcelToEntityDialogContent
-                  onClose={handleCloseDialog}
-                  entityId={props.addAble.entityId}
-                />
-              )}
-              {openDialog === "deleteOwnersFromContact" && (
-                <DeleteConfirmationDialogContent
-                  header="Delete Owner(s)"
-                  onClose={handleCloseDialog}
-                  deleteFunc={props.deleteFunc}
-                  m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
-                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-                >
-                  {`Do you want to permanently delete the owner${
+            {openDialog === "addOwnerToParcel" && (
+              <AddParcelOwnerDialogContent
+                onClose={handleCloseDialog}
+                customLayerId={props.addAble.customLayerId}
+              />
+            )}
+            {openDialog === "addParcelInterestsToEntity" && (
+              <AddParcelToEntityDialogContent
+                onClose={handleCloseDialog}
+                entityId={props.addAble.entityId}
+              />
+            )}
+            {openDialog === "deleteOwnersFromContact" && (
+              <DeleteConfirmationDialogContent
+                header="Delete Owner(s)"
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to permanently delete the owner${
+                  m1nSelectedRowsIds &&
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
+                } from  this contact?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "deleteContact" && (
+              <DeleteConfirmationDialogContent
+                header="Delete Contact(s)"
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {props.header === "Owner's Contacts" &&
+                  `Do you want to remove the contact${
                     m1nSelectedRowsIds &&
                     m1nSelectedRowsIds.length > 1 &&
                     removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                       ? "s"
                       : ""
-                  } from  this contact?`}
-                </DeleteConfirmationDialogContent>
-              )}
-              {openDialog === "deleteContact" && (
-                <DeleteConfirmationDialogContent
-                  header="Delete Contact(s)"
-                  onClose={handleCloseDialog}
-                  deleteFunc={props.deleteFunc}
-                  m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
-                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-                >
-                  {props.header === "Owner's Contacts" &&
-                    `Do you want to remove the contact${
-                      m1nSelectedRowsIds &&
-                      m1nSelectedRowsIds.length > 1 &&
-                      removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                        ? "s"
-                        : ""
-                    } from this owner?`}
+                  } from this owner?`}
 
-                  {props.header === "Contacts" &&
-                    `Do you want to delete the selected contact${
-                      m1nSelectedRowsIds &&
-                      m1nSelectedRowsIds.length > 1 &&
-                      removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                {props.header === "Contacts" &&
+                  `Do you want to delete the selected contact${
+                    m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                      ? "s"
+                      : ""
+                  }?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "deleteParcelOwnership" && (
+              <DeleteConfirmationDialogContent
+                header={`Delete Owner${
+                  m1nSelectedRowsIds &&
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
+                }`}
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to delete the owner${
+                  m1nSelectedRowsIds &&
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
+                }?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "deleteParcelInterest" && (
+              <DeleteConfirmationDialogContent
+                header={`Delete Parcel Interest${
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                }`}
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to delete the Parcel Interest${
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                }?`}
+              </DeleteConfirmationDialogContent>
+            )}
+
+            {openDialog === "deleteDeal" && (
+              <DeleteConfirmationDialogContent
+                header={`Delete Deal${
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                }`}
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to delete the selected deal${
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                }?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "buyContactsInfo" && (
+              <BuyContactsInfoDialogContent
+                onClose={handleCloseDialog}
+                rows={expandedObject}
+                setRows={setExpandedObject}
+                setSelectedRow={setSelectedRow}
+              />
+            )}
+            {openDialog === "sendMailers" && (
+              <SendMailersDialogContent
+                onClose={handleCloseDialog}
+                rows={expandedObject}
+                setRows={setExpandedObject}
+                setSelectedRow={setSelectedRow}
+              />
+            )}
+            {openDialog === "printLabels" && (
+              <PrintLabelsDialogContent
+                onClose={handleCloseDialog}
+                rows={expandedObject}
+                setRows={setExpandedObject}
+                setSelectedRow={setSelectedRow}
+              />
+            )}
+            {openDialog === "inviteUser" && (
+              <InviteUserDialog
+                rows={rows}
+                setRows={setExpandedObject}
+                onClose={handleCloseDialog}
+              />
+            )}
+            {openDialog === "reinviteUser" && (
+              <ReinviteUserDialog
+                selectedUser={selectedUser}
+                setRows={setExpandedObject}
+                onClose={handleCloseDialog}
+                onCloseMenu={closeMenu}
+              />
+            )}
+            {openDialog === "deleteUser" && (
+              <DeleteConfirmationDialogContent
+                header={`Delete User${
+                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                }`}
+                onClose={handleCloseDialog}
+                deleteFunc={() => {
+                  props.deleteFunc(selectedUser.id);
+                  closeMenu();
+                }}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {selectedUser !== null
+                  ? `Remove '${selectedUser.displayName}' from list?`
+                  : `Are you sure you want to delete selected user${
+                      m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
                         ? "s"
                         : ""
                     }?`}
-                </DeleteConfirmationDialogContent>
-              )}
-              {openDialog === "deleteParcelOwnership" && (
-                <DeleteConfirmationDialogContent
-                  header={`Delete Owner${
-                    m1nSelectedRowsIds &&
-                    m1nSelectedRowsIds.length > 1 &&
-                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                      ? "s"
-                      : ""
-                  }`}
-                  onClose={handleCloseDialog}
-                  deleteFunc={props.deleteFunc}
-                  m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
-                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-                >
-                  {`Do you want to delete the owner${
-                    m1nSelectedRowsIds &&
-                    m1nSelectedRowsIds.length > 1 &&
-                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                      ? "s"
-                      : ""
-                  }?`}
-                </DeleteConfirmationDialogContent>
-              )}
-              {openDialog === "deleteParcelInterest" && (
-                <DeleteConfirmationDialogContent
-                  header={`Delete Parcel Interest${
-                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                      ? "s"
-                      : ""
-                  }`}
-                  onClose={handleCloseDialog}
-                  deleteFunc={props.deleteFunc}
-                  m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
-                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-                >
-                  {`Do you want to delete the Parcel Interest${
-                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                      ? "s"
-                      : ""
-                  }?`}
-                </DeleteConfirmationDialogContent>
-              )}
+              </DeleteConfirmationDialogContent>
+            )}
+          </Dialog>
+        )}
 
-              {openDialog === "deleteDeal" && (
-                <DeleteConfirmationDialogContent
-                  header={`Delete Deal${
-                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                      ? "s"
-                      : ""
-                  }`}
-                  onClose={handleCloseDialog}
-                  deleteFunc={props.deleteFunc}
-                  m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
-                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-                >
-                  {`Do you want to delete the selected deal${
-                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                      ? "s"
-                      : ""
-                  }?`}
-                </DeleteConfirmationDialogContent>
-              )}
-              {openDialog === "buyContactsInfo" && (
-                <BuyContactsInfoDialogContent
-                  onClose={handleCloseDialog}
-                  rows={expandedObject}
-                  setRows={setExpandedObject}
-                  setSelectedRow={setSelectedRow}
-                />
-              )}
-              {openDialog === "sendMailers" && (
-                <SendMailersDialogContent
-                  onClose={handleCloseDialog}
-                  rows={expandedObject}
-                  setRows={setExpandedObject}
-                  setSelectedRow={setSelectedRow}
-                />
-              )}
-              {openDialog === "printLabels" && (
-                <PrintLabelsDialogContent
-                  onClose={handleCloseDialog}
-                  rows={expandedObject}
-                  setRows={setExpandedObject}
-                  setSelectedRow={setSelectedRow}
-                />
-              )}
-              {openDialog === "inviteUser" && (
-                <InviteUserDialog
-                  rows={rows}
-                  setRows={setExpandedObject}
-                  onClose={handleCloseDialog}
-                />
-              )}
-              {openDialog === "reinviteUser" && (
-                <ReinviteUserDialog
-                  selectedUser={selectedUser}
-                  setRows={setExpandedObject}
-                  onClose={handleCloseDialog}
-                  onCloseMenu={closeMenu}
-                />
-              )}
-              {openDialog === "deleteUser" && (
-                <DeleteConfirmationDialogContent
-                  header={`Delete User${
-                    m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                      ? "s"
-                      : ""
-                  }`}
-                  onClose={handleCloseDialog}
-                  deleteFunc={() => {
-                    props.deleteFunc(selectedUser.id);
-                    closeMenu();
-                  }}
-                  m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
-                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-                >
-                  {selectedUser !== null
-                    ? `Remove '${selectedUser.displayName}' from list?`
-                    : `Are you sure you want to delete selected user${
-                        m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                          ? "s"
-                          : ""
-                      }?`}
-                </DeleteConfirmationDialogContent>
-              )}
-            </Dialog>
-          )}
-
-          {multipleExpandableCard && targetLabelToExpand == "contact" && (
+        {multipleExpandableCard && targetLabelToExpand == "contact" && (
+          <Dialog
+            className={classes.dialogExpCard}
+            fullWidth
+            maxWidth="xl"
+            open={multipleExpandableCard}
+            onClose={handleCloseExpandableCard}
+          >
+            <ExpandableCardProvider
+              expanded={true}
+              handleCloseExpandableCard={handleCloseExpandableCard}
+              component={subComponent}
+              title={title}
+              subTitle={subTitle}
+              parent="table"
+              mouseX={0}
+              mouseY={0}
+              position="relative"
+              cardLeft={"0"}
+              cardTop={"0"}
+              zIndex={1201}
+              cardWidthExpanded="100%"
+              cardHeightExpanded="100%"
+              targetSourceId={selectedRow._id}
+              targetLabel={
+                targetLabelToExpand ? targetLabelToExpand : props.targetLabel
+              }
+              noTrackAvailable={
+                targetLabelToExpand === "contact" ||
+                (!targetLabelToExpand && props.targetLabel === "contact")
+                  ? true
+                  : false
+              }
+            />
+          </Dialog>
+        )}
+        {showExpandableCard &&
+          targetLabelToExpand !== "well" &&
+          targetLabelToExpand !== "contact" &&
+          multipleExpandableCard == false && (
             <Dialog
               className={classes.dialogExpCard}
               fullWidth
               maxWidth="xl"
-              open={multipleExpandableCard}
+              open={showExpandableCard}
               onClose={handleCloseExpandableCard}
             >
               <ExpandableCardProvider
@@ -2932,7 +2996,15 @@ function SubTable(props) {
                 zIndex={1201}
                 cardWidthExpanded="100%"
                 cardHeightExpanded="100%"
-                targetSourceId={selectedRow._id}
+                targetSourceId={
+                  targetLabelToExpand === "owner" ||
+                  targetLabelToExpand === "well" ||
+                  (!targetLabelToExpand &&
+                    (props.targetLabel === "owner" ||
+                      props.targetLabel === "well"))
+                    ? selectedRow.id
+                    : selectedRow._id
+                }
                 targetLabel={
                   targetLabelToExpand ? targetLabelToExpand : props.targetLabel
                 }
@@ -2945,73 +3017,24 @@ function SubTable(props) {
               />
             </Dialog>
           )}
-          {showExpandableCard &&
-            targetLabelToExpand !== "well" &&
-            targetLabelToExpand !== "contact" &&
-            multipleExpandableCard == false && (
-              <Dialog
-                className={classes.dialogExpCard}
-                fullWidth
-                maxWidth="xl"
-                open={showExpandableCard}
-                onClose={handleCloseExpandableCard}
-              >
-                <ExpandableCardProvider
-                  expanded={true}
-                  handleCloseExpandableCard={handleCloseExpandableCard}
-                  component={subComponent}
-                  title={title}
-                  subTitle={subTitle}
-                  parent="table"
-                  mouseX={0}
-                  mouseY={0}
-                  position="relative"
-                  cardLeft={"0"}
-                  cardTop={"0"}
-                  zIndex={1201}
-                  cardWidthExpanded="100%"
-                  cardHeightExpanded="100%"
-                  targetSourceId={
-                    targetLabelToExpand === "owner" ||
-                    targetLabelToExpand === "well" ||
-                    (!targetLabelToExpand &&
-                      (props.targetLabel === "owner" ||
-                        props.targetLabel === "well"))
-                      ? selectedRow.id
-                      : selectedRow._id
-                  }
-                  targetLabel={
-                    targetLabelToExpand
-                      ? targetLabelToExpand
-                      : props.targetLabel
-                  }
-                  noTrackAvailable={
-                    targetLabelToExpand === "contact" ||
-                    (!targetLabelToExpand && props.targetLabel === "contact")
-                      ? true
-                      : false
-                  }
-                />
-              </Dialog>
-            )}
-        </div>
-
-        {props.loading && (
-          <div
-            style={{
-              padding: "15px",
-              position: "absolute",
-              top: "95px",
-              left: "30px",
-              zIndex: "150",
-            }}
-          >
-            <CircularProgress size={80} disableShrink color="secondary" />
-          </div>
-        )}
-        {isUMSettings}
       </div>
-    );
+
+      {props.loading && (
+        <div
+          style={{
+            padding: "15px",
+            position: "absolute",
+            top: "95px",
+            left: "30px",
+            zIndex: "150",
+          }}
+        >
+          <CircularProgress size={80} disableShrink color="secondary" />
+        </div>
+      )}
+      {isUMSettings}
+    </div>
+  );
 }
 
 export default React.memo(SubTable, deepEqualObjects);
