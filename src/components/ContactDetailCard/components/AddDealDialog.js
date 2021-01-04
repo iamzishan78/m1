@@ -494,9 +494,12 @@ function AddDealDialog(props) {
       setDealPosition(card.position ? card.position : null);
       // setColaborators(card.colaborators ? card.colaborators : []);
       setOriginationDate(card.ts ? card.ts : null);
+
       setOwnerId(
         card.owners?.length > 0
           ? card.owners[0]?.relatedObject?._id
+            ? card.owners[0]?.relatedObject?._id
+            : card.ownerId
           : stateApp.user.mongoId
       );
 
