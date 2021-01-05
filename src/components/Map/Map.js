@@ -3751,7 +3751,7 @@ export default function Map() {
             source: "plssseconddivision_geo_source",
             paint: {
               "fill-color": "rgba(0, 0, 0, 0)",
-              "fill-outline-color": "rgba(0, 6, 15, .17)"
+              "fill-outline-color": "rgba(0, 6, 15, 0.17)"
             },
           });
 
@@ -3761,11 +3761,15 @@ export default function Map() {
             minzoom: 14,
             source: "plssseconddivision_label_geo_source",
             layout: {
+              "text-font": ["Open Sans SemiBold", "Arial Unicode MS Regular"],
               "text-field": "{ShortName}",
               "text-anchor": "center",
             },
             paint: {
-              "text-color": "#888",
+              "text-color": "hsla(0, 0%, 0%, 0.75)",
+              "text-halo-color": "hsl(35, 16%, 100%)",
+              "text-halo-width": 0.5,
+              "text-halo-blur": 0.5
             },
           });
 
