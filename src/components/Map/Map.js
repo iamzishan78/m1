@@ -698,6 +698,17 @@ export default function Map() {
             data: geoJson,
             promoteId: "id",
           });
+
+          let pointSource = geoJson.features.map(feature => {
+            return {...turf.centroid(feature), properties: feature.properties}
+          })
+
+          pointSource = {type: "FeatureCollection", features: [...pointSource]}
+
+          map.addSource(`${sourceId}_point`, {
+            type: "geojson",
+            data: pointSource
+          })
         }
       }
 
@@ -770,8 +781,17 @@ export default function Map() {
             type: prop.labelProps.paintType,
             source: sourceId,
             minzoom: prop.labelProps.minZoom,
-            layout: labelLayout,
+            // layout: labelLayout,
           });
+
+          // add point
+          map.addLayer({
+            id: `${prop.id}_point`,
+            type: 'symbol',
+            source: `${sourceId}_point`,
+            minzoom: prop.labelProps.minZoom,
+            layout: labelLayout,
+        });
         }
       }
 
