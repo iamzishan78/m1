@@ -48,6 +48,7 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
+import { PLSSSECONDDIVISIONGEO } from "../../graphQL/useQueryPLSSSecondDivisionGeo";
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 import { OWNERSQUERY } from "../../graphQL/useQueryOwners";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
@@ -345,6 +346,9 @@ export default function Map() {
   );
   const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(
     ABSTRACTGEOCONTAINSQUERY
+  );
+  const [getPLSSSecondDivisionGeo, { data: plssSecondDivisionData }] = useLazyQuery(
+    PLSSSECONDDIVISIONGEO
   );
 
   const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(
@@ -3234,6 +3238,49 @@ export default function Map() {
 
   useEffect(() => {
     if (
+      plssSecondDivisionData &&
+      plssSecondDivisionData.plssSecondDivisionGeo &&
+      plssSecondDivisionData.plssSecondDivisionGeo.length > 0
+    ) {
+      const data = plssSecondDivisionData.plssSecondDivisionGeo;
+      const makeGeoJSON = (data) => {
+        return {
+          type: "FeatureCollection",
+          features: data.map((feature) => {
+            return JSON.parse(feature.geo_json);
+          }),
+        };
+      };
+
+      const makeLabelGeoJson = (data) => {
+        return {
+          type: "FeatureCollection",
+          features: data.map((feature) => {
+            const geoJSON = JSON.parse(feature.geo_json);
+            if (
+              geoJSON.geometry &&
+              geoJSON.geometry.coordinates[0].length >= 4
+            ) {
+              const polygon = turf.polygon(geoJSON.geometry.coordinates);
+              const centroid = turf.centroid(polygon);
+              centroid.properties.ShortName =
+                geoJSON.properties.ShortName;
+              return centroid;
+            }
+          }),
+        };
+      };
+
+      const geoJson = makeGeoJSON(data);
+      const labelGeoJson = makeLabelGeoJson(data);
+
+      map.getSource("plssseconddivision_geo_source").setData(geoJson);
+      map.getSource("plssseconddivision_label_geo_source").setData(labelGeoJson);
+    }
+  }, [plssSecondDivisionData]);
+
+  useEffect(() => {
+    if (
       abstractContainsData &&
       abstractContainsData.abstractGeoContains &&
       abstractContainsData.abstractGeoContains.length > 0
@@ -3557,6 +3604,31 @@ export default function Map() {
               },
             });
           }
+
+          if (map.getZoom() >= 14) {
+            const bounds = map.getBounds();
+            const bbox = [
+              bounds.getWest(),
+              bounds.getSouth(),
+              bounds.getEast(),
+              bounds.getNorth(),
+            ];
+            const bboxPolygon = turf.bboxPolygon(bbox);
+            let polygonString = "POLYGON((";
+            bboxPolygon.geometry.coordinates[0].forEach((coordinate, index) => {
+              polygonString += coordinate[0] + " " + coordinate[1];
+              if (index < bboxPolygon.geometry.coordinates[0].length - 1) {
+                polygonString += ", ";
+              }
+            });
+            polygonString += "))";
+
+            getPLSSSecondDivisionGeo({
+              variables: {
+                polygon: polygonString,
+              },
+            });
+          }
         };
 
         newMap.on("zoomend", function (e) {
@@ -3606,6 +3678,24 @@ export default function Map() {
             promoteId: "Id",
           });
 
+          newMap.addSource("plssseconddivision_geo_source", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: [],
+            },
+            promoteId: "Id",
+          });
+
+          newMap.addSource("plssseconddivision_label_geo_source", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: [],
+            },
+            promoteId: "Id",
+          });
+
           newMap.addLayer({
             id: "abstract_geo_fill_layer",
             type: "fill",
@@ -3647,6 +3737,31 @@ export default function Map() {
             source: "abstract_label_geo_source",
             layout: {
               "text-field": "{AbstractName}",
+              "text-anchor": "center",
+            },
+            paint: {
+              "text-color": "#888",
+            },
+          });
+
+          newMap.addLayer({
+            id: "plssseconddivision_geo_layer",
+            type: "fill",
+            minzoom: 14,
+            source: "plssseconddivision_geo_source",
+            paint: {
+              "fill-color": "rgba(0, 0, 0, 0)",
+              "fill-outline-color": "rgba(0, 6, 15, .17)"
+            },
+          });
+
+          newMap.addLayer({
+            id: "plssseconddivision_geo_label_layer",
+            type: "symbol",
+            minzoom: 14,
+            source: "plssseconddivision_label_geo_source",
+            layout: {
+              "text-field": "{ShortName}",
               "text-anchor": "center",
             },
             paint: {
