@@ -746,6 +746,11 @@ export default function Map() {
           "visibility",
           visible ? "visible" : "none"
         );
+        map.setLayoutProperty(
+          `${prop.id}_point`,
+          "visibility",
+          visible ? "visible" : "none"
+        )
         if (prop.paintProps) {
           Object.keys(prop.paintProps).forEach((key) => {
             map.setPaintProperty(layerId, key, prop.paintProps[key]);
@@ -776,13 +781,13 @@ export default function Map() {
         if (prop.labelProps) {
           let labelLayout = { visibility: visible ? "visible" : "none" };
           labelLayout = { ...labelLayout, ...prop.labelProps.symbolProps };
-          map.addLayer({
-            id: `${prop.id}_label`,
-            type: prop.labelProps.paintType,
-            source: sourceId,
-            minzoom: prop.labelProps.minZoom,
-            // layout: labelLayout,
-          });
+          // map.addLayer({
+          //   id: `${prop.id}_label`,
+          //   type: prop.labelProps.paintType,
+          //   source: sourceId,
+          //   minzoom: prop.labelProps.minZoom,
+          //   // layout: labelLayout,
+          // });
 
           // add point
           map.addLayer({
