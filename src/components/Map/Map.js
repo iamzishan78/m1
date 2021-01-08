@@ -1342,7 +1342,7 @@ export default function Map() {
       // -> remove source
       const sourceId = prop.sourceProps;
       if (map.getSource(sourceId)) map.removeSource(sourceId);
-
+      if (map.getSource(`${sourceId}_point`)) map.removeSource(`${sourceId}_point`);
       if (map.getSource(`${sourceId}_filter`))
         map.removeSource(`${sourceId}_filter`);
     }
@@ -2591,6 +2591,13 @@ export default function Map() {
                 true,
                 false,
               ]);
+              map.setFilter(filterLayer + "_point", [
+                "match",
+                ["get", "shapeLabel"],
+                mergeArrays(filterCustomArray[filterLayer]),
+                true,
+                false,
+              ]);
               map.setFilter(filterLayer + "_labels", [
                 "match",
                 ["get", "shapeLabel"],
@@ -2660,6 +2667,13 @@ export default function Map() {
                     true,
                     false,
                   ]);
+                  map.setFilter(filterLayer + "_point", [
+                    "match",
+                    ["get", "shapeLabel"],
+                    "-1",
+                    true,
+                    false,
+                  ]);
                   map.setFilter(filterLayer + "_labels", [
                     "match",
                     ["get", "shapeLabel"],
@@ -2689,6 +2703,9 @@ export default function Map() {
               const layer = map.getLayer(filterLayer);
               if (layer) {
                 map.setFilter(filterLayer, null);
+                if (map.getLayer(filterLayer + "_point")) {
+                  map.setFilter(filterLayer + "_point", null);
+                }
                 if (map.getLayer(filterLayer + "_labels")) {
                   map.setFilter(filterLayer + "_labels", null);
                 }
@@ -2728,6 +2745,7 @@ export default function Map() {
         map.setFilter("basinLabels", null);
         map.setFilter("interest", null);
         map.setFilter("parcel", null);
+        map.setFilter("parcel_point", null);
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
         map.setFilter("wellsHeatmapLast12", [
           ">",
