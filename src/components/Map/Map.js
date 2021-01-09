@@ -2744,6 +2744,7 @@ export default function Map() {
         map.setFilter("basinLayer", null);
         map.setFilter("basinLabels", null);
         map.setFilter("interest", null);
+        map.setFilter("interest_point", null);
         map.setFilter("parcel", null);
         map.setFilter("parcel_point", null);
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
