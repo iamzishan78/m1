@@ -2299,6 +2299,8 @@ export default function Map() {
             totalCount += stateNav.basinName.length;
           }
         }
+      } else {
+        stateApp.toggleLayersActivity("Basins", false);
       }
 
       if (stateNav.filterAOI && stateNav.filterAOI.length > 0) {
@@ -2334,6 +2336,8 @@ export default function Map() {
         isFilterSet = true;
         geographyFilterCount += stateNav.aoiName.length;
         totalCount += stateNav.aoiName.length;
+      } else {
+        stateApp.toggleLayersActivity("Area of Interest", false);
       }
 
       if (stateNav.filterParcel && stateNav.filterParcel.length > 0) {
@@ -2369,6 +2373,8 @@ export default function Map() {
         isFilterSet = true;
         geographyFilterCount += stateNav.parcelName.length;
         totalCount += stateNav.parcelName.length;
+      } else {
+        stateApp.toggleLayersActivity("Parcels", false);
       }
 
       if (fitBounds) {
