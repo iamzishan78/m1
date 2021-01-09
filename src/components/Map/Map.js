@@ -741,13 +741,14 @@ export default function Map() {
       }
 
       if (map.getLayer(layerId)) {
+        map.moveLayer(`${layerId}_point`);
         map.setLayoutProperty(
           layerId,
           "visibility",
           visible ? "visible" : "none"
         );
         map.setLayoutProperty(
-          `${prop.id}_point`,
+          `${layerId}_point`,
           "visibility",
           visible ? "visible" : "none"
         )
@@ -756,6 +757,7 @@ export default function Map() {
             map.setPaintProperty(layerId, key, prop.paintProps[key]);
           });
         }
+        
       } else {
         //// joining all properties before to set the new layer ////
         let layout = { visibility: visible ? "visible" : "none" };
@@ -791,12 +793,13 @@ export default function Map() {
 
           // add point
           map.addLayer({
-            id: `${prop.id}_point`,
-            type: 'symbol',
-            source: `${sourceId}_point`,
-            minzoom: prop.labelProps.minZoom,
-            layout: labelLayout,
-        });
+              id: `${layerId}_point`,
+              type: 'symbol',
+              source: `${sourceId}_point`,
+              minzoom: prop.labelProps.minZoom,
+              layout: labelLayout,
+          });
+          map.moveLayer(`${layerId}_point`);
         }
       }
 
