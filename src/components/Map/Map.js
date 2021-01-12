@@ -782,7 +782,10 @@ export default function Map() {
 
         if (prop.labelProps) {
           let labelLayout = { visibility: visible ? "visible" : "none" };
-          labelLayout = { ...labelLayout, ...prop.labelProps.symbolProps };
+          labelLayout = {
+            ...labelLayout,
+            ...prop.labelProps.symbolProps,
+            };
           // map.addLayer({
           //   id: `${prop.id}_label`,
           //   type: prop.labelProps.paintType,
@@ -790,6 +793,37 @@ export default function Map() {
           //   minzoom: prop.labelProps.minZoom,
           //   // layout: labelLayout,
           // });
+
+          // override label properties for parcel and interest
+          if(layerId === 'parcel'){
+            labelLayout = { 
+              ...labelLayout,
+              "text-size": [
+                "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  12,
+                  12,
+                  15,
+                  28
+                ]
+            }
+          } else if (layerId === 'interest'){
+            labelLayout = { 
+              ...labelLayout,
+              "text-size": [
+                "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  9,
+                  16,
+                  11,
+                  32,
+                  15,
+                  54
+                ]
+            }
+          }
 
           // add point
           map.addLayer({
