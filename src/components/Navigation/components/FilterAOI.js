@@ -38,6 +38,12 @@ export default () => {
 
   const handleAOIChange = (value) => {
     let filter;
+
+    const currentLayers = [...stateApp.layers];
+    const index = currentLayers.findIndex(
+      (l) => l.identifier == "Area of Interest"
+    );
+
     if (value && value.length) {
       const layers = aoiData.filter((aoi) => value.indexOf(aoi.name) > -1);
       filter = layers.map((basinShape) => {
@@ -46,9 +52,13 @@ export default () => {
       console.log(layers, filter);
       setStateNav((stateNav) => ({ ...stateNav, aoiName: value }));
       setAOIName(value);
+
+      // set prev visibility
+      setStateApp((stateApp) => ({ ...stateApp, prevBasinVisible: currentLayers[index].layerSettings.visiable }))
     } else {
       filter = null;
       setStateNav((stateNav) => ({ ...stateNav, aoiName: null }));
+      stateApp.toggleLayersActivity("Area of Interest", stateApp.prevAOIVisible);
     }
     setStateNav((stateNav) => ({ ...stateNav, filterAOI: filter }));
   };

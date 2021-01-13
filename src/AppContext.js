@@ -151,6 +151,9 @@ const AppProvider = (props) => {
     currentContatcAtivities: [],
     dealDisplayType: "board",
     activityDisplayType: "calendar",
+    prevAOIVisible: false,
+    prevParcelVisible: false,
+    prevBasinVisible: false,
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;
