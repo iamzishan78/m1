@@ -123,8 +123,6 @@ export default (props) => {
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [user, setUser] = useState({ _id: "" });
 
-  const area = 398865.45; // TODO
-
   useEffect(() => {
     if(!customLayerInsertedData) {
       return;
@@ -159,78 +157,23 @@ export default (props) => {
     }
   }, [customLayerInsertedData]);
 
-  useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  const calculateLandArea = (feature) => {
-    if (feature) {
-      if (feature.geometry.type === "Polygon") {
-        const areaInSqMeters = area(feature);
-        const areaInAcres = convertArea(areaInSqMeters, "meters", "acres");
-        return `${Math.round(areaInAcres * 100) / 100}`;
-      }
-    }
-  };
-
-  const calculateShapeCenter = shapeCoordinates => polylabel(shapeCoordinates);
-
-  const saveAndOpenParcelDetail = function () {
-    if (!user._id) {
-      console.log("No user found!");
-      return;
-    }
-    const abstractShape = stateApp.selectedAbstracts[0];
-    let parcelName, originalProperties;
-    if(abstractShape.properties.State === "TX") {
-      parcelName = abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
-      originalProperties = [abstractShape.properties];
-    } else {
-      parcelName = "PLSS Default Name";
-      originalProperties = [];
-    }
-    const featureId = hat();
-    const newShapeFeature = {
-      id: featureId,
-      type: "Feature",
-      geometry: abstractShape.geometry,
-      properties: {
-        "originalProperties": originalProperties,
-        "sdType": "parcel",
-        "shapeLabel": parcelName,
-        "projectName": "",
-        "sdNotes": "",
-        "sdGrossAcres": "",
-        "shapeArea": calculateLandArea(abstractShape),
-        "shapeCenter": calculateShapeCenter(abstractShape.geometry.coordinates),
-        "shapeLabelLayer": "",
-        "id": featureId
-      }
-    }
-    const customLayerData = {
-      shape: JSON.stringify(newShapeFeature),
-      layer: 'parcel',
-      name: parcelName,
-      user: user._id,
-      state: abstractShape.properties.State
-    };
-
-    upsertCustomLayer({
-      variables: { customLayer: customLayerData }
-    });
+  const formatNumber = (number) => {
+    return number.toLocaleString('en-US', { maximumFractionDigits:2 });
   }
+  const calculateLandArea = () => {
+    const { selectedFeature } = props;
+    if (selectedFeature) {
+      if (selectedFeature.geometry.type === "Polygon") {
+        const areaInSqMeters = area(selectedFeature);
+        const areaInAcres = convertArea(areaInSqMeters, "meters", "acres");
+        return `${formatNumber(Math.round(areaInAcres * 100) / 100)} acres`;
+      }
+      if (selectedFeature.geometry.type === "LineString") {
+        const distanceInMiles = length(selectedFeature, { units: "miles" });
+        return `${formatNumber(Math.round(distanceInMiles * 100) / 100)} miles`;
+      }
+    }    
+  };
 
   const handleClose = function () {
     let popUps = document.getElementsByClassName("mapboxgl-popup");
@@ -255,7 +198,7 @@ export default (props) => {
       <div className={classes.mapOverlay}>
         <div class={classes.mapOverlayInner}>
           <div className={classes.content}>
-            <span class={classes.label}>Calc. Area</span> {area} acres
+            <span class={classes.label}>Calc. Area</span> {calculateLandArea()}
             <span class={classes.actions}>
               <Tooltip title="Grid">
                 <IconButton size="small" /*onClick={saveAndOpenParcelDetail}*/ aria-label="Grid" >
