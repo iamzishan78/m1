@@ -377,7 +377,7 @@ export default function DrawShapes(props) {
           selectedFeature={stateApp.currentFeature}
         />*/
         <ShapeActionsPopup
-          abstracts={[]}
+          selectedFeature={stateApp.currentFeature}
           //abstracts={stateApp.selectedAbstracts}
           //map={map}
           //onClickExpand={handleAnchorElPopOver}
