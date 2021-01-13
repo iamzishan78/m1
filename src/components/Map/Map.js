@@ -3422,6 +3422,7 @@ export default function Map() {
           .features;
 
         if (window.event.ctrlKey || window.event.metaKey) {
+          console.log("window.event.ctrlKey");
           if (featureState && featureState.click) {
             // Unselect feature
             map.setFeatureState(

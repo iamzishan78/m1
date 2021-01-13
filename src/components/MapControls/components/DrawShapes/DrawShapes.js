@@ -15,6 +15,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 //import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 // COMPONENTS
 import SpatialDataCard from "../spatialDataCard";
+import ShapeActionsPopup from "../popup/ShapeActionsPopup";
 // HELPERS
 import { area, convertArea } from "@turf/turf";
 import { spatialDataAttributes } from "./constants";
@@ -369,11 +370,17 @@ export default function DrawShapes(props) {
       !stateApp.currentFeature.id.includes("drag_circle") &&
       !stateApp.currentFeature.id.includes("draw_rectangle") &&
       !stateApp.currentFeature.id.includes("edit_polygon") ? (
-        <SpatialDataCard
+        /*<SpatialDataCard
           closeSpatialDataCard={() => toggleSpatialDataCard(false)}
           saveSpatialData={handleSaveSpatialDataToShape}
           deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
           selectedFeature={stateApp.currentFeature}
+        />*/
+        <ShapeActionsPopup
+          abstracts={[]}
+          //abstracts={stateApp.selectedAbstracts}
+          //map={map}
+          //onClickExpand={handleAnchorElPopOver}
         />
       ) : null}
     </React.Fragment>
