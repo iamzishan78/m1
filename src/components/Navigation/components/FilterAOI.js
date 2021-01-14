@@ -54,7 +54,7 @@ export default () => {
       setAOIName(value);
 
       // set prev visibility
-      setStateApp((stateApp) => ({ ...stateApp, prevBasinVisible: currentLayers[index].layerSettings.visiable }))
+      setStateApp((stateApp) => ({ ...stateApp, prevAOIVisible: currentLayers[index].layerSettings.visiable }))
     } else {
       filter = null;
       setStateNav((stateNav) => ({ ...stateNav, aoiName: null }));
