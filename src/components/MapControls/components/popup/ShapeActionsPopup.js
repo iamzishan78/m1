@@ -13,8 +13,10 @@ import { area, convertArea, length } from "@turf/turf";
 import polylabel from "polylabel";
 import hat from 'hat';
 import { AppContext } from "../../../../AppContext";
+import { NavigationContext } from "../../../Navigation/NavigationContext";
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
 import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
+import { ABSTRACTGEOCONTAINSQUERY } from "../../../../graphQL/useQueryAbstractGeoContains";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "../../../../actions";
@@ -64,7 +66,10 @@ const useStyles = makeStyles((theme) => ({
       color: "#fff",
       '&:hover': {
         color: "rgb(102 146 202)",
-      }
+      },
+      '&.selected': {
+        color: "rgb(102 146 202)",
+      },
     }
   },
   whiteText: {
@@ -82,6 +87,7 @@ export default (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
   const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel}] = useMutation(
     UPSERTCUSTOMLAYER,
     {
@@ -124,6 +130,9 @@ export default (props) => {
   );
   const [error, setError] = useState(false);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
+  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(
+    ABSTRACTGEOCONTAINSQUERY
+  );
   const [user, setUser] = useState({ _id: "" });
 
   useEffect(() => {
@@ -196,7 +205,7 @@ export default (props) => {
     }));
   }
 
-  const showWellsAndOwners = () => {
+  const actionShowWellsAndOwners = () => {
     // TODO: save in state grid wells and owners
     // maybe better save in state boundaries than wells and owners
     dispatch(
@@ -212,6 +221,51 @@ export default (props) => {
     }));
   }
 
+  const actionFilter = () => {
+    if (stateApp.shapeActionsFilterSelected) {
+      stateApp.draw.changeMode("simple_select");
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        drawingMode: null,
+        filterFeatureId: null,
+        filterDrawing: [],
+      }));
+
+      setStateApp((state) => ({
+        ...state,
+        shapeActionsFilterSelected: false,
+      }));
+    } else {
+      let feature = props.selectedFeature;
+
+      let polygonString = "POLYGON((";
+      feature.geometry.coordinates[0].forEach((coordinate, index) => {
+        polygonString += coordinate[0] + " " + coordinate[1];
+        if (index < feature.geometry.coordinates[0].length - 1) {
+          polygonString += ", ";
+        }
+      });
+      polygonString += "))";
+
+      getAbstractGeoContains({
+        variables: {
+          polygon: polygonString,
+        },
+      });
+
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        drawingMode: null,
+        filterDrawing: ["within", feature],
+      }));
+
+      setStateApp((state) => ({
+        ...state,
+        shapeActionsFilterSelected: true,
+      }));
+    }
+  }
+
   return (
     <Fragment>
       <div className={classes.mapOverlay}>
@@ -220,13 +274,13 @@ export default (props) => {
             <span class={classes.label}>Calc. Area</span> {calculateLandArea()}
             <span class={classes.actions}>
               <Tooltip title="Grid">
-                <IconButton size="small" onClick={showWellsAndOwners} aria-label="Grid" >
+                <IconButton size="small" onClick={actionShowWellsAndOwners} aria-label="Grid" >
                   <GridOnIcon />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Filter">
-                <IconButton size="small" /*onClick={saveAndOpenParcelDetail}*/ aria-label="Filter" >
-                  <FilterAltIcon />
+                <IconButton size="small" onClick={actionFilter} aria-label="Filter" >
+                  <FilterAltIcon className={ stateApp.shapeActionsFilterSelected ? "selected" : "" } />
                 </IconButton>
               </Tooltip>
               <Tooltip title="AOI">
