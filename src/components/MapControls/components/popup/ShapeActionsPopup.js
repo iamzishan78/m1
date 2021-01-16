@@ -16,6 +16,8 @@ import { AppContext } from "../../../../AppContext";
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
 import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
 import Tooltip from "@material-ui/core/Tooltip";
+import { useDispatch } from "react-redux";
+import { setMapGridCardState } from "../../../../actions";
 
 import { gql } from "@apollo/client";
 
@@ -77,6 +79,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default (props) => {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel}] = useMutation(
@@ -193,6 +196,22 @@ export default (props) => {
     }));
   }
 
+  const showWellsAndOwners = () => {
+    // TODO: save in state grid wells and owners
+    // maybe better save in state boundaries than wells and owners
+    dispatch(
+      setMapGridCardState({
+        mapGridCardActivated: true,
+        mapGridCardActiveTap: 3,
+      })
+    );
+    setStateApp((state) => ({
+      ...state,
+      gridWells: [],
+      gridOwners: [],
+    }));
+  }
+
   return (
     <Fragment>
       <div className={classes.mapOverlay}>
@@ -201,7 +220,7 @@ export default (props) => {
             <span class={classes.label}>Calc. Area</span> {calculateLandArea()}
             <span class={classes.actions}>
               <Tooltip title="Grid">
-                <IconButton size="small" /*onClick={saveAndOpenParcelDetail}*/ aria-label="Grid" >
+                <IconButton size="small" onClick={showWellsAndOwners} aria-label="Grid" >
                   <GridOnIcon />
                 </IconButton>
               </Tooltip>
