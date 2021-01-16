@@ -437,6 +437,12 @@ function MapGridCard(props) {
                 }`}
                 {...a11yProps(1)}
               />
+
+              <Tab
+                className="cancelDraggableEffect"
+                label={`Shape Filter`}
+                {...a11yProps(1)}
+              />
             </Tabs>
 
             <IconButton
@@ -657,6 +663,18 @@ function MapGridCard(props) {
                 />
               </div>
             </TabPanel>
+
+            {/* //// shape filter //// */}
+            <TabPanel
+              value={mapGridCardActiveTap}
+              index={3}
+              className={classes.tapsPanelsPadding}
+            >
+              <div style={{ position: "relative" }}>
+                TODO later
+              </div>
+            </TabPanel>
+
           </div>
         )}
       </Card>
