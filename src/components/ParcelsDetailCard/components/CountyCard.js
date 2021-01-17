@@ -19,7 +19,7 @@ function CountyCard(props) {
     let classes = useStyles();
     return (
         <div className={classes.iconContainer}>
-            <CountyIcon htmlColor='black' viewBox="0 0 280.245 280.245" fontSize="large" />
+            <CountyIcon htmlColor='black' viewBox="0 0 280.245 280.245" fontSize="large" style={{ transform: 'scale(0.9)' }} />
             <Typography
                 align="center"
                 variant="subtitle2"

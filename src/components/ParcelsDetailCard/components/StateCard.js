@@ -22,7 +22,7 @@ function StateCard(props) {
 
     return (
         <div className={classes.iconContainer}>
-            <StateIcon htmlColor='black' viewBox="0 0 1000 1000" fontSize="large" />
+            <StateIcon htmlColor='black' viewBox="0 0 1000 1000" fontSize="large" style={{ transform: 'scale(1.2)' }} />
             <Typography
                 align="center"
                 variant="subtitle2"

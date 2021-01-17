@@ -22,7 +22,7 @@ function AbstractCard(props) {
 
     return (
         <div className={classes.iconContainer}>
-            <AbstractIcon viewBox="0 0 700 492" fontSize="large" />
+            <AbstractIcon viewBox="0 0 700 492" fontSize="large" style={{ transform: 'scale(1.2)' }} />
             <Typography
                 align="center"
                 variant="subtitle2"
