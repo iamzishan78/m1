@@ -2,8 +2,7 @@ import React, { useContext,useState } from 'react';
 import { makeStyles,useTheme } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography'
 import { AppContext } from '../../../AppContext';
-import QuestionIcon from "@material-ui/icons/Help";
-import moment from 'moment'
+import BlockIcon from '../svgIcons/BlockIcon';
 
 const useStyles = makeStyles(theme => ({
     iconContainer: {
@@ -18,11 +17,9 @@ const useStyles = makeStyles(theme => ({
 
 function MeridianCard(props) {
     let classes = useStyles();
-    const [stateApp, setStateApp] = useContext(AppContext)
-
     return (
         <div className={classes.iconContainer}>
-            <QuestionIcon fontSize="large" />
+            <BlockIcon viewBox="0 0 96 96" fontSize="large" />
             <Typography
                 align="center"
                 variant="subtitle2"
