@@ -93,7 +93,6 @@ export default function DrawShapes(props) {
 
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
-
   const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(
     UPSERTCUSTOMLAYER
   );
@@ -364,7 +363,7 @@ export default function DrawShapes(props) {
           {createShapeDrawOptions()}
         </StyledMenu>
       </ClickAwayListener>
-      {showSpatialDataCard &&
+      {stateApp.showShapeActionsPopup &&
       stateApp.currentFeature !== undefined &&
       !stateApp.currentFeature.id.includes("draw_polygon") &&
       !stateApp.currentFeature.id.includes("drag_circle") &&
