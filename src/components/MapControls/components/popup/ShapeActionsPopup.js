@@ -336,6 +336,11 @@ export default (props) => {
     toggleSpatialDataCard(true);
   }
 
+  const actionParcel = () => {
+    props.selectedFeature.properties.sdType = "parcel";
+    toggleSpatialDataCard(true);
+  }
+
   return (
     <Fragment>
       {showSpatialDataCard &&
@@ -366,8 +371,8 @@ export default (props) => {
                   <span class={classes.whiteText}>AOI</span>
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Layers">
-                <IconButton size="small" /*onClick={saveAndOpenParcelDetail}*/ aria-label="Layers" >
+              <Tooltip title="Parcel">
+                <IconButton size="small" onClick={actionParcel} aria-label="Parcel" >
                   <LayerIcon />
                 </IconButton>
               </Tooltip>
