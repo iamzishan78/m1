@@ -132,6 +132,7 @@ export default function Map() {
       stateApp.draw && stateApp.draw.getMode() == "drag_circle" ? true : false,
   });
   const [flyVar1, setFlyVar1] = useState([null]);
+  const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
   const dispatch = useDispatch();
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
@@ -4737,6 +4738,60 @@ export default function Map() {
       // });
     }
   }, [stateApp.wellDetailCardOpen]);
+
+  useEffect(() => {
+    if(parcelBoundaryId && map){
+      let mapSourceData = map.getSource('parcels_source')._data;
+      const idx = mapSourceData.features.findIndex(feature => feature.id === parcelBoundaryId)
+      if(idx > -1){
+        const geoJson = {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: mapSourceData.features[idx].geometry.coordinates[0]
+          }
+        }
+
+        if(map.getSource('parcelBoundarySource')){
+          map.getSource('parcelBoundarySource').setData(geoJson);
+          if(map.getLayer('parcelBoundary')){
+            map.removeLayer('parcelBoundary')
+          }
+        } else {
+          map.addSource('parcelBoundarySource', {
+            type: "geojson",
+            data: geoJson
+          });     
+        } 
+
+        map.addLayer({
+          id: 'parcelBoundary',
+          type: 'line',
+          source: 'parcelBoundarySource',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': '#FFFF00',
+            'line-width': 8
+          }
+        });
+      }
+    }
+  }, [parcelBoundaryId])
+
+  useEffect(() => {
+    // console.log("SELECTED PARCEL!: ", stateApp.selectedParcel);
+    if(map && stateApp.selectedParcel){
+      setParcelBoundaryId(stateApp.selectedParcel.id);
+    } else if(map) {
+      map.removeLayer('parcelBoundary');
+      map.removeSource('parcelBoundarySource');
+      setParcelBoundaryId(null);
+    }
+  }, [stateApp.selectedParcel])
 
   // useEffect(() => {
   //   if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
