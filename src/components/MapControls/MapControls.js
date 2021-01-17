@@ -136,6 +136,20 @@ export default function MapControls(props) {
       anchorEl: anchorEl,
     });
 
+    if (action === "draw") {
+      if (stateApp.editDraw) {
+        setStateApp((state) => ({
+          ...state,
+          editDraw: false,
+        }));
+      } else {
+        setStateApp((state) => ({
+          ...state,
+          showShapeActionsPopup: true,
+        }));
+      }
+    }
+
     setStateApp((stateApp) => ({
       ...stateApp,
       toggle3d: action === "threed" ? !stateApp.toggle3d : stateApp.toggle3d,

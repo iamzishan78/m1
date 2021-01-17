@@ -206,23 +206,24 @@ export default (props) => {
     }    
   };
 
-  const handleClose = function () {
-    let popUps = document.getElementsByClassName("mapboxgl-popup");
-    if (popUps[0]) popUps[0].remove();
-
-    for (let i = 0; i < stateApp.selectedAbstracts.length; i++) {
-      const id = stateApp.selectedAbstracts[i].properties.Id;
-      props.map.setFeatureState(
-        { source: 'abstract_geo_source', id: id },
-        { click: false }
-      );
-    }
-
+  const clearMapAndCloseShapeActionsPopup = () => {
+    stateApp.draw.delete(stateApp.currentFeature.id);
     setStateApp((state) => ({
       ...state,
-      selectedAbstracts: []
+      //selectedAbstracts: [],
+      editDraw: false,
+      showShapeActionsPopup: false,
+      currentFeature: undefined,
     }));
   }
+  const actionClose = function () {
+    clearMapAndCloseShapeActionsPopup();
+  }
+  useEffect(() => {
+    if (stateApp && stateApp.editDraw === false) {
+      clearMapAndCloseShapeActionsPopup();
+    }
+  }, [stateApp.editDraw]);
 
   const handleSaveSpatialDataToShape = (spatialData, dataType) => {
     spatialDataAttributes.forEach((attribute) => {
@@ -264,7 +265,7 @@ export default (props) => {
         stateApp.toggleLayersActivity("Area of Interest", true);
       setStateApp((state) => ({
         ...state,
-        currentFeature: undefined,
+        //currentFeature: undefined,
         editDraw: false,
       }));
     }
@@ -347,7 +348,6 @@ export default (props) => {
         <SpatialDataCard
           closeSpatialDataCard={() => toggleSpatialDataCard(false)}
           saveSpatialData={handleSaveSpatialDataToShape}
-          //deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
           selectedFeature={stateApp.currentFeature}
         />
       }
@@ -382,7 +382,7 @@ export default (props) => {
                 </IconButton>
               </Tooltip>
               <Tooltip title="Close">
-                <IconButton size="small" onClick={handleClose} aria-label="Close">
+                <IconButton size="small" onClick={actionClose} aria-label="Close">
                   <CloseIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
