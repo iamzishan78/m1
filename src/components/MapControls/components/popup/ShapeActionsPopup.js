@@ -19,6 +19,8 @@ import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
 import { ABSTRACTGEOCONTAINSQUERY } from "../../../../graphQL/useQueryAbstractGeoContains";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch } from "react-redux";
+import { spatialDataAttributes } from "../DrawShapes/constants";
+import SpatialDataCard from "../spatialDataCard";
 import { setMapGridCardState } from "../../../../actions";
 
 import { gql } from "@apollo/client";
@@ -88,6 +90,7 @@ export default (props) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
   const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel}] = useMutation(
     UPSERTCUSTOMLAYER,
     {
@@ -134,6 +137,22 @@ export default (props) => {
     ABSTRACTGEOCONTAINSQUERY
   );
   const [user, setUser] = useState({ _id: "" });
+
+  useEffect(() => {
+    if (stateApp && stateApp.user && stateApp.user.email) {
+      getUserByEmail({
+        variables: {
+          userEmail: stateApp.user.email,
+        },
+      });
+    }
+  }, [stateApp.user.email]);
+
+  useEffect(() => {
+    if (dataUser && dataUser.userByEmail) {
+      setUser(dataUser.userByEmail);
+    }
+  }, [dataUser]);
 
   useEffect(() => {
     if(!customLayerInsertedData) {
@@ -205,6 +224,52 @@ export default (props) => {
     }));
   }
 
+  const handleSaveSpatialDataToShape = (spatialData, dataType) => {
+    spatialDataAttributes.forEach((attribute) => {
+      stateApp.draw.setFeatureProperty(
+        stateApp.currentFeature.id,
+        attribute,
+        spatialData[attribute]
+      );
+      if (
+        spatialData[attribute] != null ||
+        typeof spatialData[attribute] !== "undefined"
+      ) {
+        stateApp.currentFeature.properties[attribute] = spatialData[attribute];
+      }
+    });
+    stateApp.currentFeature.properties.id = stateApp.currentFeature.id;
+
+    toggleSpatialDataCard(false);
+    const { currentFeature } = stateApp;
+    stateApp.draw.delete(currentFeature.id);
+
+    if (user._id !== "") {
+      const customLayerData = {
+        shape: JSON.stringify(stateApp.currentFeature),
+        layer: dataType,
+        name: spatialData.shapeLabel,
+        user: user._id,
+      };
+
+      upsertCustomLayer({
+        variables: { customLayer: customLayerData },
+        refetchQueries: ["getCustomLayers"],
+        awaitRefetchQueries: true,
+      });
+
+      if ((dataType = "parcel"))
+        stateApp.toggleLayersActivity("Parcels", true);
+      if ((dataType = "interest"))
+        stateApp.toggleLayersActivity("Area of Interest", true);
+      setStateApp((state) => ({
+        ...state,
+        currentFeature: undefined,
+        editDraw: false,
+      }));
+    }
+  };
+
   const actionShowWellsAndOwners = () => {
     // TODO: save in state grid wells and owners
     // maybe better save in state boundaries than wells and owners
@@ -266,8 +331,21 @@ export default (props) => {
     }
   }
 
+  const actionAOI = () => {
+    props.selectedFeature.properties.sdType = "interest";
+    toggleSpatialDataCard(true);
+  }
+
   return (
     <Fragment>
+      {showSpatialDataCard &&
+        <SpatialDataCard
+          closeSpatialDataCard={() => toggleSpatialDataCard(false)}
+          saveSpatialData={handleSaveSpatialDataToShape}
+          //deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
+          selectedFeature={stateApp.currentFeature}
+        />
+      }
       <div className={classes.mapOverlay}>
         <div class={classes.mapOverlayInner}>
           <div className={classes.content}>
@@ -284,7 +362,7 @@ export default (props) => {
                 </IconButton>
               </Tooltip>
               <Tooltip title="AOI">
-                <IconButton size="small" /*onClick={saveAndOpenParcelDetail}*/ aria-label="AOI" >
+                <IconButton size="small" onClick={actionAOI} aria-label="AOI" >
                   <span class={classes.whiteText}>AOI</span>
                 </IconButton>
               </Tooltip>
