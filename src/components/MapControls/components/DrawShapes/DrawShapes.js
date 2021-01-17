@@ -378,9 +378,7 @@ export default function DrawShapes(props) {
         />*/
         <ShapeActionsPopup
           selectedFeature={stateApp.currentFeature}
-          //abstracts={stateApp.selectedAbstracts}
-          //map={map}
-          //onClickExpand={handleAnchorElPopOver}
+          saveSpatialData={handleSaveSpatialDataToShape}
         />
       ) : null}
     </React.Fragment>
