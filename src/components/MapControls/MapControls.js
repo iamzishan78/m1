@@ -137,12 +137,7 @@ export default function MapControls(props) {
     });
 
     if (action === "draw") {
-      if (stateApp.editDraw) {
-        setStateApp((state) => ({
-          ...state,
-          editDraw: false,
-        }));
-      } else {
+      if (!stateApp.editDraw) {
         setStateApp((state) => ({
           ...state,
           showShapeActionsPopup: true,

@@ -72,17 +72,38 @@ const useStyles = makeStyles((theme) => ({
       '&.selected': {
         color: "rgb(102 146 202)",
       },
-    }
+    },
   },
   whiteText: {
     color: "#fff",
     '&:hover': {
       color: "rgb(102 146 202)",
+    },
+  },
+  gray: {
+    color: "#777",
+    '&:hover': {
+      color: "#777",
+    },
+    '& svg': {
+      color: "#777",
+      '&:hover': {
+        color: "#777",
+      },
+      '&.selected': {
+        color: "#777",
+      },
+    },
+    '& svg.close': {
+      color: "#fff",
+      '&:hover': {
+        color: "rgb(102 146 202)",
+      },
     }
   },
   footer: {
     margin: "5px 0"
-  }
+  },
 }));
 
 export default (props) => {
@@ -272,6 +293,7 @@ export default (props) => {
   };
 
   const actionShowWellsAndOwners = () => {
+    if (isLine()) return;
     // TODO: save in state grid wells and owners
     // maybe better save in state boundaries than wells and owners
     dispatch(
@@ -288,6 +310,7 @@ export default (props) => {
   }
 
   const actionFilter = () => {
+    if (isLine()) return;
     if (stateApp.shapeActionsFilterSelected) {
       stateApp.draw.changeMode("simple_select");
       setStateNav((stateNav) => ({
@@ -333,13 +356,19 @@ export default (props) => {
   }
 
   const actionAOI = () => {
+    if (isLine()) return;
     props.selectedFeature.properties.sdType = "interest";
     toggleSpatialDataCard(true);
   }
 
   const actionParcel = () => {
+    if (isLine()) return;
     props.selectedFeature.properties.sdType = "parcel";
     toggleSpatialDataCard(true);
+  }
+
+  const isLine = () => {
+    return stateApp.currentFeature.geometry.type === "LineString" ? true : false;
   }
 
   return (
@@ -354,8 +383,10 @@ export default (props) => {
       <div className={classes.mapOverlay}>
         <div class={classes.mapOverlayInner}>
           <div className={classes.content}>
-            <span class={classes.label}>Calc. Area</span> {calculateLandArea()}
-            <span class={classes.actions}>
+            <span class={classes.label}>
+              { isLine() ? "Calc. Dist" : "Calc. Area" }
+            </span> {calculateLandArea()}
+            <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
               <Tooltip title="Grid">
                 <IconButton size="small" onClick={actionShowWellsAndOwners} aria-label="Grid" >
                   <GridOnIcon />
@@ -368,7 +399,7 @@ export default (props) => {
               </Tooltip>
               <Tooltip title="AOI">
                 <IconButton size="small" onClick={actionAOI} aria-label="AOI" >
-                  <span class={classes.whiteText}>AOI</span>
+                  <span className={`${classes.whiteText} ${isLine() ? classes.gray : ""}`}>AOI</span>
                 </IconButton>
               </Tooltip>
               <Tooltip title="Parcel">
@@ -383,7 +414,7 @@ export default (props) => {
               </Tooltip>
               <Tooltip title="Close">
                 <IconButton size="small" onClick={actionClose} aria-label="Close">
-                  <CloseIcon fontSize="small" />
+                  <CloseIcon className="close" fontSize="small" />
                 </IconButton>
               </Tooltip>
             </span>
