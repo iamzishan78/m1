@@ -343,26 +343,28 @@ export default function DrawShapes(props) {
 
   return (
     <React.Fragment>
-      <ClickAwayListener onClickAway={handleClose}>
-        <StyledMenu
-          id="draw-shapes"
-          keepMounted
-          anchorEl={stateMapControls.anchorEl}
-          open={Boolean(stateMapControls.anchorEl)}
-          onClose={handleClose}
-        >
-          <StyledMenuItem
-            disableRipple
-            key="subheader"
-            role={undefined}
-            dense
-            className={classes.subHeaderItem}
+      {!stateApp.editDraw
+        ? <ClickAwayListener onClickAway={handleClose}>
+          <StyledMenu
+            id="draw-shapes"
+            keepMounted
+            anchorEl={stateMapControls.anchorEl}
+            open={Boolean(stateMapControls.anchorEl)}
+            onClose={handleClose}
           >
-            <ListItemText primary="Draw Shapes" />
-          </StyledMenuItem>
-          {createShapeDrawOptions()}
-        </StyledMenu>
-      </ClickAwayListener>
+            <StyledMenuItem
+              disableRipple
+              key="subheader"
+              role={undefined}
+              dense
+              className={classes.subHeaderItem}
+            >
+              <ListItemText primary="Draw Shapes" />
+            </StyledMenuItem>
+            {createShapeDrawOptions()}
+          </StyledMenu>
+        </ClickAwayListener>
+        : null}
       {stateApp.showShapeActionsPopup &&
       stateApp.currentFeature !== undefined &&
       !stateApp.currentFeature.id.includes("draw_polygon") &&
