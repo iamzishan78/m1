@@ -5,8 +5,10 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
 import { BASINNAMESQUERY } from "../../../graphQL/useQueryBasinNames";
 import { GETBASINSHAPES } from "../../../graphQL/useQueryBasinShapes";
+import { AppContext } from "../../../AppContext";
 
 export default function BasinFilterJ() {
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [basinName, setBasinName] = React.useState(
     stateNav.basinName ? stateNav.basinName : []
@@ -41,6 +43,12 @@ export default function BasinFilterJ() {
 
   const handleBasinChange = (value) => {
     let filter;
+    
+    const currentLayers = [...stateApp.layers];
+    const index = currentLayers.findIndex(
+      (l) => l.identifier == "Basins"
+    );
+
     if (value && value.length) {
       getBasinShapes({
         variables: {
@@ -50,10 +58,14 @@ export default function BasinFilterJ() {
       // filter = ["match", ["get", "basin"], value, true, false];
       setStateNav((stateNav) => ({ ...stateNav, basinName: value }));
       setBasinName(value);
+      
+      // set prev visibility
+      setStateApp((stateApp) => ({ ...stateApp, prevBasinVisible: currentLayers[index].layerSettings.visiable }))
     } else {
       filter = null;
       setStateNav((stateNav) => ({ ...stateNav, basinName: null }));
       setStateNav((stateNav) => ({ ...stateNav, filterBasin: filter }));
+      stateApp.toggleLayersActivity("Basins", stateApp.prevBasinVisible);
     }
     // setStateNav((stateNav) => ({ ...stateNav, filterBasin: filter }));
   };
