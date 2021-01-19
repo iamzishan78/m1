@@ -2574,13 +2574,17 @@ export default function Map() {
         }
 
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
+        
         map.setFilter("wellsHeatmapLast12", [
           ">",
           ["get", "lastTwelveMonthBOE"],
           0,
         ]);
+        
         map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
+        
         map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
+        
         map.setFilter("wellsHeatmapRecentlyDrilled", [
           ">",
           ["get", "daysSinceDrilled"],
@@ -2786,13 +2790,8 @@ export default function Map() {
         map.setFilter("parcel", null);
         map.setFilter("parcel_point", null);
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
-        map.setFilter("wellsHeatmapLast12", [
-          ">",
-          ["get", "lastTwelveMonthBOE"],
-          0,
-        ]);
         map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
-        map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
+        map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);        
         map.setFilter("wellsHeatmapRecentlyDrilled", [
           ">",
           ["get", "daysSinceDrilled"],
@@ -2801,6 +2800,30 @@ export default function Map() {
         map.setFilter("wellsHeatmapRecentlyCompleted", [
           ">",
           ["get", "daysSinceCompletion"],
+          0,
+        ]);
+
+        map.setFilter("wellsHeatmapCumGas", [">", ["get", "cumulativeGas"], 0]);        
+        map.setFilter("wellsHeatmapCumOil", [">", ["get", "cumulativeOil"], 0]);        
+
+        map.setFilter("wellsHeatmapLast12", [
+          ">",
+          ["get", "lastTwelveMonthBOE"],
+          0,
+        ]);
+        map.setFilter("wellsHeatmapLast12Oil", [
+          ">",
+          ["get", "lastTwelveMonthOil"],
+          0,
+        ]);
+        map.setFilter("wellsHeatmapLast12Gas", [
+          ">",
+          ["get", "lastTwelveMonthGas"],
+          0,
+        ]);
+        map.setFilter("wellsHeatmapTVD", [
+          ">",
+          ["get", "trueVerticalDepth"],
           0,
         ]);
 
