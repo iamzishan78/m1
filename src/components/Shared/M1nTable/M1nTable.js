@@ -27,6 +27,7 @@ import { OWNERSQUERY } from "../../../graphQL/useQueryOwners";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { CONTACTSFILTEROPTIONS } from "../../../graphQL/useQueryContactsFilterOptions";
+import { UPDATEMAILERSTATUSES } from "../../../graphQL/useMutationUpdateMailerStatuses";
 import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
 import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
@@ -2248,6 +2249,7 @@ function M1nTable(props) {
   ] = useLazyQuery(CONTACTSFILTEROPTIONS, {
     fetchPolicy: "cache-and-network",
   });
+  const [updateMailerStatuses] = useMutation(UPDATEMAILERSTATUSES);
   //////////
   // const [getTransactionData, { data: dataDeals }] = useLazyQuery(
   //   TRANSACTIONDATA
@@ -3045,12 +3047,9 @@ function M1nTable(props) {
       setHeader("Contacts");
       setOrderByTracks(false);
       setAddAble({ parent: false, type: "contact" });
-      getPaginatedContacts({
-        variables: {
-          userId: stateApp.user.mongoId,
-        },
-      });
+      getPaginatedContacts();
       getContactsFilterOptions();
+      updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
       setUploadIcon(false);
       setStartPaginationAt(25);
       setColumnsBase(ContactsHeadCells);
