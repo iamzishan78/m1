@@ -3050,7 +3050,7 @@ function M1nTable(props) {
       getPaginatedContacts();
       getContactsFilterOptions();
       updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
-      setUploadIcon(false);
+      setUploadIcon(true);
       setStartPaginationAt(25);
       setColumnsBase(ContactsHeadCells);
     }
