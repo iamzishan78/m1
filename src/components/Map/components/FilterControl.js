@@ -263,10 +263,10 @@ function FilterControl() {
       }));
 
       if (points && points.length > 0) {
-        if (points.length > 100) {
+        if (points.length > 1000) {
           setStateApp((stateApp) => ({
             ...stateApp,
-            hugeRequest: `You have selected too many wells to track at once - ${points.length} selected (max of 100 wells). Zoom in further and draw a smaller shape to select fewer wells.`,
+            hugeRequest: `You have selected too many wells to track at once - ${points.length} selected (max of 1000 wells). Zoom in further and draw a smaller shape to select fewer wells.`,
           }));
         } else if (points.length <= 0) {
           setStateApp((stateApp) => ({
@@ -370,10 +370,10 @@ function FilterControl() {
       });
 
       if (points && points.length > 0) {
-        if (points.length > 100) {
+        if (points.length > 1000) {
           setStateApp((stateApp) => ({
             ...stateApp,
-            hugeRequest: `You have selected too many wells to track at once - ${points.length} selected (max of 100 wells). Zoom in further and draw a smaller shape to select fewer wells.`,
+            hugeRequest: `You have selected too many wells to track at once - ${points.length} selected (max of 1000 wells). Zoom in further and draw a smaller shape to select fewer wells.`,
           }));
         } else {
           setStateApp((stateApp) => ({
