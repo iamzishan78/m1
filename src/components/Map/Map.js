@@ -632,7 +632,10 @@ export default function Map() {
       let geoJson = null;
 
       if (config.layerType == "file layer") {
-        geoJson = layerData;
+        geoJson = {
+          ...layerData,
+          features: layerData?.features?.filter((feature) => !!feature?.geometry) || []
+        }
       } else {
         const makeGeoJSON = (mdata) => {
           return {
