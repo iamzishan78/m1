@@ -6,14 +6,14 @@
             "request": "launch",
             "type": "pwa-msedge",
             "runtimeExecutable": "canary",
-            "url": "http://localhost:3000",
+            "url": "http://localhost:3000/?tenant=m1neral",
             "webRoot": "${workspaceFolder}/src"
         },
         {
             "name": "Chrome",
             "type": "chrome",
             "request": "launch",
-            "url": "http://localhost:3000",
+            "url": "http://localhost:3000/?tenant=m1neral",
             "webRoot": "${workspaceRoot}/src"
         }
     ]
