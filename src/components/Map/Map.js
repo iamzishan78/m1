@@ -702,17 +702,6 @@ export default function Map() {
             data: geoJson,
             promoteId: "id",
           });
-
-          let pointSource = geoJson.features.map(feature => {
-            return {...turf.centroid(feature), properties: feature.properties}
-          })
-
-          pointSource = {type: "FeatureCollection", features: [...pointSource]}
-
-          map.addSource(`${sourceId}_point`, {
-            type: "geojson",
-            data: pointSource
-          })
         }
       }
 
