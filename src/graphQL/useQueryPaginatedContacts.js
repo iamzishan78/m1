@@ -7,7 +7,6 @@ export const PAGINATEDCONTACTSQUERY = gql`
     $filters: [FilterInput] = []
     $search: String = ""
     $pageOverride: Int
-    $userId: ID
   ) {
     paginatedContacts(
       pagination: $pagination
@@ -15,7 +14,6 @@ export const PAGINATEDCONTACTSQUERY = gql`
       filters: $filters
       search: $search
       pageOverride: $pageOverride
-      userId: $userId
     ) {
       totalCount
       edges {

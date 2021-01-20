@@ -726,6 +726,10 @@
 //   // },
 // ];
 
+
+
+
+
 export const heatLayers = [
   {
     name: "Cumulative BOE",
@@ -733,36 +737,58 @@ export const heatLayers = [
     idx: 5,
   },
   {
+    name: "Cumulative Oil",
+    id: ["wellsHeatmapCumOil"],
+    idx: 6,
+  },
+  {
+    name: "Cumulative Gas",
+    id: ["wellsHeatmapCumGas"],
+    idx: 7,
+  },
+  {
     name: "Last 12mo BOE",
     id: ["wellsHeatmapLast12"],
-    idx: 6,
+    idx: 8,
+  },
+  {
+    name: "Last 12mo Oil",
+    id: ["wellsHeatmapLast12Oil"],
+    idx: 9,
+  },
+  {
+    name: "Last 12mo Gas",
+    id: ["wellsHeatmapLast12Gas"],
+    idx: 10,
   },
   {
     name: "IP90 Oil",
     id: ["wellsHeatmapIP90Oil"],
-    idx: 7,
+    idx: 11,
   },
   {
     name: "IP90 Gas",
     id: ["wellsHeatmapIP90Gas"],
-    idx: 8,
+    idx: 12,
   },
   {
     name: "Recently Drilled",
     id: ["wellsHeatmapRecentlyDrilled"],
-    idx: 9,
+    idx: 13,
   },
   {
     name: "Recently Completed",
     id: ["wellsHeatmapRecentlyCompleted"],
-    idx: 10,
+    idx: 14,
   },
   {
     name: "True Vertical Depth",
     id: ["wellsHeatmapTVD"],
-    idx: 11,
+    idx: 15,
   },
 ];
+
+
 
 export const baseMapLayers = [
   {
@@ -1844,19 +1870,17 @@ export const defaultLayers = [
             "text-anchor": "center",
             "text-field": "{shapeLabel}",
             "text-size": [
-              "step",
+              "interpolate",
+              ["linear"],
               ["zoom"],
-              0,
-              10.4,
-              0,
-              10.5,
-              14,
               12,
-              16,
-              15,
               20,
-              22,
-              24,
+              13,
+              40,
+              14,
+              64,
+              15,
+              100
             ],
           },
         },

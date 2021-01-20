@@ -16,7 +16,7 @@ import TextField from "@material-ui/core/TextField";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { AppContext } from "../../../../../AppContext";
-import { showErrorMessage } from "../../../../../actions";
+import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import { UPLOADRECIPIENTS } from "../../../../../graphQL/useMutationUploadStorefrontRecipientsList";
 
 const styles = (theme) => ({
@@ -102,7 +102,15 @@ export default function SendMailersDialogContent(props) {
 
   const [campaign, setCampaign] = useState("");
 
-  const [uploadRecipients] = useMutation(UPLOADRECIPIENTS);
+  //const [uploadRecipients] = useMutation(UPLOADRECIPIENTS);
+  const [
+    uploadRecipients,
+    { data: dataUploadRecipients },
+  ] = useMutation(UPLOADRECIPIENTS, {
+    onCompleted: (data) => {
+      window.open(data.uploadStorefrontRecipientsList.link, '_blank');
+    }
+  });
 
   useEffect(() => {
     if (!props.rows || props.rows.length === 0) props.onClose();
@@ -122,8 +130,8 @@ export default function SendMailersDialogContent(props) {
         recipients: props.rows.map(row => row._id)
       }
     });
-    window.open('https://m1neral.mydirectmailportal.com/uStore/Home','_blank');
     props.onClose();
+    dispatch(showSuccessMessage("Redirecting..."));
   }
 
   return (
