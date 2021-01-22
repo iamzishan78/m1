@@ -55,6 +55,7 @@ import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 import { setMapGridCardState, showWarningMessage } from "../../../actions";
 import { first } from "@amcharts/amcharts4/.internal/core/utils/Array";
+import UeGridWells from "./components/Hooks/UeGridWells";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -2721,6 +2722,20 @@ function M1nTable(props) {
       }
   }, [dataWells, dataTagSamples, dataCommentsCounter]);
   ////////////Tracked Wells end///////////////////////////////////////////////
+
+  ////////////Grid Wells begin///////////////////////////////////////////////
+  useEffect(() => {
+    if (props.parent && props.parent === "gridWells") {
+      console.log("ue mintable 5"); // TODO
+      UeGridWells(
+        setTargetLabel,
+        setHeader,
+        setAddAble,
+        setLoading
+      );
+    }
+  }, [props.parent]);
+  ////////////Grid Wells end///////////////////////////////////////////////
 
   ////////////Wells Per Owner begin///////////////////////////////////////////
 

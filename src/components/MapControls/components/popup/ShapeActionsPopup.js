@@ -292,6 +292,21 @@ export default (props) => {
     }
   };
 
+  const getSelectedFeaturePolygonString = () => {
+    let feature = props.selectedFeature;
+
+    let polygonString = "POLYGON((";
+    feature.geometry.coordinates[0].forEach((coordinate, index) => {
+      polygonString += coordinate[0] + " " + coordinate[1];
+      if (index < feature.geometry.coordinates[0].length - 1) {
+        polygonString += ", ";
+      }
+    });
+    polygonString += "))";
+
+    return polygonString;
+  }
+
   const actionShowWellsAndOwners = () => {
     if (isLine()) return;
     // TODO: save in state grid wells and owners
@@ -304,8 +319,9 @@ export default (props) => {
     );
     setStateApp((state) => ({
       ...state,
-      gridWells: [],
-      gridOwners: [],
+      //gridWells: [],
+      //gridOwners: [],
+      gridPolygonString: getSelectedFeaturePolygonString(),
     }));
   }
 
@@ -326,15 +342,7 @@ export default (props) => {
       }));
     } else {
       let feature = props.selectedFeature;
-
-      let polygonString = "POLYGON((";
-      feature.geometry.coordinates[0].forEach((coordinate, index) => {
-        polygonString += coordinate[0] + " " + coordinate[1];
-        if (index < feature.geometry.coordinates[0].length - 1) {
-          polygonString += ", ";
-        }
-      });
-      polygonString += "))";
+      let polygonString = getSelectedFeaturePolygonString();
 
       getAbstractGeoContains({
         variables: {

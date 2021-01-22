@@ -3730,9 +3730,11 @@ export default function Map() {
         };
 
         newMap.on("zoomend", function (e) {
+          console.log("zoomend");
           abstractControl(e);
         });
         newMap.on("moveend", function (e) {
+          console.log("moveend");
           abstractControl(e);
         });
 
