@@ -309,8 +309,6 @@ export default (props) => {
 
   const actionShowWellsAndOwners = () => {
     if (isLine()) return;
-    // TODO: save in state grid wells and owners
-    // maybe better save in state boundaries than wells and owners
     dispatch(
       setMapGridCardState({
         mapGridCardActivated: true,
@@ -319,8 +317,6 @@ export default (props) => {
     );
     setStateApp((state) => ({
       ...state,
-      //gridWells: [],
-      //gridOwners: [],
       gridPolygonString: getSelectedFeaturePolygonString(),
     }));
   }

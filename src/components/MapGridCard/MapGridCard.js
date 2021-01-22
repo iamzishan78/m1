@@ -686,8 +686,8 @@ function MapGridCard(props) {
                       header={
                         <TabLabels
                           labels={[
-                            `Wells`,
-                            `Owners`,
+                            `Wells (${stateApp.trackedwells ? stateApp.trackedwells.length : 0})`,
+                            `Tax Roll Interests (0)`,
                           ]}
                           value={gridTapValue}
                           setValue={setGridTapValue}
@@ -700,8 +700,8 @@ function MapGridCard(props) {
                       header={
                         <TabLabels
                           labels={[
-                            `Wells`,
-                            `Owners`,
+                            `Wells (${stateApp.trackedwells ? stateApp.trackedwells.length : 0})`,
+                            `Tax Roll Interests (0)`,
                           ]}
                           value={gridTapValue}
                           setValue={setGridTapValue}
