@@ -48,6 +48,7 @@ import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
 import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterests";
 import { PAGINATEDWELLINTERESTSQUERY } from "../../../graphQL/useQueryPaginatedWellInterests.js";
 import { WELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryWellInterestsFilterOptions";
+import { SHAPEWELLS } from "../../../graphQL/useQueryShapeWells";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -55,7 +56,6 @@ import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 import { setMapGridCardState, showWarningMessage } from "../../../actions";
 import { first } from "@amcharts/amcharts4/.internal/core/utils/Array";
-import UeGridWells from "./components/Hooks/UeGridWells";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "0 !important" },
@@ -2222,6 +2222,7 @@ function M1nTable(props) {
   );
   //////////
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
+  const [getShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS);
   //////////
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(
     WELLOWNERSQUERY
@@ -2726,15 +2727,173 @@ function M1nTable(props) {
   ////////////Grid Wells begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "gridWells") {
-      console.log("ue mintable 5"); // TODO
-      UeGridWells(
-        setTargetLabel,
-        setHeader,
-        setAddAble,
-        setLoading
-      );
+      getShapeWells({
+        variables: {
+          polygon: stateApp.gridPolygonString,
+        },
+      });
+      setTargetLabel("well");
+      setHeader(props.header);
+      setAddAble(false);
     }
   }, [props.parent]);
+
+  useEffect(() => {
+    if (props.parent && props.parent === "gridWells" &&
+      dataShapeWells && dataShapeWells.shapeWells
+    ) {
+      if (dataShapeWells.shapeWells.length !== 0) {
+        const shapeWellIdArray = dataShapeWells.shapeWells.map(a => a.Id);
+      
+        getWells({
+          variables: {
+            wellIdArray: shapeWellIdArray,
+          },
+        });
+        getCommentsCounter({
+          variables: {
+            objectsIdsArray: shapeWellIdArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+        getTagSamples({
+          variables: {
+            objectsIdsArray: shapeWellIdArray,
+            userId: stateApp.user.mongoId,
+          },
+        });
+      } else {
+        setRows([]);
+        setLoading(false);
+      }
+    }
+  }, [dataShapeWells]);
+
+  useEffect(() => {
+    if (
+      props.parent && props.parent === "gridWells" &&
+      dataWells &&
+      dataWells.wells &&
+      dataWells.wells.results &&
+      dataWells.wells.results.length > 0 &&
+      dataCommentsCounter &&
+      dataCommentsCounter.commentsCounter &&
+      dataTagSamples &&
+      dataTagSamples.tagSamples
+    ) {
+      let wells = [...dataWells.wells.results];
+      wells = wells.map((w) => {
+        let well = { ...w };
+
+        //// temporary to fix the ticks dates fields comming from the rest api
+        if (well.permitApprovedDate && well.permitApprovedDate != "null")
+          well.permitApprovedDate = ticksToDateString(
+            well.permitApprovedDate
+          );
+        if (well.spudDate && well.spudDate != "null")
+          well.spudDate = ticksToDateString(well.spudDate);
+        if (well.completionDate && well.completionDate != "null")
+          well.completionDate = ticksToDateString(well.completionDate);
+        if (well.firstProductionDate && well.firstProductionDate != "null")
+          well.firstProductionDate = ticksToDateString(
+            well.firstProductionDate
+          );
+        //// temporary end
+
+        well.isTracked = true;
+        well.commentsCounter = 0;
+        well.tags = [[], 0];
+
+        well.coordinates = {};
+        if (well.Longitude && well.Latitude)
+          well.coordinates.center = [well.Longitude, well.Latitude];
+        if (well.longitude && well.latitude)
+          well.coordinates.center = [well.longitude, well.latitude];
+
+        for (
+          let i = 0;
+          i < dataCommentsCounter.commentsCounter.length;
+          i++
+        ) {
+          if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+            well.commentsCounter =
+              dataCommentsCounter.commentsCounter[i].total;
+            break;
+          }
+        }
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (well.id === dataTagSamples.tagSamples[i]._id) {
+            well.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+        return well;
+      });
+
+      let availableTags = [];
+      dataTagSamples.tagSamples.map((sample) => {
+        availableTags = [...availableTags, ...sample.tags];
+      });
+      const cleanAvailableTags = [...new Set(availableTags)];
+
+      setRows(wells);
+
+      const flyToColumn = {
+        name: "coordinates",
+        label: " ",
+        options: {
+          filter: false,
+          sort: false,
+          searchable: false,
+          download: false,
+          print: false,
+          viewColumns: false,
+        },
+      };
+
+      setColumns([
+        ...(cleanAvailableTags.length > 0
+          ? WellsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : WellsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })),
+        flyToColumn,
+      ]);
+
+      setStateApp((state) => ({
+        ...state,
+        trackedwells: wells,
+      }));
+      setLoading(false);
+    }
+  }, [dataWells, dataTagSamples, dataCommentsCounter]);
   ////////////Grid Wells end///////////////////////////////////////////////
 
   ////////////Wells Per Owner begin///////////////////////////////////////////
