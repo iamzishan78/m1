@@ -319,6 +319,12 @@ function MapGridCard(props) {
       TrackedTapValue(state);
     }
   };
+  const [gridTapValue, GridTapValue] = useState(0);
+  const setGridTapValue = (state) => {
+    if (gridTapValue != state) {
+      GridTapValue(state);
+    }
+  };
 
   const classes = useStyles({
     mapGridCardActivated,
@@ -671,7 +677,39 @@ function MapGridCard(props) {
               className={classes.tapsPanelsPadding}
             >
               <div style={{ position: "relative" }}>
-                TODO later
+                <TabPanels
+                  value={gridTapValue}
+                  panels={[
+                    <M1nTable
+                      dense
+                      parent="gridWells"
+                      header={
+                        <TabLabels
+                          labels={[
+                            `Wells (${stateApp.trackedwells ? stateApp.trackedwells.length : 0})`,
+                            `Tax Roll Interests (0)`,
+                          ]}
+                          value={gridTapValue}
+                          setValue={setGridTapValue}
+                        />
+                      }
+                    />,
+                    <M1nTable
+                      dense
+                      parent="trackOwners"
+                      header={
+                        <TabLabels
+                          labels={[
+                            `Wells (${stateApp.trackedwells ? stateApp.trackedwells.length : 0})`,
+                            `Tax Roll Interests (0)`,
+                          ]}
+                          value={gridTapValue}
+                          setValue={setGridTapValue}
+                        />
+                      }
+                    />,
+                  ]}
+                />
               </div>
             </TabPanel>
 
