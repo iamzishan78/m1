@@ -232,6 +232,10 @@ const wellsColumnHeaders = [
     label: "Well Name",
   },
   {
+    name: "WellOperator",
+    label: "Operator",
+  },
+  {
     name: "WellType",
     label: "Type",
   },
