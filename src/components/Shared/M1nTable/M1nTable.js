@@ -265,14 +265,8 @@ const WellsHeadCells = [
   { name: "wellName", label: "Well Name" },
   { name: "operator", label: "Operator" },
   { name: "wellType", label: "Type" },
-  {
-    name: "wellBoreProfile",
-    label: "Profile",
-  },
-  {
-    name: "wellBoreStatus",
-    label: "Status",
-  },
+  { name: "wellBoreProfile", label: "Profile",},
+  { name: "wellStatus", label: "Status",},
   {
     name: "tags",
     label: "Tags ",
@@ -2593,7 +2587,8 @@ function M1nTable(props) {
   useEffect(() => {
     if (dataWells?.wells)
       if (props.parent && props.parent === "trackWells" && dataWells) {
-        console.log("ue mintable 7");
+        //console.log("ue mintable 7");
+        console.log("aslkjdfalsjflajksdflj", dataWells.wells)
         if (
           dataWells.wells &&
           dataWells.wells.results &&
