@@ -3758,95 +3758,97 @@ function M1nTable(props) {
 
 
   useEffect(()=> {
-    if (props.parent && props.parent === "ownersPerParcelWells" && abstractWellData) {
-      if (
-        abstractWellData.abstractWellGeo &&
-        abstractWellData.abstractWellGeo.length > 0 &&
-        dataCommentsCounter &&
-        dataCommentsCounter.commentsCounter &&
-        dataTagSamples &&
-        dataTagSamples.tagSamples 
-      ) {
-        let wells = [...abstractWellData.abstractWellGeo];
-        wells = wells.map((o) => {
-          let wells = { ...o };
-          wells.commentsCounter = 0;
-          wells.tags = [[], 0];
+    if(props.parent && props.parent === "ownersPerParcelWells"){
+      setHeader("Associated Wells");
+      if (abstractWellData) {
+        if (
+          abstractWellData.abstractWellGeo &&
+          abstractWellData.abstractWellGeo.length > 0 &&
+          dataCommentsCounter &&
+          dataCommentsCounter.commentsCounter &&
+          dataTagSamples &&
+          dataTagSamples.tagSamples 
+        ) {
+          let wells = [...abstractWellData.abstractWellGeo];
+          wells = wells.map((o) => {
+            let wells = { ...o };
+            wells.commentsCounter = 0;
+            wells.tags = [[], 0];
 
-          for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-            if (wells.wellId === dataCommentsCounter.commentsCounter[i]._id) {
-              wells.commentsCounter =
-                dataCommentsCounter.commentsCounter[i].total;
-              break;
+            for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+              if (wells.wellId === dataCommentsCounter.commentsCounter[i]._id) {
+                wells.commentsCounter =
+                  dataCommentsCounter.commentsCounter[i].total;
+                break;
+              }
             }
-          }
 
-          for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-            if (wells.wellId === dataTagSamples.tagSamples[i]._id) {
-              wells.tags = [
-                dataTagSamples.tagSamples[i].tags,
-                dataTagSamples.tagSamples[i].total,
-              ];
+            for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+              if (wells.wellId === dataTagSamples.tagSamples[i]._id) {
+                wells.tags = [
+                  dataTagSamples.tagSamples[i].tags,
+                  dataTagSamples.tagSamples[i].total,
+                ];
 
-              break;
+                break;
+              }
             }
-          }
-          return wells;
-        });
+            return wells;
+          });
 
-        let availableTags = [];
-        dataTagSamples.tagSamples.map((sample) => {
-          availableTags = [...availableTags, ...sample.tags];
-        });
-        const cleanAvailableTags = [...new Set(availableTags)];
+          let availableTags = [];
+          dataTagSamples.tagSamples.map((sample) => {
+            availableTags = [...availableTags, ...sample.tags];
+          });
+          const cleanAvailableTags = [...new Set(availableTags)];
 
-        wells.forEach(element => {
-          if (stateApp.trackedWells) {
-            const found = stateApp.trackedWells.find((x)=> x.id == element.wellId);      
-            if (found) {
-              element.isTracked = true;
+          wells.forEach(element => {
+            if (stateApp.trackedWells) {
+              const found = stateApp.trackedWells.find((x)=> x.id == element.wellId);      
+              if (found) {
+                element.isTracked = true;
+              } else {
+                element.isTracked = false;
+              }
             } else {
               element.isTracked = false;
             }
-          } else {
-            element.isTracked = false;
-          }
-        });
-        
-        setHeader("Associated Wells");
-        setRows(wells);
-        setColumns(
-          cleanAvailableTags.length > 0
-            ? CustomWellsHeadCells.map((column) => {
+          });
+          
+          setRows(wells);
+          setColumns(
+            cleanAvailableTags.length > 0
+              ? CustomWellsHeadCells.map((column) => {
+                  if (column.name === "tags") {
+                    return {
+                      ...column,
+                      options: {
+                        ...column.options,
+                        filterOptions: {
+                          ...column.options.filterOptions,
+                          names: cleanAvailableTags
+                        },
+                      },
+                    };
+                  }
+                  return column;
+                })
+              : CustomWellsHeadCells.map((column) => {
                 if (column.name === "tags") {
                   return {
                     ...column,
                     options: {
                       ...column.options,
                       filterOptions: {
-                        ...column.options.filterOptions,
-                        names: cleanAvailableTags
+                        ...column.options.filterOptions
                       },
                     },
                   };
                 }
                 return column;
               })
-            : CustomWellsHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions
-                    },
-                  },
-                };
-              }
-              return column;
-            })
-        );
+          );
+        }
       }
       setLoading(false);
     }
