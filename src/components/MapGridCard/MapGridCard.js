@@ -220,10 +220,6 @@ const wellsColumnHeaders = [
     label: "API",
   },
   {
-    name: "WellName",
-    label: "Well Name",
-  },
-  {
     name: "State",
     label: "State",
   },
@@ -232,12 +228,20 @@ const wellsColumnHeaders = [
     label: "County",
   },
   {
+    name: "WellName",
+    label: "Well Name",
+  },
+  {
     name: "WellType",
-    label: "Well Type",
+    label: "Type",
+  },
+  {
+    name: "WellProfile",
+    label: "Profile",
   },
   {
     name: "WellStatus",
-    label: "Well Status",
+    label: "Status",
   },
 ];
 const ownersColumnHeaders = [
@@ -373,10 +377,11 @@ function MapGridCard(props) {
       labels={[
         "Wells",
         "Owners",
-        // "Operators",
-        // "Leases",
-        // "Interests",
-        // "Parcels",
+        "Operators",
+        "Leases",
+        "Interests",
+        "Parcels",
+        "Recent Permits",
         "Locations",
       ]}
       value={searchTapValue}
@@ -530,34 +535,34 @@ function MapGridCard(props) {
                       showComments
                       showTracks
                     />,
-                    // <M1nTable
-                    //   dense
-                    //   parent="search"
-                    //   privateColumns={operatorsColumnHeaders}
-                    //   targetLabel={getTargetFromSearchTaps()}
-                    //   header={<SearchTabPanels />}
-                    // />,
-                    // <M1nTable
-                    //   dense
-                    //   parent="search"
-                    //   privateColumns={leasesColumnHeaders}
-                    //   targetLabel={getTargetFromSearchTaps()}
-                    //   header={<SearchTabPanels />}
-                    // />,
-                    // <M1nTable
-                    //   dense
-                    //   parent="search"
-                    //   privateColumns={[]}
-                    //   targetLabel={getTargetFromSearchTaps()}
-                    //   header={<SearchTabPanels />}
-                    // />,
-                    // <M1nTable
-                    //   dense
-                    //   parent="search"
-                    //   privateColumns={[]}
-                    //   targetLabel={getTargetFromSearchTaps()}
-                    //   header={<SearchTabPanels />}
-                    // />,
+                    <M1nTable
+                      dense
+                      parent="search"
+                      privateColumns={operatorsColumnHeaders}
+                      targetLabel={getTargetFromSearchTaps()}
+                      header={<SearchTabPanels />}
+                    />,
+                    <M1nTable
+                      dense
+                      parent="search"
+                      privateColumns={leasesColumnHeaders}
+                      targetLabel={getTargetFromSearchTaps()}
+                      header={<SearchTabPanels />}
+                    />,
+                    <M1nTable
+                      dense
+                      parent="search"
+                      privateColumns={[]}
+                      targetLabel={getTargetFromSearchTaps()}
+                      header={<SearchTabPanels />}
+                    />,
+                    <M1nTable
+                      dense
+                      parent="search"
+                      privateColumns={[]}
+                      targetLabel={getTargetFromSearchTaps()}
+                      header={<SearchTabPanels />}
+                    />,
                     <M1nTable
                       dense
                       parent="search"

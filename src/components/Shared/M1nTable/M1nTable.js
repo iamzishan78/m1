@@ -259,13 +259,19 @@ const WellsHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "wellName", label: "Well" },
   { name: "api", label: "API" },
+  { name: "state", label: "State" },
+  { name: "county", label: "County" },
+  { name: "wellName", label: "Well Name" },
   { name: "operator", label: "Operator" },
   { name: "wellType", label: "Type" },
   {
     name: "wellBoreProfile",
     label: "Profile",
+  },
+  {
+    name: "wellBoreStatus",
+    label: "Status",
   },
   {
     name: "tags",
