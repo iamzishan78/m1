@@ -173,15 +173,21 @@ export default (props) => {
       return;
     }
     const abstractShape = stateApp.selectedAbstracts[0];
+
+    const properties = abstractShape?.properties;
+    let township = properties?.Township;
+    let range = properties?.Range;
+    let section = properties?.ShortName;
     
     let parcelName, originalProperties;
     if(abstractShape.properties.State === "TX") {
       parcelName = abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
-      originalProperties = [abstractShape.properties];
-    } else {
+    } else if(township && range && section) {
+      parcelName = `T${township} R${range} — Section ${section}`;
+    } else {  
       parcelName = "PLSS Default Name";
-      originalProperties = [abstractShape.properties];
     }
+    originalProperties = [abstractShape.properties];
 
     const featureId = hat();
     const newShapeFeature = {

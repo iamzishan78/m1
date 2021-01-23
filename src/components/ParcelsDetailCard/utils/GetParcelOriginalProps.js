@@ -6,7 +6,11 @@ export function getParcelOriginalProperties(parcel) {
     block: '',
     section: '',
     abstract: '',
-    altSurvey: ''
+    altSurvey: '',
+
+    meridian: '',
+    township: '',
+    range: '',
   };
 
   let originalProperties = parcel && parcel.originalProperties;
@@ -27,11 +31,18 @@ export function getParcelOriginalProperties(parcel) {
     } else {
       originalProperty.state = originalProperties[0].StateAbbreviation;
     }
+    if ("Section" in originalProperties[0]){
+      originalProperty.section = originalProperties[0].Section;
+    } else {
+      originalProperty.section = originalProperties[0].ShortName;
+    }
     originalProperty.survey = originalProperties[0].Survey;
     originalProperty.block = originalProperties[0].Block;
-    originalProperty.section = originalProperties[0].Section;
     originalProperty.abstract = originalProperties[0].AbstractName;
     originalProperty.altSurvey = originalProperties[0].Grantee;
+    originalProperty.meridian = originalProperties[0].PrincipalMeridian;
+    originalProperty.range = originalProperties[0].Range;
+    originalProperty.township = originalProperties[0].Township;
   }
   return originalProperty;
 }
