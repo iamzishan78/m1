@@ -49,6 +49,8 @@ const AppProvider = (props) => {
     wellDetailCardOpen: null,
     trackedwells: null,
     trackedOwnerWells: null,
+    gridWellsCount: 0,
+    gridOwnersCount: 0,
     selectedWell: null,
     selectedWellId: null,
     selectedAbstracts: [],
