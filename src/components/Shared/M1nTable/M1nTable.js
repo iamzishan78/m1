@@ -29,6 +29,7 @@ import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContac
 import { CONTACTSFILTEROPTIONS } from "../../../graphQL/useQueryContactsFilterOptions";
 import { UPDATEMAILERSTATUSES } from "../../../graphQL/useMutationUpdateMailerStatuses";
 import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
+import { TRACKSWELL } from "../../../graphQL/useQueryTracksWell"
 import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
@@ -2207,6 +2208,12 @@ function M1nTable(props) {
       fetchPolicy: "cache-and-network",
     }
   );
+  const [tracksWell, { data: dataWellTracks }] = useLazyQuery(
+    TRACKSWELL,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
   const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(
     COMMENTSCOUNTER,
     {
@@ -2754,6 +2761,7 @@ function M1nTable(props) {
             wellIdArray: shapeWellIdArray,
           },
         });
+        tracksWell();
         getCommentsCounter({
           variables: {
             objectsIdsArray: shapeWellIdArray,
@@ -2783,7 +2791,9 @@ function M1nTable(props) {
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
-      dataTagSamples.tagSamples
+      dataTagSamples.tagSamples &&
+      dataWellTracks &&
+      dataWellTracks.tracksWell
     ) {
       let wells = [...dataWells.wells.results];
       wells = wells.map((w) => {
@@ -2804,7 +2814,7 @@ function M1nTable(props) {
           );
         //// temporary end
 
-        well.isTracked = true;
+        well.isTracked = false;
         well.commentsCounter = 0;
         well.tags = [[], 0];
 
@@ -2814,6 +2824,12 @@ function M1nTable(props) {
         if (well.longitude && well.latitude)
           well.coordinates.center = [well.longitude, well.latitude];
 
+        for (let i = 0; i < dataWellTracks.tracksWell.length; i++) {
+          if (well.id === dataWellTracks.tracksWell[i].trackOn) {
+            well.isTracked = true;
+            break;
+          }
+        }
         for (
           let i = 0;
           i < dataCommentsCounter.commentsCounter.length;
@@ -2897,7 +2913,7 @@ function M1nTable(props) {
       }));
       setLoading(false);
     }
-  }, [dataWells, dataTagSamples, dataCommentsCounter]);
+  }, [dataWells, dataTagSamples, dataCommentsCounter, dataWellTracks]);
   ////////////Grid Wells end///////////////////////////////////////////////
 
   ////////////Wells Per Owner begin///////////////////////////////////////////
