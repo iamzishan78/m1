@@ -309,16 +309,16 @@ export default (props) => {
 
   const actionShowWellsAndOwners = () => {
     if (isLine()) return;
+    setStateApp((state) => ({
+      ...state,
+      gridPolygonString: getSelectedFeaturePolygonString(),
+    }));
     dispatch(
       setMapGridCardState({
         mapGridCardActivated: true,
         mapGridCardActiveTap: 3,
       })
     );
-    setStateApp((state) => ({
-      ...state,
-      gridPolygonString: getSelectedFeaturePolygonString(),
-    }));
   }
 
   const actionFilter = () => {

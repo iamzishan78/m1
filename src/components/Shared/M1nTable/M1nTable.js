@@ -49,6 +49,7 @@ import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterest
 import { PAGINATEDWELLINTERESTSQUERY } from "../../../graphQL/useQueryPaginatedWellInterests.js";
 import { WELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryWellInterestsFilterOptions";
 import { SHAPEWELLS } from "../../../graphQL/useQueryShapeWells";
+import { WELLSOWNERSQUERY } from "../../../graphQL/useQueryWellsOwners";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -2222,7 +2223,9 @@ function M1nTable(props) {
   );
   //////////
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-  const [getShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS);
+  const [getShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, {
+    fetchPolicy: "cache-and-network",
+  });
   //////////
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(
     WELLOWNERSQUERY
@@ -2338,7 +2341,7 @@ function M1nTable(props) {
 
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
-    if (props.parent && props.parent === "trackOwners") {
+    if (props.parent && (props.parent === "trackOwners" || props.parent === "gridOwners")) {
       console.log("ue mintable 2");
       setTargetLabel("owner");
 
@@ -2354,7 +2357,7 @@ function M1nTable(props) {
   useEffect(() => {
     if (
       props.parent &&
-      props.parent === "trackOwners" &&
+      (props.parent === "trackOwners" || props.parent === "gridOwners") &&
       dataTracks &&
       dataTracks.tracksByObjectType
     ) {
@@ -2398,7 +2401,7 @@ function M1nTable(props) {
   }, [dataTracks]);
 
   useEffect(() => {
-    if (props.parent && props.parent === "trackOwners" && dataOwners) {
+    if (props.parent && (props.parent === "trackOwners" || props.parent === "gridOwners") && dataOwners) {
       if (
         dataOwners.owners &&
         dataOwners.owners.length > 0 &&
@@ -2515,6 +2518,7 @@ function M1nTable(props) {
         setStateApp((state) => ({
           ...state,
           owners: owners,
+          gridOwnersCount: owners.length,
         }));
         setLoading(false);
       } else {
@@ -2743,7 +2747,7 @@ function M1nTable(props) {
       dataShapeWells && dataShapeWells.shapeWells
     ) {
       if (dataShapeWells.shapeWells.length !== 0) {
-        const shapeWellIdArray = dataShapeWells.shapeWells.map(a => a.Id);
+        const shapeWellIdArray = dataShapeWells.shapeWells.map(a => a.Id.toLowerCase());
       
         getWells({
           variables: {
@@ -2889,7 +2893,7 @@ function M1nTable(props) {
 
       setStateApp((state) => ({
         ...state,
-        trackedwells: wells,
+        gridWellsCount: wells.length,
       }));
       setLoading(false);
     }
