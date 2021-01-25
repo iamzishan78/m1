@@ -29,6 +29,7 @@ import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContac
 import { CONTACTSFILTEROPTIONS } from "../../../graphQL/useQueryContactsFilterOptions";
 import { UPDATEMAILERSTATUSES } from "../../../graphQL/useMutationUpdateMailerStatuses";
 import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
+import { TRACKSWELL } from "../../../graphQL/useQueryTracksWell"
 import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
@@ -49,6 +50,7 @@ import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterest
 import { PAGINATEDWELLINTERESTSQUERY } from "../../../graphQL/useQueryPaginatedWellInterests.js";
 import { WELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryWellInterestsFilterOptions";
 import { SHAPEWELLS } from "../../../graphQL/useQueryShapeWells";
+import { WELLSOWNERSQUERY } from "../../../graphQL/useQueryWellsOwners";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -2206,6 +2208,12 @@ function M1nTable(props) {
       fetchPolicy: "cache-and-network",
     }
   );
+  const [tracksWell, { data: dataWellTracks }] = useLazyQuery(
+    TRACKSWELL,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
   const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(
     COMMENTSCOUNTER,
     {
@@ -2222,7 +2230,9 @@ function M1nTable(props) {
   );
   //////////
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-  const [getShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS);
+  const [getShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, {
+    fetchPolicy: "cache-and-network",
+  });
   //////////
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(
     WELLOWNERSQUERY
@@ -2338,7 +2348,7 @@ function M1nTable(props) {
 
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
-    if (props.parent && props.parent === "trackOwners") {
+    if (props.parent && (props.parent === "trackOwners" || props.parent === "gridOwners")) {
       console.log("ue mintable 2");
       setTargetLabel("owner");
 
@@ -2354,7 +2364,7 @@ function M1nTable(props) {
   useEffect(() => {
     if (
       props.parent &&
-      props.parent === "trackOwners" &&
+      (props.parent === "trackOwners" || props.parent === "gridOwners") &&
       dataTracks &&
       dataTracks.tracksByObjectType
     ) {
@@ -2398,7 +2408,7 @@ function M1nTable(props) {
   }, [dataTracks]);
 
   useEffect(() => {
-    if (props.parent && props.parent === "trackOwners" && dataOwners) {
+    if (props.parent && (props.parent === "trackOwners" || props.parent === "gridOwners") && dataOwners) {
       if (
         dataOwners.owners &&
         dataOwners.owners.length > 0 &&
@@ -2515,6 +2525,7 @@ function M1nTable(props) {
         setStateApp((state) => ({
           ...state,
           owners: owners,
+          gridOwnersCount: owners.length,
         }));
         setLoading(false);
       } else {
@@ -2743,13 +2754,14 @@ function M1nTable(props) {
       dataShapeWells && dataShapeWells.shapeWells
     ) {
       if (dataShapeWells.shapeWells.length !== 0) {
-        const shapeWellIdArray = dataShapeWells.shapeWells.map(a => a.Id);
+        const shapeWellIdArray = dataShapeWells.shapeWells.map(a => a.Id.toLowerCase());
       
         getWells({
           variables: {
             wellIdArray: shapeWellIdArray,
           },
         });
+        tracksWell();
         getCommentsCounter({
           variables: {
             objectsIdsArray: shapeWellIdArray,
@@ -2779,7 +2791,9 @@ function M1nTable(props) {
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
-      dataTagSamples.tagSamples
+      dataTagSamples.tagSamples &&
+      dataWellTracks &&
+      dataWellTracks.tracksWell
     ) {
       let wells = [...dataWells.wells.results];
       wells = wells.map((w) => {
@@ -2800,7 +2814,7 @@ function M1nTable(props) {
           );
         //// temporary end
 
-        well.isTracked = true;
+        well.isTracked = false;
         well.commentsCounter = 0;
         well.tags = [[], 0];
 
@@ -2810,6 +2824,12 @@ function M1nTable(props) {
         if (well.longitude && well.latitude)
           well.coordinates.center = [well.longitude, well.latitude];
 
+        for (let i = 0; i < dataWellTracks.tracksWell.length; i++) {
+          if (well.id === dataWellTracks.tracksWell[i].trackOn) {
+            well.isTracked = true;
+            break;
+          }
+        }
         for (
           let i = 0;
           i < dataCommentsCounter.commentsCounter.length;
@@ -2889,11 +2909,11 @@ function M1nTable(props) {
 
       setStateApp((state) => ({
         ...state,
-        trackedwells: wells,
+        gridWellsCount: wells.length,
       }));
       setLoading(false);
     }
-  }, [dataWells, dataTagSamples, dataCommentsCounter]);
+  }, [dataWells, dataTagSamples, dataCommentsCounter, dataWellTracks]);
   ////////////Grid Wells end///////////////////////////////////////////////
 
   ////////////Wells Per Owner begin///////////////////////////////////////////

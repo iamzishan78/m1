@@ -167,8 +167,8 @@ const useStyles = makeStyles((theme) => {
 
 const TabLabels = ({ labels, value, setValue }) => {
   console.log(`ue mapgridcard tablabels ${(labels, value, setValue)}`);
-
   const classes = useStyles();
+
   return (
     <>
       {labels &&
@@ -686,8 +686,8 @@ function MapGridCard(props) {
                       header={
                         <TabLabels
                           labels={[
-                            `Wells (${stateApp.trackedwells ? stateApp.trackedwells.length : 0})`,
-                            `Tax Roll Interests (0)`,
+                            `Wells (${stateApp.gridWellsCount})`,
+                            `Tax Roll Owners (${stateApp.gridOwnersCount})`,
                           ]}
                           value={gridTapValue}
                           setValue={setGridTapValue}
@@ -696,12 +696,12 @@ function MapGridCard(props) {
                     />,
                     <M1nTable
                       dense
-                      parent="trackOwners"
+                      parent="gridOwners"
                       header={
                         <TabLabels
                           labels={[
-                            `Wells (${stateApp.trackedwells ? stateApp.trackedwells.length : 0})`,
-                            `Tax Roll Interests (0)`,
+                            `Wells (${stateApp.gridWellsCount})`,
+                            `Tax Roll Owners (${stateApp.gridOwnersCount})`,
                           ]}
                           value={gridTapValue}
                           setValue={setGridTapValue}
