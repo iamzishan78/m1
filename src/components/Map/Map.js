@@ -69,6 +69,7 @@ import { setMainMapState, showErrorMessage } from "../../actions";
 import { ZoomOutMapSharp } from "@material-ui/icons";
 import debounce from "lodash/debounce";
 import { createFalse } from "typescript";
+import { geojsonTypes } from "@mapbox/mapbox-gl-draw/src/constants";
 //import { AvSortByAlpha } from "material-ui/svg-icons";
 
 const useStyles = makeStyles((theme) => ({
@@ -632,10 +633,17 @@ export default function Map() {
       let geoJson = null;
 
       if (config.layerType == "file layer") {
+
         geoJson = {
           ...layerData,
           features: layerData?.features?.filter((feature) => !!feature?.geometry) || []
         }
+
+        // geoJson = layerData;
+
+
+
+
       } else {
         const makeGeoJSON = (mdata) => {
           return {
@@ -647,7 +655,7 @@ export default function Map() {
                   properties: feature,
                   geometry: {
                     type: "Point",
-                    coordinates: [feature.longitude, feature.latitude],
+                    coordinates: [Number(feature.longitude), Number(feature.latitude)],
                   },
                 };
               } else if (feature.shape) {
@@ -668,7 +676,7 @@ export default function Map() {
                   properties: feature,
                   geometry: {
                     type: "Point",
-                    coordinates: [feature.Longitude, feature.Latitude],
+                    coordinates: [Number(feature.Longitude), Number(feature.Latitude)],
                   },
                 };
               }
@@ -702,6 +710,36 @@ export default function Map() {
             data: geoJson,
             promoteId: "id",
           });
+
+
+            console.log("NEW NEW NEW",sourceId )
+            if(sourceId=="parcels_source" || sourceId=="interests_source" ){
+            let pointSource = geoJson.features.map(feature => {
+
+              var output = feature
+
+              if(feature.geometry.type == "Point"){
+                console.log('output1')
+                output = feature 
+              } else {
+                output =  {...turf.centroid(feature), properties: feature.properties}
+              }
+
+              return output
+            })
+            
+
+            pointSource = {type: "FeatureCollection", features: [...pointSource]}
+
+            map.addSource(`${sourceId}_point`, {
+              type: "geojson",
+              data: pointSource
+            })
+          }
+          
+
+
+
         }
       }
 
@@ -734,6 +772,7 @@ export default function Map() {
       }
 
       if (map.getLayer(layerId)) {
+
         map.moveLayer(`${layerId}_point`);
         map.setLayoutProperty(
           layerId,
