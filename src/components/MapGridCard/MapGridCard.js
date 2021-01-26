@@ -266,6 +266,14 @@ const ownersColumnHeaders = [
     label: "Name",
   },
   {
+    name: "State",
+    label: "State",
+  },
+  {
+    name: "City",
+    label: "City",
+  },
+  {
     name: "FullAddress",
     label: "Address",
   },
@@ -346,29 +354,22 @@ function MapGridCard(props) {
     );
   };
 
-  // useEffect(() => {
-  //   if (
-  //     stateApp.mapGridCardActiveTap &&
-  //     stateApp.mapGridCardActiveTap !== mainTapValue
-  //   ) {
-  //     setMainTapValue(stateApp.mapGridCardActiveTap);
-  //   }
-  // }, [stateApp.mapGridCardActiveTap]);
 
   const getTargetFromSearchTaps = () => {
+    /// this intends to set the search value that gets passed into the mapgridcardsearch.js
+    /// value will control the cog api 
+
     switch (searchTapValue) {
-      // case 6:
-      //   return "location";
-      // case 5:
-      //   return "parcel";
-      // case 4:
-      //   return "interest";
-      // case 3:
-      //   return "lease";
-      // case 2:
-      //   return "operator";
-      case 2:
+      case 6:
         return "location";
+      case 5:
+        return "permits";      
+      case 4:
+        return "parcel";
+      case 3:
+        return "lease";
+      case 2:
+        return "operator";
       case 1:
         return "owner";
       default:
@@ -383,7 +384,6 @@ function MapGridCard(props) {
         "Owners",
         "Operators",
         "Leases",
-        "Interests",
         "Parcels",
         "Recent Permits",
         "Locations",

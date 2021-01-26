@@ -104,6 +104,8 @@ function MapGridCardSearch(props) {
             console.log(error);
           });
       }, 500),
+
+
     []
   );
 
@@ -265,7 +267,7 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("')")
                 );
 
-                console.log(indexSource);
+                console.log("#########INDEX SOURCE WELLS",indexSource);
                 newOptions = [...results.value];
               }
 
@@ -284,7 +286,7 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
+                console.log("#########INDEX SOURCE OWNER",indexSource);
                 newOptions = [
                   ...results.value.map((result) => {
                     return {
@@ -311,7 +313,7 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
+                console.log("#########INDEX SOURCE OPERATOR",indexSource);
                 newOptions = [...results.value];
               }
 
@@ -330,7 +332,7 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
+                console.log("#########INDEX SOURCE LEASE",indexSource);
                 newOptions = [
                   ...results.value.map((result) => {
                     return {
@@ -399,6 +401,8 @@ function MapGridCardSearch(props) {
     callMapboxSearch,
     props.searchOption,
   ]);
+
+ 
 
   return (
     <form

@@ -86,6 +86,7 @@ var ticksToDateString = function (ticks) {
 
 ////////////HeadCells begin///////////////////////////////////////////////
 const TrackedOwnersHeadCells = [
+  /// appears this code is used for the track grid owners 
   {
     name: "id",
     options: {
@@ -111,15 +112,15 @@ const TrackedOwnersHeadCells = [
     },
   },
   { name: "name", label: "Name" },
-  // {
-  //   name: "ownershipType",
-  //   label: "Entity",
-  // },
-  // { name: "interestType", label: "Type" },
-  // {
-  //   name: "ownershipPercentage",
-  //   label: "Interest",
-  // },
+  {
+    name: "ownershipType",
+    label: "Entity",
+  },
+  { name: "interestType", label: "Type" },
+  {
+    name: "ownershipPercentage",
+    label: "Interest",
+  },
 
   // TEMPORARY COMMENT OUT. DO NOT DELETE
   // WILL BE ADDED IN AFTER DEVELOPING A SYSTEM TO
@@ -1114,6 +1115,8 @@ const ContactsHeadCells = [
 ];
 
 const SearchsHeadCells = [
+
+
   {
     name: "id",
     options: {
@@ -1126,6 +1129,8 @@ const SearchsHeadCells = [
       viewColumns: false,
     },
   },
+
+
   //////////
   {
     name: "tags",
