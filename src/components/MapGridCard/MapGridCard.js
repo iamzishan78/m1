@@ -232,7 +232,7 @@ const wellsColumnHeaders = [
     label: "Well Name",
   },
   {
-    name: "WellOperator",
+    name: "CurrentOperator",
     label: "Operator",
   },
   {
@@ -240,7 +240,7 @@ const wellsColumnHeaders = [
     label: "Type",
   },
   {
-    name: "WellProfile",
+    name: "WellBoreProfile",
     label: "Profile",
   },
   {
