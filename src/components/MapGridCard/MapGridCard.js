@@ -281,18 +281,103 @@ const ownersColumnHeaders = [
 const operatorsColumnHeaders = [
   {
     name: "Operator",
-    label: "Name",
+    label: "Operator",
+  },
+  {
+    name: "Active States",
+    label: "# Active States",
+  },
+  {
+    name: "ActiveBasins",
+    label: "# Active Basins",
+  },
+  {
+    name: "TotalLeases",
+    label: "Total Leases",
+  },
+  {
+    name: "TotalWells",
+    label: "Total Wells",
+  },
+  {
+    name: "Total Gas Wells",
+    label: "Gas Wells",
+  },
+  {
+    name: "TotalOilWells",
+    label: "Oil Wells",
+  },
+  {
+    name: "TotalActiveWells",
+    label: "Active Wells",
+  },
+  {
+    name: "TotalDucs",
+    label: "DUCs",
+  },
+  {
+    name: "TotalPermits",
+    label: "Active Permits",
   },
 ];
 const leasesColumnHeaders = [
   {
-    name: "LeaseId",
-    label: "Lease ID",
-  },
-  {
     name: "Lease",
     label: "Lease",
+  }, 
+  {
+    name: "LeaseId",
+    label: "Lease Number",
   },
+  {
+    name: "State",
+    label: "State",
+  },
+  {
+    name: "County",
+    label: "County",
+  },
+  {
+    name: "Acreage",
+    label: "Acreage",
+  },
+  {
+    name: "PrimaryBasin",
+    label: "Primary Basin",
+  },
+  {
+    name: "PrimaryFormation",
+    label: "Primary Formation",
+  },
+  {
+    name: "Operator",
+    label: "Operator",
+  },
+  {
+    name: "TotalWells",
+    label: "Total Wells",
+  },
+  {
+    name: "Total Gas Wells",
+    label: "Gas Wells",
+  },
+  {
+    name: "TotalOilWells",
+    label: "Oil Wells",
+  },
+  {
+    name: "TotalActiveWells",
+    label: "Active Wells",
+  },
+  {
+    name: "TotalDucs",
+    label: "DUCs",
+  },
+  {
+    name: "TotalPermits",
+    label: "Active Permits",
+  },
+
 ];
 
 const locationsColumnHeaders = [
