@@ -57,7 +57,9 @@ import { setMapGridCardState, showWarningMessage } from "../../../actions";
 import { first } from "@amcharts/amcharts4/.internal/core/utils/Array";
 
 const useStyles = makeStyles((theme) => ({
-  container: { padding: "0 !important" },
+  container: { 
+    padding: "0 !important" 
+},
 }));
 
 var ticksToDateString = function (ticks) {

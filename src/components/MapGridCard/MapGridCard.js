@@ -114,9 +114,10 @@ const useStyles = makeStyles((theme) => {
       "& .MuiBox-root": { padding: "0" },
     },
     mainPanelsDiv: {
+      height: "calc(100% - 64px)",
       maxHeight: "calc(100% - 64px)",
       overflow: "auto",
-      height: "calc(100% - 64px)",
+      // overflowX: "auto",
       "& div": {
         "&>.MuiPaper-root": {
           "&>:nth-child(3)": {
