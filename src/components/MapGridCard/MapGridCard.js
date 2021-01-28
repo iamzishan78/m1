@@ -199,7 +199,7 @@ function tabPanelsPropsAreEqual(prevProps, nextProps) {
   return Object.is(prevProps.value, nextProps.value);
 }
 
-const TabPanels = React.memo(({ panels, value }) => {
+const TabPanels = ({ panels, value }) => {
   console.log(`ue mapgridcard tabpanels ${(panels, value)}`);
 
   const classes = useStyles();
@@ -212,7 +212,7 @@ const TabPanels = React.memo(({ panels, value }) => {
       </TabPanel>
     ))
   );
-}, tabPanelsPropsAreEqual);
+};
 
 const wellsColumnHeaders = [
   {
@@ -454,7 +454,7 @@ function MapGridCard(props) {
               {mapGridCardActivated === "exp" ? (
                 <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
               ) : (
-                <ExpandIcon viewBox="0 0 64 64" color="secondary"  />
+                <ExpandIcon viewBox="0 0 64 64" color="secondary" />
               )}
             </IconButton>
             <IconButton
@@ -470,7 +470,7 @@ function MapGridCard(props) {
                 );
               }}
             >
-              <CloseIcon color="secondary"  />
+              <CloseIcon color="secondary" />
             </IconButton>
           </Toolbar>
         </AppBar>

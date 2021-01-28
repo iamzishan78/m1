@@ -798,12 +798,12 @@ export default function Pipelines(props) {
                                 <TableCell padding="checkbox"></TableCell>
                                 <TableCell align="left">Stage Name</TableCell>
                                 {/* ******DO NOT DELETE - TEMPORARILY COMMENTING OUT UNTIL WE BUILD 'PROBABILITY' and 'ROTTENESS' FUCTIONALITY****** */}
-                                {/* <TableCell align="left">
+                                <TableCell align="left">
                                   Deal Probability(%)
                                 </TableCell>
                                 <TableCell align="left">
                                   Rotting in&nbsp;(days)
-                                </TableCell> */}
+                                </TableCell>
                                 <TableCell align="left">Stage Status</TableCell>
                                 <TableCell padding="checkbox"></TableCell>
                                 {/* <TableCell padding="checkbox"></TableCell> */}
@@ -854,15 +854,18 @@ export default function Pipelines(props) {
 
                                           {/* {stage.name} */}
                                         </TableCell>
-                                  {/* ******DO NOT DELETE - TEMPORARILY COMMENTING OUT UNTIL WE BUILD 'PROBABILITY' and 'ROTTENESS' FUCTIONALITY****** */}                
-                                       
-                                        {/* <TableCell align="left">
+                                        {/* ******DO NOT DELETE - TEMPORARILY COMMENTING OUT UNTIL WE BUILD 'PROBABILITY' and 'ROTTENESS' FUCTIONALITY****** */}
+
+                                        <TableCell align="left">
                                           <TextField
                                             variant="outlined"
                                             size="small"
                                             fullWidth
                                             margin="none"
                                             value={stage.dealProbability}
+                                            InputProps={{
+                                              type: "number",
+                                            }}
                                             onChange={(event) => {
                                               handleCellTextChange(
                                                 event.target.value,
@@ -880,6 +883,9 @@ export default function Pipelines(props) {
                                             fullWidth
                                             margin="none"
                                             value={stage.rotting}
+                                            InputProps={{
+                                              type: "number",
+                                            }}
                                             onChange={(event) => {
                                               handleCellTextChange(
                                                 event.target.value,
@@ -888,8 +894,7 @@ export default function Pipelines(props) {
                                               );
                                             }}
                                           />
-                                        </TableCell> */}
-
+                                        </TableCell>
 
                                         <TableCell align="left">
                                           <Autocomplete

@@ -49,7 +49,9 @@ import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
 import { ABSTRACTWELLGEOQUERY } from "../../graphQL/useQueryAbstractWellGeo";
+import { PLSSSECONDDIVISIONGEO } from "../../graphQL/useQueryPLSSSecondDivisionGeo";
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
+import { OWNERSQUERY } from "../../graphQL/useQueryOwners";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
 import {
   ABSTRACTGEOQUERYCONTAINS,
@@ -68,6 +70,7 @@ import { setMainMapState, showErrorMessage } from "../../actions";
 import { ZoomOutMapSharp } from "@material-ui/icons";
 import debounce from "lodash/debounce";
 import { createFalse } from "typescript";
+import { geojsonTypes } from "@mapbox/mapbox-gl-draw/src/constants";
 //import { AvSortByAlpha } from "material-ui/svg-icons";
 
 const useStyles = makeStyles((theme) => ({
@@ -131,6 +134,7 @@ export default function Map() {
       stateApp.draw && stateApp.draw.getMode() == "drag_circle" ? true : false,
   });
   const [flyVar1, setFlyVar1] = useState([null]);
+  const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
   const dispatch = useDispatch();
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
@@ -307,6 +311,7 @@ export default function Map() {
     }
   };
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
+  const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
   const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
     TRACKSBYOBJECTTYPE
   );
@@ -349,6 +354,9 @@ export default function Map() {
 
   const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(
     ABSTRACTGEOCONTAINSQUERY
+  );
+  const [getPLSSSecondDivisionGeo, { data: plssSecondDivisionData }] = useLazyQuery(
+    PLSSSECONDDIVISIONGEO
   );
 
   const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(
@@ -411,14 +419,29 @@ export default function Map() {
         var objectsIdsArray = dataTracksOwner.tracksByObjectType.map(
           (item) => item.trackOn
         );
-
-        setStateApp((state) => ({
-          ...state,
-          owners: objectsIdsArray,
-        }));
+        getOwners({
+          variables: {
+            ownerIdArray: objectsIdsArray,
+          },
+        });
       }
     }
   }, [dataTracksOwner]);
+
+  useEffect(() => {
+    if (dataOwners) {
+      if (dataOwners.owners?.length >= 0)
+        setStateApp((state) => ({
+          ...state,
+          owners: [...dataOwners.owners],
+        }));
+      else
+        setStateApp((state) => ({
+          ...state,
+          owners: [],
+        }));
+    }
+  }, [dataOwners]);
 
   useEffect(() => {
     console.log("useEffect 3");
@@ -616,7 +639,17 @@ export default function Map() {
       let geoJson = null;
 
       if (config.layerType == "file layer") {
-        geoJson = layerData;
+
+        geoJson = {
+          ...layerData,
+          features: layerData?.features?.filter((feature) => !!feature?.geometry) || []
+        }
+
+        // geoJson = layerData;
+
+
+
+
       } else {
         const makeGeoJSON = (mdata) => {
           return {
@@ -628,7 +661,7 @@ export default function Map() {
                   properties: feature,
                   geometry: {
                     type: "Point",
-                    coordinates: [feature.longitude, feature.latitude],
+                    coordinates: [Number(feature.longitude), Number(feature.latitude)],
                   },
                 };
               } else if (feature.shape) {
@@ -649,7 +682,7 @@ export default function Map() {
                   properties: feature,
                   geometry: {
                     type: "Point",
-                    coordinates: [feature.Longitude, feature.Latitude],
+                    coordinates: [Number(feature.Longitude), Number(feature.Latitude)],
                   },
                 };
               }
@@ -683,6 +716,36 @@ export default function Map() {
             data: geoJson,
             promoteId: "id",
           });
+
+
+            console.log("NEW NEW NEW",sourceId )
+            if(sourceId=="parcels_source" || sourceId=="interests_source" ){
+            let pointSource = geoJson.features.map(feature => {
+
+              var output = feature
+
+              if(feature.geometry.type == "Point"){
+                console.log('output1')
+                output = feature 
+              } else {
+                output =  {...turf.centroid(feature), properties: feature.properties}
+              }
+
+              return output
+            })
+            
+
+            pointSource = {type: "FeatureCollection", features: [...pointSource]}
+
+            map.addSource(`${sourceId}_point`, {
+              type: "geojson",
+              data: pointSource
+            })
+          }
+          
+
+
+
         }
       }
 
@@ -715,16 +778,24 @@ export default function Map() {
       }
 
       if (map.getLayer(layerId)) {
+
+        map.moveLayer(`${layerId}_point`);
         map.setLayoutProperty(
           layerId,
           "visibility",
           visible ? "visible" : "none"
         );
+        map.setLayoutProperty(
+          `${layerId}_point`,
+          "visibility",
+          visible ? "visible" : "none"
+        )
         if (prop.paintProps) {
           Object.keys(prop.paintProps).forEach((key) => {
             map.setPaintProperty(layerId, key, prop.paintProps[key]);
           });
         }
+        
       } else {
         //// joining all properties before to set the new layer ////
         let layout = { visibility: visible ? "visible" : "none" };
@@ -749,14 +820,58 @@ export default function Map() {
 
         if (prop.labelProps) {
           let labelLayout = { visibility: visible ? "visible" : "none" };
-          labelLayout = { ...labelLayout, ...prop.labelProps.symbolProps };
+          labelLayout = {
+            ...labelLayout,
+            ...prop.labelProps.symbolProps,
+            };
+          // map.addLayer({
+          //   id: `${prop.id}_label`,
+          //   type: prop.labelProps.paintType,
+          //   source: sourceId,
+          //   minzoom: prop.labelProps.minZoom,
+          //   // layout: labelLayout,
+          // });
+
+          // override label properties for parcel and interest
+          if(layerId === 'parcel'){
+            labelLayout = { 
+              ...labelLayout,
+              "text-size": [
+                "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  12,
+                  12,
+                  15,
+                  28
+                ]
+            }
+          } else if (layerId === 'interest'){
+            labelLayout = { 
+              ...labelLayout,
+              "text-size": [
+                "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  9,
+                  16,
+                  11,
+                  32,
+                  15,
+                  54
+                ]
+            }
+          }
+
+          // add point
           map.addLayer({
-            id: `${prop.id}_label`,
-            type: prop.labelProps.paintType,
-            source: sourceId,
-            minzoom: prop.labelProps.minZoom,
-            layout: labelLayout,
+              id: `${layerId}_point`,
+              type: 'symbol',
+              source: `${sourceId}_point`,
+              minzoom: prop.labelProps.minZoom,
+              layout: labelLayout,
           });
+          map.moveLayer(`${layerId}_point`);
         }
       }
 
@@ -1307,7 +1422,7 @@ export default function Map() {
       // -> remove source
       const sourceId = prop.sourceProps;
       if (map.getSource(sourceId)) map.removeSource(sourceId);
-
+      if (map.getSource(`${sourceId}_point`)) map.removeSource(`${sourceId}_point`);
       if (map.getSource(`${sourceId}_filter`))
         map.removeSource(`${sourceId}_filter`);
     }
@@ -2501,13 +2616,17 @@ export default function Map() {
         }
 
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
+        
         map.setFilter("wellsHeatmapLast12", [
           ">",
           ["get", "lastTwelveMonthBOE"],
           0,
         ]);
+        
         map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
+        
         map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
+        
         map.setFilter("wellsHeatmapRecentlyDrilled", [
           ">",
           ["get", "daysSinceDrilled"],
@@ -2550,6 +2669,13 @@ export default function Map() {
               ]);
             } else if (["interest", "parcel"].indexOf(filterLayer) > -1) {
               map.setFilter(filterLayer, [
+                "match",
+                ["get", "shapeLabel"],
+                mergeArrays(filterCustomArray[filterLayer]),
+                true,
+                false,
+              ]);
+              map.setFilter(filterLayer + "_point", [
                 "match",
                 ["get", "shapeLabel"],
                 mergeArrays(filterCustomArray[filterLayer]),
@@ -2625,6 +2751,13 @@ export default function Map() {
                     true,
                     false,
                   ]);
+                  map.setFilter(filterLayer + "_point", [
+                    "match",
+                    ["get", "shapeLabel"],
+                    "-1",
+                    true,
+                    false,
+                  ]);
                   map.setFilter(filterLayer + "_labels", [
                     "match",
                     ["get", "shapeLabel"],
@@ -2654,6 +2787,9 @@ export default function Map() {
               const layer = map.getLayer(filterLayer);
               if (layer) {
                 map.setFilter(filterLayer, null);
+                if (map.getLayer(filterLayer + "_point")) {
+                  map.setFilter(filterLayer + "_point", null);
+                }
                 if (map.getLayer(filterLayer + "_labels")) {
                   map.setFilter(filterLayer + "_labels", null);
                 }
@@ -2692,15 +2828,12 @@ export default function Map() {
         map.setFilter("basinLayer", null);
         map.setFilter("basinLabels", null);
         map.setFilter("interest", null);
+        map.setFilter("interest_point", null);
         map.setFilter("parcel", null);
+        map.setFilter("parcel_point", null);
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
-        map.setFilter("wellsHeatmapLast12", [
-          ">",
-          ["get", "lastTwelveMonthBOE"],
-          0,
-        ]);
         map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
-        map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
+        map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);        
         map.setFilter("wellsHeatmapRecentlyDrilled", [
           ">",
           ["get", "daysSinceDrilled"],
@@ -2709,6 +2842,30 @@ export default function Map() {
         map.setFilter("wellsHeatmapRecentlyCompleted", [
           ">",
           ["get", "daysSinceCompletion"],
+          0,
+        ]);
+
+        map.setFilter("wellsHeatmapCumGas", [">", ["get", "cumulativeGas"], 0]);        
+        map.setFilter("wellsHeatmapCumOil", [">", ["get", "cumulativeOil"], 0]);        
+
+        map.setFilter("wellsHeatmapLast12", [
+          ">",
+          ["get", "lastTwelveMonthBOE"],
+          0,
+        ]);
+        map.setFilter("wellsHeatmapLast12Oil", [
+          ">",
+          ["get", "lastTwelveMonthOil"],
+          0,
+        ]);
+        map.setFilter("wellsHeatmapLast12Gas", [
+          ">",
+          ["get", "lastTwelveMonthGas"],
+          0,
+        ]);
+        map.setFilter("wellsHeatmapTVD", [
+          ">",
+          ["get", "trueVerticalDepth"],
           0,
         ]);
 
@@ -3228,6 +3385,49 @@ export default function Map() {
 
   useEffect(() => {
     if (
+      plssSecondDivisionData &&
+      plssSecondDivisionData.plssSecondDivisionGeo &&
+      plssSecondDivisionData.plssSecondDivisionGeo.length > 0
+    ) {
+      const data = plssSecondDivisionData.plssSecondDivisionGeo;
+      const makeGeoJSON = (data) => {
+        return {
+          type: "FeatureCollection",
+          features: data.map((feature) => {
+            return JSON.parse(feature.geo_json);
+          }),
+        };
+      };
+
+      const makeLabelGeoJson = (data) => {
+        return {
+          type: "FeatureCollection",
+          features: data.map((feature) => {
+            const geoJSON = JSON.parse(feature.geo_json);
+            if (
+              geoJSON.geometry &&
+              geoJSON.geometry.coordinates[0].length >= 4
+            ) {
+              const polygon = turf.polygon(geoJSON.geometry.coordinates);
+              const centroid = turf.centroid(polygon);
+              centroid.properties.ShortName =
+                geoJSON.properties.ShortName;
+              return centroid;
+            }
+          }),
+        };
+      };
+
+      const geoJson = makeGeoJSON(data);
+      const labelGeoJson = makeLabelGeoJson(data);
+
+      map.getSource("plssseconddivision_geo_source").setData(geoJson);
+      map.getSource("plssseconddivision_label_geo_source").setData(labelGeoJson);
+    }
+  }, [plssSecondDivisionData]);
+
+  useEffect(() => {
+    if (
       abstractContainsData &&
       abstractContainsData.abstractGeoContains &&
       abstractContainsData.abstractGeoContains.length > 0
@@ -3556,6 +3756,31 @@ export default function Map() {
               selectedPolygonString: polygonString
             }));
           }
+
+          if (map.getZoom() >= 14) {
+            const bounds = map.getBounds();
+            const bbox = [
+              bounds.getWest(),
+              bounds.getSouth(),
+              bounds.getEast(),
+              bounds.getNorth(),
+            ];
+            const bboxPolygon = turf.bboxPolygon(bbox);
+            let polygonString = "POLYGON((";
+            bboxPolygon.geometry.coordinates[0].forEach((coordinate, index) => {
+              polygonString += coordinate[0] + " " + coordinate[1];
+              if (index < bboxPolygon.geometry.coordinates[0].length - 1) {
+                polygonString += ", ";
+              }
+            });
+            polygonString += "))";
+
+            getPLSSSecondDivisionGeo({
+              variables: {
+                polygon: polygonString,
+              },
+            });
+          }
         };
 
         newMap.on("zoomend", function (e) {
@@ -3597,6 +3822,24 @@ export default function Map() {
           });
 
           newMap.addSource("abstract_label_geo_source", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: [],
+            },
+            promoteId: "Id",
+          });
+
+          newMap.addSource("plssseconddivision_geo_source", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: [],
+            },
+            promoteId: "Id",
+          });
+
+          newMap.addSource("plssseconddivision_label_geo_source", {
             type: "geojson",
             data: {
               type: "FeatureCollection",
@@ -3650,6 +3893,35 @@ export default function Map() {
             },
             paint: {
               "text-color": "#888",
+            },
+          });
+
+          newMap.addLayer({
+            id: "plssseconddivision_geo_layer",
+            type: "fill",
+            minzoom: 14,
+            source: "plssseconddivision_geo_source",
+            paint: {
+              "fill-color": "rgba(0, 0, 0, 0)",
+              "fill-outline-color": "rgba(0, 6, 15, 0.17)"
+            },
+          });
+
+          newMap.addLayer({
+            id: "plssseconddivision_geo_label_layer",
+            type: "symbol",
+            minzoom: 14,
+            source: "plssseconddivision_label_geo_source",
+            layout: {
+              "text-font": ["Open Sans SemiBold", "Arial Unicode MS Regular"],
+              "text-field": "{ShortName}",
+              "text-anchor": "center",
+            },
+            paint: {
+              "text-color": "hsla(0, 0%, 0%, 0.75)",
+              "text-halo-color": "hsl(35, 16%, 100%)",
+              "text-halo-width": 0.5,
+              "text-halo-blur": 0.5
             },
           });
 
@@ -4536,6 +4808,60 @@ export default function Map() {
       // });
     }
   }, [stateApp.wellDetailCardOpen]);
+
+  useEffect(() => {
+    if(parcelBoundaryId && map){
+      let mapSourceData = map.getSource('parcels_source')._data;
+      const idx = mapSourceData.features.findIndex(feature => feature.id === parcelBoundaryId)
+      if(idx > -1){
+        const geoJson = {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: mapSourceData.features[idx].geometry.coordinates[0]
+          }
+        }
+
+        if(map.getSource('parcelBoundarySource')){
+          map.getSource('parcelBoundarySource').setData(geoJson);
+          if(map.getLayer('parcelBoundary')){
+            map.removeLayer('parcelBoundary')
+          }
+        } else {
+          map.addSource('parcelBoundarySource', {
+            type: "geojson",
+            data: geoJson
+          });     
+        } 
+
+        map.addLayer({
+          id: 'parcelBoundary',
+          type: 'line',
+          source: 'parcelBoundarySource',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': '#FFFF00',
+            'line-width': 8
+          }
+        });
+      }
+    }
+  }, [parcelBoundaryId])
+
+  useEffect(() => {
+    // console.log("SELECTED PARCEL!: ", stateApp.selectedParcel);
+    if(map && stateApp.selectedParcel){
+      setParcelBoundaryId(stateApp.selectedParcel.id);
+    } else if(map) {
+      map.removeLayer('parcelBoundary');
+      map.removeSource('parcelBoundarySource');
+      setParcelBoundaryId(null);
+    }
+  }, [stateApp.selectedParcel])
 
   // useEffect(() => {
   //   if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {

@@ -38,6 +38,11 @@ export default () => {
 
   const handleParcelChange = (value) => {
     let filter;
+    const currentLayers = [...stateApp.layers];
+    const index = currentLayers.findIndex(
+      (l) => l.identifier == "Parcels"
+    );
+    
     if (value && value.length) {
       const layers = parcelData.filter(
         (parcel) => value.indexOf(parcel.name) > -1
@@ -48,9 +53,13 @@ export default () => {
       console.log(layers, filter);
       setStateNav((stateNav) => ({ ...stateNav, parcelName: value }));
       setParcelName(value);
+      
+      setStateApp((stateApp) => ({ ...stateApp, prevParcelVisible: currentLayers[index].layerSettings.visiable }))
     } else {
       filter = null;
       setStateNav((stateNav) => ({ ...stateNav, parcelName: null }));
+    
+      stateApp.toggleLayersActivity("Parcels", stateApp.prevParcelVisible);
     }
     setStateNav((stateNav) => ({ ...stateNav, filterParcel: filter }));
   };

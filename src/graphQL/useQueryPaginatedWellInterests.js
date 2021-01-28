@@ -19,6 +19,7 @@ export const PAGINATEDWELLINTERESTSQUERY = gql`
       edges {
         node {
           id
+          wellId
           wellName
           apiNumber
           operator
