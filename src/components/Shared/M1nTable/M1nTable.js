@@ -1338,6 +1338,10 @@ const OwnersPerParcelHeadCells = [
       "Unknown",
     ],
   },
+
+  { name: "depthFrom", label: "Depth From", editable: true },
+  { name: "depthTo", label: "Depth To", editable: true },
+
   {
     name: "type",
     label: "Type",
@@ -1354,8 +1358,6 @@ const OwnersPerParcelHeadCells = [
       "Working Interest",
     ],
   },
-  { name: "depthFrom", label: "Depth From", editable: true },
-  { name: "depthTo", label: "Depth To", editable: true },
   { name: "interest", label: "Interest", editable: true },
   { name: "nma", label: "NMA", editable: true },
   { name: "nra", label: "NRA", editable: true },
@@ -3651,7 +3653,7 @@ function M1nTable(props) {
       stateApp.user
     ) {
       setTargetLabel("Parcel Ownership");
-      setHeader("Parcel Ownerships");
+      setHeader("Parcel Ownership");
       setAddAble({
         type: "ownerToParcel",
         customLayerId: props.customLayer._id,
