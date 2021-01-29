@@ -1827,7 +1827,9 @@ function SubTable(props) {
       props.targetLabel !== "deal" &&
       props.targetLabel !== "usermanagement" &&
       props.targetLabel !== "owner" &&
-      props.targetLabel !== "production_detail",
+      props.targetLabel !== "production_detail" &&
+      props.parent !== "ownersPerParcel" &&
+      props.parent !== "ownersPerParcelWells",
     viewColumns: props.targetLabel !== "usermanagement",
     onColumnViewChange: (changedColumn, action) => {
       if (
