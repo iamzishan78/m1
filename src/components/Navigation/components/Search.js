@@ -615,6 +615,55 @@ function Search() {
                 }
               )
             : null,
+
+            searchOption == "all" || searchOption == "contacts"
+            ? callLeaseSearch(
+                { input: searchInputValue },
+                searchTop,
+                (results) => {
+                  if (results) {
+                    const indexSource = results["@odata.context"].substring(
+                      results["@odata.context"].indexOf("('") + 2,
+                      results["@odata.context"].indexOf("')")
+                    );
+                    console.log('################# index source',indexSource);
+                    console.log('################# results',results)
+                    newOptions = [
+                      ...results.value.map((result) => {
+                        result.Score = result["@search.score"];
+                        delete result["@search.score"];
+
+                        return {
+                          ...result,
+                          // Source: indexSource,
+                          Source: 'contacts-index', // will need to change this back to variable
+                          Primary:
+                            result.Lease &&
+                            (result.Lease === "" ||
+                              result.Lease === "N/A" ||
+                              result.Lease === "(N/A)")
+                              ? "--"
+                              : result.Lease,
+                          Secondary:
+                            result.LeaseId &&
+                            (result.LeaseId === "" ||
+                              result.LeaseId === "N/A" ||
+                              result.LeaseId === "(N/A)")
+                              ? null
+                              : result.LeaseId,
+                        };
+                      }),
+                      ...newOptions,
+                    ];
+
+                    setMaxMinContactsScore(maxMinScore(results.value));
+                  }
+
+                  setOptions(newOptions);
+                  setLoadingContacts(false);
+                }
+              )
+            : null,
           searchOption == "all" || searchOption == "locations"
             ? callMapboxSearch(
                 { input: searchInputValue },
@@ -1177,7 +1226,6 @@ function Search() {
                   size="small"
                   color={searchOption === "wells" ? "secondary" : "primary"}
                   onClick={() => {
-                    // setSearchTop(5);
                     setSearchOption("wells");
                   }}
                 >
@@ -1189,7 +1237,6 @@ function Search() {
                   size="small"
                   color={searchOption === "owners" ? "secondary" : "primary"}
                   onClick={() => {
-                    // setSearchTop(5);
                     setSearchOption("owners");
                   }}
                 >
@@ -1203,7 +1250,6 @@ function Search() {
                   size="small"
                   color={searchOption === "operators" ? "secondary" : "primary"}
                   onClick={() => {
-                    // setSearchTop(5);
                     setSearchOption("operators");
                   }}
                 >
@@ -1215,7 +1261,6 @@ function Search() {
                   size="small"
                   color={searchOption === "leases" ? "secondary" : "primary"}
                   onClick={() => {
-                    // setSearchTop(5);
                     setSearchOption("leases");
                   }}
                 >
@@ -1229,7 +1274,6 @@ function Search() {
                   size="small"
                   color={searchOption === "contacts" ? "secondary" : "primary"}
                   onClick={() => {
-                    // setSearchTop(5);
                     setSearchOption("contacts");
                   }}
                 >
@@ -1243,7 +1287,6 @@ function Search() {
                   size="small"
                   color={searchOption === "locations" ? "secondary" : "primary"}
                   onClick={() => {
-                    // setSearchTop(5);
                     setSearchOption("locations");
                   }}
                 >
@@ -1460,7 +1503,7 @@ function Search() {
                                     ? "operators"
                                     : option.Source === "lease-index"
                                     ? "leases"
-                                    : option.Source === "contact-index"
+                                    : option.Source === "contacts-index"
                                     ? "contacts"
                                     : option.group === "mapboxSearch"
                                     ? "locations"
@@ -1487,7 +1530,7 @@ function Search() {
                                     {option.Source === "globalowner-index" && (
                                       <PersonIcon className={classes.icon} />
                                     )}
-                                    {option.Source === "contact-index" && (
+                                    {option.Source === "contacts-index" && (
                                       //will need to change this to something different 
                                       <PersonIcon className={classes.icon} />
                                     )}
@@ -1601,7 +1644,7 @@ function Search() {
                   {option.Source === "lease-index" && (
                     <LeaseIcon className={classes.icon} color={"#757575"} />
                   )}
-                  {option.Source === "contact-index" && (
+                  {option.Source === "contacts-index" && (
                     //will need to change this to something different
                     <PersonIcon className={classes.icon} color={"#757575"} />
                   )}
