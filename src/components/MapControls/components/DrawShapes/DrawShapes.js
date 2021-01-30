@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useLayoutEffect } from "react";
+import React, { useContext, useEffect, useState, useLayoutEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import loadCSS from "fg-loadcss";
 // STATE MANAGEMENT
@@ -97,6 +97,7 @@ export default function DrawShapes(props) {
     UPSERTCUSTOMLAYER
   );
 
+  const eventsConfiguredRef = useRef(false);
   //   const [
   //     getCustomLayers,
   //     { data: customLayerData },
@@ -154,37 +155,40 @@ export default function DrawShapes(props) {
   }, [dataUser]);
 
   useEffect(() => {
-    const { map } = stateApp;
-    map.on("draw.create", ({ features }) => {
-      const [feature] = features;
-      const { draw } = stateApp;
-      if (feature) {
-        addCustomShapeProperties(feature, draw);
-      }
-      setStateApp((state) => ({ ...state, editDraw: false }));
-    });
+    if (!eventsConfiguredRef.current) {
+      const { map } = stateApp;
+      map.on("draw.create", ({ features }) => {
+        const [feature] = features;
+        const { draw } = stateApp;
+        if (feature) {
+          addCustomShapeProperties(feature, draw);
+        }
+        setStateApp((state) => ({ ...state, editDraw: false }));
+      });
 
-    map.on("draw.selectionchange", ({ features }) => {
-      const [feature] = features;
-      if (feature && !feature.id.includes("edit_polygon")) {
-        console.log("draw shape check feature", feature);
-        setStateApp((stateApp) => {
-          return {
-            ...stateApp,
-            popupOpen: false,
-            currentFeature: feature,
-            featureOrMapShape: feature,
-            editDraw: true,
-          };
-        });
-      } else {
-        setStateApp((state) => ({
-          ...state,
-          currentFeature: undefined,
-          editDraw: false,
-        }));
-      }
-    });
+      map.on("draw.selectionchange", ({ features }) => {
+        const [feature] = features;
+        if (feature && !feature.id.includes("edit_polygon")) {
+          console.log("draw shape check feature", feature);
+          setStateApp((stateApp) => {
+            return {
+              ...stateApp,
+              popupOpen: false,
+              currentFeature: feature,
+              featureOrMapShape: feature,
+              editDraw: true,
+            };
+          });
+        } else {
+          setStateApp((state) => ({
+            ...state,
+            currentFeature: undefined,
+            editDraw: false,
+          }));
+        }
+      });
+      eventsConfiguredRef.current = true;
+    }
   }, [stateApp.map, showSpatialDataCard]);
 
   useEffect(() => {
