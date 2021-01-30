@@ -181,6 +181,7 @@ function Search() {
   const [maxMinOwnersScore, setMaxMinOwnersScore] = React.useState([0, 0]);
   const [maxMinOperatosScore, setMaxMinOperatosScore] = React.useState([0, 0]);
   const [maxMinLeasesScore, setMaxMinLeasesScore] = React.useState([0, 0]);
+  const [maxMinContactsScore, setMaxMinContactsScore] = React.useState([0, 0]);
   const [maxMinMapboxSearchScore, setMaxMinMapboxSearchScore] = React.useState([
     0,
     0,
@@ -190,6 +191,7 @@ function Search() {
   const [loadingWells, setLoadingWells] = React.useState(false);
   const [loadingOwners, setLoadingOwners] = React.useState(false);
   const [loadingLeases, setLoadingLeases] = React.useState(false);
+  const [loadingContacts, setLoadingContacts] = React.useState(false);
   const [loadingOperators, setLoadingOperators] = React.useState(false);
   const [loadingMapboxSearch, setLoadingMapboxSearch] = React.useState(false);
   const classes = useStyles({ mapGridCardActivated });
@@ -1010,6 +1012,31 @@ function Search() {
         }
       }
 
+
+      //// if contact
+      if (
+        newValue &&
+        newValue.Source === "contacts-index" &&
+        ((newValue.Lease && newValue.Lease !== "") ||
+          (newValue.LeaseId && newValue.LeaseId !== ""))
+      ) {
+        if (newValue.Lease && newValue.Lease !== "") {
+          getLeaseWells({
+            variables: {
+              fieldName: "Lease",
+              value: newValue.Lease,
+            },
+          });
+        } else {
+          getLeaseWells({
+            variables: {
+              fieldName: "LeaseId",
+              value: newValue.LeaseId,
+            },
+          });
+        }
+      }
+
       //// if mapboxSearch
       if (newValue && newValue.Source === "mapboxSearch" && newValue.center) {
         let minLong, maxLong, minLat, maxLat;
@@ -1052,11 +1079,13 @@ function Search() {
         loadingOwners ||
         loadingOperators ||
         loadingLeases ||
+        loadingContacts ||
         loadingMapboxSearch)) ||
     (searchOption === "wells" && loadingWells) ||
     (searchOption === "owners" && loadingOwners) ||
     (searchOption === "operators" && loadingOperators) ||
     (searchOption === "leases" && loadingLeases) ||
+    (searchOption === "contacts" && loadingContacts) ||
     (searchOption === "locations" && loadingMapboxSearch)
   ) {
     optionsWithHeader = [header, { ...header, Source: "loader" }];
@@ -1075,6 +1104,7 @@ function Search() {
           if (option.Source === "wellheader-index-en-ms") return "Wells";
           if (option.Source === "operator-index") return "Operators";
           if (option.Source === "lease-index") return "Leases";
+          if (option.Source === "contacts-index") return "Contacts";
           if (option.Source === "mapboxSearch") return "Locations";
           if (option.Source === "loader") return "loader";
           return "header";
@@ -1194,14 +1224,14 @@ function Search() {
                 <Button
                   className={classes.headerButtons}
                   variant={
-                    searchOption === "locations" ? "contained" : "outlined"
+                    searchOption === "contacts" ? "contained" : "outlined"
                   }
                   size="small"
-                  color={searchOption === "locations" ? "secondary" : "primary"}
-                  // onClick={() => {
-                  //   // setSearchTop(5);
-                  //   setSearchOption("locations");
-                  // }}
+                  color={searchOption === "contacts" ? "secondary" : "primary"}
+                  onClick={() => {
+                    // setSearchTop(5);
+                    setSearchOption("contacts");
+                  }}
                 >
                   Contacts
                 </Button>
@@ -1247,6 +1277,8 @@ function Search() {
                               ? "operators"
                               : option.group === "Leases"
                               ? "leases"
+                              : option.group === "Contacts"
+                              ? "contacts"
                               : option.group === "Locations"
                               ? "locations"
                               : "all"
@@ -1261,7 +1293,6 @@ function Search() {
                         className={classes.groupsButton}
                         onClick={() => {
                           setSearchTop(5);
-                          // setSearchOption("all");
                         }}
                       >
                         See Less
@@ -1284,7 +1315,6 @@ function Search() {
         }}
         onInputChange={(event, newInputValue, reason) => {
           if (reason == "input") {
-            // setInputValue(newInputValue);
 
             dispatch(
               setMapGridCardState({
@@ -1305,12 +1335,14 @@ function Search() {
                 setLoadingOwners(true);
                 setLoadingOperators(true);
                 setLoadingLeases(true);
+                setLoadingContacts(true);
                 setLoadingMapboxSearch(true);
               }
               if (searchOption === "wells") setLoadingWells(true);
               if (searchOption === "owners") setLoadingOwners(true);
               if (searchOption === "operators") setLoadingOperators(true);
               if (searchOption === "leases") setLoadingLeases(true);
+              if (searchOption === "contacts") setLoadingContacts(true);
               if (searchOption === "locations") setLoadingMapboxSearch(true);
             } else {
               // setValue(null);
@@ -1319,6 +1351,7 @@ function Search() {
               setLoadingOwners(false);
               setLoadingOperators(false);
               setLoadingLeases(false);
+              setLoadingContacts(false);
               setLoadingMapboxSearch(false);
             }
           }
@@ -1427,15 +1460,12 @@ function Search() {
                                     ? "operators"
                                     : option.Source === "lease-index"
                                     ? "leases"
+                                    : option.Source === "contact-index"
+                                    ? "contacts"
                                     : option.group === "mapboxSearch"
                                     ? "locations"
                                     : "all"
                                 );
-                                // setInputValue(
-                                //   option.Primary
-                                //     ? option.Primary
-                                //     : option.Secondary
-                                // );
 
                                 dispatch(
                                   setMapGridCardState({
@@ -1455,6 +1485,10 @@ function Search() {
                                 <Grid container item xs={9} alignItems="center">
                                   <Grid item>
                                     {option.Source === "globalowner-index" && (
+                                      <PersonIcon className={classes.icon} />
+                                    )}
+                                    {option.Source === "contact-index" && (
+                                      //will need to change this to something different 
                                       <PersonIcon className={classes.icon} />
                                     )}
                                     {option.Source === "operator-index" && (
@@ -1567,6 +1601,10 @@ function Search() {
                   {option.Source === "lease-index" && (
                     <LeaseIcon className={classes.icon} color={"#757575"} />
                   )}
+                  {option.Source === "contact-index" && (
+                    //will need to change this to something different
+                    <PersonIcon className={classes.icon} color={"#757575"} />
+                  )}
                   {option.Source === "mapboxSearch" && (
                     <LocationOnIcon className={classes.icon} />
                   )}
@@ -1612,6 +1650,8 @@ function Search() {
                           ? maxMinOperatosScore
                           : option.Source === "lease-index"
                           ? maxMinLeasesScore
+                          : option.Source === "contacts-index"
+                          ? maxMinContactsScore
                           : maxMinMapboxSearchScore,
                         option.Score
                       ).toString(),
