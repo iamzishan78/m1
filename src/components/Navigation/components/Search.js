@@ -28,6 +28,7 @@ import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
 import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
 import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
 import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
+import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { NavigationContext } from "../NavigationContext";
 import Popover from "@material-ui/core/Popover";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -69,6 +70,7 @@ const calcScoreOpacity = (maxMin, score) => {
 
   return 1 - (score - maxMin[1]) / (maxMin[0] - maxMin[1]);
 };
+
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -437,6 +439,14 @@ function Search() {
       }, 500),
     []
   );
+
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
+  
 
   React.useEffect(() => {
     // if (!autocompleteService.current && window.google) {
@@ -812,6 +822,8 @@ function Search() {
     }
   }, [dataLeaseWells]);
 
+
+
   //////////////////////////////////// populating the search layer from external resource ////
   useEffect(() => {
     if (objToPopulateSearchLayer) {
@@ -1095,11 +1107,13 @@ function Search() {
                       loadingOwners ||
                       loadingOperators ||
                       loadingLeases ||
+                      loadingContacts ||
                       loadingMapboxSearch)) ||
                   (searchOption === "wells" && loadingWells) ||
                   (searchOption === "owners" && loadingOwners) ||
                   (searchOption === "operators" && loadingOperators) ||
                   (searchOption === "leases" && loadingLeases) ||
+                  (searchOption === "contacts" && loadingContacts) ||
                   (searchOption === "locations" && loadingMapboxSearch) ||
                   options.length === 0
                     ? "0"

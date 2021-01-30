@@ -3045,6 +3045,14 @@ function M1nTable(props) {
 
   ////////////Owners Per Well end///////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
   ////////////Contacts begin///////////////////////////////////////////////
 
   useEffect(() => {
@@ -3063,6 +3071,7 @@ function M1nTable(props) {
       setColumnsBase(ContactsHeadCells);
     }
   }, [props.parent]);
+
 
   useEffect(() => {
     if (
@@ -3331,6 +3340,19 @@ function M1nTable(props) {
   }, [props.parent, stateApp.user]);
 
   ////////////Contacts end///////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   //////////// Search begin///////////////////////////////////////////////
   useEffect(() => {
