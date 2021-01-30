@@ -1149,7 +1149,7 @@ function Search() {
                     setSearchOption("owners");
                   }}
                 >
-                  Owners
+                  Tax Owners
                 </Button>
                 <Button
                   className={classes.headerButtons}
@@ -1176,6 +1176,20 @@ function Search() {
                   }}
                 >
                   Leases
+                </Button>
+                <Button
+                  className={classes.headerButtons}
+                  variant={
+                    searchOption === "locations" ? "contained" : "outlined"
+                  }
+                  size="small"
+                  color={searchOption === "locations" ? "secondary" : "primary"}
+                  // onClick={() => {
+                  //   // setSearchTop(5);
+                  //   setSearchOption("locations");
+                  // }}
+                >
+                  Contacts
                 </Button>
                 <Button
                   className={classes.headerButtons}

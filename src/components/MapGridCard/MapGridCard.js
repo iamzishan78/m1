@@ -285,39 +285,39 @@ const operatorsColumnHeaders = [
     label: "Operator",
   },
   {
-    name: "Active States",
+    name: "StateCount",
     label: "# Active States",
   },
   {
-    name: "ActiveBasins",
+    name: "BasinCount",
     label: "# Active Basins",
   },
+  // {
+  //   name: "TotalLeases",
+  //   label: "Total Leases",
+  // },
   {
-    name: "TotalLeases",
-    label: "Total Leases",
-  },
-  {
-    name: "TotalWells",
+    name: "TotalWellCount",
     label: "Total Wells",
   },
   {
-    name: "Total Gas Wells",
+    name: "GasWellCount",
     label: "Gas Wells",
   },
   {
-    name: "TotalOilWells",
+    name: "OilWellCount",
     label: "Oil Wells",
   },
   {
-    name: "TotalActiveWells",
+    name: "ActiveWellCount",
     label: "Active Wells",
   },
   {
-    name: "TotalDucs",
+    name: "DUCWellCount",
     label: "DUCs",
   },
   {
-    name: "TotalPermits",
+    name: "PermitCount",
     label: "Active Permits",
   },
 ];
@@ -392,6 +392,38 @@ const locationsColumnHeaders = [
   },
 ];
 
+const parcelColumnHeaders = [
+  {
+    name: "Operator",
+    label: "Name",
+  },
+  {
+    name: "State",
+    label: "State",
+  },
+  {
+    name: "County",
+    label: "County",
+  },
+  {
+    name: "Survey",
+    label: "Survey/Meridian",
+  },
+  {
+    name: "Block",
+    label: "Block/Township",
+  },
+  {
+    name: "Section",
+    label: "Section/Range",
+  },
+  {
+    name: "Abstract",
+    label: "Abstract/Section",
+  },
+];
+
+
 function MapGridCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const dispatch = useDispatch();
@@ -446,12 +478,12 @@ function MapGridCard(props) {
     /// value will control the cog api 
 
     switch (searchTapValue) {
-      case 6:
-        return "location";
-      case 5:
-        return "permits";      
-      case 4:
-        return "parcel";
+      // case 6:
+      //   return "location";
+      // case 5:
+      //   return "permits";      
+      // case 4:
+      //   return "parcel";
       case 3:
         return "lease";
       case 2:
@@ -642,9 +674,12 @@ function MapGridCard(props) {
                     <M1nTable
                       dense
                       parent="search"
-                      privateColumns={[]}
+                      privateColumns={[parcelColumnHeaders]}
                       targetLabel={getTargetFromSearchTaps()}
                       header={<SearchTabPanels />}
+                      showTags
+                      showComments
+                      showTracks
                     />,
                     <M1nTable
                       dense
@@ -780,9 +815,9 @@ function MapGridCard(props) {
       {mapGridCardActivated === "min" ? (
         CardReturn()
       ) : (
-        <Draggable cancel={'[class*="cancelDraggableEffect"]'}>
-          {CardReturn()}
-        </Draggable>
+        // <Draggable cancel={'[class*="cancelDraggableEffect"]'}>
+          CardReturn()
+        // </Draggable>
       )}
       {mapGridCardActivated === "exp" && blackOut()}
     </div>
