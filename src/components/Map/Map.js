@@ -716,38 +716,43 @@ export default function Map() {
             data: geoJson,
             promoteId: "id",
           });
-
-
-            console.log("NEW NEW NEW",sourceId )
-            if(sourceId=="parcels_source" || sourceId=="interests_source" ){
-            let pointSource = geoJson.features.map(feature => {
-
-              var output = feature
-
-              if(feature.geometry.type == "Point"){
-                console.log('output1')
-                output = feature 
-              } else {
-                output =  {...turf.centroid(feature), properties: feature.properties}
-              }
-
-              return output
-            })
-            
-
-            pointSource = {type: "FeatureCollection", features: [...pointSource]}
-
-            map.addSource(`${sourceId}_point`, {
-              type: "geojson",
-              data: pointSource
-            })
-          }
-          
-
-
-
         }
       }
+
+        
+      console.log("NEW NEW NEW",sourceId )
+      if(sourceId=="parcels_source" || sourceId=="interests_source" ){
+        
+        let pointSource = geoJson.features.map(feature => {
+
+          var output = feature
+
+          if(feature.geometry.type == "Point"){
+            console.log('output1')
+            output = feature 
+          } else {
+            output =  {...turf.centroid(feature), properties: feature.properties}
+          }
+
+          return output
+        })
+        
+
+        pointSource = {type: "FeatureCollection", features: [...pointSource]}
+        
+        if(map.getSource(`${sourceId}_point`)){
+          let pointSourceData = map.getSource(`${sourceId}_point`)._data;
+          if (pointSourceData && !deepEqualObjects(pointSource, pointSourceData))
+            map.getSource(`${sourceId}_point`).setData(pointSource);
+        } else {
+          map.addSource(`${sourceId}_point`, {
+            type: "geojson",
+            data: pointSource
+          })
+        }
+      }
+
+      
 
       if (map.getSource(`${sourceId}_filter`)) {
         let mapSourceFilterData = map.getSource(`${sourceId}_filter`)._data;
