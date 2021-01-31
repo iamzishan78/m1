@@ -2741,6 +2741,7 @@ function M1nTable(props) {
       getShapeWells({
         variables: {
           polygon: stateApp.gridPolygonString,
+          userId: stateApp.user.mongoId,
         },
       });
       setTargetLabel("well");
@@ -2750,115 +2751,23 @@ function M1nTable(props) {
   }, [props.parent]);
 
   useEffect(() => {
-    if (props.parent && props.parent === "gridWells" &&
-      dataShapeWells && dataShapeWells.shapeWells
-    ) {
-      if (dataShapeWells.shapeWells.length !== 0) {
-        const shapeWellIdArray = dataShapeWells.shapeWells.map(a => a.Id.toLowerCase());
-      
-        getWells({
-          variables: {
-            wellIdArray: shapeWellIdArray,
-          },
-        });
-        tracksWell();
-        getCommentsCounter({
-          variables: {
-            objectsIdsArray: shapeWellIdArray,
-            userId: stateApp.user.mongoId,
-          },
-        });
-        getTagSamples({
-          variables: {
-            objectsIdsArray: shapeWellIdArray,
-            userId: stateApp.user.mongoId,
-          },
-        });
-      } else {
-        setRows([]);
-        setLoading(false);
-      }
-    }
-  }, [dataShapeWells]);
-
-  useEffect(() => {
     if (
       props.parent && props.parent === "gridWells" &&
-      dataWells &&
-      dataWells.wells &&
-      dataWells.wells.results &&
-      dataWells.wells.results.length > 0 &&
-      dataCommentsCounter &&
-      dataCommentsCounter.commentsCounter &&
-      dataTagSamples &&
-      dataTagSamples.tagSamples &&
-      dataWellTracks &&
-      dataWellTracks.tracksWell
+      dataShapeWells && dataShapeWells.shapeWells
     ) {
-      let wells = [...dataWells.wells.results];
+      let wells = [...dataShapeWells.shapeWells.results];
       wells = wells.map((w) => {
         let well = { ...w };
 
-        //// temporary to fix the ticks dates fields comming from the rest api
-        if (well.permitApprovedDate && well.permitApprovedDate != "null")
-          well.permitApprovedDate = ticksToDateString(
-            well.permitApprovedDate
-          );
-        if (well.spudDate && well.spudDate != "null")
-          well.spudDate = ticksToDateString(well.spudDate);
-        if (well.completionDate && well.completionDate != "null")
-          well.completionDate = ticksToDateString(well.completionDate);
-        if (well.firstProductionDate && well.firstProductionDate != "null")
-          well.firstProductionDate = ticksToDateString(
-            well.firstProductionDate
-          );
-        //// temporary end
+        well.permitApprovedDate = well.permitApprovedDateReady;
+        well.spudDate = well.spudDateReady;
+        well.completionDate = well.completionDateReady;
+        well.firstProductionDate = well.firstProductionDateReady;
 
-        well.isTracked = false;
-        well.commentsCounter = 0;
-        well.tags = [[], 0];
-
-        well.coordinates = {};
-        if (well.Longitude && well.Latitude)
-          well.coordinates.center = [well.Longitude, well.Latitude];
-        if (well.longitude && well.latitude)
-          well.coordinates.center = [well.longitude, well.latitude];
-
-        for (let i = 0; i < dataWellTracks.tracksWell.length; i++) {
-          if (well.id === dataWellTracks.tracksWell[i].trackOn) {
-            well.isTracked = true;
-            break;
-          }
-        }
-        for (
-          let i = 0;
-          i < dataCommentsCounter.commentsCounter.length;
-          i++
-        ) {
-          if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
-            well.commentsCounter =
-              dataCommentsCounter.commentsCounter[i].total;
-            break;
-          }
-        }
-        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (well.id === dataTagSamples.tagSamples[i]._id) {
-            well.tags = [
-              dataTagSamples.tagSamples[i].tags,
-              dataTagSamples.tagSamples[i].total,
-            ];
-
-            break;
-          }
-        }
         return well;
       });
 
-      let availableTags = [];
-      dataTagSamples.tagSamples.map((sample) => {
-        availableTags = [...availableTags, ...sample.tags];
-      });
-      const cleanAvailableTags = [...new Set(availableTags)];
+      const cleanAvailableTags = []; // get from backend
 
       setRows(wells);
 
@@ -2913,7 +2822,7 @@ function M1nTable(props) {
       }));
       setLoading(false);
     }
-  }, [dataWells, dataTagSamples, dataCommentsCounter, dataWellTracks]);
+  }, [dataShapeWells]);
   ////////////Grid Wells end///////////////////////////////////////////////
 
   ////////////Wells Per Owner begin///////////////////////////////////////////
