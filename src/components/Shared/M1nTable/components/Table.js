@@ -1259,9 +1259,7 @@ function SubTable(props) {
                   return (
                     <Tooltip
                       title={
-                        !value || value === "false"
-                          ? "Convert To Contact"
-                          : "Contact Details"
+                        value && value !== "false" && "Contact Details"
                       }
                       placement="top"
                     >
@@ -1296,34 +1294,11 @@ function SubTable(props) {
                             setMultipleExpandableCard(true);
                             setSubTitle(" ");
                             handleOpenExpandableCard();
-                          } else {
-                            if (props.targetLabel == "owner") {
-                              handleExpandClick(
-                                tableMeta.columnIndex,
-                                tableMeta.rowIndex,
-                                {
-                                  globalOwner:
-                                    props.parent === "OwnersPerWell"
-                                      ? tableMeta.rowData[2]
-                                      : tableMeta.rowData[0],
-                                  entity: tableMeta.rowData[1],
-                                },
-                                "makeOwnerAContact"
-                              );
-                            } else
-                              handleExpandClick(
-                                tableMeta.columnIndex,
-                                tableMeta.rowIndex,
-                                tableMeta.rowData[0],
-                                "makeOwnerAContact"
-                              );
                           }
                         }}
                         aria-label="show contact"
                       >
-                        {!value || value === "false" ? (
-                          <Convert_contact style={{ margin: "4px" }} />
-                        ) : (
+                        {value && value !== "false" && (
                           <Contact_card style={{ margin: "4px" }} />
                         )}
                       </IconButton>

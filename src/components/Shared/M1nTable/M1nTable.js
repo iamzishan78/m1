@@ -3712,6 +3712,10 @@ function M1nTable(props) {
             break;
           }
         }
+
+        owner.isContact = owner.ownerEntity ? owner.ownerEntity : false;
+
+        // view contact
         owners.push(owner);
       });
 
