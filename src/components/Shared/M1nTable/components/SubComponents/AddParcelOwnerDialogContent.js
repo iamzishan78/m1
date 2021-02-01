@@ -20,6 +20,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeList";
 import { ALLENTITYNAMESFORPARCEL } from "../../../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginatedContacts";
 
 const entities = [
   "Corporation",
@@ -76,12 +77,22 @@ export default function AddParcelOwnerDialogContent(props) {
   const [nameAutValue, setNameAutValue] = useState(null);
   const [nameAutInputValue, setNameAutInputValue] = useState("");
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState();
+  const [pageVariables, setPageVariables] = useState(false);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [isNextPageLoading, setIsNextPageLoading] = useState(false);
+
+  // CONTACT
 
   const [
-    getAllEntityNamesToAddAsParcelOwner,
-    { data: dataEntityNames },
-  ] = useLazyQuery(ALLENTITYNAMESFORPARCEL, {
+    getPaginatedContacts,
+    {
+      data: allContacts,
+      loading: contactsLoading,
+      fetchMore: fetchMorePaginatedContacts,
+    },
+  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
   });
 
   const [addOwnerToAParcel, { data: mutationData }] = useMutation(
@@ -89,18 +100,32 @@ export default function AddParcelOwnerDialogContent(props) {
   );
 
   useEffect(() => {
-    getAllEntityNamesToAddAsParcelOwner({
-      variables: {
-        parcelId: props.customLayerId,
-      },
-    });
-  }, []);
+    console.log("ALL CONTACTS: ", allContacts);
+    if (allContacts?.paginatedContacts) {
+      setMongoEntitiesArray(
+        allContacts?.paginatedContacts?.edges?.map((el) => el.node)
+      );
+      setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
+      setIsNextPageLoading(false);
+    }
+  }, [allContacts]);
 
   useEffect(() => {
-    if (dataEntityNames && dataEntityNames.allEntityNamesToAddAsParcelOwner) {
-      setMongoEntitiesArray(dataEntityNames.allEntityNamesToAddAsParcelOwner);
-    }
-  }, [dataEntityNames]);
+    console.log("AUTOCOMPLETE INPUT CHANGE: ", nameAutInputValue);
+
+    //will also run during initial mount
+    setIsNextPageLoading(true);
+    getPaginatedContacts({
+      variables: {
+        search: nameAutInputValue,
+      },
+    });
+  }, [nameAutInputValue]);
+
+  const loadNextPage = async (pageVariables) => {
+    setIsNextPageLoading(true);
+    fetchMorePaginatedContacts(pageVariables);
+  };
 
   useEffect(() => {
     if (mutationData && mutationData.addOwnerToAParcel) {
@@ -154,8 +179,14 @@ export default function AddParcelOwnerDialogContent(props) {
         ownerToAdd.depthFrom = "All depths";
         ownerToAdd.depthTo = "All depths";
       }
-      if (nameAutValue._id === "newEntity") ownerToAdd.name = nameAutValue.name;
-      else ownerToAdd.ownerEntityId = nameAutValue._id;
+      // if (nameAutValue._id === "newEntity") ownerToAdd.name = nameAutValue.name;
+      // else ownerToAdd.ownerEntityId = nameAutValue._id;
+      if(nameAutValue._id && nameAutValue.name){
+        ownerToAdd.ownerEntityId = nameAutValue._id;
+        ownerToAdd.name = nameAutValue.name;
+      }
+
+      console.log("name and parcelOwner: ", nameAutValue, ownerToAdd);
 
       addOwnerToAParcel({
         variables: {
@@ -163,7 +194,6 @@ export default function AddParcelOwnerDialogContent(props) {
         },
         refetchQueries: [
           "getCustomLayer",
-          "getAllEntityNamesToAddAsParcelOwner",
           "getContactParcelInterests",
         ],
         awaitRefetchQueries: true,
@@ -187,6 +217,9 @@ export default function AddParcelOwnerDialogContent(props) {
               setNameAutValue={setNameAutValue}
               nameAutInputValue={nameAutInputValue}
               setNameAutInputValue={setNameAutInputValue}
+              hasNextPage={hasNextPage}
+              isNextPageLoading={isNextPageLoading}
+              loadNextPage={loadNextPage}
             />
           </Grid>
 

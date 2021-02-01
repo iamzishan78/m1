@@ -131,8 +131,6 @@ export default function ParcelCard(props) {
     }
   }, [dataCustomLayer]);
 
-  console.log("PARCEL PROPERTIES: ", parcelProperties);
-
   if(parcelObj && parcelObj.state === "TX"){
     parcelPLSS.current = true;
   }
