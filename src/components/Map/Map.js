@@ -4927,10 +4927,7 @@ export default function Map() {
       {stateApp.selectedWell !== null &&
         showExpandableCard &&
         stateApp.expandedCard && (
-          <Draggable
-            cancel={".MuiCardContent-root"}
-            disabled={false}
-          >
+          <Draggable handle=".MuiCardHeader-root" cancel={".MuiCardHeader-content"} >
             <div className={classes.draggable}>
               <ExpandableCardProvider
                 expanded
