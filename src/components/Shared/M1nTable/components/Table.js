@@ -2164,6 +2164,13 @@ function SubTable(props) {
           }));
       }
 
+      if (props.targetLabel === "Parcel Ownership"){
+        if (rows[dataIndex]?._id){
+          setOpenDialog("addOwnerToParcel");
+          setSelectedRow(rows[dataIndex]);
+        }
+      }
+
       // if (props.targetLabel === "well") {
       //   setStateApp((state) => ({ ...state, selectedWellId: rowData[0] }));
       //   setStateApp((state) => ({ ...state, selectedWell: rows[dataIndex] }));
@@ -2770,6 +2777,8 @@ function SubTable(props) {
               <AddParcelOwnerDialogContent
                 onClose={handleCloseDialog}
                 customLayerId={props.addAble.customLayerId}
+                selectedRow={selectedRow}
+                setSelectedRow={setSelectedRow}
               />
             )}
             {openDialog === "addParcelInterestsToEntity" && (

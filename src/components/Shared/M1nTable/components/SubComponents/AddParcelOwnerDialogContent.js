@@ -11,6 +11,7 @@ import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { ADDOWNERTOAPARCEL } from "../../../../../graphQL/useMutationAddOwnerToAParcel";
+import { UPDATEPARCELOWNER } from "../../../../../graphQL/useMutationUpdateParcelOwner";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "../../../../../actions";
@@ -58,7 +59,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AddParcelOwnerDialogContent(props) {
+export default function AddParcelOwnerDialogContent({
+  selectedRow,
+  setSelectedRow,
+  ...props
+}) {
   const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
   const [newOwner, setNewOwner] = useState({
@@ -84,6 +89,39 @@ export default function AddParcelOwnerDialogContent(props) {
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
 
+  useEffect(() => {
+    if (selectedRow) {
+      const {
+        entity,
+        type,
+        depthFrom,
+        depthTo,
+        interest,
+        nma,
+        nra,
+        customLayer,
+        name,
+        ownerEntity,
+      } = selectedRow;
+      setNameAutValue({ name, _id: ownerEntity });
+
+      setNewOwner({
+        entity,
+        type,
+        depthFrom,
+        depthTo,
+        interest,
+        nma,
+        nra,
+        customLayer,
+      });
+
+      if (depthTo === "All depths" && depthFrom === "All depths")
+        setParcelOwnersRadioBValue("true");
+      else setParcelOwnersRadioBValue("false");
+    }
+  }, [selectedRow]);
+
   // CONTACT
 
   const [
@@ -100,6 +138,10 @@ export default function AddParcelOwnerDialogContent(props) {
 
   const [addOwnerToAParcel, { data: mutationData }] = useMutation(
     ADDOWNERTOAPARCEL
+  );
+
+  const [updateParcelOwner, { data: updateData }] = useMutation(
+    UPDATEPARCELOWNER
   );
 
   useEffect(() => {
@@ -131,13 +173,20 @@ export default function AddParcelOwnerDialogContent(props) {
   };
 
   useEffect(() => {
+    let type = null;
     if (mutationData && mutationData.addOwnerToAParcel) {
-      if (mutationData.addOwnerToAParcel.success) {
+      type = { name: "add", success: mutationData.addOwnerToAParcel.success };
+    } else if (updateData && updateData.updateParcelOwner) {
+      type = { name: "updat", success: updateData.updateParcelOwner.success };
+    }
+
+    if (type) {
+      if (type.success) {
         dispatch(
           showSuccessMessage(
             nameAutValue && nameAutValue.name
-              ? `${nameAutValue.name} was successfully added`
-              : "The owner was successfully added"
+              ? `${nameAutValue.name} was successfully ${type.name}ed`
+              : `The owner was successfully ${type.name}ed`
           )
         );
 
@@ -151,7 +200,7 @@ export default function AddParcelOwnerDialogContent(props) {
         universalCircularLoaderAct: false,
       }));
     }
-  }, [mutationData]);
+  }, [mutationData, updateData]);
 
   const emptyStates = () => {
     setNewOwner({
@@ -167,6 +216,7 @@ export default function AddParcelOwnerDialogContent(props) {
     setParcelOwnersRadioBValue("true");
     setNameAutValue(null);
     setNameAutInputValue("");
+    setSelectedRow(null);
   };
 
   const handleClickDialogClose = () => {
@@ -191,13 +241,24 @@ export default function AddParcelOwnerDialogContent(props) {
 
       console.log("name and parcelOwner: ", nameAutValue, ownerToAdd);
 
-      addOwnerToAParcel({
-        variables: {
-          parcelOwner: ownerToAdd,
-        },
-        refetchQueries: ["getCustomLayer", "getContactParcelInterests"],
-        awaitRefetchQueries: true,
-      });
+      if (selectedRow) {
+        ownerToAdd._id = selectedRow._id;
+        updateParcelOwner({
+          variables: {
+            parcelOwner: ownerToAdd,
+          },
+          refetchQueries: ["getCustomLayer", "getContactParcelInterests"],
+          awaitRefetchQueries: true,
+        });
+      } else {
+        addOwnerToAParcel({
+          variables: {
+            parcelOwner: ownerToAdd,
+          },
+          refetchQueries: ["getCustomLayer", "getContactParcelInterests"],
+          awaitRefetchQueries: true,
+        });
+      }
 
       setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
     }
@@ -209,7 +270,7 @@ export default function AddParcelOwnerDialogContent(props) {
   return (
     <React.Fragment>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
-        Add an Owner
+        {selectedRow ? "Update" : "Add"} an Owner
         <HighlightOffIcon
           fontSize="large"
           className={modalClass.titleClose}
@@ -395,7 +456,7 @@ export default function AddParcelOwnerDialogContent(props) {
           onClick={handleClickAdd}
           color="secondary"
         >
-          Add
+          {selectedRow ? "Update" : "Add"}
         </Button>
       </DialogActions>
     </React.Fragment>

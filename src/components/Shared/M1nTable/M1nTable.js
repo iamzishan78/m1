@@ -1322,11 +1322,10 @@ const OwnersPerParcelHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "name", label: "Name", editable: true },
+  { name: "name", label: "Name" },
   {
     name: "entity",
     label: "Entity",
-    editable: true,
     dropDownOptions: [
       "Corporation",
       "Educational Institution",
@@ -1339,13 +1338,12 @@ const OwnersPerParcelHeadCells = [
     ],
   },
 
-  { name: "depthFrom", label: "Depth From", editable: true },
-  { name: "depthTo", label: "Depth To", editable: true },
+  { name: "depthFrom", label: "Depth From" },
+  { name: "depthTo", label: "Depth To" },
 
   {
     name: "type",
     label: "Type",
-    editable: true,
     dropDownOptions: [
       "Fee Interest",
       "Leasehold",
@@ -1358,9 +1356,9 @@ const OwnersPerParcelHeadCells = [
       "Working Interest",
     ],
   },
-  { name: "interest", label: "Interest", editable: true },
-  { name: "nma", label: "NMA", editable: true },
-  { name: "nra", label: "NRA", editable: true },
+  { name: "interest", label: "Interest" },
+  { name: "nma", label: "NMA" },
+  { name: "nra", label: "NRA" },
   {
     name: "tags",
     label: "Tags ",
