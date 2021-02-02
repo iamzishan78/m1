@@ -686,8 +686,8 @@ function MapGridCard(props) {
         CardReturn()
       ) : (
         <Draggable 
-          // cancel={'[class*="cancelDraggableEffect"]'}
-          disabled={false}
+        //   // cancel={'[class*="cancelDraggableEffect"]'}
+        //   disabled={false}
         >
           {CardReturn()}
         </Draggable>

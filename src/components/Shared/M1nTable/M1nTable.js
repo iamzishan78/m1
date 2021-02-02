@@ -3727,15 +3727,15 @@ function M1nTable(props) {
   
   //////////// SELECTED POLYGON WELL //////////////////////////////////////
 
-  useEffect(()=> {
-    if (stateApp.selectedPolygonString) {
-      getAbstractWellGeo({
-        variables: {
-          polygon: stateApp.selectedPolygonString,
-        },
-      });
-    }
-  }, [stateApp.selectedPolygonString]);
+  // useEffect(()=> {
+  //   if (stateApp.selectedPolygonString) {
+  //     getAbstractWellGeo({
+  //       variables: {
+  //         polygon: stateApp.selectedPolygonString,
+  //       },
+  //     });
+  //   }
+  // }, [stateApp.selectedPolygonString]);
 
   useEffect(()=> {
 
