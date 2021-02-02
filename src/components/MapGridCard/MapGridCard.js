@@ -685,7 +685,10 @@ function MapGridCard(props) {
       {mapGridCardActivated === "min" ? (
         CardReturn()
       ) : (
-        <Draggable cancel={'[class*="cancelDraggableEffect"]'}>
+        <Draggable 
+          // cancel={'[class*="cancelDraggableEffect"]'}
+          disabled={false}
+        >
           {CardReturn()}
         </Draggable>
       )}

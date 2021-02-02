@@ -13,8 +13,6 @@ import InputBase from "@material-ui/core/InputBase";
 import { Card, Button } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import { AppContext } from "../../AppContext";
-import { Frame } from "framer"
-
 
 const useStyles = makeStyles((theme) => ({
   conatiner: {},
