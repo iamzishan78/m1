@@ -4928,7 +4928,7 @@ export default function Map() {
         showExpandableCard &&
         stateApp.expandedCard && (
           <Draggable
-            cancel={".MuiCardContent-root"}
+            // cancel={".MuiCardContent-root"}
             disabled={false}
           >
             <div className={classes.draggable}>
