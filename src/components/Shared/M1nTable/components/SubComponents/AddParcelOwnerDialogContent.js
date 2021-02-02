@@ -239,8 +239,6 @@ export default function AddParcelOwnerDialogContent({
         ownerToAdd.name = nameAutValue.name;
       }
 
-      console.log("name and parcelOwner: ", nameAutValue, ownerToAdd);
-
       if (selectedRow) {
         ownerToAdd._id = selectedRow._id;
         updateParcelOwner({
@@ -292,6 +290,7 @@ export default function AddParcelOwnerDialogContent({
               hasNextPage={hasNextPage}
               isNextPageLoading={isNextPageLoading}
               loadNextPage={loadNextPage}
+              addNew={true}
             />
           </Grid>
 
