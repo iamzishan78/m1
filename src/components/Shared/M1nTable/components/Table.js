@@ -2775,7 +2775,10 @@ function SubTable(props) {
 
             {openDialog === "addOwnerToParcel" && (
               <AddParcelOwnerDialogContent
-                onClose={handleCloseDialog}
+                onClose={() => {
+                  setSelectedRow(null);
+                  handleCloseDialog();
+                }}
                 customLayerId={props.addAble.customLayerId}
                 selectedRow={selectedRow}
                 setSelectedRow={setSelectedRow}
