@@ -48,6 +48,7 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
+import { ABSTRACTWELLGEOQUERY } from "../../graphQL/useQueryAbstractWellGeo";
 import { PLSSSECONDDIVISIONGEO } from "../../graphQL/useQueryPLSSSecondDivisionGeo";
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 import { OWNERSQUERY } from "../../graphQL/useQueryOwners";
@@ -108,16 +109,16 @@ const useStyles = makeStyles((theme) => ({
     left: "47%",
     transform: "translate(-50%, -50%)",
   },
-  draggable: {
-    width: 0,
-    height: 0,
-    "& div.MuiCardHeader-root": {
-      cursor: "move",
-      "& .MuiCardHeader-content": {
-        cursor: "text",
-      },
-    },
-  },
+  // draggable: {
+  //   width: 0,
+  //   height: 0,
+  //   "& div.MuiCardHeader-root": {
+  //     cursor: "move",
+  //     "& .MuiCardHeader-content": {
+  //       cursor: "text",
+  //     },
+  //   },
+  // },
 }));
 
 const random_hex_color_code = () => {
@@ -346,6 +347,11 @@ export default function Map() {
   const [getAbstractGeo, { data: abstractData }] = useLazyQuery(
     ABSTRACTGEOQUERY
   );
+
+  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(
+    ABSTRACTWELLGEOQUERY
+  );
+
   const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(
     ABSTRACTGEOCONTAINSQUERY
   );
@@ -710,38 +716,43 @@ export default function Map() {
             data: geoJson,
             promoteId: "id",
           });
-
-
-            console.log("NEW NEW NEW",sourceId )
-            if(sourceId=="parcels_source" || sourceId=="interests_source" ){
-            let pointSource = geoJson.features.map(feature => {
-
-              var output = feature
-
-              if(feature.geometry.type == "Point"){
-                console.log('output1')
-                output = feature 
-              } else {
-                output =  {...turf.centroid(feature), properties: feature.properties}
-              }
-
-              return output
-            })
-            
-
-            pointSource = {type: "FeatureCollection", features: [...pointSource]}
-
-            map.addSource(`${sourceId}_point`, {
-              type: "geojson",
-              data: pointSource
-            })
-          }
-          
-
-
-
         }
       }
+
+        
+      console.log("NEW NEW NEW",sourceId )
+      if(sourceId=="parcels_source" || sourceId=="interests_source" ){
+        
+        let pointSource = geoJson.features.map(feature => {
+
+          var output = feature
+
+          if(feature.geometry.type == "Point"){
+            console.log('output1')
+            output = feature 
+          } else {
+            output =  {...turf.centroid(feature), properties: feature.properties}
+          }
+
+          return output
+        })
+        
+
+        pointSource = {type: "FeatureCollection", features: [...pointSource]}
+        
+        if(map.getSource(`${sourceId}_point`)){
+          let pointSourceData = map.getSource(`${sourceId}_point`)._data;
+          if (pointSourceData && !deepEqualObjects(pointSource, pointSourceData))
+            map.getSource(`${sourceId}_point`).setData(pointSource);
+        } else {
+          map.addSource(`${sourceId}_point`, {
+            type: "geojson",
+            data: pointSource
+          })
+        }
+      }
+
+      
 
       if (map.getSource(`${sourceId}_filter`)) {
         let mapSourceFilterData = map.getSource(`${sourceId}_filter`)._data;
@@ -1086,9 +1097,15 @@ export default function Map() {
     // };
 
     const udLayerClickHandler = (feature) => {
-      console.log("Current Parcel Layer", feature);
+        //     const featureState = map.getFeatureState({
+        //       source: "abstract_geo_source",
+        //       id: "A38D232C-44FD-4255-B69B-4A1D312691E6",
+        //     });
+        // console.log("FEATURE:", featureState);
+        // ON HOLD MUNA ANG HIRAP
       setStateApp((state) => ({
         ...state,
+        expandedCard: false,
         popupOpen: false,
       }));
 
@@ -1193,8 +1210,9 @@ export default function Map() {
                 if (
                   layer.identifier == "Parcels" ||
                   layer.identifier == "Area of Interest"
-                )
+                ) {
                   udLayers.push(layerId);
+                }
               }
             });
           } else {
@@ -1228,8 +1246,6 @@ export default function Map() {
         [e.point.x - 10, e.point.y - 10],
         [e.point.x + 10, e.point.y + 10],
       ];
-
-      console.log("!!!!!!!! checking layers", layers);
 
       let features = map.queryRenderedFeatures(bbox, {
         layers: [...layers],
@@ -3065,7 +3081,7 @@ export default function Map() {
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
 
-      let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+      new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
         .setMaxWidth("none")
         .setHTML(`<div id="popupContainer"></div>`)
@@ -3489,13 +3505,10 @@ export default function Map() {
 
   const mapZoom = (e) => {
     let zooms = map.getZoom();
-    console.log("zoomz", zooms);
     setZoom(zooms);
   };
 
   const onAbstactLayerClick = function (feature, action) {
-    console.log("feature, action", feature, action);
-
     if (!feature) {
       setStateApp((state) => ({
         ...state,
@@ -3524,6 +3537,7 @@ export default function Map() {
   };
 
   useEffect(() => {
+    // HERE FOOL
     if (map) {
       map.on("click", "abstract_geo_fill_layer", function (e) {
         if (!e.features.length) {
@@ -3546,12 +3560,14 @@ export default function Map() {
             );
             onAbstactLayerClick(currentFeature, "remove");
           } else {
-            // Select feature
-            map.setFeatureState(
-              { source: "abstract_geo_source", id: e.features[0].id },
-              { click: true }
-            );
-            onAbstactLayerClick(currentFeature, "add");
+            let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
+            if (!isExisting) {
+              map.setFeatureState(
+                { source: "abstract_geo_source", id: e.features[0].id },
+                { click: true }
+              );
+              onAbstactLayerClick(currentFeature, "add");
+            }
           }
         } else {
           // Clear all selected features
@@ -3592,7 +3608,7 @@ export default function Map() {
         hoveredAbstractId = null;
       });
     }
-  }, [map]);
+  }, [map, stateApp.customLayers]);
 
   useEffect(() => {
     console.log("useEffect 27");
@@ -3739,6 +3755,11 @@ export default function Map() {
                 polygon: polygonString,
               },
             });
+
+            setStateApp((state) => ({
+              ...state,
+              selectedPolygonString: polygonString
+            }));
           }
 
           if (map.getZoom() >= 14) {
@@ -4566,7 +4587,7 @@ export default function Map() {
         variables: {
           customLayerId: customLayerId,
           customLayer: customLayerData,
-        },
+        }
       });
 
       getCustomLayers({
@@ -4894,6 +4915,7 @@ export default function Map() {
   //   stateApp.abstractPopupOpen,
   //   stateApp.selectedAbstracts
   // );
+
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
@@ -4922,36 +4944,65 @@ export default function Map() {
       {mapGridCardActivated && (
         <MapGridCard mapGridCardActivated={mapGridCardActivated} />
       )}
-
-      {/* {stateApp.popupOpen === true &&  */}
-      {stateApp.selectedWell !== null &&
-        showExpandableCard &&
+       
+      {stateApp.selectedWell !== null && showExpandableCard &&
         stateApp.expandedCard && (
-          <Draggable 
-            handle=".MuiCardHeader-root"
-            // cancel={".MuiCardHeader-content"}
-            disabled={false}
-          >
-            <div className={classes.draggable}>
-              <ExpandableCardProvider
-                expanded
-                handleCloseExpandableCard={handleCloseExpandableCard}
-                component={<WellCardProvider />}
-                title={stateApp.selectedWell.wellName}
-                subTitle={stateApp.selectedWell.api}
-                parent="map"
-                cardTop={20}
-                cardLeft={20}
-                position="relative"
-                zIndex={99}
-                cardWidthExpanded="50vw"
-                cardHeightExpanded="90vh"
-                targetSourceId={stateApp.selectedWell.id}
-                targetLabel="expandedWell"
-              />
-            </div>
-          </Draggable>
-        )}
+              // <Draggable 
+                // handle=".MuiCardHeader-root"
+                // cancel={".MuiCardHeader-content"}
+                // disabled={false}
+              // >
+              <div className={classes.draggable}>
+                <ExpandableCardProvider
+                  expanded
+                  handleCloseExpandableCard={handleCloseExpandableCard}
+                  component={<WellCardProvider />}
+                  title={stateApp.selectedWell.wellName}
+                  subTitle={stateApp.selectedWell.api}
+                  parent="map"
+                  cardTop={20}
+                  cardLeft={20}
+                  position="relative"
+                  zIndex={99}
+                  cardWidthExpanded="50vw"
+                  cardHeightExpanded="90vh"
+                  targetSourceId={stateApp.selectedWell.id}
+                  targetLabel="expandedWell"
+                />
+              </div>
+            // </Draggable>
+          )
+        }
+
+        {stateApp.selectedParcel !== null &&
+          stateApp.expandedCard && (
+            // <Draggable 
+              // handle=".MuiCardHeader-root"
+              // cancel={".MuiCardHeader-content"}
+              // disabled={false}
+            // >
+              <div className={classes.draggable}>
+                <ExpandableCardProvider
+                  expanded={true}
+                  handleCloseExpandableCard={handleCloseExpandableCard}
+                  component={<ParcelCardProvider></ParcelCardProvider>}
+                  title={stateApp.selectedParcel.shapeLabel}
+                  subTitle=""
+                  parent="map"
+                  position="relative"
+                  cardTop={20}
+                  cardLeft={20}
+                  zIndex={99}
+                  cardWidthExpanded="50vw"
+                  cardHeightExpanded="90vh"
+                  targetSourceId={stateApp.selectedParcel.id}
+                  targetLabel="expandedParcel"
+                ></ExpandableCardProvider>
+              </div>
+            // </Draggable>
+          )
+        }
+
       <div id="modalHolder" ref={modalContainer} />
       <Portal container={modalContainer.current}>
         {stateApp.selectedAbstracts.length > 0 && (
@@ -4962,7 +5013,6 @@ export default function Map() {
           />
         )}
       </Portal>
-
       <Portal container={container.current}>
         {stateApp.popupOpen === true ? (
           <div>
@@ -4994,7 +5044,7 @@ export default function Map() {
               )}
             {stateApp.selectedParcel && (
               <PortalD id="popupContainer">
-                {showExpandableCard && !stateApp.expandedCard ? (
+                {!stateApp.expandedCard && (
                   <ExpandableCardProvider
                     expanded={false}
                     handleCloseExpandableCard={handleCloseExpandableCard}
@@ -5015,46 +5065,10 @@ export default function Map() {
                     targetSourceId={stateApp.selectedParcel.id}
                     targetLabel="parcel"
                   ></ExpandableCardProvider>
-                ) : (
-                  <Popover
-                    open={stateApp.expandedCard}
-                    anchorEl={anchorElPoPOver}
-                    anchorReference="anchorEl"
-                    style={{ width: "100%" }} //right:30, left: "-30px"}}
-                    BackdropProps={{ invisible: false }}
-                    anchorOrigin={{
-                      vertical: "center",
-                      horizontal: "center",
-                    }}
-                    transformOrigin={{
-                      vertical: "center",
-                      horizontal: "center",
-                    }}
-                  >
-                    <ExpandableCardProvider
-                      expanded={true}
-                      handleCloseExpandableCard={handleCloseExpandableCard}
-                      component={<ParcelCardProvider></ParcelCardProvider>}
-                      title={stateApp.selectedParcel.shapeLabel}
-                      subTitle=""
-                      parent="map"
-                      mouseX={0}
-                      mouseY={0}
-                      position="relative"
-                      // cardLeft={"0px"}
-                      // cardTop={"0px"}
-                      zIndex={99}
-                      // cardWidth="380px"
-                      // cardHeight="380px"
-                      cardWidthExpanded="95vw"
-                      cardHeightExpanded="95vh"
-                      targetSourceId={stateApp.selectedParcel.id}
-                      targetLabel="parcel"
-                    ></ExpandableCardProvider>
-                  </Popover>
                 )}
-              </PortalD>
+                </PortalD>
             )}
+
             {stateApp.selectedUserDefinedLayer && (
               <PortalD id="popupContainer">
                 <SpatialDataCardEdit

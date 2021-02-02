@@ -32,6 +32,7 @@ import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType"
 import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
+import { ABSTRACTWELLGEOQUERY } from "../../../graphQL/useQueryAbstractWellGeo";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
@@ -300,6 +301,85 @@ const WellsHeadCells = [
   //     viewColumns: false,
   //   },
   // },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "detailCard",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+];
+
+
+const CustomWellsHeadCells = [
+  {
+    name: "wellId",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "wellName", label: "Well" },
+  { name: "apiNumber", label: "API" },
+  { name: "operator", label: "Operator" },
+  { name: "wellType", label: "Type" },
+  { name: "wellProfile",label: "Profile"},
+  { name: "wellStatus",label: "Status"},
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
   {
     name: "commentsCounter",
     label: " ",
@@ -1242,7 +1322,7 @@ const OwnersPerParcelHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "name", label: "Name", editable: true },
+  { name: "name", label: "Name" },
   {
     name: "entity",
     label: "Entity",
@@ -1258,10 +1338,14 @@ const OwnersPerParcelHeadCells = [
       "Unknown",
     ],
   },
+
+  { name: "depthFrom", label: "Depth From", editabe: true },
+  { name: "depthTo", label: "Depth To", editabe: true },
+
   {
     name: "type",
     label: "Type",
-    editable: true,
+    editabe: true,
     dropDownOptions: [
       "Fee Interest",
       "Leasehold",
@@ -1274,8 +1358,6 @@ const OwnersPerParcelHeadCells = [
       "Working Interest",
     ],
   },
-  { name: "depthFrom", label: "Depth From", editable: true },
-  { name: "depthTo", label: "Depth To", editable: true },
   { name: "interest", label: "Interest", editable: true },
   { name: "nma", label: "NMA", editable: true },
   { name: "nra", label: "NRA", editable: true },
@@ -2309,6 +2391,11 @@ function M1nTable(props) {
   ] = useLazyQuery(WELLINTERESTSFILTEROPTIONS, {
     fetchPolicy: "cache-and-network",
   });
+
+  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(
+    ABSTRACTWELLGEOQUERY
+  );
+
   ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
@@ -3566,7 +3653,7 @@ function M1nTable(props) {
       stateApp.user
     ) {
       setTargetLabel("Parcel Ownership");
-      setHeader("Parcel Ownerships");
+      setHeader("Parcel Ownership");
       setAddAble({
         type: "ownerToParcel",
         customLayerId: props.customLayer._id,
@@ -3603,6 +3690,7 @@ function M1nTable(props) {
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter
     ) {
+      
       let owners = [];
       props.customLayer.owners.forEach((parcelOwner) => {
         let owner = { ...parcelOwner };
@@ -3624,6 +3712,10 @@ function M1nTable(props) {
             break;
           }
         }
+
+        owner.isContact = owner.ownerEntity ? owner.ownerEntity : false;
+
+        // view contact
         owners.push(owner);
       });
 
@@ -3632,6 +3724,160 @@ function M1nTable(props) {
       setLoading(false);
     }
   }, [props.parent, props.customLayer, dataTracks, dataCommentsCounter]);
+  
+  //////////// SELECTED POLYGON WELL //////////////////////////////////////
+
+  // useEffect(()=> {
+  //   if (stateApp.selectedPolygonString) {
+  //     getAbstractWellGeo({
+  //       variables: {
+  //         polygon: stateApp.selectedPolygonString,
+  //       },
+  //     });
+  //   }
+  // }, [stateApp.selectedPolygonString]);
+
+  useEffect(()=> {
+
+  }, []);
+
+  useEffect(()=> {
+    if (abstractWellData) {
+      const objectsIdsArray = abstractWellData.abstractWellGeo.map(
+        (wellInterest) => wellInterest.wellId
+      );
+
+      getCommentsCounter({
+        variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+      });
+      getTagSamples({
+        variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+      });
+      // let set_tracked = [];
+      // let reconstruct_wells = [];
+      // stateApp.trackedwells.forEach(element => {
+      //   const found = abstractWellData.abstractWellGeo.find(x => x.wellId == element.id);
+      //   if (found) {
+      //     set_tracked.push(found);
+      //   }
+      // });
+      // // Tags = 0
+      // // Tracks = 1
+      // // Comments =0
+      // abstractWellData.abstractWellGeo.forEach(element => {
+      //   if (element in set_tracked) {
+      //     reconstruct_wells.push({...element, isTracked: true});
+      //   } else {
+      //     reconstruct_wells.push({...element, isTracked: false});
+      //   }
+      // });
+      // setStateApp({
+      //   ...stateApp,
+      //   selectedBoundaryWell: reconstruct_wells
+      // });
+    }
+  }, [abstractWellData]);
+
+
+  useEffect(()=> {
+    if(props.parent && props.parent === "ownersPerParcelWells"){
+      setHeader("Associated Wells");
+      if (abstractWellData) {
+        if (
+          abstractWellData.abstractWellGeo &&
+          abstractWellData.abstractWellGeo.length > 0 &&
+          dataCommentsCounter &&
+          dataCommentsCounter.commentsCounter &&
+          dataTagSamples &&
+          dataTagSamples.tagSamples 
+        ) {
+          let wells = [...abstractWellData.abstractWellGeo];
+          wells = wells.map((o) => {
+            let wells = { ...o };
+            wells.commentsCounter = 0;
+            wells.tags = [[], 0];
+
+            for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+              if (wells.wellId === dataCommentsCounter.commentsCounter[i]._id) {
+                wells.commentsCounter =
+                  dataCommentsCounter.commentsCounter[i].total;
+                break;
+              }
+            }
+
+            for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+              if (wells.wellId === dataTagSamples.tagSamples[i]._id) {
+                wells.tags = [
+                  dataTagSamples.tagSamples[i].tags,
+                  dataTagSamples.tagSamples[i].total,
+                ];
+
+                break;
+              }
+            }
+            return wells;
+          });
+
+          let availableTags = [];
+          dataTagSamples.tagSamples.map((sample) => {
+            availableTags = [...availableTags, ...sample.tags];
+          });
+          const cleanAvailableTags = [...new Set(availableTags)];
+
+          wells.forEach(element => {
+            if (stateApp.trackedWells) {
+              const found = stateApp.trackedWells.find((x)=> x.id == element.wellId);      
+              if (found) {
+                element.isTracked = true;
+              } else {
+                element.isTracked = false;
+              }
+            } else {
+              element.isTracked = false;
+            }
+          });
+          
+          setRows(wells);
+          setColumns(
+            cleanAvailableTags.length > 0
+              ? CustomWellsHeadCells.map((column) => {
+                  if (column.name === "tags") {
+                    return {
+                      ...column,
+                      options: {
+                        ...column.options,
+                        filterOptions: {
+                          ...column.options.filterOptions,
+                          names: cleanAvailableTags
+                        },
+                      },
+                    };
+                  }
+                  return column;
+                })
+              : CustomWellsHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions
+                      },
+                    },
+                  };
+                }
+                return column;
+              })
+          );
+        }
+      }
+      setLoading(false);
+    }
+
+  }, [abstractWellData, dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData])
+  //////////// SELECTED POLYGON WELL //////////////////////////////////////
+
   ////////////Owners Per Parcel begin//////////Delete//////////////////////////////
 
   useEffect(() => {
