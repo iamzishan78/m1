@@ -104,7 +104,7 @@ export default function InterestStep(props) {
     //     ownerToAdd.depthTo = "All depths";
     //   }
     //   if (nameAutValue._id === "newEntity") ownerToAdd.name = nameAutValue.name;
-    //   else ownerToAdd.ownerEntityId = nameAutValue._id;
+    //   else ownerToAdd.ownerEntity = nameAutValue._id;
 
     //   addOwnerToAParcel({
     //     variables: {

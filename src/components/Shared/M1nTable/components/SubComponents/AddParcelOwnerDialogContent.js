@@ -65,7 +65,7 @@ export default function AddParcelOwnerDialogContent({
   ...props
 }) {
   const dispatch = useDispatch();
-  const [, setStateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [newOwner, setNewOwner] = useState({
     entity: "Unknown",
     type: "Unknown",
@@ -233,9 +233,9 @@ export default function AddParcelOwnerDialogContent({
         ownerToAdd.depthTo = "All depths";
       }
       // if (nameAutValue._id === "newEntity") ownerToAdd.name = nameAutValue.name;
-      // else ownerToAdd.ownerEntityId = nameAutValue._id;
+      // else ownerToAdd.ownerEntity = nameAutValue._id;
       if (nameAutValue._id && nameAutValue.name) {
-        ownerToAdd.ownerEntityId = nameAutValue._id;
+        ownerToAdd.ownerEntity = nameAutValue.entity || nameAutValue._id;
         ownerToAdd.name = nameAutValue.name;
       }
 
@@ -243,7 +243,11 @@ export default function AddParcelOwnerDialogContent({
         ownerToAdd._id = selectedRow._id;
         updateParcelOwner({
           variables: {
-            parcelOwner: ownerToAdd,
+            parcelOwner: {
+              ...ownerToAdd,
+              createBy: stateApp.user.mongoId,
+              lastUpdateBy: stateApp.user.mongoId,
+            },
           },
           refetchQueries: ["getCustomLayer", "getContactParcelInterests"],
           awaitRefetchQueries: true,
@@ -251,7 +255,11 @@ export default function AddParcelOwnerDialogContent({
       } else {
         addOwnerToAParcel({
           variables: {
-            parcelOwner: ownerToAdd,
+            parcelOwner: {
+              ...ownerToAdd,
+              createBy: stateApp.user.mongoId,
+              lastUpdateBy: stateApp.user.mongoId,
+            }
           },
           refetchQueries: ["getCustomLayer", "getContactParcelInterests"],
           awaitRefetchQueries: true,

@@ -1311,7 +1311,7 @@ const OwnersPerParcelHeadCells = [
     },
   },
   {
-    name: "ownerEntityId",
+    name: "ownerEntity",
     options: {
       display: false,
       filter: false,
@@ -1441,7 +1441,7 @@ const OwnersPerParcelHeadCells = [
 //     },
 //   },
 //   {
-//     name: "ownerEntityId",
+//     name: "ownerEntity",
 //     options: {
 //       display: false,
 //       filter: false,
@@ -1808,7 +1808,7 @@ const ParcelInterestsPerContactHeadCells = [
     },
   },
   {
-    name: "ownerEntityId",
+    name: "ownerEntity",
     options: {
       display: false,
       filter: false,
