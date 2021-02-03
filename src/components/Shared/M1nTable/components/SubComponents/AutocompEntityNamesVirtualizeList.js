@@ -1,7 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import Autocomplete, {
+  createFilterOptions,
+} from "@material-ui/lab/Autocomplete";
 import PropTypes from "prop-types";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme, makeStyles } from "@material-ui/core/styles";
@@ -11,6 +13,7 @@ import { Typography } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
 import debounce from "lodash/debounce";
 
+const filter = createFilterOptions();
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
@@ -143,6 +146,7 @@ ListboxComponent.propTypes = {
 
 export default function AutocompEntityNamesVirtualizeList(props) {
   const {
+    addNew,
     mongoEntitiesArray,
     setMongoEntitiesArray,
     nameAutValue,
@@ -232,7 +236,19 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       ListboxComponent={ListboxComponent}
       ListboxProps={ListboxProps}
       options={mongoEntitiesArray}
-      getOptionLabel={(option) => (option?.name ? option?.name : "")}
+      getOptionLabel={(option) => {
+        // Value selected with enter, right from the input
+        if (props.addNew && typeof option === "string") {
+          return option;
+        }
+        // Add "xxx" option created dynamically
+        if (props.addNew && option.inputValue) {
+          return option.name;
+        }
+
+        if (option?.name) return option.name;
+        else return "";
+      }}
       getOptionSelected={(option, value) => {
         return option?._id === value?._id;
       }}
@@ -240,7 +256,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
         if (option._id === "newEntity")
           return (
             <Typography style={{ color: "midnightblue" }}>
-              {option.name}
+              Add '{option.name}'
             </Typography>
           );
 
@@ -259,14 +275,29 @@ export default function AutocompEntityNamesVirtualizeList(props) {
         );
       }}
       onInputChange={onInputChange}
-      filterOptions={(options, state) => options}
+      filterOptions={(options, params) => {
+        if (props.addNew) {
+          const filtered = filter(options, params);
+
+          // Suggest the creation of a new value
+          if (params.inputValue !== "") {
+            filtered.unshift({
+              name: params.inputValue,
+              _id: "newEntity",
+            });
+          }
+          return filtered;
+        } else {
+          return options;
+        }
+      }}
       onChange={(event, newValue) => {
         if (newValue && newValue._id) {
           if (newValue._id !== "newEntity") setNameAutValue(newValue);
           else
             setNameAutValue({
               _id: "newEntity",
-              name: newValue.inputValue,
+              name: newValue.name,
             });
         } else setNameAutValue(null);
       }}

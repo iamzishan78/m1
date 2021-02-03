@@ -24,13 +24,13 @@ export default function FilterTags() {
   const [getWellsIdsFromTagsArray, { data: dataWellsIds }] = useLazyQuery(
     OBJECTSFROMTAGSARRAY,
     {
-      fetchPolicy: "cache-and-network",
+      fetchPolicy: "no-cache",
     }
   );
   const [getOwnersIdsFromTagsArray, { data: dataOwnersIds }] = useLazyQuery(
     OBJECTSFROMTAGSARRAY,
     {
-      fetchPolicy: "cache-and-network",
+      fetchPolicy: "no-cache",
     }
   );
 

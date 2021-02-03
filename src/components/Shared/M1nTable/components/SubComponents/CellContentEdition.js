@@ -328,7 +328,7 @@ export default function CellContentEdition({
         targetLabel === "Parcel Ownership" ||
         targetLabel === "Parcel Interest"
       ) {
-        trimmedEditContent.ownerEntityId = entityId;
+        trimmedEditContent.ownerEntity = entityId;
         updateParcelOwner({
           variables: {
             parcelOwner: trimmedEditContent,
