@@ -901,7 +901,7 @@ const ContactsHeadCells = [
     },
   },
   {
-    name: "linkedin",
+    name: "linkedIn",
     label: "LinkedIn Profile",
     options: {
       display: false,

@@ -206,15 +206,24 @@ export default function CSVFileReader(props) {
     if (data.length > 0) {
       var uniqueKeys = Object.keys(data[0].data);
       // uniqueKeys = uniqueKeys.sort();
+      let matchedKeys = [ ...stateApp.m1neralHeaders ]
       for (let index in uniqueKeys) {
+        const matchedKey = matchedKeys.find(el => el?.label === uniqueKeys[index])
+        console.log('matchedKey: ', matchedKey);
+
         uniqueKeys[index] = {
           mapped_key: uniqueKeys[index],
-          required: false,
-          actual_key: "",
-          label: "",
+          required: !!matchedKey?.actual_key,
+          actual_key: matchedKey?.actual_key || "",
+          label: matchedKey?.label || "",
         };
+
+        if (uniqueKeys[index]?.actual_key === matchedKey?.actual_key) {
+          matchedKey.mapped_key = uniqueKeys[index].mapped_key;
+          matchedKey.required = uniqueKeys[index].required;
+        }
       }
-      setStateApp((state) => ({ ...state, mappedHeadersFromCSV: uniqueKeys }));
+      setStateApp((state) => ({ ...state, m1neralHeaders: matchedKeys, mappedHeadersFromCSV: uniqueKeys }));
     }
   };
 

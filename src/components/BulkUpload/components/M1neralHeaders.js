@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
@@ -193,6 +193,10 @@ export default function M1neralHeaders(props) {
     }));
   };
 
+  useEffect(() => {
+    changeDataToSendState();
+  }, []);
+
   return (
     <div style={main_div}>
       <div style={{ ...big_text, ...padding_div_top }}>
@@ -243,9 +247,13 @@ export default function M1neralHeaders(props) {
                           <select
                             style={headers_input}
                             id={"select" + index}
-                            defaultValue={
-                              row.actual_key === "" ? "initial" : row.actual_key
-                            }
+                            defaultValue={(() => {
+                              const matchedKeyIndex = data.findIndex(el => el?.actual_key === row?.actual_key)
+                              // console.log('matchedKey: ', matchedKey);
+                              return row.actual_key === "" 
+                                ? "initial"
+                                : matchedKeyIndex
+                            })()}
                             onChange={(event) =>
                               handleChange_select(event, index)
                             }
@@ -257,7 +265,9 @@ export default function M1neralHeaders(props) {
                             {data.map((option, i) => {
                               return (
                                 <option value={i} key={i}>
-                                  {option.label}
+                                  {(() => {
+                                    return option.label
+                                  })()}
                                 </option>
                               );
                             })}

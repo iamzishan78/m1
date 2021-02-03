@@ -270,20 +270,20 @@ export default function DetailInfo (props) {
       linkType: LinkTypes.None,
     },
 
-    "Linkedln Profile": {
-      data: { linkedln: props.contactData.linkedln },
+    "LinkedIn Profile": {
+      data: { linkedIn: props.contactData.linkedIn },
       linkType: LinkTypes.Simple,
-      // inner: props.contactData.linkedln && (
+      // inner: props.contactData.linkedIn && (
       //   <a
       //     href={`${
-      //       !props.contactData.linkedln.startsWith("http") &&
-      //       !props.contactData.linkedln.startsWith("//")
+      //       !props.contactData.linkedIn.startsWith("http") &&
+      //       !props.contactData.linkedIn.startsWith("//")
       //         ? "//"
       //         : ""
-      //     }${props.contactData.linkedln}`}
+      //     }${props.contactData.linkedIn}`}
       //     target="_blank"
       //   >
-      //     {props.contactData.linkedln}
+      //     {props.contactData.linkedIn}
       //   </a>
       // ),
     },

@@ -469,8 +469,8 @@ export default function ContactDetailCard(props) {
                   content={{ name: contactData.name }}
                 >
                   {(contactData.facebook ||
-                    contactData.twitte ||
-                    contactData.linkedln) && (
+                    contactData.twitter ||
+                    contactData.linkedIn) && (
                     <span className={classes.socialMediaSection}>
                       {contactData.facebook && (
                         <a
@@ -498,14 +498,14 @@ export default function ContactDetailCard(props) {
                           <TwitterIcon className={classes.twitterIcon} />
                         </a>
                       )}
-                      {contactData.linkedln && (
+                      {contactData.linkedIn && (
                         <a
                           href={`${
-                            !contactData.linkedln.startsWith("http") &&
-                            !contactData.linkedln.startsWith("//")
+                            !contactData.linkedIn.startsWith("http") &&
+                            !contactData.linkedIn.startsWith("//")
                               ? "//"
                               : ""
-                          }${contactData.linkedln}`}
+                          }${contactData.linkedIn}`}
                           target="_blank"
                         >
                           <LinkedInIcon />
