@@ -13,7 +13,7 @@ export const CUSTOMLAYER = gql`
       }
       owners {
         _id
-        ownerEntityId
+        ownerEntity
         name
         address1
         address2

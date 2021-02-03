@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Card from "@material-ui/core/Card";
@@ -95,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ParcelCard(props) {
-
+  const parcelPLSS = useRef(false);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [parcelContext, setParcelContext] = useContext(ParcelCardContext);
   const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
@@ -130,6 +130,10 @@ export default function ParcelCard(props) {
       setProperties(properties);
     }
   }, [dataCustomLayer]);
+
+  if(parcelObj && parcelObj.state === "TX"){
+    parcelPLSS.current = true;
+  }
 
   return parcelObj ? (
     !stateExpandableCard.expanded ? (
@@ -250,37 +254,37 @@ export default function ParcelCard(props) {
                 </TableRow>
                 <TableRow className={classes.rowGrey}>
                   <TableCell className={classes.cell1} align="left">
-                    {parcelObj.state === "TX" ? "Survey" : "Meridian"}
+                    {parcelPLSS.current ? "Survey" : "Meridian"}
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {parcelProperties.survey}
+                    {parcelPLSS.current ? parcelProperties.survey : parcelProperties.meridian}
                   </TableCell>
                 </TableRow>
                 <TableRow className={classes.rowWhite}>
                   <TableCell className={classes.cell1} align="left">
-                    {parcelObj.state === "TX" ? "Block" : "Township"}
+                    {parcelPLSS.current ? "Block" : "Township"}
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {parcelProperties.block}
+                    {parcelPLSS.current ? parcelProperties.block : parcelProperties.township}
                   </TableCell>
                 </TableRow>
                 <TableRow className={classes.rowGrey}>
                   <TableCell className={classes.cell1} align="left">
-                    {parcelObj.state === "TX" ? "Section" : "Range"}
+                    {parcelPLSS.current ? "Section" : "Range"}
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {parcelProperties.section}
+                    {parcelPLSS.current ? parcelProperties.section : parcelProperties.range}
                   </TableCell>
                 </TableRow>
                 <TableRow className={classes.rowWhite}>
                   <TableCell className={classes.cell1} align="left">
-                    {parcelObj.state === "TX" ? "Abstract" : "Section"}
+                    {parcelPLSS.current ? "Abstract" : "Section"}
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {parcelProperties.abstract}
+                    {parcelPLSS.current ? parcelProperties.abstract : parcelProperties.section}
                   </TableCell>
                 </TableRow>
-                {parcelObj.state === "TX" && (
+                {parcelPLSS.current && (
                 <TableRow className={classes.rowGrey}>
                   <TableCell className={classes.cell1} align="left">
                     Alt Survey

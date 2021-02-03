@@ -96,6 +96,7 @@ export default (props) => {
       }
     }
   );
+
   const [error, setError] = useState(false);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [user, setUser] = useState({ _id: "" });
@@ -126,10 +127,12 @@ export default (props) => {
         expandedCard: true
       }));
       props.onClickExpand();
-      setStateApp((state) => ({
-        ...state,
-        selectedAbstracts: []
-      }));
+      if (stateApp.selectedAbstracts.length > 0) {
+        setStateApp((state) => ({
+          ...state,
+          selectedAbstracts: []
+        }));
+      }
     }
     if (customLayerInsertedData.upsertCustomLayer  && customLayerInsertedData.upsertCustomLayer.customLayer && !customLayerInsertedData.upsertCustomLayer.success) {
       setError(true);
@@ -170,14 +173,22 @@ export default (props) => {
       return;
     }
     const abstractShape = stateApp.selectedAbstracts[0];
+
+    const properties = abstractShape?.properties;
+    let township = properties?.Township;
+    let range = properties?.Range;
+    let section = properties?.ShortName;
+    
     let parcelName, originalProperties;
     if(abstractShape.properties.State === "TX") {
       parcelName = abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
-      originalProperties = [abstractShape.properties];
-    } else {
+    } else if(township && range && section) {
+      parcelName = `T${township} R${range} — Section ${section}`;
+    } else {  
       parcelName = "PLSS Default Name";
-      originalProperties = [];
     }
+    originalProperties = [abstractShape.properties];
+
     const featureId = hat();
     const newShapeFeature = {
       id: featureId,
@@ -207,6 +218,27 @@ export default (props) => {
     upsertCustomLayer({
       variables: { customLayer: customLayerData }
     });
+
+    let layers = [...stateApp.customLayers];
+    layers.push(customLayerData);
+
+    setStateApp((state) => ({
+      ...state,
+      selectedParcel: {
+        "originalProperties":  abstractShape.properties.State === "TX" ?  JSON.stringify(abstractShape.properties) : [],
+        "sdType": "parcel",
+        "shapeLabel": parcelName,
+        "projectName": "",
+        "sdNotes": "",
+        "sdGrossAcres": "",
+        "shapeArea": calculateLandArea(abstractShape),
+        "shapeCenter": calculateShapeCenter(abstractShape.geometry.coordinates),
+        "shapeLabelLayer": "",
+        "id": featureId
+      },
+      customLayers: layers,
+      expandedCard: true
+    }));
   }
 
   const handleClose = function () {
