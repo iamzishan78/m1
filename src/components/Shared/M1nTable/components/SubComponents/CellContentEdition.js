@@ -320,7 +320,12 @@ export default function CellContentEdition({
           variables: {
             contact: trimmedEditContent,
           },
-          refetchQueries: ["getPaginatedContacts", "getContact", "getCustomLayer"],
+          refetchQueries: [
+            "getPaginatedContacts",
+            "getContact",
+            "getCustomLayer",
+            "getparcelOwners",
+          ],
           awaitRefetchQueries: true,
         });
       }
@@ -335,6 +340,7 @@ export default function CellContentEdition({
           },
           refetchQueries: [
             "getCustomLayer",
+            "getparcelOwners",
             "getContactParcelInterests",
             "getAllEntityNamesToAddAsParcelOwner",
           ],

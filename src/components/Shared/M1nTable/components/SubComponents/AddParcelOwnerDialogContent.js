@@ -249,7 +249,11 @@ export default function AddParcelOwnerDialogContent({
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: ["getCustomLayer", "getContactParcelInterests"],
+          refetchQueries: [
+            "getCustomLayer",
+            "getparcelOwners",
+            "getContactParcelInterests",
+          ],
           awaitRefetchQueries: true,
         });
       } else {
@@ -261,7 +265,11 @@ export default function AddParcelOwnerDialogContent({
               lastUpdateBy: stateApp.user.mongoId,
             }
           },
-          refetchQueries: ["getCustomLayer", "getContactParcelInterests"],
+          refetchQueries: [
+            "getCustomLayer",
+            "getparcelOwners",
+            "getContactParcelInterests",
+          ],
           awaitRefetchQueries: true,
         });
       }

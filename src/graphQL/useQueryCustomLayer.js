@@ -11,27 +11,7 @@ export const CUSTOMLAYER = gql`
       user {
         _id
       }
-      owners {
-        _id
-        ownerEntity
-        name
-        address1
-        address2
-        city
-        state
-        zip
-        country
-        globalOwner
-        entity
-        type
-        depthFrom
-        depthTo
-        interest
-        nma
-        nra
-        customLayer
-        isContact
-      }
+      ownerCount
     }
   }
 `;

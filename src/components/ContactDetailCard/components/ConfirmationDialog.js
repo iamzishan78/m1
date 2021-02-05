@@ -32,6 +32,7 @@ export default function ConfirmationDialog(props) {
         "getPaginatedContacts",
         // "getContact",
         "getCustomLayer",
+        "getparcelOwners",
       ],
       awaitRefetchQueries: true,
     });

@@ -804,6 +804,7 @@ function AddDealDialog(props) {
           "getPaginatedContacts",
           "getContact",
           "getCustomLayer",
+          "getparcelOwners",
         ],
         awaitRefetchQueries: true,
       });
