@@ -250,7 +250,6 @@ export default function AddParcelOwnerDialogContent({
             },
           },
           refetchQueries: [
-            "getCustomLayer",
             "getparcelOwners",
             "getContactParcelInterests",
           ],

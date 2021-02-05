@@ -3404,8 +3404,7 @@ function M1nTable(props) {
               refetchQueries: [
                 "getPaginatedContacts",
                 "getContact",
-                "getCustomLayer",
-                "getparcelOwners",
+                "checkIfOwnersAreContacts",
               ],
               awaitRefetchQueries: true,
             });

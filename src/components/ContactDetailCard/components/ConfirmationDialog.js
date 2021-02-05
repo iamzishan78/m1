@@ -31,8 +31,7 @@ export default function ConfirmationDialog(props) {
       refetchQueries: [
         "getPaginatedContacts",
         // "getContact",
-        "getCustomLayer",
-        "getparcelOwners",
+        "checkIfOwnersAreContacts",
       ],
       awaitRefetchQueries: true,
     });

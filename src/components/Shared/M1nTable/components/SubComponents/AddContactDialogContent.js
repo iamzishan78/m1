@@ -179,8 +179,6 @@ export default function AddContactDialogContent(props) {
           refetchQueries: [
             "getPaginatedContacts",
             "getContact",
-            "getCustomLayer",
-            "getparcelOwners",
           ],
           awaitRefetchQueries: true,
         });

@@ -79,8 +79,6 @@ export default function MakeItAContactConfirmationDialogContent(props) {
                   },
                   refetchQueries: [
                     "getPaginatedContacts",
-                    "getCustomLayer",
-                    "getparcelOwners",
                     "checkIfOwnersAreContacts",
                   ],
                   awaitRefetchQueries: true,
@@ -96,8 +94,7 @@ export default function MakeItAContactConfirmationDialogContent(props) {
                   },
                   refetchQueries: [
                     "getPaginatedContacts",
-                    "getCustomLayer",
-                    "getparcelOwners",
+                    "checkIfOwnersAreContacts",
                   ],
                   awaitRefetchQueries: true,
                 });

@@ -884,7 +884,10 @@ export default function ContactDetailCard(props) {
                     },
                     ignoreResponse: true,
                   },
-                  refetchQueries: ["getPaginatedContacts", "getContact"],
+                  refetchQueries: [
+                    "getPaginatedContacts",
+                    "getContact",
+                  ],
                   awaitRefetchQueries: false,
                 });
               }}

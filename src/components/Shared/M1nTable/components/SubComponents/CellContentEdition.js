@@ -323,7 +323,6 @@ export default function CellContentEdition({
           refetchQueries: [
             "getPaginatedContacts",
             "getContact",
-            "getCustomLayer",
             "getparcelOwners",
           ],
           awaitRefetchQueries: true,
@@ -339,7 +338,6 @@ export default function CellContentEdition({
             parcelOwner: trimmedEditContent,
           },
           refetchQueries: [
-            "getCustomLayer",
             "getparcelOwners",
             "getContactParcelInterests",
             "getAllEntityNamesToAddAsParcelOwner",
