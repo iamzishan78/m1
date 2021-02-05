@@ -202,7 +202,7 @@ export default function ParcelCard(props) {
                 className={classes.text2}
                 variant="caption"
               >
-                {parcelObj ? parcelObj.owners.length : "--"}
+                {parcelObj?.ownerCount || "--"}
               </Typography>
             </div>
 

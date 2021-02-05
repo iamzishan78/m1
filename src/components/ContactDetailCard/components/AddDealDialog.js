@@ -803,7 +803,6 @@ function AddDealDialog(props) {
         refetchQueries: [
           "getPaginatedContacts",
           "getContact",
-          "getCustomLayer",
         ],
         awaitRefetchQueries: true,
       });

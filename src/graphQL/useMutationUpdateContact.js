@@ -42,7 +42,7 @@ export const UPDATECONTACT = gql`
         AltPhone
         secondaryEmail
         relatives
-        linkedln
+        linkedIn
         facebook
         twitter
         leadStage

@@ -67,7 +67,8 @@ export default function MakeItAContactConfirmationDialogContent(props) {
                 ...state,
                 universalCircularLoaderAct: true,
               }));
-              if (props.targetLabel == "owner") {
+              if (props.targetLabel === "owner" ||
+                  props.targetLabel === "Parcel Ownership") {
                 addContact({
                   variables: {
                     contact: {
@@ -78,7 +79,6 @@ export default function MakeItAContactConfirmationDialogContent(props) {
                   },
                   refetchQueries: [
                     "getPaginatedContacts",
-                    "getCustomLayer",
                     "checkIfOwnersAreContacts",
                   ],
                   awaitRefetchQueries: true,
@@ -92,7 +92,10 @@ export default function MakeItAContactConfirmationDialogContent(props) {
                       lastUpdateBy: stateApp.user.mongoId,
                     },
                   },
-                  refetchQueries: ["getPaginatedContacts", "getCustomLayer"],
+                  refetchQueries: [
+                    "getPaginatedContacts",
+                    "checkIfOwnersAreContacts",
+                  ],
                   awaitRefetchQueries: true,
                 });
             }
