@@ -145,7 +145,7 @@ export default function BulkUpload(props) {
       label: "LinkedIn Profile",
       mapped_key: "",
       required: false,
-      actual_key: "linkedin",
+      actual_key: "linkedIn",
     },
     {
       label: "Facebook Profile",
@@ -265,7 +265,7 @@ export default function BulkUpload(props) {
       label: "Industry Type",
       mapped_key: "",
       required: false,
-      actual_key: "industryType ",
+      actual_key: "industryType",
     },
   ];
   const reset_state = () => {

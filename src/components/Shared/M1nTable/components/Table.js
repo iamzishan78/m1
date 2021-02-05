@@ -1019,6 +1019,8 @@ function SubTable(props) {
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
                       ? tableMeta.rowData[1]
+                      : props.parent === "ownersPerParcel"
+                      ? tableMeta.rowData[1]
                       : tableMeta.rowData[0];
                   return (
                     <TrackToggleButton
@@ -1066,6 +1068,8 @@ function SubTable(props) {
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
+                      ? tableMeta.rowData[1]
+                      : props.parent === "ownersPerParcel"
                       ? tableMeta.rowData[1]
                       : tableMeta.rowData[0];
 
@@ -1259,7 +1263,9 @@ function SubTable(props) {
                   return (
                     <Tooltip
                       title={
-                        value && value !== "false" && "Contact Details"
+                        !value || value === "false"
+                          ? "Convert To Contact"
+                          : "Contact Details"
                       }
                       placement="top"
                     >
@@ -1294,11 +1300,48 @@ function SubTable(props) {
                             setMultipleExpandableCard(true);
                             setSubTitle(" ");
                             handleOpenExpandableCard();
+                          } else {
+                            if (props.targetLabel == "owner") {
+                              handleExpandClick(
+                                tableMeta.columnIndex,
+                                tableMeta.rowIndex,
+                                {
+                                  globalOwner:
+                                    props.parent === "OwnersPerWell"
+                                      ? tableMeta.rowData[2]
+                                      : tableMeta.rowData[0],
+                                  entity: tableMeta.rowData[1],
+                                },
+                                "makeOwnerAContact"
+                              );
+                            } 
+                            else if (props.targetLabel == "Parcel Ownership") {
+                              handleExpandClick(
+                                tableMeta.columnIndex,
+                                tableMeta.rowIndex,
+                                {
+                                  globalOwner:
+                                    props.parent === "ownersPerParcel"
+                                      ? tableMeta.rowData[9]
+                                      : tableMeta.rowData[0],
+                                  entity: tableMeta.rowData[1],
+                                },
+                                "makeOwnerAContact"
+                              );
+                            }else
+                              handleExpandClick(
+                                tableMeta.columnIndex,
+                                tableMeta.rowIndex,
+                                tableMeta.rowData[0],
+                                "makeOwnerAContact"
+                              );
                           }
                         }}
                         aria-label="show contact"
                       >
-                        {value && value !== "false" && (
+                        {!value || value === "false" ? (
+                          <Convert_contact style={{ margin: "4px" }} />
+                        ) : (
                           <Contact_card style={{ margin: "4px" }} />
                         )}
                       </IconButton>
@@ -1416,6 +1459,8 @@ function SubTable(props) {
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
+                      ? tableMeta.rowData[1]
+                      : props.parent === "ownersPerParcel"
                       ? tableMeta.rowData[1]
                       : tableMeta.rowData[0];
 
