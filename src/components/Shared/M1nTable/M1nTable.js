@@ -51,7 +51,7 @@ import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
 import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterests";
 import { PAGINATEDWELLINTERESTSQUERY } from "../../../graphQL/useQueryPaginatedWellInterests.js";
 import { WELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryWellInterestsFilterOptions";
-import { SHAPEWELLS } from "../../../graphQL/useQueryShapeWells";
+import { SHAPEWELLS } from "../../../graphQL/useQueryPaginatedShapeWells";
 import { WELLSOWNERSQUERY } from "../../../graphQL/useQueryWellsOwners";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -2313,7 +2313,7 @@ function M1nTable(props) {
   );
   //////////
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-  const [getShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, {
+  const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, {
     fetchPolicy: "cache-and-network",
   });
   //////////
@@ -2830,9 +2830,10 @@ function M1nTable(props) {
   ////////////Grid Wells begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "gridWells") {
-      getShapeWells({
+      getPaginatedShapeWells({
         variables: {
           polygon: stateApp.gridPolygonString,
+
           userId: stateApp.user.mongoId,
         },
       });
@@ -2845,9 +2846,11 @@ function M1nTable(props) {
   useEffect(() => {
     if (
       props.parent && props.parent === "gridWells" &&
-      dataShapeWells && dataShapeWells.shapeWells
+      dataShapeWells && dataShapeWells.paginatedShapeWells
     ) {
-      let wells = [...dataShapeWells.shapeWells.results];
+      let wells = [...dataShapeWells.paginatedShapeWells.edges.map(
+        (el) => el.node
+      )];
       wells = wells.map((w) => {
         let well = { ...w };
 
@@ -2875,7 +2878,6 @@ function M1nTable(props) {
           viewColumns: false,
         },
       };
-
       setColumns([
         ...(cleanAvailableTags.length > 0
           ? WellsHeadCells.map((column) => {
@@ -4897,6 +4899,17 @@ function M1nTable(props) {
           wellInterestsCount: selectedOwnerWellIntsSummary?.interestsCount
             ? selectedOwnerWellIntsSummary.interestsCount
             : 0,
+          setLoading,
+        }}
+        shapeWellsPageProps={{
+          getPaginatedShapeWells,
+          shapeWellsCount: dataShapeWells?.paginatedShapeWells?.totalCount
+            ? dataShapeWells?.paginatedShapeWells?.totalCount
+            : 0,
+          /*getWellOptions,
+          wellInterestsCount: selectedOwnerWellIntsSummary?.interestsCount
+            ? selectedOwnerWellIntsSummary.interestsCount
+            : 0,*/
           setLoading,
         }}
         parent={props.parent}

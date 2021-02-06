@@ -2617,6 +2617,91 @@ function SubTable(props) {
         }
       }
 
+      if (props.parent === "gridWells") {
+        const pageVariables = {
+          variables: {
+            polygon: stateApp.gridPolygonString,
+            pagination: {
+              first: tableState.rowsPerPage,
+              after: null,
+            },
+            sort: tableState.activeColumn
+              ? {
+                  field:
+                    tableState.columns[tableState.activeColumn]?.name,
+                  order:
+                    tableState.columns[tableState.activeColumn]
+                      ?.sortDirection === "asc"
+                      ? 1
+                      : -1,
+                }
+              : [],
+
+            /*filters: {
+              field: "id",
+              value: props.wellInterestsPageProps.ownerId,
+            },*/
+            userId: stateApp.user.mongoId,
+            // search: tableState.searchText,
+          },
+        };
+
+        switch (action) {
+          case "changeRowsPerPage":
+            console.log("changeRowsPerPage");
+            props.shapeWellsPageProps.setLoading(true);
+            tableState.page = 0;
+            setPageInd(tableState.page);
+            setRowsPerPage(tableState.rowsPerPage);
+            props.shapeWellsPageProps.getPaginatedShapeWells(
+              pageVariables
+            );
+            break;
+          case "changePage":
+            console.log('props.rows[props.rows.length - 1]?.id', props.rows[props.rows.length - 1]?.id)
+            props.shapeWellsPageProps.setLoading(true);
+            props.shapeWellsPageProps.getPaginatedShapeWells({
+              ...pageVariables,
+              variables: {
+                ...pageVariables.variables,
+                pagination: {
+                  ...pageVariables.variables.pagination,
+                  before:
+                    props.rows && tableState.page < pageInd
+                      ? props.rows[0]?.id
+                      : null,
+                  after:
+                    props.rows && tableState.page > pageInd
+                      ? props.rows[props.rows.length - 1]?.id
+                      : null,
+                },
+              },
+            });
+            break;
+          case "sort":
+            props.shapeWellsPageProps.setLoading(true);
+            tableState.page = 0;
+            setPageInd(tableState.page);
+            props.shapeWellsPageProps.getPaginatedShapeWells(
+              pageVariables
+            );
+            break;
+          case "search":
+            break;
+          case "onSearchClose":
+            break;
+          case "propsUpdate":
+            console.log("work propsUpdate");
+            break;
+          case "filterChange":
+            break;
+          case "resetFilters":
+            break;
+          default:
+            console.log("action not handled.");
+        }
+      }
+
       // else if (props.header === "Monthly Production") {
       //   switch(action) {
       //     case "propsUpdate":
@@ -2628,6 +2713,17 @@ function SubTable(props) {
       // }
     },
   };
+
+  if (props.parent === "gridWells") {
+    options.rowsPerPageOptions =
+      props.shapeWellsPageProps.shapeWellsCount > 25
+        ? [10, 25, 50, 100]
+        : props.shapeWellsPageProps.shapeWellsCount > 10
+        ? [10, 25]
+        : [];
+    options.count = props.shapeWellsPageProps.shapeWellsCount;
+    options.serverSide = true;
+  }
 
   if (props.header === "Well Interests") {
     console.log('props.header === "Well Interests"');
