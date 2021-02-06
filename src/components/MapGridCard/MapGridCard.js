@@ -504,6 +504,7 @@ function MapGridCard(props) {
         "Leases",
         "Parcels",
         "Recent Permits",
+        "Contacts",
         "Locations",
       ]}
       value={searchTapValue}
@@ -677,9 +678,9 @@ function MapGridCard(props) {
                       privateColumns={[parcelColumnHeaders]}
                       targetLabel={getTargetFromSearchTaps()}
                       header={<SearchTabPanels />}
-                      showTags
-                      showComments
-                      showTracks
+                      // showTags
+                      // showComments
+                      // showTracks
                     />,
                     <M1nTable
                       dense
@@ -688,6 +689,13 @@ function MapGridCard(props) {
                       targetLabel={getTargetFromSearchTaps()}
                       header={<SearchTabPanels />}
                     />,
+                    <M1nTable
+                    dense
+                    parent="search"
+                    privateColumns={[]}
+                    targetLabel={getTargetFromSearchTaps()}
+                    header={<SearchTabPanels />}
+                  />,
                     <M1nTable
                       dense
                       parent="search"
