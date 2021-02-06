@@ -21,6 +21,9 @@ import Button from "@material-ui/core/Button";
 import { setMapGridCardState } from "../../actions";
 import OwnersSummaryCard from "../OwnersSummaryCard/OwnersSummaryCard";
 
+import ContactsHeadCells from '../Shared/constants/contacts-header-schema.js'
+
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -480,8 +483,10 @@ function MapGridCard(props) {
     switch (searchTapValue) {
       // case 6:
       //   return "location";
-      // case 5:
-      //   return "permits";      
+      case 6:
+        return "contacts";  
+      case 5:
+        return "permits";      
       // case 4:
       //   return "parcel";
       case 3:
@@ -603,14 +608,6 @@ function MapGridCard(props) {
           </Toolbar>
         </AppBar>
 
-        {/* <MapGridCardSearch
-          ativateSearchPanel={() => {
-            if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
-            if (mapGridCardActivated === "min")
-              dispatch(setMapGridCardState({ mapGridCardActivated: true }));
-          }}
-          searchOption={getTargetFromSearchTaps()}
-        /> */}
 
         {selectedOwner ? (
           <OwnersSummaryCard />
@@ -692,7 +689,7 @@ function MapGridCard(props) {
                     <M1nTable
                     dense
                     parent="search"
-                    privateColumns={[]}
+                    privateColumns={[ContactsHeadCells]}
                     targetLabel={getTargetFromSearchTaps()}
                     header={<SearchTabPanels />}
                   />,
