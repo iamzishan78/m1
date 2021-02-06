@@ -2461,9 +2461,10 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (
-      props.parent &&
-      // props.parent === "Contacts" &&
-      constDataContacts /*&&
+      props.parent 
+      && (props.parent === "Contacts")  // for parent of contact screen 
+      || (props.parent ==='search' && props.targetLabel === "contacts") // for grid card on map 
+      && constDataContacts /*&&
       dataContactsFilterOptions &&
       dataTracks &&
       dataTracks.tracksByObjectType*/
@@ -2509,10 +2510,11 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (
-      props.parent &&
-      // props.parent === "Contacts" &&
-      dataContacts?.paginatedContacts?.edges &&
-      dataContacts?.paginatedContacts?.edges.length > 0
+      props.parent
+      && (props.parent === "Contacts")  // for parent of contact screen 
+      || (props.parent ==='search' && props.targetLabel === "contacts") // for grid card on map 
+      && dataContacts?.paginatedContacts?.edges
+      && dataContacts?.paginatedContacts?.edges.length > 0
     ) {
       console.log("ue mintable 23");
 
@@ -2535,9 +2537,10 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (
-      props.parent &&
-      // props.parent === "Contacts" &&
-      dataContactsFilterOptions
+      props.parent
+      && (props.parent === "Contacts")  // for parent of contact screen 
+      || (props.parent ==='search' && props.targetLabel === "contacts") // for grid card on map 
+      && dataContactsFilterOptions
     ) {
       console.log("ue mintable 23.5");
       if (
@@ -2616,9 +2619,10 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (
-      props.parent &&
-      // props.parent === "Contacts" &&
-      dataContacts &&
+      props.parent
+      && (props.parent === "Contacts")  // for parent of contact screen 
+      || (props.parent ==='search' && props.targetLabel === "contacts") // for grid card on map 
+      && dataContacts &&
       dataContacts.paginatedContacts.edges &&
       dataContacts.paginatedContacts.edges.length > 0 &&
       dataCommentsCounter &&
