@@ -2297,6 +2297,7 @@ function SubTable(props) {
     //     }
     //   }
     // },
+    
     onTableChange: (action, tableState) => {
       if (props.header === "Contacts") {
         let filters = [];

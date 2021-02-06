@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -36,8 +36,9 @@ import Box from "@material-ui/core/Box";
 import { CircularProgress } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
-import { deepEqualObjects } from "../../Shared/functions";
+import { deepEqualObjects, deepEqual, setStateIfDeepEqual } from "../../Shared/functions";
 import ClearIcon from "@material-ui/icons/Clear";
+
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -205,6 +206,29 @@ function Search() {
     OPERATORSLATSLONS
   );
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
+
+  const setPageInd = (newState) => {
+    setStateIfDeepEqual(PageInd, newState);
+  };
+
+  const [pageInd, PageInd] = useState(0);
+
+  const setDataContacts = (newState) => {
+    setStateIfDeepEqual(DataContacts, newState);
+  };
+
+  const [dataContacts, DataContacts] = useState(null);
+
+  const setRows = (newState) => {
+    setStateIfDeepEqual(Rows, newState);
+  };
+  const [rows, Rows] = useState([]);
+  const [loading, Loading] = useState(true);
+  const setLoading = (newState) => {
+    setStateIfDeepEqual(Loading, newState);
+  };
+
+
 
   //////////// Search History Begin//////////////////
 
@@ -413,6 +437,95 @@ function Search() {
     []
   );
 
+  // const searchRequest = (e) => {
+  //   /// this function takes the search request and sends it to gql
+  //   console.log('eeeeeee',e)
+  //   getPaginatedContacts({
+  //     variables: {
+  //       search: e.input,
+  //     },
+  //   });
+  // };
+
+
+
+
+
+///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
+
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
+
+
+  const callContactsSearch = React.useMemo(
+    () =>
+    debounce((request, top, callback) => {
+
+      /// this function takes the search request and sends it to gql
+      getPaginatedContacts({
+        variables: {
+          search: request.input,
+        },
+      });
+
+    }, 500),
+    []
+  );
+
+  useEffect(() => {
+    // this use effect takes the contactdata once it comes in from the gql query
+    // and flattens things into an array 
+    // that presents options up to the search menu bar (called newOptions)
+
+    if (
+      constDataContacts 
+    ) {
+      console.log("ue mintable 23");
+      var newOptions = [];
+      var newOptions = [
+
+        ...constDataContacts.paginatedContacts.edges.map((result) => {
+
+          result = result.node;
+          result.Source = 'contacts-index'
+          
+          if(result.name){
+            result.Primary = result.name
+          } else {
+            result.Primary = "--"
+          }; 
+
+          if(result.address1 || result.city || result.state){
+            result.Secondary = result.address1 + ' ' + result.city+ ', ' + result.state+ ' ' + result.zip
+          } else {
+            result.Secondary = "--"
+          }; 
+
+          return result
+          
+        }),
+        ...newOptions,
+      ];
+
+      setOptions(newOptions);
+      setLoadingContacts(false);
+
+    }
+  }, [
+    constDataContacts,
+  ]);
+
+  //////// >>>>>>>>> END 
+
+
+
+
+
+
   const callMapboxSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
@@ -442,21 +555,10 @@ function Search() {
     []
   );
 
-  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
   
 
   React.useEffect(() => {
-    // if (!autocompleteService.current && window.google) {
-    //   autocompleteService.current = new window.google.maps.places.AutocompleteService();
-    // }
-    // if (!autocompleteService.current) {
-    //   return undefined;
-    // }
+
     if (!mapGridCardActivated) {
       if (searchInputValue === "") {
         setOptions(value ? [value] : []);
@@ -606,7 +708,7 @@ function Search() {
                       }),
                       ...newOptions,
                     ];
-
+                    console.log('newoptions,', newOptions)
                     setMaxMinLeasesScore(maxMinScore(results.value));
                   }
 
@@ -616,54 +718,13 @@ function Search() {
               )
             : null,
 
-            searchOption == "all" || searchOption == "contacts"
-            ? callLeaseSearch(
+          searchOption == "all" || searchOption == "contacts"
+            ? callContactsSearch(
                 { input: searchInputValue },
                 searchTop,
-                (results) => {
-                  if (results) {
-                    const indexSource = results["@odata.context"].substring(
-                      results["@odata.context"].indexOf("('") + 2,
-                      results["@odata.context"].indexOf("')")
-                    );
-                    console.log('################# index source',indexSource);
-                    console.log('################# results',results)
-                    newOptions = [
-                      ...results.value.map((result) => {
-                        result.Score = result["@search.score"];
-                        delete result["@search.score"];
-
-                        return {
-                          ...result,
-                          // Source: indexSource,
-                          Source: 'contacts-index', // will need to change this back to variable
-                          Primary:
-                            result.Lease &&
-                            (result.Lease === "" ||
-                              result.Lease === "N/A" ||
-                              result.Lease === "(N/A)")
-                              ? "--"
-                              : result.Lease,
-                          Secondary:
-                            result.LeaseId &&
-                            (result.LeaseId === "" ||
-                              result.LeaseId === "N/A" ||
-                              result.LeaseId === "(N/A)")
-                              ? null
-                              : result.LeaseId,
-                        };
-                      }),
-                      ...newOptions,
-                    ];
-
-                    setMaxMinContactsScore(maxMinScore(results.value));
-                  }
-
-                  setOptions(newOptions);
-                  setLoadingContacts(false);
-                }
               )
             : null,
+
           searchOption == "all" || searchOption == "locations"
             ? callMapboxSearch(
                 { input: searchInputValue },
@@ -710,6 +771,7 @@ function Search() {
     callOwnerSearch,
     callOperatorSearch,
     callLeaseSearch,
+    callContactsSearch,
     callMapboxSearch,
     searchOption,
     searchTop,
@@ -1120,6 +1182,7 @@ function Search() {
     Primary: "",
     Secondary: "",
   };
+  console.log('options xxx',options)
   let optionsWithHeader = [header, ...options];
   //// adding loader ////
   if (
