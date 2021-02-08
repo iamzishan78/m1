@@ -2438,9 +2438,8 @@ function M1nTable(props) {
 
     if (    
             props.parent  
-        && (props.parent === "Contacts")  // for parent of contact screen 
-        || (props.parent ==='search' && props.targetLabel === "contacts") // for grid card on map 
-      
+            && ((props.parent === "Contacts")  // for parent of contact screen 
+                  || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
         ) {
           console.log('props -', props)
           setLoading(true);
@@ -2449,12 +2448,8 @@ function M1nTable(props) {
           setHeader("Contacts");
           setOrderByTracks(false);
           setAddAble({ parent: false, type: "contact" });
-
-          
-          // getPaginatedContacts({variables: { search: props.searchInput }});
-          getPaginatedContacts();
-
-
+          console.log('search target', stateApp.gridSearchTarget)
+          getPaginatedContacts({variables: { search: stateApp.gridSearchTarget }});
           getContactsFilterOptions();
           updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
           setUploadIcon(true);
@@ -2462,17 +2457,17 @@ function M1nTable(props) {
           setColumnsBase(ContactsHeadCells);
         }
 
-  }, [props.parent]);
+  }, [props.parent,
+      stateApp.gridSearchTarget]);
 
   useEffect(() => {
     if (
       props.parent 
-      && (props.parent === "Contacts")  // for parent of contact screen 
-      || (props.parent ==='search' && props.targetLabel === "contacts") // for grid card on map 
-      && constDataContacts /*&&
-      dataContactsFilterOptions &&
-      dataTracks &&
-      dataTracks.tracksByObjectType*/
+      && constDataContacts 
+
+      && ((props.parent === "Contacts")  // for parent of contact screen 
+              || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
+
     ) {
       console.log("ue mintable 23");
       if (
@@ -2516,8 +2511,8 @@ function M1nTable(props) {
   useEffect(() => {
     if (
       props.parent
-      && (props.parent === "Contacts")  // for parent of contact screen 
-      || (props.parent ==='search' && props.targetLabel === "contacts") // for grid card on map 
+      && ((props.parent === "Contacts")  // for parent of contact screen 
+            || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
       && dataContacts?.paginatedContacts?.edges
       && dataContacts?.paginatedContacts?.edges.length > 0
     ) {
@@ -2543,8 +2538,8 @@ function M1nTable(props) {
   useEffect(() => {
     if (
       props.parent
-      && (props.parent === "Contacts")  // for parent of contact screen 
-      || (props.parent ==='search' && props.targetLabel === "contacts") // for grid card on map 
+      && ((props.parent === "Contacts")  // for parent of contact screen 
+            || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
       && dataContactsFilterOptions
     ) {
       console.log("ue mintable 23.5");
@@ -2625,8 +2620,8 @@ function M1nTable(props) {
   useEffect(() => {
     if (
       props.parent
-      && (props.parent === "Contacts")  // for parent of contact screen 
-      || (props.parent ==='search' && props.targetLabel === "contacts") // for grid card on map 
+      && ((props.parent === "Contacts")  // for parent of contact screen 
+            || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
       && dataContacts &&
       dataContacts.paginatedContacts.edges &&
       dataContacts.paginatedContacts.edges.length > 0 &&

@@ -16,6 +16,10 @@ import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHis
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { setMapGridCardState } from "../../../actions";
 
+
+
+
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -71,6 +75,8 @@ function MapGridCardSearch(props) {
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState([]);
   const [searchTop] = React.useState(100);
+
+
 
   const callWellSearch = React.useMemo(
     () =>
@@ -440,7 +446,11 @@ function MapGridCardSearch(props) {
                 searchInputValue: event.target.value,
               })
             );
-            console.log(event.target.value)
+            console.log('event value',event.target.value)
+            setStateApp((state) => ({
+              ...state,
+              gridSearchTarget: event.target.value,
+            }));
           // }
         }}
       />

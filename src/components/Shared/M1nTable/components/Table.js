@@ -2663,7 +2663,7 @@ function SubTable(props) {
           columns={columns ? columns : []}
           options={{
             download: false,
-            search: props.parent != "search",
+            search: props.parent != "search",  // removing the double search on the grid search bar 
             ...options,
           }}
         />
