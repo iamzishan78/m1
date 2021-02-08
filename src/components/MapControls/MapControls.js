@@ -33,6 +33,7 @@ import { default as Cube3d } from "../Shared/svgIcons/cube-3d";
 import AspectRatioOutlinedIcon from "@material-ui/icons/AspectRatioOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../actions";
+import SidePanel from "../Shared/SidePanel";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -206,9 +207,13 @@ export default function MapControls(props) {
     const { selectedControl } = stateMapControls;
     switch (selectedControl) {
       case "base":
-        return <BaseMapStyles />;
+        return <SidePanel panelName={selectedControl} />;
+      // return <BaseMapStyles />;
       case "layer":
-        return <CheckboxList changeLayers={changeLayers} />;
+        return (
+          <SidePanel changeLayers={changeLayers} panelName={selectedControl} />
+        );
+      // return <CheckboxList changeLayers={changeLayers} />;
       case "heatMaps":
         return <CheckboxListHeatmaps changeHeatmaps={changeHeatmaps} />;
       case "add":
