@@ -2442,14 +2442,19 @@ function M1nTable(props) {
         || (props.parent ==='search' && props.targetLabel === "contacts") // for grid card on map 
       
         ) {
-
+          console.log('props -', props)
           setLoading(true);
           console.log("ue mintable 22- contact");
           setTargetLabel("contact");
           setHeader("Contacts");
           setOrderByTracks(false);
           setAddAble({ parent: false, type: "contact" });
+
+          
+          // getPaginatedContacts({variables: { search: props.searchInput }});
           getPaginatedContacts();
+
+
           getContactsFilterOptions();
           updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
           setUploadIcon(true);

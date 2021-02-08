@@ -440,6 +440,7 @@ function MapGridCardSearch(props) {
                 searchInputValue: event.target.value,
               })
             );
+            console.log(event.target.value)
           // }
         }}
       />

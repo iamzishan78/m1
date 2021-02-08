@@ -692,6 +692,7 @@ function MapGridCard(props) {
                     privateColumns={[ContactsHeadCells]}
                     targetLabel={getTargetFromSearchTaps()}
                     header={<SearchTabPanels />}
+                    searchInput = 'jacob'
                   />,
                     <M1nTable
                       dense

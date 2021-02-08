@@ -2660,22 +2660,14 @@ function SubTable(props) {
           }
           title={props.header}
           data={rows ? rows : []}
-          // data={rows ? rows : []}
           columns={columns ? columns : []}
           options={{
-            download:
-              // props.targetLabel == "owner" || props.targetLabel == "well"
-              //   ? true
-              //   :
-              false,
+            download: false,
+            search: props.parent != "search",
             ...options,
           }}
         />
 
-        {/* <TransactDialog
-          selectRowOpenContact={selectRowOpenContact}
-          contactId={props.contactId}
-        /> */}
         {openDialog && openDialog !== "addDeals" && (
           <Dialog
             className={classes.dialog}
