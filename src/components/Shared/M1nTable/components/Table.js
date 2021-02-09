@@ -1855,6 +1855,7 @@ function SubTable(props) {
       props.targetLabel !== "usermanagement" &&
       props.targetLabel !== "owner" &&
       props.targetLabel !== "production_detail" &&
+      props.parent !== "search" &&
       props.parent !== "ownersPerParcel" &&
       props.parent !== "ownersPerParcelWells",
     viewColumns: props.targetLabel !== "usermanagement",
