@@ -96,10 +96,11 @@ const useStyles = makeStyles((theme) => {
       },
     },
     appBar: {
-      cursor: ({ mapGridCardActivated }) =>
-        mapGridCardActivated === "exp" || mapGridCardActivated === "min"
-          ? "context-menu"
-          : "move",
+      // cursor: ({ mapGridCardActivated }) =>
+      //   mapGridCardActivated === "exp" || mapGridCardActivated === "min"
+      //     ? "context-menu"
+      //     : "move", 
+      cursor: "context-menu",
       "& .MuiIconButton-root:hover": {
         backgroundColor: "rgba(255, 255, 255, 0.08)",
       },
@@ -741,12 +742,12 @@ function MapGridCard(props) {
       {mapGridCardActivated === "min" ? (
         CardReturn()
       ) : (
-        <Draggable 
-        //   // cancel={'[class*="cancelDraggableEffect"]'}
+        // <Draggable 
+        //   cancel={'[class*="cancelDraggableEffect"]'}
         //   disabled={false}
-        >
-          {CardReturn()}
-        </Draggable>
+        // >
+          CardReturn()
+        // </Draggable>
       )}
       {mapGridCardActivated === "exp" && blackOut()}
     </div>
