@@ -31,7 +31,6 @@ import MapBasicIcon from "../Shared/svgIcons/MapBasicIcon";
 import Collapse from "@material-ui/core/Collapse";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 import { UPDATELAYERSETTINGS } from "../../graphQL/useMutationUpdateLayerSettings";
-import { UPDATEMANYLAYERSETTINGS } from "../../graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
 import Box from "@material-ui/core/Box";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
@@ -73,6 +72,9 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
   },
   imageBox: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr 1fr",
+    backgroundColor: "#263451",
     "& :nth-child(1)": {
       float: "left",
       display: "grid",
@@ -95,59 +97,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const reorder = (list, startPosition, endPosition) => {
-  const reorderedLayers = Array.from(list);
-  let startIndex = reorderedLayers.findIndex(
-    (layer) => layer.position == startPosition
-  );
-  let endIndex = reorderedLayers.findIndex(
-    (layer) => layer.position == endPosition
-  );
-
-  //// switch positions between layers
-  let endI = endIndex;
-  while (endI > startIndex) {
-    let temp = reorderedLayers[endI].position;
-    reorderedLayers[endI] = {
-      ...reorderedLayers[endI],
-      position: reorderedLayers[endI - 1].position,
-    };
-    reorderedLayers[endI - 1] = {
-      ...reorderedLayers[endI - 1],
-      position: temp,
-    };
-    endI--;
-  }
-  while (endI < startIndex) {
-    let temp = reorderedLayers[endI].position;
-    reorderedLayers[endI] = {
-      ...reorderedLayers[endI],
-      position: reorderedLayers[endI + 1].position,
-    };
-    reorderedLayers[endI + 1] = {
-      ...reorderedLayers[endI + 1],
-      position: temp,
-    };
-    endI++;
-  }
-
-  //// reorder the stateApp.layers
-  const [removed] = reorderedLayers.splice(startIndex, 1);
-  reorderedLayers.splice(endIndex, 0, removed);
-
-  //// separate the layers to update
-  let layersToUpdate = reorderedLayers
-    .filter(
-      (currentValue, index) =>
-        (startIndex < endIndex && startIndex <= index && index <= endIndex) ||
-        (startIndex > endIndex && startIndex >= index && index >= endIndex)
-    )
-    .map((layer) => ({ _id: layer._id, position: layer.position }));
-
-  return { reorderedLayers, layersToUpdate };
-};
-
-export default function CheckboxList({ panelName }) {
+export default function SidePanel({
+  panelName,
+  handleToggle,
+  onDragEnd,
+  panelItems,
+}) {
   const { basinLayerColor, GLOUnitsColor, GLOLeasesColor } = useSelector(
     ({ MainMap }) => MainMap
   );
@@ -161,10 +116,9 @@ export default function CheckboxList({ panelName }) {
   const [layerMap, setLayerMap] = useState([]);
   const [open, setOpen] = useState(true);
   const [mapStyles, setMapStyles] = useState([]);
-  const [currentLayers, setCurrentLayers] = useState(stateApp.layers);
+  const [currentLayers, setCurrentLayers] = useState(panelItems);
 
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
-  const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
   useEffect(() => {
     if (panelName === "base") {
@@ -198,38 +152,32 @@ export default function CheckboxList({ panelName }) {
   }, [panelName]);
 
   useEffect(() => {
-    console.log(
-      "Panelname and layer",
-      panelName,
-      stateApp.layers,
-      stateApp.baseMapLayers
-    );
-    if (panelName === "layer" && stateApp.layers) {
-      setLayerMap(stateApp.layers);
-    } else if (panelName === "base" && stateApp.baseMapLayers) {
+    console.log("Panelname and layer", panelName, panelItems);
+    if (panelName === "layer" && panelItems) {
+      setLayerMap(panelItems);
+    } else if (panelName === "base" && panelItems) {
       setLayerMap(
-        stateApp.baseMapLayers.filter(
+        panelItems.filter(
           (item) => item.name !== "Water" && item.name !== "Land"
         )
       );
     }
   }, [
     stateMapControls.selectedControl,
-    stateApp.layers,
-    stateApp.baseMapLayers,
-    stateApp.checkedBaseLayers
+    panelItems,
+    stateApp.checkedBaseLayers,
   ]);
 
   //   useEffect(() => {
-  //     console.log("Panelname and basemap", panelName, stateApp.baseMapLayers);
+  //     console.log("Panelname and basemap", panelName, panelItems);
 
-  //   }, [stateApp.baseMapLayers]);
+  //   }, [panelItems]);
 
   useEffect(() => {
     console.log("Layer Map: ", layerMap);
   }, [layerMap]);
 
-  if (panelName === "layer" && !stateApp.layers) {
+  if (panelName === "layer" && !panelItems) {
     return null;
   }
 
@@ -237,49 +185,8 @@ export default function CheckboxList({ panelName }) {
     setOpen(!open);
   };
 
-  const handleToggleVisbility = (layer, index) => {
-    const currentLayers = [...stateApp.layers];
-    const updatedLayer = {
-      ...layer,
-      layerSettings: {
-        ...layer.layerSettings,
-        visiable: !layer.layerSettings.visiable,
-      },
-    };
-
-    //// saving to stateApp
-    currentLayers[index] = updatedLayer;
-    setStateApp((stateApp) => ({ ...stateApp, layers: [...currentLayers] }));
-
-    //// saving to mongo
-    updateLayerSettings({
-      variables: {
-        settings: {
-          _id: updatedLayer._id,
-          layerSettings: updatedLayer.layerSettings,
-        },
-      },
-    });
-  };
-
-  const handleToggleBasemap = (idx) => {
-    const currentIndex = stateApp.checkedBaseLayers.indexOf(idx);
-    const newChecked = [...stateApp.checkedBaseLayers];
-    if (currentIndex === -1) {
-      newChecked.push(idx);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-    setStateApp((stateApp) => ({ ...stateApp, checkedBaseLayers: newChecked }));
-  };
-
-  const handleToggle = ({ layer, index }) => () => {
-    if (panelName === "layer") handleToggleVisbility(layer, index);
-    else if (panelName === "base") handleToggleBasemap(index);
-  };
-
   const handleToggleInteraction = (layer, index) => () => {
-    const currentLayers = [...stateApp.layers];
+    const currentLayers = [...panelItems];
     const updatedLayer = {
       ...layer,
       layerSettings: {
@@ -431,84 +338,6 @@ export default function CheckboxList({ panelName }) {
     }));
   };
 
-  const onDragEndLayer = (result) => {
-    if (!result.destination) {
-      return;
-    }
-
-    if (result.source.index !== result.destination.index) {
-      const { reorderedLayers, layersToUpdate } = reorder(
-        stateApp.layers,
-        result.source.index,
-        result.destination.index
-      );
-
-      //// saving to stateApp
-      setStateApp({
-        ...stateApp,
-        layers: [...reorderedLayers],
-      });
-
-      //// saving to mongo
-      updateManyUserLayerSettings({
-        variables: {
-          manySettings: layersToUpdate,
-        },
-      });
-    }
-  };
-
-  const onDragEndBasemap = (result) => {
-    // dropped outside the list
-    if (!result.destination) {
-      return;
-    }
-
-    const items = reorder(
-      stateApp.baseMapLayers,
-      result.source.index,
-      result.destination.index
-    );
-
-    let checkedBaseLayers = stateApp.checkedBaseLayers.slice(0);
-    const sourceIndex = checkedBaseLayers.indexOf(result.source.index);
-
-    let direction = 0;
-    let from,
-      to = 0;
-    if (result.destination.index > result.source.index) {
-      direction = -1;
-      from = result.source.index;
-      to = result.destination.index;
-    } else {
-      direction = 1;
-      to = result.source.index;
-      from = result.destination.index;
-    }
-
-    for (let i = 0; i < checkedBaseLayers.length; i++) {
-      if (checkedBaseLayers[i] <= to && checkedBaseLayers[i] >= from) {
-        checkedBaseLayers[i] += direction;
-      }
-    }
-
-    if (sourceIndex !== -1) {
-      checkedBaseLayers[sourceIndex] = result.destination.index;
-    }
-
-    setStateApp({
-      ...stateApp,
-      baseMapLayers: items,
-      checkedBaseLayers: checkedBaseLayers,
-    });
-  };
-
-  const onDragEnd = (result) => {
-    // dropped outside the list
-    if (panelName === "layer") onDragEndLayer(result);
-    else if (panelName === "base") onDragEndBasemap(result);
-  };
-
   const ifLayerHaveData = (layer) => {
     //// temporary disabling the Title Layer
     if (layer.identifier === "Title") return false;
@@ -630,16 +459,16 @@ export default function CheckboxList({ panelName }) {
     );
   };
 
-//   const WithBox = ({ children, layer, ...defaultProps }) => {
-//     console.log("Children default props", children, defaultProps);
-//     return panelName === "layer " ? (
-//       <Box borderColor={getLayerColor(layer)} {...defaultProps}>
-//         {children}
-//       </Box>
-//     ) : (
-//       { children }
-//     );
-//   };
+  //   const WithBox = ({ children, layer, ...defaultProps }) => {
+  //     console.log("Children default props", children, defaultProps);
+  //     return panelName === "layer " ? (
+  //       <Box borderColor={getLayerColor(layer)} {...defaultProps}>
+  //         {children}
+  //       </Box>
+  //     ) : (
+  //       { children }
+  //     );
+  //   };
 
   const getLayerControls = (layer, labelId, index) => {
     const control1 = layer.layerSettings.colorable && (
@@ -776,7 +605,9 @@ export default function CheckboxList({ panelName }) {
                                     layer,
                                     index,
                                   })}
-                                  onChange={handleToggle({ layer, index })}
+                                  onChange={() =>
+                                    handleToggle({ layer, index })
+                                  }
                                 />
                               }
                             />
