@@ -185,7 +185,7 @@ export default function CSVFileReader(props) {
 
   let handleOnDrop = (data) => {
     if (!unmounted.current) {
-      if (data && data.length <= 1001) {
+      if (data && data.length <= 100001) {
         mapped_headers_from_CSV(data);
         setStateApp((state) => ({
           ...state,
