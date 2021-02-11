@@ -11,26 +11,26 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Checkbox from "@material-ui/core/Checkbox";
 import DragIndicator from "@material-ui/icons/DragIndicator";
 import Button from "@material-ui/core/Button";
-import { MapControlsContext } from "../MapControls/MapControlsContext";
-import { AppContext } from "../../AppContext";
+import { MapControlsContext } from "../../../MapControls/MapControlsContext";
+import { AppContext } from "../../../../AppContext";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
-import ClickIcon from "..//Shared/svgIcons/cursor-click.js";
-import UserDefined from "..//Shared/svgIcons/user-defined.js";
-import ColorControl from "..//Shared/svgIcons/color-control.js";
+import ClickIcon from "../../svgIcons/cursor-click.js";
+import UserDefined from "../../svgIcons/user-defined.js";
+import ColorControl from "../../svgIcons/color-control.js";
 import AddIcon from "@material-ui/icons/Add";
 import LayersIcon from "@material-ui/icons/Layers";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import MapDarkIcon from "../Shared/svgIcons/MapDarkIcon";
-import MapOutdoorIcon from "../Shared/svgIcons/MapOutdoorIcon";
-import MapSatelliteIcon from "../Shared/svgIcons/MapSatelliteIcon";
-import MapLightIcon from "../Shared/svgIcons/MapLightIcon";
-import MapBasicIcon from "../Shared/svgIcons/MapBasicIcon";
+import MapDarkIcon from "../../svgIcons/MapDarkIcon";
+import MapOutdoorIcon from "../../svgIcons/MapOutdoorIcon";
+import MapSatelliteIcon from "../../svgIcons/MapSatelliteIcon";
+import MapLightIcon from "../../svgIcons/MapLightIcon";
+import MapBasicIcon from "../../svgIcons/MapBasicIcon";
 import Collapse from "@material-ui/core/Collapse";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
-import { UPDATELAYERSETTINGS } from "../../graphQL/useMutationUpdateLayerSettings";
+import { UPDATELAYERSETTINGS } from "../../../../graphQL/useMutationUpdateLayerSettings";
 import { useMutation } from "@apollo/client";
 import Box from "@material-ui/core/Box";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
@@ -97,12 +97,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SidePanel({
-  panelName,
-  handleToggle,
-  onDragEnd,
-  panelItems,
-}) {
+export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
   const { basinLayerColor, GLOUnitsColor, GLOLeasesColor } = useSelector(
     ({ MainMap }) => MainMap
   );
@@ -116,12 +111,12 @@ export default function SidePanel({
   const [layerMap, setLayerMap] = useState([]);
   const [open, setOpen] = useState(true);
   const [mapStyles, setMapStyles] = useState([]);
-  const [currentLayers, setCurrentLayers] = useState(panelItems);
+  const [currentLayers, setCurrentLayers] = useState(items);
 
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
   useEffect(() => {
-    if (panelName === "base") {
+    if (type === "base") {
       const req = new Request(
         "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
         {
@@ -149,35 +144,29 @@ export default function SidePanel({
         abortController.abort();
       };
     }
-  }, [panelName]);
+  }, [type]);
 
   useEffect(() => {
-    console.log("Panelname and layer", panelName, panelItems);
-    if (panelName === "layer" && panelItems) {
-      setLayerMap(panelItems);
-    } else if (panelName === "base" && panelItems) {
+    console.log("type and layer", type, items);
+    if (type === "layer" && items) {
+      setLayerMap(items);
+    } else if (type === "base" && items) {
       setLayerMap(
-        panelItems.filter(
-          (item) => item.name !== "Water" && item.name !== "Land"
-        )
+        items.filter((item) => item.name !== "Water" && item.name !== "Land")
       );
     }
-  }, [
-    stateMapControls.selectedControl,
-    panelItems,
-    stateApp.checkedBaseLayers,
-  ]);
+  }, [stateMapControls.selectedControl, items, stateApp.checkedBaseLayers]);
 
   //   useEffect(() => {
-  //     console.log("Panelname and basemap", panelName, panelItems);
+  //     console.log("type and basemap", type, items);
 
-  //   }, [panelItems]);
+  //   }, [items]);
 
   useEffect(() => {
     console.log("Layer Map: ", layerMap);
   }, [layerMap]);
 
-  if (panelName === "layer" && !panelItems) {
+  if (type === "layer" && !items) {
     return null;
   }
 
@@ -186,7 +175,7 @@ export default function SidePanel({
   };
 
   const handleToggleInteraction = (layer, index) => () => {
-    const currentLayers = [...panelItems];
+    const currentLayers = [...items];
     const updatedLayer = {
       ...layer,
       layerSettings: {
@@ -323,13 +312,6 @@ export default function SidePanel({
     },
   }))(ListItem);
 
-  const handleClose = () => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      anchorEl: null,
-    }));
-  };
-
   const openAddLayer = () => {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
@@ -452,7 +434,7 @@ export default function SidePanel({
           <ListItemIcon>
             <LayersIcon />
           </ListItemIcon>
-          <ListItemText primary="Base Map Layers" />
+          <ListItemText primary={`${title} Layers`} />
           {open ? <ExpandLess /> : <ExpandMore />}
         </StyledListItem2>
       </>
@@ -461,7 +443,7 @@ export default function SidePanel({
 
   //   const WithBox = ({ children, layer, ...defaultProps }) => {
   //     console.log("Children default props", children, defaultProps);
-  //     return panelName === "layer " ? (
+  //     return type === "layer " ? (
   //       <Box borderColor={getLayerColor(layer)} {...defaultProps}>
   //         {children}
   //       </Box>
@@ -529,15 +511,22 @@ export default function SidePanel({
   };
 
   const getLayerChecked = ({ layer, index }) => {
-    if (panelName === "layer" && layer) {
+    if (type === "layer" && layer) {
       return layer.layerSettings.visiable !== false;
-    } else if (panelName === "base" && index) {
+    } else if (type === "base" && index) {
       return stateApp.checkedBaseLayers
         ? stateApp.checkedBaseLayers.indexOf(index) !== -1
         : false;
     } else {
       return false;
     }
+  };
+
+  const handleClose = () => {
+    setStateMapControls((stateMapControls) => ({
+      ...stateMapControls,
+      anchorEl: null,
+    }));
   };
 
   const displayList = (
@@ -551,8 +540,8 @@ export default function SidePanel({
 
                 //// remove the (layer.identifier!="Tracked Owners") condition from the if statement to show the tracked owers layer
                 if (
-                  panelName === "base" ||
-                  (panelName === "layer" &&
+                  type === "base" ||
+                  (type === "layer" &&
                     layer.layerSettings &&
                     layer.layerSettings.showable &&
                     layer.identifier != "Tracked Owners")
@@ -561,12 +550,12 @@ export default function SidePanel({
                     <Draggable
                       key={labelId}
                       draggableId={labelId}
-                      index={panelName === "layer" ? layer.position : index}
+                      index={type === "layer" ? layer.position : index}
                     >
                       {(provided, snapshot) => (
                         <Box
                           borderColor={
-                            panelName === "layer" ? getLayerColor(layer) : {}
+                            type === "layer" ? getLayerColor(layer) : {}
                           }
                           {...defaultProps}
                         >
@@ -581,25 +570,24 @@ export default function SidePanel({
                             <ListItemText
                               id={labelId}
                               primary={
-                                panelName === "layer"
+                                type === "layer"
                                   ? getLayerName(layer)
                                   : layer.name
                               }
                               className={
-                                !ifLayerHaveData(layer) && panelName === "layer"
+                                !ifLayerHaveData(layer) && type === "layer"
                                   ? classes.disabledLayerTitle
                                   : ""
                               }
                             />
-                            {panelName === "layer" &&
+                            {type === "layer" &&
                               layer.layerSettings.colorable &&
                               getLayerControls(layer, labelId, index)}
                             <FormControlLabel
                               control={
                                 <Switch
                                   disabled={
-                                    !ifLayerHaveData(layer) &&
-                                    panelName === "layer"
+                                    !ifLayerHaveData(layer) && type === "layer"
                                   }
                                   checked={getLayerChecked({
                                     layer,
@@ -641,10 +629,8 @@ export default function SidePanel({
           dense
           className={classes.subHeaderItem}
         >
-          <ListItemText
-            primary={panelName === "layer" ? "Layer Visibility" : "Base Map"}
-          />
-          {panelName === "layer" && (
+          <ListItemText primary={title} />
+          {type === "layer" && (
             <StyledListItemSecondaryAction>
               <Button
                 onClick={openAddLayer}
@@ -658,9 +644,9 @@ export default function SidePanel({
         </StyledMenuHeaderItem>
 
         {/* base Stuff */}
-        {panelName === "base" && getBasemapImageBox()}
+        {type === "base" && getBasemapImageBox()}
 
-        {panelName === "base" ? (
+        {type === "base" ? (
           <Collapse in={open} timeout="auto" unmountOnExit>
             {displayList}
           </Collapse>
