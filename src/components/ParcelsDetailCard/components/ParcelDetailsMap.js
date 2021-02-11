@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import mapboxgl from "mapbox-gl";
-import uid from "uid";
+import { uid } from "uid";
 import { AppContext } from "../../../AppContext";
 
 const useStyles = makeStyles((theme) => ({

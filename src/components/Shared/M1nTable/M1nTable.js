@@ -2272,6 +2272,11 @@ function M1nTable(props) {
     setStateIfDeepEqual(DataWellInterests, newState);
   };
 
+  const [dataTracks, DataTracks] = useState(null);
+  const setDataTracks = (newState) => {
+    setStateIfDeepEqual(DataTracks, newState);
+  };
+
   const {
     searchloading,
     searchResultData,
@@ -2282,7 +2287,7 @@ function M1nTable(props) {
 
   ////////////Queries begin///////////////////////////////////////////////
 
-  const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
+  const [tracksByObjectType, { data: constDataTracks }] = useLazyQuery(
     TRACKSBYOBJECTTYPE,
     {
       fetchPolicy: "cache-and-network",
@@ -2298,7 +2303,9 @@ function M1nTable(props) {
     fetchPolicy: "cache-and-network",
   });
   //////////
-  const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
+  const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY, {
+    fetchPolicy: "cache-and-network",
+  });
   const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
     OWNERSWELLSQUERY
   );
@@ -2444,41 +2451,60 @@ function M1nTable(props) {
   useEffect(() => {
     if (
       props.parent &&
-      props.parent === "trackOwners" &&
-      dataTracks &&
-      dataTracks.tracksByObjectType
+      constDataTracks &&
+      constDataTracks.tracksByObjectType
     ) {
       console.log("ue mintable 3");
-      if (dataTracks.tracksByObjectType.length !== 0) {
-        setLoading(true);
-        const tracksIdArray = dataTracks.tracksByObjectType.map(
+      if (constDataTracks.tracksByObjectType.length !== 0) {
+        const tracksIdArray = constDataTracks.tracksByObjectType.map(
           (track) => track.trackOn
         );
 
+        setDataTracks(tracksIdArray);
+        // setRows(tracksIdArray);
+        // setLoading(false);
+
+      } else {
+        setLoading(false);
+        setRows([]);
+      }
+    }
+  }, [constDataTracks]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "trackOwners" &&
+      dataTracks
+    ) {
+      console.log("ue mintable 3");
+      if (dataTracks.length !== 0) {
+        // setLoading(true);
+
         getOwners({
           variables: {
-            ownerIdArray: tracksIdArray,
+            ownerIdArray: dataTracks,
           },
         });
         // getOwnersWells({
         //   variables: {
-        //     ownersIds: tracksIdArray,
+        //     ownersIds: dataTracks,
         //   },
         // });
         getCommentsCounter({
           variables: {
-            objectsIdsArray: tracksIdArray,
+            objectsIdsArray: dataTracks,
             userId: stateApp.user.mongoId,
           },
         });
         getTagSamples({
           variables: {
-            objectsIdsArray: tracksIdArray,
+            objectsIdsArray: dataTracks,
             userId: stateApp.user.mongoId,
           },
         });
         checkIfOwnersAreContacts({
-          variables: { idsArray: tracksIdArray },
+          variables: { idsArray: dataTracks },
         });
       } else {
         setRows([]);
@@ -2642,30 +2668,26 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "trackWells" &&
-      dataTracks &&
-      dataTracks.tracksByObjectType
+      dataTracks
     ) {
       console.log("ue mintable 6");
-      if (dataTracks.tracksByObjectType.length !== 0) {
+      if (dataTracks.length !== 0) {
         // setLoading(true);
-        const tracksIdArray = dataTracks.tracksByObjectType.map(
-          (track) => track.trackOn
-        );
 
         getWells({
           variables: {
-            wellIdArray: tracksIdArray,
+            wellIdArray: dataTracks,
           },
         });
         getCommentsCounter({
           variables: {
-            objectsIdsArray: tracksIdArray,
+            objectsIdsArray: dataTracks,
             userId: stateApp.user.mongoId,
           },
         });
         getTagSamples({
           variables: {
-            objectsIdsArray: tracksIdArray,
+            objectsIdsArray: dataTracks,
             userId: stateApp.user.mongoId,
           },
         });
@@ -2859,16 +2881,15 @@ function M1nTable(props) {
         dataCommentsCounter.commentsCounter &&
         dataTagSamples &&
         dataTagSamples.tagSamples &&
-        dataTracks &&
-        dataTracks.tracksByObjectType
+        dataTracks
       ) {
         dataWells.wells.results.forEach((well) => {
           well.isTracked = false;
           well.commentsCounter = 0;
           well.tags = [[], 0];
 
-          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-            if (well.id === dataTracks.tracksByObjectType[i].trackOn) {
+          for (let i = 0; i < dataTracks.length; i++) {
+            if (well.id === dataTracks[i]) {
               well.isTracked = true;
               break;
             }
@@ -3003,7 +3024,6 @@ function M1nTable(props) {
       dataTagSamples.tagSamples &&
       // dataOwnersWells &&
       dataTracks &&
-      dataTracks.tracksByObjectType &&
       checkIfOwnersAreContactsData &&
       checkIfOwnersAreContactsData.ifAreContacts
     ) {
@@ -3065,9 +3085,9 @@ function M1nTable(props) {
           }
         }
 
-        for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+        for (let i = 0; i < dataTracks.length; i++) {
           if (
-            wellOwner.globalOwnerId === dataTracks.tracksByObjectType[i].trackOn
+            wellOwner.globalOwnerId === dataTracks[i]
           ) {
             wellOwner.isTracked = true;
             break;
@@ -3154,8 +3174,7 @@ function M1nTable(props) {
       props.parent === "Contacts" &&
       constDataContacts /*&&
       dataContactsFilterOptions &&
-      dataTracks &&
-      dataTracks.tracksByObjectType*/
+      dataTracks*/
     ) {
       console.log("ue mintable 23");
       if (
@@ -3484,7 +3503,7 @@ function M1nTable(props) {
       (!props.showComments ||
         (dataCommentsCounter && dataCommentsCounter.commentsCounter)) &&
       (!props.showTags || (dataTagSamples && dataTagSamples.tagSamples)) &&
-      (!props.showTracks || (dataTracks && dataTracks.tracksByObjectType)) &&
+      (!props.showTracks || (dataTracks)) &&
       (props.targetLabel !== "owner" ||
         (checkIfOwnersAreContactsData &&
           checkIfOwnersAreContactsData.ifAreContacts)) &&
@@ -3567,8 +3586,8 @@ function M1nTable(props) {
 
           if (props.showTracks) {
             result.isTracked = false;
-            for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-              if (result.Id === dataTracks.tracksByObjectType[i].trackOn) {
+            for (let i = 0; i < dataTracks.length; i++) {
+              if (result.Id === dataTracks[i]) {
                 result.isTracked = true;
                 break;
               }
@@ -3703,7 +3722,6 @@ function M1nTable(props) {
       dataTagSamples &&
       dataTagSamples.tagSamples &&
       dataTracks &&
-      dataTracks.tracksByObjectType &&
       checkIfOwnersAreContactsData &&
       checkIfOwnersAreContactsData.ifAreContacts
     ) {
@@ -3749,8 +3767,8 @@ function M1nTable(props) {
           }
         }
 
-        for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-          if (parcelOwner.ownerEntity === dataTracks.tracksByObjectType[i].trackOn) {
+        for (let i = 0; i < dataTracks.length; i++) {
+          if (parcelOwner.ownerEntity === dataTracks[i]) {
             parcelOwner.isTracked = true;
             break;
           }
@@ -4045,7 +4063,6 @@ function M1nTable(props) {
       dataContactParcelInterests.contactParcelInterests &&
       dataContactParcelInterests.contactParcelInterests.length > 0 &&
       dataTracks &&
-      dataTracks.tracksByObjectType &&
       dataCommentsCounter &&
       dataCommentsCounter.commentsCounter
     ) {
@@ -4065,9 +4082,9 @@ function M1nTable(props) {
             }
           }
 
-          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+          for (let i = 0; i < dataTracks.length; i++) {
             if (
-              parcelInterest._id === dataTracks.tracksByObjectType[i].trackOn
+              parcelInterest._id === dataTracks[i]
             ) {
               parcelInterest.isTracked = true;
               break;
@@ -4424,8 +4441,7 @@ function M1nTable(props) {
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
-      dataTracks &&
-      dataTracks.tracksByObjectType
+      dataTracks
     ) {
       let wells = [...viewportFeatures];
       wells = wells.map((w) => {
@@ -4455,9 +4471,9 @@ function M1nTable(props) {
             break;
           }
         }
-        for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+        for (let i = 0; i < dataTracks.length; i++) {
           if (
-            well.id === dataTracks.tracksByObjectType[i].trackOn.toLowerCase()
+            well.id === dataTracks[i].toLowerCase()
           ) {
             well.isTracked = true;
             break;
@@ -4631,8 +4647,7 @@ function M1nTable(props) {
         dataCommentsCounter.commentsCounter &&
         dataTagSamples &&
         dataTagSamples.tagSamples &&
-        dataTracks &&
-        dataTracks.tracksByObjectType
+        dataTracks
       ) {
         let wells = dataWellInterests.map((w) => {
           let well = { ...w };
@@ -4648,8 +4663,8 @@ function M1nTable(props) {
           if (well.longitude && well.latitude)
             well.coordinates.center = [well.longitude, well.latitude];
 
-          for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-            if (well.wellId === dataTracks.tracksByObjectType[i].trackOn) {
+          for (let i = 0; i < dataTracks.length; i++) {
+            if (well.wellId === dataTracks[i]) {
               well.isTracked = true;
               break;
             }
