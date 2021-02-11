@@ -57,12 +57,12 @@ export default function BulkUpload(props) {
       required: false,
       actual_key: "suffix",
     },
-    {
-      label: "Global Owner",
-      mapped_key: "",
-      required: false,
-      actual_key: "globalOwner",
-    },
+    // {
+    //   label: "Global Owner",
+    //   mapped_key: "",
+    //   required: false,
+    //   actual_key: "globalOwner",
+    // },
     {
       label: "Primary Address 1",
       mapped_key: "",
