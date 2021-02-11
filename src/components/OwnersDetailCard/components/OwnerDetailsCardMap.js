@@ -8,7 +8,7 @@ import React, {
 import { makeStyles } from "@material-ui/core/styles";
 import mapboxgl from "mapbox-gl";
 import { AppContext } from "../../../AppContext";
-import uid from "uid";
+import { uid } from "uid";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { useLazyQuery } from "@apollo/client";
 import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
