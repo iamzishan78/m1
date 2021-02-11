@@ -84,157 +84,137 @@ export default function SidePanel() {
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
-  const handleToggleBasemap = useCallback(
-    ({ index }) => {
-      const currentIndex = stateApp.checkedBaseLayers.indexOf(index);
-      const newChecked = [...stateApp.checkedBaseLayers];
-      if (currentIndex === -1) {
-        newChecked.push(index);
-      } else {
-        newChecked.splice(currentIndex, 1);
-      }
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        checkedBaseLayers: newChecked,
-      }));
-    },
-    [setStateApp, stateApp.checkedBaseLayers]
-  );
-
-  const handleToggleLayer = useCallback(
-    ({ layer, index }) => {
-      const currentLayers = [...stateApp.layers];
-      const updatedLayer = {
-        ...layer,
-        layerSettings: {
-          ...layer.layerSettings,
-          visiable: !layer.layerSettings.visiable,
-        },
-      };
-
-      //// saving to stateApp
-      currentLayers[index] = updatedLayer;
-      setStateApp((stateApp) => ({ ...stateApp, layers: [...currentLayers] }));
-
-      //// saving to mongo
-      updateLayerSettings({
-        variables: {
-          settings: {
-            _id: updatedLayer._id,
-            layerSettings: updatedLayer.layerSettings,
-          },
-        },
-      });
-    },
-    [setStateApp, stateApp.layers, updateLayerSettings]
-  );
-
-  const onDragEndLayer = useCallback(
-    (result) => {
-      if (!result.destination) {
-        return;
-      }
-
-      if (result.source.index !== result.destination.index) {
-        const { reorderedLayers, layersToUpdate } = reorderLayers(
-          stateApp.layers,
-          result.source.index,
-          result.destination.index
-        );
-
-        //// saving to stateApp
-        setStateApp({
-          ...stateApp,
-          layers: [...reorderedLayers],
-        });
-
-        //// saving to mongo
-        updateManyUserLayerSettings({
-          variables: {
-            manySettings: layersToUpdate,
-          },
-        });
-      }
-    },
-    [setStateApp, stateApp, updateManyUserLayerSettings]
-  );
-
-  const onDragEndBasemap = useCallback(
-    (result) => {
-      // dropped outside the list
-      if (!result.destination) {
-        return;
-      }
-
-      const items = reorderBasemap(
-        stateApp.baseMapLayers,
-        result.source.index,
-        result.destination.index
-      );
-
-      let checkedBaseLayers = stateApp.checkedBaseLayers.slice(0);
-      const sourceIndex = checkedBaseLayers.indexOf(result.source.index);
-
-      let direction = 0;
-      let from,
-        to = 0;
-      if (result.destination.index > result.source.index) {
-        direction = -1;
-        from = result.source.index;
-        to = result.destination.index;
-      } else {
-        direction = 1;
-        to = result.source.index;
-        from = result.destination.index;
-      }
-
-      for (let i = 0; i < checkedBaseLayers.length; i++) {
-        if (checkedBaseLayers[i] <= to && checkedBaseLayers[i] >= from) {
-          checkedBaseLayers[i] += direction;
-        }
-      }
-
-      if (sourceIndex !== -1) {
-        checkedBaseLayers[sourceIndex] = result.destination.index;
-      }
-
-      setStateApp({
-        ...stateApp,
-        baseMapLayers: items,
-        checkedBaseLayers: checkedBaseLayers,
-      });
-    },
-    [setStateApp, stateApp]
-  );
-
   //   for BaseMap Panel
   useEffect(() => {
     if (panelType === "base") {
-      setDragFunction(() => onDragEndBasemap);
-      setToggleFunction(() => handleToggleBasemap);
       setPanelItems(stateApp.baseMapLayers);
       setPanelTitle("Base Map");
       setPanelButton(null);
       setHeaderFilters(null);
+
+      setDragFunction(() => (result) => {
+        // dropped outside the list
+        if (!result.destination) {
+          return;
+        }
+
+        const items = reorderBasemap(
+          stateApp.baseMapLayers,
+          result.source.index,
+          result.destination.index
+        );
+
+        let checkedBaseLayers = stateApp.checkedBaseLayers.slice(0);
+        const sourceIndex = checkedBaseLayers.indexOf(result.source.index);
+
+        let direction = 0;
+        let from,
+          to = 0;
+        if (result.destination.index > result.source.index) {
+          direction = -1;
+          from = result.source.index;
+          to = result.destination.index;
+        } else {
+          direction = 1;
+          to = result.source.index;
+          from = result.destination.index;
+        }
+
+        for (let i = 0; i < checkedBaseLayers.length; i++) {
+          if (checkedBaseLayers[i] <= to && checkedBaseLayers[i] >= from) {
+            checkedBaseLayers[i] += direction;
+          }
+        }
+
+        if (sourceIndex !== -1) {
+          checkedBaseLayers[sourceIndex] = result.destination.index;
+        }
+
+        setStateApp({
+          ...stateApp,
+          baseMapLayers: items,
+          checkedBaseLayers: checkedBaseLayers,
+        });
+      });
+
+      setToggleFunction(() => ({ index }) => {
+        const currentIndex = stateApp.checkedBaseLayers.indexOf(index);
+        let newChecked = [...stateApp.checkedBaseLayers];
+        if (currentIndex === -1) {
+          newChecked.push(index);
+        } else {
+          newChecked.splice(currentIndex, 1);
+        }
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          checkedBaseLayers: newChecked,
+        }));
+      });
     }
-  }, [
-    panelType,
-    stateApp.baseMapLayers,
-    onDragEndBasemap,
-    handleToggleBasemap,
-  ]);
+  }, [panelType, stateApp.baseMapLayers, stateApp.checkedBaseLayers]);
 
   //   for BaseMap Panel
   useEffect(() => {
     if (panelType === "layer") {
-      setDragFunction(() => onDragEndLayer);
-      setToggleFunction(() => handleToggleLayer);
       setPanelItems(stateApp.layers);
       setPanelTitle("Layer Visibility");
       setPanelButton(null);
       setHeaderFilters(null);
+
+      setDragFunction(() => (result) => {
+        if (!result.destination) {
+          return;
+        }
+
+        if (result.source.index !== result.destination.index) {
+          const { reorderedLayers, layersToUpdate } = reorderLayers(
+            stateApp.layers,
+            result.source.index,
+            result.destination.index
+          );
+
+          setStateApp({
+            ...stateApp,
+            layers: [...reorderedLayers],
+          });
+
+          updateManyUserLayerSettings({
+            variables: {
+              manySettings: layersToUpdate,
+            },
+          });
+        }
+      });
+
+      setToggleFunction(() => ({ layer, index }) => {
+        const currentLayers = [...stateApp.layers];
+        const updatedLayer = {
+          ...layer,
+          layerSettings: {
+            ...layer.layerSettings,
+            visiable: !layer.layerSettings.visiable,
+          },
+        };
+
+        //// saving to stateApp
+        currentLayers[index] = updatedLayer;
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          layers: [...currentLayers],
+        }));
+
+        //// saving to mongo
+        updateLayerSettings({
+          variables: {
+            settings: {
+              _id: updatedLayer._id,
+              layerSettings: updatedLayer.layerSettings,
+            },
+          },
+        });
+      });
     }
-  }, [panelType, stateApp.layers, onDragEndLayer, handleToggleLayer]);
+  }, [panelType, stateApp.layers]);
 
   //   for Marketplace Panel
   useEffect(() => {
@@ -255,7 +235,7 @@ export default function SidePanel() {
       headerFilters={headerFilters}
       title={panelTitle}
       items={panelItems}
-      onDrag={dragFunction}
+      onDragEnd={dragFunction}
       handleToggle={toggleFunction}
     />
   );

@@ -35,6 +35,7 @@ import { useMutation } from "@apollo/client";
 import Box from "@material-ui/core/Box";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { useSelector } from "react-redux";
+import { deepEqualObjects } from "../../functions";
 
 const theme = createMuiTheme({
   overrides: {
@@ -155,7 +156,12 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
         items.filter((item) => item.name !== "Water" && item.name !== "Land")
       );
     }
-  }, [stateMapControls.selectedControl, items, stateApp.checkedBaseLayers]);
+  }, [
+    stateMapControls.selectedControl,
+    items,
+    stateApp.checkedBaseLayers,
+    type,
+  ]);
 
   //   useEffect(() => {
   //     console.log("type and basemap", type, items);
@@ -513,10 +519,8 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
   const getLayerChecked = ({ layer, index }) => {
     if (type === "layer" && layer) {
       return layer.layerSettings.visiable !== false;
-    } else if (type === "base" && index) {
-      return stateApp.checkedBaseLayers
-        ? stateApp.checkedBaseLayers.indexOf(index) !== -1
-        : false;
+    } else if (type === "base" && index && stateApp.checkedBaseLayers) {
+      return stateApp.checkedBaseLayers.indexOf(index) !== -1;
     } else {
       return false;
     }
@@ -659,3 +663,5 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
     </ClickAwayListener>
   );
 }
+
+// export default React.memo(Panel, deepEqualObjects);
