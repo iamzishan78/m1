@@ -52,6 +52,7 @@ import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterest
 import { PAGINATEDWELLINTERESTSQUERY } from "../../../graphQL/useQueryPaginatedWellInterests.js";
 import { WELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryWellInterestsFilterOptions";
 import { SHAPEWELLS } from "../../../graphQL/useQueryPaginatedShapeWells";
+import { SHAPEWELLSCOUNT } from "../../../graphQL/useQueryShapeWellsCount";
 import { WELLSOWNERSQUERY } from "../../../graphQL/useQueryWellsOwners";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -2316,6 +2317,9 @@ function M1nTable(props) {
   const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, {
     fetchPolicy: "cache-and-network",
   });
+  const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, {
+    fetchPolicy: "cache-and-network",
+  });
   //////////
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(
     WELLOWNERSQUERY
@@ -2833,8 +2837,12 @@ function M1nTable(props) {
       getPaginatedShapeWells({
         variables: {
           polygon: stateApp.gridPolygonString,
-
           userId: stateApp.user.mongoId,
+        },
+      });
+      getShapeWellsCount({
+        variables: {
+          polygon: stateApp.gridPolygonString,
         },
       });
       setTargetLabel("well");
@@ -2851,14 +2859,44 @@ function M1nTable(props) {
       let wells = [...dataShapeWells.paginatedShapeWells.edges.map(
         (el) => el.node
       )];
+
+      const objectsIdsArray = dataShapeWells.paginatedShapeWells.edges.map(
+        (well) => well.node.id
+      );
+      getCommentsCounter({
+        variables: {
+          objectsIdsArray: objectsIdsArray,
+          userId: stateApp.user.mongoId,
+        },
+      });
+      getTagSamples({
+        variables: {
+          objectsIdsArray: objectsIdsArray,
+          userId: stateApp.user.mongoId,
+        },
+      });
+      
       wells = wells.map((w) => {
         let well = { ...w };
 
-        well.permitApprovedDate = well.permitApprovedDateReady;
-        well.spudDate = well.spudDateReady;
-        well.completionDate = well.completionDateReady;
-        well.firstProductionDate = well.firstProductionDateReady;
+        //// temporary to fix the ticks dates fields comming from the rest api
+        if (well.permitApprovedDate && well.permitApprovedDate != "null")
+          well.permitApprovedDate = ticksToDateString(
+            well.permitApprovedDate
+          );
+        if (well.spudDate && well.spudDate != "null")
+          well.spudDate = ticksToDateString(well.spudDate);
+        if (well.completionDate && well.completionDate != "null")
+          well.completionDate = ticksToDateString(well.completionDate);
+        if (well.firstProductionDate && well.firstProductionDate != "null")
+          well.firstProductionDate = ticksToDateString(
+            well.firstProductionDate
+          );
+        //// temporary end
 
+        well.isTracked = false;
+        well.commentsCounter = 0;
+        well.tags = [[], 0];
         return well;
       });
 
@@ -2917,6 +2955,52 @@ function M1nTable(props) {
       setLoading(false);
     }
   }, [dataShapeWells]);
+
+  useEffect(() => {
+    if (
+      props.parent && props.parent === "gridWells" &&
+      dataShapeWells && dataShapeWells.paginatedShapeWells &&
+      dataCommentsCounter && dataCommentsCounter.commentsCounter &&
+      dataTagSamples && dataTagSamples.tagSamples
+    ) {
+      let wells = rows;
+      wells = wells.map((w) => {
+        let well = { ...w };
+
+        well.isTracked = false;
+        well.commentsCounter = 0;
+        well.tags = [[], 0];
+
+        for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
+          if (well.id === dataTracks.tracksByObjectType[i].trackOn) {
+            well.isTracked = true;
+            break;
+          }
+        }
+        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+          if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+            well.commentsCounter =
+              dataCommentsCounter.commentsCounter[i].total;
+            break;
+          }
+        }
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (well.id === dataTagSamples.tagSamples[i]._id) {
+            well.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+        return well;
+      });
+
+      setRows(wells);
+      setLoading(false);
+    }
+  }, [dataShapeWells, dataTracks, dataCommentsCounter, dataTagSamples]);
   ////////////Grid Wells end///////////////////////////////////////////////
 
   ////////////Wells Per Owner begin///////////////////////////////////////////
@@ -4903,9 +4987,7 @@ function M1nTable(props) {
         }}
         shapeWellsPageProps={{
           getPaginatedShapeWells,
-          shapeWellsCount: dataShapeWells?.paginatedShapeWells?.totalCount
-            ? dataShapeWells?.paginatedShapeWells?.totalCount
-            : 0,
+          shapeWellsCount: (dataShapeWellsCount && dataShapeWellsCount.shapeWellsCount) ? dataShapeWellsCount.shapeWellsCount : 0,
           /*getWellOptions,
           wellInterestsCount: selectedOwnerWellIntsSummary?.interestsCount
             ? selectedOwnerWellIntsSummary.interestsCount

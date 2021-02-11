@@ -17,13 +17,9 @@ export const SHAPEWELLS = gql`
       search: $search
       userId: $userId
     ) {
-      totalCount,
       edges {
         node {
           id
-          isTracked
-          commentsCounter
-          tags
           coordinates
           wellName
           api
