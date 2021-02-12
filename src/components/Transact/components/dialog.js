@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import NumberFormat from "react-number-format";
 import Button from "@material-ui/core/Button";
