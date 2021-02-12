@@ -1428,8 +1428,7 @@ export default function Map() {
       const sourceId = prop.sourceProps;
       if (map.getSource(sourceId)) map.removeSource(sourceId);
       if (map.getSource(`${sourceId}_point`)) map.removeSource(`${sourceId}_point`);
-      if (map.getSource(`${sourceId}_filter`))
-        map.removeSource(`${sourceId}_filter`);
+      if (map.getSource(`${sourceId}_filter`)) map.removeSource(`${sourceId}_filter`);
     }
   };
 
@@ -3107,10 +3106,8 @@ export default function Map() {
     //     }
 
     if (map && stateApp.wellSelectedCoordinates) {
-      if (map.getLayer("well-point")) {
-        map.removeLayer("well-point");
-        map.removeSource("well-select-point");
-      }
+      if (map.getLayer("well-point")) map.removeLayer("well-point");
+      if (map.getSource("well-select-point")) map.removeSource("well-select-point");
 
       if (stateApp.wellSelectedCoordinates.length > 0) {
         map.addSource("well-select-point", {
@@ -4152,7 +4149,7 @@ export default function Map() {
   //Added '?' to mapList, temp fix to avoid undefined errors.
         var mapList = document.getElementById("map");
         console.log(mapList?.childNodes);
-        if (mapList?.childNodes.length > 1) {
+        if (mapList?.childNodes?.length > 1) {
           mapList.removeChild(mapList.childNodes[1]);
           mapList.removeChild(mapList.childNodes[1]);
           mapList.removeChild(mapList.childNodes[1]);
@@ -4863,8 +4860,8 @@ export default function Map() {
     if(map && stateApp.selectedParcel){
       setParcelBoundaryId(stateApp.selectedParcel.id);
     } else if(map) {
-      map.removeLayer('parcelBoundary');
-      map.removeSource('parcelBoundarySource');
+      if (map.getLayer('parcelBoundary')) map.removeLayer('parcelBoundary');
+      if (map.getSource('parcelBoundarySource')) map.removeSource('parcelBoundarySource');
       setParcelBoundaryId(null);
     }
   }, [stateApp.selectedParcel])
