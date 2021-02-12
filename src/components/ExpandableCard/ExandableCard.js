@@ -421,7 +421,7 @@ export default function ExpandableCard(props) {
               )} */}
               
             
-              {stateExpandableCard.expanded && targetLabel !== "activity"
+              {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact"
                 ? parent !== "table" && targetLabel !== "expandedWell" && targetLabel !== "expandedParcel"
                   ? (
                   <Tooltip title={"Shrink"} placement="top">
