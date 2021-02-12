@@ -4150,8 +4150,8 @@ export default function Map() {
         console.log(stateApp.mapVars);
 
         var mapList = document.getElementById("map");
-        console.log(mapList.childNodes);
-        if (mapList.childNodes.length > 1) {
+        console.log(mapList?.childNodes);
+        if (mapList?.childNodes?.length > 1) {
           mapList.removeChild(mapList.childNodes[1]);
           mapList.removeChild(mapList.childNodes[1]);
           mapList.removeChild(mapList.childNodes[1]);
