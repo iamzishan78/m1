@@ -4156,7 +4156,7 @@ export default function Map() {
           mapList.removeChild(mapList.childNodes[1]);
           mapList.removeChild(mapList.childNodes[1]);
         }
-        console.log(mapList.childNodes);
+        console.log(mapList?.childNodes);
         console.log("end map unmount");
       };
     }
