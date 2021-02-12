@@ -19,7 +19,6 @@ import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
 import ClickIcon from "../../svgIcons/cursor-click.js";
 import UserDefined from "../../svgIcons/user-defined.js";
 import ColorControl from "../../svgIcons/color-control.js";
-import AddIcon from "@material-ui/icons/Add";
 import LayersIcon from "@material-ui/icons/Layers";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -98,7 +97,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
+function Panel({
+  type,
+  title,
+  headerButton,
+  handleToggle,
+  onDragEnd,
+  items,
+}) {
   const { basinLayerColor, GLOUnitsColor, GLOLeasesColor } = useSelector(
     ({ MainMap }) => MainMap
   );
@@ -149,7 +155,7 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
 
   useEffect(() => {
     console.log("type and layer", type, items);
-    if (type === "layer" && items) {
+    if ((type === "layer" || type === "heatMaps") && items) {
       setLayerMap(items);
     } else if (type === "base" && items) {
       setLayerMap(
@@ -160,6 +166,7 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
     stateMapControls.selectedControl,
     items,
     stateApp.checkedBaseLayers,
+    stateApp.checkedHeatLayers,
     type,
   ]);
 
@@ -171,10 +178,6 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
   useEffect(() => {
     console.log("Layer Map: ", layerMap);
   }, [layerMap]);
-
-  if (type === "layer" && !items) {
-    return null;
-  }
 
   const handleClick = () => {
     setOpen(!open);
@@ -318,14 +321,6 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
     },
   }))(ListItem);
 
-  const openAddLayer = () => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      addLayer: true,
-      selectedControl: null,
-    }));
-  };
-
   const ifLayerHaveData = (layer) => {
     //// temporary disabling the Title Layer
     if (layer.identifier === "Title") return false;
@@ -358,6 +353,8 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
   };
 
   const getLayerName = (layer) => {
+    if (type !== "layer") return layer.name;
+
     if (layer.layerCategory == "M1 Layer") {
       return layer.layerName;
     } else {
@@ -372,6 +369,8 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
 
   const getLayerColor = (layer) => {
     // layerName: "Rig Activity"
+    if (type !== "layer") return {};
+
     if (layer) {
       if (layer.identifier == "Rig Activity") return "#263451";
 
@@ -519,8 +518,18 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
   const getLayerChecked = ({ layer, index }) => {
     if (type === "layer" && layer) {
       return layer.layerSettings.visiable !== false;
-    } else if (type === "base" && index && stateApp.checkedBaseLayers) {
+    } else if (
+      type === "base" &&
+      typeof index === "number" &&
+      stateApp.checkedBaseLayers
+    ) {
       return stateApp.checkedBaseLayers.indexOf(index) !== -1;
+    } else if (
+      type === "heatMaps" &&
+      typeof index === "number" &&
+      stateApp.checkedHeats
+    ) {
+      return stateApp.checkedHeats.indexOf(index) !== -1;
     } else {
       return false;
     }
@@ -531,6 +540,10 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
       ...stateMapControls,
       anchorEl: null,
     }));
+  };
+
+  const checkIfNoLayerData = (layer) => {
+    return type === "layer" && !ifLayerHaveData(layer);
   };
 
   const displayList = (
@@ -544,6 +557,7 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
 
                 //// remove the (layer.identifier!="Tracked Owners") condition from the if statement to show the tracked owers layer
                 if (
+                  type === "heatMaps" ||
                   type === "base" ||
                   (type === "layer" &&
                     layer.layerSettings &&
@@ -558,9 +572,7 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
                     >
                       {(provided, snapshot) => (
                         <Box
-                          borderColor={
-                            type === "layer" ? getLayerColor(layer) : {}
-                          }
+                          borderColor={getLayerColor(layer)}
                           {...defaultProps}
                         >
                           <StyledListItem
@@ -573,13 +585,9 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
                             </ListItemIcon>
                             <ListItemText
                               id={labelId}
-                              primary={
-                                type === "layer"
-                                  ? getLayerName(layer)
-                                  : layer.name
-                              }
+                              primary={getLayerName(layer)}
                               className={
-                                !ifLayerHaveData(layer) && type === "layer"
+                                checkIfNoLayerData(layer)
                                   ? classes.disabledLayerTitle
                                   : ""
                               }
@@ -591,7 +599,9 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
                               control={
                                 <Switch
                                   disabled={
-                                    !ifLayerHaveData(layer) && type === "layer"
+                                    checkIfNoLayerData(layer)
+                                      ? classes.disabledLayerTitle
+                                      : ""
                                   }
                                   checked={getLayerChecked({
                                     layer,
@@ -634,14 +644,14 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
           className={classes.subHeaderItem}
         >
           <ListItemText primary={title} />
-          {type === "layer" && (
+          {headerButton && (
             <StyledListItemSecondaryAction>
               <Button
-                onClick={openAddLayer}
+                onClick={headerButton.fn}
                 color="primary"
-                startIcon={<AddIcon />}
+                startIcon={headerButton.icon}
               >
-                Add Layer
+                {headerButton.text}
               </Button>
             </StyledListItemSecondaryAction>
           )}
@@ -664,4 +674,4 @@ export default function Panel({ type, title, handleToggle, onDragEnd, items }) {
   );
 }
 
-// export default React.memo(Panel, deepEqualObjects);
+export default React.memo(Panel, deepEqualObjects);

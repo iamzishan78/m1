@@ -212,11 +212,11 @@ export default function MapControls(props) {
       case "base":
       case "layer":
       case "marketplace":
+      case "heatMaps":
         return <SidePanel />;
       // return <BaseMapStyles />;
       // return <CheckboxList changeLayers={changeLayers} />;
-      case "heatMaps":
-        return <CheckboxListHeatmaps changeHeatmaps={changeHeatmaps} />;
+      // return <CheckboxListHeatmaps changeHeatmaps={changeHeatmaps} />;
       case "add":
         return <AddUserData />;
       case "draw":

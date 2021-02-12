@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useMutation } from "@apollo/client";
+import AddIcon from "@material-ui/icons/Add";
 import { MapControlsContext } from "../../MapControls/MapControlsContext";
 import { AppContext } from "../../../AppContext";
 import Panel from "./compoennts/Panel";
 import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
 import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyLayerSettings";
 
-const reorderBasemap = (list, startIndex, endIndex) => {
+const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
@@ -84,6 +85,22 @@ export default function SidePanel() {
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
+  const openAddLayer = () => {
+    setStateMapControls((stateMapControls) => ({
+      ...stateMapControls,
+      addLayer: true,
+      selectedControl: null,
+    }));
+  };
+
+  const panelButtons = {
+    layer: {
+      text: "Add Layer",
+      fn: openAddLayer,
+      icon: <AddIcon />,
+    },
+  };
+
   //   for BaseMap Panel
   useEffect(() => {
     if (panelType === "base") {
@@ -98,7 +115,7 @@ export default function SidePanel() {
           return;
         }
 
-        const items = reorderBasemap(
+        const items = reorder(
           stateApp.baseMapLayers,
           result.source.index,
           result.destination.index
@@ -158,7 +175,7 @@ export default function SidePanel() {
     if (panelType === "layer") {
       setPanelItems(stateApp.layers);
       setPanelTitle("Layer Visibility");
-      setPanelButton(null);
+      setPanelButton(panelButtons[panelType]);
       setHeaderFilters(null);
 
       setDragFunction(() => (result) => {
@@ -216,6 +233,71 @@ export default function SidePanel() {
     }
   }, [panelType, stateApp.layers]);
 
+  //   for HeatMap Panel
+  useEffect(() => {
+    if (panelType === "heatMaps") {
+      setDragFunction(() => (result) => {
+        // dropped outside the list
+        if (!result.destination) {
+          return;
+        }
+
+        const items = reorder(
+          stateApp.heatLayers,
+          result.source.index,
+          result.destination.index
+        );
+
+        let checkedHeats = stateApp.checkedHeats.slice(0);
+        const sourceIndex = checkedHeats.indexOf(result.source.index);
+
+        let direction = 0;
+        let from,
+          to = 0;
+        if (result.destination.index > result.source.index) {
+          direction = -1;
+          from = result.source.index;
+          to = result.destination.index;
+        } else {
+          direction = 1;
+          to = result.source.index;
+          from = result.destination.index;
+        }
+
+        for (let i = 0; i < checkedHeats.length; i++) {
+          if (checkedHeats[i] <= to && checkedHeats[i] >= from) {
+            checkedHeats[i] += direction;
+          }
+        }
+
+        if (sourceIndex !== -1) {
+          checkedHeats[sourceIndex] = result.destination.index;
+        }
+
+        setStateApp({
+          ...stateApp,
+          heatLayers: items,
+          checkedHeats: checkedHeats,
+        });
+      });
+      setToggleFunction(() => ({ index }) => {
+        const currentIndex = stateApp.checkedHeats.indexOf(index);
+        const newChecked = [...stateApp.checkedHeats];
+
+        if (currentIndex === -1) {
+          newChecked.push(index);
+        } else {
+          newChecked.splice(currentIndex, 1);
+        }
+        setStateApp((stateApp) => ({ ...stateApp, checkedHeats: newChecked }));
+      });
+      setPanelItems(stateApp.heatLayers);
+      setPanelTitle("Heatmaps");
+      setPanelButton(null);
+      setHeaderFilters(null);
+    }
+  }, [panelType, stateApp.heatLayers, stateApp.checkedHeats]);
+
   //   for Marketplace Panel
   useEffect(() => {
     if (panelType === "marketplace") {
@@ -228,7 +310,7 @@ export default function SidePanel() {
     }
   }, [panelType]);
 
-  return (
+  return panelItems ? (
     <Panel
       type={panelType}
       headerButton={panelButton}
@@ -238,5 +320,5 @@ export default function SidePanel() {
       onDragEnd={dragFunction}
       handleToggle={toggleFunction}
     />
-  );
+  ) : null;
 }
