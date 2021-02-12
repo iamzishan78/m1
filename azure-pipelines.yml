@@ -17,9 +17,13 @@ steps:
   inputs:
     versionSpec: '14.x'
   displayName: 'Install Node.js'
+
+- task: Npm@1
+  inputs:
+    command: 'install'
+  displayName: 'Npm Install'
   
 - script: |
-    npm install
     echo $NODE_OPTIONS
     npm run build
   failOnStderr: true
