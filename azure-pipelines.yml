@@ -17,12 +17,14 @@ steps:
   inputs:
     versionSpec: '14.x'
   displayName: 'Install Node.js'
-
+  
 - script: |
     npm install
     echo $NODE_OPTIONS
     npm run build
-  displayName: 'npm install and build'
+  failOnStderr: true
+  displayName: 'Prepare binaries'
+
 ## Copy the client to the staging directory
 - task: CopyFiles@2
   inputs:
