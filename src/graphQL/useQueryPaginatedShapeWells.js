@@ -33,13 +33,9 @@ export const SHAPEWELLS = gql`
           wellStatus
           lastTwelveMonthBOE
           permitApprovedDate
-          permitApprovedDateReady
           spudDate
-          spudDateReady
           completionDate
-          completionDateReady
           firstProductionDate
-          firstProductionDateReady
         },
         cursor
       },
