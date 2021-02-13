@@ -2981,6 +2981,7 @@ function M1nTable(props) {
   useEffect(() => {
     if (
       props.parent && props.parent === "gridWells" &&
+      constDataTracks && constDataTracks.tracksByObjectType &&
       dataShapeWells && dataShapeWells.paginatedShapeWells &&
       dataCommentsCounter && dataCommentsCounter.commentsCounter &&
       dataTagSamples && dataTagSamples.tagSamples
@@ -2993,8 +2994,8 @@ function M1nTable(props) {
         well.commentsCounter = 0;
         well.tags = [[], 0];
 
-        for (let i = 0; i < dataTracks.tracksByObjectType.length; i++) {
-          if (well.id === dataTracks.tracksByObjectType[i].trackOn) {
+        for (let i = 0; i < constDataTracks.tracksByObjectType.length; i++) {
+          if (well.id === constDataTracks.tracksByObjectType[i].trackOn) {
             well.isTracked = true;
             break;
           }
