@@ -4145,7 +4145,8 @@ export default function Map() {
 
         console.log("save map state variables");
         console.log(stateApp.mapVars);
-
+  //Loading state is not being handled and causes undefined mapList Array
+  //Added '?' to mapList, temp fix to avoid undefined errors.
         var mapList = document.getElementById("map");
         console.log(mapList?.childNodes);
         if (mapList?.childNodes?.length > 1) {

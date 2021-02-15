@@ -91,6 +91,9 @@ export default function ExpandableCard(props) {
     }
   }, [props.title, props.targetLabel]);
 
+  
+
+
   const useStyles = makeStyles((theme) => ({
     card: {
       position: position,
@@ -318,6 +321,23 @@ export default function ExpandableCard(props) {
     await props.handleDelete();
   };
 
+  useEffect(() => {
+    if(props.targetLabel === "contact"){
+      if (openDialog) {
+        document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = '15px';
+      }
+    }
+    return () => {
+      if(props.targetLabel === "contact"){
+        if (openDialog) {
+          document.body.style.overflow = 'auto';
+          document.body.style.paddingRight = '0px';
+        }
+      }
+    };
+  }, [openDialog])
+
   return (
     <React.Fragment>
       {openDialog && (
@@ -422,7 +442,7 @@ export default function ExpandableCard(props) {
               )} */}
               
             
-              {stateExpandableCard.expanded && targetLabel !== "activity"
+              {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact"
                 ? parent !== "table" && targetLabel !== "expandedWell" && targetLabel !== "expandedParcel"
                   ? (
                   <Tooltip title={"Shrink"} placement="top">
