@@ -182,7 +182,7 @@ export default function ExpandableCard(props) {
 
   const handleExpand = () => {
     if (parent === "map" && $("#popupContainer").length) {
-      console.log("jquery expand");
+      console.log("jquery expand", props);
     }
 
     if (toggleExpand == false) {
@@ -205,6 +205,7 @@ export default function ExpandableCard(props) {
       }));
     } else if (props.targetLabel == "expandedParcel" || props.targetLabel == "parcel") {
       setStateApp((state) => ({ ...state, 
+        parcelDetailCardOpen: true, 
         popupOpen: false, 
       }));
     }

@@ -4741,24 +4741,11 @@ export default function Map() {
   }, [stateApp.editingUserDefinedLayers]);
 
   useEffect(() => {
-    /////// USE EFFECT  to handle the map zoom /  for selected map elements
+    /////// USE EFFECT  to handle the map zoom /  for selected well elements
 
-    if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
+    if ((stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true)) {
       // set and remove map marker
 
-      // var el = document.createElement("div");
-      // el.style.backgroundImage = "url(icons/favicon-inverted.png)";
-      // el.style.width = "28px";
-      // el.style.height = "64px";
-
-      // if(mapboxgl.Marker()){mapboxgl.Marker(el).remove()}
-
-      // var marker = new mapboxgl.Marker(el)
-      // .setLngLat([
-      //   stateApp.selectedWell.longitude,
-      //   stateApp.selectedWell.latitude,
-      // ])
-      // .addTo(map);
 
       // mathematical formula for screen fit
       const alpha = 0.01;
@@ -4776,11 +4763,6 @@ export default function Map() {
       map.fitBounds(bbox, {
         speed: 0.75,
         linear: true,
-        // pitch: 60,
-        // bearing: 20,
-        // easing: function (t) {
-        //           return Math.sin((t * Math.PI) / 2);
-        //         }
       });
 
       setStateApp({
@@ -4788,28 +4770,51 @@ export default function Map() {
         wellDetailCardOpen: false,
       });
 
-      // map.on("moveend", function (e) {
-      //   if (
-      //     map.getBearing() === -1
-      //     //&&
-      //     // map.getZoom() === 16
-      //   ) {
-      //     map.flyTo({
-      //       around: [
-      //         stateApp.selectedWell.longitude,
-      //         stateApp.selectedWell?.latitude,
-      //       ],
-      //       speed: 0.4,
-      //       bearing: 540,
-      //       duration: 100000,
-      //       easing: function (t) {
-      //         return Math.sin((t * Math.PI) / 2);
-      //       },
-      //     });
-      //   }
-      // });
     }
   }, [stateApp.wellDetailCardOpen]);
+
+
+  useEffect(() => {
+    /////// USE EFFECT  to handle the map zoom /  for selected parcel elements
+
+    if ((stateApp.parcelDetailCardOpen && stateApp.parcelDetailCardOpen === true)) {
+      // set and remove map marker
+      
+      const coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter)
+      const longitude = coordinates[0]
+      const latitude = coordinates[1]
+
+      const mapBounds = map.getBounds()
+      const screenLeftLng = mapBounds._sw.lng
+      const screenRightLng = mapBounds._ne.lng
+      const alpha = (screenRightLng - screenLeftLng) / 2
+
+      const bbox = [
+        [
+          longitude - 1.5 * alpha,
+          latitude,
+        ],
+        [
+          longitude + 0.5 * alpha,
+          latitude,
+        ],
+      ];
+
+      map.fitBounds(bbox, {
+        speed: 0.75,
+        linear: true,
+      });
+
+      setStateApp({
+        ...stateApp,
+        parcelDetailCardOpen: false,
+      });
+
+    }
+  }, [stateApp.parcelDetailCardOpen]);
+
+
+
 
   useEffect(() => {
     if(parcelBoundaryId && map){
