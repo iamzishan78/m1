@@ -293,18 +293,6 @@ const WellsHeadCells = [
       },
     },
   },
-  // {
-  //   name: "ownerCount",
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
   {
     name: "commentsCounter",
     label: " ",
