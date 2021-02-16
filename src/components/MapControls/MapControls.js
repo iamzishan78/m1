@@ -1,7 +1,7 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { MapControlsContext } from "./MapControlsContext";
 import { AppContext } from "../../AppContext";
-
+import { useMutation } from "@apollo/client";
 //material-ui components
 import SpeedDial from "@material-ui/lab/SpeedDial";
 import SpeedDialAction from "@material-ui/lab/SpeedDialAction";
@@ -19,20 +19,19 @@ import { makeStyles } from "@material-ui/core/styles";
 //components
 import ColorPickerDialog from "./components/ColorPickerDialog";
 // import ColorPickerUDLayerDialog from './components/ColorPickerUDLayerDialog';
-import BaseMapStyles from "./BaseMapStyles";
-import CheckboxList from "./CheckboxList";
 import CheckboxListHeatmaps from "./CheckboxListHeatmaps";
 import AddUserData from "./components/addUserData";
 import AddALayer from "./components/addALayer";
 import DrawShapes from "./components/DrawShapes/DrawShapes";
-import TrackedWellsMapCard from "./components/TrackedWellsMapCard";
 import GpsFixedIcon from "@material-ui/icons/GpsFixed";
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import GpsNotFixedIcon from "@material-ui/icons/GpsNotFixed";
 import GradientIcon from "@material-ui/icons/Gradient";
 import { default as Cube3d } from "../Shared/svgIcons/cube-3d";
 import AspectRatioOutlinedIcon from "@material-ui/icons/AspectRatioOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../actions";
+import SidePanel from "../Shared/SidePanel/SidePanel";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -101,7 +100,7 @@ export default function MapControls(props) {
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
-  const { changeHeatmaps, changeLayers } = props;
+  // const { changeHeatmaps, changeLayers } = props;
 
   const toggleSpeedDial = (event) => {
     setStateMapControls({
@@ -116,6 +115,8 @@ export default function MapControls(props) {
 
   const handleFabClick = (e, action) => {
     let anchorEl = e.currentTarget;
+    // console.log("Setting anchorEl: ", anchorEl);
+
     if (action === "track") {
       anchorEl = null;
       if (mapGridCardActiveTap === 1 && mapGridCardActivated) {
@@ -130,11 +131,14 @@ export default function MapControls(props) {
       }
     }
 
-    setStateMapControls({
-      ...stateMapControls,
-      selectedControl: action,
-      anchorEl: anchorEl,
-    });
+    if (action !== "track" && action !== "threed" && action !== "zoomout") {
+      setStateMapControls({
+        ...stateMapControls,
+        selectedControl: action,
+        panelExpanded: (action === stateMapControls.selectedControl) && stateMapControls.panelExpanded ? false : true,
+        anchorEl: anchorEl,
+      });
+    }
 
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -184,6 +188,11 @@ export default function MapControls(props) {
         name: "Toggle Zoom Out",
         action: "zoomout",
       },
+      {
+        icon: <AttachMoneyIcon />,
+        name: "Marketplace",
+        action: "marketplace",
+      },
     ];
 
     return actions.map((action) => (
@@ -206,11 +215,13 @@ export default function MapControls(props) {
     const { selectedControl } = stateMapControls;
     switch (selectedControl) {
       case "base":
-        return <BaseMapStyles />;
       case "layer":
-        return <CheckboxList changeLayers={changeLayers} />;
+      case "marketplace":
       case "heatMaps":
-        return <CheckboxListHeatmaps changeHeatmaps={changeHeatmaps} />;
+        return <SidePanel />;
+      // return <BaseMapStyles />;
+      // return <CheckboxList changeLayers={changeLayers} />;
+      // return <CheckboxListHeatmaps changeHeatmaps={changeHeatmaps} />;
       case "add":
         return <AddUserData />;
       case "draw":
@@ -218,7 +229,7 @@ export default function MapControls(props) {
       // case "track":
       //   return <TrackedWellsMapCard />;
       default:
-        return null;
+        return <SidePanel />;
     }
   };
 
