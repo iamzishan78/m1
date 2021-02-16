@@ -193,7 +193,7 @@ export default function WellCardDetails(props) {
   const [target, setTarget] = useState(null);
   const [chartDisplay, setChartDisplay] = useState([]);
   const [productionContainer, setProductionContainer] = useState(null);
-  const [showSummary, setShowSummary] = useState(false)
+  const [showSummary, setShowSummary] = useState(true)
   let temp_state = useRef(null);
   const [
     getProductionDetail,

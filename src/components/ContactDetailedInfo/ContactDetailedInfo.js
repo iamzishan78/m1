@@ -457,6 +457,7 @@ export default function DetailInfo(props) {
           }
           label="Show empty fields"
           labelPlacement="end"
+
         />
       </FormGroup>
     );
