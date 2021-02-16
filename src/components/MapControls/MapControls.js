@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { MapControlsContext } from "./MapControlsContext";
 import { AppContext } from "../../AppContext";
 import { useMutation } from "@apollo/client";
@@ -100,7 +100,7 @@ export default function MapControls(props) {
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
-  const { changeHeatmaps, changeLayers } = props;
+  // const { changeHeatmaps, changeLayers } = props;
 
   const toggleSpeedDial = (event) => {
     setStateMapControls({
@@ -115,6 +115,8 @@ export default function MapControls(props) {
 
   const handleFabClick = (e, action) => {
     let anchorEl = e.currentTarget;
+    // console.log("Setting anchorEl: ", anchorEl);
+
     if (action === "track") {
       anchorEl = null;
       if (mapGridCardActiveTap === 1 && mapGridCardActivated) {
@@ -129,11 +131,14 @@ export default function MapControls(props) {
       }
     }
 
-    setStateMapControls({
-      ...stateMapControls,
-      selectedControl: action,
-      anchorEl: anchorEl,
-    });
+    if (action !== "track" && action !== "threed" && action !== "zoomout") {
+      setStateMapControls({
+        ...stateMapControls,
+        selectedControl: action,
+        panelExpanded: (action === stateMapControls.selectedControl) && stateMapControls.panelExpanded ? false : true,
+        anchorEl: anchorEl,
+      });
+    }
 
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -224,7 +229,7 @@ export default function MapControls(props) {
       // case "track":
       //   return <TrackedWellsMapCard />;
       default:
-        return null;
+        return <SidePanel />;
     }
   };
 

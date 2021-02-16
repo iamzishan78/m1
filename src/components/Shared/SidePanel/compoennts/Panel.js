@@ -59,15 +59,15 @@ const useStyles = makeStyles((theme) => ({
 	pulloutBox: {
 		height: "100px",
 		color: "white",
-		width: "50px",
-		display: "block",
-		// position: "absolute",
-		// top: "90px",
+		width: "20px",
 		background: "#011133",
 		cursor: "pointer",
 		display: "flex",
 		alignItems: "center",
 		justifyContent: "center",
+    "& svg": {
+      transform: "scaleX(0.5)"
+    }
 	},
 	subHeaderItem: {
 		backgroundColor: "#011133 !important",
@@ -179,15 +179,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		stateApp.checkedHeatLayers,
 		type,
 	]);
-
-	//   useEffect(() => {
-	//     console.log("type and basemap", type, items);
-
-	//   }, [items]);
-
-	useEffect(() => {
-		console.log("Layer Map: ", layerMap);
-	}, [layerMap]);
 
 	const handleClick = () => {
 		setOpen(!open);
@@ -461,7 +452,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 									mapVars: { ...stateApp.mapVars, styleId: style.name },
 								}));
 
-								handleClose();
+								// handleClose();
 							}}
 						>
 							<ThemeProvider theme={theme}>
@@ -578,12 +569,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		}
 	};
 
-	const handleClose = () => {
-		setStateMapControls((stateMapControls) => ({
-			...stateMapControls,
-			anchorEl: null,
-		}));
-	};
+	// const handleClose = () => {
+	// 	setStateMapControls((stateMapControls) => ({
+	// 		...stateMapControls,
+	// 		anchorEl: null,
+	// 	}));
+	// };
 
 	const checkIfNoLayerData = (layer) => {
 		return type === "layer" && !ifLayerHaveData(layer);
@@ -680,14 +671,16 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 				width: "500px",
 				maxWidth: "500px",
 				top: "90px",
-				left: stateMapControls.panelExpanded ? "30px" : "-400px",
+				left: stateMapControls.panelExpanded ? "30px" : "-405px",
+        transition: "left 0.5s ease-in-out",
+        listStyleType: "none"
 			}}
 		>
 			<StyledMenu
 				id="checklist-menu"
-				anchorEl={stateMapControls.anchorEl}
+				// anchorEl={stateMapControls.anchorEl}
 				keepMounted
-				open={Boolean(stateMapControls.anchorEl)}
+				open={Boolean(stateMapControls.selectedControl)}
 
 				//onClose={handleClose}
 			>
