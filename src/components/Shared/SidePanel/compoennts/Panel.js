@@ -1,9 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
+import Paper from "@material-ui/core/Paper";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import RootRef from "@material-ui/core/RootRef";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
@@ -37,641 +40,707 @@ import { useSelector } from "react-redux";
 import { deepEqualObjects } from "../../functions";
 
 const theme = createMuiTheme({
-  overrides: {
-    MuiSvgIcon: {
-      root: {
-        width: 90,
-        height: 60,
-      },
-    },
-    MuiListItemText: {
-      root: {
-        textAlign: "center",
-      },
-    },
-  },
+	overrides: {
+		MuiSvgIcon: {
+			root: {
+				width: 90,
+				height: 60,
+			},
+		},
+		MuiListItemText: {
+			root: {
+				textAlign: "center",
+			},
+		},
+	},
 });
 
 const useStyles = makeStyles((theme) => ({
-  subHeaderItem: {
-    backgroundColor: "#011133 !important",
-    minWidth: "400px",
-  },
-  list: {
-    padding: 0,
-  },
-  nested: {
-    paddingLeft: theme.spacing(6),
-    paddingRight: theme.spacing(6),
-  },
-  disabledLayerTitle: {
-    "& span": { color: "rgb(127, 149, 199) !important" },
-  },
-  boxtext: {
-    textAlign: "center",
-    margin: "auto",
-  },
-  imageBox: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr 1fr",
-    backgroundColor: "#263451",
-    "& :nth-child(1)": {
-      float: "left",
-      display: "grid",
-    },
-    "& :nth-child(2)": {
-      float: "left",
-      display: "grid",
-    },
-    "& :nth-child(3)": {
-      display: "grid",
-    },
-    "& :nth-child(4)": {
-      float: "left",
-      display: "grid",
-    },
-    "& :nth-child(5)": {
-      display: "grid",
-      float: "left",
-    },
-  },
+	pulloutBox: {
+		height: "100px",
+		color: "white",
+		width: "50px",
+		display: "block",
+		// position: "absolute",
+		// top: "90px",
+		background: "#011133",
+		cursor: "pointer",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	subHeaderItem: {
+		backgroundColor: "#011133 !important",
+		minWidth: "400px",
+	},
+	list: {
+		padding: 0,
+	},
+	nested: {
+		paddingLeft: theme.spacing(6),
+		paddingRight: theme.spacing(6),
+	},
+	disabledLayerTitle: {
+		"& span": { color: "rgb(127, 149, 199) !important" },
+	},
+	boxtext: {
+		textAlign: "center",
+		margin: "auto",
+	},
+	imageBox: {
+		display: "grid",
+		gridTemplateColumns: "1fr 1fr 1fr",
+		backgroundColor: "#263451",
+		"& :nth-child(1)": {
+			float: "left",
+			display: "grid",
+		},
+		"& :nth-child(2)": {
+			float: "left",
+			display: "grid",
+		},
+		"& :nth-child(3)": {
+			display: "grid",
+		},
+		"& :nth-child(4)": {
+			float: "left",
+			display: "grid",
+		},
+		"& :nth-child(5)": {
+			display: "grid",
+			float: "left",
+		},
+	},
 }));
 
-function Panel({
-  type,
-  title,
-  headerButton,
-  handleToggle,
-  onDragEnd,
-  items,
-}) {
-  const { basinLayerColor, GLOUnitsColor, GLOLeasesColor } = useSelector(
-    ({ MainMap }) => MainMap
-  );
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
-  const [stateApp, setStateApp] = useContext(AppContext);
+function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
+	const { basinLayerColor, GLOUnitsColor, GLOLeasesColor } = useSelector(
+		({ MainMap }) => MainMap
+	);
+	const [stateMapControls, setStateMapControls] = useContext(
+		MapControlsContext
+	);
+	const [stateApp, setStateApp] = useContext(AppContext);
 
-  const classes = useStyles();
+	const classes = useStyles();
 
-  const [layerMap, setLayerMap] = useState([]);
-  const [open, setOpen] = useState(true);
-  const [mapStyles, setMapStyles] = useState([]);
-  const [currentLayers, setCurrentLayers] = useState(items);
+	const [layerMap, setLayerMap] = useState([]);
+	const [open, setOpen] = useState(true);
+	const [mapStyles, setMapStyles] = useState([]);
+	const [currentLayers, setCurrentLayers] = useState(items);
 
-  const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
+	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
-  useEffect(() => {
-    if (type === "base") {
-      const req = new Request(
-        "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
-        {
-          method: "GET",
-          mode: "cors",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "Cache-Control": "max-age=0",
-          },
-        }
-      );
+	useEffect(() => {
+		if (type === "base") {
+			const req = new Request(
+				"https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
+				{
+					method: "GET",
+					mode: "cors",
+					headers: {
+						Accept: "application/json",
+						"Content-Type": "application/json",
+						"Cache-Control": "max-age=0",
+					},
+				}
+			);
 
-      const abortController = new AbortController();
-      const signal = abortController.signal;
+			const abortController = new AbortController();
+			const signal = abortController.signal;
 
-      fetch(req, { signal: signal })
-        .then((results) => results.json())
-        .then((data) => {
-          setMapStyles(data.slice(0, 5));
-        });
+			fetch(req, { signal: signal })
+				.then((results) => results.json())
+				.then((data) => {
+					setMapStyles(data.slice(0, 5));
+				});
 
-      //clean up
-      return function cleanup() {
-        abortController.abort();
-      };
-    }
-  }, [type]);
+			//clean up
+			return function cleanup() {
+				abortController.abort();
+			};
+		}
+	}, [type]);
 
-  useEffect(() => {
-    console.log("type and layer", type, items);
-    if ((type === "layer" || type === "heatMaps") && items) {
-      setLayerMap(items);
-    } else if (type === "base" && items) {
-      setLayerMap(
-        items.filter((item) => item.name !== "Water" && item.name !== "Land")
-      );
-    }
-  }, [
-    stateMapControls.selectedControl,
-    items,
-    stateApp.checkedBaseLayers,
-    stateApp.checkedHeatLayers,
-    type,
-  ]);
+	useEffect(() => {
+		console.log("type and layer", type, items);
+		if ((type === "layer" || type === "heatMaps") && items) {
+			setLayerMap(items);
+		} else if (type === "base" && items) {
+			setLayerMap(
+				items.filter((item) => item.name !== "Water" && item.name !== "Land")
+			);
+		}
+	}, [
+		stateMapControls.selectedControl,
 
-  //   useEffect(() => {
-  //     console.log("type and basemap", type, items);
+		items,
+		stateApp.checkedBaseLayers,
+		stateApp.checkedHeatLayers,
+		type,
+	]);
 
-  //   }, [items]);
+	//   useEffect(() => {
+	//     console.log("type and basemap", type, items);
 
-  useEffect(() => {
-    console.log("Layer Map: ", layerMap);
-  }, [layerMap]);
+	//   }, [items]);
 
-  const handleClick = () => {
-    setOpen(!open);
-  };
+	useEffect(() => {
+		console.log("Layer Map: ", layerMap);
+	}, [layerMap]);
 
-  const handleToggleInteraction = (layer, index) => () => {
-    const currentLayers = [...items];
-    const updatedLayer = {
-      ...layer,
-      layerSettings: {
-        ...layer.layerSettings,
-        interaction: {
-          ...layer.layerSettings.interaction,
-          interactionDetail: {
-            hover: !layer.layerSettings.interaction.interactionDetail.hover,
-            click: !layer.layerSettings.interaction.interactionDetail.click,
-          },
-        },
-      },
-    };
+	const handleClick = () => {
+		setOpen(!open);
+	};
 
-    //// saving to stateApp
-    currentLayers[index] = updatedLayer;
-    setStateApp((stateApp) => ({ ...stateApp, layers: [...currentLayers] }));
+	const togglePullout = () => {
+		setStateMapControls((stateMapControls) => ({
+			...stateMapControls,
+			panelExpanded: !stateMapControls.panelExpanded,
+		}));
+	};
 
-    //// saving to mongo
-    updateLayerSettings({
-      variables: {
-        settings: {
-          _id: updatedLayer._id,
-          layerSettings: updatedLayer.layerSettings,
-        },
-      },
-    });
-  };
+	const handleToggleInteraction = (layer, index) => () => {
+		const currentLayers = [...items];
+		const updatedLayer = {
+			...layer,
+			layerSettings: {
+				...layer.layerSettings,
+				interaction: {
+					...layer.layerSettings.interaction,
+					interactionDetail: {
+						hover: !layer.layerSettings.interaction.interactionDetail.hover,
+						click: !layer.layerSettings.interaction.interactionDetail.click,
+					},
+				},
+			},
+		};
 
-  const StyledMenu = withStyles({
-    paper: {
-      border: "1px solid #011133",
-      left: "30px !important",
-      top: "90px !important",
-      // right: "80px !important",
-    },
-  })((props) => (
-    <Menu
-      elevation={0}
-      variant="menu"
-      transitionDuration={0}
-      getContentAnchorEl={null}
-      // anchorOrigin={{
-      //   vertical: "top",
-      //   horizontal: "left",
-      // }}
-      MenuListProps={{
-        disablePadding: true,
-      }}
-      // transformOrigin={{
-      //   vertical: "top",
-      //   horizontal: "right",
-      // }}
-      {...props}
-    />
-  ));
+		//// saving to stateApp
+		currentLayers[index] = updatedLayer;
+		setStateApp((stateApp) => ({ ...stateApp, layers: [...currentLayers] }));
 
-  const defaultProps = {
-    borderLeft: 4,
-  };
+		//// saving to mongo
+		updateLayerSettings({
+			variables: {
+				settings: {
+					_id: updatedLayer._id,
+					layerSettings: updatedLayer.layerSettings,
+				},
+			},
+		});
+	};
 
-  const StyledMenuHeaderItem = withStyles((theme) => ({
-    root: {
-      fontFamily: "Poppins",
-      "&:hover": {
-        background: "#4B618F",
-      },
-      backgroundColor: "#263451",
-      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-        color: theme.palette.common.white,
-      },
-      "& .MuiButton-textPrimary": {
-        color: theme.palette.common.white,
-        background: "#17acdd",
-        padding: "3px 10px",
-      },
-    },
-  }))(MenuItem);
+	const StyledMenu = withStyles({
+		// paper: {
+		// 	position: "absolute",
+		// 	border: "1px solid #011133",
+		// },
+	})((props) => (
+		// <Menu
+		// 	elevation={0}
+		// 	variant="menu"
+		// 	transitionDuration={0}
+		// 	getContentAnchorEl={null}
+		// 	// anchorOrigin={{
+		// 	//   vertical: "top",
+		// 	//   horizontal: "left",
+		// 	// }}
+		// 	MenuListProps={{
+		// 		disablePadding: true,
+		// 	}}
+		// 	// transformOrigin={{
+		// 	//   vertical: "top",
+		// 	//   horizontal: "right",
+		// 	// }}
+		// 	{...props}
+		// />
+		<Paper
+			elevation={0}
+			variant="elevation"
+			{...props}
+			// style={{
+			// 	maxWidth: "500px",
+			// 	width: "500px",
+			// 	position: "absolute",
+			// 	//left: "30px !important",
+			// 	top: "90px !important",
+			// 	left: stateMapControls.panelExpanded
+			// 		? "-30px !important"
+			// 		: "-500px !important",
+			// }}
+			// transitionDuration={0}
+			// getContentAnchorEl={null}
+			// anchorOrigin={{
+			// 	vertical: "top",
+			// 	horizontal: "left",
+			// }}
+			// MenuListProps={{
+			// 	disablePadding: true,
+			// }}
+			// transformOrigin={{
+			// 	vertical: "top",
+			// 	horizontal: "right",
+			// }}
+		/>
+	));
 
-  const StyledMenuItem = withStyles((theme) => ({
-    root: {
-      fontFamily: "Poppins",
-      display: "block",
-      color: "white",
-      "&:hover": {
-        background: "#4B618F",
-      },
+	const defaultProps = {
+		borderLeft: 4,
+	};
 
-      backgroundColor: "#263451",
-      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-        color: theme.palette.common.white,
-        // },
-      },
-    },
-  }))(MenuItem);
+	const StyledMenuHeaderItem = withStyles((theme) => ({
+		root: {
+			fontFamily: "Poppins",
+			"&:hover": {
+				background: "#4B618F",
+			},
+			backgroundColor: "#263451",
+			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+				color: theme.palette.common.white,
+			},
+			"& .MuiButton-textPrimary": {
+				color: theme.palette.common.white,
+				background: "#17acdd",
+				padding: "3px 10px",
+			},
+		},
+	}))(MenuItem);
 
-  const StyledListItemSecondaryAction = withStyles((theme) => ({
-    root: {
-      "& .MuiButton-textPrimary": {
-        color: theme.palette.common.white,
-        background: "#17acdd",
-        padding: "3px 10px",
-      },
-    },
-  }))(ListItemSecondaryAction);
+	const StyledMenuItem = withStyles((theme) => ({
+		root: {
+			fontFamily: "Poppins",
+			display: "block",
+			color: "white",
+			"&:hover": {
+				background: "#4B618F",
+			},
 
-  const StyledListItem = withStyles((theme) => ({
-    root: {
-      fontFamily: "Poppins",
-      "&:hover": {
-        background: "#4B618F",
-      },
-      backgroundColor: "#263451",
-      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-        color: theme.palette.common.white,
-      },
-      "& .MuiListItemText-primary svg": {
-        marginLeft: "5px",
-        verticalAlign: "middle",
-      },
-    },
-  }))(ListItem);
+			backgroundColor: "#263451",
+			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+				color: theme.palette.common.white,
+				// },
+			},
+		},
+	}))(MenuItem);
 
-  const StyledListItem2 = withStyles((theme) => ({
-    root: {
-      fontFamily: "Poppins",
-      "&:hover": {
-        background: "#a3b2cf",
-      },
-      backgroundColor: "#4B618F",
-      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-        color: theme.palette.common.white,
-      },
-    },
-  }))(ListItem);
+	const StyledListItemSecondaryAction = withStyles((theme) => ({
+		root: {
+			"& .MuiButton-textPrimary": {
+				color: theme.palette.common.white,
+				background: "#17acdd",
+				padding: "3px 10px",
+			},
+		},
+	}))(ListItemSecondaryAction);
 
-  const ifLayerHaveData = (layer) => {
-    //// temporary disabling the Title Layer
-    if (layer.identifier === "Title") return false;
-    ////
+	const StyledListItem = withStyles((theme) => ({
+		root: {
+			fontFamily: "Poppins",
+			"&:hover": {
+				background: "#4B618F",
+			},
+			backgroundColor: "#263451",
+			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+				color: theme.palette.common.white,
+			},
+			"& .MuiListItemText-primary svg": {
+				marginLeft: "5px",
+				verticalAlign: "middle",
+			},
+		},
+	}))(ListItem);
 
-    if (
-      (layer.identifier === "User Tags" &&
-        !(
-          stateApp.wellListFromTagsFilter &&
-          stateApp.wellListFromTagsFilter.length > 0
-        )) ||
-      (layer.identifier === "Search" &&
-        !(
-          stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0
-        )) ||
-      (layer.identifier === "Tracked Wells" &&
-        !(stateApp.trackedwells && stateApp.trackedwells.length > 0)) ||
-      (layer.identifier === "Tracked Owners" &&
-        !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
-    )
-      return false;
-    return true;
-  };
+	const StyledListItem2 = withStyles((theme) => ({
+		root: {
+			fontFamily: "Poppins",
+			"&:hover": {
+				background: "#a3b2cf",
+			},
+			backgroundColor: "#4B618F",
+			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+				color: theme.palette.common.white,
+			},
+		},
+	}))(ListItem);
 
-  const handleColorPicker = (layer) => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      selectedLayer: layer,
-    }));
-  };
+	const ifLayerHaveData = (layer) => {
+		//// temporary disabling the Title Layer
+		if (layer.identifier === "Title") return false;
+		////
 
-  const getLayerName = (layer) => {
-    if (type !== "layer") return layer.name;
+		if (
+			(layer.identifier === "User Tags" &&
+				!(
+					stateApp.wellListFromTagsFilter &&
+					stateApp.wellListFromTagsFilter.length > 0
+				)) ||
+			(layer.identifier === "Search" &&
+				!(
+					stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0
+				)) ||
+			(layer.identifier === "Tracked Wells" &&
+				!(stateApp.trackedwells && stateApp.trackedwells.length > 0)) ||
+			(layer.identifier === "Tracked Owners" &&
+				!(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
+		)
+			return false;
+		return true;
+	};
 
-    if (layer.layerCategory == "M1 Layer") {
-      return layer.layerName;
-    } else {
-      return (
-        <>
-          <span>{layer.layerName}</span>
-          <UserDefined />
-        </>
-      );
-    }
-  };
+	const handleColorPicker = (layer) => {
+		setStateMapControls((stateMapControls) => ({
+			...stateMapControls,
+			selectedLayer: layer,
+		}));
+	};
 
-  const getLayerColor = (layer) => {
-    // layerName: "Rig Activity"
-    if (type !== "layer") return {};
+	const getLayerName = (layer) => {
+		if (type !== "layer") return layer.name;
 
-    if (layer) {
-      if (layer.identifier == "Rig Activity") return "#263451";
+		if (layer.layerCategory == "M1 Layer") {
+			return layer.layerName;
+		} else {
+			return (
+				<>
+					<span>{layer.layerName}</span>
+					<UserDefined />
+				</>
+			);
+		}
+	};
 
-      if (
-        layer.layerPaintProps &&
-        layer.layerPaintProps[0] &&
-        layer.layerPaintProps[0].paintProps
-      ) {
-        if (layer.layerPaintProps[0].paintProps["circle-color"])
-          return layer.layerPaintProps[0].paintProps["circle-color"];
-        if (layer.layerPaintProps[0].paintProps["fill-color"])
-          return layer.layerPaintProps[0].paintProps["fill-color"];
-        if (layer.layerPaintProps[0].paintProps["line-color"])
-          return layer.layerPaintProps[0].paintProps["line-color"];
-        if (layer.layerPaintProps[0].paintProps["icon-color"])
-          return layer.layerPaintProps[0].paintProps["icon-color"];
-      }
+	const getLayerColor = (layer) => {
+		// layerName: "Rig Activity"
+		if (type !== "layer") return {};
 
-      if (
-        layer.layerPaintProps &&
-        layer.layerPaintProps.ids &&
-        layer.layerPaintProps.ids[0]
-      ) {
-        if (layer.layerPaintProps.ids[0] == "basinLayer")
-          return basinLayerColor;
-        if (layer.layerPaintProps.ids[0] == "GLOUnits") return GLOUnitsColor;
-        if (layer.layerPaintProps.ids[0] == "GLOLeases") return GLOLeasesColor;
-      }
-    }
-    return "#263451";
-  };
+		if (layer) {
+			if (layer.identifier == "Rig Activity") return "#263451";
 
-  const getBasemapImageBox = () => {
-    return (
-      <>
-        <div className={classes.imageBox}>
-          {mapStyles.map((style) => (
-            <StyledMenuItem
-              disableRipple
-              key={style.id}
-              role={undefined}
-              onClick={() => {
-                setStateApp((stateApp) => ({
-                  ...stateApp,
-                  mapVars: { ...stateApp.mapVars, styleId: style.name },
-                }));
+			if (
+				layer.layerPaintProps &&
+				layer.layerPaintProps[0] &&
+				layer.layerPaintProps[0].paintProps
+			) {
+				if (layer.layerPaintProps[0].paintProps["circle-color"])
+					return layer.layerPaintProps[0].paintProps["circle-color"];
+				if (layer.layerPaintProps[0].paintProps["fill-color"])
+					return layer.layerPaintProps[0].paintProps["fill-color"];
+				if (layer.layerPaintProps[0].paintProps["line-color"])
+					return layer.layerPaintProps[0].paintProps["line-color"];
+				if (layer.layerPaintProps[0].paintProps["icon-color"])
+					return layer.layerPaintProps[0].paintProps["icon-color"];
+			}
 
-                handleClose();
-              }}
-            >
-              <ThemeProvider theme={theme}>
-                <div>{style.name == "Outdoors" && <MapOutdoorIcon />}</div>
-                <div>{style.name == "Satellite" && <MapSatelliteIcon />}</div>
-                <div>{style.name == "Light" && <MapLightIcon />}</div>
-                <div>{style.name == "Dark" && <MapDarkIcon />}</div>
-                <div>{style.name == "Basic" && <MapBasicIcon />}</div>
-                <div className={classes.boxtext}>
-                  <ListItemText primary={style.name} />
-                </div>
-              </ThemeProvider>
-            </StyledMenuItem>
-          ))}
-        </div>
+			if (
+				layer.layerPaintProps &&
+				layer.layerPaintProps.ids &&
+				layer.layerPaintProps.ids[0]
+			) {
+				if (layer.layerPaintProps.ids[0] == "basinLayer")
+					return basinLayerColor;
+				if (layer.layerPaintProps.ids[0] == "GLOUnits") return GLOUnitsColor;
+				if (layer.layerPaintProps.ids[0] == "GLOLeases") return GLOLeasesColor;
+			}
+		}
+		return "#263451";
+	};
 
-        <StyledListItem2 button onClick={handleClick}>
-          <ListItemIcon>
-            <LayersIcon />
-          </ListItemIcon>
-          <ListItemText primary={`${title} Layers`} />
-          {open ? <ExpandLess /> : <ExpandMore />}
-        </StyledListItem2>
-      </>
-    );
-  };
+	const getBasemapImageBox = () => {
+		return (
+			<>
+				<div className={classes.imageBox}>
+					{mapStyles.map((style) => (
+						<StyledMenuItem
+							disableRipple
+							key={style.id}
+							role={undefined}
+							onClick={() => {
+								setStateApp((stateApp) => ({
+									...stateApp,
+									mapVars: { ...stateApp.mapVars, styleId: style.name },
+								}));
 
-  //   const WithBox = ({ children, layer, ...defaultProps }) => {
-  //     console.log("Children default props", children, defaultProps);
-  //     return type === "layer " ? (
-  //       <Box borderColor={getLayerColor(layer)} {...defaultProps}>
-  //         {children}
-  //       </Box>
-  //     ) : (
-  //       { children }
-  //     );
-  //   };
+								handleClose();
+							}}
+						>
+							<ThemeProvider theme={theme}>
+								<div>{style.name == "Outdoors" && <MapOutdoorIcon />}</div>
+								<div>{style.name == "Satellite" && <MapSatelliteIcon />}</div>
+								<div>{style.name == "Light" && <MapLightIcon />}</div>
+								<div>{style.name == "Dark" && <MapDarkIcon />}</div>
+								<div>{style.name == "Basic" && <MapBasicIcon />}</div>
+								<div className={classes.boxtext}>
+									<ListItemText primary={style.name} />
+								</div>
+							</ThemeProvider>
+						</StyledMenuItem>
+					))}
+				</div>
 
-  const getLayerControls = (layer, labelId, index) => {
-    const control1 = layer.layerSettings.colorable && (
-      <div
-        style={{
-          paddingRight: !layer.layerSettings.interaction.interactionAble
-            ? "40"
-            : "",
-        }}
-      >
-        <ListItemIcon onClick={() => handleColorPicker(layer)}>
-          <Tooltip title="Layer Styling">
-            <ColorControl />
-          </Tooltip>
-        </ListItemIcon>
-      </div>
-    );
+				<StyledListItem2 button onClick={handleClick}>
+					<ListItemIcon>
+						<LayersIcon />
+					</ListItemIcon>
+					<ListItemText primary={`${title} Layers`} />
+					{open ? <ExpandLess /> : <ExpandMore />}
+				</StyledListItem2>
+			</>
+		);
+	};
 
-    const control2 = layer.layerSettings.interaction.interactionAble && (
-      <div
-        style={{
-          paddingRight: 20,
-          height: "42px",
-          width: "42px",
-        }}
-      >
-        <Checkbox
-          icon={
-            <CancelOutlinedIcon
-              htmlColor={
-                !ifLayerHaveData(layer) ? "rgb(127, 149, 199)" : "#12abe0"
-              }
-            />
-          }
-          checkedIcon={
-            <ClickIcon
-              color={!ifLayerHaveData(layer) ? "rgb(127, 149, 199)" : "#12abe0"}
-            />
-          }
-          edge="start"
-          checked={layer.layerSettings.interaction.interactionDetail.click}
-          tabIndex={-1}
-          disableRipple
-          inputProps={{
-            "aria-labelledby": labelId,
-          }}
-          onChange={handleToggleInteraction(layer, index)}
-        />
-      </div>
-    );
+	//   const WithBox = ({ children, layer, ...defaultProps }) => {
+	//     console.log("Children default props", children, defaultProps);
+	//     return type === "layer " ? (
+	//       <Box borderColor={getLayerColor(layer)} {...defaultProps}>
+	//         {children}
+	//       </Box>
+	//     ) : (
+	//       { children }
+	//     );
+	//   };
 
-    return (
-      <>
-        {control1}
-        {control2}
-      </>
-    );
-  };
+	const getLayerControls = (layer, labelId, index) => {
+		const control1 = layer.layerSettings.colorable && (
+			<div
+				style={{
+					paddingRight: !layer.layerSettings.interaction.interactionAble
+						? "40"
+						: "",
+				}}
+			>
+				<ListItemIcon onClick={() => handleColorPicker(layer)}>
+					<Tooltip title="Layer Styling">
+						<ColorControl />
+					</Tooltip>
+				</ListItemIcon>
+			</div>
+		);
 
-  const getLayerChecked = ({ layer, index }) => {
-    if (type === "layer" && layer) {
-      return layer.layerSettings.visiable !== false;
-    } else if (
-      type === "base" &&
-      typeof index === "number" &&
-      stateApp.checkedBaseLayers
-    ) {
-      return stateApp.checkedBaseLayers.indexOf(index) !== -1;
-    } else if (
-      type === "heatMaps" &&
-      typeof index === "number" &&
-      stateApp.checkedHeats
-    ) {
-      return stateApp.checkedHeats.indexOf(index) !== -1;
-    } else {
-      return false;
-    }
-  };
+		const control2 = layer.layerSettings.interaction.interactionAble && (
+			<div
+				style={{
+					paddingRight: 20,
+					height: "42px",
+					width: "42px",
+				}}
+			>
+				<Checkbox
+					icon={
+						<CancelOutlinedIcon
+							htmlColor={
+								!ifLayerHaveData(layer) ? "rgb(127, 149, 199)" : "#12abe0"
+							}
+						/>
+					}
+					checkedIcon={
+						<ClickIcon
+							color={!ifLayerHaveData(layer) ? "rgb(127, 149, 199)" : "#12abe0"}
+						/>
+					}
+					edge="start"
+					checked={layer.layerSettings.interaction.interactionDetail.click}
+					tabIndex={-1}
+					disableRipple
+					inputProps={{
+						"aria-labelledby": labelId,
+					}}
+					onChange={handleToggleInteraction(layer, index)}
+				/>
+			</div>
+		);
 
-  const handleClose = () => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      anchorEl: null,
-    }));
-  };
+		return (
+			<>
+				{control1}
+				{control2}
+			</>
+		);
+	};
 
-  const checkIfNoLayerData = (layer) => {
-    return type === "layer" && !ifLayerHaveData(layer);
-  };
+	const getLayerChecked = ({ layer, index }) => {
+		if (type === "layer" && layer) {
+			return layer.layerSettings.visiable !== false;
+		} else if (
+			type === "base" &&
+			typeof index === "number" &&
+			stateApp.checkedBaseLayers
+		) {
+			return stateApp.checkedBaseLayers.indexOf(index) !== -1;
+		} else if (
+			type === "heatMaps" &&
+			typeof index === "number" &&
+			stateApp.checkedHeats
+		) {
+			return stateApp.checkedHeats.indexOf(index) !== -1;
+		} else {
+			return false;
+		}
+	};
 
-  const displayList = (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppableM1">
-        {(provided, snapshot) => (
-          <RootRef rootRef={provided.innerRef}>
-            <List className={classes.list}>
-              {layerMap.map((layer, index) => {
-                const labelId = `checkbox-list-label-${index}`;
+	const handleClose = () => {
+		setStateMapControls((stateMapControls) => ({
+			...stateMapControls,
+			anchorEl: null,
+		}));
+	};
 
-                //// remove the (layer.identifier!="Tracked Owners") condition from the if statement to show the tracked owers layer
-                if (
-                  type === "heatMaps" ||
-                  type === "base" ||
-                  (type === "layer" &&
-                    layer.layerSettings &&
-                    layer.layerSettings.showable &&
-                    layer.identifier != "Tracked Owners")
-                ) {
-                  return (
-                    <Draggable
-                      key={labelId}
-                      draggableId={labelId}
-                      index={type === "layer" ? layer.position : index}
-                    >
-                      {(provided, snapshot) => (
-                        <Box
-                          borderColor={getLayerColor(layer)}
-                          {...defaultProps}
-                        >
-                          <StyledListItem
-                            ContainerComponent="li"
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                          >
-                            <ListItemIcon {...provided.dragHandleProps}>
-                              <DragIndicator />
-                            </ListItemIcon>
-                            <ListItemText
-                              id={labelId}
-                              primary={getLayerName(layer)}
-                              className={
-                                checkIfNoLayerData(layer)
-                                  ? classes.disabledLayerTitle
-                                  : ""
-                              }
-                            />
-                            {type === "layer" &&
-                              layer.layerSettings.colorable &&
-                              getLayerControls(layer, labelId, index)}
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  disabled={
-                                    checkIfNoLayerData(layer)
-                                      ? classes.disabledLayerTitle
-                                      : ""
-                                  }
-                                  checked={getLayerChecked({
-                                    layer,
-                                    index,
-                                  })}
-                                  onChange={() =>
-                                    handleToggle({ layer, index })
-                                  }
-                                />
-                              }
-                            />
-                          </StyledListItem>
-                        </Box>
-                      )}
-                    </Draggable>
-                  );
-                }
-              })}
-            </List>
-          </RootRef>
-        )}
-      </Droppable>
-    </DragDropContext>
-  );
+	const checkIfNoLayerData = (layer) => {
+		return type === "layer" && !ifLayerHaveData(layer);
+	};
 
-  return (
-    <ClickAwayListener onClickAway={handleClose}>
-      <StyledMenu
-        id="checklist-menu"
-        anchorEl={stateMapControls.anchorEl}
-        keepMounted
-        open={Boolean(stateMapControls.anchorEl)}
-        onClose={handleClose}
-      >
-        <StyledMenuHeaderItem
-          disableRipple
-          key="subheader"
-          role={undefined}
-          dense
-          className={classes.subHeaderItem}
-        >
-          <ListItemText primary={title} />
-          {headerButton && (
-            <StyledListItemSecondaryAction>
-              <Button
-                onClick={headerButton.fn}
-                color="primary"
-                startIcon={headerButton.icon}
-              >
-                {headerButton.text}
-              </Button>
-            </StyledListItemSecondaryAction>
-          )}
-        </StyledMenuHeaderItem>
+	const displayList = (
+		<DragDropContext onDragEnd={onDragEnd}>
+			<Droppable droppableId="droppableM1">
+				{(provided, snapshot) => (
+					<RootRef rootRef={provided.innerRef}>
+						<List className={classes.list}>
+							{layerMap.map((layer, index) => {
+								const labelId = `checkbox-list-label-${index}`;
 
-        {/* base Stuff */}
-        {type === "base" && getBasemapImageBox()}
+								//// remove the (layer.identifier!="Tracked Owners") condition from the if statement to show the tracked owers layer
+								if (
+									type === "heatMaps" ||
+									type === "base" ||
+									(type === "layer" &&
+										layer.layerSettings &&
+										layer.layerSettings.showable &&
+										layer.identifier != "Tracked Owners")
+								) {
+									return (
+										<Draggable
+											key={labelId}
+											draggableId={labelId}
+											index={type === "layer" ? layer.position : index}
+										>
+											{(provided, snapshot) => (
+												<Box
+													borderColor={getLayerColor(layer)}
+													{...defaultProps}
+												>
+													<StyledListItem
+														ContainerComponent="li"
+														ref={provided.innerRef}
+														{...provided.draggableProps}
+													>
+														<ListItemIcon {...provided.dragHandleProps}>
+															<DragIndicator />
+														</ListItemIcon>
+														<ListItemText
+															id={labelId}
+															primary={getLayerName(layer)}
+															className={
+																checkIfNoLayerData(layer)
+																	? classes.disabledLayerTitle
+																	: ""
+															}
+														/>
+														{type === "layer" &&
+															layer.layerSettings.colorable &&
+															getLayerControls(layer, labelId, index)}
+														<FormControlLabel
+															control={
+																<Switch
+																	disabled={
+																		checkIfNoLayerData(layer)
+																			? classes.disabledLayerTitle
+																			: ""
+																	}
+																	checked={getLayerChecked({
+																		layer,
+																		index,
+																	})}
+																	onChange={() =>
+																		handleToggle({ layer, index })
+																	}
+																/>
+															}
+														/>
+													</StyledListItem>
+												</Box>
+											)}
+										</Draggable>
+									);
+								}
+							})}
+						</List>
+					</RootRef>
+				)}
+			</Droppable>
+		</DragDropContext>
+	);
 
-        {type === "base" ? (
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            {displayList}
-          </Collapse>
-        ) : (
-          displayList
-        )}
+	return (
+		// <ClickAwayListener onClickAway={handleClose}>
+		<div
+			style={{
+				position: "absolute",
+				display: "flex",
+				flexDirection: "row",
+				width: "500px",
+				maxWidth: "500px",
+				top: "90px",
+				left: stateMapControls.panelExpanded ? "30px" : "-400px",
+			}}
+		>
+			<StyledMenu
+				id="checklist-menu"
+				anchorEl={stateMapControls.anchorEl}
+				keepMounted
+				open={Boolean(stateMapControls.anchorEl)}
 
-        {/* </Collapse> */}
-      </StyledMenu>
-    </ClickAwayListener>
-  );
+				//onClose={handleClose}
+			>
+				<StyledMenuHeaderItem
+					disableRipple
+					key="subheader"
+					role={undefined}
+					dense
+					className={classes.subHeaderItem}
+				>
+					<ListItemText primary={title} />
+					{headerButton && (
+						<StyledListItemSecondaryAction>
+							<Button
+								onClick={headerButton.fn}
+								color="primary"
+								startIcon={headerButton.icon}
+							>
+								{headerButton.text}
+							</Button>
+						</StyledListItemSecondaryAction>
+					)}
+				</StyledMenuHeaderItem>
+
+				{/* base Stuff */}
+				{type === "base" && getBasemapImageBox()}
+
+				{type === "base" ? (
+					<Collapse in={open} timeout="auto" unmountOnExit>
+						{displayList}
+					</Collapse>
+				) : (
+					displayList
+				)}
+
+				{/* </Collapse> */}
+			</StyledMenu>
+			<div
+				className={classes.pulloutBox}
+				// style={{
+				// 	left: stateMapControls.panelExpanded ? "530px !important" : "0px",
+				// }}
+				onClick={togglePullout}
+			>
+				{stateMapControls.panelExpanded ? (
+					<ArrowBackIosIcon />
+				) : (
+					<ArrowForwardIosIcon />
+				)}
+			</div>
+			{/* // </ClickAwayListener> */}
+		</div>
+	);
 }
 
 export default React.memo(Panel, deepEqualObjects);
