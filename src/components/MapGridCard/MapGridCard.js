@@ -22,6 +22,7 @@ import { setMapGridCardState } from "../../actions";
 import OwnersSummaryCard from "../OwnersSummaryCard/OwnersSummaryCard";
 
 import ContactsHeadCells from '../Shared/constants/contacts-header-schema.js'
+import WellsHeadCells from '../Shared/constants/well-header-schema.js'
 
 
 function TabPanel(props) {
@@ -252,6 +253,8 @@ const wellsColumnHeaders = [
     label: "Status",
   },
 ];
+
+
 const ownersColumnHeaders = [
   {
     name: "entity",
@@ -282,6 +285,8 @@ const ownersColumnHeaders = [
     label: "Address",
   },
 ];
+
+
 const operatorsColumnHeaders = [
   {
     name: "Operator",
@@ -643,7 +648,6 @@ function MapGridCard(props) {
                       showTags
                       showComments
                       showTracks
-                      //print
                     />,
                     <M1nTable
                       dense
@@ -692,7 +696,6 @@ function MapGridCard(props) {
                     privateColumns={[ContactsHeadCells]}
                     targetLabel={getTargetFromSearchTaps()}
                     header={<SearchTabPanels />}
-                    searchInput = 'jacob'
                   />,
                     <M1nTable
                       dense

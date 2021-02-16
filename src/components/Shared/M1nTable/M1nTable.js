@@ -57,6 +57,7 @@ import { setMapGridCardState, showWarningMessage } from "../../../actions";
 import { first } from "@amcharts/amcharts4/.internal/core/utils/Array";
 
 import ContactsHeadCells from '../constants/contacts-header-schema.js'
+import WellsHeadCells from '../constants/well-header-schema.js'
 
 const useStyles = makeStyles((theme) => ({
   container: { 
@@ -251,85 +252,85 @@ const TrackedOwnersHeadCells = [
   },
 ];
 
-const WellsHeadCells = [
-  {
-    name: "id",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  { name: "api", label: "API" },
-  { name: "state", label: "State" },
-  { name: "county", label: "County" },
-  { name: "wellName", label: "Well Name" },
-  { name: "operator", label: "Operator" },
-  { name: "wellType", label: "Type" },
-  { name: "wellBoreProfile", label: "Profile",},
-  { name: "wellStatus", label: "Status",},
-  {
-    name: "tags",
-    label: "Tags ",
-    options: {
-      sort: false,
-      download: false,
-      print: false,
-      filterOptions: {
-        names: [],
-        logic(rowVal, pickedTags) {
-          let containIts = true;
-          pickedTags.map((pickedTag) => {
-            if (rowVal[0].indexOf(pickedTag) === -1) {
-              containIts = false;
-            }
-          });
-          return !containIts;
-        },
-      },
-    },
-  },
-  {
-    name: "commentsCounter",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  {
-    name: "isTracked",
-    label: " ",
-    options: {
-      filter: false,
-      sort: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  {
-    name: "detailCard",
-    label: " ",
-    options: {
-      filter: false,
-      sort: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-];
+// const WellsHeadCells = [
+//   {
+//     name: "id",
+//     options: {
+//       display: false,
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   { name: "api", label: "API" },
+//   { name: "state", label: "State" },
+//   { name: "county", label: "County" },
+//   { name: "wellName", label: "Well Name" },
+//   { name: "operator", label: "Operator" },
+//   { name: "wellType", label: "Type" },
+//   { name: "wellBoreProfile", label: "Profile",},
+//   { name: "wellStatus", label: "Status",},
+//   {
+//     name: "tags",
+//     label: "Tags ",
+//     options: {
+//       sort: false,
+//       download: false,
+//       print: false,
+//       filterOptions: {
+//         names: [],
+//         logic(rowVal, pickedTags) {
+//           let containIts = true;
+//           pickedTags.map((pickedTag) => {
+//             if (rowVal[0].indexOf(pickedTag) === -1) {
+//               containIts = false;
+//             }
+//           });
+//           return !containIts;
+//         },
+//       },
+//     },
+//   },
+//   {
+//     name: "commentsCounter",
+//     label: " ",
+//     options: {
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   {
+//     name: "isTracked",
+//     label: " ",
+//     options: {
+//       filter: false,
+//       sort: false,
+//       searchable: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   {
+//     name: "detailCard",
+//     label: " ",
+//     options: {
+//       filter: false,
+//       sort: false,
+//       searchable: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+// ];
 
 const OwnersPerWellHeadCells = [
   {
@@ -1960,8 +1961,6 @@ function M1nTable(props) {
   useEffect(() => {
     if (dataWells?.wells)
       if (props.parent && props.parent === "trackWells" && dataWells) {
-        //console.log("ue mintable 7");
-        console.log("aslkjdfalsjflajksdflj", dataWells.wells)
         if (
           dataWells.wells &&
           dataWells.wells.results &&
@@ -1974,6 +1973,8 @@ function M1nTable(props) {
           let wells = [...dataWells.wells.results];
           wells = wells.map((w) => {
             let well = { ...w };
+
+          console.log('wells',wells)
 
             //// temporary to fix the ticks dates fields comming from the rest api
             if (well.permitApprovedDate && well.permitApprovedDate != "null")
@@ -2030,6 +2031,11 @@ function M1nTable(props) {
           });
           const cleanAvailableTags = [...new Set(availableTags)];
 
+
+          console.log('datawells', dataWells)
+          console.log('WellsHeadCells',WellsHeadCells)
+  
+
           setRows(wells);
 
           const flyToColumn = {
@@ -2076,6 +2082,44 @@ function M1nTable(props) {
                 })),
             flyToColumn,
           ]);
+
+
+          console.log('colmns ',
+          
+          [
+            ...(cleanAvailableTags.length > 0
+              ? WellsHeadCells.map((column) => {
+                  if (column.name === "tags") {
+                    return {
+                      ...column,
+                      options: {
+                        ...column.options,
+                        filterOptions: {
+                          ...column.options.filterOptions,
+                          names: cleanAvailableTags,
+                        },
+                      },
+                    };
+                  }
+                  return column;
+                })
+              : WellsHeadCells.map((column) => {
+                  if (column.name === "tags") {
+                    return {
+                      ...column,
+                      options: {
+                        ...column.options,
+                        filter: false,
+                      },
+                    };
+                  }
+                  return column;
+                })),
+            flyToColumn,
+          ]
+          
+          
+          )
 
           setStateApp((state) => ({
             ...state,
@@ -2179,6 +2223,7 @@ function M1nTable(props) {
           availableTags = [...availableTags, ...sample.tags];
         });
         const cleanAvailableTags = [...new Set(availableTags)];
+
 
         setRows(dataWells.wells.results);
 

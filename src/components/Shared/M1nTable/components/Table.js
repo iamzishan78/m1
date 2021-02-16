@@ -1565,10 +1565,16 @@ function SubTable(props) {
             };
             break;
           default:
+            //// this is where the column names get mapped 
+            console.log('run default', column.options)
             {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  
+                  console.log('value',value)
+                  console.log('tablemeta',tableMeta)
+
                   const valueFormatter = (v) => {
                     if (
                       (column.name === "status" &&
@@ -1656,7 +1662,7 @@ function SubTable(props) {
                             margin: "0",
                           }}
                         >
-                          N/A
+                          --
                         </p>
                       );
 
@@ -1737,6 +1743,8 @@ function SubTable(props) {
             break;
         }
       });
+
+
       setColumns([...props.columns]);
       setViewColumns(props.addColumnFilter);
     }
@@ -2662,9 +2670,10 @@ function SubTable(props) {
           data={rows ? rows : []}
           columns={columns ? columns : []}
           options={{
+            ...options,
             download: false,
             search: props.parent != "search",  // removing the double search on the grid search bar 
-            ...options,
+            print: false,
           }}
         />
 
