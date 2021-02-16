@@ -173,8 +173,9 @@ export default function CheckboxList(props) {
   const StyledMenu = withStyles({
     paper: {
       border: "1px solid #011133",
-      left: "unset !important",
-      right: "80px !important",
+      left: "30px !important",
+      top: "90px !important"
+      // right: "80px !important",
     },
   })((props) => (
     <Menu
@@ -182,17 +183,17 @@ export default function CheckboxList(props) {
       variant="menu"
       transitionDuration={0}
       getContentAnchorEl={null}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
+      // anchorOrigin={{
+      //   vertical: "top",
+      //   horizontal: "left",
+      // }}
       MenuListProps={{
         disablePadding: true,
       }}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
+      // transformOrigin={{
+      //   vertical: "top",
+      //   horizontal: "right",
+      // }}
       {...props}
     />
   ));
