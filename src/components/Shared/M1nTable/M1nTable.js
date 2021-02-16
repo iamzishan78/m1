@@ -2277,6 +2277,9 @@ function M1nTable(props) {
     setStateIfDeepEqual(DataTracks, newState);
   };
 
+  // year state
+  const [selectedYear, setSelectedYear] = useState(2019)
+
   const {
     searchloading,
     searchResultData,
@@ -2969,6 +2972,7 @@ function M1nTable(props) {
   ////////////Owners Per Well begin///////////////////////////////////////////////
 
   useEffect(() => {
+    console.log("Update MMMMMM useEffect")
     if (props.parent && props.parent === "OwnersPerWell") {
       setLoading(true);
       console.log("ue mintable 10");
@@ -2976,10 +2980,13 @@ function M1nTable(props) {
       setHeader("Tax Roll Ownership");
       setAddAble(false);
       getWellOwners({
-        variables: { id: props.selectedWell.id },
+        variables: {
+          id: props.selectedWell.id,
+          selectedYear: selectedYear.toString()
+        },
       });
     }
-  }, [props.selectedWell]);
+  }, [props.selectedWell, selectedYear]);
 
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
@@ -4756,6 +4763,9 @@ function M1nTable(props) {
   /////////// PRODUCTION DETAILS ////////////////////////////////////////
 
   ////////////-----Add your code section here-----///////////////////////
+  const getWellOwnersByYear = (selectedYear) => {
+    setSelectedYear(selectedYear)
+  }
   return (
     <Container
       maxWidth={false}
@@ -4776,7 +4786,6 @@ function M1nTable(props) {
           contactId={props.contact?._id}
         />
       )}
-
       <Table
         style={{ backgroundColor: "#fff" }}
         header={header}
@@ -4813,6 +4822,7 @@ function M1nTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={setColumnsBase}
+        getWellOwnersByYear={getWellOwnersByYear}
       />
     </Container>
   );

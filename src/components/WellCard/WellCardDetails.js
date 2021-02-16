@@ -184,7 +184,7 @@ const tableGridStyle = makeStyles({
 export default function WellCardDetails(props) {
   const classes = useStyles();
   const table_classes = tableGridStyle();
-  const [stateApp,setStateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const [tabValue, setTabValue] = React.useState(0);
   const [production, setProduction] = useState(null);
@@ -198,17 +198,17 @@ export default function WellCardDetails(props) {
     { loading: loadingProductionDetail, data: productionDetail },
   ] = useLazyQuery(PRODUCTIONDETAILQUERY);
 
-  useEffect(()=> {
+  useEffect(() => {
     getProductionDetail({
       variables: { id: stateApp.selectedWell.id },
     });
   }, []);
 
-  useEffect(()=> {
+  useEffect(() => {
     if (productionDetail) {
       let temp = [];
       productionDetail.productionDetail.forEach(element => {
-        let temp_row = {...element};
+        let temp_row = { ...element };
         temp_row.ReportDate = moment.utc(temp_row.ReportDate).format("MM/YYYY");
         temp.push(temp_row)
       });
@@ -218,7 +218,7 @@ export default function WellCardDetails(props) {
       }
     } else {
     }
-  },[productionDetail, props.target, setTarget]);
+  }, [productionDetail, props.target, setTarget]);
 
   const handleChangeOil = (event) => {
     setStateWellCard({
@@ -306,7 +306,6 @@ export default function WellCardDetails(props) {
     }
   }
 
-
   return stateApp.selectedWell ? (
     <React.Fragment >
       <Grid item sm={12} className={classes.gridItemGrey}>
@@ -320,10 +319,11 @@ export default function WellCardDetails(props) {
         <CompletionDateCard />
         <FirstProdDateCard />
         <PlugDateCard />
+        <h1>Hery</h1>
       </Grid>
       <Grid item sm={12} container className={classes.gridWidthScroll}>
-        <Grid item sm={12} container style={{ height: "482px"}}>
-          <Grid container spacing={2} style={{marginRight: 0, marginLeft: 0}}>
+        <Grid item sm={12} container style={{ height: "482px" }}>
+          <Grid container spacing={2} style={{ marginRight: 0, marginLeft: 0 }}>
             <Grid item sm={8} >
               <TableSummary summary={props.summary} />
             </Grid>
@@ -351,7 +351,7 @@ export default function WellCardDetails(props) {
                           <OilSwitch
                             checked={stateWellCard.chartToggleOil}
                             onChange={handleChangeOil}
-                            //name="chartToggleOil"
+                          //name="chartToggleOil"
                           />
                         }
                         label="Allocated Oil"
@@ -363,7 +363,7 @@ export default function WellCardDetails(props) {
                             onChange={handleChangeGas}
                             name="checkedGas"
                             color="secondary"
-                            // color="#e57373"//invalid color
+                          // color="#e57373"//invalid color
                           />
                         }
                         label="Allocated Gas"
@@ -411,9 +411,9 @@ export default function WellCardDetails(props) {
                   selectedWell={stateApp.selectedWell}
                 />
               </Paper>,
-              <CompletionsContainer/>,
-              <SimulationContainer/>,
-              <FormationContainer/>,
+              <CompletionsContainer />,
+              <SimulationContainer />,
+              <FormationContainer />,
             ]}
           />
         </Grid>
