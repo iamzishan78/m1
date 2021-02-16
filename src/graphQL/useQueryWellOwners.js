@@ -2,8 +2,8 @@ import React from "react";
 import gql from "graphql-tag";
 
 export const WELLOWNERSQUERY = gql`
-  query getWellOwners($id: String $selectedYear:String) {
-    wellOwners(wellId: $id selectedYear:$selectedYear) {
+  query getWellOwners($id: String) {
+    wellOwners(wellId: $id) {
       id
       globalOwnerId
       name

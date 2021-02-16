@@ -44,7 +44,9 @@ import FormationContainer from "./components/Formation";
 import { useLazyQuery } from "@apollo/client";
 import { PRODUCTIONDETAILQUERY } from "../../graphQL/useQueryProductionDetail";
 import moment from 'moment';
-
+import { Box, IconButton } from "@material-ui/core";
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 const useStyles = makeStyles((theme) => ({
   grid: {
     // height: "100%",
@@ -191,7 +193,7 @@ export default function WellCardDetails(props) {
   const [target, setTarget] = useState(null);
   const [chartDisplay, setChartDisplay] = useState([]);
   const [productionContainer, setProductionContainer] = useState(null);
-
+  const [showSummary, setShowSummary] = useState(false)
   let temp_state = useRef(null);
   const [
     getProductionDetail,
@@ -319,19 +321,30 @@ export default function WellCardDetails(props) {
         <CompletionDateCard />
         <FirstProdDateCard />
         <PlugDateCard />
-        <h1>Hery</h1>
+        <Box>
+          <IconButton
+            onClick={() => setShowSummary(!showSummary)}
+            aria-label="delete" color="primary">
+            {
+              showSummary ? <KeyboardArrowUpIcon fontSize="large" /> : <KeyboardArrowDownIcon fontSize="large" />
+            }
+
+          </IconButton>
+        </Box>
       </Grid>
       <Grid item sm={12} container className={classes.gridWidthScroll}>
-        <Grid item sm={12} container style={{ height: "482px" }}>
-          <Grid container spacing={2} style={{ marginRight: 0, marginLeft: 0 }}>
-            <Grid item sm={8} >
-              <TableSummary summary={props.summary} />
-            </Grid>
-            <Grid item xs={4}>
-              <QuadProvider />
+        {showSummary &&
+          <Grid item sm={12} container style={{ height: "482px" }}>
+            <Grid container spacing={2} style={{ marginRight: 0, marginLeft: 0 }}>
+              <Grid item sm={8} >
+                <TableSummary summary={props.summary} />
+              </Grid>
+              <Grid item xs={4}>
+                <QuadProvider />
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
+        }
         <Grid item sm={12}>
           <Taps
             tabLabels={[

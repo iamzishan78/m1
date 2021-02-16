@@ -2972,7 +2972,6 @@ function M1nTable(props) {
   ////////////Owners Per Well begin///////////////////////////////////////////////
 
   useEffect(() => {
-    console.log("Update MMMMMM useEffect")
     if (props.parent && props.parent === "OwnersPerWell") {
       setLoading(true);
       console.log("ue mintable 10");
@@ -2982,11 +2981,10 @@ function M1nTable(props) {
       getWellOwners({
         variables: {
           id: props.selectedWell.id,
-          selectedYear: selectedYear.toString()
         },
       });
     }
-  }, [props.selectedWell, selectedYear]);
+  }, [props.selectedWell]);
 
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
