@@ -41,7 +41,7 @@ export default function WellsCard(props) {
     <div className={classes.root}>
       <div>
         <h4 style={{ marginTop: "0", float: "left" }}>Wells (0)</h4>
-        {/* <IconButton
+        <IconButton
           size="small"
           className={classes.addIcon}
           onClick={() => {
@@ -55,7 +55,7 @@ export default function WellsCard(props) {
           }}
         >
           <AddIcon htmlColor="rgb(28 173 225 / 81%)" />
-        </IconButton> */}
+        </IconButton>
       </div>
       <div className={classes.cardContent}>
         <div className={classes.leftColumn}>

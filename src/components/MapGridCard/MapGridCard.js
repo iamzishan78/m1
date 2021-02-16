@@ -168,8 +168,8 @@ const useStyles = makeStyles((theme) => {
 
 const TabLabels = ({ labels, value, setValue }) => {
   console.log(`ue mapgridcard tablabels ${(labels, value, setValue)}`);
-
   const classes = useStyles();
+
   return (
     <>
       {labels &&
@@ -320,6 +320,12 @@ function MapGridCard(props) {
       TrackedTapValue(state);
     }
   };
+  const [gridTapValue, GridTapValue] = useState(0);
+  const setGridTapValue = (state) => {
+    if (gridTapValue != state) {
+      GridTapValue(state);
+    }
+  };
 
   const classes = useStyles({
     mapGridCardActivated,
@@ -436,6 +442,12 @@ function MapGridCard(props) {
                     ? " (" + stateApp.viewportWells?.length + ")"
                     : ""
                 }`}
+                {...a11yProps(1)}
+              />
+
+              <Tab
+                className="cancelDraggableEffect"
+                label={`Shape Filter`}
                 {...a11yProps(1)}
               />
             </Tabs>
@@ -658,6 +670,50 @@ function MapGridCard(props) {
                 />
               </div>
             </TabPanel>
+
+            {/* //// shape filter //// */}
+            <TabPanel
+              value={mapGridCardActiveTap}
+              index={3}
+              className={classes.tapsPanelsPadding}
+            >
+              <div style={{ position: "relative" }}>
+                <TabPanels
+                  value={gridTapValue}
+                  panels={[
+                    <M1nTable
+                      dense
+                      parent="gridWells"
+                      header={
+                        <TabLabels
+                          labels={[
+                            `Wells (${stateApp.gridWellsCount})`,
+                            `Tax Roll Owners (${stateApp.gridOwnersCount})`,
+                          ]}
+                          value={gridTapValue}
+                          setValue={setGridTapValue}
+                        />
+                      }
+                    />,
+                    <M1nTable
+                      dense
+                      parent="gridOwners"
+                      header={
+                        <TabLabels
+                          labels={[
+                            `Wells (${stateApp.gridWellsCount})`,
+                            `Tax Roll Owners (${stateApp.gridOwnersCount})`,
+                          ]}
+                          value={gridTapValue}
+                          setValue={setGridTapValue}
+                        />
+                      }
+                    />,
+                  ]}
+                />
+              </div>
+            </TabPanel>
+
           </div>
         )}
       </Card>
@@ -708,4 +764,4 @@ function areEqual(prevProps, nextProps) {
   );
 }
 
-export default React.memo(MapGridCard, areEqual);
+export default React.memo(MapGridCard, areEqual, TabLabels, TabPanels);

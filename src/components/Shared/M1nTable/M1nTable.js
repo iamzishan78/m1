@@ -29,6 +29,7 @@ import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContac
 import { CONTACTSFILTEROPTIONS } from "../../../graphQL/useQueryContactsFilterOptions";
 import { UPDATEMAILERSTATUSES } from "../../../graphQL/useMutationUpdateMailerStatuses";
 import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType";
+import { TRACKSWELL } from "../../../graphQL/useQueryTracksWell"
 import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
@@ -50,6 +51,10 @@ import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
 import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterests";
 import { PAGINATEDWELLINTERESTSQUERY } from "../../../graphQL/useQueryPaginatedWellInterests.js";
 import { WELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryWellInterestsFilterOptions";
+import { SHAPEWELLS } from "../../../graphQL/useQueryPaginatedShapeWells";
+import { SHAPEWELLSCOUNT } from "../../../graphQL/useQueryShapeWellsCount";
+import { WELLSOWNERSQUERY } from "../../../graphQL/useQueryWellsOwners";
+import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -2155,6 +2160,83 @@ const ProductionDetailsHeaders = [
     },
   },
 ];
+
+const ContactWellHeadCells = [
+  {
+    name: "id",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  { name: "wellName", label: "Well" },
+  { name: "api", label: "API" },
+  { name: "lease", label: "Lease Name" },
+  { name: "leaseAcres", label: "Lease Acres" },
+  { name: "interestOwner", label: "Interest Owner" },
+  { name: "entity", label: "Entity" },
+  { name: "type", label: "Type" },
+  { name: "amount", label: "Amount" },
+  { name: "taxValue", label: "Tax Value" },
+  { name: "nra", label: "NRA" },
+  {
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
+  },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: "Track",
+    options: {
+      searchable: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: ["Tracked", "Untracked"],
+        logic(tracked, filterVal) {
+          return !(
+            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+            (filterVal.indexOf("Untracked") >= 0 && !tracked)
+          );
+        },
+      },
+      filterType: "dropdown",
+    },
+  },
+];
 ////////////PRODUCTION DETAILS end//////////////////////////////////////
 
 ////////////HeadCells end///////////////////////////////////////////////
@@ -2293,6 +2375,12 @@ function M1nTable(props) {
       fetchPolicy: "cache-and-network",
     }
   );
+  const [tracksWell, { data: dataWellTracks }] = useLazyQuery(
+    TRACKSWELL,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
   const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(
     COMMENTSCOUNTER,
     {
@@ -2311,11 +2399,20 @@ function M1nTable(props) {
   );
   //////////
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
+  const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, {
+    fetchPolicy: "cache-and-network",
+  });
+  const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, {
+    fetchPolicy: "cache-and-network",
+  });
   //////////
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(
     WELLOWNERSQUERY
   );
   //////////
+  const [getContactWells, { data: dataContactWells }] = useLazyQuery(
+    CONTACTWELLS
+  );
   // const [getContactInM1nTable, { data: dataContact }] = useLazyQuery(CONTACT, {
   //   fetchPolicy: "cache-and-network",
   // });
@@ -2435,7 +2532,7 @@ function M1nTable(props) {
 
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
-    if (props.parent && props.parent === "trackOwners") {
+    if (props.parent && (props.parent === "trackOwners" || props.parent === "gridOwners")) {
       console.log("ue mintable 2");
       setTargetLabel("owner");
 
@@ -2514,7 +2611,7 @@ function M1nTable(props) {
   }, [dataTracks]);
 
   useEffect(() => {
-    if (props.parent && props.parent === "trackOwners" && dataOwners) {
+    if (props.parent && (props.parent === "trackOwners" || props.parent === "gridOwners") && dataOwners) {
       if (
         dataOwners.owners &&
         dataOwners.owners.length > 0 &&
@@ -2631,6 +2728,7 @@ function M1nTable(props) {
         setStateApp((state) => ({
           ...state,
           owners: owners,
+          gridOwnersCount: owners.length,
         }));
         setLoading(false);
       } else {
@@ -2835,6 +2933,280 @@ function M1nTable(props) {
       }
   }, [dataWells, dataTagSamples, dataCommentsCounter]);
   ////////////Tracked Wells end///////////////////////////////////////////////
+
+  ////////////Grid Wells begin///////////////////////////////////////////////
+  useEffect(() => {
+    if (props.parent && props.parent === "gridWells") {
+      getPaginatedShapeWells({
+        variables: {
+          polygon: stateApp.gridPolygonString,
+          userId: stateApp.user.mongoId,
+        },
+      });
+      getShapeWellsCount({
+        variables: {
+          polygon: stateApp.gridPolygonString,
+        },
+      });
+      setTargetLabel("well");
+      setHeader(props.header);
+      setAddAble(false);
+    }
+  }, [props.parent]);
+
+  useEffect(() => {
+    if (
+      props.parent && props.parent === "gridWells" &&
+      dataShapeWells && dataShapeWells.paginatedShapeWells
+    ) {
+      let wells = [...dataShapeWells.paginatedShapeWells.edges.map(
+        (el) => el.node
+      )];
+
+      const objectsIdsArray = dataShapeWells.paginatedShapeWells.edges.map(
+        (well) => well.node.id
+      );
+      getCommentsCounter({
+        variables: {
+          objectsIdsArray: objectsIdsArray,
+          userId: stateApp.user.mongoId,
+        },
+      });
+      getTagSamples({
+        variables: {
+          objectsIdsArray: objectsIdsArray,
+          userId: stateApp.user.mongoId,
+        },
+      });
+      
+      wells = wells.map((w) => {
+        let well = { ...w };
+
+        //// temporary to fix the ticks dates fields comming from the rest api
+        if (well.permitApprovedDate && well.permitApprovedDate != "null")
+          well.permitApprovedDate = ticksToDateString(
+            well.permitApprovedDate
+          );
+        if (well.spudDate && well.spudDate != "null")
+          well.spudDate = ticksToDateString(well.spudDate);
+        if (well.completionDate && well.completionDate != "null")
+          well.completionDate = ticksToDateString(well.completionDate);
+        if (well.firstProductionDate && well.firstProductionDate != "null")
+          well.firstProductionDate = ticksToDateString(
+            well.firstProductionDate
+          );
+        //// temporary end
+
+        well.isTracked = false;
+        well.commentsCounter = 0;
+        well.tags = [[], 0];
+        return well;
+      });
+
+      const cleanAvailableTags = []; // get from backend
+
+      setRows(wells);
+
+      const flyToColumn = {
+        name: "coordinates",
+        label: " ",
+        options: {
+          filter: false,
+          sort: false,
+          searchable: false,
+          download: false,
+          print: false,
+          viewColumns: false,
+        },
+      };
+      setColumns([
+        ...(cleanAvailableTags.length > 0
+          ? WellsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
+                    },
+                  },
+                };
+              }
+              return column;
+            })
+          : WellsHeadCells.map((column) => {
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })),
+        flyToColumn,
+      ]);
+
+      setStateApp((state) => ({
+        ...state,
+        gridWellsCount: wells.length,
+      }));
+      setLoading(false);
+    }
+  }, [dataShapeWells]);
+
+  useEffect(() => {
+    if (
+      props.parent && props.parent === "gridWells" &&
+      constDataTracks && constDataTracks.tracksByObjectType &&
+      dataShapeWells && dataShapeWells.paginatedShapeWells &&
+      dataCommentsCounter && dataCommentsCounter.commentsCounter &&
+      dataTagSamples && dataTagSamples.tagSamples
+    ) {
+      let wells = rows;
+      wells = wells.map((w) => {
+        let well = { ...w };
+
+        well.isTracked = false;
+        well.commentsCounter = 0;
+        well.tags = [[], 0];
+
+        for (let i = 0; i < constDataTracks.tracksByObjectType.length; i++) {
+          if (well.id === constDataTracks.tracksByObjectType[i].trackOn) {
+            well.isTracked = true;
+            break;
+          }
+        }
+        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+          if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+            well.commentsCounter =
+              dataCommentsCounter.commentsCounter[i].total;
+            break;
+          }
+        }
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (well.id === dataTagSamples.tagSamples[i]._id) {
+            well.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+        return well;
+      });
+
+      setRows(wells);
+      setLoading(false);
+    }
+  }, [dataShapeWells, dataTracks, dataCommentsCounter, dataTagSamples]);
+  ////////////Grid Wells end///////////////////////////////////////////////
+
+  ////////////Contact Wells begin///////////////////////////////////////////////
+  useEffect(() => {
+    if (props.parent && props.parent === "assocTaxRollInterests") {
+      console.log("m1ntable assocTaxRollInterests");
+      getContactWells({
+        variables: {
+          contactId: props.contactId,
+        },
+      });
+      setTargetLabel("well");
+      setHeader(props.header);
+      setAddAble(false);
+    }
+  }, [props.parent]);
+
+  useEffect(() => {
+    if (
+      props.parent && props.parent === "assocTaxRollInterests" &&
+      dataContactWells && dataContactWells.contactWells
+    ) {
+
+      let wells = dataContactWells.contactWells;
+      const objectsIdsArray = wells.map(
+        (well) => well._id
+      );
+      getCommentsCounter({
+        variables: {
+          objectsIdsArray: objectsIdsArray,
+          userId: stateApp.user.mongoId,
+        },
+      });
+      getTagSamples({
+        variables: {
+          objectsIdsArray: objectsIdsArray,
+          userId: stateApp.user.mongoId,
+        },
+      });
+      
+      wells = wells.map((w) => {
+        let well = { ...w };
+
+        well.isTracked = false;
+        well.commentsCounter = 0;
+        well.tags = [[], 0];
+        return well;
+      });
+
+      setRows(wells);
+      setColumns([...ContactWellHeadCells]);
+      setLoading(false);
+    }
+  }, [dataContactWells]);
+
+  /*useEffect(() => {
+    if (
+      props.parent && props.parent === "gridWells" &&
+      constDataTracks && constDataTracks.tracksByObjectType &&
+      dataShapeWells && dataShapeWells.paginatedShapeWells &&
+      dataCommentsCounter && dataCommentsCounter.commentsCounter &&
+      dataTagSamples && dataTagSamples.tagSamples
+    ) {
+      let wells = rows;
+      wells = wells.map((w) => {
+        let well = { ...w };
+
+        well.isTracked = false;
+        well.commentsCounter = 0;
+        well.tags = [[], 0];
+
+        for (let i = 0; i < constDataTracks.tracksByObjectType.length; i++) {
+          if (well.id === constDataTracks.tracksByObjectType[i].trackOn) {
+            well.isTracked = true;
+            break;
+          }
+        }
+        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+          if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+            well.commentsCounter =
+              dataCommentsCounter.commentsCounter[i].total;
+            break;
+          }
+        }
+        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+          if (well.id === dataTagSamples.tagSamples[i]._id) {
+            well.tags = [
+              dataTagSamples.tagSamples[i].tags,
+              dataTagSamples.tagSamples[i].total,
+            ];
+
+            break;
+          }
+        }
+        return well;
+      });
+
+      setRows(wells);
+      setLoading(false);
+    }
+  }, [dataShapeWells, dataTracks, dataCommentsCounter, dataTagSamples]);*/
+  ////////////Contact Wells end///////////////////////////////////////////////
 
   ////////////Wells Per Owner begin///////////////////////////////////////////
 
@@ -4809,6 +5181,15 @@ function M1nTable(props) {
           wellInterestsCount: selectedOwnerWellIntsSummary?.interestsCount
             ? selectedOwnerWellIntsSummary.interestsCount
             : 0,
+          setLoading,
+        }}
+        shapeWellsPageProps={{
+          getPaginatedShapeWells,
+          shapeWellsCount: (dataShapeWellsCount && dataShapeWellsCount.shapeWellsCount) ? dataShapeWellsCount.shapeWellsCount : 0,
+          /*getWellOptions,
+          wellInterestsCount: selectedOwnerWellIntsSummary?.interestsCount
+            ? selectedOwnerWellIntsSummary.interestsCount
+            : 0,*/
           setLoading,
         }}
         parent={props.parent}
