@@ -509,7 +509,7 @@ function MapGridCard(props) {
     <TabLabels
       labels={[
         "Wells",
-        "Owners",
+        "Tax Owners",
         "Operators",
         "Leases",
         "Parcels",
@@ -730,7 +730,7 @@ function MapGridCard(props) {
                                 ? stateApp.trackedwells.length
                                 : 0
                             })`,
-                            `Owners (${
+                            `Tax Owners (${
                               stateApp.owners ? stateApp.owners.length : 0
                             })`,
                           ]}
@@ -750,7 +750,7 @@ function MapGridCard(props) {
                                 ? stateApp.trackedwells.length
                                 : 0
                             })`,
-                            `Owners (${
+                            `Tax Owners (${
                               stateApp.owners ? stateApp.owners.length : 0
                             })`,
                           ]}

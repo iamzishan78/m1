@@ -638,6 +638,7 @@ const SearchsHeadCells = [
       searchable: false,
       download: false,
       print: false,
+      viewColumns: false,
       filterOptions: {
         names: ["Tracked", "Untracked"],
         logic(tracked, filterVal) {
@@ -2973,7 +2974,8 @@ function M1nTable(props) {
 
         if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
 
-        if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
+        if (props.showTracks) 
+          buildingColumns.push(SearchsHeadCells[3]);
         if (
           props.targetLabel &&
           (props.targetLabel == "well" || props.targetLabel == "owner")
