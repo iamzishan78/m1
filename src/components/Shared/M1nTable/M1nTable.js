@@ -2163,7 +2163,7 @@ const ProductionDetailsHeaders = [
 
 const ContactWellHeadCells = [
   {
-    name: "id",
+    name: "_id",
     options: {
       display: false,
       filter: false,
@@ -2219,7 +2219,7 @@ const ContactWellHeadCells = [
   },
   {
     name: "isTracked",
-    label: "Track",
+    label: " ",
     options: {
       searchable: false,
       download: false,
@@ -2234,6 +2234,18 @@ const ContactWellHeadCells = [
         },
       },
       filterType: "dropdown",
+    },
+  },
+  {
+    name: "detailCard",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
 ];
@@ -3110,7 +3122,6 @@ function M1nTable(props) {
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "assocTaxRollInterests") {
-      console.log("m1ntable assocTaxRollInterests");
       getContactWells({
         variables: {
           contactId: props.contactId,
@@ -3148,6 +3159,7 @@ function M1nTable(props) {
       wells = wells.map((w) => {
         let well = { ...w };
 
+        well.detailCard = well.wellId;
         well.isTracked = false;
         well.commentsCounter = 0;
         well.tags = [[], 0];
@@ -3155,16 +3167,48 @@ function M1nTable(props) {
       });
 
       setRows(wells);
-      setColumns([...ContactWellHeadCells]);
+
+      const cleanAvailableTags = []; // get from backend
+      setColumns([
+        ...(cleanAvailableTags.length > 0
+          ? ContactWellHeadCells.map((column) => {
+            if (column.name === "tags") {
+              return {
+                ...column,
+                options: {
+                  ...column.options,
+                  filterOptions: {
+                    ...column.options.filterOptions,
+                    names: cleanAvailableTags,
+                  },
+                },
+              };
+            }
+            return column;
+          })
+          : ContactWellHeadCells.map((column) => {
+            if (column.name === "tags") {
+              return {
+                ...column,
+                options: {
+                  ...column.options,
+                  filter: false,
+                },
+              };
+            }
+            return column;
+          })),
+        //flyToColumn,
+      ]);
       setLoading(false);
     }
   }, [dataContactWells]);
 
-  /*useEffect(() => {
+  useEffect(() => {
     if (
-      props.parent && props.parent === "gridWells" &&
+      props.parent && props.parent === "assocTaxRollInterests" &&
       constDataTracks && constDataTracks.tracksByObjectType &&
-      dataShapeWells && dataShapeWells.paginatedShapeWells &&
+      dataContactWells && dataContactWells.contactWells &&
       dataCommentsCounter && dataCommentsCounter.commentsCounter &&
       dataTagSamples && dataTagSamples.tagSamples
     ) {
@@ -3172,25 +3216,26 @@ function M1nTable(props) {
       wells = wells.map((w) => {
         let well = { ...w };
 
+        well.detailCard = well.wellId;
         well.isTracked = false;
         well.commentsCounter = 0;
         well.tags = [[], 0];
 
         for (let i = 0; i < constDataTracks.tracksByObjectType.length; i++) {
-          if (well.id === constDataTracks.tracksByObjectType[i].trackOn) {
+          if (well._id === constDataTracks.tracksByObjectType[i].trackOn) {
             well.isTracked = true;
             break;
           }
         }
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+          if (well._id === dataCommentsCounter.commentsCounter[i]._id) {
             well.commentsCounter =
               dataCommentsCounter.commentsCounter[i].total;
             break;
           }
         }
         for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (well.id === dataTagSamples.tagSamples[i]._id) {
+          if (well._id === dataTagSamples.tagSamples[i]._id) {
             well.tags = [
               dataTagSamples.tagSamples[i].tags,
               dataTagSamples.tagSamples[i].total,
@@ -3205,7 +3250,7 @@ function M1nTable(props) {
       setRows(wells);
       setLoading(false);
     }
-  }, [dataShapeWells, dataTracks, dataCommentsCounter, dataTagSamples]);*/
+  }, [dataContactWells, dataTracks, dataCommentsCounter, dataTagSamples]);
   ////////////Contact Wells end///////////////////////////////////////////////
 
   ////////////Wells Per Owner begin///////////////////////////////////////////

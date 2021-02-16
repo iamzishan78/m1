@@ -8,8 +8,8 @@ import Search from "./components/Search";
 import M1nTable from "../../../Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import Button from "@material-ui/core/Button";
-import TabLabels from "../../../MapGridCard/MapGridCard";
-import TabPanels from "../../../MapGridCard/MapGridCard";
+//import TabLabels from "../../../MapGridCard/MapGridCard";
+//import TabPanels from "../../../MapGridCard/MapGridCard";
 
 const useStyles = makeStyles((theme) => ({
   tapsPanels: {
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 function ContactsWellInterestsParcelInterests(props) {
-  console.log('ContactsWellInterestsParcelInterests')
+  console.log('ContactsWellInterestsParcelInterests2')
   console.log('props', props)
   console.log('props.contactData', props.contactData)
 
@@ -37,35 +37,23 @@ function ContactsWellInterestsParcelInterests(props) {
     }
   };
 
-  const header = <TabLabels
+  /*const header = <TabLabels
     labels={[
       `Tax Roll Interests`,
       `Parcel Interests`,
     ]}
     value={assocTapValue}
     setValue={setAssocTapValue}
-  />;
+  />;*/
 
   const classes = useStyles({});
 
   return (
     <div>
-      {/*<Search />*/}
       <div style={{ position: "relative" }}>
-        <TabPanels
-          value={assocTapValue}
-          panels={[
-            <M1nTable
-              dense
-              parent="assocTaxRollInterests"
-              header={ header }
-            />,
-            {/*<M1nTable
-              dense
-              parent="assocParcelInterests"
-              header={ header }
-            />,*/}
-          ]}
+        <M1nTable
+          parent="assocTaxRollInterests"
+          contactId={ props.contactData._id }
         />
       </div>
     </div>

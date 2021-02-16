@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 
 export const CONTACTWELLS = gql`
   query getContactWells(
-    $contactId: String
+    $contactId: ID
   ) {
     contactWells(
       contactId: $contactId
