@@ -33,6 +33,7 @@ import MakeItAContactConfirmationDialogContent from "./SubComponents/MakeItACont
 import Button from "@material-ui/core/Button";
 import LocalPrintshopRoundedIcon from "@material-ui/icons/LocalPrintshopRounded";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
+import MergeTypeIcon from "@material-ui/icons/MergeType";
 import ContactPhoneRoundedIcon from "@material-ui/icons/ContactPhoneRounded";
 import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
 import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
@@ -70,11 +71,13 @@ import { WELLQUERY } from "../../../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
 import WellTableStyles from "../customStyles/WellTableStyle";
 import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
-import ProductionTableStyle from '../customStyles/ProductionDetailsStyle';
+import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
 import moment from "moment";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckIcon from "@material-ui/icons/Check";
+import AlertDialogSlide from "../../../Contacts/components/RightDialog";
+import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 
 var ticksToDateString = function (ticks) {
   var epochTicks = 621355968000000000;
@@ -142,12 +145,12 @@ const customStyles = makeStyles((theme) => ({
     "& thead": {
       opacity: "1",
       transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
+      webkitTransition: "opacity 1s ease-out",
     },
     "& tbody": {
       opacity: "1",
       transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
+      webkitTransition: "opacity 1s ease-out",
     },
   },
 }));
@@ -185,12 +188,12 @@ const productionStyle = makeStyles((theme) => ({
     "& thead": {
       opacity: "1",
       transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
+      webkitTransition: "opacity 1s ease-out",
     },
     "& tbody": {
       opacity: "1",
       transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
+      webkitTransition: "opacity 1s ease-out",
     },
   },
 }));
@@ -217,21 +220,30 @@ const useStyles = makeStyles((theme) => ({
       paddingRight: (props) => (props.dense ? "12px" : null),
       "& td": {
         "& div": {
-          padding: (props) => ((props.parent === "ownersPerParcel" || props.parent === "ownersPerParcelWells") && "0 5px !important"),
-          width: (props) => ((props.parent === "ownersPerParcel" || props.parent === "ownersPerParcelWells") && "max-content !important"),
-          maxWidth: (props) => ((props.parent === "ownersPerParcel" || props.parent === "ownersPerParcelWells") && "300px !important"),
+          padding: (props) =>
+            (props.parent === "ownersPerParcel" ||
+              props.parent === "ownersPerParcelWells") &&
+            "0 5px !important",
+          width: (props) =>
+            (props.parent === "ownersPerParcel" ||
+              props.parent === "ownersPerParcelWells") &&
+            "max-content !important",
+          maxWidth: (props) =>
+            (props.parent === "ownersPerParcel" ||
+              props.parent === "ownersPerParcelWells") &&
+            "300px !important",
         },
-      }
+      },
     },
     "& thead": {
       opacity: "1",
       transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
+      webkitTransition: "opacity 1s ease-out",
     },
     "& tbody": {
       opacity: "1",
       transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
+      webkitTransition: "opacity 1s ease-out",
     },
   },
   loadingTable: {
@@ -1314,8 +1326,9 @@ function SubTable(props) {
                                 },
                                 "makeOwnerAContact"
                               );
-                            } 
-                            else if (props.targetLabel == "Parcel Ownership") {
+                            } else if (
+                              props.targetLabel == "Parcel Ownership"
+                            ) {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
@@ -1328,7 +1341,7 @@ function SubTable(props) {
                                 },
                                 "makeOwnerAContact"
                               );
-                            }else
+                            } else
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
@@ -1811,24 +1824,23 @@ function SubTable(props) {
     handleOpenExpandableCard();
   };
 
-  
   let history = useHistory();
 
   let routeChange = (route) => {
     history.push(route);
   };
 
-  useEffect(()=> {
+  useEffect(() => {
     if (props.targetLabel) {
       let ret_val = null;
-      switch(props.targetLabel) {
-        case 'owner':
+      switch (props.targetLabel) {
+        case "owner":
           ret_val = wellTableClass.table;
           break;
-        case 'production_detail':
+        case "production_detail":
           ret_val = productionClass.table;
           break;
-        case 'Parcel Ownership':
+        case "Parcel Ownership":
           ret_val = parcelTableClass.table;
           break;
         default:
@@ -1837,7 +1849,7 @@ function SubTable(props) {
       }
       setTableStyle(ret_val);
     }
-  }, [props.targetLabel])
+  }, [props.targetLabel]);
 
   const options = {
     filterType: "dropdown",
@@ -1955,6 +1967,24 @@ function SubTable(props) {
                 >
                   {props.header !== "Active Users" && (
                     <>
+                      {m1nSelectedRowsIndexes?.length > 1 && (
+                        <Button
+                          color="secondary"
+                          startIcon={<MergeTypeIcon />}
+                          className={classes.multiSelectionTopBarButtons}
+                          onClick={() => {
+                            handleExpandClick(
+                              null,
+                              null,
+                              getSelectedRows(),
+                              "merge"
+                            );
+                          }}
+                        >
+                          Merge
+                        </Button>
+                      )}
+
                       <Button
                         color="secondary"
                         startIcon={<ContactPhoneRoundedIcon />}
@@ -2210,8 +2240,8 @@ function SubTable(props) {
           }));
       }
 
-      if (props.targetLabel === "Parcel Ownership"){
-        if (rows[dataIndex]?._id){
+      if (props.targetLabel === "Parcel Ownership") {
+        if (rows[dataIndex]?._id) {
           setOpenDialog("addOwnerToParcel");
           setSelectedRow(rows[dataIndex]);
         }
@@ -2936,6 +2966,14 @@ function SubTable(props) {
             )}
             {openDialog === "buyContactsInfo" && (
               <BuyContactsInfoDialogContent
+                onClose={handleCloseDialog}
+                rows={expandedObject}
+                setRows={setExpandedObject}
+                setSelectedRow={setSelectedRow}
+              />
+            )}
+            {openDialog === "merge" && (
+              <MergeContactDrawer
                 onClose={handleCloseDialog}
                 rows={expandedObject}
                 setRows={setExpandedObject}
