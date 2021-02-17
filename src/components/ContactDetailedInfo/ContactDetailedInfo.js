@@ -181,7 +181,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DetailInfo(props) {
   const [basicInfExp, setBasicInfExp] = useState(false);
-  const [showEmpty, setShowEmpty] = useState(false);
+  const [showEmpty, setShowEmpty] = useState(true);
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const basicInfoContent = {

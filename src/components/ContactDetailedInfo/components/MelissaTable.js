@@ -137,7 +137,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default ({ ...props }) => {
   const classes = useStyles();
-  const [showEmpty, setShowEmpty] = useState(false);
+  const [showEmpty, setShowEmpty] = useState(true);
 
   const handleEmptyFields = () => {
     setShowEmpty(!showEmpty);

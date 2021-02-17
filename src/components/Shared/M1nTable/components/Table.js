@@ -2712,7 +2712,7 @@ function SubTable(props) {
           // data={rows ? rows : []}
           columns={columns ? columns : []}
           components={{
-            TableFilterList: TableFilterList,
+            TableFilterList: props.header == 'Tax Roll Ownership' ? TableFilterList : null,
           }}
           options={{
             download:
