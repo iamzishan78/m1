@@ -65,9 +65,9 @@ const useStyles = makeStyles((theme) => ({
 		display: "flex",
 		alignItems: "center",
 		justifyContent: "center",
-    "& svg": {
-      transform: "scaleX(0.5)"
-    }
+		"& svg": {
+			transform: "scaleX(0.5)",
+		},
 	},
 	subHeaderItem: {
 		backgroundColor: "#011133 !important",
@@ -162,9 +162,21 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		}
 	}, [type]);
 
+	console.log("props", {
+		type,
+		title,
+		headerButton,
+		handleToggle,
+		onDragEnd,
+		items,
+	});
+
 	useEffect(() => {
 		console.log("type and layer", type, items);
-		if ((type === "layer" || type === "heatMaps") && items) {
+		if (
+			(type === "layer" || type === "heatMaps" || type === "marketplace") &&
+			items
+		) {
 			setLayerMap(items);
 		} else if (type === "base" && items) {
 			setLayerMap(
@@ -325,6 +337,91 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		},
 	}))(ListItemSecondaryAction);
 
+	const MarketPlaceListItem = withStyles((theme) => ({
+		root: {
+			fontFamily: "Poppins",
+			"&:hover": {
+				background: "#cccccc",
+			},
+			marginBottom: "0.4rem",
+			color: "black",
+			border: "1px solid grey",
+			backgroundColor: "white",
+			display: "flex",
+			flexDirection: "column",
+			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+				color: theme.palette.common.white,
+			},
+			"& .MuiListItemText-primary svg": {
+				marginLeft: "5px",
+				verticalAlign: "middle",
+			},
+		},
+	}))(ListItem);
+
+	const MarketPlaceUpper = withStyles((theme) => ({
+		root: {
+			fontFamily: "Poppins",
+			"&:hover": {
+				background: "#cccccc",
+			},
+			color: "black",
+
+			display: "flex",
+			flexDirection: "row",
+			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+				color: theme.palette.common.white,
+			},
+			"& .MuiListItemText-primary svg": {
+				marginLeft: "5px",
+				verticalAlign: "middle",
+			},
+		},
+	}))(ListItem);
+
+	const MarketPlaceLower = withStyles((theme) => ({
+		root: {
+			fontFamily: "Poppins",
+			"&:hover": {
+				background: "#cccccc",
+			},
+			color: "black",
+			backgroundColor: "white",
+			display: "flex",
+			flexDirection: "row",
+			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+				color: theme.palette.common.white,
+			},
+			"& .MuiListItemText-primary svg": {
+				marginLeft: "5px",
+				verticalAlign: "middle",
+			},
+		},
+	}))(ListItem);
+
+	const MarketPlaceLowerItems = withStyles((theme) => ({
+		root: {
+			fontFamily: "Poppins",
+			"&:hover": {
+				background: "#cccccc",
+			},
+			color: "black",
+			marginRight: "3px",
+			backgroundColor: "white",
+			display: "flex",
+			flexDirection: "column",
+			alignItems: "center",
+			textAlign: "center",
+			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+				color: theme.palette.common.white,
+			},
+			"& .MuiListItemText-primary svg": {
+				marginLeft: "5px",
+				verticalAlign: "middle",
+			},
+		},
+	}))(ListItem);
+
 	const StyledListItem = withStyles((theme) => ({
 		root: {
 			fontFamily: "Poppins",
@@ -387,6 +484,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	};
 
 	const getLayerName = (layer) => {
+		if (type === "marketplace") {
+			return layer.layerName;
+		}
 		if (type !== "layer") return layer.name;
 
 		if (layer.layerCategory == "M1 Layer") {
@@ -593,6 +693,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 								if (
 									type === "heatMaps" ||
 									type === "base" ||
+									type === "marketplace" ||
 									(type === "layer" &&
 										layer.layerSettings &&
 										layer.layerSettings.showable &&
@@ -609,45 +710,74 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 													borderColor={getLayerColor(layer)}
 													{...defaultProps}
 												>
-													<StyledListItem
-														ContainerComponent="li"
-														ref={provided.innerRef}
-														{...provided.draggableProps}
-													>
-														<ListItemIcon {...provided.dragHandleProps}>
-															<DragIndicator />
-														</ListItemIcon>
-														<ListItemText
-															id={labelId}
-															primary={getLayerName(layer)}
-															className={
-																checkIfNoLayerData(layer)
-																	? classes.disabledLayerTitle
-																	: ""
-															}
-														/>
-														{type === "layer" &&
-															layer.layerSettings.colorable &&
-															getLayerControls(layer, labelId, index)}
-														<FormControlLabel
-															control={
-																<Switch
-																	disabled={
-																		checkIfNoLayerData(layer)
-																			? classes.disabledLayerTitle
-																			: ""
-																	}
-																	checked={getLayerChecked({
-																		layer,
-																		index,
-																	})}
-																	onChange={() =>
-																		handleToggle({ layer, index })
-																	}
-																/>
-															}
-														/>
-													</StyledListItem>
+													{type === "marketplace" ? (
+														<MarketPlaceListItem>
+															<MarketPlaceUpper>Hello</MarketPlaceUpper>
+															<MarketPlaceLower>
+																<MarketPlaceLowerItems>
+																	<div>Asking Price</div>
+																	<div>Offer</div>
+																</MarketPlaceLowerItems>
+																<MarketPlaceLowerItems>
+																	<div>Asking Price</div>
+																	<div>Offer</div>
+																</MarketPlaceLowerItems>
+																<MarketPlaceLowerItems>
+																	<div>Asking Price</div>
+																	<div>Offer</div>
+																</MarketPlaceLowerItems>
+																<MarketPlaceLowerItems>
+																	<div>Asking Price</div>
+																	<div>Offer</div>
+																</MarketPlaceLowerItems>
+																<MarketPlaceLowerItems>
+																	<div>Asking Price</div>
+																	<div>Offer</div>
+																</MarketPlaceLowerItems>
+															</MarketPlaceLower>
+														</MarketPlaceListItem>
+													) : (
+														<StyledListItem
+															ContainerComponent="li"
+															ref={provided.innerRef}
+															{...provided.draggableProps}
+														>
+															<ListItemIcon {...provided.dragHandleProps}>
+																<DragIndicator />
+															</ListItemIcon>
+															<ListItemText
+																id={labelId}
+																primary={getLayerName(layer)}
+																//primary="Hello"
+																className={
+																	checkIfNoLayerData(layer)
+																		? classes.disabledLayerTitle
+																		: ""
+																}
+															/>
+															{type === "layer" &&
+																layer.layerSettings.colorable &&
+																getLayerControls(layer, labelId, index)}
+															<FormControlLabel
+																control={
+																	<Switch
+																		disabled={
+																			checkIfNoLayerData(layer)
+																				? classes.disabledLayerTitle
+																				: ""
+																		}
+																		checked={getLayerChecked({
+																			layer,
+																			index,
+																		})}
+																		onChange={() =>
+																			handleToggle({ layer, index })
+																		}
+																	/>
+																}
+															/>
+														</StyledListItem>
+													)}
 												</Box>
 											)}
 										</Draggable>
@@ -672,8 +802,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 				maxWidth: "500px",
 				top: "90px",
 				left: stateMapControls.panelExpanded ? "30px" : "-405px",
-        transition: "left 0.5s ease-in-out",
-        listStyleType: "none"
+				transition: "left 0.5s ease-in-out",
+				listStyleType: "none",
 			}}
 		>
 			<StyledMenu
