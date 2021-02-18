@@ -34,9 +34,11 @@ export const PAGINATEDCONTACTSQUERY = gql`
           suffix
           mobilePhone
           homePhone
+          AltPhone
           primaryEmail
           owners
           leadSource
+          companyName
           lastUpdateAt
           lastUpdateBy {
             name
