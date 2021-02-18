@@ -31,6 +31,7 @@ import MapSatelliteIcon from "../../svgIcons/MapSatelliteIcon";
 import MapLightIcon from "../../svgIcons/MapLightIcon";
 import MapBasicIcon from "../../svgIcons/MapBasicIcon";
 import Collapse from "@material-ui/core/Collapse";
+import Select from "@material-ui/core/Select";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 import { UPDATELAYERSETTINGS } from "../../../../graphQL/useMutationUpdateLayerSettings";
 import { useMutation } from "@apollo/client";
@@ -38,6 +39,10 @@ import Box from "@material-ui/core/Box";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { useSelector } from "react-redux";
 import { deepEqualObjects } from "../../functions";
+import StarIcon from "@material-ui/icons/Star";
+import ListIcon from "@material-ui/icons/List";
+import BusinessIcon from "@material-ui/icons/Business";
+import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
 
 const theme = createMuiTheme({
 	overrides: {
@@ -121,6 +126,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		MapControlsContext
 	);
 	const [stateApp, setStateApp] = useContext(AppContext);
+	const [view, setView] = React.useState("All");
+	const [sortBy, setSortBy] = React.useState("Recently Posted");
 
 	const classes = useStyles();
 
@@ -292,9 +299,38 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		borderLeft: 4,
 	};
 
+	const MarketplaceDropdown = withStyles((theme) => ({
+		icon: {
+			color: "white",
+			fill: "white",
+		},
+		root: {
+			fontFamily: "Poppins",
+			display: "flex",
+			fontWeight: "light",
+			justifyContent: "space-between",
+			color: "white",
+			minWidth: "8rem",
+			// "&:hover": {
+			// 	background: "#4B618F",
+			// },
+			// backgroundColor: "#263451",
+			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+				color: theme.palette.common.white,
+			},
+			"& .MuiButton-textPrimary": {
+				color: theme.palette.common.white,
+				background: "#17acdd",
+				padding: "3px 10px",
+			},
+		},
+	}))(Select);
+
 	const StyledMenuHeaderItem = withStyles((theme) => ({
 		root: {
 			fontFamily: "Poppins",
+			display: "flex",
+			justifyContent: "space-between",
 			"&:hover": {
 				background: "#4B618F",
 			},
@@ -340,9 +376,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	const MarketPlaceListItem = withStyles((theme) => ({
 		root: {
 			fontFamily: "Poppins",
-			"&:hover": {
-				background: "#cccccc",
-			},
+			// "&:hover": {
+			// 	background: "#cccccc",
+			// },
+			display: "flex",
+
+			alignItems: "center",
 			marginBottom: "0.4rem",
 			color: "black",
 			border: "1px solid grey",
@@ -359,16 +398,36 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		},
 	}))(ListItem);
 
-	const MarketPlaceUpper = withStyles((theme) => ({
+	const MarketPlaceHeader = withStyles((theme) => ({
 		root: {
 			fontFamily: "Poppins",
 			"&:hover": {
-				background: "#cccccc",
+				background: "#4B618F",
 			},
+			display: "flex",
+			justifyContent: "space-between",
+			backgroundColor: "#263451",
+			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+				color: theme.palette.common.white,
+			},
+			"& .MuiListItemText-primary svg": {
+				marginLeft: "5px",
+				verticalAlign: "middle",
+			},
+		},
+	}))(ListItem);
+
+	const MarketPlaceUpper = withStyles((theme) => ({
+		root: {
+			fontFamily: "Poppins",
+			// "&:hover": {
+			// 	background: "#cccccc",
+			// },
 			color: "black",
 
 			display: "flex",
 			flexDirection: "row",
+			justifyContent: "space-between",
 			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
 				color: theme.palette.common.white,
 			},
@@ -382,9 +441,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	const MarketPlaceLower = withStyles((theme) => ({
 		root: {
 			fontFamily: "Poppins",
-			"&:hover": {
-				background: "#cccccc",
-			},
+			// "&:hover": {
+			// 	background: "#cccccc",
+			// },
 			color: "black",
 			backgroundColor: "white",
 			display: "flex",
@@ -402,21 +461,23 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	const MarketPlaceLowerItems = withStyles((theme) => ({
 		root: {
 			fontFamily: "Poppins",
-			"&:hover": {
-				background: "#cccccc",
-			},
+			// "&:hover": {
+			// 	background: "#cccccc",
+			// },
 			color: "black",
+			width: "6rem",
 			marginRight: "3px",
 			backgroundColor: "white",
+			padding: "0",
 			display: "flex",
 			flexDirection: "column",
-			alignItems: "center",
-			textAlign: "center",
+			alignItems: "flex-start",
+			// textAlign: "center",
 			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
 				color: theme.palette.common.white,
 			},
 			"& .MuiListItemText-primary svg": {
-				marginLeft: "5px",
+				//marginLeft: "5px",
 				verticalAlign: "middle",
 			},
 		},
@@ -685,7 +746,13 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			<Droppable droppableId="droppableM1">
 				{(provided, snapshot) => (
 					<RootRef rootRef={provided.innerRef}>
-						<List className={classes.list}>
+						<List
+							style={{
+								maxHeight: "775px",
+								overflowY: type === "marketplace" ? "scroll" : "hidden",
+							}}
+							className={classes.list}
+						>
 							{layerMap.map((layer, index) => {
 								const labelId = `checkbox-list-label-${index}`;
 
@@ -712,27 +779,32 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 												>
 													{type === "marketplace" ? (
 														<MarketPlaceListItem>
-															<MarketPlaceUpper>Hello</MarketPlaceUpper>
+															<MarketPlaceUpper>
+																<BusinessIcon />
+																<span>Martin, TX - 308 NRA - Permian</span>
+																<SupervisedUserCircleIcon />
+																<StarIcon />
+															</MarketPlaceUpper>
 															<MarketPlaceLower>
 																<MarketPlaceLowerItems>
 																	<div>Asking Price</div>
-																	<div>Offer</div>
+																	<div>$127K</div>
 																</MarketPlaceLowerItems>
 																<MarketPlaceLowerItems>
-																	<div>Asking Price</div>
-																	<div>Offer</div>
+																	<div>Avg. Revenue</div>
+																	<div>$22K</div>
 																</MarketPlaceLowerItems>
 																<MarketPlaceLowerItems>
-																	<div>Asking Price</div>
-																	<div>Offer</div>
+																	<div>Wells</div>
+																	<div>26</div>
 																</MarketPlaceLowerItems>
 																<MarketPlaceLowerItems>
-																	<div>Asking Price</div>
-																	<div>Offer</div>
+																	<div>Permits</div>
+																	<div>3</div>
 																</MarketPlaceLowerItems>
 																<MarketPlaceLowerItems>
-																	<div>Asking Price</div>
-																	<div>Offer</div>
+																	<div>Listing</div>
+																	<ListIcon />
 																</MarketPlaceLowerItems>
 															</MarketPlaceLower>
 														</MarketPlaceListItem>
@@ -801,7 +873,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 				width: "500px",
 				maxWidth: "500px",
 				top: "90px",
-				left: stateMapControls.panelExpanded ? "30px" : "-405px",
+				left: stateMapControls.panelExpanded
+					? "30px"
+					: type === "marketplace"
+					? "-639px"
+					: "-405px",
 				transition: "left 0.5s ease-in-out",
 				listStyleType: "none",
 			}}
@@ -821,7 +897,44 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					dense
 					className={classes.subHeaderItem}
 				>
-					<ListItemText primary={title} />
+					{type === "marketplace" ? (
+						<>
+							<div>
+								<span style={{ marginRight: "2rem", color: "#00B0F0" }}>
+									View
+								</span>
+
+								<MarketplaceDropdown
+									labelId="demo-simple-select-label"
+									id="demo-simple-select"
+									value={view}
+									onChange={(e) => setView(e.target.value)}
+								>
+									<MenuItem value={"All"}>All</MenuItem>
+									<MenuItem value={"Twenty"}>Twenty</MenuItem>
+									<MenuItem value={"Thirty"}>Thirty</MenuItem>
+								</MarketplaceDropdown>
+							</div>
+
+							<div>
+								<span style={{ marginRight: "2rem", color: "#00B0F0" }}>
+									Sort By
+								</span>
+								<MarketplaceDropdown
+									labelId="demo-simple-select-label"
+									id="demo-simple-select"
+									value={sortBy}
+									onChange={(e) => setSortBy(e.target.value)}
+								>
+									<MenuItem value={"Recently Posted"}>Recently Posted</MenuItem>
+									<MenuItem value={"Twenty"}>Twenty</MenuItem>
+									<MenuItem value={"Thirty"}>Thirty</MenuItem>
+								</MarketplaceDropdown>
+							</div>
+						</>
+					) : (
+						<ListItemText primary={title} />
+					)}
 					{headerButton && (
 						<StyledListItemSecondaryAction>
 							<Button
