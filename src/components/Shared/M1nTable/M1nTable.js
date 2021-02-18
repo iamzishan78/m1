@@ -691,7 +691,6 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
-
   {
     name: "address1",
     label: "Primary Address 1",
@@ -770,7 +769,6 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
-
   {
     name: "name",
     label: "Full Name",
@@ -831,6 +829,16 @@ const ContactsHeadCells = [
     },
   },
   {
+    name: "companyName",
+    label: "Company Name",
+    options: {
+      // display: true,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
     name: "fullContactAddress",
     label: "Primary Address",
     // editable: true,
@@ -852,30 +860,20 @@ const ContactsHeadCells = [
     },
   },
   {
-    name: "mobilephone",
-    label: "Primary Mobile Phone",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-    },
-  },
-  {
     name: "homePhone",
     label: "Primary Home Phone",
     options: {
-      display: false,
+      // display: true,
       filter: false,
       searchable: false,
       sort: false,
     },
   },
   {
-    name: "primaryEmail",
-    label: "Primary Email",
+    name: "mobilePhone",
+    label: "Primary Mobile Phone",
     options: {
-      display: false,
+      // display: true,
       filter: false,
       searchable: false,
       sort: false,
@@ -885,7 +883,17 @@ const ContactsHeadCells = [
     name: "AltPhone",
     label: "Primary Work Phone",
     options: {
-      display: false,
+      // display: true,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "primaryEmail",
+    label: "Primary Email",
+    options: {
+      // display: true,
       filter: false,
       searchable: false,
       sort: false,
@@ -924,16 +932,6 @@ const ContactsHeadCells = [
   {
     name: "twitter",
     label: "Twitter Profile",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-    },
-  },
-  {
-    name: "companyName",
-    label: "Company Name",
     options: {
       display: false,
       filter: false,
@@ -1106,6 +1104,7 @@ const ContactsHeadCells = [
     label: "Lead Source",
     // editable: false,
     options: {
+      display: false,
       sort: false,
       filterOptions: {
         names: [],
@@ -1116,6 +1115,7 @@ const ContactsHeadCells = [
     name: "lastUpdateBy.name",
     label: "Updated By",
     options: {
+      display: false,
       sort: false,
       filterOptions: {
         names: [],
