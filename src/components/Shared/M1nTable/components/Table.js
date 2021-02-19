@@ -1694,7 +1694,7 @@ function SubTable(props) {
                   }
 
                   return (
-                    <div style={{ display: "flex" }}>
+                    <div style={{ display: "flex",alignItems: "center", justifyContent: "left" }}>
                       {props.targetLabel === "contact" &&
                         column.name === "name" && (
                           <Avatar
