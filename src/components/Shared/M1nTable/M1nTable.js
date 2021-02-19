@@ -696,7 +696,6 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
-
   {
     name: "address1",
     label: "Primary Address 1",
@@ -775,7 +774,6 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
-
   {
     name: "name",
     label: "Full Name",
@@ -836,6 +834,16 @@ const ContactsHeadCells = [
     },
   },
   {
+    name: "companyName",
+    label: "Company Name",
+    options: {
+      // display: true,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
     name: "fullContactAddress",
     label: "Primary Address",
     // editable: true,
@@ -857,30 +865,20 @@ const ContactsHeadCells = [
     },
   },
   {
-    name: "mobilephone",
-    label: "Primary Mobile Phone",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-    },
-  },
-  {
     name: "homePhone",
     label: "Primary Home Phone",
     options: {
-      display: false,
+      // display: true,
       filter: false,
       searchable: false,
       sort: false,
     },
   },
   {
-    name: "primaryEmail",
-    label: "Primary Email",
+    name: "mobilePhone",
+    label: "Primary Mobile Phone",
     options: {
-      display: false,
+      // display: true,
       filter: false,
       searchable: false,
       sort: false,
@@ -890,7 +888,17 @@ const ContactsHeadCells = [
     name: "AltPhone",
     label: "Primary Work Phone",
     options: {
-      display: false,
+      // display: true,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
+    name: "primaryEmail",
+    label: "Primary Email",
+    options: {
+      // display: true,
       filter: false,
       searchable: false,
       sort: false,
@@ -929,16 +937,6 @@ const ContactsHeadCells = [
   {
     name: "twitter",
     label: "Twitter Profile",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-    },
-  },
-  {
-    name: "companyName",
-    label: "Company Name",
     options: {
       display: false,
       filter: false,
@@ -1111,6 +1109,7 @@ const ContactsHeadCells = [
     label: "Lead Source",
     // editable: false,
     options: {
+      display: false,
       sort: false,
       filterOptions: {
         names: [],
@@ -1121,6 +1120,7 @@ const ContactsHeadCells = [
     name: "lastUpdateBy.name",
     label: "Updated By",
     options: {
+      display: false,
       sort: false,
       filterOptions: {
         names: [],
@@ -2176,7 +2176,7 @@ const ContactWellHeadCells = [
   },
   { name: "wellName", label: "Well" },
   { name: "api", label: "API" },
-  { name: "lease", label: "Lease Name" },
+  { name: "lease", label: "Lease" },
   { name: "leaseAcres", label: "Lease Acres" },
   { name: "interestOwner", label: "Interest Owner" },
   { name: "entity", label: "Entity" },
@@ -4643,17 +4643,6 @@ function M1nTable(props) {
 
       //   dealsRowsData.push(dealData);
       // });
-
-      let currencyFormat = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-
-      let dateFormat = new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        day: "numeric",
-        month: "numeric",
-      });
 
       // let contactDealRows = [
       //   ...dataDeals.contactDeals.map((deal) => {

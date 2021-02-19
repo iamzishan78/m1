@@ -66,14 +66,14 @@ export default function WellsCard(props) {
 
         <div>
           <h5 className={classes.h5}>
-            Cum. Prod (BOE)
+            Types of Interest
             <br />
             <span className={classes.lastContactedSpan}>-</span>
           </h5>
           <h5 className={classes.h5}>
-            Avg Mo. Prod (BOE)
+            Average Value
             <br />
-            <span className={classes.lastContactedSpan}>-</span>
+            <span className={classes.lastContactedSpan}>$</span>
           </h5>
         </div>
       </div>

@@ -188,11 +188,12 @@ export default function MapControls(props) {
         name: "Toggle Zoom Out",
         action: "zoomout",
       },
-      {
-        icon: <AttachMoneyIcon />,
-        name: "Marketplace",
-        action: "marketplace",
-      },
+      // temp delete for marketplace
+      // {
+      //   icon: <AttachMoneyIcon />,
+      //   name: "Marketplace",
+      //   action: "marketplace",
+      // },
     ];
 
     return actions.map((action) => (
