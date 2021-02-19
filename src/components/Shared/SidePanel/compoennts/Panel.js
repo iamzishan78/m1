@@ -43,6 +43,8 @@ import StarIcon from "@material-ui/icons/Star";
 import ListIcon from "@material-ui/icons/List";
 import BusinessIcon from "@material-ui/icons/Business";
 import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
+import MarketPlaceData from "./marketplace.json";
+import GavelIcon from "@material-ui/icons/Gavel";
 
 const theme = createMuiTheme({
 	overrides: {
@@ -326,6 +328,52 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		},
 	}))(Select);
 
+	const Dropdown = withStyles((theme) => ({
+		root: {
+			fontFamily: "Poppins",
+			display: "flex",
+			fontWeight: "light",
+			justifyContent: "space-between",
+			color: "white",
+			minWidth: "8rem",
+			backgroundColor: "white",
+			// "&:hover": {
+			// 	background: "#4B618F",
+			// },
+			// backgroundColor: "#263451",
+			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+				color: theme.palette.common.white,
+			},
+			"& .MuiButton-textPrimary": {
+				color: theme.palette.common.white,
+				background: "#17acdd",
+				padding: "3px 10px",
+			},
+		},
+	}))(Select);
+
+	const MarketPlaceMenu = withStyles((theme) => ({
+		root: {
+			fontFamily: "Poppins",
+			display: "flex",
+			width: "19rem",
+			height: "3rem",
+			justifyContent: "space-between",
+			"&:hover": {
+				background: "#4B618F",
+			},
+			backgroundColor: "#263451",
+			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+				color: theme.palette.common.white,
+			},
+			"& .MuiButton-textPrimary": {
+				color: theme.palette.common.white,
+				background: "#17acdd",
+				padding: "3px 10px",
+			},
+		},
+	}))(MenuItem);
+
 	const StyledMenuHeaderItem = withStyles((theme) => ({
 		root: {
 			fontFamily: "Poppins",
@@ -465,8 +513,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			// 	background: "#cccccc",
 			// },
 			color: "black",
-			width: "6rem",
-			marginRight: "3px",
+			whiteSpace: "nowrap",
+			marginRight: "2rem",
 			backgroundColor: "white",
 			padding: "0",
 			display: "flex",
@@ -753,6 +801,93 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 							}}
 							className={classes.list}
 						>
+							{type === "marketplace" &&
+								MarketPlaceData.map((layer, index) => {
+									return view === "All" ? (
+										<Box {...defaultProps}>
+											<MarketPlaceListItem>
+												<MarketPlaceUpper>
+													<BusinessIcon />
+													<span>{layer.name}</span>
+													<div>
+														{" "}
+														<SupervisedUserCircleIcon />
+														<StarIcon
+															style={{
+																marginLeft: "0.6rem",
+																color: "#FFFF00",
+															}}
+														/>
+													</div>
+												</MarketPlaceUpper>
+
+												<MarketPlaceLower>
+													{layer.properties.map((property, i) => (
+														<MarketPlaceLowerItems>
+															<div>{property.name}</div>
+															<div>{property.value}</div>
+														</MarketPlaceLowerItems>
+													))}
+													<MarketPlaceLowerItems>
+														<div>{layer.type}</div>
+														{layer.type === "Listing" ? (
+															<ListIcon />
+														) : layer.type === "Auction" ? (
+															<GavelIcon />
+														) : layer.type === "Sponsor" ? (
+															<ListIcon />
+														) : (
+															""
+														)}
+													</MarketPlaceLowerItems>
+												</MarketPlaceLower>
+											</MarketPlaceListItem>
+										</Box>
+									) : (
+										layer.type === view && (
+											<Box {...defaultProps}>
+												<MarketPlaceListItem>
+													<MarketPlaceUpper>
+														<BusinessIcon />
+														<span>{layer.name}</span>
+														<div>
+															{" "}
+															<SupervisedUserCircleIcon />
+															<StarIcon
+																style={{
+																	marginLeft: "0.6rem",
+																	color: "#FFFF00",
+																}}
+															/>
+														</div>
+													</MarketPlaceUpper>
+
+													<MarketPlaceLower>
+														{layer.properties.map((property, i) => (
+															<MarketPlaceLowerItems>
+																<div>{property.name}</div>
+																<div>{property.value}</div>
+															</MarketPlaceLowerItems>
+														))}
+														<MarketPlaceLowerItems>
+															<div>{layer.type}</div>
+															{layer.type === "Listing" ? (
+																<ListIcon />
+															) : layer.type === "Auction" ? (
+																<GavelIcon />
+															) : layer.type === "Sponsor" ? (
+																<ListIcon />
+															) : (
+																""
+															)}
+														</MarketPlaceLowerItems>
+													</MarketPlaceLower>
+												</MarketPlaceListItem>
+											</Box>
+										)
+									);
+								})}
+
 							{layerMap.map((layer, index) => {
 								const labelId = `checkbox-list-label-${index}`;
 
@@ -760,7 +895,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 								if (
 									type === "heatMaps" ||
 									type === "base" ||
-									type === "marketplace" ||
 									(type === "layer" &&
 										layer.layerSettings &&
 										layer.layerSettings.showable &&
@@ -777,79 +911,46 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 													borderColor={getLayerColor(layer)}
 													{...defaultProps}
 												>
-													{type === "marketplace" ? (
-														<MarketPlaceListItem>
-															<MarketPlaceUpper>
-																<BusinessIcon />
-																<span>Martin, TX - 308 NRA - Permian</span>
-																<SupervisedUserCircleIcon />
-																<StarIcon />
-															</MarketPlaceUpper>
-															<MarketPlaceLower>
-																<MarketPlaceLowerItems>
-																	<div>Asking Price</div>
-																	<div>$127K</div>
-																</MarketPlaceLowerItems>
-																<MarketPlaceLowerItems>
-																	<div>Avg. Revenue</div>
-																	<div>$22K</div>
-																</MarketPlaceLowerItems>
-																<MarketPlaceLowerItems>
-																	<div>Wells</div>
-																	<div>26</div>
-																</MarketPlaceLowerItems>
-																<MarketPlaceLowerItems>
-																	<div>Permits</div>
-																	<div>3</div>
-																</MarketPlaceLowerItems>
-																<MarketPlaceLowerItems>
-																	<div>Listing</div>
-																	<ListIcon />
-																</MarketPlaceLowerItems>
-															</MarketPlaceLower>
-														</MarketPlaceListItem>
-													) : (
-														<StyledListItem
-															ContainerComponent="li"
-															ref={provided.innerRef}
-															{...provided.draggableProps}
-														>
-															<ListItemIcon {...provided.dragHandleProps}>
-																<DragIndicator />
-															</ListItemIcon>
-															<ListItemText
-																id={labelId}
-																primary={getLayerName(layer)}
-																//primary="Hello"
-																className={
-																	checkIfNoLayerData(layer)
-																		? classes.disabledLayerTitle
-																		: ""
-																}
-															/>
-															{type === "layer" &&
-																layer.layerSettings.colorable &&
-																getLayerControls(layer, labelId, index)}
-															<FormControlLabel
-																control={
-																	<Switch
-																		disabled={
-																			checkIfNoLayerData(layer)
-																				? classes.disabledLayerTitle
-																				: ""
-																		}
-																		checked={getLayerChecked({
-																			layer,
-																			index,
-																		})}
-																		onChange={() =>
-																			handleToggle({ layer, index })
-																		}
-																	/>
-																}
-															/>
-														</StyledListItem>
-													)}
+													<StyledListItem
+														ContainerComponent="li"
+														ref={provided.innerRef}
+														{...provided.draggableProps}
+													>
+														<ListItemIcon {...provided.dragHandleProps}>
+															<DragIndicator />
+														</ListItemIcon>
+														<ListItemText
+															id={labelId}
+															primary={getLayerName(layer)}
+															//primary="Hello"
+															className={
+																checkIfNoLayerData(layer)
+																	? classes.disabledLayerTitle
+																	: ""
+															}
+														/>
+														{type === "layer" &&
+															layer.layerSettings.colorable &&
+															getLayerControls(layer, labelId, index)}
+														<FormControlLabel
+															control={
+																<Switch
+																	disabled={
+																		checkIfNoLayerData(layer)
+																			? classes.disabledLayerTitle
+																			: ""
+																	}
+																	checked={getLayerChecked({
+																		layer,
+																		index,
+																	})}
+																	onChange={() =>
+																		handleToggle({ layer, index })
+																	}
+																/>
+															}
+														/>
+													</StyledListItem>
 												</Box>
 											)}
 										</Draggable>
@@ -865,116 +966,124 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 
 	return (
 		// <ClickAwayListener onClickAway={handleClose}>
-		<div
-			style={{
-				position: "absolute",
-				display: "flex",
-				flexDirection: "row",
-				width: "500px",
-				maxWidth: "500px",
-				top: "90px",
-				left: stateMapControls.panelExpanded
-					? "30px"
-					: type === "marketplace"
-					? "-639px"
-					: "-405px",
-				transition: "left 0.5s ease-in-out",
-				listStyleType: "none",
-			}}
-		>
-			<StyledMenu
-				id="checklist-menu"
-				// anchorEl={stateMapControls.anchorEl}
-				keepMounted
-				open={Boolean(stateMapControls.selectedControl)}
+		<div>
+			<MarketPlaceMenu> </MarketPlaceMenu>
 
-				//onClose={handleClose}
-			>
-				<StyledMenuHeaderItem
-					disableRipple
-					key="subheader"
-					role={undefined}
-					dense
-					className={classes.subHeaderItem}
-				>
-					{type === "marketplace" ? (
-						<>
-							<div>
-								<span style={{ marginRight: "2rem", color: "#00B0F0" }}>
-									View
-								</span>
-
-								<MarketplaceDropdown
-									labelId="demo-simple-select-label"
-									id="demo-simple-select"
-									value={view}
-									onChange={(e) => setView(e.target.value)}
-								>
-									<MenuItem value={"All"}>All</MenuItem>
-									<MenuItem value={"Twenty"}>Twenty</MenuItem>
-									<MenuItem value={"Thirty"}>Thirty</MenuItem>
-								</MarketplaceDropdown>
-							</div>
-
-							<div>
-								<span style={{ marginRight: "2rem", color: "#00B0F0" }}>
-									Sort By
-								</span>
-								<MarketplaceDropdown
-									labelId="demo-simple-select-label"
-									id="demo-simple-select"
-									value={sortBy}
-									onChange={(e) => setSortBy(e.target.value)}
-								>
-									<MenuItem value={"Recently Posted"}>Recently Posted</MenuItem>
-									<MenuItem value={"Twenty"}>Twenty</MenuItem>
-									<MenuItem value={"Thirty"}>Thirty</MenuItem>
-								</MarketplaceDropdown>
-							</div>
-						</>
-					) : (
-						<ListItemText primary={title} />
-					)}
-					{headerButton && (
-						<StyledListItemSecondaryAction>
-							<Button
-								onClick={headerButton.fn}
-								color="primary"
-								startIcon={headerButton.icon}
-							>
-								{headerButton.text}
-							</Button>
-						</StyledListItemSecondaryAction>
-					)}
-				</StyledMenuHeaderItem>
-
-				{/* base Stuff */}
-				{type === "base" && getBasemapImageBox()}
-
-				{type === "base" ? (
-					<Collapse in={open} timeout="auto" unmountOnExit>
-						{displayList}
-					</Collapse>
-				) : (
-					displayList
-				)}
-
-				{/* </Collapse> */}
-			</StyledMenu>
 			<div
-				className={classes.pulloutBox}
-				// style={{
-				// 	left: stateMapControls.panelExpanded ? "530px !important" : "0px",
-				// }}
-				onClick={togglePullout}
+				style={{
+					position: "absolute",
+					display: "flex",
+					flexDirection: "row",
+					width: "500px",
+					maxWidth: "500px",
+					top: "130px",
+					left: stateMapControls.panelExpanded
+						? "30px"
+						: type === "marketplace"
+						? "-567px"
+						: "-405px",
+					transition: "left 0.5s ease-in-out",
+					listStyleType: "none",
+				}}
 			>
-				{stateMapControls.panelExpanded ? (
-					<ArrowBackIosIcon />
-				) : (
-					<ArrowForwardIosIcon />
-				)}
+				<StyledMenu
+					id="checklist-menu"
+					// anchorEl={stateMapControls.anchorEl}
+					keepMounted
+					open={Boolean(stateMapControls.selectedControl)}
+
+					//onClose={handleClose}
+				>
+					<StyledMenuHeaderItem
+						disableRipple
+						key="subheader"
+						role={undefined}
+						dense
+						className={classes.subHeaderItem}
+					>
+						{type === "marketplace" ? (
+							<>
+								<div>
+									<span style={{ marginRight: "2rem", color: "#00B0F0" }}>
+										View
+									</span>
+
+									<MarketplaceDropdown
+										labelId="demo-simple-select-label"
+										id="demo-simple-select"
+										value={view}
+										onChange={(e) => setView(e.target.value)}
+									>
+										<MenuItem value={"All"}>All</MenuItem>
+
+										<MenuItem value={"Listing"}>Listing</MenuItem>
+										<MenuItem value={"Auction"}>Auction</MenuItem>
+										<MenuItem value={"Sponsor"}>Sponsor</MenuItem>
+									</MarketplaceDropdown>
+								</div>
+
+								<div>
+									<span style={{ marginRight: "2rem", color: "#00B0F0" }}>
+										Sort By
+									</span>
+									<MarketplaceDropdown
+										labelId="demo-simple-select-label"
+										id="demo-simple-select"
+										value={sortBy}
+										onChange={(e) => setSortBy(e.target.value)}
+									>
+										<MenuItem value={"Recently Posted"}>
+											Recently Posted
+										</MenuItem>
+										<MenuItem value={"Twenty"}>Twenty</MenuItem>
+										<MenuItem value={"Thirty"}>Thirty</MenuItem>
+									</MarketplaceDropdown>
+								</div>
+							</>
+						) : (
+							<ListItemText primary={title} />
+						)}
+						{headerButton && (
+							<StyledListItemSecondaryAction>
+								<Button
+									onClick={headerButton.fn}
+									color="primary"
+									startIcon={headerButton.icon}
+								>
+									{headerButton.text}
+								</Button>
+							</StyledListItemSecondaryAction>
+						)}
+					</StyledMenuHeaderItem>
+
+					{/* base Stuff */}
+					{type === "base" && getBasemapImageBox()}
+
+					{type === "base" ? (
+						<Collapse in={open} timeout="auto" unmountOnExit>
+							{displayList}
+						</Collapse>
+					) : (
+						displayList
+					)}
+
+					{/* </Collapse> */}
+				</StyledMenu>
+				<div
+					className={classes.pulloutBox}
+					// style={{
+					// 	left: stateMapControls.panelExpanded ? "530px !important" : "0px",
+					// }}
+					onClick={togglePullout}
+				>
+					{stateMapControls.panelExpanded ? (
+						<ArrowBackIosIcon />
+					) : (
+						<ArrowForwardIosIcon />
+					)}
+				</div>
+				{/* // </ClickAwayListener> */}
 			</div>
-			{/* // </ClickAwayListener> */}
 		</div>
 	);
 }
