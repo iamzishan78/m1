@@ -2540,23 +2540,6 @@ function M1nTable(props) {
     }
   }, [stateApp.user, targetLabel, showTracks]);
 
-  ////////////General end///////////////////////////////////////////////
-
-  ////////////Tracked Owners begin///////////////////////////////////////////////
-  useEffect(() => {
-    if (props.parent && (props.parent === "trackOwners" || props.parent === "gridOwners")) {
-      console.log("ue mintable 2");
-      setTargetLabel("owner");
-
-      if (props.header) {
-        setHeader(props.header);
-      } else {
-        setHeader("Owners");
-      }
-      setAddAble(false);
-    }
-  }, [props.parent, props.header]);
-
   useEffect(() => {
     if (
       props.parent &&
@@ -2573,12 +2556,26 @@ function M1nTable(props) {
         // setRows(tracksIdArray);
         // setLoading(false);
 
-      } else {
-        setLoading(false);
-        setRows([]);
-      }
+      } 
     }
   }, [constDataTracks]);
+
+  ////////////General end///////////////////////////////////////////////
+
+  ////////////Tracked Owners begin///////////////////////////////////////////////
+  useEffect(() => {
+    if (props.parent && props.parent === "trackOwners") {
+      console.log("ue mintable 2");
+      setTargetLabel("owner");
+
+      if (props.header) {
+        setHeader(props.header);
+      } else {
+        setHeader("Owners");
+      }
+      setAddAble(false);
+    }
+  }, [props.parent, props.header]);
 
   useEffect(() => {
     if (
@@ -4561,10 +4558,10 @@ function M1nTable(props) {
           type: "inviteUser",
         });
         setOrderByTracks(false);
+      } else {
+        setRows([]);
       }
-    } else {
-      setRows([]);
-    }
+    } 
   }, [props.parent, userLists]);
 
   ///////// Remove User ////////////////////////////////////////////////////////////////////////
