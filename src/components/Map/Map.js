@@ -4970,7 +4970,8 @@ export default function Map() {
                   cardWidthExpanded="50vw"
                   cardHeightExpanded="90vh"
                   targetSourceId={stateApp.selectedWell.id}
-                  targetLabel="expandedWell"
+                  // targetLabel="expandedWell"
+                  targetLabel="well"
                 />
               </div>
             // </Draggable>
@@ -4999,7 +5000,8 @@ export default function Map() {
                   cardWidthExpanded="50vw"
                   cardHeightExpanded="90vh"
                   targetSourceId={stateApp.selectedParcel.id}
-                  targetLabel="expandedParcel"
+                  // targetLabel="expandedParcel"
+                  targetLabel="parcel"
                 ></ExpandableCardProvider>
               </div>
             // </Draggable>

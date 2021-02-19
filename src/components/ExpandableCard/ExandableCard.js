@@ -206,7 +206,7 @@ export default function ExpandableCard(props) {
         wellDetailCardOpen: true,
         popupOpen: false,
       }));
-    } else if (props.targetLabel == "expandedParcel" || props.targetLabel == "parcel") {
+    } else if (props.targetLabel == "parcel" || props.targetLabel == "expandedParcel") {
       setStateApp((state) => ({ ...state, 
         parcelDetailCardOpen: true, 
         popupOpen: false, 
@@ -322,21 +322,19 @@ export default function ExpandableCard(props) {
   };
 
   useEffect(() => {
-    if(props.targetLabel === "contact"){
-      if (openDialog) {
-        document.body.style.overflow = 'hidden';
-        document.body.style.paddingRight = '15px';
-      }
-    }
-    return () => {
-      if(props.targetLabel === "contact"){
-        if (openDialog) {
-          document.body.style.overflow = 'auto';
-          document.body.style.paddingRight = '0px';
-        }
-      }
-    };
-  }, [openDialog])
+		///Set body style overflow hidden when card is fully expanded
+		const disableBodyScrollBarIfExpanded = () => {
+			if (width === '95vw') {
+				document.body.style.overflow = 'hidden';
+			}
+		};
+
+		disableBodyScrollBarIfExpanded();
+		return () => {
+			  document.body.style.overflow = 'auto';
+		};
+	}, [openDialog, props.targetLabel, isExpanded, width]);
+
 
   return (
     <React.Fragment>
@@ -443,7 +441,9 @@ export default function ExpandableCard(props) {
               
             
               {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact"
-                ? parent !== "table" && targetLabel !== "expandedWell" && targetLabel !== "expandedParcel"
+                ? parent !== "table" && 
+                targetLabel !== "well" && targetLabel !== "expandedWell" && 
+                targetLabel !== "parcel" && targetLabel !== "expandedParcel"
                   ? (
                   <Tooltip title={"Shrink"} placement="top">
                     <IconButton
