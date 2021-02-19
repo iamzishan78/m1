@@ -1850,14 +1850,14 @@ function SubTable(props) {
         : [],
     selectableRows:
       props.targetLabel == "production_detail" ? false : "multiple",
-    print:
-      props.targetLabel !== "deal" &&
-      props.targetLabel !== "usermanagement" &&
-      props.targetLabel !== "owner" &&
-      props.targetLabel !== "production_detail" &&
-      props.parent !== "search" &&
-      props.parent !== "ownersPerParcel" &&
-      props.parent !== "ownersPerParcelWells",
+    print: false,
+      // props.targetLabel !== "deal" &&
+      // props.targetLabel !== "usermanagement" &&
+      // props.targetLabel !== "owner" &&
+      // props.targetLabel !== "production_detail" &&
+      // props.parent !== "search" &&
+      // props.parent !== "ownersPerParcel" &&
+      // props.parent !== "ownersPerParcelWells",
     viewColumns: props.targetLabel !== "usermanagement",
     onColumnViewChange: (changedColumn, action) => {
       if (
