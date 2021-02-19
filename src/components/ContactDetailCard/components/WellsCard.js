@@ -73,7 +73,7 @@ export default function WellsCard(props) {
           <h5 className={classes.h5}>
             Average Value
             <br />
-            <span className={classes.lastContactedSpan}>-</span>
+            <span className={classes.lastContactedSpan}>$</span>
           </h5>
         </div>
       </div>
