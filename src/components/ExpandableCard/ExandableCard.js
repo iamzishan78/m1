@@ -206,7 +206,7 @@ export default function ExpandableCard(props) {
         wellDetailCardOpen: true,
         popupOpen: false,
       }));
-    } else if (props.targetLabel == "expandedParcel" || props.targetLabel == "parcel") {
+    } else if (props.targetLabel == "parcel" || props.targetLabel == "expandedParcel") {
       setStateApp((state) => ({ ...state, 
         parcelDetailCardOpen: true, 
         popupOpen: false, 
@@ -443,7 +443,9 @@ export default function ExpandableCard(props) {
               
             
               {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact"
-                ? parent !== "table" && targetLabel !== "expandedWell" && targetLabel !== "expandedParcel"
+                ? parent !== "table" && 
+                targetLabel !== "well" && targetLabel !== "expandedWell" && 
+                targetLabel !== "parcel" && targetLabel !== "expandedParcel"
                   ? (
                   <Tooltip title={"Shrink"} placement="top">
                     <IconButton
