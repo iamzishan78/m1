@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
 import WellIcon from "../../Shared/svgIcons/well";
 import ContactsWellInterestsParcelInterests from "./ContactsWellInterestsParcelInterests/ContactsWellInterestsParcelInterests";
+import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
+import vf_currency from "../../Shared/valueformatters/vf_currency.js";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,11 +40,36 @@ const useStyles = makeStyles((theme) => ({
 
 export default function WellsCard(props) {
   const classes = useStyles();
+  const [interestTypes, setInterestTypes] = useState("");
+  const [count, setCount] = useState("-");
+  const [avgTaxValues, setAvgTaxValues] = useState(0);
+  const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  useEffect(() => {
+    if (props.contactData && props.contactData._id) {
+      getContactWells({
+        variables: {
+          contactId: props.contactData._id,
+        },
+      });
+    }
+  }, [props.contactData]);
+
+  useEffect(() => {
+    if (dataContactWells && dataContactWells.contactWells) {
+      const wells = dataContactWells.contactWells;
+      setInterestTypes([...new Set(wells.map(well => well.type))].join(", "));
+      setCount(wells.length);
+      setAvgTaxValues(wells.map(well => well.taxValue).reduce((a, b) => (a + b)) / wells.length);
+    }
+  }, [dataContactWells]);
 
   return (
     <div className={classes.root}>
       <div>
-        <h4 style={{ marginTop: "0", float: "left" }}>Wells (0)</h4>
+        <h4 style={{ marginTop: "0", float: "left" }}>Wells ({ count })</h4>
         <IconButton
           size="small"
           className={classes.addIcon}
@@ -68,12 +97,12 @@ export default function WellsCard(props) {
           <h5 className={classes.h5}>
             Types of Interest
             <br />
-            <span className={classes.lastContactedSpan}>-</span>
+            <span className={classes.lastContactedSpan}>{ interestTypes }</span>
           </h5>
           <h5 className={classes.h5}>
             Average Value
             <br />
-            <span className={classes.lastContactedSpan}>$</span>
+            <span className={classes.lastContactedSpan}>{ vf_currency(avgTaxValues) }</span>
           </h5>
         </div>
       </div>

@@ -26,10 +26,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 function ContactsWellInterestsParcelInterests(props) {
-  console.log('ContactsWellInterestsParcelInterests2')
-  console.log('props', props)
-  console.log('props.contactData', props.contactData)
-
   const [assocTapValue, AssocTapValue] = useState(0);
   const setAssocTapValue = (state) => {
     if (assocTapValue != state) {
