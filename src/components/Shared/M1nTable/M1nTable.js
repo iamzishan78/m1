@@ -4646,16 +4646,16 @@ function M1nTable(props) {
       //   dealsRowsData.push(dealData);
       // });
 
-      let currencyFormat = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
+      // let currencyFormat = new Intl.NumberFormat("en-US", {
+      //   style: "currency",
+      //   currency: "USD",
+      // });
 
-      let dateFormat = new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        day: "numeric",
-        month: "numeric",
-      });
+      // let dateFormat = new Intl.DateTimeFormat("en-US", {
+      //   year: "numeric",
+      //   day: "numeric",
+      //   month: "numeric",
+      // });
 
       // let contactDealRows = [
       //   ...dataDeals.contactDeals.map((deal) => {
