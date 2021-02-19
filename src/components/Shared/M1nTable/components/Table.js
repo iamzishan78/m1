@@ -75,6 +75,8 @@ import moment from "moment";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckIcon from "@material-ui/icons/Check";
+import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
+
 
 var ticksToDateString = function (ticks) {
   var epochTicks = 621355968000000000;
@@ -1588,10 +1590,13 @@ function SubTable(props) {
                       return capitalizeFirstLetter(v);
 
                     if (column.name === "appraisedValue")
-                      return formatter.format(v);
+                      return vf_currency(v);
+
+                    if (column.name === "taxValue")
+                      return vf_currency(v);
 
                     if (column.name === "offerPrice" && !!v && !isNaN(v))
-                      return formatter.format(v);
+                      return vf_currency(v);
 
                     if (column.name === "lastUpdateAt")
                       return anyToDate(v).toLocaleString("en-US", {

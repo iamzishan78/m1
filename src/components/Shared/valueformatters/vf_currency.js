@@ -9,7 +9,6 @@ export default function vf_currency(value) {
       });
 
     const valueFormatter = (v) => {
-        console.log('formatter',formatter.format(parseInt(v)))
         return formatter.format(parseInt(v));
       };
 
