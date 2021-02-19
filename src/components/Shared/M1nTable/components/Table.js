@@ -458,7 +458,7 @@ function SubTable(props) {
   useEffect(() => {
     if (
       props.parent &&
-      (props.parent === "search" || props.parent === "owner_WellInterests") &&
+      (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests") &&
       props.targetLabel == "well" &&
       dataWell &&
       dataWell.well
@@ -760,17 +760,13 @@ function SubTable(props) {
                           });
                         } else {
                           let selectedWell = props.rows.find((row) => {
-                            if (props.parent === "assocTaxRollInterests") {
-                              console.log("assocTaxRollInterests found")
-                              return row.wellId == tableMeta.rowData[0];
-                            }
                             if (row.id) return row.id == tableMeta.rowData[0];
                             return row.Id == tableMeta.rowData[0];
                           });
 
                           if (selectedWell) {
                             if (props.targetLabel === "well") {
-                              if (props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests") {
+                              if (props.parent === "owner_WellInterests") {
                                 selectedWell.id = selectedWell.wellId;
                                 delete selectedWell.wellId;
                               }

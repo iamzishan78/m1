@@ -3156,6 +3156,7 @@ function M1nTable(props) {
       wells = wells.map((w) => {
         let well = { ...w };
 
+        well.detailCard = well.wellId;
         well.isTracked = false;
         well.commentsCounter = 0;
         well.tags = [[], 0];
@@ -3212,6 +3213,7 @@ function M1nTable(props) {
       wells = wells.map((w) => {
         let well = { ...w };
 
+        well.detailCard = well.wellId;
         well.isTracked = false;
         well.commentsCounter = 0;
         well.tags = [[], 0];
