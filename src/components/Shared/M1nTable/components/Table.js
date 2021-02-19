@@ -705,8 +705,8 @@ function SubTable(props) {
             <Divider />
           </div>
         ) : (
-          <div></div>
-        )}
+            <div></div>
+          )}
         <MenuItem
           className={classes.userMenuItem}
           onClick={(e) => handleExpandClick(null, null, null, "deleteUser")}
@@ -749,12 +749,11 @@ function SubTable(props) {
                       id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                       size={props.dense ? "small" : "medium"}
                       color="secondary"
-                      className={`${classes.icons} ${
-                        colInd === tableMeta.columnIndex &&
-                        rowInd === tableMeta.rowIndex
+                      className={`${classes.icons} ${colInd === tableMeta.columnIndex &&
+                          rowInd === tableMeta.rowIndex
                           ? classes.iconSelected
                           : ""
-                      }`}
+                        }`}
                       onClick={(e) => {
                         e.stopPropagation();
 
@@ -933,9 +932,9 @@ function SubTable(props) {
                     <Tooltip
                       title={
                         value &&
-                        (value.bbox ||
-                          value.center ||
-                          value.objToPopulateSearchLayer)
+                          (value.bbox ||
+                            value.center ||
+                            value.objToPopulateSearchLayer)
                           ? "Fly To Map"
                           : "Not Available"
                       }
@@ -946,14 +945,13 @@ function SubTable(props) {
                         id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
-                        className={`${classes.icons} ${
-                          value &&
-                          (value.bbox ||
-                            value.center ||
-                            value.objToPopulateSearchLayer)
+                        className={`${classes.icons} ${value &&
+                            (value.bbox ||
+                              value.center ||
+                              value.objToPopulateSearchLayer)
                             ? ""
                             : classes.noCommentsIcon
-                        }`}
+                          }`}
                         onClick={(e) => {
                           e.stopPropagation();
 
@@ -1030,10 +1028,10 @@ function SubTable(props) {
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
-                      ? tableMeta.rowData[1]
-                      : props.parent === "ownersPerParcel"
-                      ? tableMeta.rowData[1]
-                      : tableMeta.rowData[0];
+                        ? tableMeta.rowData[1]
+                        : props.parent === "ownersPerParcel"
+                          ? tableMeta.rowData[1]
+                          : tableMeta.rowData[0];
                   return (
                     <TrackToggleButton
                       id={id + targetSourceId + tableMeta.rowIndex}
@@ -1080,10 +1078,10 @@ function SubTable(props) {
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
-                      ? tableMeta.rowData[1]
-                      : props.parent === "ownersPerParcel"
-                      ? tableMeta.rowData[1]
-                      : tableMeta.rowData[0];
+                        ? tableMeta.rowData[1]
+                        : props.parent === "ownersPerParcel"
+                          ? tableMeta.rowData[1]
+                          : tableMeta.rowData[0];
 
                   return (
                     <Tooltip
@@ -1101,14 +1099,12 @@ function SubTable(props) {
                           id={id + targetSourceId + tableMeta.rowIndex}
                           size={props.dense ? "small" : "medium"}
                           color="primary"
-                          className={`${classes.icons} ${
-                            !value || value === 0 ? classes.noCommentsIcon : ""
-                          } ${
-                            colInd === tableMeta.columnIndex &&
-                            rowInd === tableMeta.rowIndex
+                          className={`${classes.icons} ${!value || value === 0 ? classes.noCommentsIcon : ""
+                            } ${colInd === tableMeta.columnIndex &&
+                              rowInd === tableMeta.rowIndex
                               ? classes.iconSelected
                               : ""
-                          }`}
+                            }`}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleExpandClick(
@@ -1165,16 +1161,14 @@ function SubTable(props) {
                         <IconButton
                           size={props.dense ? "small" : "medium"}
                           color="primary"
-                          className={`${classes.icons} ${
-                            !value || value.length === 0
+                          className={`${classes.icons} ${!value || value.length === 0
                               ? classes.noOwnersIcon
                               : ""
-                          } ${
-                            colInd === tableMeta.columnIndex &&
-                            rowInd === tableMeta.rowIndex
+                            } ${colInd === tableMeta.columnIndex &&
+                              rowInd === tableMeta.rowIndex
                               ? classes.iconSelected
                               : ""
-                          }`}
+                            }`}
                           onClick={(e) => {
                             e.stopPropagation();
                             if (value && value.length > 0) {
@@ -1284,11 +1278,10 @@ function SubTable(props) {
                       <IconButton
                         size={props.dense ? "small" : "medium"}
                         color="primary"
-                        className={`${classes.icons} ${
-                          !value || value === "false"
+                        className={`${classes.icons} ${!value || value === "false"
                             ? classes.noCommentsIcon
                             : ""
-                        }`}
+                          }`}
                         onClick={(e) => {
                           e.stopPropagation();
 
@@ -1355,8 +1348,8 @@ function SubTable(props) {
                         {!value || value === "false" ? (
                           <Convert_contact style={{ margin: "4px" }} />
                         ) : (
-                          <Contact_card style={{ margin: "4px" }} />
-                        )}
+                            <Contact_card style={{ margin: "4px" }} />
+                          )}
                       </IconButton>
                     </Tooltip>
                   );
@@ -1382,14 +1375,12 @@ function SubTable(props) {
                         <IconButton
                           size={props.dense ? "small" : "medium"}
                           color="primary"
-                          className={`${classes.icons} ${
-                            !value ? classes.noOwnersIcon : ""
-                          } ${
-                            colInd === tableMeta.columnIndex &&
-                            rowInd === tableMeta.rowIndex
+                          className={`${classes.icons} ${!value ? classes.noOwnersIcon : ""
+                            } ${colInd === tableMeta.columnIndex &&
+                              rowInd === tableMeta.rowIndex
                               ? classes.iconSelected
                               : ""
-                          }`}
+                            }`}
                           onClick={(e) => {
                             e.stopPropagation();
                             if (value && value > 0) {
@@ -1430,16 +1421,14 @@ function SubTable(props) {
                         <IconButton
                           size={props.dense ? "small" : "medium"}
                           color="primary"
-                          className={`${classes.icons} ${
-                            !value || value.length === 0
+                          className={`${classes.icons} ${!value || value.length === 0
                               ? classes.noOwnersIcon
                               : ""
-                          }  ${
-                            colInd === tableMeta.columnIndex &&
-                            rowInd === tableMeta.rowIndex
+                            }  ${colInd === tableMeta.columnIndex &&
+                              rowInd === tableMeta.rowIndex
                               ? classes.iconSelected
                               : ""
-                          }`}
+                            }`}
                           onClick={(e) => {
                             e.stopPropagation();
                             if (value.length > 0) {
@@ -1472,10 +1461,10 @@ function SubTable(props) {
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
-                      ? tableMeta.rowData[1]
-                      : props.parent === "ownersPerParcel"
-                      ? tableMeta.rowData[1]
-                      : tableMeta.rowData[0];
+                        ? tableMeta.rowData[1]
+                        : props.parent === "ownersPerParcel"
+                          ? tableMeta.rowData[1]
+                          : tableMeta.rowData[0];
 
                   return (
                     <div style={{ marginRight: "10px" }}>
@@ -1485,12 +1474,11 @@ function SubTable(props) {
                       >
                         <Badge
                           id={id + targetSourceId + tableMeta.rowIndex}
-                          className={`${classes.TagSample} ${
-                            colInd === tableMeta.columnIndex &&
-                            rowInd === tableMeta.rowIndex
+                          className={`${classes.TagSample} ${colInd === tableMeta.columnIndex &&
+                              rowInd === tableMeta.rowIndex
                               ? classes.iconSelected
                               : ""
-                          }`}
+                            }`}
                           badgeContent={value ? value[1] : 0}
                           color="secondary"
                           onClick={(e) => {
@@ -1528,8 +1516,8 @@ function SubTable(props) {
                               <p className="two">...</p>
                             </React.Fragment>
                           ) : (
-                            <p className="three">No Tags</p>
-                          )}
+                              <p className="three">No Tags</p>
+                            )}
                         </Badge>
                       </Tooltip>
                     </div>
@@ -1728,8 +1716,8 @@ function SubTable(props) {
                         }
                         entityId={
                           props.targetLabel === "Parcel Interest" ||
-                          props.targetLabel === "Parcel Ownershipship" ||
-                          props.targetLabel === "contact"
+                            props.targetLabel === "Parcel Ownershipship" ||
+                            props.targetLabel === "contact"
                             ? tableMeta.rowData[1]
                             : null
                         }
@@ -1738,14 +1726,14 @@ function SubTable(props) {
                       {props.targetLabel === "contact" &&
                         column.name === "name" &&
                         tableMeta.rowData[
-                          props.columns.findIndex(
-                            (val) => val.name === "melissaRowsCount"
-                          )
+                        props.columns.findIndex(
+                          (val) => val.name === "melissaRowsCount"
+                        )
                         ] &&
                         tableMeta.rowData[
-                          props.columns.findIndex(
-                            (val) => val.name === "melissaRowsCount"
-                          )
+                        props.columns.findIndex(
+                          (val) => val.name === "melissaRowsCount"
+                        )
                         ] !== 0 && (
                           <MonetizationOnIcon
                             className={classes.monetizationIcon}
@@ -1858,8 +1846,8 @@ function SubTable(props) {
       props.rows && props.rows.length > 25
         ? [10, 25, 50, 100]
         : props.rows && props.rows.length > 10
-        ? [10, 25]
-        : [],
+          ? [10, 25]
+          : [],
     selectableRows:
       props.targetLabel == "production_detail" ? false : "multiple",
     print:
@@ -1887,8 +1875,8 @@ function SubTable(props) {
                   options: column.options
                     ? { ...column.options, display: true }
                     : {
-                        display: true,
-                      },
+                      display: true,
+                    },
                 };
               else
                 return {
@@ -1896,8 +1884,8 @@ function SubTable(props) {
                   options: column.options
                     ? { ...column.options, display: false }
                     : {
-                        display: false,
-                      },
+                      display: false,
+                    },
                 };
 
             return column;
@@ -1944,78 +1932,78 @@ function SubTable(props) {
       props.header === "Interest Owners Tied to Contact"
         ? false
         : (selectedRows, displayData, setSelectedRow) => {
-            //// if contacts set the multi selection top bar: ////
-            if (
-              props.header === "Owner's Contacts" ||
-              props.header === "Contacts" ||
-              props.header === "Active Users"
-            ) {
-              const getSelectedRows = () => {
-                const selectedRows = [];
-                for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
-                  selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
-                }
-                return selectedRows;
-              };
+          //// if contacts set the multi selection top bar: ////
+          if (
+            props.header === "Owner's Contacts" ||
+            props.header === "Contacts" ||
+            props.header === "Active Users"
+          ) {
+            const getSelectedRows = () => {
+              const selectedRows = [];
+              for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+                selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+              }
+              return selectedRows;
+            };
 
-              return (
-                <div
-                  style={{
-                    height: "48px",
-                    display: "flex",
-                  }}
-                >
-                  {props.header !== "Active Users" && (
-                    <>
-                      {m1nSelectedRowsIndexes?.length > 1 && (
-                        <Button
-                          color="secondary"
-                          startIcon={<MergeTypeIcon />}
-                          className={classes.multiSelectionTopBarButtons}
-                          onClick={() => {
-                            handleExpandClick(
-                              null,
-                              null,
-                              getSelectedRows(),
-                              "merge"
-                            );
-                          }}
-                        >
-                          Merge
-                        </Button>
-                      )}
-
+            return (
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                {props.header !== "Active Users" && (
+                  <>
+                    {m1nSelectedRowsIndexes?.length > 1 && (
                       <Button
                         color="secondary"
-                        startIcon={<ContactPhoneRoundedIcon />}
+                        startIcon={<MergeTypeIcon />}
                         className={classes.multiSelectionTopBarButtons}
                         onClick={() => {
                           handleExpandClick(
                             null,
                             null,
                             getSelectedRows(),
-                            "buyContactsInfo"
+                            "merge"
                           );
                         }}
                       >
-                        Buy Contact Info
+                        Merge
                       </Button>
-                      <Button
-                        color="secondary"
-                        startIcon={<EmailRoundedIcon />}
-                        className={classes.multiSelectionTopBarButtons}
-                        onClick={() => {
-                          handleExpandClick(
-                            null,
-                            null,
-                            getSelectedRows(),
-                            "sendMailers"
-                          );
-                        }}
-                      >
-                        Send Mailers
+                    )}
+
+                    <Button
+                      color="secondary"
+                      startIcon={<ContactPhoneRoundedIcon />}
+                      className={classes.multiSelectionTopBarButtons}
+                      onClick={() => {
+                        handleExpandClick(
+                          null,
+                          null,
+                          getSelectedRows(),
+                          "buyContactsInfo"
+                        );
+                      }}
+                    >
+                      Buy Contact Info
                       </Button>
-                      {/* <Button
+                    <Button
+                      color="secondary"
+                      startIcon={<EmailRoundedIcon />}
+                      className={classes.multiSelectionTopBarButtons}
+                      onClick={() => {
+                        handleExpandClick(
+                          null,
+                          null,
+                          getSelectedRows(),
+                          "sendMailers"
+                        );
+                      }}
+                    >
+                      Send Mailers
+                      </Button>
+                    {/* <Button
                         color="secondary"
                         startIcon={<LocalPrintshopRoundedIcon />}
                         className={classes.multiSelectionTopBarButtons}
@@ -2030,100 +2018,100 @@ function SubTable(props) {
                       >
                         Labels
                       </Button> */}
-                      <Divider orientation="vertical" flexItem />
-                    </>
-                  )}
-                  <Tooltip title={"Delete"}>
-                    <IconButton
-                      size="medium"
-                      style={{ margin: "0 5px" }}
-                      onClick={(e) => {
-                        props.header !== "Active Users"
-                          ? handleExpandClick(null, null, null, "deleteContact")
-                          : handleExpandClick(null, null, null, "deleteUser");
-                      }}
-                      aria-label="delete"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                </div>
-              );
-            }
-
-            //// if Parcel Ownership set the multi selection top bar: ////
-            if (props.targetLabel === "Parcel Ownership") {
-              return (
+                    <Divider orientation="vertical" flexItem />
+                  </>
+                )}
                 <Tooltip title={"Delete"}>
                   <IconButton
                     size="medium"
                     style={{ margin: "0 5px" }}
                     onClick={(e) => {
-                      handleExpandClick(
-                        null,
-                        null,
-                        null,
-                        "deleteParcelOwnership"
-                      );
+                      props.header !== "Active Users"
+                        ? handleExpandClick(null, null, null, "deleteContact")
+                        : handleExpandClick(null, null, null, "deleteUser");
                     }}
                     aria-label="delete"
                   >
                     <DeleteIcon />
                   </IconButton>
                 </Tooltip>
-              );
-            }
-
-            //// if Parcel Interest set the multi selection top bar: ////
-            if (props.targetLabel === "Parcel Interest") {
-              return (
-                <Tooltip title={"Delete"}>
-                  <IconButton
-                    size="medium"
-                    style={{ margin: "0 5px" }}
-                    onClick={(e) => {
-                      handleExpandClick(
-                        null,
-                        null,
-                        null,
-                        "deleteParcelInterest"
-                      );
-                    }}
-                    aria-label="delete"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
-              );
-            }
-
-            //// if deals set the multi selection top bar: ////
-            // if (props.targetLabel === "deal") {
-            //   return (
-            //     <Tooltip title={"Delete"}>
-            //       <IconButton
-            //         size="medium"
-            //         style={{ margin: "0 5px" }}
-            //         onClick={(e) => {
-            //           handleExpandClick(null, null, null, "deleteDeal");
-            //         }}
-            //         aria-label="delete"
-            //       >
-            //         <DeleteIcon />
-            //       </IconButton>
-            //     </Tooltip>
-            //   );
-            // }
-
-            //// default empty top bar ////
-            return (
-              <div
-                style={{
-                  height: "48px",
-                }}
-              />
+              </div>
             );
-          },
+          }
+
+          //// if Parcel Ownership set the multi selection top bar: ////
+          if (props.targetLabel === "Parcel Ownership") {
+            return (
+              <Tooltip title={"Delete"}>
+                <IconButton
+                  size="medium"
+                  style={{ margin: "0 5px" }}
+                  onClick={(e) => {
+                    handleExpandClick(
+                      null,
+                      null,
+                      null,
+                      "deleteParcelOwnership"
+                    );
+                  }}
+                  aria-label="delete"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            );
+          }
+
+          //// if Parcel Interest set the multi selection top bar: ////
+          if (props.targetLabel === "Parcel Interest") {
+            return (
+              <Tooltip title={"Delete"}>
+                <IconButton
+                  size="medium"
+                  style={{ margin: "0 5px" }}
+                  onClick={(e) => {
+                    handleExpandClick(
+                      null,
+                      null,
+                      null,
+                      "deleteParcelInterest"
+                    );
+                  }}
+                  aria-label="delete"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            );
+          }
+
+          //// if deals set the multi selection top bar: ////
+          // if (props.targetLabel === "deal") {
+          //   return (
+          //     <Tooltip title={"Delete"}>
+          //       <IconButton
+          //         size="medium"
+          //         style={{ margin: "0 5px" }}
+          //         onClick={(e) => {
+          //           handleExpandClick(null, null, null, "deleteDeal");
+          //         }}
+          //         aria-label="delete"
+          //       >
+          //         <DeleteIcon />
+          //       </IconButton>
+          //     </Tooltip>
+          //   );
+          // }
+
+          //// default empty top bar ////
+          return (
+            <div
+              style={{
+                height: "48px",
+              }}
+            />
+          );
+        },
     customToolbar: () => {
       return (
         <>
@@ -2131,10 +2119,9 @@ function SubTable(props) {
             //////Upload Icon/////////////////////////
             <span className={classes.addIcon}>
               <Tooltip
-                title={`Import ${
-                  props.targetLabel.charAt(0).toUpperCase() +
+                title={`Import ${props.targetLabel.charAt(0).toUpperCase() +
                   props.targetLabel.slice(1)
-                }s`}
+                  }s`}
               >
                 <IconButton
                   size="medium"
@@ -2151,13 +2138,12 @@ function SubTable(props) {
             //////Add Icon/////////////////////////
             <span className={classes.addIcon}>
               <Tooltip
-                title={`Add${
-                  props.targetLabel
+                title={`Add${props.targetLabel
                     ? " " +
-                      props.targetLabel.charAt(0).toUpperCase() +
-                      props.targetLabel.slice(1)
+                    props.targetLabel.charAt(0).toUpperCase() +
+                    props.targetLabel.slice(1)
                     : ""
-                }`}
+                  }`}
               >
                 <IconButton
                   size="medium"
@@ -2414,17 +2400,17 @@ function SubTable(props) {
             },
             sort: tableState.activeColumn
               ? {
-                  field:
-                    tableState.columns[tableState.activeColumn]?.name ===
+                field:
+                  tableState.columns[tableState.activeColumn]?.name ===
                     "fullContactAddress"
-                      ? "address1"
-                      : tableState.columns[tableState.activeColumn]?.name,
-                  order:
-                    tableState.columns[tableState.activeColumn]
-                      ?.sortDirection === "asc"
-                      ? 1
-                      : -1,
-                }
+                    ? "address1"
+                    : tableState.columns[tableState.activeColumn]?.name,
+                order:
+                  tableState.columns[tableState.activeColumn]
+                    ?.sortDirection === "asc"
+                    ? 1
+                    : -1,
+              }
               : [],
 
             filters: filters,
@@ -2548,17 +2534,17 @@ function SubTable(props) {
             },
             sort: tableState.activeColumn
               ? {
-                  field:
-                    tableState.columns[tableState.activeColumn]?.name ===
+                field:
+                  tableState.columns[tableState.activeColumn]?.name ===
                     "fullContactAddress"
-                      ? "address1"
-                      : tableState.columns[tableState.activeColumn]?.name,
-                  order:
-                    tableState.columns[tableState.activeColumn]
-                      ?.sortDirection === "asc"
-                      ? 1
-                      : -1,
-                }
+                    ? "address1"
+                    : tableState.columns[tableState.activeColumn]?.name,
+                order:
+                  tableState.columns[tableState.activeColumn]
+                    ?.sortDirection === "asc"
+                    ? 1
+                    : -1,
+              }
               : [],
 
             filters: {
@@ -2666,8 +2652,8 @@ function SubTable(props) {
       props.wellInterestsPageProps.wellInterestsCount > 25
         ? [10, 25, 50, 100]
         : props.wellInterestsPageProps.wellInterestsCount > 10
-        ? [10, 25]
-        : [];
+          ? [10, 25]
+          : [];
     options.count = props.wellInterestsPageProps.wellInterestsCount;
     options.serverSide = true;
   }
@@ -2677,8 +2663,8 @@ function SubTable(props) {
       props.contactsPageProps.contactsCount > 25
         ? [10, 25, 50, 100]
         : props.contactsPageProps.contactsCount > 10
-        ? [10, 25]
-        : [];
+          ? [10, 25]
+          : [];
     options.count = props.contactsPageProps.contactsCount;
     options.serverSide = true;
     options.print = false;
@@ -2711,9 +2697,8 @@ function SubTable(props) {
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <div
-        className={`${classes.table} ${
-          rows && !props.loading ? "" : classes.loadingTable
-        } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
+        className={`${classes.table} ${rows && !props.loading ? "" : classes.loadingTable
+          } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
       >
         <MUIDataTable
           className={tableStyle}
@@ -2742,20 +2727,20 @@ function SubTable(props) {
             onClose={handleCloseDialog}
             fullWidth={
               openDialog === "comment" ||
-              openDialog === "owner" ||
-              openDialog === "wellsPerOwner" ||
-              openDialog === "buyContactsInfo" ||
-              openDialog === "sendMailers" ||
-              openDialog === "printLabels" ||
-              openDialog === "deleteUser" ||
-              openDialog === "addParcelInterestsToEntity"
+                openDialog === "owner" ||
+                openDialog === "wellsPerOwner" ||
+                openDialog === "buyContactsInfo" ||
+                openDialog === "sendMailers" ||
+                openDialog === "printLabels" ||
+                openDialog === "deleteUser" ||
+                openDialog === "addParcelInterestsToEntity"
                 ? true
                 : false
             }
             maxWidth={
               openDialog === "owner" ||
-              openDialog === "wellsPerOwner" ||
-              openDialog === "ownerContacts"
+                openDialog === "wellsPerOwner" ||
+                openDialog === "ownerContacts"
                 ? "xl"
                 : openDialog === "owner" ||
                   openDialog === "ownersPerContacts" ||
@@ -2763,14 +2748,14 @@ function SubTable(props) {
                   openDialog === "owner" ||
                   openDialog === "wellsPerOwner" ||
                   openDialog === "addParcelInterestsToEntity"
-                ? "lg"
-                : openDialog === "addContact" ||
-                  openDialog === "addOwnerToParcel" ||
-                  openDialog === "deleteOwnersFromContact" ||
-                  openDialog === "deleteContact" ||
-                  openDialog === "deleteUser"
-                ? "xs"
-                : "sm"
+                  ? "lg"
+                  : openDialog === "addContact" ||
+                    openDialog === "addOwnerToParcel" ||
+                    openDialog === "deleteOwnersFromContact" ||
+                    openDialog === "deleteContact" ||
+                    openDialog === "deleteUser"
+                    ? "xs"
+                    : "sm"
             }
           >
             {openDialog === "comment" && (
@@ -2782,7 +2767,7 @@ function SubTable(props) {
                 }
                 multipleIds={
                   m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
-                  m1nSelectedRowsIndexes.length > 1
+                    m1nSelectedRowsIndexes.length > 1
                     ? removeDuplicatesIds(m1nSelectedRowsIds)
                     : null
                 }
@@ -2797,7 +2782,7 @@ function SubTable(props) {
                   }
                   multipleIds={
                     m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 &&
-                    m1nSelectedRowsIndexes.length > 1
+                      m1nSelectedRowsIndexes.length > 1
                       ? removeDuplicatesIds(m1nSelectedRowsIds)
                       : null
                   }
@@ -2874,13 +2859,12 @@ function SubTable(props) {
                 m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
-                {`Do you want to permanently delete the owner${
-                  m1nSelectedRowsIds &&
-                  m1nSelectedRowsIds.length > 1 &&
-                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                {`Do you want to permanently delete the owner${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                     ? "s"
                     : ""
-                } from  this contact?`}
+                  } from  this contact?`}
               </DeleteConfirmationDialogContent>
             )}
             {openDialog === "deleteContact" && (
@@ -2892,76 +2876,68 @@ function SubTable(props) {
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {props.header === "Owner's Contacts" &&
-                  `Do you want to remove the contact${
-                    m1nSelectedRowsIds &&
+                  `Do you want to remove the contact${m1nSelectedRowsIds &&
                     m1nSelectedRowsIds.length > 1 &&
                     removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                      ? "s"
-                      : ""
+                    ? "s"
+                    : ""
                   } from this owner?`}
 
                 {props.header === "Contacts" &&
-                  `Do you want to delete the selected contact${
-                    m1nSelectedRowsIds &&
+                  `Do you want to delete the selected contact${m1nSelectedRowsIds &&
                     m1nSelectedRowsIds.length > 1 &&
                     removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                      ? "s"
-                      : ""
+                    ? "s"
+                    : ""
                   }?`}
               </DeleteConfirmationDialogContent>
             )}
             {openDialog === "deleteParcelOwnership" && (
               <DeleteConfirmationDialogContent
-                header={`Delete Owner${
-                  m1nSelectedRowsIds &&
-                  m1nSelectedRowsIds.length > 1 &&
-                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                header={`Delete Owner${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                     ? "s"
                     : ""
-                }`}
+                  }`}
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
                 m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
-                {`Do you want to delete the owner${
-                  m1nSelectedRowsIds &&
-                  m1nSelectedRowsIds.length > 1 &&
-                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                {`Do you want to delete the owner${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                     ? "s"
                     : ""
-                }?`}
+                  }?`}
               </DeleteConfirmationDialogContent>
             )}
             {openDialog === "deleteParcelInterest" && (
               <DeleteConfirmationDialogContent
-                header={`Delete Parcel Interest${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
-                }`}
+                header={`Delete Parcel Interest${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                  }`}
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
                 m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
-                {`Do you want to delete the Parcel Interest${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
-                }?`}
+                {`Do you want to delete the Parcel Interest${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                  }?`}
               </DeleteConfirmationDialogContent>
             )}
 
             {openDialog === "deleteDeal" && (
               <DeleteConfirmationDialogContent
-                header={`Delete Deal${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
-                }`}
+                header={`Delete Deal${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                  }`}
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
                 m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
-                {`Do you want to delete the selected deal${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
-                }?`}
+                {`Do you want to delete the selected deal${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                  }?`}
               </DeleteConfirmationDialogContent>
             )}
             {openDialog === "buyContactsInfo" && (
@@ -2976,8 +2952,8 @@ function SubTable(props) {
               <MergeContactDrawer
                 onClose={handleCloseDialog}
                 rows={expandedObject}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 setRows={setExpandedObject}
-                setSelectedRow={setSelectedRow}
               />
             )}
             {openDialog === "sendMailers" && (
@@ -3013,9 +2989,8 @@ function SubTable(props) {
             )}
             {openDialog === "deleteUser" && (
               <DeleteConfirmationDialogContent
-                header={`Delete User${
-                  m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
-                }`}
+                header={`Delete User${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                  }`}
                 onClose={handleCloseDialog}
                 deleteFunc={() => {
                   props.deleteFunc(selectedUser.id);
@@ -3026,11 +3001,10 @@ function SubTable(props) {
               >
                 {selectedUser !== null
                   ? `Remove '${selectedUser.displayName}' from list?`
-                  : `Are you sure you want to delete selected user${
-                      m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
-                        ? "s"
-                        : ""
-                    }?`}
+                  : `Are you sure you want to delete selected user${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1
+                    ? "s"
+                    : ""
+                  }?`}
               </DeleteConfirmationDialogContent>
             )}
           </Dialog>
@@ -3065,7 +3039,7 @@ function SubTable(props) {
               }
               noTrackAvailable={
                 targetLabelToExpand === "contact" ||
-                (!targetLabelToExpand && props.targetLabel === "contact")
+                  (!targetLabelToExpand && props.targetLabel === "contact")
                   ? true
                   : false
               }
@@ -3100,10 +3074,10 @@ function SubTable(props) {
                 cardHeightExpanded="100%"
                 targetSourceId={
                   targetLabelToExpand === "owner" ||
-                  targetLabelToExpand === "well" ||
-                  (!targetLabelToExpand &&
-                    (props.targetLabel === "owner" ||
-                      props.targetLabel === "well"))
+                    targetLabelToExpand === "well" ||
+                    (!targetLabelToExpand &&
+                      (props.targetLabel === "owner" ||
+                        props.targetLabel === "well"))
                     ? selectedRow.id
                     : selectedRow._id
                 }
@@ -3112,7 +3086,7 @@ function SubTable(props) {
                 }
                 noTrackAvailable={
                   targetLabelToExpand === "contact" ||
-                  (!targetLabelToExpand && props.targetLabel === "contact")
+                    (!targetLabelToExpand && props.targetLabel === "contact")
                     ? true
                     : false
                 }

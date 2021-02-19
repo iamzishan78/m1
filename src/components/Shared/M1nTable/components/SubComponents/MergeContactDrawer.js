@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useLazyQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, Grid, Container, Box } from "@material-ui/core";
+import { Button, Grid, Container, Box, CircularProgress } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseSharp from "@material-ui/icons/CloseSharp";
@@ -10,8 +10,9 @@ import DoneSharpIcon from "@material-ui/icons/DoneSharp";
 import RemoveSharpIcon from "@material-ui/icons/RemoveSharp";
 import Typography from "@material-ui/core/Typography";
 import AlertDialogSlide from "../../../../Contacts/components/RightDialog";
-import { showSuccessMessage } from "../../../../../actions";
-import { COMMENTSBYOBJECTSIDS } from "../../../../../graphQL/useQueryCommentsByObjectsIds";
+import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
+import { MERGE_CONTACTS } from "../../../../../graphQL/useMutationMergeContact";
+
 
 const styles = (theme) => ({
   root: {
@@ -23,39 +24,54 @@ const styles = (theme) => ({
 
 const useStyles = makeStyles(styles);
 
-export default function MergeContactDrawer({ onClose, rows, setRows }) {
+export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [primaryContact, setPrimaryContact] = useState(rows[0]);
+  const [loading, setLoading] = useState(false);
 
-  const [
-    getCommentsByObjectsIds,
-    { data: dataCommentsMultiIds },
-  ] = useLazyQuery(COMMENTSBYOBJECTSIDS, {
-    fetchPolicy: "cache-and-network",
-  });
-
-  const ids = rows.reduce((ids, row) => {
-    ids.push(row._id);
-    return ids;
-  }, []);
-
-  useEffect(() => {
-    getCommentsByObjectsIds({
-      variables: {
-        objectsIdsArray: ids,
-      },
-    });
-  }, []);
+  const [mergeContacts] = useMutation(MERGE_CONTACTS);
 
   const onMerge = () => {
-    dispatch(showSuccessMessage("All records saved successfully"));
-    onClose();
+    let secondaryContacts = rows.filter(
+      (row) => row._id !== primaryContact._id
+    );
+    secondaryContacts = secondaryContacts.reduce((ids, row) => {
+      ids.push(row._id);
+      return ids;
+    }, []);
+    setLoading(true);
+    mergeContacts({
+      variables: { primary: primaryContact._id, secondary: secondaryContacts },
+      refetchQueries: [
+        "getPaginatedContacts",
+      ],
+      awaitRefetchQueries: true
+    }).then(
+      res => {
+        console.log(res)
+        dispatch(showSuccessMessage("Contacts Merged Successfully"));
+        setM1nSelectedRowsIndexes([])
+        onClose();
+        setLoading(false);
+      },
+      err => {
+        console.log(err)
+        setLoading(false);
+        dispatch(showErrorMessage("Failed to merge"));
+      }
+    );;
+
   };
 
   const onDelete = (row) => {
     setRows(rows.filter((r) => r._id !== row._id));
   };
+
+  const handleClose = () => {
+    setM1nSelectedRowsIndexes([])
+    onClose();
+  }
 
   return (
     <AlertDialogSlide open={true}>
@@ -79,7 +95,7 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
               </Typography>
             </Grid>
             <Grid item>
-              <IconButton aria-label="delete" color="primary" onClick={onClose}>
+              <IconButton aria-label="delete" color="primary" onClick={handleClose}>
                 <CloseSharp />
               </IconButton>
             </Grid>
@@ -114,17 +130,17 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
                   />
                 </IconButton>
               ) : (
-                <IconButton onClick={() => setPrimaryContact(row)}>
-                  <RemoveSharpIcon
-                    fontSize="small"
-                    style={{
-                      background: "#f70000",
-                      color: "white",
-                      borderRadius: 3,
-                    }}
-                  />
-                </IconButton>
-              )}
+                  <IconButton onClick={() => setPrimaryContact(row)}>
+                    <RemoveSharpIcon
+                      fontSize="small"
+                      style={{
+                        background: "#f70000",
+                        color: "white",
+                        borderRadius: 3,
+                      }}
+                    />
+                  </IconButton>
+                )}
             </Grid>
 
             <Grid item md={10}>
@@ -155,13 +171,13 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
             alignItems="flex-end"
           >
             <Grid item>
-              <Button onClick={onClose}>Cancel</Button>
+              <Button onClick={handleClose}>Cancel</Button>
             </Grid>
             <Grid item>
               <Button
                 variant="contained"
                 component="span"
-                disabled={rows.length > 1}
+                disabled={rows.length < 2}
                 style={{ backgroundColor: "#00abed", color: "white" }}
                 onClick={onMerge}
               >
@@ -171,6 +187,19 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
           </Grid>
         </Box>
       </Container>
+
+      {loading && (
+        <div
+          style={{
+            position: "absolute",
+            left: "250px",
+            bottom: "148px",
+            zIndex: "150",
+          }}
+        >
+          <CircularProgress size={80} disableShrink color="secondary" />
+        </div>
+      )}
     </AlertDialogSlide>
   );
 }
