@@ -2163,7 +2163,7 @@ const ProductionDetailsHeaders = [
 
 const ContactWellHeadCells = [
   {
-    name: "_id",
+    name: "wellId",
     options: {
       display: false,
       filter: false,
@@ -2219,7 +2219,7 @@ const ContactWellHeadCells = [
   },
   {
     name: "isTracked",
-    label: " ",
+    label: "Track",
     options: {
       searchable: false,
       download: false,
@@ -3141,7 +3141,7 @@ function M1nTable(props) {
 
       let wells = dataContactWells.contactWells;
       const objectsIdsArray = wells.map(
-        (well) => well._id
+        (well) => well.wellId
       );
       getCommentsCounter({
         variables: {
@@ -3220,20 +3220,20 @@ function M1nTable(props) {
         well.tags = [[], 0];
 
         for (let i = 0; i < constDataTracks.tracksByObjectType.length; i++) {
-          if (well._id === constDataTracks.tracksByObjectType[i].trackOn) {
+          if (well.wellId === constDataTracks.tracksByObjectType[i].trackOn) {
             well.isTracked = true;
             break;
           }
         }
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (well._id === dataCommentsCounter.commentsCounter[i]._id) {
+          if (well.wellId === dataCommentsCounter.commentsCounter[i]._id) {
             well.commentsCounter =
               dataCommentsCounter.commentsCounter[i].total;
             break;
           }
         }
         for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (well._id === dataTagSamples.tagSamples[i]._id) {
+          if (well.wellId === dataTagSamples.tagSamples[i]._id) {
             well.tags = [
               dataTagSamples.tagSamples[i].tags,
               dataTagSamples.tagSamples[i].total,

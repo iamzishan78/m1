@@ -759,7 +759,8 @@ function SubTable(props) {
                         } else {
                           let selectedWell = props.rows.find((row) => {
                             if (props.parent === "assocTaxRollInterests") {
-                              return row._id == tableMeta.rowData[0];
+                              console.log("assocTaxRollInterests found")
+                              return row.wellId == tableMeta.rowData[0];
                             }
                             if (row.id) return row.id == tableMeta.rowData[0];
                             return row.Id == tableMeta.rowData[0];
@@ -767,12 +768,9 @@ function SubTable(props) {
 
                           if (selectedWell) {
                             if (props.targetLabel === "well") {
-                              if (props.parent === "owner_WellInterests") {
+                              if (props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests") {
                                 selectedWell.id = selectedWell.wellId;
                                 delete selectedWell.wellId;
-                              }
-                              if (props.parent === "assocTaxRollInterests") {
-                                selectedWell.id = selectedWell.wellId;
                               }
                               setSelectedRow(selectedWell);
                               setStateApp((state) => ({
