@@ -445,11 +445,6 @@ function MapGridCard(props) {
                 {...a11yProps(1)}
               />
 
-              <Tab
-                className="cancelDraggableEffect"
-                label={`Shape Filter`}
-                {...a11yProps(1)}
-              />
             </Tabs>
 
             <IconButton
@@ -666,49 +661,6 @@ function MapGridCard(props) {
                         = {stateApp.minZoomToQueryViewport})
                       </h6>
                     </div>,
-                  ]}
-                />
-              </div>
-            </TabPanel>
-
-            {/* //// shape filter //// */}
-            <TabPanel
-              value={mapGridCardActiveTap}
-              index={3}
-              className={classes.tapsPanelsPadding}
-            >
-              <div style={{ position: "relative" }}>
-                <TabPanels
-                  value={gridTapValue}
-                  panels={[
-                    <M1nTable
-                      dense
-                      parent="gridWells"
-                      header={
-                        <TabLabels
-                          labels={[
-                            `Wells (${stateApp.gridWellsCount})`,
-                            `Tax Roll Owners (${stateApp.gridOwnersCount})`,
-                          ]}
-                          value={gridTapValue}
-                          setValue={setGridTapValue}
-                        />
-                      }
-                    />,
-                    <M1nTable
-                      dense
-                      parent="gridOwners"
-                      header={
-                        <TabLabels
-                          labels={[
-                            `Wells (${stateApp.gridWellsCount})`,
-                            `Tax Roll Owners (${stateApp.gridOwnersCount})`,
-                          ]}
-                          value={gridTapValue}
-                          setValue={setGridTapValue}
-                        />
-                      }
-                    />,
                   ]}
                 />
               </div>
