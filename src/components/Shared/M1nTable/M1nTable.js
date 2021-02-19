@@ -2176,7 +2176,7 @@ const ContactWellHeadCells = [
   },
   { name: "wellName", label: "Well" },
   { name: "api", label: "API" },
-  { name: "lease", label: "Lease Name" },
+  { name: "lease", label: "Lease" },
   { name: "leaseAcres", label: "Lease Acres" },
   { name: "interestOwner", label: "Interest Owner" },
   { name: "entity", label: "Entity" },
