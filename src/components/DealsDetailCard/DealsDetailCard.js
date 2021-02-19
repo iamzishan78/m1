@@ -35,7 +35,7 @@ const sumDeals = (deals) => {
     // sum += parseFloat(card.label.split("$").join("").split(",").join(""))
   });
 
-  return vf_currency(sum).slice(0, vf_currency(sum).length - 3);
+  return vf_currency(sum);
 };
 
 export default function DealsDetailCard(props) {

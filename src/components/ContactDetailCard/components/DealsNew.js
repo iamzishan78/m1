@@ -103,7 +103,7 @@ export default function Deals({ contact, ...props }) {
       // sum += parseFloat(card.label.split("$").join("").split(",").join(""))
     });
 
-    return vf_currency(sum).slice(0, vf_currency(sum).length - 3);
+    return vf_currency(sum);
   };
 
   const sumWonDeals = () => {
@@ -112,7 +112,7 @@ export default function Deals({ contact, ...props }) {
       if (card.offerPrice && !isNaN(card.offerPrice)) sum += card.offerPrice;
       // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     });
-    return vf_currency(sum).slice(0, vf_currency(sum).length - 3);
+    return vf_currency(sum);
   };
 
   const sumLostDeals = () => {
@@ -122,7 +122,7 @@ export default function Deals({ contact, ...props }) {
       // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     });
 
-    return vf_currency(sum).slice(0, vf_currency(sum).length - 3);
+    return vf_currency(sum);
   };
 
   return (
