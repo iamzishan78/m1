@@ -1,5 +1,4 @@
-
-const WellsHeadCells = [
+const OwnersPerContactsHeadCells = [
     {
       name: "id",
       options: {
@@ -12,14 +11,15 @@ const WellsHeadCells = [
         viewColumns: false,
       },
     },
-    { name: "api", label: "API" },
-    { name: "state", label: "State" },
-    { name: "county", label: "County" },
-    { name: "wellName", label: "Well Name" },
-    { name: "operator", label: "Operator" },
-    { name: "wellType", label: "Type" },
-    { name: "wellBoreProfile", label: "Profile",},
-    { name: "wellStatus", label: "Status",},
+    { name: "name", label: "Name" },
+    {
+      name: "ownershipType",
+      label: "Entity",
+    },
+    {
+      name: "appraisedValue",
+      label: "Appraised Value",
+    },
     {
       name: "tags",
       label: "Tags ",
@@ -41,6 +41,7 @@ const WellsHeadCells = [
         },
       },
     },
+  
     {
       name: "commentsCounter",
       label: " ",
@@ -55,28 +56,23 @@ const WellsHeadCells = [
     },
     {
       name: "isTracked",
-      label: " ",
+      label: "Track",
       options: {
-        filter: false,
-        sort: false,
         searchable: false,
         download: false,
         print: false,
-        viewColumns: false,
-      },
-    },
-    {
-      name: "detailCard",
-      label: " ",
-      options: {
-        filter: false,
-        sort: false,
-        searchable: false,
-        download: false,
-        print: false,
-        viewColumns: false,
+        filterOptions: {
+          names: ["Tracked", "Untracked"],
+          logic(tracked, filterVal) {
+            return !(
+              (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+              (filterVal.indexOf("Untracked") >= 0 && !tracked)
+            );
+          },
+        },
+        filterType: "dropdown",
       },
     },
   ];
   
-export default WellsHeadCells;
+export default OwnersPerContactsHeadCells;

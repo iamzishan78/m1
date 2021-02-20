@@ -1,7 +1,6 @@
-
-const WellsHeadCells = [
+const CustomWellsHeadCells = [
     {
-      name: "id",
+      name: "wellId",
       options: {
         display: false,
         filter: false,
@@ -12,14 +11,12 @@ const WellsHeadCells = [
         viewColumns: false,
       },
     },
-    { name: "api", label: "API" },
-    { name: "state", label: "State" },
-    { name: "county", label: "County" },
-    { name: "wellName", label: "Well Name" },
+    { name: "wellName", label: "Well" },
+    { name: "apiNumber", label: "API" },
     { name: "operator", label: "Operator" },
     { name: "wellType", label: "Type" },
-    { name: "wellBoreProfile", label: "Profile",},
-    { name: "wellStatus", label: "Status",},
+    { name: "wellProfile", label: "Profile" },
+    { name: "wellStatus", label: "Status" },
     {
       name: "tags",
       label: "Tags ",
@@ -79,4 +76,4 @@ const WellsHeadCells = [
     },
   ];
   
-export default WellsHeadCells;
+export default CustomWellsHeadCells;

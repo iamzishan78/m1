@@ -1,5 +1,9 @@
+import React from "react";
 
-const WellsHeadCells = [
+/* props is just a style object*/
+
+const TrackedOwnersHeadCells = [
+    /// appears this code is used for the track grid owners 
     {
       name: "id",
       options: {
@@ -12,14 +16,29 @@ const WellsHeadCells = [
         viewColumns: false,
       },
     },
-    { name: "api", label: "API" },
-    { name: "state", label: "State" },
-    { name: "county", label: "County" },
-    { name: "wellName", label: "Well Name" },
-    { name: "operator", label: "Operator" },
-    { name: "wellType", label: "Type" },
-    { name: "wellBoreProfile", label: "Profile",},
-    { name: "wellStatus", label: "Status",},
+    {
+      name: "entity",
+      options: {
+        display: false,
+        filter: false,
+        searchable: false,
+        sort: false,
+        download: false,
+        print: false,
+        viewColumns: false,
+      },
+    },
+    { name: "name", label: "Name" },
+    {
+      name: "ownershipType",
+      label: "Entity",
+    },
+    { name: "interestType", label: "Type" },
+    {
+      name: "ownershipPercentage",
+      label: "Interest",
+    },
+  
     {
       name: "tags",
       label: "Tags ",
@@ -41,6 +60,21 @@ const WellsHeadCells = [
         },
       },
     },
+  
+    {
+      name: "isContact",
+      label: " ",
+      options: {
+        filter: false,
+        searchable: false,
+        sort: false,
+        download: false,
+        print: false,
+        viewColumns: false,
+      },
+    },
+  
+  
     {
       name: "commentsCounter",
       label: " ",
@@ -77,6 +111,19 @@ const WellsHeadCells = [
         viewColumns: false,
       },
     },
+    {
+      name: "coordinates",
+      label: " ",
+      options: {
+        filter: false,
+        sort: false,
+        searchable: false,
+        download: false,
+        print: false,
+        viewColumns: false,
+      },
+    },
   ];
   
-export default WellsHeadCells;
+
+export default TrackedOwnersHeadCells;

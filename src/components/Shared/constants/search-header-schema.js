@@ -1,5 +1,6 @@
+const SearchsHeadCells = [
 
-const WellsHeadCells = [
+
     {
       name: "id",
       options: {
@@ -12,14 +13,9 @@ const WellsHeadCells = [
         viewColumns: false,
       },
     },
-    { name: "api", label: "API" },
-    { name: "state", label: "State" },
-    { name: "county", label: "County" },
-    { name: "wellName", label: "Well Name" },
-    { name: "operator", label: "Operator" },
-    { name: "wellType", label: "Type" },
-    { name: "wellBoreProfile", label: "Profile",},
-    { name: "wellStatus", label: "Status",},
+  
+  
+    //////////
     {
       name: "tags",
       label: "Tags ",
@@ -57,6 +53,26 @@ const WellsHeadCells = [
       name: "isTracked",
       label: " ",
       options: {
+        searchable: false,
+        download: false,
+        print: false,
+        viewColumns: false,
+        filterOptions: {
+          names: ["Tracked", "Untracked"],
+          logic(tracked, filterVal) {
+            return !(
+              (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+              (filterVal.indexOf("Untracked") >= 0 && !tracked)
+            );
+          },
+        },
+        filterType: "dropdown",
+      },
+    },
+    {
+      name: "coordinates",
+      label: " ",
+      options: {
         filter: false,
         sort: false,
         searchable: false,
@@ -77,6 +93,18 @@ const WellsHeadCells = [
         viewColumns: false,
       },
     },
+    {
+      name: "isContact",
+      label: " ",
+      options: {
+        filter: false,
+        searchable: false,
+        sort: false,
+        download: false,
+        print: false,
+        viewColumns: false,
+      },
+    },
   ];
-  
-export default WellsHeadCells;
+
+export default SearchsHeadCells;
