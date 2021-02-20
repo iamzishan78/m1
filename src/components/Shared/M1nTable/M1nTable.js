@@ -2179,7 +2179,13 @@ const ContactWellHeadCells = [
   { name: "lease", label: "Lease" },
   { name: "leaseAcres", label: "Lease Acres" },
   { name: "interestOwner", label: "Interest Owner" },
-  { name: "entity", label: "Entity" },
+  {
+    name: "entity",
+    label: "Entity",
+    options: {
+      display: false
+    }
+  },
   { name: "type", label: "Type" },
   { name: "amount", label: "Amount" },
   { name: "taxValue", label: "Tax Value" },

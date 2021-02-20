@@ -4761,7 +4761,8 @@ export default function Map() {
         ],
       ];
 
-      map.fitBounds(bbox, {
+      // map may be null when wellDetailCard is launched from somewhere else
+      map?.fitBounds(bbox, {
         speed: 0.75,
         linear: true,
       });
