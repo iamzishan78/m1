@@ -15,11 +15,24 @@ import { MERGE_CONTACTS } from "../../../../../graphQL/useMutationMergeContact";
 
 
 const styles = (theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(2),
-  },
+  // root: {
+  //   margin: 0,
+  //   padding: theme.spacing(2),
+  // },
   topHeading: {},
+  gridWidthScroll: {
+    backgroundColor: "#fff",
+    "& .formLabel": {
+      color: "#757575",
+      fontWeight: "bold",
+      width: "100%",
+      marginBottom: "0",
+    },
+  },
+  dealContainer: {
+    // display: "flex",
+    // padding: "10px 10px 30px 10px",
+  },
 });
 
 const useStyles = makeStyles(styles);
@@ -75,7 +88,9 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
 
   return (
     <AlertDialogSlide open={true}>
-      <Container maxWidth="sm">
+      <Container maxWidth="sm" className={classes.gridWidthScroll}>
+      <div className={classes.dealContainer}>
+
         <Box p={3} pt={1}>
           <Grid
             container
@@ -186,6 +201,7 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
             </Grid>
           </Grid>
         </Box>
+        </div>
       </Container>
 
       {loading && (
