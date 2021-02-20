@@ -12,7 +12,7 @@ import { setMapGridCardState } from "../../../actions";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 
 // import value formatters 
-import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
+import capitalizeFirstLetter from "../../Shared/valueformatters/capitalize-first-letter.js";
 
 
 const useStyles = makeStyles((theme) => ({

@@ -19,7 +19,7 @@ import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 
 // import value formatters 
-import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
+import capitalizeFirstLetter from "../../../../Shared/valueformatters/capitalize-first-letter.js";
 
 const styles = (theme) => ({
   root: {

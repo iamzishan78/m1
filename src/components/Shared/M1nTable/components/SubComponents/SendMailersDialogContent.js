@@ -20,7 +20,7 @@ import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import { UPLOADRECIPIENTS } from "../../../../../graphQL/useMutationUploadStorefrontRecipientsList";
 
 // import value formatters 
-import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
+import capitalizeFirstLetter from "../../../../Shared/valueformatters/capitalize-first-letter.js";
 
 const styles = (theme) => ({
   root: {

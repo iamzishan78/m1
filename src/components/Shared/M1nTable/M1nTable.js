@@ -55,8 +55,8 @@ import SearchsHeadCells from '../constants/search-header-schema.js'
 import OwnersPerContactsHeadCells from '../constants/ownerspercontacts-header-schema.js'
 
 // import value formatters 
-import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
-import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
+import capitalizeFirstLetter from "../../Shared/valueformatters/capitalize-first-letter.js";
+import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
 
 
 

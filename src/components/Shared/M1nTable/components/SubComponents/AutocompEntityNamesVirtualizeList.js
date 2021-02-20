@@ -14,7 +14,7 @@ import { Grid } from "@material-ui/core";
 import debounce from "lodash/debounce";
 
 // import value formatters 
-import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
+import capitalizeFirstLetter from "../../../../Shared/valueformatters/capitalize-first-letter.js";
 
 const filter = createFilterOptions();
 

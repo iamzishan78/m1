@@ -19,7 +19,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import "./Tagger.css";
 
 // import value formatters 
-import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
+import capitalizeFirstLetter from "../Shared/valueformatters/capitalize-first-letter.js";
 
 
 const AntSwitch = withStyles((theme) => ({

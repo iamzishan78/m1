@@ -28,7 +28,7 @@ import Divider from "@material-ui/core/Divider";
 import CloseIcon from "@material-ui/icons/Close";
 
 // import value formatters 
-import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
+import capitalizeFirstLetter from "../Shared/valueformatters/capitalize-first-letter.js";
 
 
 const AntSwitch = withStyles((theme) => ({

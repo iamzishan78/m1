@@ -18,7 +18,7 @@ import { setMapGridCardState } from "../../../../../actions";
 import { deepEqualObjects } from "../../../../Shared/functions";
 
 // import value formatters 
-import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
+import capitalizeFirstLetter from "../../../../Shared/valueformatters/capitalize-first-letter.js";
 
 
 const useStyles = makeStyles((theme) => ({

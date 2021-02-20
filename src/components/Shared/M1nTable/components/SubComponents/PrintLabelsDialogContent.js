@@ -16,7 +16,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormLabel from "@material-ui/core/FormLabel";
 
 // import value formatters 
-import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
+import capitalizeFirstLetter from "../../../../Shared/valueformatters/capitalize-first-letter.js";
 
 const styles = (theme) => ({
   root: {
