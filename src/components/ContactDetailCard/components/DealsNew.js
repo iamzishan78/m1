@@ -8,6 +8,9 @@ import { CONTACTDEALS } from "../../../graphQL/useQueryContactDeals";
 import DealMoneyIcon from "../../Shared/svgIcons/DealMoneyIcon";
 import { AppContext } from "../../../AppContext";
 import DealsDetailCard from "../../DealsDetailCard/DealsDetailCard";
+import vf_currency from "../../Shared/valueformatters/vf_currency.js";
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,10 +41,7 @@ const useStyles = makeStyles((theme) => ({
   h5: { color: "#757575", marginTop: "0" },
 }));
 
-let formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
+
 
 export default function Deals({ contact, ...props }) {
   const classes = useStyles();
@@ -102,8 +102,8 @@ export default function Deals({ contact, ...props }) {
       if (card.offerPrice && !isNaN(card.offerPrice)) sum += card.offerPrice;
       // sum += parseFloat(card.label.split("$").join("").split(",").join(""))
     });
-    const formatted = formatter.format(sum);
-    return formatted.slice(0, formatted.length - 3);
+
+    return vf_currency(sum);
   };
 
   const sumWonDeals = () => {
@@ -112,8 +112,7 @@ export default function Deals({ contact, ...props }) {
       if (card.offerPrice && !isNaN(card.offerPrice)) sum += card.offerPrice;
       // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     });
-    const formatted = formatter.format(sum);
-    return formatted.slice(0, formatted.length - 3);
+    return vf_currency(sum);
   };
 
   const sumLostDeals = () => {
@@ -122,8 +121,8 @@ export default function Deals({ contact, ...props }) {
       if (card.offerPrice && !isNaN(card.offerPrice)) sum += card.offerPrice;
       // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     });
-    const formatted = formatter.format(sum);
-    return formatted.slice(0, formatted.length - 3);
+
+    return vf_currency(sum);
   };
 
   return (

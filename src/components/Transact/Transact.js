@@ -25,6 +25,8 @@ import { setFlowState } from "../../actions";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import moment from "moment";
+import vf_currency from "../Shared/valueformatters/vf_currency.js";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -127,11 +129,6 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
 }));
-
-let formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
 
 const CustomAvatar = ({ text = "" }) => {
   const classes = useStyles();
@@ -477,8 +474,7 @@ export default function Transact() {
 
   const getCard = ({ metadata, title, description, id, laneId }) => {
     const cardPrice = metadata && metadata.offerPrice ? metadata.offerPrice : 0;
-    const formatted = formatter.format(cardPrice);
-    const formattedPrice = formatted.slice(0, formatted.length - 3);
+    const formattedPrice = vf_currency(cardPrice);
 
     let formattedDate = null;
 
@@ -563,15 +559,15 @@ export default function Transact() {
               : 0)
       );
 
-    const formatted = formatter.format(priceSum);
-    const formattedTotal = formatted.slice(0, formatted.length - 3);
+    const formattedTotal = vf_currency(priceSum);
 
+
+            
     let forecast = null;
     let forecastFormatted = "";
     if (priceSum > 0 && metadata.dealProbability > 0) {
       forecast = priceSum * (metadata.dealProbability / 100);
-      let formatted2 = formatter.format(forecast);
-      forecastFormatted = formatted2.slice(0, formatted2.length - 3);
+      forecastFormatted = vf_currency(forecast);
     }
 
     return (

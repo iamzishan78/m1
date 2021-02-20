@@ -9,6 +9,9 @@ import WellIcon from "../../Shared/svgIcons/well";
 import { useDispatch, useSelector } from "react-redux";
 import { setMapGridCardState } from "../../../actions";
 
+import vf_currency from "../../Shared/valueformatters/vf_currency.js";
+
+
 const useStyles = makeStyles((theme) => ({
   Paper: {
     minHeight: "35px",
@@ -32,18 +35,11 @@ function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-var formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumSignificantDigits: 21,
-});
-const valueFormatter = (v) => {
-  return formatter.format(parseInt(v));
-};
 
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
+
 const joinAddress = (row) => {
   let rowData = {
     city: row.city,
@@ -162,7 +158,7 @@ export default function WellInterestsTopSumary(props) {
                   <span>
                     Average Appraisal Value:{" "}
                     {selectedOwnerWellIntsSummary.averageValue
-                      ? valueFormatter(
+                      ? vf_currency(
                           selectedOwnerWellIntsSummary.averageValue
                         )
                       : "N/A"}
@@ -171,14 +167,14 @@ export default function WellInterestsTopSumary(props) {
                   <span>
                     Max Appraisal Value:{" "}
                     {selectedOwnerWellIntsSummary.maxValue
-                      ? valueFormatter(selectedOwnerWellIntsSummary.maxValue)
+                      ? vf_currency(selectedOwnerWellIntsSummary.maxValue)
                       : "N/A"}
                     <br />
                   </span>
                   <span>
                     Total Appraisal Value:{" "}
                     {selectedOwnerWellIntsSummary.totalValue
-                      ? valueFormatter(selectedOwnerWellIntsSummary.totalValue)
+                      ? vf_currency(selectedOwnerWellIntsSummary.totalValue)
                       : "N/A"}
                     <br />
                   </span>

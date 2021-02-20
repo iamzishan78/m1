@@ -168,8 +168,8 @@ const useStyles = makeStyles((theme) => {
 
 const TabLabels = ({ labels, value, setValue }) => {
   console.log(`ue mapgridcard tablabels ${(labels, value, setValue)}`);
-
   const classes = useStyles();
+
   return (
     <>
       {labels &&
@@ -320,6 +320,12 @@ function MapGridCard(props) {
       TrackedTapValue(state);
     }
   };
+  const [gridTapValue, GridTapValue] = useState(0);
+  const setGridTapValue = (state) => {
+    if (gridTapValue != state) {
+      GridTapValue(state);
+    }
+  };
 
   const classes = useStyles({
     mapGridCardActivated,
@@ -438,6 +444,7 @@ function MapGridCard(props) {
                 }`}
                 {...a11yProps(1)}
               />
+
             </Tabs>
 
             <IconButton
@@ -658,6 +665,7 @@ function MapGridCard(props) {
                 />
               </div>
             </TabPanel>
+
           </div>
         )}
       </Card>
@@ -708,4 +716,4 @@ function areEqual(prevProps, nextProps) {
   );
 }
 
-export default React.memo(MapGridCard, areEqual);
+export default React.memo(MapGridCard, areEqual, TabLabels, TabPanels);

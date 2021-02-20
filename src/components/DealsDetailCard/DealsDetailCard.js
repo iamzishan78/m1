@@ -7,6 +7,9 @@ import M1nTable from "../Shared/M1nTable/M1nTable";
 import DealDisplay from "./components/DealDisplay";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { CONTACTDEALS } from "../../graphQL/useQueryContactDeals";
+import vf_currency from "../Shared/valueformatters/vf_currency.js";
+
+
 
 const useStyles = makeStyles((theme) => ({
   gridWidthScroll: {
@@ -24,10 +27,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-let formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
 
 const sumDeals = (deals) => {
   let sum = 0;
@@ -35,8 +34,8 @@ const sumDeals = (deals) => {
     if (card.offerPrice && !isNaN(card.offerPrice)) sum += card.offerPrice;
     // sum += parseFloat(card.label.split("$").join("").split(",").join(""))
   });
-  const formatted = formatter.format(sum);
-  return formatted.slice(0, formatted.length - 3);
+
+  return vf_currency(sum);
 };
 
 export default function DealsDetailCard(props) {

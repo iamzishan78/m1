@@ -75,6 +75,8 @@ import moment from "moment";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckIcon from "@material-ui/icons/Check";
+import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
+
 
 var ticksToDateString = function (ticks) {
   var epochTicks = 621355968000000000;
@@ -456,7 +458,7 @@ function SubTable(props) {
   useEffect(() => {
     if (
       props.parent &&
-      (props.parent === "search" || props.parent === "owner_WellInterests") &&
+      (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests") &&
       props.targetLabel == "well" &&
       dataWell &&
       dataWell.well
@@ -1588,10 +1590,13 @@ function SubTable(props) {
                       return capitalizeFirstLetter(v);
 
                     if (column.name === "appraisedValue")
-                      return formatter.format(v);
+                      return vf_currency(v);
+
+                    if (column.name === "taxValue")
+                      return vf_currency(v);
 
                     if (column.name === "offerPrice" && !!v && !isNaN(v))
-                      return formatter.format(v);
+                      return vf_currency(v);
 
                     if (column.name === "lastUpdateAt")
                       return anyToDate(v).toLocaleString("en-US", {
@@ -1689,7 +1694,7 @@ function SubTable(props) {
                   }
 
                   return (
-                    <div style={{ display: "flex" }}>
+                    <div style={{ display: "flex",alignItems: "center", justifyContent: "left" }}>
                       {props.targetLabel === "contact" &&
                         column.name === "name" && (
                           <Avatar
@@ -1850,14 +1855,14 @@ function SubTable(props) {
         : [],
     selectableRows:
       props.targetLabel == "production_detail" ? false : "multiple",
-    print:
-      props.targetLabel !== "deal" &&
-      props.targetLabel !== "usermanagement" &&
-      props.targetLabel !== "owner" &&
-      props.targetLabel !== "production_detail" &&
-      props.parent !== "search" &&
-      props.parent !== "ownersPerParcel" &&
-      props.parent !== "ownersPerParcelWells",
+    print: false,
+      // props.targetLabel !== "deal" &&
+      // props.targetLabel !== "usermanagement" &&
+      // props.targetLabel !== "owner" &&
+      // props.targetLabel !== "production_detail" &&
+      // props.parent !== "search" &&
+      // props.parent !== "ownersPerParcel" &&
+      // props.parent !== "ownersPerParcelWells",
     viewColumns: props.targetLabel !== "usermanagement",
     onColumnViewChange: (changedColumn, action) => {
       if (

@@ -443,15 +443,6 @@ export default function Comments(props) {
 
   let commentsDisplayedCount = 0;
 
-  var formatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumSignificantDigits: 21,
-  });
-
-  const valueFormatter = (v) => {
-    return v;
-  };
 
   return (
     <Card
