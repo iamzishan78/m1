@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -28,6 +28,7 @@ import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
 import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
 import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
 import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
+import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { NavigationContext } from "../NavigationContext";
 import Popover from "@material-ui/core/Popover";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -35,8 +36,9 @@ import Box from "@material-ui/core/Box";
 import { CircularProgress } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
-import { deepEqualObjects } from "../../Shared/functions";
+import { deepEqualObjects, deepEqual, setStateIfDeepEqual } from "../../Shared/functions";
 import ClearIcon from "@material-ui/icons/Clear";
+
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -69,6 +71,7 @@ const calcScoreOpacity = (maxMin, score) => {
 
   return 1 - (score - maxMin[1]) / (maxMin[0] - maxMin[1]);
 };
+
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -179,6 +182,7 @@ function Search() {
   const [maxMinOwnersScore, setMaxMinOwnersScore] = React.useState([0, 0]);
   const [maxMinOperatosScore, setMaxMinOperatosScore] = React.useState([0, 0]);
   const [maxMinLeasesScore, setMaxMinLeasesScore] = React.useState([0, 0]);
+  const [maxMinContactsScore, setMaxMinContactsScore] = React.useState([0, 0]);
   const [maxMinMapboxSearchScore, setMaxMinMapboxSearchScore] = React.useState([
     0,
     0,
@@ -188,6 +192,7 @@ function Search() {
   const [loadingWells, setLoadingWells] = React.useState(false);
   const [loadingOwners, setLoadingOwners] = React.useState(false);
   const [loadingLeases, setLoadingLeases] = React.useState(false);
+  const [loadingContacts, setLoadingContacts] = React.useState(false);
   const [loadingOperators, setLoadingOperators] = React.useState(false);
   const [loadingMapboxSearch, setLoadingMapboxSearch] = React.useState(false);
   const classes = useStyles({ mapGridCardActivated });
@@ -201,6 +206,29 @@ function Search() {
     OPERATORSLATSLONS
   );
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
+
+  const setPageInd = (newState) => {
+    setStateIfDeepEqual(PageInd, newState);
+  };
+
+  const [pageInd, PageInd] = useState(0);
+
+  const setDataContacts = (newState) => {
+    setStateIfDeepEqual(DataContacts, newState);
+  };
+
+  const [dataContacts, DataContacts] = useState(null);
+
+  const setRows = (newState) => {
+    setStateIfDeepEqual(Rows, newState);
+  };
+  const [rows, Rows] = useState([]);
+  const [loading, Loading] = useState(true);
+  const setLoading = (newState) => {
+    setStateIfDeepEqual(Loading, newState);
+  };
+
+
 
   //////////// Search History Begin//////////////////
 
@@ -409,6 +437,95 @@ function Search() {
     []
   );
 
+  // const searchRequest = (e) => {
+  //   /// this function takes the search request and sends it to gql
+  //   console.log('eeeeeee',e)
+  //   getPaginatedContacts({
+  //     variables: {
+  //       search: e.input,
+  //     },
+  //   });
+  // };
+
+
+
+
+
+///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
+
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
+
+
+  const callContactsSearch = React.useMemo(
+    () =>
+    debounce((request, top, callback) => {
+
+      /// this function takes the search request and sends it to gql
+      getPaginatedContacts({
+        variables: {
+          search: request.input,
+        },
+      });
+
+    }, 500),
+    []
+  );
+
+  useEffect(() => {
+    // this use effect takes the contactdata once it comes in from the gql query
+    // and flattens things into an array 
+    // that presents options up to the search menu bar (called newOptions)
+
+    if (
+      constDataContacts 
+    ) {
+      console.log("ue mintable 23");
+      var newOptions = [];
+      var newOptions = [
+
+        ...constDataContacts.paginatedContacts.edges.map((result) => {
+
+          result = result.node;
+          result.Source = 'contacts-index'
+          
+          if(result.name){
+            result.Primary = result.name
+          } else {
+            result.Primary = "--"
+          }; 
+
+          if(result.address1 || result.city || result.state){
+            result.Secondary = result.address1 + ' ' + result.city+ ', ' + result.state+ ' ' + result.zip
+          } else {
+            result.Secondary = "--"
+          }; 
+
+          return result
+          
+        }),
+        ...newOptions,
+      ];
+
+      setOptions(newOptions);
+      setLoadingContacts(false);
+
+    }
+  }, [
+    constDataContacts,
+  ]);
+
+  //////// >>>>>>>>> END 
+
+
+
+
+
+
   const callMapboxSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
@@ -438,13 +555,10 @@ function Search() {
     []
   );
 
+  
+
   React.useEffect(() => {
-    // if (!autocompleteService.current && window.google) {
-    //   autocompleteService.current = new window.google.maps.places.AutocompleteService();
-    // }
-    // if (!autocompleteService.current) {
-    //   return undefined;
-    // }
+
     if (!mapGridCardActivated) {
       if (searchInputValue === "") {
         setOptions(value ? [value] : []);
@@ -594,7 +708,7 @@ function Search() {
                       }),
                       ...newOptions,
                     ];
-
+                    console.log('newoptions,', newOptions)
                     setMaxMinLeasesScore(maxMinScore(results.value));
                   }
 
@@ -603,6 +717,14 @@ function Search() {
                 }
               )
             : null,
+
+          searchOption == "all" || searchOption == "contacts"
+            ? callContactsSearch(
+                { input: searchInputValue },
+                searchTop,
+              )
+            : null,
+
           searchOption == "all" || searchOption == "locations"
             ? callMapboxSearch(
                 { input: searchInputValue },
@@ -649,6 +771,7 @@ function Search() {
     callOwnerSearch,
     callOperatorSearch,
     callLeaseSearch,
+    callContactsSearch,
     callMapboxSearch,
     searchOption,
     searchTop,
@@ -811,6 +934,8 @@ function Search() {
       }
     }
   }, [dataLeaseWells]);
+
+
 
   //////////////////////////////////// populating the search layer from external resource ////
   useEffect(() => {
@@ -998,6 +1123,31 @@ function Search() {
         }
       }
 
+
+      //// if contact
+      if (
+        newValue &&
+        newValue.Source === "contacts-index" &&
+        ((newValue.Lease && newValue.Lease !== "") ||
+          (newValue.LeaseId && newValue.LeaseId !== ""))
+      ) {
+        if (newValue.Lease && newValue.Lease !== "") {
+          getLeaseWells({
+            variables: {
+              fieldName: "Lease",
+              value: newValue.Lease,
+            },
+          });
+        } else {
+          getLeaseWells({
+            variables: {
+              fieldName: "LeaseId",
+              value: newValue.LeaseId,
+            },
+          });
+        }
+      }
+
       //// if mapboxSearch
       if (newValue && newValue.Source === "mapboxSearch" && newValue.center) {
         let minLong, maxLong, minLat, maxLat;
@@ -1032,6 +1182,7 @@ function Search() {
     Primary: "",
     Secondary: "",
   };
+  console.log('options xxx',options)
   let optionsWithHeader = [header, ...options];
   //// adding loader ////
   if (
@@ -1040,11 +1191,13 @@ function Search() {
         loadingOwners ||
         loadingOperators ||
         loadingLeases ||
+        loadingContacts ||
         loadingMapboxSearch)) ||
     (searchOption === "wells" && loadingWells) ||
     (searchOption === "owners" && loadingOwners) ||
     (searchOption === "operators" && loadingOperators) ||
     (searchOption === "leases" && loadingLeases) ||
+    (searchOption === "contacts" && loadingContacts) ||
     (searchOption === "locations" && loadingMapboxSearch)
   ) {
     optionsWithHeader = [header, { ...header, Source: "loader" }];
@@ -1063,6 +1216,7 @@ function Search() {
           if (option.Source === "wellheader-index-en-ms") return "Wells";
           if (option.Source === "operator-index") return "Operators";
           if (option.Source === "lease-index") return "Leases";
+          if (option.Source === "contacts-index") return "Contacts";
           if (option.Source === "mapboxSearch") return "Locations";
           if (option.Source === "loader") return "loader";
           return "header";
@@ -1095,11 +1249,13 @@ function Search() {
                       loadingOwners ||
                       loadingOperators ||
                       loadingLeases ||
+                      loadingContacts ||
                       loadingMapboxSearch)) ||
                   (searchOption === "wells" && loadingWells) ||
                   (searchOption === "owners" && loadingOwners) ||
                   (searchOption === "operators" && loadingOperators) ||
                   (searchOption === "leases" && loadingLeases) ||
+                  (searchOption === "contacts" && loadingContacts) ||
                   (searchOption === "locations" && loadingMapboxSearch) ||
                   options.length === 0
                     ? "0"
@@ -1133,7 +1289,6 @@ function Search() {
                   size="small"
                   color={searchOption === "wells" ? "secondary" : "primary"}
                   onClick={() => {
-                    // setSearchTop(5);
                     setSearchOption("wells");
                   }}
                 >
@@ -1145,11 +1300,10 @@ function Search() {
                   size="small"
                   color={searchOption === "owners" ? "secondary" : "primary"}
                   onClick={() => {
-                    // setSearchTop(5);
                     setSearchOption("owners");
                   }}
                 >
-                  Owners
+                  Tax Owners
                 </Button>
                 <Button
                   className={classes.headerButtons}
@@ -1159,7 +1313,6 @@ function Search() {
                   size="small"
                   color={searchOption === "operators" ? "secondary" : "primary"}
                   onClick={() => {
-                    // setSearchTop(5);
                     setSearchOption("operators");
                   }}
                 >
@@ -1171,11 +1324,23 @@ function Search() {
                   size="small"
                   color={searchOption === "leases" ? "secondary" : "primary"}
                   onClick={() => {
-                    // setSearchTop(5);
                     setSearchOption("leases");
                   }}
                 >
                   Leases
+                </Button>
+                <Button
+                  className={classes.headerButtons}
+                  variant={
+                    searchOption === "contacts" ? "contained" : "outlined"
+                  }
+                  size="small"
+                  color={searchOption === "contacts" ? "secondary" : "primary"}
+                  onClick={() => {
+                    setSearchOption("contacts");
+                  }}
+                >
+                  Contacts
                 </Button>
                 <Button
                   className={classes.headerButtons}
@@ -1185,7 +1350,6 @@ function Search() {
                   size="small"
                   color={searchOption === "locations" ? "secondary" : "primary"}
                   onClick={() => {
-                    // setSearchTop(5);
                     setSearchOption("locations");
                   }}
                 >
@@ -1219,6 +1383,8 @@ function Search() {
                               ? "operators"
                               : option.group === "Leases"
                               ? "leases"
+                              : option.group === "Contacts"
+                              ? "contacts"
                               : option.group === "Locations"
                               ? "locations"
                               : "all"
@@ -1233,7 +1399,6 @@ function Search() {
                         className={classes.groupsButton}
                         onClick={() => {
                           setSearchTop(5);
-                          // setSearchOption("all");
                         }}
                       >
                         See Less
@@ -1256,7 +1421,6 @@ function Search() {
         }}
         onInputChange={(event, newInputValue, reason) => {
           if (reason == "input") {
-            // setInputValue(newInputValue);
 
             dispatch(
               setMapGridCardState({
@@ -1277,12 +1441,14 @@ function Search() {
                 setLoadingOwners(true);
                 setLoadingOperators(true);
                 setLoadingLeases(true);
+                setLoadingContacts(true);
                 setLoadingMapboxSearch(true);
               }
               if (searchOption === "wells") setLoadingWells(true);
               if (searchOption === "owners") setLoadingOwners(true);
               if (searchOption === "operators") setLoadingOperators(true);
               if (searchOption === "leases") setLoadingLeases(true);
+              if (searchOption === "contacts") setLoadingContacts(true);
               if (searchOption === "locations") setLoadingMapboxSearch(true);
             } else {
               // setValue(null);
@@ -1291,6 +1457,7 @@ function Search() {
               setLoadingOwners(false);
               setLoadingOperators(false);
               setLoadingLeases(false);
+              setLoadingContacts(false);
               setLoadingMapboxSearch(false);
             }
           }
@@ -1399,15 +1566,12 @@ function Search() {
                                     ? "operators"
                                     : option.Source === "lease-index"
                                     ? "leases"
+                                    : option.Source === "contacts-index"
+                                    ? "contacts"
                                     : option.group === "mapboxSearch"
                                     ? "locations"
                                     : "all"
                                 );
-                                // setInputValue(
-                                //   option.Primary
-                                //     ? option.Primary
-                                //     : option.Secondary
-                                // );
 
                                 dispatch(
                                   setMapGridCardState({
@@ -1427,6 +1591,10 @@ function Search() {
                                 <Grid container item xs={9} alignItems="center">
                                   <Grid item>
                                     {option.Source === "globalowner-index" && (
+                                      <PersonIcon className={classes.icon} />
+                                    )}
+                                    {option.Source === "contacts-index" && (
+                                      //will need to change this to something different 
                                       <PersonIcon className={classes.icon} />
                                     )}
                                     {option.Source === "operator-index" && (
@@ -1539,6 +1707,10 @@ function Search() {
                   {option.Source === "lease-index" && (
                     <LeaseIcon className={classes.icon} color={"#757575"} />
                   )}
+                  {option.Source === "contacts-index" && (
+                    //will need to change this to something different
+                    <PersonIcon className={classes.icon} color={"#757575"} />
+                  )}
                   {option.Source === "mapboxSearch" && (
                     <LocationOnIcon className={classes.icon} />
                   )}
@@ -1584,6 +1756,8 @@ function Search() {
                           ? maxMinOperatosScore
                           : option.Source === "lease-index"
                           ? maxMinLeasesScore
+                          : option.Source === "contacts-index"
+                          ? maxMinContactsScore
                           : maxMinMapboxSearchScore,
                         option.Score
                       ).toString(),

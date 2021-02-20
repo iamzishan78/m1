@@ -16,6 +16,10 @@ import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHis
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { setMapGridCardState } from "../../../actions";
 
+
+
+
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -72,6 +76,8 @@ function MapGridCardSearch(props) {
   const [options, setOptions] = React.useState([]);
   const [searchTop] = React.useState(100);
 
+
+
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, callback) => {
@@ -104,6 +110,8 @@ function MapGridCardSearch(props) {
             console.log(error);
           });
       }, 500),
+
+
     []
   );
 
@@ -265,7 +273,7 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("')")
                 );
 
-                console.log(indexSource);
+                console.log("#########INDEX SOURCE WELLS",indexSource);
                 newOptions = [...results.value];
               }
 
@@ -284,7 +292,7 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
+                console.log("#########INDEX SOURCE OWNER",indexSource);
                 newOptions = [
                   ...results.value.map((result) => {
                     return {
@@ -311,7 +319,7 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
+                console.log("#########INDEX SOURCE OPERATOR",indexSource);
                 newOptions = [...results.value];
               }
 
@@ -330,7 +338,7 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
+                console.log("#########INDEX SOURCE LEASE",indexSource);
                 newOptions = [
                   ...results.value.map((result) => {
                     return {
@@ -400,6 +408,8 @@ function MapGridCardSearch(props) {
     props.searchOption,
   ]);
 
+ 
+
   return (
     <form
       className={`cancelDraggableEffect ${classes.root}`}
@@ -436,6 +446,11 @@ function MapGridCardSearch(props) {
                 searchInputValue: event.target.value,
               })
             );
+            console.log('event value',event.target.value)
+            setStateApp((state) => ({
+              ...state,
+              gridSearchTarget: event.target.value,
+            }));
           // }
         }}
       />

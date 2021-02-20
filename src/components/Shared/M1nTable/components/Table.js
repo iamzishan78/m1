@@ -5,6 +5,7 @@ import React, {
   useRef,
   Fragment,
 } from "react";
+import {MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
@@ -106,6 +107,9 @@ const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
 
 const customStyles = makeStyles((theme) => ({
   table: {
+    "& .MuiTableBody-root": {
+      height: '50px',
+    },
     "& .MuiTableCell-body": {
       padding: (props) =>
         props.dense ? "0 !important" : "0px 16px !important",
@@ -151,6 +155,7 @@ const customStyles = makeStyles((theme) => ({
       transition: "opacity 1s ease-out",
       WebkitTransition: "opacity 1s ease-out",
     },
+    // width: '300px',
   },
 }));
 
@@ -200,8 +205,15 @@ const productionStyle = makeStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-  },
+    // height: '50px !important',
+    // width: '300px'
+    //   "& .MuiTableBody-root": {
+    //     height: '50px',}
+    },
   table: {
+    "& .MuiTableBody-root": {
+      height: '50px',
+    },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
     },
@@ -234,6 +246,7 @@ const useStyles = makeStyles((theme) => ({
       opacity: "1",
       transition: "opacity 1s ease-out",
       WebkitTransition: "opacity 1s ease-out",
+      height: "50px"
     },
   },
   loadingTable: {
@@ -331,6 +344,16 @@ var formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
   maximumSignificantDigits: 21,
+});
+
+const myTheme = createMuiTheme({
+  overrides: {
+    MUIDataTable: {
+      responsiveScroll: {
+        maxHeight: '80px'
+      }
+    }
+  }
 });
 
 function SubTable(props) {
@@ -1576,10 +1599,16 @@ function SubTable(props) {
             };
             break;
           default:
+            //// this is where the column names get mapped 
+            console.log('run default', column.options)
             {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  
+                  console.log('value',value)
+                  console.log('tablemeta',tableMeta)
+
                   const valueFormatter = (v) => {
                     if (
                       (column.name === "status" &&
@@ -1670,7 +1699,7 @@ function SubTable(props) {
                             margin: "0",
                           }}
                         >
-                          N/A
+                          --
                         </p>
                       );
 
@@ -1751,6 +1780,8 @@ function SubTable(props) {
             break;
         }
       });
+
+
       setColumns([...props.columns]);
       setViewColumns(props.addColumnFilter);
     }
@@ -2349,6 +2380,7 @@ function SubTable(props) {
     //     }
     //   }
     // },
+    
     onTableChange: (action, tableState) => {
       if (props.header === "Contacts") {
         let filters = [];
@@ -2684,32 +2716,30 @@ function SubTable(props) {
   };
 
   return (
-    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+    <div style={{ 
+      width: "100%", 
+      height: "100%", 
+      position: "relative" 
+      }}>
       <div
         className={`${classes.table} ${
           rows && !props.loading ? "" : classes.loadingTable
         } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
       >
+
         <MUIDataTable
           className={tableStyle}
           title={props.header}
           data={rows ? rows : []}
-          // data={rows ? rows : []}
           columns={columns ? columns : []}
           options={{
-            download:
-              // props.targetLabel == "owner" || props.targetLabel == "well"
-              //   ? true
-              //   :
-              false,
             ...options,
+            download: false,
+            search: props.parent != "search",  // removing the double search on the grid search bar 
+            print: false,
           }}
         />
 
-        {/* <TransactDialog
-          selectRowOpenContact={selectRowOpenContact}
-          contactId={props.contactId}
-        /> */}
         {openDialog && openDialog !== "addDeals" && (
           <Dialog
             className={classes.dialog}

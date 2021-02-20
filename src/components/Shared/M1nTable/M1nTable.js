@@ -63,8 +63,13 @@ import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 import { setMapGridCardState, showWarningMessage } from "../../../actions";
 import { first } from "@amcharts/amcharts4/.internal/core/utils/Array";
 
+import ContactsHeadCells from '../constants/contacts-header-schema.js'
+import WellsHeadCells from '../constants/well-header-schema.js'
+
 const useStyles = makeStyles((theme) => ({
-  container: { padding: "0 !important" },
+  container: { 
+    padding: "0 !important" 
+},
 }));
 
 var ticksToDateString = function (ticks) {
@@ -93,6 +98,7 @@ var ticksToDateString = function (ticks) {
 
 ////////////HeadCells begin///////////////////////////////////////////////
 const TrackedOwnersHeadCells = [
+  /// appears this code is used for the track grid owners 
   {
     name: "id",
     options: {
@@ -118,15 +124,15 @@ const TrackedOwnersHeadCells = [
     },
   },
   { name: "name", label: "Name" },
-  // {
-  //   name: "ownershipType",
-  //   label: "Entity",
-  // },
-  // { name: "interestType", label: "Type" },
-  // {
-  //   name: "ownershipPercentage",
-  //   label: "Interest",
-  // },
+  {
+    name: "ownershipType",
+    label: "Entity",
+  },
+  { name: "interestType", label: "Type" },
+  {
+    name: "ownershipPercentage",
+    label: "Interest",
+  },
 
   // TEMPORARY COMMENT OUT. DO NOT DELETE
   // WILL BE ADDED IN AFTER DEVELOPING A SYSTEM TO
@@ -253,97 +259,85 @@ const TrackedOwnersHeadCells = [
   },
 ];
 
-const WellsHeadCells = [
-  {
-    name: "id",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  { name: "wellName", label: "Well" },
-  { name: "api", label: "API" },
-  { name: "operator", label: "Operator" },
-  { name: "wellType", label: "Type" },
-  {
-    name: "wellBoreProfile",
-    label: "Profile",
-  },
-  {
-    name: "tags",
-    label: "Tags ",
-    options: {
-      sort: false,
-      download: false,
-      print: false,
-      filterOptions: {
-        names: [],
-        logic(rowVal, pickedTags) {
-          let containIts = true;
-          pickedTags.map((pickedTag) => {
-            if (rowVal[0].indexOf(pickedTag) === -1) {
-              containIts = false;
-            }
-          });
-          return !containIts;
-        },
-      },
-    },
-  },
-  // {
-  //   name: "ownerCount",
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
-  {
-    name: "commentsCounter",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  {
-    name: "isTracked",
-    label: " ",
-    options: {
-      filter: false,
-      sort: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  {
-    name: "detailCard",
-    label: " ",
-    options: {
-      filter: false,
-      sort: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-];
+// const WellsHeadCells = [
+//   {
+//     name: "id",
+//     options: {
+//       display: false,
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   { name: "api", label: "API" },
+//   { name: "state", label: "State" },
+//   { name: "county", label: "County" },
+//   { name: "wellName", label: "Well Name" },
+//   { name: "operator", label: "Operator" },
+//   { name: "wellType", label: "Type" },
+//   { name: "wellBoreProfile", label: "Profile",},
+//   { name: "wellStatus", label: "Status",},
+//   {
+//     name: "tags",
+//     label: "Tags ",
+//     options: {
+//       sort: false,
+//       download: false,
+//       print: false,
+//       filterOptions: {
+//         names: [],
+//         logic(rowVal, pickedTags) {
+//           let containIts = true;
+//           pickedTags.map((pickedTag) => {
+//             if (rowVal[0].indexOf(pickedTag) === -1) {
+//               containIts = false;
+//             }
+//           });
+//           return !containIts;
+//         },
+//       },
+//     },
+//   },
+//   {
+//     name: "commentsCounter",
+//     label: " ",
+//     options: {
+//       filter: false,
+//       searchable: false,
+//       sort: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   {
+//     name: "isTracked",
+//     label: " ",
+//     options: {
+//       filter: false,
+//       sort: false,
+//       searchable: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+//   {
+//     name: "detailCard",
+//     label: " ",
+//     options: {
+//       filter: false,
+//       sort: false,
+//       searchable: false,
+//       download: false,
+//       print: false,
+//       viewColumns: false,
+//     },
+//   },
+// ];
 
 
 const CustomWellsHeadCells = [
@@ -670,6 +664,7 @@ const OwnersPerContactsHeadCells = [
     },
   },
 ];
+
 
 const ContactsHeadCells = [
   {
@@ -1199,7 +1194,10 @@ const ContactsHeadCells = [
   // },
 ];
 
+
 const SearchsHeadCells = [
+
+
   {
     name: "id",
     options: {
@@ -1212,6 +1210,8 @@ const SearchsHeadCells = [
       viewColumns: false,
     },
   },
+
+
   //////////
   {
     name: "tags",
@@ -1253,6 +1253,7 @@ const SearchsHeadCells = [
       searchable: false,
       download: false,
       print: false,
+      viewColumns: false,
       filterOptions: {
         names: ["Tracked", "Untracked"],
         logic(tracked, filterVal) {
@@ -1433,103 +1434,7 @@ const OwnersPerParcelHeadCells = [
   },
 ];
 
-// const ParcelInterestsPerContactHeadCells = [
-//   {
-//     name: "_id",
-//     options: {
-//       display: false,
-//       filter: false,
-//       searchable: false,
-//       sort: false,
-//       download: false,
-//       print: false,
-//       viewColumns: false,
-//     },
-//   },
-//   {
-//     name: "ownerEntity",
-//     options: {
-//       display: false,
-//       filter: false,
-//       searchable: false,
-//       sort: false,
-//       download: false,
-//       print: false,
-//       viewColumns: false,
-//     },
-//   },
-//   {
-//     name: "customLayerId",
-//     options: {
-//       display: false,
-//       filter: false,
-//       searchable: false,
-//       sort: false,
-//       download: false,
-//       print: false,
-//       viewColumns: false,
-//     },
-//   },
-//   //// from parcel
-//   { name: "customLayerName", label: "Name" },
-//   { name: "customLayerState", label: "State" },
-//   { name: "customLayerCounty", label: "County" },
-//   { name: "Grid1", label: "Survey/ Meridian" },
-//   { name: "Grid2", label: "Block/ Township" },
-//   { name: "Grid3", label: "Section/ Range" },
-//   { name: "Grid4", label: "Abstract/ Section" },
-//   { name: "Grid5", label: "Alternate Survey" },
-//   //// from parcelOwnership
-//   { name: "depthFrom", label: "Depth From", editable: true },
-//   { name: "depthTo", label: "Depth To", editable: true },
-//   { name: "interest", label: "Interest", editable: true },
-//   { name: "nma", label: "NMA", editable: true },
-//   { name: "nra", label: "NRA", editable: true },
 
-//   {
-//     name: "parcelIcon",
-//     label: " ",
-//     options: {
-//       filter: false,
-//       searchable: false,
-//       sort: false,
-//       download: false,
-//       print: false,
-//       viewColumns: false,
-//     },
-//   },
-//   {
-//     name: "commentsCounter",
-//     label: " ",
-//     options: {
-//       filter: false,
-//       searchable: false,
-//       sort: false,
-//       download: false,
-//       print: false,
-//       viewColumns: false,
-//     },
-//   },
-//   {
-//     name: "isTracked",
-//     label: "Track",
-//     options: {
-//       searchable: false,
-//       download: false,
-//       print: false,
-//       filterOptions: {
-//         names: ["Tracked", "Untracked"],
-//         logic(tracked, filterVal) {
-//           return !(
-//             (filterVal.indexOf("Tracked") >= 0 && tracked) ||
-//             (filterVal.indexOf("Untracked") >= 0 && !tracked)
-//           );
-//         },
-//       },
-//       filterType: "dropdown",
-//     },
-//   },
-// ];
 
 const UserManagementHeadCells = [
   {
@@ -2287,6 +2192,7 @@ const joinAddress = (row) => {
 };
 
 function M1nTable(props) {
+  console.log('M1NTABLE PROPS', props)
   const classes = useStyles();
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -2814,7 +2720,6 @@ function M1nTable(props) {
   useEffect(() => {
     if (dataWells?.wells)
       if (props.parent && props.parent === "trackWells" && dataWells) {
-        console.log("ue mintable 7");
         if (
           dataWells.wells &&
           dataWells.wells.results &&
@@ -2827,6 +2732,8 @@ function M1nTable(props) {
           let wells = [...dataWells.wells.results];
           wells = wells.map((w) => {
             let well = { ...w };
+
+          console.log('wells',wells)
 
             //// temporary to fix the ticks dates fields comming from the rest api
             if (well.permitApprovedDate && well.permitApprovedDate != "null")
@@ -2883,6 +2790,11 @@ function M1nTable(props) {
           });
           const cleanAvailableTags = [...new Set(availableTags)];
 
+
+          console.log('datawells', dataWells)
+          console.log('WellsHeadCells',WellsHeadCells)
+  
+
           setRows(wells);
 
           const flyToColumn = {
@@ -2929,6 +2841,44 @@ function M1nTable(props) {
               })),
             flyToColumn,
           ]);
+
+
+          console.log('colmns ',
+          
+          [
+            ...(cleanAvailableTags.length > 0
+              ? WellsHeadCells.map((column) => {
+                  if (column.name === "tags") {
+                    return {
+                      ...column,
+                      options: {
+                        ...column.options,
+                        filterOptions: {
+                          ...column.options.filterOptions,
+                          names: cleanAvailableTags,
+                        },
+                      },
+                    };
+                  }
+                  return column;
+                })
+              : WellsHeadCells.map((column) => {
+                  if (column.name === "tags") {
+                    return {
+                      ...column,
+                      options: {
+                        ...column.options,
+                        filter: false,
+                      },
+                    };
+                  }
+                  return column;
+                })),
+            flyToColumn,
+          ]
+          
+          
+          )
 
           setStateApp((state) => ({
             ...state,
@@ -3339,6 +3289,7 @@ function M1nTable(props) {
         });
         const cleanAvailableTags = [...new Set(availableTags)];
 
+
         setRows(dataWells.wells.results);
 
         setColumns(
@@ -3569,32 +3520,52 @@ function M1nTable(props) {
 
   ////////////Owners Per Well end///////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
   ////////////Contacts begin///////////////////////////////////////////////
 
   useEffect(() => {
-    if (props.parent && props.parent === "Contacts") {
-      setLoading(true);
-      console.log("ue mintable 22- contact");
-      setTargetLabel("contact");
-      setHeader("Contacts");
-      setOrderByTracks(false);
-      setAddAble({ parent: false, type: "contact" });
-      getPaginatedContacts();
-      getContactsFilterOptions();
-      updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
-      setUploadIcon(true);
-      setStartPaginationAt(25);
-      setColumnsBase(ContactsHeadCells);
-    }
-  }, [props.parent]);
+    // this use effect appears to kick off the contacts workflow in the table 
+
+    if (    
+            props.parent  
+            && ((props.parent === "Contacts")  // for parent of contact screen 
+                  || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
+        ) {
+          console.log('props -', props)
+          setLoading(true);
+          console.log("ue mintable 22- contact");
+          setTargetLabel("contact");
+          setHeader("Contacts");
+          setOrderByTracks(false);
+          setAddAble({ parent: false, type: "contact" });
+          console.log('search target', stateApp.gridSearchTarget)
+          getPaginatedContacts({variables: { search: stateApp.gridSearchTarget }});
+          getContactsFilterOptions();
+          updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
+          setUploadIcon(true);
+          setStartPaginationAt(25);
+          setColumnsBase(ContactsHeadCells);
+        }
+
+  }, [props.parent,
+      stateApp.gridSearchTarget]);
 
   useEffect(() => {
     if (
-      props.parent &&
-      props.parent === "Contacts" &&
-      constDataContacts /*&&
-      dataContactsFilterOptions &&
-      dataTracks*/
+
+      props.parent 
+      && constDataContacts 
+
+      && ((props.parent === "Contacts")  // for parent of contact screen 
+              || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
+
     ) {
       console.log("ue mintable 23");
       if (
@@ -3637,10 +3608,11 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (
-      props.parent &&
-      props.parent === "Contacts" &&
-      dataContacts?.paginatedContacts?.edges &&
-      dataContacts?.paginatedContacts?.edges.length > 0
+      props.parent
+      && ((props.parent === "Contacts")  // for parent of contact screen 
+            || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
+      && dataContacts?.paginatedContacts?.edges
+      && dataContacts?.paginatedContacts?.edges.length > 0
     ) {
       console.log("ue mintable 23");
 
@@ -3663,9 +3635,10 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (
-      props.parent &&
-      props.parent === "Contacts" &&
-      dataContactsFilterOptions
+      props.parent
+      && ((props.parent === "Contacts")  // for parent of contact screen 
+            || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
+      && dataContactsFilterOptions
     ) {
       console.log("ue mintable 23.5");
       if (
@@ -3744,9 +3717,10 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (
-      props.parent &&
-      props.parent === "Contacts" &&
-      dataContacts &&
+      props.parent
+      && ((props.parent === "Contacts")  // for parent of contact screen 
+            || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
+      && dataContacts &&
       dataContacts.paginatedContacts.edges &&
       dataContacts.paginatedContacts.edges.length > 0 &&
       dataCommentsCounter &&
@@ -3854,6 +3828,19 @@ function M1nTable(props) {
   }, [props.parent, stateApp.user]);
 
   ////////////Contacts end///////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   //////////// Search begin///////////////////////////////////////////////
   useEffect(() => {
@@ -4051,7 +4038,8 @@ function M1nTable(props) {
 
         if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
 
-        if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
+        if (props.showTracks) 
+          buildingColumns.push(SearchsHeadCells[3]);
         if (
           props.targetLabel &&
           (props.targetLabel == "well" || props.targetLabel == "owner")
