@@ -62,7 +62,7 @@ export default function WellsCard(props) {
       const wells = dataContactWells.contactWells;
       setInterestTypes([...new Set(wells.map(well => well.type))].join(", "));
       setCount(wells.length);
-      setAvgTaxValues(wells.map(well => well.taxValue).reduce((a, b) => (a + b)) / wells.length);
+      setAvgTaxValues(wells.map(well => well.taxValue).reduce((a, b) => (a + b), 0) / ( wells.length !== 0 ? wells.length : 1 ) );
     }
   }, [dataContactWells]);
 
