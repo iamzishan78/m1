@@ -21,6 +21,10 @@ import Button from "@material-ui/core/Button";
 import { setMapGridCardState } from "../../actions";
 import OwnersSummaryCard from "../OwnersSummaryCard/OwnersSummaryCard";
 
+import ContactsHeadCells from '../Shared/constants/contacts-header-schema.js'
+import WellsHeadCells from '../Shared/constants/well-header-schema.js'
+
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -115,9 +119,10 @@ const useStyles = makeStyles((theme) => {
       "& .MuiBox-root": { padding: "0" },
     },
     mainPanelsDiv: {
+      height: "calc(100% - 64px)",
       maxHeight: "calc(100% - 64px)",
       overflow: "auto",
-      height: "calc(100% - 64px)",
+      // overflowX: "auto",
       "& div": {
         "&>.MuiPaper-root": {
           "&>:nth-child(3)": {
@@ -221,10 +226,6 @@ const wellsColumnHeaders = [
     label: "API",
   },
   {
-    name: "WellName",
-    label: "Well Name",
-  },
-  {
     name: "State",
     label: "State",
   },
@@ -233,14 +234,28 @@ const wellsColumnHeaders = [
     label: "County",
   },
   {
+    name: "WellName",
+    label: "Well Name",
+  },
+  {
+    name: "CurrentOperator",
+    label: "Operator",
+  },
+  {
     name: "WellType",
-    label: "Well Type",
+    label: "Type",
+  },
+  {
+    name: "WellBoreProfile",
+    label: "Profile",
   },
   {
     name: "WellStatus",
-    label: "Well Status",
+    label: "Status",
   },
 ];
+
+
 const ownersColumnHeaders = [
   {
     name: "entity",
@@ -259,25 +274,120 @@ const ownersColumnHeaders = [
     label: "Name",
   },
   {
+    name: "State",
+    label: "State",
+  },
+  {
+    name: "City",
+    label: "City",
+  },
+  {
     name: "FullAddress",
     label: "Address",
   },
 ];
+
+
 const operatorsColumnHeaders = [
   {
     name: "Operator",
-    label: "Name",
+    label: "Operator",
+  },
+  {
+    name: "StateCount",
+    label: "# Active States",
+  },
+  {
+    name: "BasinCount",
+    label: "# Active Basins",
+  },
+  // {
+  //   name: "TotalLeases",
+  //   label: "Total Leases",
+  // },
+  {
+    name: "TotalWellCount",
+    label: "Total Wells",
+  },
+  {
+    name: "GasWellCount",
+    label: "Gas Wells",
+  },
+  {
+    name: "OilWellCount",
+    label: "Oil Wells",
+  },
+  {
+    name: "ActiveWellCount",
+    label: "Active Wells",
+  },
+  {
+    name: "DUCWellCount",
+    label: "DUCs",
+  },
+  {
+    name: "PermitCount",
+    label: "Active Permits",
   },
 ];
 const leasesColumnHeaders = [
   {
-    name: "LeaseId",
-    label: "Lease ID",
-  },
-  {
     name: "Lease",
     label: "Lease",
+  }, 
+  {
+    name: "LeaseId",
+    label: "Lease Number",
   },
+  {
+    name: "State",
+    label: "State",
+  },
+  {
+    name: "County",
+    label: "County",
+  },
+  {
+    name: "Acreage",
+    label: "Acreage",
+  },
+  {
+    name: "PrimaryBasin",
+    label: "Primary Basin",
+  },
+  {
+    name: "PrimaryFormation",
+    label: "Primary Formation",
+  },
+  {
+    name: "Operator",
+    label: "Operator",
+  },
+  {
+    name: "TotalWells",
+    label: "Total Wells",
+  },
+  {
+    name: "Total Gas Wells",
+    label: "Gas Wells",
+  },
+  {
+    name: "TotalOilWells",
+    label: "Oil Wells",
+  },
+  {
+    name: "TotalActiveWells",
+    label: "Active Wells",
+  },
+  {
+    name: "TotalDucs",
+    label: "DUCs",
+  },
+  {
+    name: "TotalPermits",
+    label: "Active Permits",
+  },
+
 ];
 
 const locationsColumnHeaders = [
@@ -290,6 +400,38 @@ const locationsColumnHeaders = [
     label: "Location Address",
   },
 ];
+
+const parcelColumnHeaders = [
+  {
+    name: "Operator",
+    label: "Name",
+  },
+  {
+    name: "State",
+    label: "State",
+  },
+  {
+    name: "County",
+    label: "County",
+  },
+  {
+    name: "Survey",
+    label: "Survey/Meridian",
+  },
+  {
+    name: "Block",
+    label: "Block/Township",
+  },
+  {
+    name: "Section",
+    label: "Section/Range",
+  },
+  {
+    name: "Abstract",
+    label: "Abstract/Section",
+  },
+];
+
 
 function MapGridCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -345,29 +487,24 @@ function MapGridCard(props) {
     );
   };
 
-  // useEffect(() => {
-  //   if (
-  //     stateApp.mapGridCardActiveTap &&
-  //     stateApp.mapGridCardActiveTap !== mainTapValue
-  //   ) {
-  //     setMainTapValue(stateApp.mapGridCardActiveTap);
-  //   }
-  // }, [stateApp.mapGridCardActiveTap]);
 
   const getTargetFromSearchTaps = () => {
+    /// this intends to set the search value that gets passed into the mapgridcardsearch.js
+    /// value will control the cog api 
+
     switch (searchTapValue) {
       // case 6:
       //   return "location";
-      // case 5:
-      //   return "parcel";
+      case 6:
+        return "contacts";  
+      case 5:
+        return "permits";      
       // case 4:
-      //   return "interest";
-      // case 3:
-      //   return "lease";
-      // case 2:
-      //   return "operator";
+      //   return "parcel";
+      case 3:
+        return "lease";
       case 2:
-        return "location";
+        return "operator";
       case 1:
         return "owner";
       default:
@@ -379,11 +516,12 @@ function MapGridCard(props) {
     <TabLabels
       labels={[
         "Wells",
-        "Owners",
-        // "Operators",
-        // "Leases",
-        // "Interests",
-        // "Parcels",
+        "Tax Owners",
+        "Operators",
+        "Leases",
+        "Parcels",
+        "Recent Permits",
+        "Contacts",
         "Locations",
       ]}
       value={searchTapValue}
@@ -483,14 +621,6 @@ function MapGridCard(props) {
           </Toolbar>
         </AppBar>
 
-        {/* <MapGridCardSearch
-          ativateSearchPanel={() => {
-            if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
-            if (mapGridCardActivated === "min")
-              dispatch(setMapGridCardState({ mapGridCardActivated: true }));
-          }}
-          searchOption={getTargetFromSearchTaps()}
-        /> */}
 
         {selectedOwner ? (
           <OwnersSummaryCard />
@@ -526,7 +656,6 @@ function MapGridCard(props) {
                       showTags
                       showComments
                       showTracks
-                      //print
                     />,
                     <M1nTable
                       dense
@@ -538,34 +667,44 @@ function MapGridCard(props) {
                       showComments
                       showTracks
                     />,
-                    // <M1nTable
-                    //   dense
-                    //   parent="search"
-                    //   privateColumns={operatorsColumnHeaders}
-                    //   targetLabel={getTargetFromSearchTaps()}
-                    //   header={<SearchTabPanels />}
-                    // />,
-                    // <M1nTable
-                    //   dense
-                    //   parent="search"
-                    //   privateColumns={leasesColumnHeaders}
-                    //   targetLabel={getTargetFromSearchTaps()}
-                    //   header={<SearchTabPanels />}
-                    // />,
-                    // <M1nTable
-                    //   dense
-                    //   parent="search"
-                    //   privateColumns={[]}
-                    //   targetLabel={getTargetFromSearchTaps()}
-                    //   header={<SearchTabPanels />}
-                    // />,
-                    // <M1nTable
-                    //   dense
-                    //   parent="search"
-                    //   privateColumns={[]}
-                    //   targetLabel={getTargetFromSearchTaps()}
-                    //   header={<SearchTabPanels />}
-                    // />,
+                    <M1nTable
+                      dense
+                      parent="search"
+                      privateColumns={operatorsColumnHeaders}
+                      targetLabel={getTargetFromSearchTaps()}
+                      header={<SearchTabPanels />}
+                    />,
+                    <M1nTable
+                      dense
+                      parent="search"
+                      privateColumns={leasesColumnHeaders}
+                      targetLabel={getTargetFromSearchTaps()}
+                      header={<SearchTabPanels />}
+                    />,
+                    <M1nTable
+                      dense
+                      parent="search"
+                      privateColumns={[parcelColumnHeaders]}
+                      targetLabel={getTargetFromSearchTaps()}
+                      header={<SearchTabPanels />}
+                      // showTags
+                      // showComments
+                      // showTracks
+                    />,
+                    <M1nTable
+                      dense
+                      parent="search"
+                      privateColumns={[]}
+                      targetLabel={getTargetFromSearchTaps()}
+                      header={<SearchTabPanels />}
+                    />,
+                    <M1nTable
+                    dense
+                    parent="search"
+                    privateColumns={[ContactsHeadCells]}
+                    targetLabel={getTargetFromSearchTaps()}
+                    header={<SearchTabPanels />}
+                  />,
                     <M1nTable
                       dense
                       parent="search"
@@ -599,7 +738,7 @@ function MapGridCard(props) {
                                 ? stateApp.trackedwells.length
                                 : 0
                             })`,
-                            `Owners (${
+                            `Tax Owners (${
                               stateApp.owners ? stateApp.owners.length : 0
                             })`,
                           ]}
@@ -619,7 +758,7 @@ function MapGridCard(props) {
                                 ? stateApp.trackedwells.length
                                 : 0
                             })`,
-                            `Owners (${
+                            `Tax Owners (${
                               stateApp.owners ? stateApp.owners.length : 0
                             })`,
                           ]}
@@ -694,10 +833,8 @@ function MapGridCard(props) {
       {mapGridCardActivated === "min" ? (
         CardReturn()
       ) : (
-        // <Draggable 
-        //   cancel={'[class*="cancelDraggableEffect"]'}
-        //   disabled={false}
-        // >
+        
+        // <Draggable cancel={'[class*="cancelDraggableEffect"]'}>
           CardReturn()
         // </Draggable>
       )}
