@@ -128,8 +128,14 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		MapControlsContext
 	);
 	const [stateApp, setStateApp] = useContext(AppContext);
+
 	const [view, setView] = React.useState("All");
 	const [sortBy, setSortBy] = React.useState("Recently Posted");
+	const [sponsorName, setSponsorName] = useState("Seller/Sponsor Name");
+	const [interestType, setInterestType] = useState("Interest Type");
+	const [region, setRegion] = useState("Region");
+	const [operators, setOperators] = useState("Operators");
+	const [saleType, setSaleType] = useState("Sale Type");
 
 	const classes = useStyles();
 
@@ -334,20 +340,21 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			display: "flex",
 			fontWeight: "light",
 			justifyContent: "space-between",
-			color: "white",
-			minWidth: "8rem",
-			backgroundColor: "white",
-			// "&:hover": {
-			// 	background: "#4B618F",
-			// },
-			// backgroundColor: "#263451",
+			color: "#404040",
+			//minWidth: "13.5rem",
+			background: "white",
+			flex: "1",
+			"&:hover": {
+				background: "white",
+			},
 			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
 				color: theme.palette.common.white,
 			},
 			"& .MuiButton-textPrimary": {
 				color: theme.palette.common.white,
-				background: "#17acdd",
-				padding: "3px 10px",
+				background: "white",
+				padding: "3px 15px",
+				paddingLeft: "5rem",
 			},
 		},
 	}))(Select);
@@ -356,11 +363,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		root: {
 			fontFamily: "Poppins",
 			display: "flex",
-			width: "19rem",
-			height: "3rem",
 			justifyContent: "space-between",
 			"&:hover": {
-				background: "#4B618F",
+				background: "#263451",
 			},
 			backgroundColor: "#263451",
 			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
@@ -369,7 +374,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			"& .MuiButton-textPrimary": {
 				color: theme.palette.common.white,
 				background: "#17acdd",
-				padding: "3px 10px",
+				padding: "10px 10px",
+				paddingTop: "10px",
+				paddingBottom: "10px",
 			},
 		},
 	}))(MenuItem);
@@ -612,7 +619,13 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 
 	const getLayerColor = (layer) => {
 		// layerName: "Rig Activity"
-		if (type !== "layer") return {};
+		if (type !== "layer" && type !== "marketplace") return {};
+
+		if (layer) {
+			if (layer.type === "Listing") return "#2D3451";
+			if (layer.type === "Auction") return "#FF0000";
+			if (layer.type === "Sponsor") return "#00B050";
+		}
 
 		if (layer) {
 			if (layer.identifier == "Rig Activity") return "#263451";
@@ -804,7 +817,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 							{type === "marketplace" &&
 								MarketPlaceData.map((layer, index) => {
 									return view === "All" ? (
-										<Box {...defaultProps}>
+										<Box borderColor={getLayerColor(layer)} {...defaultProps}>
 											<MarketPlaceListItem>
 												<MarketPlaceUpper>
 													<BusinessIcon />
@@ -845,7 +858,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 										</Box>
 									) : (
 										layer.type === view && (
-											<Box {...defaultProps}>
+											<Box borderColor={getLayerColor(layer)} {...defaultProps}>
 												<MarketPlaceListItem>
 													<MarketPlaceUpper>
 														<BusinessIcon />
@@ -967,7 +980,128 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	return (
 		// <ClickAwayListener onClickAway={handleClose}>
 		<div>
-			<MarketPlaceMenu> </MarketPlaceMenu>
+			{type === "marketplace" && (
+				<MarketPlaceMenu>
+					<Dropdown
+						labelId="demo-simple-select-label"
+						id="demo-simple-select"
+						value={sponsorName}
+						style={{
+							background: "white",
+							paddingLeft: "1rem",
+							marginRight: "1rem",
+							flex: "1",
+						}}
+						onChange={(e) => setSponsorName(e.target.value)}
+					>
+						<MenuItem value={"Seller/Sponsor Name"}>
+							Seller/Sponsor Name
+						</MenuItem>
+						<MenuItem value={"Pheasant Energy"}>Pheasant Energy</MenuItem>{" "}
+						<MenuItem value={"Taprock"}>Taprock</MenuItem>{" "}
+						<MenuItem value={"Frontier Group"}>Frontier Group</MenuItem>{" "}
+						<MenuItem value={"Greyshore Capital"}>Greyshore Capital</MenuItem>{" "}
+						<MenuItem value={"Blackstone Minerals"}>
+							Blackstone Minerals
+						</MenuItem>{" "}
+						<MenuItem value={"Onshore Land"}>Onshore Land</MenuItem>{" "}
+						<MenuItem value={"Caddo"}>Caddo</MenuItem>
+					</Dropdown>
+
+					<Dropdown
+						labelId="demo-simple-select-label"
+						id="demo-simple-select"
+						value={interestType}
+						style={{
+							background: "white",
+							paddingLeft: "1rem",
+							marginRight: "1rem",
+							flex: "1",
+						}}
+						onChange={(e) => setInterestType(e.target.value)}
+					>
+						<MenuItem value={"Interest Type"}>Interest Type</MenuItem>
+						<MenuItem value={"Operated Working Interest"}>
+							Operated Working Interest
+						</MenuItem>
+						<MenuItem value={"Non-operated Working Interest"}>
+							Non-operated Working Interest
+						</MenuItem>
+						<MenuItem value={"Overriding Royalty Interest"}>
+							Overriding Royalty Interest
+						</MenuItem>
+						<MenuItem value={"Royalty Interest"}>Royalty Interest</MenuItem>
+						<MenuItem value={"Mineral Interest"}>Mineral Interest</MenuItem>
+						<MenuItem value={"Leasehold Interest"}>Leasehold Interest</MenuItem>
+					</Dropdown>
+
+					<Dropdown
+						labelId="demo-simple-select-label"
+						id="demo-simple-select"
+						value={region}
+						style={{
+							background: "white",
+							paddingLeft: "1rem",
+							marginRight: "1rem",
+							flex: "1",
+						}}
+						onChange={(e) => setRegion(e.target.value)}
+					>
+						<MenuItem value={"Region"}>Region</MenuItem>
+						<MenuItem value={"Alaska"}>Alaska</MenuItem>
+						<MenuItem value={"Appalachians"}>Appalachians</MenuItem>
+						<MenuItem value={"Arklatex"}>Arklatex</MenuItem>
+						<MenuItem value={"Central Texas"}>Central Texas</MenuItem>
+						<MenuItem value={"East Texas"}>East Texas</MenuItem>
+						<MenuItem value={"Gulf Coast"}>Gulf Coast</MenuItem>
+						<MenuItem value={"Michigan Basin"}>Michigan Basin</MenuItem>
+						<MenuItem value={"Mid Continent"}>Mid Continent</MenuItem>
+						<MenuItem value={"Offshore"}>Offshore</MenuItem>
+						<MenuItem value={"Panhandle"}>Panhandle</MenuItem>
+						<MenuItem value={"Permian Basin"}>Permian Basin</MenuItem>
+						<MenuItem value={"San Juan Basin"}>San Juan Basin</MenuItem>
+						<MenuItem value={"South Texas"}>South Texas</MenuItem>
+						<MenuItem value={"West Coast"}>West Coast</MenuItem>
+					</Dropdown>
+
+					<Dropdown
+						labelId="demo-simple-select-label"
+						id="demo-simple-select"
+						value={saleType}
+						style={{
+							background: "white",
+							paddingLeft: "1rem",
+							marginRight: "1rem",
+							flex: "1",
+						}}
+						onChange={(e) => setSaleType(e.target.value)}
+					>
+						<MenuItem value={"Sale Type"}>Sale Type</MenuItem>
+						<MenuItem value={"Sponsor"}>Sponsor</MenuItem>{" "}
+						<MenuItem value={"Lease"}>Lease</MenuItem>{" "}
+						<MenuItem value={"Auction"}>Auction</MenuItem>
+					</Dropdown>
+
+					<Dropdown
+						labelId="demo-simple-select-label"
+						id="demo-simple-select"
+						value={operators}
+						style={{
+							background: "white",
+							paddingLeft: "1rem",
+							marginRight: "1rem",
+							flex: "1",
+						}}
+						onChange={(e) => setOperators(e.target.value)}
+					>
+						<MenuItem value={"Operators"}>Operators</MenuItem>
+						<MenuItem value={"Chevron"}>Chevron</MenuItem>{" "}
+						<MenuItem value={"Apache"}>Apache</MenuItem>{" "}
+						<MenuItem value={"BLS Production"}>BLS Production</MenuItem>
+						<MenuItem value={"Lime Rock"}>Lime Rock</MenuItem>
+					</Dropdown>
+				</MarketPlaceMenu>
+			)}
 
 			<div
 				style={{
