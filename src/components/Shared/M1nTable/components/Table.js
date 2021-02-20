@@ -89,110 +89,10 @@ const capitalizeFirstLetter = (string) => {
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
 
-const customStyles = makeStyles((theme) => ({
-  table: {
-    "& .MuiTableBody-root": {
-      height: '50px',
-    },
-    "& .MuiTableCell-body": {
-      padding: (props) =>
-        props.dense ? "0 !important" : "0px 16px !important",
-    },
-    "& .MuiTableHead-root": {
-      "& th": {
-        backgroundColor: "#F2F2F2",
-        zIndex: "auto",
-        padding: (props) => (props.dense ? "10px" : null),
-      },
-      "& .MuiTableCell-paddingCheckbox": {
-        padding: (props) => (props.dense ? "0 !important" : "16px"),
-      },
-    },
-    "& tr": {
-      paddingRight: (props) => (props.dense ? "12px" : null),
-      "& td": {
-        "& div": {
-          padding: 0,
-        },
-      },
-      "& td:nth-child(3)": {
-        "& div": {
-          width: 300,
-        },
-      },
-      "& td:nth-child(13)": {
-        "& div": {
-          width: 300,
-          "& span": {
-            maxWidth: 300,
-          },
-        },
-      },
-    },
-    "& thead": {
-      opacity: "1",
-      transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
-    },
-    "& tbody": {
-      opacity: "1",
-      transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
-    },
-    // width: '300px',
-  },
-}));
-
-const productionStyle = makeStyles((theme) => ({
-  table: {
-    "& .MuiTableCell-body": {
-      padding: (props) =>
-        props.dense ? "0 !important" : "0px 16px !important",
-    },
-    "& .MuiTableCell-head": {
-      "& span": {
-        justifyContent: "center",
-      },
-    },
-    "& .MuiTableHead-root": {
-      "& th": {
-        backgroundColor: "#F2F2F2",
-        zIndex: "auto",
-        padding: (props) => (props.dense ? "10px" : null),
-      },
-      "& .MuiTableCell-paddingCheckbox": {
-        padding: (props) => (props.dense ? "0 !important" : "16px"),
-      },
-    },
-    "& tr": {
-      paddingRight: (props) => (props.dense ? "12px" : null),
-      "& td": {
-        textAlign: "center",
-        "& div": {
-          justifyContent: "center",
-        },
-      },
-    },
-    "& thead": {
-      opacity: "1",
-      transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
-    },
-    "& tbody": {
-      opacity: "1",
-      transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
-    },
-  },
-}));
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    // height: '50px !important',
-    // width: '300px'
-    //   "& .MuiTableBody-root": {
-    //     height: '50px',}
     },
   table: {
     "& .MuiTableBody-root": {
@@ -366,9 +266,6 @@ function SubTable(props) {
   };
 
   const [columns, setColumns] = useState([]);
-  // const setColumns = (newState) => {
-  //   setStateIfDeepEqual(Columns, newState);
-  // };
 
   const [viewColumns, ViewColumns] = useState([]);
   const setViewColumns = (newState) => {
@@ -679,16 +576,6 @@ function SubTable(props) {
         open={true}
         onClose={closeMenu}
       >
-        {/* <MenuItem
-          className={classes.userMenuItem}
-          onClick={selectedUser !== null && changeAdminAccess}
-        >
-          {selectedUser !== null &&
-          typeof selectedUser.adminAccess !== "undefined" &&
-          selectedUser.adminAccess
-            ? "Remove Admin Access"
-            : "Grant Admin Access"}
-        </MenuItem> */}
         {user.lastLogin == null || user.lastLogin == undefined ? (
           <div>
             <MenuItem
@@ -1200,52 +1087,7 @@ function SubTable(props) {
               };
             }
             break;
-          // case "contactsCounter":
-          //   {
-          //     column.options = {
-          //       ...column.options,
-          //       customBodyRender: (value, tableMeta, updateValue) => {
-          //         return (
-          //           <Tooltip
-          //             title={value || value === 0 ? "Contacts" : "Add Contact"}
-          //             placement="top"
-          //             style={{ marginRight: "10px" }}
-          //           >
-          //             <Badge
-          //               badgeContent={value ? value : null}
-          //               color="secondary"
-          //             >
-          //               <IconButton
-          //                 size={props.dense ? "small" : "medium"}
-          //                 color="primary"
-          //                 className={`${classes.icons} ${
-          //                   !value || value === 0 ? classes.noCommentsIcon : ""
-          //                 } ${
-          //                   colInd === tableMeta.columnIndex &&
-          //                   rowInd === tableMeta.rowIndex
-          //                     ? classes.iconSelected
-          //                     : ""
-          //                 }`}
-          //                 onClick={(e) => {
-          //                   e.stopPropagation();
-          //                   handleExpandClick(
-          //                     tableMeta.columnIndex,
-          //                     tableMeta.rowIndex,
-          //                     tableMeta.rowData[0],
-          //                     "ownerContacts"
-          //                   );
-          //                 }}
-          //                 aria-label="show contacs"
-          //               >
-          //                 <ContactPhoneIcon />
-          //               </IconButton>
-          //             </Badge>
-          //           </Tooltip>
-          //         );
-          //       },
-          //     };
-          //   }
-          //   break;
+
           case "isContact":
             {
               column.options = {
@@ -1439,12 +1281,6 @@ function SubTable(props) {
                           onClick={(e) => {
                             e.stopPropagation();
                             if (value.length > 0) {
-                              // handleExpandClick(
-                              //   tableMeta.columnIndex,
-                              //   tableMeta.rowIndex,
-                              //   value,
-                              //   "ownersPerContacts"
-                              // );
                             }
                           }}
                           aria-label="show owners"
@@ -1635,12 +1471,6 @@ function SubTable(props) {
 
                     return v;
                   };
-
-                  // if (column.name === "lastUpdateBy.name") {
-                  //   if (props.rows[tableMeta.rowIndex]) {
-                  //     value = props.rows[tableMeta.rowIndex].lastUpdateBy?.name;
-                  //   }
-                  // }
 
                   if (
                     column.name === "isClosed" &&
@@ -1871,13 +1701,6 @@ function SubTable(props) {
     selectableRows:
       props.targetLabel == "production_detail" ? false : "multiple",
     print: false,
-      // props.targetLabel !== "deal" &&
-      // props.targetLabel !== "usermanagement" &&
-      // props.targetLabel !== "owner" &&
-      // props.targetLabel !== "production_detail" &&
-      // props.parent !== "search" &&
-      // props.parent !== "ownersPerParcel" &&
-      // props.parent !== "ownersPerParcelWells",
     viewColumns: props.targetLabel !== "usermanagement",
     onColumnViewChange: (changedColumn, action) => {
       if (
@@ -1914,8 +1737,6 @@ function SubTable(props) {
     },
     //// triggers when a row/s is selected ////
     onRowsSelect: (currentRowsSelected, rowsSelected) => {
-      // console.log("currentRowsSelected", JSON.stringify(currentRowsSelected));
-      // console.log("rowsSelected", JSON.stringify(rowsSelected));
       if (rowsSelected && rowsSelected.length > 0) {
         let indexArray = rowsSelected
           .map((d) => d.dataIndex)
@@ -2005,21 +1826,6 @@ function SubTable(props) {
                       >
                         Send Mailers
                       </Button>
-                      {/* <Button
-                        color="secondary"
-                        startIcon={<LocalPrintshopRoundedIcon />}
-                        className={classes.multiSelectionTopBarButtons}
-                        onClick={() => {
-                          handleExpandClick(
-                            null,
-                            null,
-                            getSelectedRows(),
-                            "printLabels"
-                          );
-                        }}
-                      >
-                        Labels
-                      </Button> */}
                       <Divider orientation="vertical" flexItem />
                     </>
                   )}
@@ -2086,24 +1892,6 @@ function SubTable(props) {
                 </Tooltip>
               );
             }
-
-            //// if deals set the multi selection top bar: ////
-            // if (props.targetLabel === "deal") {
-            //   return (
-            //     <Tooltip title={"Delete"}>
-            //       <IconButton
-            //         size="medium"
-            //         style={{ margin: "0 5px" }}
-            //         onClick={(e) => {
-            //           handleExpandClick(null, null, null, "deleteDeal");
-            //         }}
-            //         aria-label="delete"
-            //       >
-            //         <DeleteIcon />
-            //       </IconButton>
-            //     </Tooltip>
-            //   );
-            // }
 
             //// default empty top bar ////
             return (
@@ -2197,18 +1985,6 @@ function SubTable(props) {
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
       setSelectedRow(rows[dataIndex]);
 
-      // if (props.targetLabel === "owner") {
-      //   setStateApp((state) => ({ ...state, selectedOwner: rows[dataIndex] }));
-      //   setSubComponent(
-      //     <OwnersDetailCard
-      //       ownerId={rows[dataIndex].id}
-      //       wellsIdsArray={rows[dataIndex].wellsCounter}
-      //     />
-      //   );
-      //   setTitle(rows[dataIndex].name);
-      //   setSubTitle(rows[dataIndex].interestType);
-      //   handleOpenExpandableCard();
-      // }
       if (props.targetLabel === "deal") {
         console.log("ROW DATA: ", rows[dataIndex]);
         console.log("ROW DATA 0 INDEX: ", rowData[0]);
@@ -2236,15 +2012,6 @@ function SubTable(props) {
           setSelectedRow(rows[dataIndex]);
         }
       }
-
-      // if (props.targetLabel === "well") {
-      //   setStateApp((state) => ({ ...state, selectedWellId: rowData[0] }));
-      //   setStateApp((state) => ({ ...state, selectedWell: rows[dataIndex] }));
-      //   setSubComponent(<WellCardProvider />);
-      //   setTitle(rows[dataIndex].wellName);
-      //   setSubTitle(rows[dataIndex].operator);
-      //   handleOpenExpandableCard();
-      // }
 
       if (props.targetLabel === "contact") {
         setStateApp((stateApp) => ({
@@ -2352,18 +2119,7 @@ function SubTable(props) {
         }
       }
     },
-    // onColumnSortChange: (column, direction) => {
-    //   if (props.total === true) {
-    //     switch(props.parent) {
-    //       case "production_WellDetails":
-    //         let trimmed = rows.filter(item => item.ReportDate !== "Cumulative");
-    //         setRows(trimmed);
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //   }
-    // },
+
     
     onTableChange: (action, tableState) => {
       if (props.header === "Contacts") {
@@ -2501,35 +2257,6 @@ function SubTable(props) {
       }
 
       if (props.header === "Well Interests") {
-        // let filters = [];
-        // const leadSourceIndex = tableState.columns.findIndex(
-        //   (i) => i.name === "leadSource"
-        // );
-        // const lastUpdateByIndex = tableState.columns.findIndex(
-        //   (i) => i.name === "lastUpdateBy.name"
-        // );
-        // const tagsIndex = tableState.columns.findIndex(
-        //   (i) => i.name === "tags"
-        // );
-
-        // if (tableState.filterList[leadSourceIndex]?.length !== 0) {
-        //   filters.push({
-        //     field: "leadSource",
-        //     value: tableState.filterList[leadSourceIndex],
-        //   });
-        // }
-        // if (tableState.filterList[lastUpdateByIndex]?.length !== 0) {
-        //   filters.push({
-        //     field: "lastUpdateBy.name",
-        //     value: tableState.filterList[lastUpdateByIndex],
-        //   });
-        // }
-        // if (tableState.filterList[tagsIndex]?.length !== 0) {
-        //   filters.push({
-        //     field: "tag.tag",
-        //     value: tableState.filterList[tagsIndex],
-        //   });
-        // }
 
         const pageVariables = {
           variables: {
@@ -2557,7 +2284,6 @@ function SubTable(props) {
               value: props.wellInterestsPageProps.ownerId,
             },
             userId: stateApp.user.mongoId,
-            // search: tableState.searchText,
           },
         };
 
@@ -2601,53 +2327,20 @@ function SubTable(props) {
             );
             break;
           case "search":
-            // delayedSearchRequest({
-            //   tableState: tableState,
-            //   setLoading: props.wellInterestsPageProps.setLoading,
-            //   getPaginatedWellInterests:
-            //     props.wellInterestsPageProps.getPaginatedWellInterests,
-            //   getContactsFilterOptions:
-            //     props.wellInterestsPageProps.getContactsFilterOptions,
-            //   pageVariables,
-            // });
             break;
           case "onSearchClose":
-            // props.wellInterestsPageProps.setLoading(true);
-            // tableState.page = 0;
-            // tableState.count = 0;
-            // setPageInd(tableState.page);
-            // props.wellInterestsPageProps.getPaginatedWellInterests(pageVariables);
-            // props.wellInterestsPageProps.getContactsFilterOptions();
             break;
           case "propsUpdate":
             console.log("work propsUpdate");
             break;
           case "filterChange":
-            // props.wellInterestsPageProps.setLoading(true);
-            // tableState.page = 0;
-            // setPageInd(tableState.page);
-            // props.wellInterestsPageProps.getPaginatedWellInterests(pageVariables);
             break;
           case "resetFilters":
-            // props.wellInterestsPageProps.setLoading(true);
-            // tableState.page = 0;
-            // setPageInd(tableState.page);
-            // props.wellInterestsPageProps.getPaginatedWellInterests(pageVariables);
             break;
           default:
             console.log("action not handled.");
         }
       }
-
-      // else if (props.header === "Monthly Production") {
-      //   switch(action) {
-      //     case "propsUpdate":
-      //       console.log(tableState.data);
-      //       break;
-      //     default:
-      //       break;
-      //   }
-      // }
     },
   };
 
