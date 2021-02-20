@@ -1,18 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////                TO USE THIS TABLE:
-//// 1-Send to this component a prop called 'parent' with a trackOwners/trackWells/Contacts/OwnersPerWell...
-////  -if it is OwnersPerWell use case add another prop "selectedWell" with the well
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////                TO USE THIS TABLE IN A NEW USE CASE:
-//// 1-Send to this component a prop called 'parent' with a string you choose to identify your use case.
-//// 2-Define your HeadCells const, for your columns, in the HeadCells section.
-//// 3-Add your query in the queries section.
-//// 4-At the end, but before the return line, add your own section where you will run your queries
-////   and you will set all necessaries local states for your use case and the table,
-////   look at the Tracked Owners section as example.
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////external table package info: https://github.com/gregnb/mui-datatables /////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
@@ -134,14 +119,6 @@ const TrackedOwnersHeadCells = [
     label: "Interest",
   },
 
-  // TEMPORARY COMMENT OUT. DO NOT DELETE
-  // WILL BE ADDED IN AFTER DEVELOPING A SYSTEM TO
-  // AGGREGATE OWNERS
-  // {
-  //   name: "appraisedValue",
-  //   label: "Appraised Value",
-  // },
-
   {
     name: "tags",
     label: "Tags ",
@@ -163,18 +140,6 @@ const TrackedOwnersHeadCells = [
       },
     },
   },
-  // {
-  //   name: "contactsCounter",
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
 
   {
     name: "isContact",
@@ -189,25 +154,6 @@ const TrackedOwnersHeadCells = [
     },
   },
 
-  /*
-  // TEMPORARY COMMENT OUT. DO NOT DELETE
-  // WILL BE RE-ADDED ONCE WE FIGURE OUT HOW TO DRAW AGGREGATIONS
-  // FOR UNIVERSAL OWNERS
-
-
-  // {
-  //   name: "wellsCounter",
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
- */
 
   {
     name: "commentsCounter",
@@ -258,86 +204,6 @@ const TrackedOwnersHeadCells = [
     },
   },
 ];
-
-// const WellsHeadCells = [
-//   {
-//     name: "id",
-//     options: {
-//       display: false,
-//       filter: false,
-//       searchable: false,
-//       sort: false,
-//       download: false,
-//       print: false,
-//       viewColumns: false,
-//     },
-//   },
-//   { name: "api", label: "API" },
-//   { name: "state", label: "State" },
-//   { name: "county", label: "County" },
-//   { name: "wellName", label: "Well Name" },
-//   { name: "operator", label: "Operator" },
-//   { name: "wellType", label: "Type" },
-//   { name: "wellBoreProfile", label: "Profile",},
-//   { name: "wellStatus", label: "Status",},
-//   {
-//     name: "tags",
-//     label: "Tags ",
-//     options: {
-//       sort: false,
-//       download: false,
-//       print: false,
-//       filterOptions: {
-//         names: [],
-//         logic(rowVal, pickedTags) {
-//           let containIts = true;
-//           pickedTags.map((pickedTag) => {
-//             if (rowVal[0].indexOf(pickedTag) === -1) {
-//               containIts = false;
-//             }
-//           });
-//           return !containIts;
-//         },
-//       },
-//     },
-//   },
-//   {
-//     name: "commentsCounter",
-//     label: " ",
-//     options: {
-//       filter: false,
-//       searchable: false,
-//       sort: false,
-//       download: false,
-//       print: false,
-//       viewColumns: false,
-//     },
-//   },
-//   {
-//     name: "isTracked",
-//     label: " ",
-//     options: {
-//       filter: false,
-//       sort: false,
-//       searchable: false,
-//       download: false,
-//       print: false,
-//       viewColumns: false,
-//     },
-//   },
-//   {
-//     name: "detailCard",
-//     label: " ",
-//     options: {
-//       filter: false,
-//       sort: false,
-//       searchable: false,
-//       download: false,
-//       print: false,
-//       viewColumns: false,
-//     },
-//   },
-// ];
 
 
 const CustomWellsHeadCells = [
@@ -505,25 +371,6 @@ const OwnersPerWellHeadCells = [
     },
   },
 
-  /*
-// TEMPORARY COMMENT OUT. DO NOT DELETE
-  // WILL BE RE-ADDED ONCE WE HAVE A WAY OF AGGREGATING A
-  // UNIVERSAL OWNER
-
-  // {
-  //   name: "wellsCounter",
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
-  */
-
   {
     name: "commentsCounter",
     label: " ",
@@ -675,15 +522,6 @@ const SearchsHeadCells = [
 
 
 
-
-
-
-
-
-
-
-
-
 const OwnersPerContactsHeadCells = [
   {
     name: "id",
@@ -727,37 +565,6 @@ const OwnersPerContactsHeadCells = [
       },
     },
   },
-  // {
-  //   name: "contactsCounter",
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
-
-  /*
-  // TEMPORARY COMMENT OUT. DO NOT REMOVE
-  // WILL BE UNCOMMENTED ONCE WE UNDERSTAND A MORE
-  // UNIVERSAL OWNER ID.
-
-  // {
-  //   name: "wellsCounter",
-  //   label: " ",
-  //   options: {
-  //     filter: false,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
- */
 
   {
     name: "commentsCounter",
@@ -965,18 +772,7 @@ const UserManagementHeadCells = [
       viewColumns: false,
     },
   },
-  // {
-  //   name: "userType",
-  //   label: "User Type",
-  //   options: {
-  //     filter: true,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
+
   {
     name: "role",
     label: "Role",
@@ -989,18 +785,7 @@ const UserManagementHeadCells = [
       viewColumns: false,
     },
   },
-  // {
-  //   name: "adminAccess",
-  //   label: "Admin Access",
-  //   options: {
-  //     filter: true,
-  //     searchable: false,
-  //     sort: false,
-  //     download: false,
-  //     print: false,
-  //     viewColumns: false,
-  //   },
-  // },
+
   {
     name: "lastLogin",
     label: "Last Login",
