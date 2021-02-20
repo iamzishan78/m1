@@ -13,10 +13,11 @@ import { Typography } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
 import debounce from "lodash/debounce";
 
+// import value formatters 
+import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
+
 const filter = createFilterOptions();
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
+
 const joinAddress = (row) => {
   let rowData = {
     address1: row.address1,

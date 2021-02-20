@@ -17,6 +17,10 @@ import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { setMapGridCardState } from "../../../../../actions";
 import { deepEqualObjects } from "../../../../Shared/functions";
 
+// import value formatters 
+import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
+
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -35,9 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
+
 
 const joinAddress = (row) => {
   let rowData = {

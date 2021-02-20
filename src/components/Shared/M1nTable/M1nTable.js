@@ -54,6 +54,11 @@ import OwnersPerWellHeadCells from '../constants/ownersperwell-header-schema.js'
 import SearchsHeadCells from '../constants/search-header-schema.js'
 import OwnersPerContactsHeadCells from '../constants/ownerspercontacts-header-schema.js'
 
+// import value formatters 
+import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
+import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
+
+
 
 const useStyles = makeStyles((theme) => ({
   container: { 
@@ -61,29 +66,6 @@ const useStyles = makeStyles((theme) => ({
 },
 }));
 
-var ticksToDateString = function (ticks) {
-  var epochTicks = 621355968000000000;
-  var ticksPerMillisecond = 10000; // whoa!
-  var maxDateMilliseconds = 8640000000000000;
-
-  if (isNaN(ticks)) {
-    //      0001-01-01T00:00:00.000Z
-    return "NANA-NA-NATNA:NA:BA.TMAN";
-  }
-
-  // convert the ticks into something javascript understands
-  var ticksSinceEpoch = ticks - epochTicks;
-  var millisecondsSinceEpoch = ticksSinceEpoch / ticksPerMillisecond;
-
-  if (millisecondsSinceEpoch > maxDateMilliseconds) {
-    //      +035210-09-17T07:18:31.111Z
-    return "+WHOAWH-OA-ISTOO:FA:RA.WAYZ";
-  }
-
-  // output the result in something the human understands
-  var date = new Date(millisecondsSinceEpoch);
-  return date.toISOString();
-};
 
 
 
@@ -928,9 +910,7 @@ const ContactWellHeadCells = [
 
 ////////////HeadCells end///////////////////////////////////////////////
 
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
+
 
 const joinAddress = (row) => {
   let rowData = {

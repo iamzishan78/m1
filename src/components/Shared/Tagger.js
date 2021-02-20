@@ -18,6 +18,10 @@ import Switch from "@material-ui/core/Switch";
 import ClearIcon from "@material-ui/icons/Clear";
 import "./Tagger.css";
 
+// import value formatters 
+import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
+
+
 const AntSwitch = withStyles((theme) => ({
   root: {
     width: 28,
@@ -271,9 +275,7 @@ export default function Tags(props) {
 
   ///////////////////// INSERTING NEW TAG ///////////////////////////////////////////////
 
-  const capitalizeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  };
+
 
   const UpperAndCleanTagText = (tagText) => {
     return tagText

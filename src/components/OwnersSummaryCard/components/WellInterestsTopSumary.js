@@ -11,6 +11,9 @@ import { setMapGridCardState } from "../../../actions";
 
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 
+// import value formatters 
+import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
+
 
 const useStyles = makeStyles((theme) => ({
   Paper: {
@@ -36,9 +39,6 @@ function numberWithCommas(x) {
 }
 
 
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
 
 const joinAddress = (row) => {
   let rowData = {
