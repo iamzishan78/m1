@@ -57,7 +57,7 @@ import TrackedOwnersHeadCells from '../constants/track-owners-header-schema.js'
 import CustomWellsHeadCells from '../constants/custom-wells-header-schema.js'
 import OwnersPerWellHeadCells from '../constants/ownersperwell-header-schema.js'
 import SearchsHeadCells from '../constants/search-header-schema.js'
-import OwnersPerContactsHeadCells from '../constants/owerspercontacts-header-schema.js'
+import OwnersPerContactsHeadCells from '../constants/ownerspercontacts-header-schema.js'
 
 const useStyles = makeStyles((theme) => ({
   container: { 
