@@ -76,28 +76,12 @@ import moment from "moment";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckIcon from "@material-ui/icons/Check";
+
+// import value formatters 
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
+import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
 
 
-var ticksToDateString = function (ticks) {
-  var epochTicks = 621355968000000000;
-  var ticksPerMillisecond = 10000; // whoa!
-  var maxDateMilliseconds = 8640000000000000;
-  if (isNaN(ticks)) {
-    //      0001-01-01T00:00:00.000Z
-    return "NANA-NA-NATNA:NA:BA.TMAN";
-  }
-  // convert the ticks into something javascript understands
-  var ticksSinceEpoch = ticks - epochTicks;
-  var millisecondsSinceEpoch = ticksSinceEpoch / ticksPerMillisecond;
-  if (millisecondsSinceEpoch > maxDateMilliseconds) {
-    //      +035210-09-17T07:18:31.111Z
-    return "+WHOAWH-OA-ISTOO:FA:RA.WAYZ";
-  }
-  // output the result in something the human understands
-  var date = new Date(millisecondsSinceEpoch);
-  return date.toISOString();
-};
 
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);

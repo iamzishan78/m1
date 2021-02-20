@@ -4,7 +4,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
-import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 
 
 // QUERIES 
@@ -21,7 +20,6 @@ import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ABSTRACTWELLGEOQUERY } from "../../../graphQL/useQueryAbstractWellGeo";
-import { CONTACT } from "../../../graphQL/useQueryContact";
 import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
@@ -31,7 +29,6 @@ import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction
 import { PARCELOWNERSQUERY } from "../../../graphQL/useQueryParcelOwners";
 import { UPDATEPARCELOWNER } from "../../../graphQL/useMutationUpdateParcelOwner";
 import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRecords";
-import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACTDEALS } from "../../../graphQL/useQueryContactDeals";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
 import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
@@ -40,7 +37,6 @@ import { PAGINATEDWELLINTERESTSQUERY } from "../../../graphQL/useQueryPaginatedW
 import { WELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryWellInterestsFilterOptions";
 import { SHAPEWELLS } from "../../../graphQL/useQueryPaginatedShapeWells";
 import { SHAPEWELLSCOUNT } from "../../../graphQL/useQueryShapeWellsCount";
-import { WELLSOWNERSQUERY } from "../../../graphQL/useQueryWellsOwners";
 import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -48,7 +44,6 @@ import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
 import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 import { setMapGridCardState, showWarningMessage } from "../../../actions";
-import { first } from "@amcharts/amcharts4/.internal/core/utils/Array";
 
 // Header Schemas 
 import ContactsHeadCells from '../constants/contacts-header-schema.js'
@@ -58,6 +53,7 @@ import CustomWellsHeadCells from '../constants/custom-wells-header-schema.js'
 import OwnersPerWellHeadCells from '../constants/ownersperwell-header-schema.js'
 import SearchsHeadCells from '../constants/search-header-schema.js'
 import OwnersPerContactsHeadCells from '../constants/ownerspercontacts-header-schema.js'
+
 
 const useStyles = makeStyles((theme) => ({
   container: { 
