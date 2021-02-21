@@ -4536,7 +4536,10 @@ export default function Map() {
     if ((stateApp.parcelDetailCardOpen && stateApp.parcelDetailCardOpen === true)) {
       // set and remove map marker
       
-      const coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter)
+      let coordinates = stateApp.selectedParcel.shapeCenter
+      if (typeof stateApp.selectedParcel.shapeCenter === "string") {
+        coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter);
+      }
       const longitude = coordinates[0]
       const latitude = coordinates[1]
 
