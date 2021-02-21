@@ -68,21 +68,28 @@ const useStyles = makeStyles((theme) => {
       },
     },
     rootList: {
-      opacity: ({ mapGridCardActivated }) =>
-        mapGridCardActivated === "min" ? "0.6" : "1",
-      transition:
-        "opacity 0.2s ease-out, transform 0.05s ease-out, width 0.3s ease-out, height 0.3s ease-out",
-      WebkitTransition:
-        "opacity 0.2s ease-out, transform 0.05s ease-out, width 0.3s ease-out, height 0.3s ease-out",
+      //removing the shrinking of the search card on fly to for now
+      // opacity: ({ mapGridCardActivated }) =>
+      //   mapGridCardActivated === "min" ? ".6" : "1",
+      // transition:
+      //   "opacity 0.2s ease-out, transform 0.05s ease-out, width 0.3s ease-out, height 0.3s ease-out",
+      // WebkitTransition:
+      //   "opacity 0.2s ease-out, transform 0.05s ease-out, width 0.3s ease-out, height 0.3s ease-out",
       width: ({ mapGridCardActivated }) =>
         mapGridCardActivated === "min"
-          ? "600px"
+        //removed shrinking for now
+        // ? "600px"
+         ? "57vw"
+
           : mapGridCardActivated === "exp"
           ? "96vw"
           : "57vw",
       height: ({ mapGridCardActivated }) =>
         mapGridCardActivated === "min"
-          ? "114px"
+        //removed shrinking for now  
+        // ? "114px"
+         ? "60vh"
+
           : mapGridCardActivated === "exp"
           ? "91vh"
           : "60vh",
