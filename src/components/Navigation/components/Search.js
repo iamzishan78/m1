@@ -1191,7 +1191,7 @@ function Search() {
         loadingOwners ||
         loadingOperators ||
         loadingLeases ||
-        loadingContacts ||
+        // loadingContacts ||
         loadingMapboxSearch)) ||
     (searchOption === "wells" && loadingWells) ||
     (searchOption === "owners" && loadingOwners) ||
@@ -1249,7 +1249,7 @@ function Search() {
                       loadingOwners ||
                       loadingOperators ||
                       loadingLeases ||
-                      loadingContacts ||
+                      // loadingContacts ||
                       loadingMapboxSearch)) ||
                   (searchOption === "wells" && loadingWells) ||
                   (searchOption === "owners" && loadingOwners) ||
@@ -1329,7 +1329,7 @@ function Search() {
                 >
                   Leases
                 </Button>
-                <Button
+                {/* <Button
                   className={classes.headerButtons}
                   variant={
                     searchOption === "contacts" ? "contained" : "outlined"
@@ -1341,7 +1341,7 @@ function Search() {
                   }}
                 >
                   Contacts
-                </Button>
+                </Button> */}
                 <Button
                   className={classes.headerButtons}
                   variant={
@@ -1441,7 +1441,7 @@ function Search() {
                 setLoadingOwners(true);
                 setLoadingOperators(true);
                 setLoadingLeases(true);
-                setLoadingContacts(true);
+                setLoadingContacts(false);
                 setLoadingMapboxSearch(true);
               }
               if (searchOption === "wells") setLoadingWells(true);

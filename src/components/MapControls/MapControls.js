@@ -115,7 +115,6 @@ export default function MapControls(props) {
 
   const handleFabClick = (e, action) => {
     let anchorEl = e.currentTarget;
-    // console.log("Setting anchorEl: ", anchorEl);
 
     if (action === "track") {
       anchorEl = null;

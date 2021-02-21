@@ -310,7 +310,6 @@ export default function SpatialDataCardEdit(props) {
       props.selectedFeature.properties &&
       props.selectedFeature.properties.id
     ) {
-      console.log("Deleting AOI ...", props.selectedFeature.properties.id);
       updateCustomLayer({
         variables: {
           customLayerId: props.selectedFeature.properties.id,
