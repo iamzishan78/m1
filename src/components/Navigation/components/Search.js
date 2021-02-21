@@ -1182,7 +1182,7 @@ function Search() {
     Primary: "",
     Secondary: "",
   };
-  console.log('options xxx',options)
+  
   let optionsWithHeader = [header, ...options];
   //// adding loader ////
   if (

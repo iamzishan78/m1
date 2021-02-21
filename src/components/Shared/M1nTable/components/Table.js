@@ -370,6 +370,7 @@ function SubTable(props) {
       });
 
       selectedWell = { ...selectedWell, ...dataWell.well };
+      console.log('esteban did it again my friends')
       //// temporary to fix the ticks dates fields comming from the rest api
       if (
         selectedWell.permitApprovedDate &&

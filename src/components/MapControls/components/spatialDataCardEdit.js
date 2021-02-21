@@ -205,7 +205,6 @@ export default function SpatialDataCardEdit(props) {
           },
         }
       ) {
-        console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
 
         cache.modify({
           _id: cache.identify(customLayer),

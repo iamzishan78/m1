@@ -162,7 +162,6 @@ const Login = (props) => {
               })();
 
           if (accountObj) {
-            console.log('hellz yeah!');
 
             // We need to reject id tokens that were not issued with the default sign-in policy.
             // "acr" claim in the token tells us what policy is used (NOTE: for new policies (v2.0), use "tfp" instead of "acr")
