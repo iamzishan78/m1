@@ -113,7 +113,6 @@ export default (props) => {
       }));
 
       const customLayer = customLayerInsertedData.upsertCustomLayer.customLayer;
-      console.log('before')
       const feature = JSON.parse(customLayer.shape);
       feature.id = customLayer._id;
       feature.properties.id = customLayer._id;
@@ -169,7 +168,6 @@ export default (props) => {
 
   const saveAndOpenParcelDetail = function () {
     if (!user._id) {
-      console.log("No user found!");
       return;
     }
     const abstractShape = stateApp.selectedAbstracts[0];

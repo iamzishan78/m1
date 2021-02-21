@@ -184,7 +184,6 @@ export default function ExpandableCard(props) {
 
   const handleExpand = () => {
     if (parent === "map" && $("#popupContainer").length) {
-      console.log("jquery expand", props);
     }
 
     if (toggleExpand == false) {
@@ -228,7 +227,6 @@ export default function ExpandableCard(props) {
 
   const handleShrink = () => {
     if (parent === "map" && $("#popupContainer").length) {
-      console.log("jquery shrink");
     }
     setCardTop(mouseY);
     setCardLeft(mouseX);
@@ -243,7 +241,6 @@ export default function ExpandableCard(props) {
   const handleClose = () => {
     if (parent === "map") {
       if ($("#tempPopupHolder").length) {
-        console.log("jquery close");
         let popUps = document.getElementsByClassName("mapboxgl-popup");
         if (popUps[0]) popUps[0].remove();
       }
@@ -301,7 +298,6 @@ export default function ExpandableCard(props) {
   };
 
   const deleteParcel = () => {
-    console.log("Deleting Parcel ...", targetSourceId);
     updateCustomLayer({
       variables: {
         customLayerId: targetSourceId,
