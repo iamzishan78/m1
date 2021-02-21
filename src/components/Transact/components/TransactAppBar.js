@@ -178,7 +178,6 @@ const TransactAppBar = ({
 
   useEffect(() => {
     if (pipeToShow?.lanes) {
-      console.log(pipeToShow.lanes)
       setOpenDeals(sumDeals(pipeToShow.lanes, "open"));
       setWonDeals(sumDeals(pipeToShow.lanes, "won"));
       setLostDeals(sumDeals(pipeToShow.lanes, "lost"));

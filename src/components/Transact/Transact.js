@@ -243,7 +243,6 @@ export default function Transact() {
       setFilteredBoardTransactData({
         lanes: [...filterBoardCards(pipeToShow.lanes, dealFilter)],
       });
-      console.log("DATA: ", filteredBoardTransactData);
 
       filteredBoardTransactData.lanes &&
         filteredBoardTransactData.lanes.forEach((lane) => {
@@ -292,11 +291,9 @@ export default function Transact() {
   }, [pipeToShowTab, dealFilter]);
 
   useEffect(() => {
-    console.log("FILTERED DATA: ", filteredTabTransactData);
   }, [filteredTabTransactData]);
 
   const handleDataChange = (newData) => {
-    console.log("DATA CHANGE", newData);
   };
 
   const handleCardClick = (cardId, metadata, laneId) => {
@@ -319,9 +316,6 @@ export default function Transact() {
     cardDetails
   ) => {
     // handle drag within lanes - runs first
-    console.log(
-      `handleCardDragEnd: ${cardId}, ${sourceLaneId}, ${targetLaneId}, ${position}, ${cardDetails}`
-    );
 
     let unfilteredSourceLane = pipeToShow.lanes.find(
       (lane) => lane?.id === sourceLaneId
@@ -427,8 +421,6 @@ export default function Transact() {
           status: unfilteredTargetLane.metadata.dealsStatus.toLowerCase(),
         };
 
-      console.log("UPDATED DEAL: ", updatedDeal);
-
       updateDeal({
         variables: {
           deal: { ...updatedDeal },
@@ -441,9 +433,6 @@ export default function Transact() {
 
   const onCardMoveAcrossLanes = (fromLaneId, toLaneId, cardId, addedIndex) => {
     if (fromLaneId !== toLaneId) {
-      console.log(
-        `onCardMoveAcrossLanes: ${fromLaneId}, ${toLaneId}, ${cardId}, ${addedIndex}`
-      );
     }
   };
 
@@ -451,15 +440,6 @@ export default function Transact() {
     let cardColor = "limegreen";
     let rottingDate = null;
     rottingDate = moment(stageChangeDate).add(rotting, "days");
-    // console.log("ROTTING DATE: ", rottingDate);
-    // console.log(
-    //   "ROTTING STAGE CHANGE DIFFERENCE: ",
-    //   rottingDate.diff(moment(metadata.stageChangeDate), "days")
-    // );
-    // console.log(
-    //   "ROTTING CURRENT DIFFERENCE: ",
-    //   rottingDate.diff(new Date(), "days")
-    // );
 
     let total = rottingDate.diff(moment(stageChangeDate), "days");
     let current = rottingDate.diff(moment(), "days"); // swap date values if doesn't work as intended
@@ -502,9 +482,6 @@ export default function Transact() {
     const lane = filteredBoardTransactData.lanes.find(
       (lane) => lane.id === laneId
     );
-
-    // console.log("STAGECHANGEDATE: ", stageChangeDate);
-    // console.log("ROTTING: ", lane.metadata.rotting);
 
     let cardColor = "limegreen";
     if (lane?.metadata?.rotting && stageChangeDate) {

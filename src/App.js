@@ -82,7 +82,6 @@ const theme = createMuiTheme({
 
 const SetApolloClient = (props) => {
   const [stateApp] = useContext(AppContext);
-  //console.log('ep',stateApp.apolloClientEndpoint)
 
   useEffect(() => {
     props.setApolloClient();
@@ -90,7 +89,6 @@ const SetApolloClient = (props) => {
 
   useEffect(() => {
     if (stateApp.apolloClientEndpoint) {
-      // console.log('ue endpoint',stateApp.apolloClientEndpoint)
       props.setApolloClientEndpoint(stateApp.apolloClientEndpoint);
     }
   }, [stateApp.apolloClientEndpoint]);
@@ -202,7 +200,6 @@ function App() {
   //set default to core until login is complete and we can get the tenant's endpoint
   //const apolloEndpoint = "https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA==";
   const updateApolloClientEndpoint = (endpoint) => {
-    //console.log('update apollo end',endpoint)
     setApolloClientEndpoint(endpoint);
     updateApolloClient(endpoint, apolloClientToken);
   };
@@ -240,7 +237,6 @@ function App() {
     }
 
     if (apolloClient && endpoint) {
-      console.log("endpoint", endpoint);
 
       setApolloClient((state, props) => {
         return new ApolloClient({
@@ -252,7 +248,6 @@ function App() {
     }
 
     if (apolloClient && token) {
-      console.log("token added to graphQL");
       apolloClient.link.options.headers = { ["X-ZUMO-AUTH"]: token };
     }
   };

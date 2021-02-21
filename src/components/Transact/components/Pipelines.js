@@ -598,7 +598,6 @@ export default function Pipelines(props) {
               );
           })
           .catch((reason) => {
-            console.log(reason);
           });
       }
 

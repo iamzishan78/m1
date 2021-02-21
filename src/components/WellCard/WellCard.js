@@ -190,7 +190,6 @@ export default function WellCard() {
   const classes = useStyles();
 
   useEffect(() => {
-    // console.log("stateApp.user", stateApp.user);
     if (!source) {
       setSource({
         sourceId: stateApp.user.id,
@@ -200,11 +199,6 @@ export default function WellCard() {
         properties: [],
       });
     }
-    //  else {
-    //   getVertexEdges({
-    //     variables: { source: source, edgeLabel: "tracks", targetLabel: "well" },
-    //   });
-    // }
   }, [stateApp.user, source]);
   
 
@@ -224,7 +218,6 @@ export default function WellCard() {
 
   //make fire and forget call to REST api so that it begins to cache other well related api calls
   // const { data, loading, error } = useQueryWell(stateApp.selectedWell.id);
-  // console.log('fireForget',data)
   /* useEffect(() => {
     setStateApp(state => ({ ...state, selectedWell: props.selectedWell }))
    

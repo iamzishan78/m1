@@ -60,7 +60,6 @@ export default (props) => {
     UPSERTCUSTOMLAYER,
     {
       update(cache, { data: { upsertCustomLayer: { customLayer } } }) {
-        console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
         cache.modify({
           fields: {
             allCustomLayers(existingCustomLayers = [], { readField }) {

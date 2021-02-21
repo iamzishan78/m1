@@ -69,11 +69,9 @@ const WeatherCard = () => {
             return setLocation({ long: longitude, lat: latitude });
           },
           (e) => {
-            console.log("Error", e.message);
           }
         );
       } else {
-        console.log("Location not supported");
       }
     };
     getLocation();
@@ -96,7 +94,6 @@ const WeatherCard = () => {
         };
         return setCurrWeather(fdata);
       } catch (e) {
-        console.log(e);
       }
     };
     getWeather();
@@ -116,11 +113,9 @@ const WeatherCard = () => {
         }));
         return setForecast(fdata);
       } catch (e) {
-        console.log(e);
       }
     };
     getForecast();
-    console.log("forecast", forecast);
   }, [location, weatherkey]);
 
   return (
