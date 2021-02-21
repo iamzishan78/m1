@@ -55,7 +55,6 @@ function a11yProps(index) {
 }
 
 const useStyles = makeStyles((theme) => {
-  console.log(`ue mapgridcard makestyles ${theme}`);
 
   return {
     card: {
@@ -172,7 +171,6 @@ const useStyles = makeStyles((theme) => {
 });
 
 const TabLabels = ({ labels, value, setValue }) => {
-  console.log(`ue mapgridcard tablabels ${(labels, value, setValue)}`);
   const classes = useStyles();
 
   return (
@@ -206,7 +204,6 @@ function tabPanelsPropsAreEqual(prevProps, nextProps) {
 }
 
 const TabPanels = ({ panels, value }) => {
-  console.log(`ue mapgridcard tabpanels ${(panels, value)}`);
 
   const classes = useStyles();
   return (
@@ -476,7 +473,6 @@ function MapGridCard(props) {
   });
 
   const handleMainTapChange = (event, newValue) => {
-    console.log(`ue mapgridcard handlemaintapchange ${newValue}`);
 
     dispatch(
       setMapGridCardState({
@@ -834,10 +830,7 @@ function MapGridCard(props) {
       {mapGridCardActivated === "min" ? (
         CardReturn()
       ) : (
-        
-        // <Draggable cancel={'[class*="cancelDraggableEffect"]'}>
           CardReturn()
-        // </Draggable>
       )}
       {mapGridCardActivated === "exp" && blackOut()}
     </div>
@@ -845,9 +838,6 @@ function MapGridCard(props) {
 }
 
 function areEqual(prevProps, nextProps) {
-  // console.log(
-  //   `${prevProps.mapGridCardActivated} ... ${nextProps.mapGridCardActivated}`
-  // );
   return Object.is(
     prevProps.mapGridCardActivated,
     nextProps.mapGridCardActivated

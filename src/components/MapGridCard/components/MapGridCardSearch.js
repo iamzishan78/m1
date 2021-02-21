@@ -271,8 +271,6 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-
-                console.log("#########INDEX SOURCE WELLS",indexSource);
                 newOptions = [...results.value];
               }
 
@@ -291,7 +289,6 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log("#########INDEX SOURCE OWNER",indexSource);
                 newOptions = [
                   ...results.value.map((result) => {
                     return {
@@ -318,7 +315,6 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log("#########INDEX SOURCE OPERATOR",indexSource);
                 newOptions = [...results.value];
               }
 
@@ -337,7 +333,6 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log("#########INDEX SOURCE LEASE",indexSource);
                 newOptions = [
                   ...results.value.map((result) => {
                     return {
@@ -445,7 +440,6 @@ function MapGridCardSearch(props) {
                 searchInputValue: event.target.value,
               })
             );
-            console.log('event value',event.target.value)
             setStateApp((state) => ({
               ...state,
               gridSearchTarget: event.target.value,
@@ -458,7 +452,6 @@ function MapGridCardSearch(props) {
 }
 
 function areEqual(prevProps, nextProps) {
-  console.log(`${prevProps.searchOption} ... ${nextProps.searchOption}`)
   return Object.is(prevProps.searchOption, nextProps.searchOption);
 }
 

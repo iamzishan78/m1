@@ -261,9 +261,7 @@ export default function AddLayer(props) {
       ...stateApp,
       universalCircularLoaderAct: true,
     }));
-    console.log("ADDED FILES:", fileObj);
     let fileContent = await handleFileAsync(fileObj);
-    console.log("FILE CONTENT: ", fileContent);
 
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -294,7 +292,7 @@ export default function AddLayer(props) {
 
           <DropzoneAreaBase
             onAdd={handleFileInput}
-            onDelete={(fileObj) => console.log("Removed File:", fileObj)}
+            onDelete={(fileObj) => ("Removed File:", fileObj)}
             onAlert={(message, variant) => {
               console.log(`${variant}: ${message}`);
             }}
@@ -319,7 +317,9 @@ export default function AddLayer(props) {
             acceptedFiles={[".geojson", ".zip"]}
             maxFileSize={10000000}
             dropzoneClass={classes.dropzoneClass}
-          ></DropzoneAreaBase>
+            >
+
+          </DropzoneAreaBase>
           <StyledListItem2 button onClick={handleClickM1List}>
             <ListItemText primary="M1neral Layers" />
             {openM1 ? <ExpandLess /> : <ExpandMore />}
