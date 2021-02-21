@@ -514,11 +514,11 @@ function MapGridCard(props) {
         "Wells",
         "Tax Owners",
         "Operators",
-        "Leases",
-        "Parcels",
-        "Recent Permits",
-        "Contacts",
-        "Locations",
+        // "Leases",
+        // "Parcels",
+        // "Recent Permits",
+        // "Contacts",
+        // "Locations",
       ]}
       value={searchTapValue}
       setValue={(n) => {
