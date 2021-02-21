@@ -7,7 +7,7 @@ const PortalD = ({ id, children }) => {
   if(el.current && children){
     return createPortal(children, el.current);
   }
-  return
+  return null;
   
 };
 
