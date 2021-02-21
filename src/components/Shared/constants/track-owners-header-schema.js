@@ -29,15 +29,26 @@ const TrackedOwnersHeadCells = [
       },
     },
     { name: "name", label: "Name" },
-    {
-      name: "ownershipType",
-      label: "Entity",
-    },
-    { name: "interestType", label: "Type" },
-    {
-      name: "ownershipPercentage",
-      label: "Interest",
-    },
+
+
+    //need to add in the address on file for global owner
+    // {
+    //   name: "",
+    //   label: "Address",
+    // },
+
+
+
+    //removing due to the fact that tracked owners are global owners with multiple interests and not well level interests
+    // {
+    //   name: "ownershipType",
+    //   label: "Entity",
+    // },
+    // { name: "interestType", label: "Type" },
+    // {
+    //   name: "ownershipPercentage",
+    //   label: "Interest",
+    // },
   
     {
       name: "tags",

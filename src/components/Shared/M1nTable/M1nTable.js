@@ -2279,8 +2279,7 @@ function M1nTable(props) {
 
     if (    
             props.parent  
-            && ((props.parent === "Contacts")  // for parent of contact screen 
-                  || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
+            && (props.parent === "Contacts")  // for parent of contact screen 
         ) {
           console.log('props -', props)
           setLoading(true);
@@ -2297,6 +2296,26 @@ function M1nTable(props) {
           setStartPaginationAt(25);
           setColumnsBase(ContactsHeadCells);
         }
+
+      else  if (    
+          props.parent  
+          && (props.parent ==='search' && props.targetLabel === "contacts")  // for parent of contact screen              
+      ) {
+        console.log('props -', props)
+        setLoading(true);
+        console.log("ue mintable 22- contact");
+        setTargetLabel("contact");
+        setHeader("Contacts");
+        setOrderByTracks(false);
+        setAddAble({ parent: false, type: "contact" });
+        console.log('search target', stateApp.gridSearchTarget)
+        getPaginatedContacts({variables: { search: stateApp.gridSearchTarget }});
+        getContactsFilterOptions();
+        updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
+        setUploadIcon(false);
+        setStartPaginationAt(25);
+        setColumnsBase(ContactsHeadCells);
+      }
 
   }, [props.parent,
       stateApp.gridSearchTarget]);
