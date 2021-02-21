@@ -273,14 +273,14 @@ const ownersColumnHeaders = [
     name: "OwnerName",
     label: "Name",
   },
-  {
-    name: "State",
-    label: "State",
-  },
-  {
-    name: "City",
-    label: "City",
-  },
+  // {
+  //   name: "State",
+  //   label: "State",
+  // },
+  // {
+  //   name: "City",
+  //   label: "City",
+  // },
   {
     name: "FullAddress",
     label: "Address",
@@ -669,6 +669,7 @@ function MapGridCard(props) {
                     />,
                     <M1nTable
                       dense
+                      style 
                       parent="search"
                       privateColumns={operatorsColumnHeaders}
                       targetLabel={getTargetFromSearchTaps()}
