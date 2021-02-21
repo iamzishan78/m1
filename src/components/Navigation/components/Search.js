@@ -40,19 +40,6 @@ import { deepEqualObjects, deepEqual, setStateIfDeepEqual } from "../../Shared/f
 import ClearIcon from "@material-ui/icons/Clear";
 
 
-function loadScript(src, position, id) {
-  if (!position) {
-    return;
-  }
-
-  const script = document.createElement("script");
-  script.setAttribute("async", "");
-  script.setAttribute("id", id);
-  script.src = src;
-  position.appendChild(script);
-}
-
-// const autocompleteService = { current: null };
 
 const maxMinScore = (options) => {
   let max = 0;
@@ -275,17 +262,6 @@ function Search() {
 
   //////////// Search History End//////////////////
 
-  //   if (typeof window !== 'undefined' && !loaded.current) {
-  //     if (!document.querySelector('#google-maps')) {
-  //       loadScript(
-  //         'https://maps.googleapis.com/maps/api/js?key=AIzaSyBwRp1e12ec1vOTtGiA4fcCt2sCUS78UYc&libraries=places',
-  //         document.querySelector('head'),
-  //         'google-maps',
-  //       );
-  //     }
-
-  //     loaded.current = true;
-  //   }
 
   const callWellSearch = React.useMemo(
     () =>
