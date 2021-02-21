@@ -350,7 +350,7 @@ function SubTable(props) {
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [tableStyle, setTableStyle] = useState(classes);
-  const [year, setYear] = React.useState(2019);
+  const [year, setYear] = React.useState(2020);
 
   const [rows, Rows] = useState([]);
   const setRows = (newState) => {
@@ -2691,8 +2691,8 @@ function SubTable(props) {
         value={year}
         onChange={handleYearChange}
       >
-        <MenuItem value={2019}>2019</MenuItem>
-        <MenuItem value={2020}>2020</MenuItem>
+        <MenuItem selected={year === 2019} value={2019}>2019</MenuItem>
+        <MenuItem selected={year === 2020} value={2020}>2020</MenuItem>
 
       </Select>
     </Box>

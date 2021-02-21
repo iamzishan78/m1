@@ -101,12 +101,12 @@ const SetApolloClient = (props) => {
     }
   }, [stateApp.user]);
 
-  useEffect(()=> {
+  useEffect(() => {
     let draggableArea = document.getElementById("root");
     if (window.location.pathname == "/") {
-      draggableArea.style.overflow='hidden'
+      draggableArea.style.overflow = 'hidden'
     } else {
-      draggableArea.style.overflow='visible'
+      draggableArea.style.overflow = 'visible'
     }
   }, [stateApp]);
 
@@ -156,8 +156,8 @@ const PrivateRoute = ({ component, ...options }) => {
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
       ? component
       : (() => {
-          return stateApp.myMSALB2CObj ? LoginB2C : Login;
-        })();
+        return stateApp.myMSALB2CObj ? LoginB2C : Login;
+      })();
 
   return (
     <div>
@@ -339,8 +339,8 @@ function App() {
             </MuiThemeProvider>
           </ApolloProvider>
         ) : (
-          <CircularProgress></CircularProgress>
-        )}
+            <CircularProgress></CircularProgress>
+          )}
       </AppProvider>
     </ReduxProvider>
   );
