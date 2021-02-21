@@ -2678,7 +2678,6 @@ function SubTable(props) {
 
   const handleYearChange = (event) => {
     setYear(event.target.value);
-    console.log("Props in handleYearChange ==> ", props)
     props.getWellOwnersByYear(event.target.value)
   };
 

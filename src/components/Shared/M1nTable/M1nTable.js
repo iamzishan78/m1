@@ -2278,7 +2278,7 @@ function M1nTable(props) {
   };
 
   // year state
-  const [selectedYear, setSelectedYear] = useState(2019)
+  const [selectedYear, setSelectedYear] = useState(2020)
 
   const {
     searchloading,
@@ -2981,10 +2981,11 @@ function M1nTable(props) {
       getWellOwners({
         variables: {
           id: props.selectedWell.id,
+          selectedYear: selectedYear.toString()
         },
       });
     }
-  }, [props.selectedWell]);
+  }, [props.selectedWell, selectedYear]);
 
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
