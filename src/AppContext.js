@@ -48,7 +48,6 @@ const AppProvider = (props) => {
     wellCount: 500,
     wells: null,
     wellDetailCardOpen: null,
-    parcelDetailCardOpen: false,
     trackedwells: null,
     trackedOwnerWells: null,
     selectedWell: null,
