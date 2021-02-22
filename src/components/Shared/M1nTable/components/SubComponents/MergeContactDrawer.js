@@ -12,6 +12,7 @@ import Typography from "@material-ui/core/Typography";
 import AlertDialogSlide from "../../../../Contacts/components/RightDialog";
 import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import { MERGE_CONTACTS } from "../../../../../graphQL/useMutationMergeContact";
+import { AppContext } from "../../../../../AppContext";
 
 
 const styles = (theme) => ({
@@ -25,6 +26,7 @@ const styles = (theme) => ({
 const useStyles = makeStyles(styles);
 
 export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes }) {
+  const [stateApp] = React.useContext(AppContext);
   const classes = useStyles();
   const dispatch = useDispatch();
   const [primaryContact, setPrimaryContact] = useState(rows[0]);
@@ -42,7 +44,7 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
     }, []);
     setLoading(true);
     mergeContacts({
-      variables: { primary: primaryContact._id, secondary: secondaryContacts },
+      variables: { primary: primaryContact._id, secondary: secondaryContacts, mergedBy: stateApp.user.mongoId, },
       refetchQueries: [
         "getPaginatedContacts",
       ],
@@ -73,6 +75,7 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
     onClose();
   }
 
+  console.log(rows)
   return (
     <AlertDialogSlide open={true}>
       <Container maxWidth="sm">
@@ -145,13 +148,13 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
 
             <Grid item md={10}>
               <Typography style={{ backgroundColor: "#edfbff" }}>
-                {row.name} {row.address1} {row.address2} {row.city} {row.state}
+                <Box display='inline' pr={2}>{row.name}</Box> {row.address1} {row.address2} {row.city}, {row.state} {row.zip}
               </Typography>
             </Grid>
 
             <Grid item md={1}>
               <IconButton aria-label="delete" onClick={() => onDelete(row)}>
-                <DeleteIcon />
+                <CloseSharp />
               </IconButton>
             </Grid>
           </Grid>
