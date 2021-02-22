@@ -22,7 +22,7 @@ import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
-import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloProvider, ApolloClient, InMemoryCache, useApolloClient } from "@apollo/client";
 import { relayStylePagination } from "./graphQL/apolloPaginationSchemes.js";
 import { CircularProgress, Typography } from "@material-ui/core";
 // import ProfileProvider from "./components/Profile/ProfileProvider";
@@ -139,6 +139,7 @@ const SetApolloClient = (props) => {
 
 const PrivateRoute = ({ component, ...options }) => {
   const [stateApp] = useContext(AppContext);
+  const apolloClient = useApolloClient();
 
   if (
     stateApp.user &&
@@ -152,6 +153,7 @@ const PrivateRoute = ({ component, ...options }) => {
 
   const finalComponent =
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
+    && apolloClient?.link?.options?.headers?.["X-ZUMO-AUTH"]
       ? component
       : (() => {
         return stateApp.myMSALB2CObj ? LoginB2C : Login;
