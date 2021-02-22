@@ -865,11 +865,20 @@ function SubTable(props) {
                                   selectedWellId:
                                     props.targetLabel == "well"
                                       ? tableMeta.rowData[0]
-                                      : null,
-                                  flyTo: {
+                                      : null, 
+                                   //adding in fitbounds to center in right side of screen                           
+                                   fitBounds: {
+                                        maxLat: value.center[1],
+                                        minLat: value.center[1],
+                                        minLong: value.center[0] - 1.5 * .02,
+                                        maxLong: value.center[0] + 0.5 * .02,
+                                      },
+                                  
+                                      flyTo: {
                                     longitude: value.center[0],
                                     latitude: value.center[1],
                                   },
+
                                 };
                               });
 
