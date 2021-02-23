@@ -278,10 +278,10 @@ export default function CSVFileReader(props) {
           <Link
             to="/downloadables/Sample_Contacts_Upload.csv"
             target="_blank"
-            download
+            download = "Sample_Contacts_Upload.csv"
             style={linkContent}
           >
-            Download sample CSV template and then upload with your information
+            Click this link to download sample CSV template
           </Link>
         </div>
 
