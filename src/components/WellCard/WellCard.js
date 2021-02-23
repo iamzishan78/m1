@@ -434,6 +434,15 @@ export default function WellCard() {
                     </TableRow>
                   : null}
 
+                  {/* <TableRow>
+                  <TableCell className={classes.cell1} align="left">
+                        Plug Date
+                      </TableCell>
+                      <TableCell className={classes.cell2} align="right">
+                        {convertDate(stateApp.selectedWell.plugDate)}
+                      </TableCell>
+                  </TableRow> */}
+
                 </TableBody>
               </Table>
             </CardContent>

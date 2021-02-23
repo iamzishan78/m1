@@ -210,7 +210,7 @@ export default function Tags(props) {
         if (
           element.taggedOn.length === props.multipleIds.length &&
           element.public.filter((v) => v === publicTag).length ===
-            props.multipleIds.length
+          props.multipleIds.length
         ) {
           tags.push({
             ...element,
@@ -466,9 +466,8 @@ export default function Tags(props) {
           </h3>
         )}
         <FormControlLabel
-          className={`${classes.switchButtom} ${
-            props.publicLeftBottom ? classes.publicLeftBottom : ""
-          } ${!publicTag ? classes.switchTextDeselected : ""}`}
+          className={`${classes.switchButtom} ${props.publicLeftBottom ? classes.publicLeftBottom : ""
+            } ${!publicTag ? classes.switchTextDeselected : ""}`}
           control={
             <React.Fragment>
               {props.publicLeftBottom && <h4 className="h4Before">Tags</h4>}
@@ -561,8 +560,8 @@ export default function Tags(props) {
           )} */}
         </Grid>
       ) : (
-        <CircularProgress color="secondary"></CircularProgress>
-      )}
+          <CircularProgress color="secondary"></CircularProgress>
+        )}
     </div>
   );
 }
