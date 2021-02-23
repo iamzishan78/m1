@@ -530,7 +530,7 @@ function MapGridCard(props) {
         "Wells",
         "Tax Owners",
         "Operators",
-        // "Leases",
+        "Leases",
         // "Parcels",
         // "Recent Permits",
         // "Contacts",
