@@ -625,12 +625,13 @@ function MapGridCard(props) {
         {selectedOwner ? (
           <OwnersSummaryCard />
         ) : (
-            <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`}>
+            <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{position:"relative"}}>
               {/* //// search panel //// */}
               <TabPanel
                 value={mapGridCardActiveTap}
                 index={0}
                 className={classes.tapsPanelsPadding}
+                style={{position:"absolute"}}
               >
                 <MapGridCardSearch
                   ativateSearchPanel={() => {
@@ -724,6 +725,9 @@ function MapGridCard(props) {
                 value={mapGridCardActiveTap}
                 index={1}
                 className={classes.tapsPanelsPadding}
+                // 
+                style ={{position:"absolute"}}
+                // 
               >
                 <div style={{ position: "relative" }}>
                   <TabPanels
@@ -779,6 +783,7 @@ function MapGridCard(props) {
                 value={mapGridCardActiveTap}
                 index={2}
                 className={classes.tapsPanelsPadding}
+                style ={{position:"absolute"}}
               >
                 <div style={{ position: "relative" }}>
                   {/* <TabLabels
