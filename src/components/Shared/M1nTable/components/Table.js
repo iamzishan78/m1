@@ -74,7 +74,7 @@ import Chip from '@material-ui/core/Chip';
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
 import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
-
+import RightDialog from "../../../ContactDetailCard/components/RightDialog"
 
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
@@ -2439,9 +2439,45 @@ function SubTable(props) {
             print: false,
           }}
         />
+		{
+			openDialog 
+			&& openDialog === "sendMailers" 
+			&& (<RightDialog
+				  open = {openDialog ? true : false}
+				  handleClickDialogClose = {handleCloseDialog}
+          width = {"700px"}
+				>
+    			  <SendMailersDialogContent
+                    onClose={handleCloseDialog}
+                    rows={expandedObject}
+                    setRows={setExpandedObject}
+                    setSelectedRow={setSelectedRow}
+                  />
+				</RightDialog>) 
+		}
 
-        {openDialog && openDialog !== "addDeals" && (
-          <Dialog
+		{
+			openDialog 
+			&& openDialog === "buyContactsInfo" 
+			&& (<RightDialog
+				  open = {openDialog ? true : false}
+				  handleClickDialogClose = {handleCloseDialog}
+				  width = {"700px"}
+				>
+    			    <BuyContactsInfoDialogContent
+                onClose={handleCloseDialog}
+                rows={expandedObject}
+                setRows={setExpandedObject}
+                setSelectedRow={setSelectedRow}
+              />
+				</RightDialog>) 
+		}
+
+        {openDialog 
+		&& openDialog !== "addDeals" 
+		&& openDialog !== "sendMailers"
+		&& openDialog !== "buyContactsInfo" 
+		&&(<Dialog
             className={classes.dialog}
             open={openDialog ? true : false}
             onClose={handleCloseDialog}
