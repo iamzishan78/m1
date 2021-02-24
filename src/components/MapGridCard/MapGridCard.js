@@ -277,18 +277,27 @@ const ownersColumnHeaders = [
     name: "OwnerName",
     label: "Name",
   },
-  // {
-  //   name: "State",
-  //   label: "State",
-  // },
-  // {
-  //   name: "City",
-  //   label: "City",
-  // },
   {
-    name: "FullAddress",
-    label: "Address",
+    name: "StreetAddress",
+    label: "Street Address",
   },
+  {
+    name: "City",
+    label: "City",
+  },
+  {
+    name: "State",
+    label: "State",
+  },
+  {
+    name: "Zip",
+    label: "Zip Code",
+  },
+
+  // {
+  //   name: "FullAddress",
+  //   label: "Address",
+  // },
 ];
 
 
