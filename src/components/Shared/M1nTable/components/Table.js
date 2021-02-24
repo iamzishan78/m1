@@ -2453,7 +2453,7 @@ function SubTable(props) {
 			&& (<RightDialog
 				  open = {openDialog ? true : false}
 				  handleClickDialogClose = {handleCloseDialog}
-				  width = {"450px"}
+          width = {"700px"}
 				>
     			  <SendMailersDialogContent
                     onClose={handleCloseDialog}
@@ -2470,7 +2470,7 @@ function SubTable(props) {
 			&& (<RightDialog
 				  open = {openDialog ? true : false}
 				  handleClickDialogClose = {handleCloseDialog}
-				  width = {"450px"}
+				  width = {"700px"}
 				>
     			    <BuyContactsInfoDialogContent
                 onClose={handleCloseDialog}
