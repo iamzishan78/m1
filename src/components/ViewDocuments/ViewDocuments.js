@@ -130,7 +130,6 @@ export default function ViewDocuments(props) {
   });
 
   useEffect(() => {
-    console.log("VIEW FILE RESULT", viewFileResult);
     if (viewFileResult?.viewFile?.uri) {
       let a = document.createElement("a");
       a.href = viewFileResult.viewFile.uri;
@@ -139,24 +138,6 @@ export default function ViewDocuments(props) {
       // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
       a.click();
     }
-    // if (viewFileResult) {
-    //   fetch(viewFileResult.viewFile.uri, {
-    //     headers: {
-    //       "Content-Type": "text/plain; charset=UTF-8",
-    //       "X-Ms-Blob-Type": "BlockBlob",
-    //       "X-Ms-Meta-Internalkey": viewFileResult.viewFile.internalKey,
-    //       "X-Ms-Version": "2015-02-21",
-    //     },
-    //     method: "GET",
-    //   })
-    //     .then((res) => res.json())
-    //     .then((res) => {
-    //       console.log("FILE RESPONSE: ", res);
-    //     })
-    //     .catch((e) => {
-    //       console.log("Could not view file", e);
-    //     });
-    // }
   }, [viewFileResult]);
 
   const handleViewFile = async (id) => {
@@ -175,7 +156,6 @@ export default function ViewDocuments(props) {
     if (files) {
       setAllDocuments(files?.getFileDescriptors);
     }
-    console.log("FILES:", files);
   }, [files]);
 
   useEffect(() => {
@@ -184,7 +164,6 @@ export default function ViewDocuments(props) {
       doc.fileName.toLowerCase().includes(documentSearch.toLowerCase())
     );
     setFilteredDocuments(filtered);
-    console.log("DOCS:", documentSearch, allDocuments);
   }, [documentSearch, allDocuments]);
 
   return (
@@ -212,7 +191,6 @@ export default function ViewDocuments(props) {
 
       <ul className={classes.documentsList}>
         {filteredDocuments.map((doc) => {
-          console.log("FILE", doc);
           return (
             <li className={classes.document} key={doc.fileUrl}>
               <div className={classes.documentLeft}>
@@ -226,7 +204,6 @@ export default function ViewDocuments(props) {
                 </div>
                 <div className={classes.fileText}>
                   <h4 className={classes.uploadTitle}>{doc.fileName}</h4>
-                  {/* <h5 className={classes.uploadSubtext}>{doc.userName}</h5> */}
                   <h5 className={classes.uploadSubtext}>
                     {moment.utc(doc.dateTime).format("MMM DD, YYYY")}
                   </h5>

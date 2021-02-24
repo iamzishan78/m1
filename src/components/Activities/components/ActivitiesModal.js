@@ -214,7 +214,6 @@ export default function ActivitiesModal({
 }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  console.log("SELECTED ACTIVITY", selectedActivity, stateApp);
 
   const [addNew, setAddNew] = useState(true);
   const [activityType, setActivityType] = useState("");
@@ -302,7 +301,6 @@ export default function ActivitiesModal({
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
 
   useEffect(() => {
-    console.log("AUTOCOMPLETE INPUT CHANGE: ", nameAutInputValue);
 
     //will also run during initial mount
     setIsNextPageLoading(true);
@@ -329,19 +327,6 @@ export default function ActivitiesModal({
     setIsNextPageLoading(false);
   }, [allContacts]);
 
-  // useEffect(() => {
-  //   console.log(
-  //     "SET CDATA stateApp.activityDialog 1",
-  //     addNew,
-  //     stateApp.activityDialog,
-  //     cData?.contact,
-  //     nameAutValue
-  //   );
-
-  //   setNameAutValue((prev) =>
-  //     !addNew ? { ...prev } : { name: "", id: 0, _id: 0 }
-  //   );
-  // }, [addNew]);
 
   useEffect(() => {
     const date = mergeDateAndTime(startDate, startTime);
@@ -349,7 +334,6 @@ export default function ActivitiesModal({
   }, [startDate, startTime]);
 
   useEffect(() => {
-    console.log("set cdata EVENT: SET ACTIVITY:", selectedActivity);
     if (selectedActivity) {
       setAddNew(false);
       setNotes(selectedActivity.notes);
@@ -373,11 +357,7 @@ export default function ActivitiesModal({
 
       setEndDate(moment.parseZone(selectedActivity.end).format("yyyy-MM-DD"));
       setEndTime(moment.parseZone(selectedActivity.end).format("HH:mm"));
-      console.log(
-        "SELECTED ACTIVITY",
-        getDateFromString(selectedActivity.end.toISOString()),
-        moment(selectedActivity.end).format("yyyy-MM-DD")
-      );
+
     } else {
       setAddNew(true);
       setNameAutValue({ name: "", _id: null });
@@ -410,11 +390,9 @@ export default function ActivitiesModal({
     }
   );
 
-  console.log("OPEN DEALS", openDeals);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
-      console.log("OPEN DEALS GET", stateApp.user);
       getOpenDeals();
     }
   }, [stateApp.user]);
@@ -424,36 +402,6 @@ export default function ActivitiesModal({
       setOpenDeals(dealsData?.openDeals?.deals);
     }
   }, [dealsData]);
-
-  // useEffect(() => {
-  //   let open = [];
-
-  //   if (!tloading && tdata?.transactionData) {
-  //     tdata.transactionData.forEach((pipeline) => {
-  //       const lanes = pipeline.allData?.lanes;
-
-  //       // get all deals
-  //       const all = [];
-  //       lanes.forEach((deal) => {
-  //         deal.cards.forEach((card) => {
-  //           all.push(card);
-  //         });
-  //       });
-
-  //       all.forEach((card) => {
-  //         if (card.dealState === "won") {
-  //           // do nothing
-  //         } else if (card.dealState === "lost") {
-  //           // do nothing
-  //         } else if (card.isDeleted) {
-  //           // do nothing
-  //         } else open.push(card);
-  //       });
-  //     });
-  //   }
-  //   console.log("ALL", open);
-  //   setOpenDeals(open);
-  // }, [tdata]);
 
   const onModalClose = () => {
     clearFields();
@@ -522,15 +470,6 @@ export default function ActivitiesModal({
       owner: ownerErr,
     });
 
-    console.log("ADD ERROR", {
-      activityType: activityTypeErr,
-      activityName: activityNameErr,
-      startDate: startDataErr,
-      startTime: startTimeErr,
-      endDate: endDateErr,
-      endTime: endTimeErr,
-      owner: ownerErr,
-    });
     return (
       activityNameErr ||
       activityTypeErr ||
@@ -969,7 +908,6 @@ export default function ActivitiesModal({
                     color="primary"
                     variant="contained"
                     onClick={() => {
-                      console.log("ADD", addNew);
                       if (addNew) addActivity();
                       else updateActivity();
                     }}

@@ -94,7 +94,6 @@ export default function AddUserData(props) {
     }
 
     if (fileName.endsWith(".geojson")) {
-      console.log("GEOJSON Feature Service Path");
       return await new Promise((resolve, reject) => {
         fetch(inputFile)
           .then((response) => response.json())
@@ -108,7 +107,6 @@ export default function AddUserData(props) {
         fetch(inputFile).then((response) => {
           response.arrayBuffer().then((buffer) => {
             shp(buffer).then((geojson) => {
-              console.log(geojson);
               resolve(geojson);
             });
           });
@@ -120,7 +118,6 @@ export default function AddUserData(props) {
   useEffect(() => {
     if (fileData && fileData.addFile) {
       if (fileData.addFile.success) {
-        console.log(fileData.addFile);
 
         // Upload file to MS Blob Stroage
 
@@ -145,7 +142,6 @@ export default function AddUserData(props) {
           })
             .then((response) => response.text())
             .then((response) => {
-              console.log(response);
               const idColor = random_rgb();
               let type = turf.getType(fileContent);
               let paintProps = {};
@@ -316,7 +312,6 @@ export default function AddUserData(props) {
   }, [stateApp.layers]);
 
   const handleApplyChanges = async () => {
-    console.log("Apply Changes");
     if (!layerName) {
       setErrorr(true);
     } else {
@@ -352,7 +347,6 @@ export default function AddUserData(props) {
     }));
 
     let fileContent = await handleFileAsync(url);
-    console.log("FILE CONTENT: ", fileContent);
     setInputFiles(fileContent);
     setStateApp((stateApp) => ({
       ...stateApp,

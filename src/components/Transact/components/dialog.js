@@ -88,7 +88,6 @@ export default function TransactDialog(props) {
   );
 
   useEffect(() => {
-    console.log("TDATAAAAAAAAA : ", tdata?.transactionData?.allData);
     if (tdata?.transactionData?.allData) {
       setTransactData(
         JSON.parse(JSON.stringify(tdata?.transactionData?.allData))
@@ -122,7 +121,6 @@ export default function TransactDialog(props) {
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
-      console.log(stateApp.user);
       getTransactionData({
         variables: {
           userId: stateApp.user.mongoId,
@@ -243,7 +241,6 @@ export default function TransactDialog(props) {
         // add new
 
         let td = { ...transactData };
-        console.log(td, transactData, stateApp.user.mongoId);
 
         td.lanes.forEach((lane) => {
           if (lane.id === newStage) {
@@ -369,7 +366,6 @@ export default function TransactDialog(props) {
             id="demo-simple-select-outlined"
             value={stage}
             onChange={(e) => {
-              console.log("Stage: ", e.target.value);
               setStage(e.target.value);
             }}
             fullWidth

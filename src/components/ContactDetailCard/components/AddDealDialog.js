@@ -370,7 +370,6 @@ function AddDealDialog(props) {
   }, []);
 
   useEffect(() => {
-    console.log("ALL CONTACTS: ", allContacts);
     if (allContacts?.paginatedContacts) {
       setMongoEntitiesArray(
         allContacts?.paginatedContacts?.edges?.map((el) => el.node)
@@ -381,10 +380,7 @@ function AddDealDialog(props) {
   }, [allContacts]);
 
   useEffect(() => {
-    console.log("AUTOCOMPLETE INPUT CHANGE: ", nameAutInputValue);
-
     if (props.isTransactPage) {
-      //will also run during initial mount
       setIsNextPageLoading(true);
       getPaginatedContacts({
         variables: {
@@ -400,7 +396,6 @@ function AddDealDialog(props) {
   };
 
   useEffect(() => {
-    console.log("CDATA", cData);
     if (cData?.contact) {
       setNameAutValue(
         cData?.contact
@@ -411,7 +406,6 @@ function AddDealDialog(props) {
   }, [cData]);
 
   useEffect(() => {
-    console.log("CONTACT", nameAutValue);
     if (nameAutValue?.name) {
       setContact(nameAutValue);
     }
@@ -458,7 +452,6 @@ function AddDealDialog(props) {
   }, [props.contactId]);
 
   useEffect(() => {
-    console.log("ACTIVE DEAL: ", stateApp.activeDeal);
     const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
     const laneId = stateApp.activeDeal?.laneId;
 
@@ -741,7 +734,6 @@ function AddDealDialog(props) {
                 );
             })
             .catch((reason) => {
-              console.log(reason);
             });
       } else {
         //// add a new deal
@@ -1092,7 +1084,6 @@ function AddDealDialog(props) {
                 placeholder=""
                 fullWidth
                 onChange={(e) => {
-                  console.log("DATE", e.target.value);
                   setCloseDate(e.target.value);
                 }}
               />
@@ -1145,8 +1136,6 @@ function AddDealDialog(props) {
                 native
                 value={stageId}
                 onChange={(e) => {
-                  console.log("Stage: ", e.target.value);
-                  // setStageId(e.target.value);
                   settingNewStageAndFindNextAvailablePosition(
                     e.target.value,
                     true

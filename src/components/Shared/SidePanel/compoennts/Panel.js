@@ -163,7 +163,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	}, [type]);
 
 	useEffect(() => {
-		console.log("type and layer", type, items);
 		if ((type === "layer" || type === "heatMaps") && items) {
 			setLayerMap(items);
 		} else if (type === "base" && items) {
@@ -480,16 +479,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		);
 	};
 
-	//   const WithBox = ({ children, layer, ...defaultProps }) => {
-	//     console.log("Children default props", children, defaultProps);
-	//     return type === "layer " ? (
-	//       <Box borderColor={getLayerColor(layer)} {...defaultProps}>
-	//         {children}
-	//       </Box>
-	//     ) : (
-	//       { children }
-	//     );
-	//   };
 
 	const getLayerControls = (layer, labelId, index) => {
 		const control1 = layer.layerSettings.colorable && (

@@ -10,13 +10,14 @@ export const WELLSQUERY = gql`
         id
         wellName
         api
+        state
+        county
         operator
         wellType
         latitude
         longitude
         wellBoreProfile
         ownerCount
-
         wellStatus
         lastTwelveMonthBOE
         permitApprovedDate

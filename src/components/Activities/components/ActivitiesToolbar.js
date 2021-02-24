@@ -127,8 +127,6 @@ const ActivitiesToolbar = ({
     toolbar.onView(view);
   };
 
-  console.log(toolbar);
-
   return (
     <div className={classes.root}>
       <div className={classes.left}>

@@ -143,7 +143,6 @@ const mergeDateAndTime = (d, t) => {
 };
 
 function AddActivityDialog(props) {
-  console.log("ACTIVITY", props);
   const classes = useStyles();
   const { selectedActivity, onClose, contactData } = props;
   const [stateApp] = useContext(AppContext);
@@ -230,7 +229,6 @@ function AddActivityDialog(props) {
 
   useEffect(() => {
     if (selectedActivity) {
-      console.log("SELECTED ACTIVITY", selectedActivity);
       setAddNew(false);
       setNotes(selectedActivity.notes);
       setOwner({
@@ -633,7 +631,6 @@ function AddActivityDialog(props) {
           color="primary"
           variant="contained"
           onClick={() => {
-            console.log("ADD", addNew);
             if (addNew) addActivity();
             else updateActivity();
           }}

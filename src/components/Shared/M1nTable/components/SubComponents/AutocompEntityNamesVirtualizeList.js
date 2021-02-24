@@ -13,10 +13,11 @@ import { Typography } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
 import debounce from "lodash/debounce";
 
+// import value formatters 
+import capitalizeFirstLetter from "../../../../Shared/valueformatters/capitalize-first-letter.js";
+
 const filter = createFilterOptions();
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
+
 const joinAddress = (row) => {
   let rowData = {
     address1: row.address1,
@@ -96,8 +97,6 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
     }
 
     if (!data[index]) {
-      // eslint-disable-next-line
-      console.log("isLoaded but no data", { data, index });
       return null;
     }
 
@@ -196,7 +195,6 @@ export default function AutocompEntityNamesVirtualizeList(props) {
     if (isNextPageLoading || !hasNextPage) {
       return () => {};
     } else {
-      console.log(mongoEntitiesArray[startIndex - 1]);
       return loadNextPage({
         variables: {
           pagination: {
@@ -221,7 +219,6 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   const onInputChange = React.useMemo(
     () =>
       debounce((event, value, reason) => {
-        console.log("here");
         setNameAutInputValue(value);
       }, 500),
     []

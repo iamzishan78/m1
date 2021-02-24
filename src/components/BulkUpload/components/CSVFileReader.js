@@ -209,7 +209,6 @@ export default function CSVFileReader(props) {
       let matchedKeys = [ ...stateApp.m1neralHeaders ]
       for (let index in uniqueKeys) {
         const matchedKey = matchedKeys.find(el => el?.label === uniqueKeys[index])
-        console.log('matchedKey: ', matchedKey);
 
         uniqueKeys[index] = {
           mapped_key: uniqueKeys[index],
@@ -229,13 +228,11 @@ export default function CSVFileReader(props) {
 
   let handleOnError = (err, file, inputElem, reason) => {
     if (!unmounted.current) {
-      console.log(err);
     }
   };
 
   let handleOnRemoveFile = (data) => {
     if (!unmounted.current) {
-      console.log(data);
     }
   };
 
@@ -281,10 +278,10 @@ export default function CSVFileReader(props) {
           <Link
             to="/downloadables/Sample_Contacts_Upload.csv"
             target="_blank"
-            download
+            download = "Sample_Contacts_Upload.csv"
             style={linkContent}
           >
-            Download sample CSV template and then upload with your information
+            Click this link to download sample CSV template
           </Link>
         </div>
 

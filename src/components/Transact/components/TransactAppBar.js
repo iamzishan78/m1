@@ -8,6 +8,8 @@ import CheckBox from "@material-ui/icons/CheckBox";
 import { makeStyles } from "@material-ui/core/styles";
 import Pipelines from "./Pipelines";
 import { useSelector } from "react-redux";
+import vf_currency from "../../Shared/valueformatters/vf_currency.js";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -146,10 +148,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-let formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
 
 const sumDeals = (lanes, status) => {
   let sumAmount = 0;
@@ -165,15 +163,10 @@ const sumDeals = (lanes, status) => {
       }
     });
   });
-  const formatted = formatter.format(sumAmount);
-  return { count: sumCount, amount: formatted.slice(0, formatted.length - 3) };
+  return { count: sumCount, amount: vf_currency(sumAmount) };
 };
 
 const TransactAppBar = ({
-  // wonLength,
-  // wonSum,
-  // openLength,
-  // openSum,
   dealFilter,
   setDealFilter,
 }) => {
@@ -185,7 +178,6 @@ const TransactAppBar = ({
 
   useEffect(() => {
     if (pipeToShow?.lanes) {
-      console.log(pipeToShow.lanes)
       setOpenDeals(sumDeals(pipeToShow.lanes, "open"));
       setWonDeals(sumDeals(pipeToShow.lanes, "won"));
       setLostDeals(sumDeals(pipeToShow.lanes, "lost"));

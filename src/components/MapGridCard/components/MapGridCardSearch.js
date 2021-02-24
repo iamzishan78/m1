@@ -16,6 +16,12 @@ import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHis
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { setMapGridCardState } from "../../../actions";
 
+
+// import value formatters 
+import capitalizeFirstLetter from "../../Shared/valueformatters/capitalize-first-letter.js";
+
+
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -34,9 +40,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
 
 const joinAddress = (row) => {
   let rowData = {
@@ -72,6 +75,8 @@ function MapGridCardSearch(props) {
   const [options, setOptions] = React.useState([]);
   const [searchTop] = React.useState(100);
 
+
+
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, callback) => {
@@ -104,6 +109,8 @@ function MapGridCardSearch(props) {
             console.log(error);
           });
       }, 500),
+
+
     []
   );
 
@@ -264,8 +271,6 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-
-                console.log(indexSource);
                 newOptions = [...results.value];
               }
 
@@ -284,7 +289,6 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
                 newOptions = [
                   ...results.value.map((result) => {
                     return {
@@ -311,7 +315,6 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
                 newOptions = [...results.value];
               }
 
@@ -330,7 +333,6 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
                 newOptions = [
                   ...results.value.map((result) => {
                     return {
@@ -400,6 +402,8 @@ function MapGridCardSearch(props) {
     props.searchOption,
   ]);
 
+ 
+
   return (
     <form
       className={`cancelDraggableEffect ${classes.root}`}
@@ -436,6 +440,10 @@ function MapGridCardSearch(props) {
                 searchInputValue: event.target.value,
               })
             );
+            setStateApp((state) => ({
+              ...state,
+              gridSearchTarget: event.target.value,
+            }));
           // }
         }}
       />
@@ -444,7 +452,6 @@ function MapGridCardSearch(props) {
 }
 
 function areEqual(prevProps, nextProps) {
-  console.log(`${prevProps.searchOption} ... ${nextProps.searchOption}`)
   return Object.is(prevProps.searchOption, nextProps.searchOption);
 }
 

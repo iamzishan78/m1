@@ -18,6 +18,10 @@ import Switch from "@material-ui/core/Switch";
 import ClearIcon from "@material-ui/icons/Clear";
 import "./Tagger.css";
 
+// import value formatters 
+import capitalizeFirstLetter from "../Shared/valueformatters/capitalize-first-letter.js";
+
+
 const AntSwitch = withStyles((theme) => ({
   root: {
     width: 28,
@@ -206,7 +210,7 @@ export default function Tags(props) {
         if (
           element.taggedOn.length === props.multipleIds.length &&
           element.public.filter((v) => v === publicTag).length ===
-            props.multipleIds.length
+          props.multipleIds.length
         ) {
           tags.push({
             ...element,
@@ -271,9 +275,7 @@ export default function Tags(props) {
 
   ///////////////////// INSERTING NEW TAG ///////////////////////////////////////////////
 
-  const capitalizeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  };
+
 
   const UpperAndCleanTagText = (tagText) => {
     return tagText
@@ -464,9 +466,8 @@ export default function Tags(props) {
           </h3>
         )}
         <FormControlLabel
-          className={`${classes.switchButtom} ${
-            props.publicLeftBottom ? classes.publicLeftBottom : ""
-          } ${!publicTag ? classes.switchTextDeselected : ""}`}
+          className={`${classes.switchButtom} ${props.publicLeftBottom ? classes.publicLeftBottom : ""
+            } ${!publicTag ? classes.switchTextDeselected : ""}`}
           control={
             <React.Fragment>
               {props.publicLeftBottom && <h4 className="h4Before">Tags</h4>}
@@ -559,8 +560,8 @@ export default function Tags(props) {
           )} */}
         </Grid>
       ) : (
-        <CircularProgress color="secondary"></CircularProgress>
-      )}
+          <CircularProgress color="secondary"></CircularProgress>
+        )}
     </div>
   );
 }

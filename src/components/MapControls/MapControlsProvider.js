@@ -3,7 +3,7 @@ import { MapControlsContextProvider } from "./MapControlsContext";
 
 import MapControls from "./MapControls";
 
-export default function MapControlsProvider(props) {
+function MapControlsProvider(props) {
   const { changeBaseMap, changeLayers, changeHeatmaps } = props;
 
   return (
@@ -16,3 +16,5 @@ export default function MapControlsProvider(props) {
     </MapControlsContextProvider>
   );
 }
+
+export default React.memo(MapControlsProvider);

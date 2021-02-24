@@ -15,6 +15,9 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormLabel from "@material-ui/core/FormLabel";
 
+// import value formatters 
+import capitalizeFirstLetter from "../../../../Shared/valueformatters/capitalize-first-letter.js";
+
 const styles = (theme) => ({
   root: {
     margin: 0,
@@ -47,9 +50,6 @@ const DialogTitle = withStyles(styles)((props) => {
   );
 });
 
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
 
 const joinAddress = (row) => {
   let rowData =
