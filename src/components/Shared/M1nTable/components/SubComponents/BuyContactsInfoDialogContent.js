@@ -16,7 +16,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import { GETPERSONDATA } from "../../../../../graphQL/useQueryGetPersonData";
 import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import Close from "@material-ui/icons/Close";
 
 // import value formatters 
 import capitalizeFirstLetter from "../../../../Shared/valueformatters/capitalize-first-letter.js";
@@ -38,7 +38,7 @@ const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, updateMelissaTable, ...other } = props;
   return (
     <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
+      <Typography variant="h4" style = {{fontWeight: "bold"}}>{children}</Typography>
       {onClose ? (
         <IconButton
           aria-label="close"
@@ -156,11 +156,11 @@ export default function BuyContactsInfoDialogContent(props) {
 
   return (
     <React.Fragment>
-      <DialogTitle className={modalClass.title} id="customized-dialog-title">
+      <DialogTitle style={{backgroundColor: "#fff"}} id="customized-dialog-title">
         Contact Info Purchase
-        <HighlightOffIcon
+        <Close
           fontSize="large"
-          className={modalClass.titleClose}
+          className = {modalClass.closeIcon}
           onClick={props.onClose}
         />
       </DialogTitle>
@@ -180,7 +180,7 @@ export default function BuyContactsInfoDialogContent(props) {
               {currentCredits && currentCredits > 1 ? "s" : ""}
             </FormLabel>
           </Grid> */}
-          <Grid item xs={12} style={{ marginTop: "15px" }}>
+          <Grid item xs={12} style={{ marginTop: "50px" }}>
             <h3 style={{ margin: "0" }}>Contact information to purchase</h3>
           </Grid>
           <Grid item xs={12} style={{ margin: 0, paddingTop: 0 }}>
