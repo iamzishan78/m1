@@ -40,7 +40,8 @@ import { deepEqualObjects, deepEqual, setStateIfDeepEqual } from "../../Shared/f
 import ClearIcon from "@material-ui/icons/Clear";
 
 
-const leaseIndexName = 'lease-index-v2'
+const leaseIndexName = 'lease-index-v2';
+const operatorIndexName = 'operator-index';
 
 const maxMinScore = (options) => {
   let max = 0;
@@ -344,7 +345,7 @@ function Search() {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2020-06-30&queryType=full&ount=true&searchFields=Operator&top=" +
+          "https://m1search.search.windows.net/indexes/"+operatorIndexName+"/docs?api-version=2020-06-30&queryType=full&ount=true&searchFields=Operator&top=" +
           top +
           "&search=" +
           encodeURIComponent(
@@ -361,7 +362,7 @@ function Search() {
         };
 
         console.log(
-          "request made to operator-index search at: " + new Date().toString()
+          "request made to operator search at: " + new Date().toString()
         );
 
         fetch(endpoint, options)
@@ -1065,7 +1066,7 @@ function Search() {
       //// if operator
       if (
         newValue &&
-        newValue.Source === "operator-index" &&
+        newValue.Source === "operatorIndexName" &&
         newValue.Operator
       ) {
         getOperatorWells({
@@ -1191,7 +1192,7 @@ function Search() {
         groupBy={(option) => {
           if (option.Source === "globalowner-index") return "Owners";
           if (option.Source === "wellheader-index-en-ms") return "Wells";
-          if (option.Source === "operator-index") return "Operators";
+          if (option.Source === operatorIndexName) return "Operators";
           if (option.Source === leaseIndexName) return "Leases";
           // if (option.Source === "contacts-index") return "Contacts";
           if (option.Source === "mapboxSearch") return "Locations";
@@ -1553,7 +1554,7 @@ function Search() {
                                     ? "owners"
                                     : option.Source === "wellheader-index-en-ms"
                                     ? "wells"
-                                    : option.Source === "operator-index"
+                                    : option.Source === operatorIndexName
                                     ? "operators"
                                     : option.Source === leaseIndexName
                                     ? "leases"
@@ -1588,7 +1589,7 @@ function Search() {
                                       //will need to change this to something different 
                                       <PersonIcon className={classes.icon} />
                                     )} */}
-                                    {option.Source === "operator-index" && (
+                                    {option.Source === operatorIndexName && (
                                       <OperatorIcon
                                         className={classes.icon}
                                         color={"#757575"}
@@ -1687,7 +1688,7 @@ function Search() {
                   {option.Source === "globalowner-index" && (
                     <PersonIcon className={classes.icon} />
                   )}
-                  {option.Source === "operator-index" && (
+                  {option.Source === operatorIndexName && (
                     <OperatorIcon className={classes.icon} color={"#757575"} />
                   )}
                   {option.Source === "wellheader-index-en-ms" && (
@@ -1699,7 +1700,10 @@ function Search() {
                     />
                   )}
                   {option.Source === leaseIndexName && (
-                    <LeaseIcon className={classes.icon} color={"#757575"} />
+                    <div>
+                      {console.log('icon should show')}
+                    <WellIcon className={classes.icon} color={"#757575"} />
+                    </div>
                   )}
                   {/* {option.Source === "contacts-index" && (
                     //will need to change this to something different
@@ -1746,7 +1750,7 @@ function Search() {
                           ? maxMinOwnersScore
                           : option.Source === "wellheader-index-en-ms"
                           ? maxMinWellsScore
-                          : option.Source === "operator-index"
+                          : option.Source === operatorIndexName
                           ? maxMinOperatosScore
                           : option.Source === leaseIndexName
                           ? maxMinLeasesScore
