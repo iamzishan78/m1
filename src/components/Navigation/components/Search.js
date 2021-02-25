@@ -42,6 +42,9 @@ import ClearIcon from "@material-ui/icons/Clear";
 
 const leaseIndexName = 'lease-index-v2';
 const operatorIndexName = 'operator-index';
+const wellCogIndexName = "wellheader-index-en-ms";
+const ownerCogIndexName = "globalowner-index";
+
 
 const maxMinScore = (options) => {
   let max = 0;
@@ -1033,7 +1036,7 @@ function Search() {
       //// if well, with lat long
       if (
         newValue &&
-        newValue.Source === "wellheader-index-en-ms" &&
+        newValue.Source === wellCogIndexName &&
         newValue.Longitude &&
         newValue.Latitude
       ) {
@@ -1055,7 +1058,7 @@ function Search() {
       }
 
       //// if owner
-      if (newValue && newValue.Source === "globalowner-index" && newValue.Id) {
+      if (newValue && newValue.Source === ownerCogIndexName && newValue.Id) {
         getOwnerWells({
           variables: {
             ownerId: newValue.Id,
@@ -1190,8 +1193,8 @@ function Search() {
         filterOptions={(x) => x}
         options={optionsWithHeader}
         groupBy={(option) => {
-          if (option.Source === "globalowner-index") return "Owners";
-          if (option.Source === "wellheader-index-en-ms") return "Wells";
+          if (option.Source === ownerCogIndexName) return "Owners";
+          if (option.Source === wellCogIndexName) return "Wells";
           if (option.Source === operatorIndexName) return "Operators";
           if (option.Source === leaseIndexName) return "Leases";
           // if (option.Source === "contacts-index") return "Contacts";
@@ -1550,9 +1553,9 @@ function Search() {
                               onClick={() => {
                                 setSearchTop(5);
                                 setSearchOption(
-                                  option.Source === "globalowner-index"
+                                  option.Source === ownerCogIndexName
                                     ? "owners"
-                                    : option.Source === "wellheader-index-en-ms"
+                                    : option.Source === wellCogIndexName
                                     ? "wells"
                                     : option.Source === operatorIndexName
                                     ? "operators"
@@ -1582,7 +1585,7 @@ function Search() {
                               <Grid container spacing={0}>
                                 <Grid container item xs={9} alignItems="center">
                                   <Grid item>
-                                    {option.Source === "globalowner-index" && (
+                                    {option.Source === ownerCogIndexName && (
                                       <PersonIcon className={classes.icon} />
                                     )}
                                     {/* {option.Source === "contacts-index" && (
@@ -1596,7 +1599,7 @@ function Search() {
                                       />
                                     )}
                                     {option.Source ===
-                                      "wellheader-index-en-ms" && (
+                                      wellCogIndexName && (
                                       <WellIcon
                                         className={classes.icon}
                                         color={"#757575"}
@@ -1685,13 +1688,13 @@ function Search() {
             <Grid container spacing={0}>
               <Grid container item xs={11} alignItems="center">
                 <Grid item>
-                  {option.Source === "globalowner-index" && (
+                  {option.Source === ownerCogIndexName && (
                     <PersonIcon className={classes.icon} />
                   )}
                   {option.Source === operatorIndexName && (
                     <OperatorIcon className={classes.icon} color={"#757575"} />
                   )}
-                  {option.Source === "wellheader-index-en-ms" && (
+                  {option.Source === wellCogIndexName && (
                     <WellIcon
                       className={classes.icon}
                       color={"#757575"}
@@ -1746,9 +1749,9 @@ function Search() {
                       backgroundImage:
                         "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
                       opacity: calcScoreOpacity(
-                        option.Source === "globalowner-index"
+                        option.Source === ownerCogIndexName
                           ? maxMinOwnersScore
-                          : option.Source === "wellheader-index-en-ms"
+                          : option.Source === wellCogIndexName
                           ? maxMinWellsScore
                           : option.Source === operatorIndexName
                           ? maxMinOperatosScore
