@@ -29,6 +29,16 @@ const Modals = makeStyles((theme) => ({
         border: 1,
         borderRadius: 7
       },
+      inputContainerFlex:{
+        display: 'flex',
+        backgroundColor: '#f0fbff',
+        margin: '5px',
+        padding: '0px',
+        border: 1,
+        borderRadius: 7,
+        alignItems: 'center',
+        justifyContent: 'space-between'
+      },
       greyedInputContainer: {
         backgroundColor: '#f3f3f3',
         margin: '5px',
@@ -38,6 +48,11 @@ const Modals = makeStyles((theme) => ({
       inputContent: {
         float: "right",
         padding: '1%',
+        fontSize: '15px'
+      },
+      inputLabelFlex:{
+        float: "left",
+        padding: '1.5%',
         fontSize: '15px'
       },
       inputLabel: {
