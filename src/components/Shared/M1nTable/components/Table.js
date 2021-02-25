@@ -219,6 +219,18 @@ const useStyles = makeStyles((theme) => ({
     left: "223px",
     position: "absolute",
     top: "19px"
+  },
+  clickableCell:{
+    cursor: "pointer",
+    padding: "10px 30px 10px 10px",
+    position: "relative",
+    minWidth: "100px",
+    borderRadius: "7px",
+    color: "#17aadd",
+    "&:hover": {
+      textDecoration: "underline",
+    },
+    fontWeight: "bold"
   }
 }));
 
@@ -1552,22 +1564,47 @@ function SubTable(props) {
                             round
                           />
                         )}
-                      <CellContentEdition
-                        id={tableMeta.rowData[0]}
-                        content={{ [column.name]: valueFormatter(value) }}
-                        targetLabel={props.targetLabel}
-                        dropDownOptions={
-                          column.dropDownOptions ? column.dropDownOptions : null
-                        }
-                        entityId={
-                          props.targetLabel === "Parcel Interest" ||
-                            props.targetLabel === "Parcel Ownershipship" ||
-                            props.targetLabel === "contact"
-                            ? tableMeta.rowData[1]
-                            : null
-                        }
-                        nonEditable={!column.editable}
-                      />
+                     {props.targetLabel === "contact" &&
+                        column.name !== "name" && (
+                          <CellContentEdition
+                          id={tableMeta.rowData[0]}
+                          content={{ [column.name]: valueFormatter(value) }}
+                          targetLabel={props.targetLabel}
+                          dropDownOptions={
+                            column.dropDownOptions ? column.dropDownOptions : null
+                          }
+                          entityId={
+                            props.targetLabel === "Parcel Interest" ||
+                              props.targetLabel === "Parcel Ownershipship" ||
+                              props.targetLabel === "contact"
+                              ? tableMeta.rowData[1]
+                              : null
+                          }
+                          nonEditable={!column.editable}
+                        />
+                        )}
+                       {props.targetLabel === "contact" &&
+                        column.name === "name" && (
+                          <p  className ={classes.clickableCell}
+                            onClick = {() => {
+                              setStateApp((stateApp) => ({
+                                ...stateApp,
+                                selectedContact: tableMeta.rowData[0],
+                              }));
+                      
+                              setSubComponent(
+                                <ContactDetailCard
+                                  selectRowOpenContact={selectRowOpenContact}
+                                  handleCloseExpandableCard={handleCloseExpandableCard}
+                                />
+                              );
+                              setTitle("Contact Details");
+                              setSubTitle(" ");
+                              handleOpenExpandableCard();
+                            }}
+                          >{value}</p>
+                        )}
+                  
                       {props.targetLabel === "contact" &&
                         column.name === "name" &&
                         tableMeta.rowData[
@@ -2011,22 +2048,22 @@ function SubTable(props) {
         }
       }
 
-      if (props.targetLabel === "contact") {
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          selectedContact: rows[dataIndex]._id,
-        }));
+      // if (props.targetLabel === "contact") {
+      //   setStateApp((stateApp) => ({
+      //     ...stateApp,
+      //     selectedContact: rows[dataIndex]._id,
+      //   }));
 
-        setSubComponent(
-          <ContactDetailCard
-            selectRowOpenContact={selectRowOpenContact}
-            handleCloseExpandableCard={handleCloseExpandableCard}
-          />
-        );
-        setTitle("Contact Details");
-        setSubTitle(" ");
-        handleOpenExpandableCard();
-      }
+      //   setSubComponent(
+      //     <ContactDetailCard
+      //       selectRowOpenContact={selectRowOpenContact}
+      //       handleCloseExpandableCard={handleCloseExpandableCard}
+      //     />
+      //   );
+      //   setTitle("Contact Details");
+      //   setSubTitle(" ");
+      //   handleOpenExpandableCard();
+      // }
     },
     onChangePage: (pageState) => {
       setPageInd(pageState);
