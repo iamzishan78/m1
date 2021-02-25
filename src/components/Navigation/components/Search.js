@@ -562,7 +562,6 @@ function Search() {
                       results["@odata.context"].indexOf("')")
                     );
 
-                    console.log(indexSource);
                     newOptions = [
                       ...results.value.map((result) => {
                         result.Score = result["@search.score"];
@@ -595,7 +594,6 @@ function Search() {
                       results["@odata.context"].indexOf("('") + 2,
                       results["@odata.context"].indexOf("')")
                     );
-                    console.log(indexSource);
                     newOptions = [
                       ...results.value.map((result) => {
                         result.Score = result["@search.score"];
@@ -628,7 +626,6 @@ function Search() {
                       results["@odata.context"].indexOf("('") + 2,
                       results["@odata.context"].indexOf("')")
                     );
-                    console.log(indexSource);
                     newOptions = [
                       ...results.value.map((result) => {
                         result.Score = result["@search.score"];
@@ -661,7 +658,6 @@ function Search() {
                       results["@odata.context"].indexOf("('") + 2,
                       results["@odata.context"].indexOf("')")
                     );
-                    console.log(indexSource);
                     newOptions = [
                       ...results.value.map((result) => {
                         result.Score = result["@search.score"];
@@ -688,7 +684,6 @@ function Search() {
                       }),
                       ...newOptions,
                     ];
-                    console.log('newoptions,', newOptions)
                     setMaxMinLeasesScore(maxMinScore(results.value));
                   }
 
@@ -762,10 +757,7 @@ function Search() {
   useEffect(() => {
     if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray) {
       if (dataOwnerWells.ownerLatsLonsArray.length !== 0) {
-        console.log(
-          "wells data from search",
-          dataOwnerWells.ownerLatsLonsArray
-        );
+
 
         setStateApp((stateApp) =>
           dataOwnerWells.ownerLatsLonsArray.length === 1
@@ -789,7 +781,6 @@ function Search() {
 
         stateApp.toggleLayersActivity("Search", true);
       } else {
-        console.log("Not wells found for the owner");
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -806,7 +797,6 @@ function Search() {
       dataWells.wells.results &&
       dataWells.wells.results.length !== 0
     ) {
-      console.log("wells data from search", dataWells.wells.results);
 
       setStateApp((stateApp) =>
         dataWells.wells.results.length === 1
@@ -835,10 +825,6 @@ function Search() {
   useEffect(() => {
     if (dataOperatorWells && dataOperatorWells.operatorLatsLonsArray) {
       if (dataOperatorWells.operatorLatsLonsArray.length !== 0) {
-        console.log(
-          "wells data from search",
-          dataOperatorWells.operatorLatsLonsArray
-        );
 
         setStateApp((stateApp) =>
           dataOperatorWells.operatorLatsLonsArray.length === 1
@@ -865,7 +851,6 @@ function Search() {
         );
         stateApp.toggleLayersActivity("Search", true);
       } else {
-        console.log("Not wells found for the operator");
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -879,10 +864,7 @@ function Search() {
   useEffect(() => {
     if (dataLeaseWells && dataLeaseWells.leaseLatsLonsArray) {
       if (dataLeaseWells.leaseLatsLonsArray.length !== 0) {
-        console.log(
-          "wells data from search",
-          dataLeaseWells.leaseLatsLonsArray
-        );
+
 
         setStateApp((stateApp) =>
           dataLeaseWells.leaseLatsLonsArray.length === 1
@@ -905,7 +887,6 @@ function Search() {
         );
         stateApp.toggleLayersActivity("Search", true);
       } else {
-        console.log("Not wells found for the lease");
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -980,7 +961,6 @@ function Search() {
   ///////////////////////////////////////
 
   const handleChange = (newValue) => {
-    console.log("search Selected", newValue);
     if (
       !value ||
       (newValue &&
@@ -1185,7 +1165,6 @@ function Search() {
 
   return (
     <div className={classes.root}>
-      {console.log('start autocomplete search')}
       <Autocomplete
         id="cognitive-search-autocomplete"
         getOptionLabel={(option, value) => option.Primary}
@@ -1216,7 +1195,6 @@ function Search() {
 
           return option.group === "header" ? (
             <div>
-            {console.log('header grid activated', searchOption)}
             <Grid
               key={option.group}
               container
@@ -1454,7 +1432,6 @@ function Search() {
         renderInput={(params) => (
 
           <div>
-            {console.log('grid activated', params)}
           <TextField
             {...params}
             variant="outlined"
@@ -1545,7 +1522,6 @@ function Search() {
                           /// THIS IS THEI LIST FOR THE SEARCH HISTORY 
                           return (
                             <div>
-                              {console.log('search history grid', option)}
                             <Box
                               p={1}
                               key={i}
@@ -1679,7 +1655,6 @@ function Search() {
           </div>
         )}
         renderOption={(option) => {
-          console.log('grid render option', option)
           if (option.Source === "header" || option.group === "loader")
             return null;
           const parts = parse(option.Primary, Array());
@@ -1704,7 +1679,6 @@ function Search() {
                   )}
                   {option.Source === leaseIndexName && (
                     <div>
-                      {console.log('icon should show')}
                     <WellIcon className={classes.icon} color={"#757575"} />
                     </div>
                   )}
