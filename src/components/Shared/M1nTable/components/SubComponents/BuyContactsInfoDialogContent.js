@@ -191,8 +191,8 @@ export default function BuyContactsInfoDialogContent(props) {
           </Grid>
           {props.rows &&
             props.rows.map((row, index) => (
-              <Grid item xs={12} className={modalClass.inputContainerFlex}>
-                <FormLabel className={modalClass.inputLabelFlex}>
+              <Grid item xs={12} className={modalClass.inputContainer}>
+                <FormLabel className={modalClass.inputLabel}>
                   {row.name}
                 </FormLabel>
                 <FormLabel className={modalClass.inputContent}>
