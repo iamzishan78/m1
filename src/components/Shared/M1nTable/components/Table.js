@@ -1572,6 +1572,25 @@ function SubTable(props) {
                             round
                           />
                         )}
+                      {props.targetLabel !== "contact" &&
+                     (
+                          <CellContentEdition
+                          id={tableMeta.rowData[0]}
+                          content={{ [column.name]: valueFormatter(value) }}
+                          targetLabel={props.targetLabel}
+                          dropDownOptions={
+                            column.dropDownOptions ? column.dropDownOptions : null
+                          }
+                          entityId={
+                            props.targetLabel === "Parcel Interest" ||
+                              props.targetLabel === "Parcel Ownershipship" ||
+                              props.targetLabel === "contact"
+                              ? tableMeta.rowData[1]
+                              : null
+                          }
+                          nonEditable={!column.editable}
+                        />
+                        )}
                      {props.targetLabel === "contact" &&
                         column.name !== "name" && (
                           <CellContentEdition
