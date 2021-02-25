@@ -174,7 +174,7 @@ export default function SendMailersDialogContent(props) {
 					</Grid>
 					{props.rows &&
 						props.rows.map((row, index) => (
-							<Grid item xs={12} className={modalClass.inputContaineFlex}>
+							<Grid item xs={12} className={modalClass.inputContainerFlex}>
 								<FormLabel className={modalClass.inputLabelFlex}>
 									{row.name} 	{joinAddress(row)}
 								</FormLabel>
