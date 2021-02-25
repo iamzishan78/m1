@@ -40,7 +40,7 @@ import { deepEqualObjects, deepEqual, setStateIfDeepEqual } from "../../Shared/f
 import ClearIcon from "@material-ui/icons/Clear";
 
 
-
+const leaseIndexName = 'lease-index-v2'
 
 const maxMinScore = (options) => {
   let max = 0;
@@ -381,7 +381,7 @@ function Search() {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/lease-index-v2/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
+          "https://m1search.search.windows.net/indexes/"+leaseIndexName+"/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
           top +
           "&search=" +
           encodeURIComponent(
@@ -398,7 +398,7 @@ function Search() {
         };
 
         console.log(
-          "request made to lease-index-v2 search at: " + new Date().toString()
+          "request made to lease search at: " + new Date().toString()
         );
 
         fetch(endpoint, options)
@@ -1078,7 +1078,7 @@ function Search() {
       //// if lease
       if (
         newValue &&
-        newValue.Source === "lease-index-v2" &&
+        newValue.Source === leaseIndexName &&
         ((newValue.Lease && newValue.Lease !== "") ||
           (newValue.LeaseId && newValue.LeaseId !== ""))
       ) {
@@ -1192,7 +1192,7 @@ function Search() {
           if (option.Source === "globalowner-index") return "Owners";
           if (option.Source === "wellheader-index-en-ms") return "Wells";
           if (option.Source === "operator-index") return "Operators";
-          if (option.Source === "lease-index-v2") return "Leases";
+          if (option.Source === leaseIndexName) return "Leases";
           // if (option.Source === "contacts-index") return "Contacts";
           if (option.Source === "mapboxSearch") return "Locations";
           if (option.Source === "loader") return "loader";
@@ -1555,7 +1555,7 @@ function Search() {
                                     ? "wells"
                                     : option.Source === "operator-index"
                                     ? "operators"
-                                    : option.Source === "lease-index-v2"
+                                    : option.Source === leaseIndexName
                                     ? "leases"
                                     // : option.Source === "contacts-index"
                                     // ? "contacts"
@@ -1603,7 +1603,7 @@ function Search() {
                                         small
                                       />
                                     )}
-                                    {option.Source === "lease-index-v2" && (
+                                    {option.Source === leaseIndexName && (
                                       <LeaseIcon
                                         className={classes.icon}
                                         color={"#757575"}
@@ -1698,7 +1698,7 @@ function Search() {
                       small
                     />
                   )}
-                  {option.Source === "lease-index-v2" && (
+                  {option.Source === leaseIndexName && (
                     <LeaseIcon className={classes.icon} color={"#757575"} />
                   )}
                   {/* {option.Source === "contacts-index" && (
@@ -1748,7 +1748,7 @@ function Search() {
                           ? maxMinWellsScore
                           : option.Source === "operator-index"
                           ? maxMinOperatosScore
-                          : option.Source === "lease-index-v2"
+                          : option.Source === leaseIndexName
                           ? maxMinLeasesScore
                           // : option.Source === "contacts-index"
                           // ? maxMinContactsScore
