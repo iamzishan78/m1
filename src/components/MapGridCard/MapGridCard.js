@@ -360,44 +360,48 @@ const leasesColumnHeaders = [
     name: "County",
     label: "County",
   },
+  // {
+  //   name: "Acreage",
+  //   label: "Acreage",
+  // },
   {
-    name: "Acreage",
-    label: "Acreage",
+    name: "BasinCount",
+    label: "Basin Count",
   },
   {
-    name: "PrimaryBasin",
-    label: "Primary Basin",
+    name: "PlayCount",
+    label: "Play Count",
   },
   {
-    name: "PrimaryFormation",
-    label: "Primary Formation",
+    name: "FormationCount",
+    label: "Formation Count",
   },
   {
-    name: "Operator",
-    label: "Operator",
+    name: "OperatorCount",
+    label: "Operator Count",
   },
   {
-    name: "TotalWells",
+    name: "TotalWellCount",
     label: "Total Wells",
   },
   {
-    name: "Total Gas Wells",
+    name: "GasWellCount",
     label: "Gas Wells",
   },
   {
-    name: "TotalOilWells",
+    name: "OilWellCount",
     label: "Oil Wells",
   },
   {
-    name: "TotalActiveWells",
+    name: "ActiveWellCount",
     label: "Active Wells",
   },
   {
-    name: "TotalDucs",
-    label: "DUCs",
+    name: "DUCWellCount",
+    label: "DUC Wells",
   },
   {
-    name: "TotalPermits",
+    name: "PermitCount",
     label: "Active Permits",
   },
 

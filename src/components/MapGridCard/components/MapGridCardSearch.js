@@ -188,7 +188,7 @@ function MapGridCardSearch(props) {
     () =>
       debounce((request, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
+          "https://m1search.search.windows.net/indexes/lease-index-v2/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
           searchTop +
           "&search=" +
           encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
