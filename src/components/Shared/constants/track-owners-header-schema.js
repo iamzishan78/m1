@@ -29,7 +29,22 @@ const TrackedOwnersHeadCells = [
       },
     },
     { name: "name", label: "Name" },
-
+    {
+      name: "StreetAddress",
+      label: "Street Address",
+    },
+    {
+      name: "City",
+      label: "City",
+    },
+    {
+      name: "State",
+      label: "State",
+    },
+    {
+      name: "Zip",
+      label: "Zip Code",
+    },
 
     //need to add in the address on file for global owner
     // {

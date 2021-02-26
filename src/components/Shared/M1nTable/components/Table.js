@@ -1423,9 +1423,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  
-                  console.log('value',value)
-                  console.log('tablemeta',tableMeta)
+
 
                   const valueFormatter = (v) => {
                     if (
