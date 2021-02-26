@@ -700,6 +700,14 @@ function Search() {
           //     )
           //   : null,
 
+          
+          // searchOption == "all" || searchOption == "parcels"
+          //   ? callParcelSearch(
+          //       { input: searchInputValue },
+          //       searchTop,
+          //     )
+          //   : null,
+
           searchOption == "all" || searchOption == "locations"
             ? callMapboxSearch(
                 { input: searchInputValue },
@@ -747,6 +755,7 @@ function Search() {
     callOperatorSearch,
     callLeaseSearch,
     // callContactsSearch,
+    // callParcelSearch,
     callMapboxSearch,
     searchOption,
     searchTop,
