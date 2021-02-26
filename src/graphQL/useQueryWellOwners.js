@@ -7,6 +7,10 @@ export const WELLOWNERSQUERY = gql`
       id
       globalOwnerId
       name
+      StreetAddress
+      City
+      State
+      Zip
       ownershipType
       interestType
       ownershipPercentage
