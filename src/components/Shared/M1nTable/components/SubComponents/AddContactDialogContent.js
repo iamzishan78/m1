@@ -75,8 +75,10 @@ export default function AddContactDialogContent(props) {
     country: "",
     state: "",
     zip: "",
+    contactOwner: ""
     // owners: props.parent ? [props.parent] : [],
   });
+
   const [
     getPaginatedContacts,
     { loading: loadingContacts, data: dataContacts },
@@ -165,7 +167,6 @@ export default function AddContactDialogContent(props) {
 
   const handleClickAdd = (e) => {
     e.preventDefault();
-
     if (props.dealsPage) {
       if (activeTapIndex === 0) {
         addContact({
@@ -229,8 +230,8 @@ export default function AddContactDialogContent(props) {
                     option && option.name
                       ? option.name
                       : typeof option === "string"
-                      ? option
-                      : ""
+                        ? option
+                        : ""
                   }
                   autoComplete
                   autoSelect
@@ -254,8 +255,8 @@ export default function AddContactDialogContent(props) {
               </Grid>
             </Grid>
           ) : (
-            <CircularProgress size={40} disableShrink color="secondary" />
-          )}
+              <CircularProgress size={40} disableShrink color="secondary" />
+            )}
         </div>
       </React.Fragment>
     );
@@ -429,6 +430,21 @@ export default function AddContactDialogContent(props) {
               }}
             />
           </Grid>
+          <Grid item xs={12}>
+            <h3>Contact Owner</h3>
+            <TextField
+              size="small"
+              className={classes.maxWidth}
+              multiline
+              value={newContact.contactOwner}
+              onChange={(e) => {
+                setNewContact({
+                  ...newContact,
+                  contactOwner: e.target.value,
+                });
+              }}
+            />
+          </Grid>
         </Grid>
       </React.Fragment>
     );
@@ -460,8 +476,8 @@ export default function AddContactDialogContent(props) {
             backgroundColor="#fff"
           />
         ) : (
-          addNew()
-        )}
+            addNew()
+          )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClickDialogClose} color="primary">
@@ -477,8 +493,8 @@ export default function AddContactDialogContent(props) {
       </DialogActions>
     </React.Fragment>
   ) : (
-    <div style={{ padding: "15px" }}>
-      <CircularProgress size={80} disableShrink color="secondary" />
-    </div>
-  );
+      <div style={{ padding: "15px" }}>
+        <CircularProgress size={80} disableShrink color="secondary" />
+      </div>
+    );
 }
