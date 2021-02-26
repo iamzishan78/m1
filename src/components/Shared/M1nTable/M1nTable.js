@@ -1289,8 +1289,8 @@ function M1nTable(props) {
         dataTagSamples.tagSamples &&
         checkIfOwnersAreContactsData &&
         checkIfOwnersAreContactsData.ifAreContacts
-        //  && dataOwnersWells
       ) {
+        console.log('dataowners',dataOwners)
         let owners = [...dataOwners.owners];
         owners = owners.map((o) => {
           let owner = { ...o };
@@ -1305,16 +1305,6 @@ function M1nTable(props) {
             },
           };
           owner.isContact = false;
-          // if (dataOwnersWells.ownersWells) {
-          //   for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
-          //     if (owner.id === dataOwnersWells.ownersWells[i].ownerId) {
-          //       owner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
-          //         (well) => well.wellId
-          //       );
-          //       break;
-          //     }
-          //   }
-          // }
 
           for (
             let i = 0;

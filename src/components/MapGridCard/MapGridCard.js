@@ -509,12 +509,12 @@ function MapGridCard(props) {
     /// value will control the cog api 
 
     switch (searchTapValue) {
+      case 4:
+        return "location";
       // case 6:
-      //   return "location";
-      case 6:
-        return "contacts";  
-      case 5:
-        return "permits";      
+      //   return "contacts";  
+      // case 5:
+      //   return "permits";      
       // case 4:
       //   return "parcel";
       case 3:
@@ -538,7 +538,7 @@ function MapGridCard(props) {
         // "Parcels",
         // "Recent Permits",
         // "Contacts",
-        // "Locations",
+        "Locations",
       ]}
       value={searchTapValue}
       setValue={(n) => {
@@ -695,30 +695,30 @@ function MapGridCard(props) {
                       targetLabel={getTargetFromSearchTaps()}
                       header={<SearchTabPanels />}
                     />,
-                    <M1nTable
-                      dense
-                      parent="search"
-                      privateColumns={[parcelColumnHeaders]}
-                      targetLabel={getTargetFromSearchTaps()}
-                      header={<SearchTabPanels />}
-                      // showTags
-                      // showComments
-                      // showTracks
-                    />,
-                    <M1nTable
-                      dense
-                      parent="search"
-                      privateColumns={[]}
-                      targetLabel={getTargetFromSearchTaps()}
-                      header={<SearchTabPanels />}
-                    />,
-                    <M1nTable
-                    dense
-                    parent="search"
-                    privateColumns={[ContactsHeadCells]}
-                    targetLabel={getTargetFromSearchTaps()}
-                    header={<SearchTabPanels />}
-                  />,
+                  //   <M1nTable
+                  //     dense
+                  //     parent="search"
+                  //     privateColumns={[parcelColumnHeaders]}
+                  //     targetLabel={getTargetFromSearchTaps()}
+                  //     header={<SearchTabPanels />}
+                  //     // showTags
+                  //     // showComments
+                  //     // showTracks
+                  //   />,
+                  //   <M1nTable
+                  //     dense
+                  //     parent="search"
+                  //     privateColumns={[]}
+                  //     targetLabel={getTargetFromSearchTaps()}
+                  //     header={<SearchTabPanels />}
+                  //   />,
+                  //   <M1nTable
+                  //   dense
+                  //   parent="search"
+                  //   privateColumns={[ContactsHeadCells]}
+                  //   targetLabel={getTargetFromSearchTaps()}
+                  //   header={<SearchTabPanels />}
+                  // />,
 
                       <M1nTable
                         dense
