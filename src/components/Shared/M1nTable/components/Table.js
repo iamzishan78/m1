@@ -31,6 +31,7 @@ import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationD
 import MakeItAContactConfirmationDialogContent from "./SubComponents/MakeItAContactConfirmationDialogContent";
 import Button from "@material-ui/core/Button";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
+import MergeTypeIcon from "@material-ui/icons/MergeType";
 import ContactPhoneRoundedIcon from "@material-ui/icons/ContactPhoneRounded";
 import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
 import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
@@ -65,9 +66,11 @@ import { WELLQUERY } from "../../../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
 import WellTableStyles from "../customStyles/WellTableStyle";
 import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
-import ProductionTableStyle from '../customStyles/ProductionDetailsStyle';
+import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
 import moment from "moment";
 import CheckIcon from "@material-ui/icons/Check";
+import AlertDialogSlide from "../../../Contacts/components/RightDialog";
+import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import Chip from '@material-ui/core/Chip';
 
 // import value formatters 
@@ -79,6 +82,98 @@ import RightDialog from "../../../ContactDetailCard/components/RightDialog"
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
 
+const customStyles = makeStyles((theme) => ({
+  table: {
+    "& .MuiTableCell-body": {
+      padding: (props) =>
+        props.dense ? "0 !important" : "0px 16px !important",
+    },
+    "& .MuiTableHead-root": {
+      "& th": {
+        backgroundColor: "#F2F2F2",
+        zIndex: "auto",
+        padding: (props) => (props.dense ? "10px" : null),
+      },
+      "& .MuiTableCell-paddingCheckbox": {
+        padding: (props) => (props.dense ? "0 !important" : "16px"),
+      },
+    },
+    "& tr": {
+      paddingRight: (props) => (props.dense ? "12px" : null),
+      "& td": {
+        "& div": {
+          padding: 0,
+        },
+      },
+      "& td:nth-child(3)": {
+        "& div": {
+          width: 300,
+        },
+      },
+      "& td:nth-child(13)": {
+        "& div": {
+          width: 300,
+          "& span": {
+            maxWidth: 300,
+          },
+        },
+      },
+    },
+    "& thead": {
+      opacity: "1",
+      transition: "opacity 1s ease-out",
+      webkitTransition: "opacity 1s ease-out",
+    },
+    "& tbody": {
+      opacity: "1",
+      transition: "opacity 1s ease-out",
+      webkitTransition: "opacity 1s ease-out",
+    },
+  },
+}));
+
+const productionStyle = makeStyles((theme) => ({
+  table: {
+    "& .MuiTableCell-body": {
+      padding: (props) =>
+        props.dense ? "0 !important" : "0px 16px !important",
+    },
+    "& .MuiTableCell-head": {
+      "& span": {
+        justifyContent: "center",
+      },
+    },
+    "& .MuiTableHead-root": {
+      "& th": {
+        backgroundColor: "#F2F2F2",
+        zIndex: "auto",
+        padding: (props) => (props.dense ? "10px" : null),
+      },
+      "& .MuiTableCell-paddingCheckbox": {
+        padding: (props) => (props.dense ? "0 !important" : "16px"),
+      },
+    },
+    "& tr": {
+      paddingRight: (props) => (props.dense ? "12px" : null),
+      "& td": {
+        textAlign: "center",
+        "& div": {
+          justifyContent: "center",
+        },
+      },
+    },
+    "& thead": {
+      opacity: "1",
+      transition: "opacity 1s ease-out",
+      webkitTransition: "opacity 1s ease-out",
+    },
+    "& tbody": {
+      opacity: "1",
+      transition: "opacity 1s ease-out",
+      webkitTransition: "opacity 1s ease-out",
+    },
+  },
+}));
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -105,16 +200,25 @@ const useStyles = makeStyles((theme) => ({
       paddingRight: (props) => (props.dense ? "12px" : null),
       "& td": {
         "& div": {
-          padding: (props) => ((props.parent === "ownersPerParcel" || props.parent === "ownersPerParcelWells") && "0 5px !important"),
-          width: (props) => ((props.parent === "ownersPerParcel" || props.parent === "ownersPerParcelWells") && "max-content !important"),
-          maxWidth: (props) => ((props.parent === "ownersPerParcel" || props.parent === "ownersPerParcelWells") && "300px !important"),
+          padding: (props) =>
+            (props.parent === "ownersPerParcel" ||
+              props.parent === "ownersPerParcelWells") &&
+            "0 5px !important",
+          width: (props) =>
+            (props.parent === "ownersPerParcel" ||
+              props.parent === "ownersPerParcelWells") &&
+            "max-content !important",
+          maxWidth: (props) =>
+            (props.parent === "ownersPerParcel" ||
+              props.parent === "ownersPerParcelWells") &&
+            "300px !important",
         },
-      }
+      },
     },
     "& thead": {
       opacity: "1",
       transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
+      webkitTransition: "opacity 1s ease-out",
     },
     "& tbody": {
       opacity: "1",
@@ -1713,7 +1817,6 @@ function SubTable(props) {
     handleOpenExpandableCard();
   };
 
-
   let history = useHistory();
 
   let routeChange = (route) => {
@@ -1727,10 +1830,10 @@ function SubTable(props) {
         case 'owner':
           ret_val = wellTableClass.table;
           break;
-        case 'production_detail':
+        case "production_detail":
           ret_val = productionClass.table;
           break;
-        case 'Parcel Ownership':
+        case "Parcel Ownership":
           ret_val = parcelTableClass.table;
           break;
         default:
@@ -1739,7 +1842,7 @@ function SubTable(props) {
       }
       setTableStyle(ret_val);
     }
-  }, [props.targetLabel])
+  }, [props.targetLabel]);
 
   const options = {
     filterType: "dropdown",
@@ -1848,6 +1951,24 @@ function SubTable(props) {
               >
                 {props.header !== "Active Users" && (
                   <>
+                    {m1nSelectedRowsIndexes?.length > 1 && (
+                      <Button
+                        color="secondary"
+                        startIcon={<MergeTypeIcon />}
+                        className={classes.multiSelectionTopBarButtons}
+                        onClick={() => {
+                          handleExpandClick(
+                            null,
+                            null,
+                            getSelectedRows(),
+                            "merge"
+                          );
+                        }}
+                      >
+                        Merge
+                      </Button>
+                    )}
+
                     <Button
                       color="secondary"
                       startIcon={<ContactPhoneRoundedIcon />}
@@ -2716,10 +2837,10 @@ function SubTable(props) {
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the owner${m1nSelectedRowsIds &&
-                  m1nSelectedRowsIds.length > 1 &&
-                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                  ? "s"
-                  : ""
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                   }?`}
               </DeleteConfirmationDialogContent>
             )}
@@ -2756,6 +2877,14 @@ function SubTable(props) {
                 rows={expandedObject}
                 setRows={setExpandedObject}
                 setSelectedRow={setSelectedRow}
+              />
+            )}
+            {openDialog === "merge" && (
+              <MergeContactDrawer
+                onClose={handleCloseDialog}
+                rows={expandedObject}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+                setRows={setExpandedObject}
               />
             )}
             {openDialog === "sendMailers" && (
