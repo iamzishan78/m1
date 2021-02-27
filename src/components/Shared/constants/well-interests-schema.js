@@ -1,9 +1,4 @@
-import React from "react";
-
-/* props is just a style object*/
-
-const TrackedOwnersHeadCells = [
-    /// appears this code is used for the track grid owners 
+const WellInterests = [
     {
       name: "id",
       options: {
@@ -17,7 +12,7 @@ const TrackedOwnersHeadCells = [
       },
     },
     {
-      name: "entity",
+      name: "wellId",
       options: {
         display: false,
         filter: false,
@@ -28,47 +23,53 @@ const TrackedOwnersHeadCells = [
         viewColumns: false,
       },
     },
-    { name: "name", label: "Name" },
     {
-      name: "StreetAddress",
-      label: "Street Address",
+      name: "wellName",
+      label: "Well",
+      options: {
+        filter: false,
+      },
     },
     {
-      name: "City",
-      label: "City",
+      name: "apiNumber",
+      label: "API",
+      options: {
+        filter: false,
+      },
     },
     {
-      name: "State",
-      label: "State",
+      name: "operator",
+      label: "Operator",
+      options: {
+        filter: false,
+      },
     },
     {
-      name: "Zip",
-      label: "Zip Code",
+      name: "interestType",
+      label: "Type",
+      options: {
+        filter: false,
+      },
     },
-
-    //need to add in the address on file for global owner
-    // {
-    //   name: "",
-    //   label: "Address",
-    // },
-
-
-
-    //removing due to the fact that tracked owners are global owners with multiple interests and not well level interests
-    // {
-    //   name: "ownershipType",
-    //   label: "Entity",
-    // },
-    // { name: "interestType", label: "Type" },
-    // {
-    //   name: "ownershipPercentage",
-    //   label: "Interest",
-    // },
-  
+    {
+      name: "ownershipPercentage",
+      label: "Interest",
+      options: {
+        filter: false,
+      },
+    },
+    {
+      name: "appraisedValue",
+      label: "Appraised Value",
+      options: {
+        filter: false,
+      },
+    },
     {
       name: "tags",
       label: "Tags ",
       options: {
+        filter: false,
         sort: false,
         download: false,
         print: false,
@@ -86,21 +87,6 @@ const TrackedOwnersHeadCells = [
         },
       },
     },
-  
-    {
-      name: "isContact",
-      label: " ",
-      options: {
-        filter: false,
-        searchable: false,
-        sort: false,
-        download: false,
-        print: false,
-        viewColumns: false,
-      },
-    },
-  
-  
     {
       name: "commentsCounter",
       label: " ",
@@ -150,6 +136,5 @@ const TrackedOwnersHeadCells = [
       },
     },
   ];
-  
 
-export default TrackedOwnersHeadCells;
+  export default WellInterests;

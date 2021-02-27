@@ -40,6 +40,11 @@ import { deepEqualObjects, deepEqual, setStateIfDeepEqual } from "../../Shared/f
 import ClearIcon from "@material-ui/icons/Clear";
 
 
+const leaseIndexName = 'lease-index-v2';
+const operatorIndexName = 'operator-index';
+const wellCogIndexName = "wellheader-index-en-ms";
+const ownerCogIndexName = "globalowner-index";
+
 
 const maxMinScore = (options) => {
   let max = 0;
@@ -343,7 +348,7 @@ function Search() {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2020-06-30&queryType=full&ount=true&searchFields=Operator&top=" +
+          "https://m1search.search.windows.net/indexes/"+operatorIndexName+"/docs?api-version=2020-06-30&queryType=full&ount=true&searchFields=Operator&top=" +
           top +
           "&search=" +
           encodeURIComponent(
@@ -360,7 +365,7 @@ function Search() {
         };
 
         console.log(
-          "request made to operator-index search at: " + new Date().toString()
+          "request made to operator search at: " + new Date().toString()
         );
 
         fetch(endpoint, options)
@@ -380,7 +385,7 @@ function Search() {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
+          "https://m1search.search.windows.net/indexes/"+leaseIndexName+"/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
           top +
           "&search=" +
           encodeURIComponent(
@@ -397,7 +402,7 @@ function Search() {
         };
 
         console.log(
-          "request made to lease-index search at: " + new Date().toString()
+          "request made to lease search at: " + new Date().toString()
         );
 
         fetch(endpoint, options)
@@ -460,7 +465,6 @@ function Search() {
     if (
       constDataContacts 
     ) {
-      console.log("ue mintable 23");
       var newOptions = [];
       var newOptions = [
 
@@ -558,7 +562,6 @@ function Search() {
                       results["@odata.context"].indexOf("')")
                     );
 
-                    console.log(indexSource);
                     newOptions = [
                       ...results.value.map((result) => {
                         result.Score = result["@search.score"];
@@ -591,7 +594,6 @@ function Search() {
                       results["@odata.context"].indexOf("('") + 2,
                       results["@odata.context"].indexOf("')")
                     );
-                    console.log(indexSource);
                     newOptions = [
                       ...results.value.map((result) => {
                         result.Score = result["@search.score"];
@@ -624,7 +626,6 @@ function Search() {
                       results["@odata.context"].indexOf("('") + 2,
                       results["@odata.context"].indexOf("')")
                     );
-                    console.log(indexSource);
                     newOptions = [
                       ...results.value.map((result) => {
                         result.Score = result["@search.score"];
@@ -657,7 +658,6 @@ function Search() {
                       results["@odata.context"].indexOf("('") + 2,
                       results["@odata.context"].indexOf("')")
                     );
-                    console.log(indexSource);
                     newOptions = [
                       ...results.value.map((result) => {
                         result.Score = result["@search.score"];
@@ -684,7 +684,6 @@ function Search() {
                       }),
                       ...newOptions,
                     ];
-                    console.log('newoptions,', newOptions)
                     setMaxMinLeasesScore(maxMinScore(results.value));
                   }
 
@@ -694,12 +693,20 @@ function Search() {
               )
             : null,
 
-          searchOption == "all" || searchOption == "contacts"
-            ? callContactsSearch(
-                { input: searchInputValue },
-                searchTop,
-              )
-            : null,
+          // searchOption == "all" || searchOption == "contacts"
+          //   ? callContactsSearch(
+          //       { input: searchInputValue },
+          //       searchTop,
+          //     )
+          //   : null,
+
+          
+          // searchOption == "all" || searchOption == "parcels"
+          //   ? callParcelSearch(
+          //       { input: searchInputValue },
+          //       searchTop,
+          //     )
+          //   : null,
 
           searchOption == "all" || searchOption == "locations"
             ? callMapboxSearch(
@@ -747,7 +754,8 @@ function Search() {
     callOwnerSearch,
     callOperatorSearch,
     callLeaseSearch,
-    callContactsSearch,
+    // callContactsSearch,
+    // callParcelSearch,
     callMapboxSearch,
     searchOption,
     searchTop,
@@ -758,10 +766,7 @@ function Search() {
   useEffect(() => {
     if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray) {
       if (dataOwnerWells.ownerLatsLonsArray.length !== 0) {
-        console.log(
-          "wells data from search",
-          dataOwnerWells.ownerLatsLonsArray
-        );
+
 
         setStateApp((stateApp) =>
           dataOwnerWells.ownerLatsLonsArray.length === 1
@@ -785,7 +790,6 @@ function Search() {
 
         stateApp.toggleLayersActivity("Search", true);
       } else {
-        console.log("Not wells found for the owner");
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -802,7 +806,6 @@ function Search() {
       dataWells.wells.results &&
       dataWells.wells.results.length !== 0
     ) {
-      console.log("wells data from search", dataWells.wells.results);
 
       setStateApp((stateApp) =>
         dataWells.wells.results.length === 1
@@ -831,10 +834,6 @@ function Search() {
   useEffect(() => {
     if (dataOperatorWells && dataOperatorWells.operatorLatsLonsArray) {
       if (dataOperatorWells.operatorLatsLonsArray.length !== 0) {
-        console.log(
-          "wells data from search",
-          dataOperatorWells.operatorLatsLonsArray
-        );
 
         setStateApp((stateApp) =>
           dataOperatorWells.operatorLatsLonsArray.length === 1
@@ -861,7 +860,6 @@ function Search() {
         );
         stateApp.toggleLayersActivity("Search", true);
       } else {
-        console.log("Not wells found for the operator");
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -875,10 +873,7 @@ function Search() {
   useEffect(() => {
     if (dataLeaseWells && dataLeaseWells.leaseLatsLonsArray) {
       if (dataLeaseWells.leaseLatsLonsArray.length !== 0) {
-        console.log(
-          "wells data from search",
-          dataLeaseWells.leaseLatsLonsArray
-        );
+
 
         setStateApp((stateApp) =>
           dataLeaseWells.leaseLatsLonsArray.length === 1
@@ -901,7 +896,6 @@ function Search() {
         );
         stateApp.toggleLayersActivity("Search", true);
       } else {
-        console.log("Not wells found for the lease");
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -976,7 +970,6 @@ function Search() {
   ///////////////////////////////////////
 
   const handleChange = (newValue) => {
-    console.log("search Selected", newValue);
     if (
       !value ||
       (newValue &&
@@ -1032,7 +1025,7 @@ function Search() {
       //// if well, with lat long
       if (
         newValue &&
-        newValue.Source === "wellheader-index-en-ms" &&
+        newValue.Source === wellCogIndexName &&
         newValue.Longitude &&
         newValue.Latitude
       ) {
@@ -1054,7 +1047,7 @@ function Search() {
       }
 
       //// if owner
-      if (newValue && newValue.Source === "globalowner-index" && newValue.Id) {
+      if (newValue && newValue.Source === ownerCogIndexName && newValue.Id) {
         getOwnerWells({
           variables: {
             ownerId: newValue.Id,
@@ -1065,7 +1058,7 @@ function Search() {
       //// if operator
       if (
         newValue &&
-        newValue.Source === "operator-index" &&
+        newValue.Source === "operatorIndexName" &&
         newValue.Operator
       ) {
         getOperatorWells({
@@ -1078,7 +1071,7 @@ function Search() {
       //// if lease
       if (
         newValue &&
-        newValue.Source === "lease-index" &&
+        newValue.Source === leaseIndexName &&
         ((newValue.Lease && newValue.Lease !== "") ||
           (newValue.LeaseId && newValue.LeaseId !== ""))
       ) {
@@ -1101,28 +1094,28 @@ function Search() {
 
 
       //// if contact
-      if (
-        newValue &&
-        newValue.Source === "contacts-index" &&
-        ((newValue.Lease && newValue.Lease !== "") ||
-          (newValue.LeaseId && newValue.LeaseId !== ""))
-      ) {
-        if (newValue.Lease && newValue.Lease !== "") {
-          getLeaseWells({
-            variables: {
-              fieldName: "Lease",
-              value: newValue.Lease,
-            },
-          });
-        } else {
-          getLeaseWells({
-            variables: {
-              fieldName: "LeaseId",
-              value: newValue.LeaseId,
-            },
-          });
-        }
-      }
+      // if (
+      //   newValue &&
+      //   newValue.Source === "contacts-index" &&
+      //   ((newValue.Lease && newValue.Lease !== "") ||
+      //     (newValue.LeaseId && newValue.LeaseId !== ""))
+      // ) {
+      //   if (newValue.Lease && newValue.Lease !== "") {
+      //     getLeaseWells({
+      //       variables: {
+      //         fieldName: "Lease",
+      //         value: newValue.Lease,
+      //       },
+      //     });
+      //   } else {
+      //     getLeaseWells({
+      //       variables: {
+      //         fieldName: "LeaseId",
+      //         value: newValue.LeaseId,
+      //       },
+      //     });
+      //   }
+      // }
 
       //// if mapboxSearch
       if (newValue && newValue.Source === "mapboxSearch" && newValue.center) {
@@ -1173,7 +1166,7 @@ function Search() {
     (searchOption === "owners" && loadingOwners) ||
     (searchOption === "operators" && loadingOperators) ||
     (searchOption === "leases" && loadingLeases) ||
-    (searchOption === "contacts" && loadingContacts) ||
+    // (searchOption === "contacts" && loadingContacts) ||
     (searchOption === "locations" && loadingMapboxSearch)
   ) {
     optionsWithHeader = [header, { ...header, Source: "loader" }];
@@ -1188,11 +1181,11 @@ function Search() {
         filterOptions={(x) => x}
         options={optionsWithHeader}
         groupBy={(option) => {
-          if (option.Source === "globalowner-index") return "Owners";
-          if (option.Source === "wellheader-index-en-ms") return "Wells";
-          if (option.Source === "operator-index") return "Operators";
-          if (option.Source === "lease-index") return "Leases";
-          if (option.Source === "contacts-index") return "Contacts";
+          if (option.Source === ownerCogIndexName) return "Owners";
+          if (option.Source === wellCogIndexName) return "Wells";
+          if (option.Source === operatorIndexName) return "Operators";
+          if (option.Source === leaseIndexName) return "Leases";
+          // if (option.Source === "contacts-index") return "Contacts";
           if (option.Source === "mapboxSearch") return "Locations";
           if (option.Source === "loader") return "loader";
           return "header";
@@ -1210,6 +1203,7 @@ function Search() {
             );
 
           return option.group === "header" ? (
+            <div>
             <Grid
               key={option.group}
               container
@@ -1231,7 +1225,7 @@ function Search() {
                   (searchOption === "owners" && loadingOwners) ||
                   (searchOption === "operators" && loadingOperators) ||
                   (searchOption === "leases" && loadingLeases) ||
-                  (searchOption === "contacts" && loadingContacts) ||
+                  // (searchOption === "contacts" && loadingContacts) ||
                   (searchOption === "locations" && loadingMapboxSearch) ||
                   options.length === 0
                     ? "0"
@@ -1253,7 +1247,7 @@ function Search() {
                   size="small"
                   color={searchOption === "all" ? "secondary" : "primary"}
                   onClick={() => {
-                    setSearchTop(5);
+                    // setSearchTop(5);
                     setSearchOption("all");
                   }}
                 >
@@ -1265,6 +1259,7 @@ function Search() {
                   size="small"
                   color={searchOption === "wells" ? "secondary" : "primary"}
                   onClick={() => {
+                    // setSearchTop(5);
                     setSearchOption("wells");
                   }}
                 >
@@ -1276,6 +1271,7 @@ function Search() {
                   size="small"
                   color={searchOption === "owners" ? "secondary" : "primary"}
                   onClick={() => {
+                    // setSearchTop(5);
                     setSearchOption("owners");
                   }}
                 >
@@ -1289,6 +1285,7 @@ function Search() {
                   size="small"
                   color={searchOption === "operators" ? "secondary" : "primary"}
                   onClick={() => {
+                    // setSearchTop(5);
                     setSearchOption("operators");
                   }}
                 >
@@ -1300,6 +1297,7 @@ function Search() {
                   size="small"
                   color={searchOption === "leases" ? "secondary" : "primary"}
                   onClick={() => {
+                    // setSearchTop(5);
                     setSearchOption("leases");
                   }}
                 >
@@ -1326,6 +1324,7 @@ function Search() {
                   size="small"
                   color={searchOption === "locations" ? "secondary" : "primary"}
                   onClick={() => {
+                    setSearchTop(5);
                     setSearchOption("locations");
                   }}
                 >
@@ -1333,6 +1332,7 @@ function Search() {
                 </Button>
               </Grid>
             </Grid>
+            </div>
           ) : (
             (searchOption === "all" ||
               searchOption === option.group.toLowerCase()) && (
@@ -1359,8 +1359,8 @@ function Search() {
                               ? "operators"
                               : option.group === "Leases"
                               ? "leases"
-                              : option.group === "Contacts"
-                              ? "contacts"
+                              // : option.group === "Contacts"
+                              // ? "contacts"
                               : option.group === "Locations"
                               ? "locations"
                               : "all"
@@ -1417,14 +1417,14 @@ function Search() {
                 setLoadingOwners(true);
                 setLoadingOperators(true);
                 setLoadingLeases(true);
-                setLoadingContacts(false);
+                // setLoadingContacts(false);
                 setLoadingMapboxSearch(true);
               }
               if (searchOption === "wells") setLoadingWells(true);
               if (searchOption === "owners") setLoadingOwners(true);
               if (searchOption === "operators") setLoadingOperators(true);
               if (searchOption === "leases") setLoadingLeases(true);
-              if (searchOption === "contacts") setLoadingContacts(true);
+              // if (searchOption === "contacts") setLoadingContacts(true);
               if (searchOption === "locations") setLoadingMapboxSearch(true);
             } else {
               // setValue(null);
@@ -1433,12 +1433,14 @@ function Search() {
               setLoadingOwners(false);
               setLoadingOperators(false);
               setLoadingLeases(false);
-              setLoadingContacts(false);
+              // setLoadingContacts(false);
               setLoadingMapboxSearch(false);
             }
           }
         }}
         renderInput={(params) => (
+
+          <div>
           <TextField
             {...params}
             variant="outlined"
@@ -1526,7 +1528,9 @@ function Search() {
                           let option = search.searchData;
                           const parts = parse(option.Primary, Array());
 
+                          /// THIS IS THEI LIST FOR THE SEARCH HISTORY 
                           return (
+                            <div>
                             <Box
                               p={1}
                               key={i}
@@ -1534,16 +1538,16 @@ function Search() {
                               onClick={() => {
                                 setSearchTop(5);
                                 setSearchOption(
-                                  option.Source === "globalowner-index"
+                                  option.Source === ownerCogIndexName
                                     ? "owners"
-                                    : option.Source === "wellheader-index-en-ms"
+                                    : option.Source === wellCogIndexName
                                     ? "wells"
-                                    : option.Source === "operator-index"
+                                    : option.Source === operatorIndexName
                                     ? "operators"
-                                    : option.Source === "lease-index"
+                                    : option.Source === leaseIndexName
                                     ? "leases"
-                                    : option.Source === "contacts-index"
-                                    ? "contacts"
+                                    // : option.Source === "contacts-index"
+                                    // ? "contacts"
                                     : option.group === "mapboxSearch"
                                     ? "locations"
                                     : "all"
@@ -1566,21 +1570,21 @@ function Search() {
                               <Grid container spacing={0}>
                                 <Grid container item xs={9} alignItems="center">
                                   <Grid item>
-                                    {option.Source === "globalowner-index" && (
+                                    {option.Source === ownerCogIndexName && (
                                       <PersonIcon className={classes.icon} />
                                     )}
-                                    {option.Source === "contacts-index" && (
+                                    {/* {option.Source === "contacts-index" && (
                                       //will need to change this to something different 
                                       <PersonIcon className={classes.icon} />
-                                    )}
-                                    {option.Source === "operator-index" && (
+                                    )} */}
+                                    {option.Source === operatorIndexName && (
                                       <OperatorIcon
                                         className={classes.icon}
                                         color={"#757575"}
                                       />
                                     )}
                                     {option.Source ===
-                                      "wellheader-index-en-ms" && (
+                                      wellCogIndexName && (
                                       <WellIcon
                                         className={classes.icon}
                                         color={"#757575"}
@@ -1588,7 +1592,7 @@ function Search() {
                                         small
                                       />
                                     )}
-                                    {option.Source === "lease-index" && (
+                                    {option.Source === leaseIndexName && (
                                       <LeaseIcon
                                         className={classes.icon}
                                         color={"#757575"}
@@ -1642,6 +1646,7 @@ function Search() {
                                 </Grid>
                               </Grid>
                             </Box>
+                            </div>
                           );
                         })
                       ) : (
@@ -1656,6 +1661,7 @@ function Search() {
             }}
             className={classes.textF}
           />
+          </div>
         )}
         renderOption={(option) => {
           if (option.Source === "header" || option.group === "loader")
@@ -1666,13 +1672,13 @@ function Search() {
             <Grid container spacing={0}>
               <Grid container item xs={11} alignItems="center">
                 <Grid item>
-                  {option.Source === "globalowner-index" && (
+                  {option.Source === ownerCogIndexName && (
                     <PersonIcon className={classes.icon} />
                   )}
-                  {option.Source === "operator-index" && (
+                  {option.Source === operatorIndexName && (
                     <OperatorIcon className={classes.icon} color={"#757575"} />
                   )}
-                  {option.Source === "wellheader-index-en-ms" && (
+                  {option.Source === wellCogIndexName && (
                     <WellIcon
                       className={classes.icon}
                       color={"#757575"}
@@ -1680,13 +1686,15 @@ function Search() {
                       small
                     />
                   )}
-                  {option.Source === "lease-index" && (
-                    <LeaseIcon className={classes.icon} color={"#757575"} />
+                  {option.Source === leaseIndexName && (
+                    <div>
+                    <WellIcon className={classes.icon} color={"#757575"} />
+                    </div>
                   )}
-                  {option.Source === "contacts-index" && (
+                  {/* {option.Source === "contacts-index" && (
                     //will need to change this to something different
                     <PersonIcon className={classes.icon} color={"#757575"} />
-                  )}
+                  )} */}
                   {option.Source === "mapboxSearch" && (
                     <LocationOnIcon className={classes.icon} />
                   )}
@@ -1724,16 +1732,16 @@ function Search() {
                       backgroundImage:
                         "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
                       opacity: calcScoreOpacity(
-                        option.Source === "globalowner-index"
+                        option.Source === ownerCogIndexName
                           ? maxMinOwnersScore
-                          : option.Source === "wellheader-index-en-ms"
+                          : option.Source === wellCogIndexName
                           ? maxMinWellsScore
-                          : option.Source === "operator-index"
+                          : option.Source === operatorIndexName
                           ? maxMinOperatosScore
-                          : option.Source === "lease-index"
+                          : option.Source === leaseIndexName
                           ? maxMinLeasesScore
-                          : option.Source === "contacts-index"
-                          ? maxMinContactsScore
+                          // : option.Source === "contacts-index"
+                          // ? maxMinContactsScore
                           : maxMinMapboxSearchScore,
                         option.Score
                       ).toString(),

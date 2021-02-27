@@ -88,12 +88,13 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     borderRadius: "7px",
     cursor: "text",
-    "&:hover": {
-      backgroundColor: ({ edit }) => (edit ? null : "#fff"),
-      "& .hiddenEditIcons": {
-        visibility: ({ edit }) => (edit ? null : "visible"),
-      },
-    },
+    // removing estebans weird hover effects
+    // "&:hover": {
+    //   backgroundColor: ({ edit }) => (edit ? null : "#fff"),
+    //   "& .hiddenEditIcons": {
+    //     visibility: ({ edit }) => (edit ? null : "visible"),
+    //   },
+    // },
   },
   hiddenEditIcons: {
     position: "absolute",

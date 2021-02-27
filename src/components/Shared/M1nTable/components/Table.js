@@ -10,7 +10,6 @@ import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
 import WellCardProvider from "../../../WellCard/WellCardProvider";
-import OwnersDetailCard from "../../../OwnersDetailCard/OwnersDetailCard";
 import ContactDetailCard from "../../../ContactDetailCard/ContactDetailCard";
 import { AppContext } from "../../../../AppContext";
 import Tags from "../../Tagger";
@@ -26,13 +25,11 @@ import ChatIcon from "@material-ui/icons/Chat";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import M1nTable from "../M1nTable";
 import WellIcon from "../../svgIcons/well";
-import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
 import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationDialogContent";
 import MakeItAContactConfirmationDialogContent from "./SubComponents/MakeItAContactConfirmationDialogContent";
 import Button from "@material-ui/core/Button";
-import LocalPrintshopRoundedIcon from "@material-ui/icons/LocalPrintshopRounded";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
 import ContactPhoneRoundedIcon from "@material-ui/icons/ContactPhoneRounded";
 import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
@@ -44,8 +41,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Divider from "@material-ui/core/Divider";
 import CellContentEdition from "./SubComponents/CellContentEdition";
 import Avatar, { ConfigProvider } from "react-avatar";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import MapLocation from "../../svgIcons/MapLocation";
 import RoomIcon from "@material-ui/icons/Room";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import { useDispatch, useSelector } from "react-redux";
@@ -62,7 +57,6 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import AddParcelToEntityDialogContent from "./SubComponents/AddParcelToEntityDialogContent/AddParcelToEntityDialogContent";
 import Convert_contact from "../../svgIcons/convert_contact";
 import Contact_card from "../../svgIcons/contact_card";
-import TransactDialog from "../../../Transact/components/dialog";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
 import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
 import debounce from "lodash/debounce";
@@ -73,8 +67,6 @@ import WellTableStyles from "../customStyles/WellTableStyle";
 import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
 import ProductionTableStyle from '../customStyles/ProductionDetailsStyle';
 import moment from "moment";
-import CheckBoxIcon from "@material-ui/icons/CheckBox";
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckIcon from "@material-ui/icons/Check";
 import Chip from '@material-ui/core/Chip';
 
@@ -227,18 +219,6 @@ const useStyles = makeStyles((theme) => ({
     left: "223px",
     position: "absolute",
     top: "19px"
-  },
-  clickableCell:{
-    cursor: "pointer",
-    padding: "10px 30px 10px 10px",
-    position: "relative",
-    minWidth: "100px",
-    borderRadius: "7px",
-    color: "#17aadd",
-    "&:hover": {
-      textDecoration: "underline",
-    },
-    fontWeight: "bold"
   }
 }));
 
@@ -1443,9 +1423,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  
-                  console.log('value',value)
-                  console.log('tablemeta',tableMeta)
+
 
                   const valueFormatter = (v) => {
                     if (
@@ -2075,22 +2053,22 @@ function SubTable(props) {
         }
       }
 
-      // if (props.targetLabel === "contact") {
-      //   setStateApp((stateApp) => ({
-      //     ...stateApp,
-      //     selectedContact: rows[dataIndex]._id,
-      //   }));
+      if (props.targetLabel === "contact") {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedContact: rows[dataIndex]._id,
+        }));
 
-      //   setSubComponent(
-      //     <ContactDetailCard
-      //       selectRowOpenContact={selectRowOpenContact}
-      //       handleCloseExpandableCard={handleCloseExpandableCard}
-      //     />
-      //   );
-      //   setTitle("Contact Details");
-      //   setSubTitle(" ");
-      //   handleOpenExpandableCard();
-      // }
+        setSubComponent(
+          <ContactDetailCard
+            selectRowOpenContact={selectRowOpenContact}
+            handleCloseExpandableCard={handleCloseExpandableCard}
+          />
+        );
+        setTitle("Contact Details");
+        setSubTitle(" ");
+        handleOpenExpandableCard();
+      }
     },
     onChangePage: (pageState) => {
       setPageInd(pageState);

@@ -360,44 +360,48 @@ const leasesColumnHeaders = [
     name: "County",
     label: "County",
   },
+  // {
+  //   name: "Acreage",
+  //   label: "Acreage",
+  // },
   {
-    name: "Acreage",
-    label: "Acreage",
+    name: "BasinCount",
+    label: "Basin Count",
   },
   {
-    name: "PrimaryBasin",
-    label: "Primary Basin",
+    name: "PlayCount",
+    label: "Play Count",
   },
   {
-    name: "PrimaryFormation",
-    label: "Primary Formation",
+    name: "FormationCount",
+    label: "Formation Count",
   },
   {
-    name: "Operator",
-    label: "Operator",
+    name: "OperatorCount",
+    label: "Operator Count",
   },
   {
-    name: "TotalWells",
+    name: "TotalWellCount",
     label: "Total Wells",
   },
   {
-    name: "Total Gas Wells",
+    name: "GasWellCount",
     label: "Gas Wells",
   },
   {
-    name: "TotalOilWells",
+    name: "OilWellCount",
     label: "Oil Wells",
   },
   {
-    name: "TotalActiveWells",
+    name: "ActiveWellCount",
     label: "Active Wells",
   },
   {
-    name: "TotalDucs",
-    label: "DUCs",
+    name: "DUCWellCount",
+    label: "DUC Wells",
   },
   {
-    name: "TotalPermits",
+    name: "PermitCount",
     label: "Active Permits",
   },
 
@@ -505,12 +509,12 @@ function MapGridCard(props) {
     /// value will control the cog api 
 
     switch (searchTapValue) {
+      case 4:
+        return "location";
       // case 6:
-      //   return "location";
-      case 6:
-        return "contacts";  
-      case 5:
-        return "permits";      
+      //   return "contacts";  
+      // case 5:
+      //   return "permits";      
       // case 4:
       //   return "parcel";
       case 3:
@@ -530,11 +534,11 @@ function MapGridCard(props) {
         "Wells",
         "Tax Owners",
         "Operators",
-        // "Leases",
+        "Leases",
         // "Parcels",
         // "Recent Permits",
         // "Contacts",
-        // "Locations",
+        "Locations",
       ]}
       value={searchTapValue}
       setValue={(n) => {
@@ -691,30 +695,30 @@ function MapGridCard(props) {
                       targetLabel={getTargetFromSearchTaps()}
                       header={<SearchTabPanels />}
                     />,
-                    <M1nTable
-                      dense
-                      parent="search"
-                      privateColumns={[parcelColumnHeaders]}
-                      targetLabel={getTargetFromSearchTaps()}
-                      header={<SearchTabPanels />}
-                      // showTags
-                      // showComments
-                      // showTracks
-                    />,
-                    <M1nTable
-                      dense
-                      parent="search"
-                      privateColumns={[]}
-                      targetLabel={getTargetFromSearchTaps()}
-                      header={<SearchTabPanels />}
-                    />,
-                    <M1nTable
-                    dense
-                    parent="search"
-                    privateColumns={[ContactsHeadCells]}
-                    targetLabel={getTargetFromSearchTaps()}
-                    header={<SearchTabPanels />}
-                  />,
+                  //   <M1nTable
+                  //     dense
+                  //     parent="search"
+                  //     privateColumns={[parcelColumnHeaders]}
+                  //     targetLabel={getTargetFromSearchTaps()}
+                  //     header={<SearchTabPanels />}
+                  //     // showTags
+                  //     // showComments
+                  //     // showTracks
+                  //   />,
+                  //   <M1nTable
+                  //     dense
+                  //     parent="search"
+                  //     privateColumns={[]}
+                  //     targetLabel={getTargetFromSearchTaps()}
+                  //     header={<SearchTabPanels />}
+                  //   />,
+                  //   <M1nTable
+                  //   dense
+                  //   parent="search"
+                  //   privateColumns={[ContactsHeadCells]}
+                  //   targetLabel={getTargetFromSearchTaps()}
+                  //   header={<SearchTabPanels />}
+                  // />,
 
                       <M1nTable
                         dense
