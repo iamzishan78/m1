@@ -219,6 +219,18 @@ const useStyles = makeStyles((theme) => ({
     left: "223px",
     position: "absolute",
     top: "19px"
+  },
+  clickableCell:{
+    cursor: "pointer",
+    padding: "10px 30px 10px 10px",
+    position: "relative",
+    minWidth: "100px",
+    borderRadius: "7px",
+    color: "#17aadd",
+    "&:hover": {
+      textDecoration: "underline",
+    },
+    fontWeight: "bold"
   }
 }));
 
