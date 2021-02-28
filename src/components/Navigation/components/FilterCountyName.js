@@ -125,7 +125,7 @@ export default function FilterCountyName() {
           autoSelect
           disableListWrap
           includeInputInList
-          //value={countyList.length === 0 ? "" : ""}
+          value={countyList.length === 0 ? "" : stateNav.countyName}
           onChange={(event, newValue) => {
             handleCountyNameChange(event, newValue);
           }}
