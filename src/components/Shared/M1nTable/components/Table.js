@@ -2127,7 +2127,9 @@ function SubTable(props) {
             <span className={classes.addIcon}>
               <Tooltip
                 title={`Add${
-                  props.targetLabel
+                  props.parent === "assocTaxRollInterests"
+                    ? " Well Interest"
+                    : props.targetLabel
                     ? " " +
                       props.targetLabel.charAt(0).toUpperCase() +
                       props.targetLabel.slice(1)
@@ -2153,6 +2155,15 @@ function SubTable(props) {
                         dealDialog: true,
                         activeDeal: { cardId: null, laneId: null },
                       }));
+
+                    if (props.addAble.type && props.addAble.type === "wellInterest") {
+                      setStateApp((stateApp) => ({
+                        ...stateApp,
+                        wellInterestDialog: true,
+                        //activeDeal: { cardId: null, laneId: null },
+                      }));
+                    }
+
                     if (
                       props.addAble.type &&
                       props.addAble.type === "parcelInterestsToEntity"

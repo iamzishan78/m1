@@ -60,6 +60,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
 import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
+import AddWellInterestDialog from "../../ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 import { setMapGridCardState, showWarningMessage } from "../../../actions";
 import { first } from "@amcharts/amcharts4/.internal/core/utils/Array";
 
@@ -3132,7 +3133,7 @@ function M1nTable(props) {
       });
       setTargetLabel("well");
       setHeader(props.header);
-      setAddAble(false);
+      setAddAble({ type: "wellInterest" });
     }
   }, [props.parent]);
 
@@ -5180,6 +5181,21 @@ function M1nTable(props) {
               ...stateApp,
               dealDialog: false,
               activeDeal: { cardId: null, laneId: null },
+            }))
+          }
+          contactId={props.contact?._id}
+        />
+      )}
+
+      {props.parent && props.parent === "assocTaxRollInterests" && (
+        <AddWellInterestDialog
+          open={stateApp.wellInterestDialog ? true : false}
+          width="450px"
+          onClose={() =>
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              wellInterestDialog: false,
+              //activeDeal: { cardId: null, laneId: null },
             }))
           }
           contactId={props.contact?._id}
