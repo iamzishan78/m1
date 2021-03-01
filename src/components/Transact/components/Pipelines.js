@@ -2,11 +2,11 @@ import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import SettingsIcon from '@material-ui/icons/Settings';
+import IconButton from '@material-ui/core/IconButton';
 import Dialog from "@material-ui/core/Dialog";
 import {
   setFlowState,
@@ -605,15 +605,7 @@ export default function Pipelines(props) {
     setDeleteDialogOpen(open);
   };
 
-  // const deleteFunc = async () => {
-  //   // try {
-  //   //   setIsDeleting(true);
-  //   //   await deleteDeal();
-  //   //   setIsDeleting(false);
-  //   // } catch {
-  //   //   setIsDeleting(false);
-  //   // }
-  // };
+
 
   //// checking if the something to update in the pipe or the stages
   const checkingIfEdited = () => {
@@ -710,7 +702,7 @@ export default function Pipelines(props) {
             );
           }}
         />
-          <Button
+          <IconButton
             disabled={!selectedPipe}
             size="small"
             onClick={() => {
@@ -722,7 +714,7 @@ export default function Pipelines(props) {
             }}
           >
             <SettingsIcon />
-          </Button>
+          </IconButton>
       </ButtonGroup>
 
       {/* //// pipelines dialog //// */}
