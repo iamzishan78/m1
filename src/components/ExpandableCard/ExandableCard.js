@@ -27,7 +27,7 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { gql } from "@apollo/client";
 import ContactSearch from "./components/ContactSearch";
 
-export default function ExpandableCard(props) {
+function ExpandableCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateExpandableCard, setStateExpandableCard] = useContext(
     ExpandableCardContext
@@ -518,3 +518,6 @@ export default function ExpandableCard(props) {
     </React.Fragment>
   );
 }
+
+ExpandableCard.whyDidYouRender = true
+export default React.memo(ExpandableCard);

@@ -4,7 +4,7 @@ import { WellCardContextProvider } from './WellCardContext'
 import WellCard from './WellCard'
 
 
-export default function WellCardProvider(props) {
+function WellCardProvider(props) {
   const handleCloseWellCard = () => {
     props.closeWellCard()
   }
@@ -21,4 +21,5 @@ export default function WellCardProvider(props) {
   )
 }
 
-
+WellCardProvider.whyDidYouRender = true
+export default React.memo(WellCardProvider);

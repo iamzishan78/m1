@@ -117,7 +117,7 @@ const random_hex_color_code = () => {
 };
 let hoveredAbstractId = null;
 
-export default function Map() {
+function Map() {
   const [stateApp, setStateApp] = useContext(AppContext);
   let classes = useStyles({
     drawingCircle:
@@ -2870,7 +2870,9 @@ export default function Map() {
     (currentFeature) => {
       let coordinates = [currentFeature.longitude, currentFeature.latitude];
       let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
+      if (popUps[0]) {
+        popUps[0].remove();
+      }
       new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
         .setMaxWidth("none")
@@ -2891,7 +2893,9 @@ export default function Map() {
       const { geometry } = filterFeature;
       const coordinates = geometry.coordinates;
       let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
+      if (popUps[0]) {
+        popUps[0].remove();
+      }
       if (coordinates.length > 0) {
         const minLatitude = coordinates.reduce((a, b) =>
           a[0] < b[0] ? a : b
@@ -2921,7 +2925,9 @@ export default function Map() {
   const createSelectedAbstractPopup = useCallback(
     (currentFeature) => {
       let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
+      if (popUps[0]) {
+        popUps[0].remove();
+      }
 
       if (!currentFeature) return;
 
@@ -2966,7 +2972,9 @@ export default function Map() {
         coordinates = JSON.parse(currentFeature.shapeCenter);
       }
       let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
+      if (popUps[0]) {
+        popUps[0].remove();
+      }
 
       new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
@@ -3091,7 +3099,12 @@ export default function Map() {
 
         if (currentFeature) {
           let popUps = document.getElementsByClassName("mapboxgl-popup");
-          if (popUps[0]) popUps[0].remove();
+          setStateApp((state) => ({
+            ...state,
+            popupOpen: false,
+            selectedUserDefinedLayer: null,
+            selectedParcel: null,
+          }));
           setStateApp((state) => ({
             ...state,
             selectedWell: currentFeature.properties,
@@ -3290,7 +3303,9 @@ export default function Map() {
   useLayoutEffect(() => {
     if (stateApp.popupOpen === false) {
       let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
+      if (popUps[0]) {
+        popUps[0].remove();
+      }
 
       setStateApp((state) => ({
         ...state,
@@ -4791,3 +4806,6 @@ export default function Map() {
     </div>
   );
 }
+
+Map.whyDidYouRender = true
+export default React.memo(Map);

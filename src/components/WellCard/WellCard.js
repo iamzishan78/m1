@@ -163,7 +163,7 @@ const formatBOE = (boe) => {
   return Math.round(boe).toLocaleString();
 };
 
-export default function WellCard() {
+function WellCard() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateExpandableCard, setStateExpandableCard] = useContext(
     ExpandableCardContext
@@ -632,3 +632,6 @@ export default function WellCard() {
 
 
 }
+
+WellCard.whyDidYouRender = true
+export default React.memo(WellCard);
