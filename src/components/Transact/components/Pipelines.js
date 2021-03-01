@@ -6,7 +6,7 @@ import IconButton from "@material-ui/core/IconButton";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import EditIcon from "@material-ui/icons/Edit";
+import SettingsIcon from '@material-ui/icons/Settings';
 import Dialog from "@material-ui/core/Dialog";
 import {
   setFlowState,
@@ -722,7 +722,7 @@ export default function Pipelines(props) {
               );
             }}
           >
-            <EditIcon />
+            <SettingsIcon />
           </Button>
         </ButtonGroup>
       </ButtonGroup>
