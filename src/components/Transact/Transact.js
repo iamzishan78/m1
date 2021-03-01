@@ -1,6 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
-//////////react-trello info: https://github.com/rcdexta/react-trello  //////////
-////////////////////////////////////////////////////////////////////////////////
 
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
@@ -8,20 +5,12 @@ import { AppContext } from "../../AppContext";
 import Board from "react-trello";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { UPDATESTAGEDEALDESCRIPTORS } from "../../graphQL/useMutationUpdateStageDealDescriptors";
-import { GETPIPELINES } from "../../graphQL/useQueryPipelines";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Button from "@material-ui/core/Button";
-import Dialog from "./components/dialog";
-import getLaneTitle from "./getLaneTitle";
 import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
-import RightDialog from "../ContactDetailCard/components/RightDialog";
-import { isEqual } from "lodash";
 import "./index.css";
-import { AppBar } from "@material-ui/core";
 import TransactAppBar from "./components/TransactAppBar";
 import TransactTable from "./components/TransactTable";
 import { useDispatch, useSelector } from "react-redux";
-import { setFlowState } from "../../actions";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import moment from "moment";
@@ -330,11 +319,6 @@ export default function Transact() {
     let filteredTargetLane = filteredBoardTransactData.lanes.find(
       (lane) => lane?.id === targetLaneId
     );
-
-    let filteredSourcePosition = filteredSourceLane.cards.findIndex(
-      (card) => card?.id === cardId
-    );
-    let filteredTargetPosition = position;
 
     let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex(
       (card) => card?.id === cardId
