@@ -710,7 +710,6 @@ export default function Pipelines(props) {
             );
           }}
         />
-        <ButtonGroup>
           <Button
             disabled={!selectedPipe}
             size="small"
@@ -724,7 +723,6 @@ export default function Pipelines(props) {
           >
             <SettingsIcon />
           </Button>
-        </ButtonGroup>
       </ButtonGroup>
 
       {/* //// pipelines dialog //// */}
