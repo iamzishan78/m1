@@ -194,7 +194,41 @@ const TransactAppBar = ({
         variant="outlined"
       >
         <div className={classes.top} style={{ marginTop: 15 }}>
+          <Pipelines />
+
+
           <div className={classes.right}>
+            <div className={classes.activeDeals}>
+              <OfflineBolt />
+              <span>
+                {openDeals.count}{" "}
+                {openDeals.count !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
+                {openDeals.amount}
+              </span>
+            </div>
+            <div className={classes.closedDeals}>
+              <CheckBox />
+              <span>
+                {wonDeals.count}{" "}
+                {wonDeals.count !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
+                {wonDeals.amount}
+              </span>
+            </div>
+            <div className={classes.lostDeals}>
+              <NotInterested />
+              <span>
+                {lostDeals.count}{" "}
+                {lostDeals.count !== 1 ? "LOST DEALS" : "LOST DEAL"} |{" "}
+                {lostDeals.amount}
+              </span>
+            </div>
+            {/* <Button className={classes.import} color="default" size="small">
+              IMPORT
+            </Button> */}
+            {/* <Pipelines /> */}
+          </div>
+
+          <div className={classes.left}>
             {/* <h1>DEAL FLOW</h1> */}
 
             <ButtonGroup style={{ minHeight: 36 }}>
@@ -246,36 +280,6 @@ const TransactAppBar = ({
                 Deleted
               </Button> */}
             </ButtonGroup>
-          </div>
-          <div className={classes.left}>
-            <div className={classes.activeDeals}>
-              <OfflineBolt />
-              <span>
-                {openDeals.count}{" "}
-                {openDeals.count !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
-                {openDeals.amount}
-              </span>
-            </div>
-            <div className={classes.closedDeals}>
-              <CheckBox />
-              <span>
-                {wonDeals.count}{" "}
-                {wonDeals.count !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
-                {wonDeals.amount}
-              </span>
-            </div>
-            <div className={classes.lostDeals}>
-              <NotInterested />
-              <span>
-                {lostDeals.count}{" "}
-                {lostDeals.count !== 1 ? "LOST DEALS" : "LOST DEAL"} |{" "}
-                {lostDeals.amount}
-              </span>
-            </div>
-            {/* <Button className={classes.import} color="default" size="small">
-              IMPORT
-            </Button> */}
-            <Pipelines />
           </div>
         </div>
         {/* <div className={classes.bottom}>

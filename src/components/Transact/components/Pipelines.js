@@ -390,19 +390,11 @@ export default function Pipelines(props) {
     );
     //// saving state
     setStages([...reorderedStages]);
-    //   //// saving to mongo
-    //   updateManyUserLayerSettings({
-    //     variables: {
-    //       manySettings: stagesToUpdate,
-    //     },
-    //   });
   };
 
   const handleToggleRotten = (stage, index) => {
-    // if (addingNewPipe) {
     const upStages = [...stages];
     upStages[index] = { ...stage, rotten: !stage.rotten };
-
     setStages([...upStages]);
     // }
   };
@@ -656,7 +648,7 @@ export default function Pipelines(props) {
         >
           <DeleteConfirmationDialogContent
             header={
-              deleteDialogOpen === "pipe" ? `Delete Pipeline` : `Delete Stage`
+              deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`
             }
             onClose={handleCloseDeleteDialog}
             deleteFunc={deleteFunc ? deleteFunc : () => {}}
@@ -664,7 +656,7 @@ export default function Pipelines(props) {
             setM1nSelectedRowsIndexes={() => {}}
           >
             {deleteDialogOpen === "pipe"
-              ? "Are you sure you want to delete the pipeline?"
+              ? "Are you sure you want to delete the Flowline?"
               : "Are you sure you want to delete the stage?"}
           </DeleteConfirmationDialogContent>
         </Dialog>
@@ -745,8 +737,8 @@ export default function Pipelines(props) {
         >
           <DialogTitle className={classes.title}>
             {openPipeDialog !== "newPipe"
-              ? "Edit Pipeline"
-              : "Add a New Pipeline"}
+              ? "Edit Flowline"
+              : "Add a New Flowline"}
 
             <div className={classes.titleClose}>
               {openPipeDialog !== "newPipe" && (
@@ -937,30 +929,6 @@ export default function Pipelines(props) {
                                             />
                                           </Tooltip>
                                         </TableCell>
-
-                                        {/* <TableCell padding="checkbox">
-                                          <Tooltip
-                                            title="Rotten Stats"
-                                            placement="top"
-                                          >
-                                            <FormControlLabel
-                                              control={
-                                                <Switch
-                                                  checked={stage.rotten}
-                                                  onChange={() => {
-                                                    handleToggleRotten(
-                                                      stage,
-                                                      index
-                                                    );
-                                                  }}
-                                                />
-                                              }
-                                            />
-                                          </Tooltip>
-                                        </TableCell> */}
-                                        {/* <TableCell align="left">
-                                          {stage.autoAssign}
-                                        </TableCell> */}
                                       </TableRow>
                                     )}
                                   </Draggable>
