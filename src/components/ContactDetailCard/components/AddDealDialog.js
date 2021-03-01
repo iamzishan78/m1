@@ -48,7 +48,6 @@ import {
 import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
-import { toDate } from "date-fns";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
