@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import uuid from "uuid";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -14,15 +13,12 @@ import Grid from "@material-ui/core/Grid";
 import { AppContext } from "../../../AppContext";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
-import getLaneTitle from "../../Transact/getLaneTitle";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
-import { ALLENTITYNAMESFORPARCEL } from "../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CircularProgress, Dialog, Typography } from "@material-ui/core";
 import RightDialog from "./RightDialog";
-import { DatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import {
   deepEqual,
@@ -192,10 +188,7 @@ const newContact = {
   state: "",
   zip: "",
 };
-const wonStyle = { borderColor: "#35DA97" };
-const lostStyle = { borderColor: "#F74E1E" };
-const defaultStyle = { borderColor: "#e2e2e2" };
-const openStyle = { borderColor: "#EBC253" };
+
 
 function AddDealDialog(props) {
   const dispatch = useDispatch();
@@ -919,14 +912,6 @@ function AddDealDialog(props) {
                     </IconButton>
                   </>
                 )}
-
-              <IconButton
-                disabled={updateDealLoading || addContactLoading}
-                onClick={handleClose}
-                size="small"
-              >
-                <CloseIcon className={classes.closeIcon} fontSize="small" />
-              </IconButton>
             </div>
           </Grid>
           <div
