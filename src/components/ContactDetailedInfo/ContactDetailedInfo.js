@@ -513,7 +513,13 @@ export default function DetailInfo(props) {
               )
             } else {
               let objName = Object.keys(row.data)[0];
-              if (row.data[objName] != undefined) {
+              if (row.data[objName] != undefined 
+                  && row.data[objName] != `""` 
+                  && row.data[objName] != '' 
+                  && row.data[objName] != ""                  
+                  && row.data[objName].length != 0
+                  && row.data[objName] != null 
+                  ) {
                 return (
                   <React.Fragment>
                     <Grid item xs={3} className="fieldName">
@@ -558,8 +564,16 @@ export default function DetailInfo(props) {
                 )
               } else {
                 let objName = Object.keys(row.data)[0];
-                if (row.data[objName] != undefined) {
+
+                if (row.data[objName] != undefined
+                  && row.data[objName] != `""` 
+                  && row.data[objName] != '' 
+                  && row.data[objName] != ""                  
+                  && row.data[objName].length != 0
+                  && row.data[objName] != null 
+                  ) {
                   return (
+                  
                     <React.Fragment key={key}>
                       <Grid item xs={3} className="fieldName">
                         <p className="dataLabels">{key}</p>

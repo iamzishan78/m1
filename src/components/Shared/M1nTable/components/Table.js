@@ -1969,7 +1969,8 @@ function SubTable(props) {
                       </Button>
                     )}
 
-                    <Button
+                    {/* temporary comment out until melissa is back */}
+                    {/* <Button
                       color="secondary"
                       startIcon={<ContactPhoneRoundedIcon />}
                       className={classes.multiSelectionTopBarButtons}
@@ -1983,7 +1984,7 @@ function SubTable(props) {
                       }}
                     >
                       Buy Contact Info
-                      </Button>
+                      </Button> */}
                     <Button
                       color="secondary"
                       startIcon={<EmailRoundedIcon />}

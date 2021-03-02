@@ -1058,7 +1058,7 @@ function Search() {
       //// if operator
       if (
         newValue &&
-        newValue.Source === "operatorIndexName" &&
+        newValue.Source === operatorIndexName &&
         newValue.Operator
       ) {
         getOperatorWells({

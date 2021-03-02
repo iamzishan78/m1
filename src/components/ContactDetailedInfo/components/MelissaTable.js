@@ -201,7 +201,13 @@ export default ({ ...props }) => {
                 );
               } else {
                 let objName = Object.keys(value.data)[0];
-                if (value.data[objName] != undefined) {
+                if (value.data[objName] != undefined
+                  && value.data[objName] != `""` 
+                  && value.data[objName] != '' 
+                  && value.data[objName] != ""                  
+                  && value.data[objName].length != 0
+                  && value.data[objName] != null 
+                  ) {
                   return (
                     <React.Fragment>
                       <Grid item xs={3} className="fieldName">
