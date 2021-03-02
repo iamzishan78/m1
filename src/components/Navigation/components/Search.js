@@ -201,7 +201,7 @@ function Search() {
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
-  const [getContactsWells, { data: dataContactsWells }] = useLazyQuery(CONTACTWELLS);
+  const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
 
 
 
@@ -908,42 +908,40 @@ function Search() {
 
 
   //// getting wells data from contacts ////
-  useEffect(() => {
-
-    console.log('dataContacts',dataContactsWells)
-    if (dataLeaseWells && dataLeaseWells.leaseLatsLonsArray) {
-      if (dataLeaseWells.leaseLatsLonsArray.length !== 0) {
-
-
-        setStateApp((stateApp) =>
-          dataLeaseWells.leaseLatsLonsArray.length === 1
-            ? {
-                ...stateApp,
-                selectedWell: null,
-                fitBounds: null,
-                selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
-                wellSelectedCoordinates: [
-                  dataLeaseWells.leaseLatsLonsArray[0].longitude,
-                  dataLeaseWells.leaseLatsLonsArray[0].latitude,
-                ],
-                wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
-              }
-            : {
-                ...stateApp,
-                fitBounds: null,
-                wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
-              }
-        );
-        stateApp.toggleLayersActivity("Search", true);
-      } else {
-        stateApp.toggleLayersActivity("Search", false);
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          wellListFromSearch: [],
-        }));
+    useEffect(() => {
+      if (dataContactWells && dataContactWells.contactWells) {
+        if (dataContactWells.contactWells.length !== 0) {
+  
+          console.log('data contact wells', dataContactWells)
+          setStateApp((stateApp) =>
+          dataContactWells.contactWells.length === 1
+              ? {
+                  ...stateApp,
+                  selectedWell: null,
+                  fitBounds: null,
+                  selectedWellId: dataContactWells.contactWells[0].id.toLowerCase(),
+                  wellSelectedCoordinates: [
+                    dataContactWells.contactWells[0].longitude,
+                    dataContactWells.contactWells[0].latitude,
+                  ],
+                  wellListFromSearch: [...dataContactWells.contactWells],
+                }
+              : {
+                  ...stateApp,
+                  fitBounds: null,
+                  wellListFromSearch: [...dataContactWells.contactWells],
+                }
+          );
+          stateApp.toggleLayersActivity("Search", true);
+        } else {
+          stateApp.toggleLayersActivity("Search", false);
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            wellListFromSearch: [],
+          }));
+        }
       }
-    }
-  }, [dataContactsWells]);
+    }, [dataContactWells]);
 
 
 
@@ -1137,14 +1135,14 @@ function Search() {
       if (
         newValue &&
         newValue.Source === contactIndexName 
-        // &&
+        && newValue._id
         // ((newValue.Lease && newValue.Lease !== "") ||
         //   (newValue.LeaseId && newValue.LeaseId !== ""))
       ) {
           console.log('newvalue',newValue)
           getContactsWells({
             variables: {
-              contactId: newValue._Id,
+              contactId: newValue._id,
             },
           });
       }
