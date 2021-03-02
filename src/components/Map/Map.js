@@ -1029,17 +1029,17 @@ function Map() {
     //   }
     // };
 
+
     const wellPointClick = (feature) => {
       if (feature && feature.properties) {
-        const objFiledsToLowerCase = (feature) => {
-          let newObj = {};
-          for (let key in feature)
-            newObj[key.charAt(0).toLowerCase() + key.slice(1)] = feature[key];
 
-          return newObj;
-        };
-        let properties = objFiledsToLowerCase(feature.properties);
+        let properties = feature.properties;
+        console.log('wellpointclick popprops', properties)
+        console.log('wellpointclick popprops 2', properties.wellName ? properties : null)
+        console.log('wellpointclick popprops 3', properties.id ? properties.id.toLowerCase() : null)
+        console.log('wellpointclick wellname popprops 4', properties.wellName)
 
+        if (properties.id){
         setStateApp((state) => ({
           ...state,
           popupOpen: false,
@@ -1048,18 +1048,60 @@ function Map() {
         }));
         setStateApp((state) => ({
           ...state,
-          selectedWell:
-            properties.wellName && properties.operator ? properties : null,
-          selectedWellId: properties.id ? properties.id.toLowerCase() : null,
+          //selectedWell: properties.wellName ? properties : null,
+          selectedWellId: properties.id.toLowerCase(),
           wellSelectedCoordinates: [properties.longitude, properties.latitude],
         }));
 
-        if (properties.wellName && properties.operator) {
-          createPopUp(properties);
-          map.resize();
-        }
+        // if (properties.wellName) {
+          // createPopUp(properties);
+          // map.resize();
+        // }
       }
+      }
+
     };
+
+
+    // const wellPointClick = (feature) => {
+    //   // this function is intended to organize the data 
+    //   // when a well point is clicked 
+    //   // and initiate the mapbox popup 
+
+    //   console.log('feature ', feature)
+    //   if (feature && feature.properties) {
+
+    //     let properties = feature.properties;
+
+    //     // tmp fix because it appears that the data coming back 
+    //     // from contacts api is slightly different than other apis
+    //     // need to setup in a standard format 
+    //     if(!properties.id){properties.id = properties.wellId}
+        
+
+    //     setStateApp((state) => ({
+    //       ...state,
+    //       popupOpen: false,
+    //       selectedUserDefinedLayer: null,
+    //       selectedParcel: null,
+    //     }));
+        
+    //     setStateApp((state) => ({
+    //       ...state,
+    //       selectedWell:
+    //         properties.id ? properties : null,
+    //       selectedWellId: properties.id ? properties.id : null,
+    //       wellSelectedCoordinates: [properties.longitude, properties.latitude],
+    //     }));
+
+    //     if (properties.id) {
+    //       console.log('wellpoint click popprops', properties)
+    //       createPopUp(properties);
+    //       map.resize();
+    //     }
+    //   }
+    // };
+
 
 
     const udLayerClickHandler = (feature) => {
