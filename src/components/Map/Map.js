@@ -997,6 +997,38 @@ function Map() {
   useEffect(() => {
 
 
+    // const wellPointClick = (feature) => {
+    //   if (feature && feature.properties) {
+    //     const objFiledsToLowerCase = (feature) => {
+    //       let newObj = {};
+    //       for (let key in feature)
+    //         newObj[key.charAt(0).toLowerCase() + key.slice(1)] = feature[key];
+
+    //       return newObj;
+    //     };
+    //     let properties = objFiledsToLowerCase(feature.properties);
+
+    //     setStateApp((state) => ({
+    //       ...state,
+    //       popupOpen: false,
+    //       selectedUserDefinedLayer: null,
+    //       selectedParcel: null,
+    //     }));
+    //     setStateApp((state) => ({
+    //       ...state,
+    //       selectedWell:
+    //         properties.wellName && properties.operator ? properties : null,
+    //       selectedWellId: properties.id ? properties.id.toLowerCase() : null,
+    //       wellSelectedCoordinates: [properties.longitude, properties.latitude],
+    //     }));
+
+    //     if (properties.wellName && properties.operator) {
+    //       createPopUp(properties);
+    //       map.resize();
+    //     }
+    //   }
+    // };
+
     const wellPointClick = (feature) => {
       if (feature && feature.properties) {
         const objFiledsToLowerCase = (feature) => {
@@ -1028,7 +1060,6 @@ function Map() {
         }
       }
     };
-
 
 
     const udLayerClickHandler = (feature) => {
