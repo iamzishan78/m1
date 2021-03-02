@@ -309,15 +309,15 @@ export default function DetailInfo(props) {
       data: { AltPhone3: props.contactData.AltPhone3 },
       linkType: LinkTypes.None,
     },
-
+    "Relative Names": {
+      data: { relatives: props.contactData.relatives },
+      linkType: LinkTypes.None,
+    },
     // Notes: {
     //   data: { notes: props.contactData.notes },
     //   linkType: LinkTypes.None,
     // },
-    Website: {
-      data: { website: props.contactData.website },
-      linkType: LinkTypes.None,
-    },
+
 
     "LinkedIn Profile": {
       data: { linkedIn: props.contactData.linkedIn },
@@ -370,11 +370,11 @@ export default function DetailInfo(props) {
       //   </a>
       // ),
     },
-
-    "Relative Names": {
-      data: { relatives: props.contactData.relatives },
+    Website: {
+      data: { website: props.contactData.website },
       linkType: LinkTypes.None,
     },
+
     // "Company Name": {
     //   data: { companyName: props.contactData.companyName },
     //   linkType: LinkTypes.None,
@@ -383,10 +383,10 @@ export default function DetailInfo(props) {
     //   data: { jobTitle: props.contactData.jobTitle },
     //   linkType: LinkTypes.None,
     // },
-    "Lead Stage": {
-      data: { leadStage: props.contactData.leadStage },
-      linkType: LinkTypes.None,
-    },
+    // "Lead Stage": {
+    //   data: { leadStage: props.contactData.leadStage },
+    //   linkType: LinkTypes.None,
+    // },
     "Industry Type": {
       data: { industryType: props.contactData.industryType },
       linkType: LinkTypes.None,
@@ -400,16 +400,17 @@ export default function DetailInfo(props) {
       data: { leadSource: props.contactData.leadSource },
       linkType: LinkTypes.None,
     },
-    Status: {
-      data: { status: props.contactData.status },
-      linkType: LinkTypes.None,
-    },
+
     "Time Zone": {
       data: { timeZone: props.contactData.timeZone },
       linkType: LinkTypes.None,
     },
     Territory: {
       data: { territory: props.contactData.territory },
+      linkType: LinkTypes.None,
+    },
+    Status: {
+      data: { status: props.contactData.status },
       linkType: LinkTypes.None,
     },
     "Created By": {
