@@ -18,6 +18,8 @@ import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+
+
 import { OWNERWELLSQUERY } from "../../../graphQL/useQueryOwnerWells ";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
@@ -29,6 +31,9 @@ import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
 import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
 import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
+
+
 import { NavigationContext } from "../NavigationContext";
 import Popover from "@material-ui/core/Popover";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -44,6 +49,7 @@ const leaseIndexName = 'lease-index-v2';
 const operatorIndexName = 'operator-index';
 const wellCogIndexName = "wellheader-index-en-ms";
 const ownerCogIndexName = "globalowner-index";
+const contactIndexName = 'contacts-index';
 
 
 const maxMinScore = (options) => {
@@ -180,7 +186,8 @@ function Search() {
     0,
   ]);
   const [searchHistoryList, setSearchHistoryList] = React.useState([]);
-  const loaded = React.useRef(false);
+
+  // loaders 
   const [loadingWells, setLoadingWells] = React.useState(false);
   const [loadingOwners, setLoadingOwners] = React.useState(false);
   const [loadingLeases, setLoadingLeases] = React.useState(false);
@@ -189,21 +196,14 @@ function Search() {
   const [loadingMapboxSearch, setLoadingMapboxSearch] = React.useState(false);
   const classes = useStyles({ mapGridCardActivated });
 
-  const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(
-    OWNERSLATSLONS
-  );
+  // queries 
+  const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-
-  const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(
-    OPERATORSLATSLONS
-  );
+  const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
+  const [getContactsWells, { data: dataContactsWells }] = useLazyQuery(CONTACTWELLS);
 
-  const setPageInd = (newState) => {
-    setStateIfDeepEqual(PageInd, newState);
-  };
 
-  const [pageInd, PageInd] = useState(0);
 
   const setDataContacts = (newState) => {
     setStateIfDeepEqual(DataContacts, newState);
@@ -471,7 +471,7 @@ function Search() {
         ...constDataContacts.paginatedContacts.edges.map((result) => {
 
           result = result.node;
-          result.Source = 'contacts-index'
+          result.Source = contactIndexName;
           
           if(result.name){
             result.Primary = result.name
@@ -693,12 +693,12 @@ function Search() {
               )
             : null,
 
-          // searchOption == "all" || searchOption == "contacts"
-          //   ? callContactsSearch(
-          //       { input: searchInputValue },
-          //       searchTop,
-          //     )
-          //   : null,
+          searchOption == "all" || searchOption == "contacts"
+            ? callContactsSearch(
+                { input: searchInputValue },
+                searchTop,
+              )
+            : null,
 
           
           // searchOption == "all" || searchOption == "parcels"
@@ -754,7 +754,7 @@ function Search() {
     callOwnerSearch,
     callOperatorSearch,
     callLeaseSearch,
-    // callContactsSearch,
+    callContactsSearch,
     // callParcelSearch,
     callMapboxSearch,
     searchOption,
@@ -904,6 +904,46 @@ function Search() {
       }
     }
   }, [dataLeaseWells]);
+
+
+
+  //// getting wells data from contacts ////
+  useEffect(() => {
+
+    console.log('dataContacts',dataContactsWells)
+    if (dataLeaseWells && dataLeaseWells.leaseLatsLonsArray) {
+      if (dataLeaseWells.leaseLatsLonsArray.length !== 0) {
+
+
+        setStateApp((stateApp) =>
+          dataLeaseWells.leaseLatsLonsArray.length === 1
+            ? {
+                ...stateApp,
+                selectedWell: null,
+                fitBounds: null,
+                selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
+                wellSelectedCoordinates: [
+                  dataLeaseWells.leaseLatsLonsArray[0].longitude,
+                  dataLeaseWells.leaseLatsLonsArray[0].latitude,
+                ],
+                wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
+              }
+            : {
+                ...stateApp,
+                fitBounds: null,
+                wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
+              }
+        );
+        stateApp.toggleLayersActivity("Search", true);
+      } else {
+        stateApp.toggleLayersActivity("Search", false);
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          wellListFromSearch: [],
+        }));
+      }
+    }
+  }, [dataContactsWells]);
 
 
 
@@ -1093,29 +1133,21 @@ function Search() {
       }
 
 
-      //// if contact
-      // if (
-      //   newValue &&
-      //   newValue.Source === "contacts-index" &&
-      //   ((newValue.Lease && newValue.Lease !== "") ||
-      //     (newValue.LeaseId && newValue.LeaseId !== ""))
-      // ) {
-      //   if (newValue.Lease && newValue.Lease !== "") {
-      //     getLeaseWells({
-      //       variables: {
-      //         fieldName: "Lease",
-      //         value: newValue.Lease,
-      //       },
-      //     });
-      //   } else {
-      //     getLeaseWells({
-      //       variables: {
-      //         fieldName: "LeaseId",
-      //         value: newValue.LeaseId,
-      //       },
-      //     });
-      //   }
-      // }
+      // if contact
+      if (
+        newValue &&
+        newValue.Source === contactIndexName 
+        // &&
+        // ((newValue.Lease && newValue.Lease !== "") ||
+        //   (newValue.LeaseId && newValue.LeaseId !== ""))
+      ) {
+          console.log('newvalue',newValue)
+          getContactsWells({
+            variables: {
+              contactId: newValue._Id,
+            },
+          });
+      }
 
       //// if mapboxSearch
       if (newValue && newValue.Source === "mapboxSearch" && newValue.center) {
@@ -1160,13 +1192,13 @@ function Search() {
         loadingOwners ||
         loadingOperators ||
         loadingLeases ||
-        // loadingContacts ||
+        loadingContacts ||
         loadingMapboxSearch)) ||
     (searchOption === "wells" && loadingWells) ||
     (searchOption === "owners" && loadingOwners) ||
     (searchOption === "operators" && loadingOperators) ||
     (searchOption === "leases" && loadingLeases) ||
-    // (searchOption === "contacts" && loadingContacts) ||
+    (searchOption === "contacts" && loadingContacts) ||
     (searchOption === "locations" && loadingMapboxSearch)
   ) {
     optionsWithHeader = [header, { ...header, Source: "loader" }];
@@ -1185,7 +1217,7 @@ function Search() {
           if (option.Source === wellCogIndexName) return "Wells";
           if (option.Source === operatorIndexName) return "Operators";
           if (option.Source === leaseIndexName) return "Leases";
-          // if (option.Source === "contacts-index") return "Contacts";
+          if (option.Source === contactIndexName) return "Contacts";
           if (option.Source === "mapboxSearch") return "Locations";
           if (option.Source === "loader") return "loader";
           return "header";
@@ -1303,7 +1335,7 @@ function Search() {
                 >
                   Leases
                 </Button>
-                {/* <Button
+                <Button
                   className={classes.headerButtons}
                   variant={
                     searchOption === "contacts" ? "contained" : "outlined"
@@ -1315,7 +1347,7 @@ function Search() {
                   }}
                 >
                   Contacts
-                </Button> */}
+                </Button>
                 <Button
                   className={classes.headerButtons}
                   variant={
@@ -1359,8 +1391,8 @@ function Search() {
                               ? "operators"
                               : option.group === "Leases"
                               ? "leases"
-                              // : option.group === "Contacts"
-                              // ? "contacts"
+                              : option.group === "Contacts"
+                              ? "contacts"
                               : option.group === "Locations"
                               ? "locations"
                               : "all"
@@ -1417,14 +1449,14 @@ function Search() {
                 setLoadingOwners(true);
                 setLoadingOperators(true);
                 setLoadingLeases(true);
-                // setLoadingContacts(false);
+                setLoadingContacts(true);
                 setLoadingMapboxSearch(true);
               }
               if (searchOption === "wells") setLoadingWells(true);
               if (searchOption === "owners") setLoadingOwners(true);
               if (searchOption === "operators") setLoadingOperators(true);
               if (searchOption === "leases") setLoadingLeases(true);
-              // if (searchOption === "contacts") setLoadingContacts(true);
+              if (searchOption === "contacts") setLoadingContacts(true);
               if (searchOption === "locations") setLoadingMapboxSearch(true);
             } else {
               // setValue(null);
@@ -1433,7 +1465,7 @@ function Search() {
               setLoadingOwners(false);
               setLoadingOperators(false);
               setLoadingLeases(false);
-              // setLoadingContacts(false);
+              setLoadingContacts(false);
               setLoadingMapboxSearch(false);
             }
           }
@@ -1546,8 +1578,8 @@ function Search() {
                                     ? "operators"
                                     : option.Source === leaseIndexName
                                     ? "leases"
-                                    // : option.Source === "contacts-index"
-                                    // ? "contacts"
+                                    : option.Source === contactIndexName
+                                    ? "contacts"
                                     : option.group === "mapboxSearch"
                                     ? "locations"
                                     : "all"
@@ -1573,10 +1605,10 @@ function Search() {
                                     {option.Source === ownerCogIndexName && (
                                       <PersonIcon className={classes.icon} />
                                     )}
-                                    {/* {option.Source === "contacts-index" && (
+                                    {option.Source === contactIndexName && (
                                       //will need to change this to something different 
                                       <PersonIcon className={classes.icon} />
-                                    )} */}
+                                    )}
                                     {option.Source === operatorIndexName && (
                                       <OperatorIcon
                                         className={classes.icon}
@@ -1691,10 +1723,10 @@ function Search() {
                     <WellIcon className={classes.icon} color={"#757575"} />
                     </div>
                   )}
-                  {/* {option.Source === "contacts-index" && (
+                  {option.Source === contactIndexName && (
                     //will need to change this to something different
                     <PersonIcon className={classes.icon} color={"#757575"} />
-                  )} */}
+                  )}
                   {option.Source === "mapboxSearch" && (
                     <LocationOnIcon className={classes.icon} />
                   )}
@@ -1740,8 +1772,8 @@ function Search() {
                           ? maxMinOperatosScore
                           : option.Source === leaseIndexName
                           ? maxMinLeasesScore
-                          // : option.Source === "contacts-index"
-                          // ? maxMinContactsScore
+                          : option.Source === contactIndexName
+                          ? maxMinContactsScore
                           : maxMinMapboxSearchScore,
                         option.Score
                       ).toString(),
