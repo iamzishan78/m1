@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setFlowState } from "../../actions";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import M1nTable from "../Shared/M1nTable/M1nTable";
+import Drawer from "./components/Drawer"
 import moment from "moment";
 
 const useStyles = makeStyles((theme) => ({
@@ -607,6 +608,7 @@ export default function Transact() {
           }))
         }
       />
+      <Drawer />
       <TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} />
       {pipeToShow ? (
         <div className={classes.boardAndTable}>

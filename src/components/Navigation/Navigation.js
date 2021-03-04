@@ -1510,6 +1510,7 @@ export default function Navigation(props) {
                 <Avatar name={stateApp.user.name} size="38" round />
               )}
             </IconButton>
+            {matchTransact && <div style={{ width: "50px" }} />}
           </Toolbar>
         ) : (
           <div
