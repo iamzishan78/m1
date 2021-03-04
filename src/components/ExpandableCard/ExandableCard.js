@@ -20,6 +20,7 @@ import { TRACKBYOBJECTID } from "../../graphQL/useQueryTrackByObjectId";
 import TaggerWithIcon from "../Shared/TaggerWithIcon";
 import CommentsWithIcon from "../Shared/CommentsWithIcon";
 import TrackToggleButton from "../Shared/TrackToggleButton";
+import LinkWithIcon from "../Shared/LinkWithIcon";
 import BugsIcon from "../Shared/svgIcons/bug.js";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
@@ -90,7 +91,7 @@ function ExpandableCard(props) {
     }
   }, [props.title, props.targetLabel]);
 
-  
+
 
 
   const useStyles = makeStyles((theme) => ({
@@ -99,7 +100,7 @@ function ExpandableCard(props) {
       left: cardLeft,
       top: cardTop,
       zIndex: zIdx,
-      WebkitTransform: "translateZ(0)",
+      webkitTransform: "translateZ(0)",
       transition: "width 0.1s, height 0.1s, left 0.1s, top 0.1s",
       width: width,
       height: props.expanded ? height : "inherit",
@@ -205,9 +206,10 @@ function ExpandableCard(props) {
         popupOpen: false,
       }));
     } else if (props.targetLabel == "parcel" || props.targetLabel == "expandedParcel") {
-      setStateApp((state) => ({ ...state, 
-        parcelDetailCardOpen: true, 
-        popupOpen: false, 
+      setStateApp((state) => ({
+        ...state,
+        parcelDetailCardOpen: true,
+        popupOpen: false,
       }));
     }
 
@@ -317,18 +319,18 @@ function ExpandableCard(props) {
   };
 
   useEffect(() => {
-		///Set body style overflow hidden when card is fully expanded
-		const disableBodyScrollBarIfExpanded = () => {
-			if (width === '95vw') {
-				document.body.style.overflow = 'hidden';
-			}
-		};
+    ///Set body style overflow hidden when card is fully expanded
+    const disableBodyScrollBarIfExpanded = () => {
+      if (width === '95vw') {
+        document.body.style.overflow = 'hidden';
+      }
+    };
 
-		disableBodyScrollBarIfExpanded();
-		return () => {
-			  document.body.style.overflow = 'auto';
-		};
-	}, [openDialog, props.targetLabel, isExpanded, width]);
+    disableBodyScrollBarIfExpanded();
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [openDialog, props.targetLabel, isExpanded, width]);
 
 
   return (
@@ -342,11 +344,11 @@ function ExpandableCard(props) {
           maxWidth="sm"
         >
           <DeleteConfirmationDialogContent
-            header={`Delete ${targetLabel == "expandedParcel" ? "parcel" : targetLabel }`}
+            header={`Delete ${targetLabel == "expandedParcel" ? "parcel" : targetLabel}`}
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Are you sure you want to delete the selected {targetLabel == "expandedParcel" ? "parcel" : targetLabel}?
           </DeleteConfirmationDialogContent>
@@ -363,6 +365,12 @@ function ExpandableCard(props) {
             <div className={classes.headerIcons}>
               {targetLabel !== "activity" ? (
                 <>
+                  <LinkWithIcon
+                    objectId={targetSourceId.toLowerCase()}
+                    targetLabel={props.targetLabel}
+                    iconZiseSmall={!stateExpandableCard.expanded}
+                  />
+
                   <CommentsWithIcon
                     objectId={targetSourceId.toLowerCase()}
                     targetLabel={props.targetLabel}
@@ -387,7 +395,7 @@ function ExpandableCard(props) {
 
               {stateExpandableCard.expanded &&
                 targetLabel !== "activity" &&
-                targetLabel !== "contact" && targetLabel !== "expandedParcel" &&(
+                targetLabel !== "contact" && targetLabel !== "expandedParcel" && (
                   <Tooltip title={"Report Bug"} placement="top">
                     <IconButton
                       size="medium"
@@ -406,14 +414,14 @@ function ExpandableCard(props) {
                     {isDeletingCustomLayer || deleteLoading ? (
                       <CircularProgress size={20} color="secondary" />
                     ) : (
-                      <IconButton
-                        onClick={openConfirmationDialog}
-                        aria-label="Delete"
-                        className={classes.icons}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    )}
+                        <IconButton
+                          onClick={openConfirmationDialog}
+                          aria-label="Delete"
+                          className={classes.icons}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
                   </Tooltip>
                 )}
 
@@ -433,61 +441,61 @@ function ExpandableCard(props) {
                   )}
                 </Tooltip>
               )} */}
-              
-            
+
+
               {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact"
-                ? parent !== "table" && 
-                targetLabel !== "well" && targetLabel !== "expandedWell" && 
-                targetLabel !== "parcel" && targetLabel !== "expandedParcel"
+                ? parent !== "table" &&
+                  targetLabel !== "well" && targetLabel !== "expandedWell" &&
+                  targetLabel !== "parcel" && targetLabel !== "expandedParcel"
                   ? (
-                  <Tooltip title={"Shrink"} placement="top">
-                    <IconButton
-                      color="secondary"
-                      onClick={handleShrink}
-                      aria-label="shrink"
-                      className={classes.icons}
-                    >
-                      <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
-                    </IconButton>
-                  </Tooltip>
-                ) : isExpanded == false && targetLabel !== "activity" ? (
-                  <Tooltip title={"Expand"} placement="top">
-                    <IconButton
-                      size="small"
-                      onClick={handleExpand}
-                      aria-label="expand"
-                      className={classes.icons}
-                    >
-                      <ExpandIcon viewBox="0 0 64 64" color="secondary" />
-                    </IconButton>
-                  </Tooltip>
-                  ) : (
                     <Tooltip title={"Shrink"} placement="top">
                       <IconButton
                         color="secondary"
-                        onClick={handleExpand}
+                        onClick={handleShrink}
                         aria-label="shrink"
                         className={classes.icons}
                       >
                         <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
                       </IconButton>
                     </Tooltip>
+                  ) : isExpanded == false && targetLabel !== "activity" ? (
+                    <Tooltip title={"Expand"} placement="top">
+                      <IconButton
+                        size="small"
+                        onClick={handleExpand}
+                        aria-label="expand"
+                        className={classes.icons}
+                      >
+                        <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                      <Tooltip title={"Shrink"} placement="top">
+                        <IconButton
+                          color="secondary"
+                          onClick={handleExpand}
+                          aria-label="shrink"
+                          className={classes.icons}
+                        >
+                          <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                : (
+                  parent !== "table" &&
+                  targetLabel !== "activity" && (
+                    <Tooltip title={"Expand"} placement="top">
+                      <IconButton
+                        size="small"
+                        onClick={handleExpand}
+                        aria-label="expand"
+                        className={classes.icons}
+                      >
+                        <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+                      </IconButton>
+                    </Tooltip>
                   )
-              : (
-                parent !== "table" &&
-                targetLabel !== "activity" && (
-                  <Tooltip title={"Expand"} placement="top">
-                    <IconButton
-                      size="small"
-                      onClick={handleExpand}
-                      aria-label="expand"
-                      className={classes.icons}
-                    >
-                      <ExpandIcon viewBox="0 0 64 64" color="secondary" />
-                    </IconButton>
-                  </Tooltip>
-                )
-              )}
+                )}
 
               <Tooltip title={"Close"} placement="top">
                 <IconButton
