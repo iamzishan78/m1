@@ -1,10 +1,11 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
 import ClearIcon from "@material-ui/icons/Clear";
 import { IconButton } from "@material-ui/core";
+import { formatDiagnostics } from "typescript";
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -23,9 +24,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const format = "MM/DD/YYYY"
+
+
 export default function FilterDatePickerCompletetion(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [displayValue, setDisplayValue] = useState(null);
 
   useEffect(() => {
     let filter = null;
@@ -66,10 +71,17 @@ export default function FilterDatePickerCompletetion(props) {
   }, [stateNav.completetionDateFrom, stateNav.completetionDateTo, setStateNav]);
 
   const handleStartDate = (date) => {
+
+    console.log('check formatting', moment(date,format))
+    console.log('check formatting 2', moment(date).format(format))
+
+    //setDisplayValue(moment(date).format("MM/DD/YYYY"))
+
     setStateNav((stateNav) => ({
       ...stateNav,
       completetionDateFrom: !date ? null : moment(date),
     }));
+
   };
 
   const handleEndDate = (date) => {
@@ -78,6 +90,8 @@ export default function FilterDatePickerCompletetion(props) {
       completetionDateTo: !date ? null : moment(date),
     }));
   };
+
+  console.log('display value',displayValue)
 
   return (
     <div className={classes.root}>
@@ -89,11 +103,13 @@ export default function FilterDatePickerCompletetion(props) {
           }`}
           maxDate={moment().subtract(1, "day")}
           variant="inline"
+          // inputValue = {displayValue}
           value={
             stateNav.completetionDateFrom
-              ? stateNav.completetionDateFrom
-              : new Date("1900-01-01T00:00:00")
+            ? moment(stateNav.completetionDateFrom)
+            : new Date("1900-01-01T00:00:00")
           }
+
           onChange={(date) => handleStartDate(date)}
           //inputVariant="outlined"
           minDateMessage="Date should not be before minimal date"
@@ -101,7 +117,7 @@ export default function FilterDatePickerCompletetion(props) {
           disableToolbar
           KeyboardButtonProps={{ "aria-label": "change date" }}
           autoOk="true"
-          format="MM/DD/YYYY"
+          format = {format}
           PopoverProps={{ disablePortal: true }}
           fullWidth={true}
           InputProps={{
@@ -122,8 +138,11 @@ export default function FilterDatePickerCompletetion(props) {
             stateNav.completetionDateTo ? classes.blue : ""
           }`}
           variant="inline"
+          //inputValue = {displayValue}
           value={
-            stateNav.completetionDateTo ? stateNav.completetionDateTo : moment()
+            stateNav.completetionDateTo
+            ? moment(stateNav.completetionDateTo)
+            : moment()
           }
           onChange={(date) => handleEndDate(date)}
           maxDate={moment()}
