@@ -581,7 +581,7 @@ function MapGridCard(props) {
                 value={mapGridCardActiveTap}
                 index={0}
                 className={classes.tapsPanelsPadding}
-                style={{position:"absolute",width:"100%"}}
+                style={{position:"absolute",width:"96vw"}}
               >
                 <MapGridCardSearch
                   ativateSearchPanel={() => {
@@ -678,7 +678,7 @@ function MapGridCard(props) {
                 index={1}
                 className={classes.tapsPanelsPadding}
                 // 
-                style ={{position:"absolute",width:"100%"}}
+                style ={{position:"absolute",width:"96vw"}}
                 // 
               >
                 <div style={{ position: "relative" }}>
@@ -735,7 +735,7 @@ function MapGridCard(props) {
                 value={mapGridCardActiveTap}
                 index={2}
                 className={classes.tapsPanelsPadding}
-                style ={{position:"absolute",width:"100%"}}
+                style ={{position:"absolute",width:"96vw"}}
               >
                 <div style={{ position: "relative" }}>
                   {/* <TabLabels
@@ -754,7 +754,7 @@ function MapGridCard(props) {
                           header={"Wells"}
                         />
 
-                        <h6 id="minimumZoomRequired">
+                        <h6 id="minimumZoomRequired" style={{textAlign:"left", marginLeft:"5rem"}}>
                           Please zoom in to leverage this feature (min zoom level
                         = {stateApp.minZoomToQueryViewport})
                       </h6>
