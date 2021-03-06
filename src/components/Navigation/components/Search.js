@@ -912,18 +912,12 @@ function Search() {
       if (dataContactWells && dataContactWells.contactWells) {
         if (dataContactWells.contactWells.length !== 0) {
   
-          console.log('data contact wells', dataContactWells)
           setStateApp((stateApp) =>
           dataContactWells.contactWells.length === 1
               ? {
                   ...stateApp,
                   selectedWell: null,
                   fitBounds: null,
-                  selectedWellId: dataContactWells.contactWells[0].id.toLowerCase(),
-                  wellSelectedCoordinates: [
-                    dataContactWells.contactWells[0].longitude,
-                    dataContactWells.contactWells[0].latitude,
-                  ],
                   wellListFromSearch: [...dataContactWells.contactWells],
                 }
               : {

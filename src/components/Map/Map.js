@@ -1038,6 +1038,10 @@ function Map() {
         console.log('wellpointclick popprops 2', properties.wellName ? properties : null)
         console.log('wellpointclick popprops 3', properties.id ? properties.id.toLowerCase() : null)
         console.log('wellpointclick wellname popprops 4', properties.wellName)
+        if(!properties.id){properties.id = properties.wellId}
+
+        console.log('props1', properties.id)
+        console.log('props2', properties.id.toLowerCase())
 
         if (properties.id){
         setStateApp((state) => ({
@@ -1048,15 +1052,10 @@ function Map() {
         }));
         setStateApp((state) => ({
           ...state,
-          //selectedWell: properties.wellName ? properties : null,
           selectedWellId: properties.id.toLowerCase(),
           wellSelectedCoordinates: [properties.longitude, properties.latitude],
         }));
 
-        // if (properties.wellName) {
-          // createPopUp(properties);
-          // map.resize();
-        // }
       }
       }
 
