@@ -61,7 +61,6 @@ export default function FilterDedaultListInterest(props) {
   }, [props]);
 
   const removeNameFromTypeInterest = (string) => {
-    // console.log(string);
     if (string.includes("interestTypeOverrideRoyalty")) {
       return string.replace("interestTypeOverrideRoyalty", "OVERRIDE");
     }

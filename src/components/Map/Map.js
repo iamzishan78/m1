@@ -996,52 +996,20 @@ function Map() {
 
   useEffect(() => {
 
-
-    // const wellPointClick = (feature) => {
-    //   if (feature && feature.properties) {
-    //     const objFiledsToLowerCase = (feature) => {
-    //       let newObj = {};
-    //       for (let key in feature)
-    //         newObj[key.charAt(0).toLowerCase() + key.slice(1)] = feature[key];
-
-    //       return newObj;
-    //     };
-    //     let properties = objFiledsToLowerCase(feature.properties);
-
-    //     setStateApp((state) => ({
-    //       ...state,
-    //       popupOpen: false,
-    //       selectedUserDefinedLayer: null,
-    //       selectedParcel: null,
-    //     }));
-    //     setStateApp((state) => ({
-    //       ...state,
-    //       selectedWell:
-    //         properties.wellName && properties.operator ? properties : null,
-    //       selectedWellId: properties.id ? properties.id.toLowerCase() : null,
-    //       wellSelectedCoordinates: [properties.longitude, properties.latitude],
-    //     }));
-
-    //     if (properties.wellName && properties.operator) {
-    //       createPopUp(properties);
-    //       map.resize();
-    //     }
-    //   }
-    // };
-
-
     const wellPointClick = (feature) => {
+
+      // this function is intended to organize the data 
+      // when a well point is clicked 
+      // and initiate the mapbox popup 
+
       if (feature && feature.properties) {
 
         let properties = feature.properties;
-        console.log('wellpointclick popprops', properties)
-        console.log('wellpointclick popprops 2', properties.wellName ? properties : null)
-        console.log('wellpointclick popprops 3', properties.id ? properties.id.toLowerCase() : null)
-        console.log('wellpointclick wellname popprops 4', properties.wellName)
-        if(!properties.id){properties.id = properties.wellId}
 
-        console.log('props1', properties.id)
-        console.log('props2', properties.id.toLowerCase())
+        // tmp fix because it appears that the data coming back 
+        // from contacts api is slightly different than other apis
+        // need to setup in a standard format         
+        if(!properties.id){properties.id = properties.wellId}
 
         if (properties.id){
         setStateApp((state) => ({
@@ -1060,47 +1028,6 @@ function Map() {
       }
 
     };
-
-
-    // const wellPointClick = (feature) => {
-    //   // this function is intended to organize the data 
-    //   // when a well point is clicked 
-    //   // and initiate the mapbox popup 
-
-    //   console.log('feature ', feature)
-    //   if (feature && feature.properties) {
-
-    //     let properties = feature.properties;
-
-    //     // tmp fix because it appears that the data coming back 
-    //     // from contacts api is slightly different than other apis
-    //     // need to setup in a standard format 
-    //     if(!properties.id){properties.id = properties.wellId}
-        
-
-    //     setStateApp((state) => ({
-    //       ...state,
-    //       popupOpen: false,
-    //       selectedUserDefinedLayer: null,
-    //       selectedParcel: null,
-    //     }));
-        
-    //     setStateApp((state) => ({
-    //       ...state,
-    //       selectedWell:
-    //         properties.id ? properties : null,
-    //       selectedWellId: properties.id ? properties.id : null,
-    //       wellSelectedCoordinates: [properties.longitude, properties.latitude],
-    //     }));
-
-    //     if (properties.id) {
-    //       console.log('wellpoint click popprops', properties)
-    //       createPopUp(properties);
-    //       map.resize();
-    //     }
-    //   }
-    // };
-
 
 
     const udLayerClickHandler = (feature) => {
@@ -3148,14 +3075,9 @@ function Map() {
             headers: headers,
           };
 
-          console.log(
-            "request made to lod2019-index search at: " + new Date().toString()
-          );
-
           await fetch(endpoint, options)
             .then((response) => response.json())
             .then((response) => {
-              console.log(response);
               features = response.features;
               currentFeature = features.find(
                 (element) =>
@@ -3165,8 +3087,6 @@ function Map() {
             .catch((error) => {
               console.log(error);
             });
-
-          console.log("current feature", currentFeature);
         }
 
         if (currentFeature) {

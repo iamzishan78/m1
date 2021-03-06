@@ -94,14 +94,9 @@ function Search(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to wellheader-index-en-ms search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -128,11 +123,6 @@ function Search(props) {
           method: "GET",
           headers: headers,
         };
-
-        console.log(
-          "request made to globalowner-index search at: " +
-            new Date().toString()
-        );
 
         fetch(endpoint, options)
           .then((response) => response.json())
@@ -167,8 +157,6 @@ function Search(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-
-                console.log(indexSource);
                 newOptions = [...results.value];
               }
 
@@ -183,7 +171,6 @@ function Search(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
                 newOptions = [
                   ...results.value.map((result) => {
                     return {

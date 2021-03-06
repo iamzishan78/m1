@@ -288,15 +288,9 @@ function Search() {
           headers: headers,
         };
 
-        console.log(
-          "request made to wellheader-index-en-ms search at: " +
-            new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -326,15 +320,9 @@ function Search() {
           headers: headers,
         };
 
-        console.log(
-          "request made to globalowner-index search at: " +
-            new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -364,14 +352,9 @@ function Search() {
           headers: headers,
         };
 
-        console.log(
-          "request made to operator search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -401,14 +384,9 @@ function Search() {
           headers: headers,
         };
 
-        console.log(
-          "request made to lease search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -417,18 +395,6 @@ function Search() {
       }, 500),
     []
   );
-
-  // const searchRequest = (e) => {
-  //   /// this function takes the search request and sends it to gql
-  //   console.log('eeeeeee',e)
-  //   getPaginatedContacts({
-  //     variables: {
-  //       search: e.input,
-  //     },
-  //   });
-  // };
-
-
 
 
 
@@ -1130,16 +1096,14 @@ function Search() {
         newValue &&
         newValue.Source === contactIndexName 
         && newValue._id
-        // ((newValue.Lease && newValue.Lease !== "") ||
-        //   (newValue.LeaseId && newValue.LeaseId !== ""))
       ) {
-          console.log('newvalue',newValue)
           getContactsWells({
             variables: {
               contactId: newValue._id,
             },
           });
       }
+      
 
       //// if mapboxSearch
       if (newValue && newValue.Source === "mapboxSearch" && newValue.center) {

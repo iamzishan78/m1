@@ -127,7 +127,6 @@ const Login = (props) => {
   }, [stateApp.signUpUserType]);
 
   const handleNewUserSignUp = (userData) => {
-    console.log("userData", userData);
   };
 
   const renderSignupNewCard = signUpUserType ? (
