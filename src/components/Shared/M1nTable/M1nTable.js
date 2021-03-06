@@ -722,42 +722,6 @@ function M1nTable(props) {
             flyToColumn,
           ]);
 
-          
-          [
-            ...(cleanAvailableTags.length > 0
-              ? WellsHeadCells.map((column) => {
-                  if (column.name === "tags") {
-                    return {
-                      ...column,
-                      options: {
-                        ...column.options,
-                        filterOptions: {
-                          ...column.options.filterOptions,
-                          names: cleanAvailableTags,
-                        },
-                      },
-                    };
-                  }
-                  return column;
-                })
-              : WellsHeadCells.map((column) => {
-                  if (column.name === "tags") {
-                    return {
-                      ...column,
-                      options: {
-                        ...column.options,
-                        filter: false,
-                      },
-                    };
-                  }
-                  return column;
-                })),
-            flyToColumn,
-          ]
-          
-          
-          )
-
           setStateApp((state) => ({
             ...state,
             trackedwells: wells,
