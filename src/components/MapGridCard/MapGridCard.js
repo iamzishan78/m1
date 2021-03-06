@@ -23,6 +23,8 @@ import OwnersSummaryCard from "../OwnersSummaryCard/OwnersSummaryCard";
 
 import ContactsHeadCells from '../Shared/constants/contacts-header-schema.js'
 import WellsHeadCells from '../Shared/constants/well-header-schema.js'
+import wellsColumnHeaders from '../Shared/constants/well-header-schema.js'
+import parcelsColumnHeaders from '../Shared/constants/parcel-header-grid.js'
 
 
 function TabPanel(props) {
@@ -223,41 +225,6 @@ const TabPanels = ({ panels, value }) => {
   );
 };
 
-const wellsColumnHeaders = [
-  {
-    name: "ApiNumber",
-    label: "API",
-  },
-  {
-    name: "State",
-    label: "State",
-  },
-  {
-    name: "County",
-    label: "County",
-  },
-  {
-    name: "WellName",
-    label: "Well Name",
-  },
-  {
-    name: "CurrentOperator",
-    label: "Operator",
-  },
-  {
-    name: "WellType",
-    label: "Type",
-  },
-  {
-    name: "WellBoreProfile",
-    label: "Profile",
-  },
-  {
-    name: "WellStatus",
-    label: "Status",
-  },
-];
-
 
 const ownersColumnHeaders = [
   {
@@ -417,36 +384,7 @@ const locationsColumnHeaders = [
   },
 ];
 
-const parcelColumnHeaders = [
-  {
-    name: "Operator",
-    label: "Name",
-  },
-  {
-    name: "State",
-    label: "State",
-  },
-  {
-    name: "County",
-    label: "County",
-  },
-  {
-    name: "Survey",
-    label: "Survey/Meridian",
-  },
-  {
-    name: "Block",
-    label: "Block/Township",
-  },
-  {
-    name: "Section",
-    label: "Section/Range",
-  },
-  {
-    name: "Abstract",
-    label: "Abstract/Section",
-  },
-];
+
 
 
 function MapGridCard(props) {
@@ -508,10 +446,10 @@ function MapGridCard(props) {
     /// value will control the cog api 
 
     switch (searchTapValue) {
-      case 4:
+      case 5:
         return "location";
-      // case 6:
-      //   return "contacts";  
+      case 4:
+        return "contacts";  
       // case 5:
       //   return "permits";      
       // case 4:
@@ -536,7 +474,7 @@ function MapGridCard(props) {
         "Leases",
         // "Parcels",
         // "Recent Permits",
-        // "Contacts",
+        "Contacts",
         "Locations",
       ]}
       value={searchTapValue}
@@ -712,13 +650,15 @@ function MapGridCard(props) {
                   //     targetLabel={getTargetFromSearchTaps()}
                   //     header={<SearchTabPanels />}
                   //   />,
-                  //   <M1nTable
-                  //   dense
-                  //   parent="search"
-                  //   privateColumns={[ContactsHeadCells]}
-                  //   targetLabel={getTargetFromSearchTaps()}
-                  //   header={<SearchTabPanels />}
-                  // />,
+
+
+                      <M1nTable
+                        dense
+                        parent="search"
+                        privateColumns={[ContactsHeadCells]}
+                        targetLabel={getTargetFromSearchTaps()}
+                        header={<SearchTabPanels />}
+                      />,
 
                       <M1nTable
                         dense
