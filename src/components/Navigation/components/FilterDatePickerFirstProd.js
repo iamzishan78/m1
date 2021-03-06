@@ -78,7 +78,6 @@ export default function FilterDatePickerFirstProd(props) {
   }, [stateNav.firstProdDateFrom, stateNav.firstProdDateTo, setStateNav]);
 
   const handleStartDate = (date) => {
-    console.log('date', date)
     setStateNav((stateNav) => ({
       ...stateNav,
       firstProdDateFrom: !date ? null : moment(date),
@@ -92,59 +91,16 @@ export default function FilterDatePickerFirstProd(props) {
     }));
   };
 
-  const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
-
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
-
 
   return (
     <div 
     className={classes.root}
     >
       <div className={classes.datesRow}>
-        {/* <KeyboardDatePicker
-          label={props.labelDates + " " + "From"}
-          // label="From"
-          className={`${classes.datePicker} ${
-            stateNav.firstProdDateFrom ? classes.blue : ""
-          }`}
-          maxDate={moment().subtract(1, "day")}
-          variant="inline"
-          value={
-            stateNav.firstProdDateFrom
-              ? moment(stateNav.firstProdDateFrom).format("MM/DD/YYYY")
-              : new Date("1900-01-01T00:00:00")
-          }
-          onChange={(date) => handleStartDate(date)}
-          //inputVariant="outlined"
-          minDateMessage="Date should not be before minimal date"
-          maxDateMessage="Date should not be after max date"
-          disableToolbar
-          KeyboardButtonProps={{ "aria-label": "change date" }}
-          autoOk="true"
-          format="MM/DD/YYYY"
-          // orientation = 'landscape'
-          // margin = 'normal'
-          PopoverProps={{ disablePortal: true }}
-          fullWidth={true}
-          InputProps={{
-            endAdornment: (
-              <IconButton onClick={() => handleStartDate(null)}>
-                <ClearIcon style={{ height: "22px", width: "22px" }} />
-              </IconButton>
-            ),
-          }}
-          InputAdornmentProps={{
-            position: "start",
-          }}
-        /> */}
-
         <Controller
             control={control}
             name="prodDateFrom"          
-            defaultValue={null}
+            defaultValue={stateNav.firstProdDateFrom}
             render ={({onChange, onClick, value}
             ) => (
 
@@ -180,55 +136,55 @@ export default function FilterDatePickerFirstProd(props) {
             InputAdornmentProps={{
               position: "start",
             }}
-
-            // value={watch('receivedDate')}
-            // defaultValue={watch('receivedDate')}
-
-            // onChange={date => {
-            //     setValue('receivedDate', date);
-            //     handleBlur(getValues().id, 'receivedDate'); //Managing patch save at server
-            //     return {value: date} //important to update the controller value after change else state is updated and the controller will not render
-            // }}
-            //disabled={state.disabled}
             />
 
             )}
-
         />
 
-        <KeyboardDatePicker
-          label={props.labelDates + " " + "To"}
-          // label="To"
-          className={`${classes.datePicker} ${
-            stateNav.firstProdDateTo ? classes.blue : ""
-          }`}
-          maxDate={moment()}
-          variant="inline"
-          value={stateNav.firstProdDateTo ? stateNav.firstProdDateTo : moment()}
-          onChange={(date) => handleEndDate(date)}
-          //inputVariant="outlined"
-          minDateMessage="Date should not be before minimal date"
-          maxDateMessage="Date should not be after max date"
-          disableToolbar
-          KeyboardButtonProps={{ "aria-label": "change date" }}
-          autoOk="true"
-          format="MM/DD/YYYY"
-          // orientation = 'landscape'
-          // margin = 'normal'
-          PopoverProps={{ disablePortal: true }}
-          fullWidth={true}
-          InputProps={{
-            endAdornment: (
-              <IconButton onClick={() => handleEndDate(null)}>
-                <ClearIcon style={{ height: "22px", width: "22px" }} />
-              </IconButton>
-            ),
-          }}
-          InputAdornmentProps={{
-            position: "start",
-          }}
-        />
+        <Controller
+            control={control}
+            name="prodDateTo"          
+            defaultValue={stateNav.firstProdDateTo}
+            render ={({onChange, onClick, value}
+            ) => (
 
+            <KeyboardDatePicker
+              label={props.labelDates + " " + "To"}
+              className={`${classes.datePicker} ${
+                stateNav.firstProdDateTo ? classes.blue : ""
+              }`}
+              variant="inline"
+              value={watch('prodDateTo')}
+              onChange={(date) => {
+                setValue('prodDateTo',date);
+                if(date && date.isValid()){handleEndDate(date)}
+                if(!date){handleEndDate(date)}
+                return {value: date}
+              }}
+              disableToolbar
+              KeyboardButtonProps={{ "aria-label": "change date" }}
+              autoOk="true"
+              format="MM/DD/YYYY"
+              PopoverProps={{ disablePortal: true }}
+              fullWidth={true}
+              InputProps={{
+                endAdornment: (
+                  <IconButton onClick={() => {
+                      setValue('prodDateTo',null);
+                      handleEndDate(null);
+                    }}>
+
+                    <ClearIcon style={{ height: "22px", width: "22px" }} />
+                  </IconButton>
+                ),
+              }}
+              InputAdornmentProps={{
+                position: "start",
+              }}
+            />
+
+            )}
+        />
 
 
       </div>
