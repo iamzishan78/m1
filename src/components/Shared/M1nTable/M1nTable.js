@@ -101,14 +101,11 @@ const joinAddress = (row) => {
 };
 
 function M1nTable(props) {
-  console.log('M1NTABLE PROPS', props)
   const classes = useStyles();
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-
   const [addDealOpen, setAddDealOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState();
-
   const [rows, Rows] = useState([]);
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
@@ -153,9 +150,6 @@ function M1nTable(props) {
   };
 
   const [deleteFunc, setDeleteFunc] = useState(null);
-  // const setDeleteFunc = (newState) => {
-  //   setStateIfDeepEqual(DeleteFunc, newState);
-  // };
   const [showTracks, ShowTracks] = useState(true);
   const setShowTracks = (newState) => {
     setStateIfDeepEqual(ShowTracks, newState);
@@ -370,7 +364,6 @@ function M1nTable(props) {
       constDataTracks &&
       constDataTracks.tracksByObjectType
     ) {
-      console.log("ue mintable 3");
       if (constDataTracks.tracksByObjectType.length !== 0) {
         const tracksIdArray = constDataTracks.tracksByObjectType.map(
           (track) => track.trackOn
@@ -389,7 +382,6 @@ function M1nTable(props) {
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners") {
-      console.log("ue mintable 2");
       setTargetLabel("owner");
 
       if (props.header) {
@@ -407,7 +399,6 @@ function M1nTable(props) {
       props.parent === "trackOwners" &&
       dataTracks
     ) {
-      console.log("ue mintable 3");
       if (dataTracks.length !== 0) {
         // setLoading(true);
 
@@ -455,7 +446,6 @@ function M1nTable(props) {
         checkIfOwnersAreContactsData &&
         checkIfOwnersAreContactsData.ifAreContacts
       ) {
-        console.log('dataowners',dataOwners)
         let owners = [...dataOwners.owners];
         owners = owners.map((o) => {
           let owner = { ...o };
@@ -573,9 +563,7 @@ function M1nTable(props) {
   ////////////Tracked Wells begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackWells") {
-      console.log("ue mintable 5");
       setTargetLabel("well");
-
       if (props.header) {
         setHeader(props.header);
       } else {
@@ -591,10 +579,7 @@ function M1nTable(props) {
       props.parent === "trackWells" &&
       dataTracks
     ) {
-      console.log("ue mintable 6");
       if (dataTracks.length !== 0) {
-        // setLoading(true);
-
         getWells({
           variables: {
             wellIdArray: dataTracks,
@@ -634,8 +619,6 @@ function M1nTable(props) {
           let wells = [...dataWells.wells.results];
           wells = wells.map((w) => {
             let well = { ...w };
-
-          console.log('wells',wells)
 
             //// temporary to fix the ticks dates fields comming from the rest api
             if (well.permitApprovedDate && well.permitApprovedDate != "null")
@@ -692,11 +675,6 @@ function M1nTable(props) {
           });
           const cleanAvailableTags = [...new Set(availableTags)];
 
-
-          console.log('datawells', dataWells)
-          console.log('WellsHeadCells',WellsHeadCells)
-  
-
           setRows(wells);
 
           const flyToColumn = {
@@ -744,8 +722,6 @@ function M1nTable(props) {
             flyToColumn,
           ]);
 
-
-          console.log('colmns ',
           
           [
             ...(cleanAvailableTags.length > 0
@@ -1118,7 +1094,6 @@ function M1nTable(props) {
       stateApp.user &&
       stateApp.user.mongoId
     ) {
-      console.log("ue mintable 8");
       setTargetLabel("well");
       setHeader("Wells");
       setAddAble(false);
@@ -1144,7 +1119,6 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "WellsPerOwner" && dataWells) {
-      console.log("ue mintable 9");
       if (
         dataWells.wells &&
         dataWells.wells.results &&
@@ -1244,7 +1218,6 @@ function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell") {
       setLoading(true);
-      console.log("ue mintable 10");
       setTargetLabel("owner");
       setHeader("Tax Roll Ownership");
       setAddAble(false);
@@ -1259,7 +1232,6 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
-      console.log("ue mintable 11");
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
         setLoading(true);
         const objectsIdsArray = dataWellOwners.wellOwners.map(
@@ -1442,14 +1414,11 @@ function M1nTable(props) {
             props.parent  
             && (props.parent === "Contacts")  // for parent of contact screen 
         ) {
-          console.log('props -', props)
           setLoading(true);
-          console.log("ue mintable 22- contact");
           setTargetLabel("contact");
           setHeader("Contacts");
           setOrderByTracks(false);
           setAddAble({ parent: false, type: "contact" });
-          console.log('search target', stateApp.gridSearchTarget)
           getPaginatedContacts({variables: { search: stateApp.gridSearchTarget }});
           getContactsFilterOptions();
           updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
@@ -1462,14 +1431,11 @@ function M1nTable(props) {
           props.parent  
           && (props.parent ==='search' && props.targetLabel === "contacts")  // for parent of contact screen              
       ) {
-        console.log('props -', props)
         setLoading(true);
-        console.log("ue mintable 22- contact");
         setTargetLabel("contact");
         setHeader("Contacts");
         setOrderByTracks(false);
         setAddAble({ parent: false, type: "contact" });
-        console.log('search target', stateApp.gridSearchTarget)
         getPaginatedContacts({variables: { search: stateApp.gridSearchTarget }});
         getContactsFilterOptions();
         updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
@@ -1491,7 +1457,6 @@ function M1nTable(props) {
               || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
 
     ) {
-      console.log("ue mintable 23");
       if (
         constDataContacts?.paginatedContacts?.edges &&
         constDataContacts.paginatedContacts.edges.length > 0
@@ -1538,8 +1503,6 @@ function M1nTable(props) {
       && dataContacts?.paginatedContacts?.edges
       && dataContacts?.paginatedContacts?.edges.length > 0
     ) {
-      console.log("ue mintable 23");
-
       const objectsIdsArray = [];
       dataContacts.paginatedContacts.edges.forEach(({ node }) => {
         objectsIdsArray.push(node._id);
@@ -1564,7 +1527,6 @@ function M1nTable(props) {
             || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
       && dataContactsFilterOptions
     ) {
-      console.log("ue mintable 23.5");
       if (
         dataContactsFilterOptions &&
         dataContactsFilterOptions.contactsFilterOptions
@@ -1654,8 +1616,6 @@ function M1nTable(props) {
       dataMelissaRowsCount &&
       dataMelissaRowsCount.getMelissaRecordsCountForContactIds
     ) {
-      console.log("ue mintable 24");
-
       let tmpDataContacts = {
         ...dataContacts,
         paginatedContacts: {
@@ -1726,7 +1686,6 @@ function M1nTable(props) {
       stateApp.user &&
       stateApp.user.mongoId
     ) {
-      console.log("ue mintable 25");
       setDeleteFunc(() => (contactsIdsToDelete) => {
         if (contactsIdsToDelete) {
           for (let i = 0; i < contactsIdsToDelete.length; i++) {
@@ -2004,7 +1963,6 @@ function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "ownersPerParcel") {
       setLoading(true);
-      // console.log("ue mintable 10");
       setTargetLabel("Parcel Ownership");
       setHeader("Parcel Ownership");
       setAddAble({
@@ -2506,7 +2464,6 @@ function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "Deals" && stateApp.user) {
       setLoading(true);
-      console.log("ue mintable 22 - deals");
       setTargetLabel("deal");
       setHeader("Deals");
       getContactDeals({
@@ -2528,66 +2485,12 @@ function M1nTable(props) {
       dataDeals?.contactDeals &&
       props.contact
     ) {
-      console.log("DATA DEALS : ", dataDeals);
-      // const lanes = dataDeals?.transactionData?.allData?.lanes;
-
-      // const all = [];
-      // console.log("ALL : ", all, lanes);
-      // if (lanes) {
-      //   lanes.forEach((deal) => {
-      //     deal.cards.forEach((card) => {
-      //       if (props.contact?._id === card.contactId && !card.isDeleted)
-      //         all.push(card);
-      //     });
-      //   });
-      // }
-
-      // const dealsRowsData = all.map((deal) => ({
-      //   ...deal,
-      //   id: deal.id,
-      //   dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
-      // }));
-      // all.forEach((deal) => {
-      //   console.log("DEAL: ", deal)
-      //   let dealData = {
-      //     name: deal.title,
-      //     contact: deal.contactName,
-      //     dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
-      //     dealAmount: deal.label,
-      //     dealDetails: deal.description,
-      //     id: deal.id, //// "deal.laneId" check if this is the rigth id to delete the data
-      //   };
-
-      //   dealsRowsData.push(dealData);
-      // });
-
-      // let contactDealRows = [
-      //   ...dataDeals.contactDeals.map((deal) => {
-      //     return {
-      //       ...deal,
-      //       offerPrice: !isNaN(deal.offerPrice)
-      //         ? currencyFormat.format(deal.offerPrice)
-      //         : deal.offerPrice,
-      //       closeDate: anyToDate(deal.closeDate).toLocaleString("en-US", {
-      //         year: "numeric",
-      //         day: "numeric",
-      //         month: "numeric",
-      //       })
-      //     }
-      //   })
-      // ]
-
       setTargetLabel("deal");
       setRows([...dataDeals.contactDeals]);
       setColumns([...DealsHeadCells]);
       setLoading(false);
     }
 
-    console.log(
-      "%cCONTACT ID : ",
-      "font-size:20px; color:green;",
-      props.contact
-    );
   }, [dataDeals]);
 
   // deals delete
@@ -2609,11 +2512,6 @@ function M1nTable(props) {
           });
 
           const newData = { ...dataDeals.transactionData.allData, lanes };
-
-          console.log({
-            transactionId: dataDeals.transactionData._id,
-            transaction: { allData: newData, user: stateApp.user.mongoId },
-          });
 
           updateTransaction({
             variables: {
@@ -2903,7 +2801,6 @@ function M1nTable(props) {
       props.parent === "owner_WellInterests" &&
       constDataWellInterests
     ) {
-      console.log("ue mintable 23");
       if (
         constDataWellInterests?.paginatedWellInterests?.edges &&
         constDataWellInterests.paginatedWellInterests.edges.length > 0

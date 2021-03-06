@@ -16,7 +16,6 @@ const useStyles = makeStyles(theme => ({
 export default function  TabPanel ( props ) {
     const classes = useStyles();
     const { children, value, index, ...other } = props;
-    // console.log(props)
     return (
       <div
         className={classes.tabPanel}

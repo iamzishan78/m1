@@ -192,7 +192,6 @@ const Login = (props) => {
             }
 
             // Account object was retrieved, continue with app progress
-            console.log("id_token acquired at: " + new Date().toString());
             // Account object is now an array! what do we do if multiple users are signed in on the same browser?
             // Passing first account as default for now
             finishAADAuth(accountObj);

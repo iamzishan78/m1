@@ -959,7 +959,6 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   const handleSearchInputChange = (event) => {
-    console.log("input", event.currentTarget.value);
     setStateNav((state) => ({
       ...state,
       searchInputValue: event.currentTarget.value,

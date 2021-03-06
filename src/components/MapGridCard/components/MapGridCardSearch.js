@@ -95,14 +95,9 @@ function MapGridCardSearch(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to wellheader-index-en-ms search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -132,14 +127,9 @@ function MapGridCardSearch(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to globalowner-index search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -167,14 +157,9 @@ function MapGridCardSearch(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to operator-index search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -202,14 +187,9 @@ function MapGridCardSearch(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to lease-index search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {

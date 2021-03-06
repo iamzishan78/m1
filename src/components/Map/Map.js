@@ -996,18 +996,22 @@ function Map() {
 
   useEffect(() => {
 
-
     const wellPointClick = (feature) => {
+
+      // this function is intended to organize the data 
+      // when a well point is clicked 
+      // and initiate the mapbox popup 
+
       if (feature && feature.properties) {
-        const objFiledsToLowerCase = (feature) => {
-          let newObj = {};
-          for (let key in feature)
-            newObj[key.charAt(0).toLowerCase() + key.slice(1)] = feature[key];
 
-          return newObj;
-        };
-        let properties = objFiledsToLowerCase(feature.properties);
+        let properties = feature.properties;
 
+        // tmp fix because it appears that the data coming back 
+        // from contacts api is slightly different than other apis
+        // need to setup in a standard format         
+        if(!properties.id){properties.id = properties.wellId}
+
+        if (properties.id){
         setStateApp((state) => ({
           ...state,
           popupOpen: false,
@@ -1016,19 +1020,14 @@ function Map() {
         }));
         setStateApp((state) => ({
           ...state,
-          selectedWell:
-            properties.wellName && properties.operator ? properties : null,
-          selectedWellId: properties.id ? properties.id.toLowerCase() : null,
+          selectedWellId: properties.id.toLowerCase(),
           wellSelectedCoordinates: [properties.longitude, properties.latitude],
         }));
 
-        if (properties.wellName && properties.operator) {
-          createPopUp(properties);
-          map.resize();
-        }
       }
-    };
+      }
 
+    };
 
 
     const udLayerClickHandler = (feature) => {
@@ -3076,14 +3075,9 @@ function Map() {
             headers: headers,
           };
 
-          console.log(
-            "request made to lod2019-index search at: " + new Date().toString()
-          );
-
           await fetch(endpoint, options)
             .then((response) => response.json())
             .then((response) => {
-              console.log(response);
               features = response.features;
               currentFeature = features.find(
                 (element) =>
@@ -3093,8 +3087,6 @@ function Map() {
             .catch((error) => {
               console.log(error);
             });
-
-          console.log("current feature", currentFeature);
         }
 
         if (currentFeature) {

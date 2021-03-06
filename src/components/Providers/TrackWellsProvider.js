@@ -93,6 +93,4 @@ const SimpleUserTable = (props) => {
   return dataWells;
 };
 
-console.log("SIMPLE USER TABLE", SimpleUserTable);
-
 export default SimpleUserTable;

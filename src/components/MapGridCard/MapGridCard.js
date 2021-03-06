@@ -206,7 +206,6 @@ const TabLabels = ({ labels, value, setValue }) => {
 };
 
 function tabPanelsPropsAreEqual(prevProps, nextProps) {
-  console.log(`${prevProps.value} ... ${nextProps.value}`);
   return Object.is(prevProps.value, nextProps.value);
 }
 

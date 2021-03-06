@@ -294,7 +294,6 @@ export default function AddLayer(props) {
             onAdd={handleFileInput}
             onDelete={(fileObj) => ("Removed File:", fileObj)}
             onAlert={(message, variant) => {
-              console.log(`${variant}: ${message}`);
             }}
             filesLimit={1}
             dropzoneText={

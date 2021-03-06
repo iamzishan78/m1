@@ -47,12 +47,6 @@ export default function FilterWellAppraisal() {
     let min = parseInt(valueMinDisplay);
     let max = parseInt(valueMaxDisplay);
 
-    console.log("min", min);
-    console.log("max", max);
-    console.log(!min);
-    console.log(!max);
-    console.log(min < max);
-
     if (!min && !max) {
       filter = null;
     }
@@ -71,8 +65,6 @@ export default function FilterWellAppraisal() {
     } else {
       filter = null;
     }
-
-    console.log("filter", filter);
 
     setStateNav((stateNav) => ({
       ...stateNav,

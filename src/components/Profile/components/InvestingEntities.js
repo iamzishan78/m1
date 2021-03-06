@@ -136,7 +136,6 @@ const InvestingEntities = () => {
 
     useEffect(() => {
         if (entities.length !== 0) {
-            //console.log("Entities rendered: ",entities);
             tempForm.current = [...entities];
         }
         displayInvestingEntities([...entities]);

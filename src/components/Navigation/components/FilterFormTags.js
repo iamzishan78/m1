@@ -56,8 +56,6 @@ export default function FilterFormProduction() {
       dataWells.wells.results &&
       dataWells.wells.results.length !== 0
     ) {
-      console.log("wells data from tags filter", dataWells.wells.results);
-
       setStateApp((stateApp) => ({
         ...stateApp,
         wellListFromTagsFilter: [...dataWells.wells.results],

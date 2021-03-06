@@ -66,7 +66,6 @@ export default function Deals({ contact, ...props }) {
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
-      console.log(stateApp.user);
       getTransactionData({
         variables: {
           userId: stateApp.user.mongoId,
@@ -93,7 +92,6 @@ export default function Deals({ contact, ...props }) {
           if (contact?._id === card.contactId && !card.isDeleted) all.push(card);
         });
       });
-      console.log("all: ", all);
       setAllDeals(all);
     }
   }, [contact, stringData, data, loading]);

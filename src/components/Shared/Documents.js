@@ -146,7 +146,6 @@ function UploadZone(props) {
 
   useEffect(() => {
     if (props.addFileData && props.addFileData?.addFileDescriptor?.success) {
-      console.log("HALLO ADD FILE DATA HERE", props.addFileData);
       const uri = props.addFileData.addFileDescriptor.file.uri;
       const interal_key = props.addFileData.addFileDescriptor.file.internalKey;
       const file_id = props.addFileData.addFileDescriptor.file.id;
@@ -164,7 +163,6 @@ function UploadZone(props) {
           body: inputFile,
         })
           .then((res) => {
-            console.log(res);
             if (res?.status == 201) {
               // props.getRecentFiles();
             } else dispatch(showErrorMessage("Upload failed"));
@@ -199,9 +197,7 @@ function UploadZone(props) {
     <>
       <DropzoneAreaBase
         onAdd={handleFileInput}
-        // onDelete={(fileObj) => console.log("Removed File:", fileObj)}
         onAlert={(message, variant) => {
-          console.log(`${variant}: ${message}`);
         }}
         filesLimit={1}
         dropzoneText={"Drag a file here or click to select a file to upload"}
