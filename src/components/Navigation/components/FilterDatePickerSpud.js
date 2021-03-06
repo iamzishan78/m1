@@ -102,7 +102,7 @@ export default function FilterDatePickerSpud(props) {
               onChange={(date) => {
                 setValue('spudDateFrom',date);
                 if(date && date.isValid()){handleStartDate(date)}
-                if(!date){handleStartDate(date)}
+                if(!date || !date.isValid()){handleStartDate(null)}
                 return {value: date}
               }}
               disableToolbar
@@ -148,7 +148,7 @@ export default function FilterDatePickerSpud(props) {
               onChange={(date) => {
                 setValue('spudDateTo',date);
                 if(date && date.isValid()){handleEndDate(date)}
-                if(!date){handleEndDate(date)}
+                if(!date || !date.isValid()){handleEndDate(null)}
                 return {value: date}
               }}
               disableToolbar

@@ -110,8 +110,8 @@ export default function FilterDatePickerCompletetion(props) {
               value={ watch('completetionDateFrom')}
               onChange={(date) => {
                 setValue('completetionDateFrom',date);
+                if(!date || !date.isValid()){handleStartDate(null)}
                 if(date && date.isValid()){handleStartDate(date)}
-                if(!date){handleStartDate(date)}
                 return {value: date}
             }}
               disableToolbar
@@ -156,7 +156,7 @@ export default function FilterDatePickerCompletetion(props) {
               onChange={(date) => {
                 setValue('completetionDateTo',date);
                 if(date && date.isValid()){handleEndDate(date)}
-                if(!date){handleEndDate(date)}
+                if(!date || !date.isValid()){handleEndDate(null)}
                 return {value: date}
               }}
               maxDate={moment()}

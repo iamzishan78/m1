@@ -102,7 +102,7 @@ export default function FilterDatePickerPermit(props) {
                 onChange={(date) => {
                   setValue('permitDateFrom',date);
                   if(date && date.isValid()){handleStartDate(date)}
-                  if(!date){handleStartDate(date)}
+                  if(!date || !date.isValid()){handleStartDate(null)}
                   return {value: date}
               }}
                 disableToolbar
@@ -147,7 +147,7 @@ export default function FilterDatePickerPermit(props) {
             onChange={(date) => {
               setValue('permitDateTo',date);
               if(date && date.isValid()){handleEndDate(date)}
-              if(!date){handleEndDate(date)}
+              if(!date || !date.isValid()){handleEndDate(null)}
               return {value: date}
             }}
             disableToolbar
