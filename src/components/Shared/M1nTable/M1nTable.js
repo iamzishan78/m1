@@ -199,18 +199,8 @@ function M1nTable(props) {
 
   ////////////Queries begin///////////////////////////////////////////////
 
-  const [tracksByObjectType, { data: constDataTracks }] = useLazyQuery(
-    TRACKSBYOBJECTTYPE,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
-  const [tracksWell, { data: dataWellTracks }] = useLazyQuery(
-    TRACKSWELL,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const [tracksByObjectType, { data: constDataTracks }] = useLazyQuery(TRACKSBYOBJECTTYPE,{fetchPolicy: "cache-and-network",});
+  const [tracksWell, { data: dataWellTracks }] = useLazyQuery(TRACKSWELL,{fetchPolicy: "cache-and-network",});
   const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(
     COMMENTSCOUNTER,
     {
@@ -1236,7 +1226,6 @@ function M1nTable(props) {
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
-      // dataOwnersWells &&
       dataTracks &&
       checkIfOwnersAreContactsData &&
       checkIfOwnersAreContactsData.ifAreContacts
@@ -1247,17 +1236,6 @@ function M1nTable(props) {
         wellOwner.tags = [[], 0];
         wellOwner.wellsCounter = [];
         wellOwner.isTracked = false;
-
-        // if (dataOwnersWells.ownersWells) {
-        //   for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
-        //     if (wellOwner.globalOwnerId === dataOwnersWells.ownersWells[i].ownerId) {
-        //       wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
-        //         (well) => well.wellId
-        //       );
-        //       break;
-        //     }
-        //   }
-        // }
 
         for (
           let i = 0;
@@ -2080,22 +2058,6 @@ function M1nTable(props) {
     dataTracks,
   ]);
 
-  //////////// SELECTED POLYGON WELL //////////////////////////////////////
-
-  // useEffect(()=> {
-  //   if (stateApp.selectedPolygonString) {
-  //     getAbstractWellGeo({
-  //       variables: {
-  //         polygon: stateApp.selectedPolygonString,
-  //       },
-  //     });
-  //   }
-  // }, [stateApp.selectedPolygonString]);
-
-  useEffect(() => {
-
-  }, []);
-
   useEffect(() => {
     if (abstractWellData) {
       const objectsIdsArray = abstractWellData.abstractWellGeo.map(
@@ -2108,28 +2070,6 @@ function M1nTable(props) {
       getTagSamples({
         variables: { objectsIdsArray, userId: stateApp.user.mongoId },
       });
-      // let set_tracked = [];
-      // let reconstruct_wells = [];
-      // stateApp.trackedwells.forEach(element => {
-      //   const found = abstractWellData.abstractWellGeo.find(x => x.wellId == element.id);
-      //   if (found) {
-      //     set_tracked.push(found);
-      //   }
-      // });
-      // // Tags = 0
-      // // Tracks = 1
-      // // Comments =0
-      // abstractWellData.abstractWellGeo.forEach(element => {
-      //   if (element in set_tracked) {
-      //     reconstruct_wells.push({...element, isTracked: true});
-      //   } else {
-      //     reconstruct_wells.push({...element, isTracked: false});
-      //   }
-      // });
-      // setStateApp({
-      //   ...stateApp,
-      //   selectedBoundaryWell: reconstruct_wells
-      // });
     }
   }, [abstractWellData]);
 
