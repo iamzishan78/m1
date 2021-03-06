@@ -113,7 +113,10 @@ export default function FilterDatePickerPermit(props) {
                 fullWidth={true}
                 InputProps={{
                   endAdornment: (
-                    <IconButton onClick={() => handleStartDate(null)}>
+                    <IconButton onClick={() => {
+                      setValue('permitDateFrom',null);
+                      handleStartDate(null);
+                    }}>
                       <ClearIcon style={{ height: "22px", width: "22px" }} />
                     </IconButton>
                   ),
@@ -129,7 +132,7 @@ export default function FilterDatePickerPermit(props) {
         <Controller
             control={control}
             name="permitDateTo"          
-            defaultValue={stateNav.permitDateTo}
+            defaultValue={stateNav.firstProdDateTo}
             render ={({onChange, onClick, value}
             ) => (
 
@@ -155,7 +158,10 @@ export default function FilterDatePickerPermit(props) {
             fullWidth={true}
             InputProps={{
               endAdornment: (
-                <IconButton onClick={() => handleEndDate(null)}>
+                <IconButton onClick={() => {
+                        setValue('permitDateTo',null);
+                        handleEndDate(null);
+                }}>
                   <ClearIcon style={{ height: "22px", width: "22px" }} />
                 </IconButton>
               ),
