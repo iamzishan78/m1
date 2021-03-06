@@ -1224,7 +1224,6 @@ function M1nTable(props) {
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
-      // dataOwnersWells &&
       dataTracks &&
       checkIfOwnersAreContactsData &&
       checkIfOwnersAreContactsData.ifAreContacts
@@ -1235,17 +1234,6 @@ function M1nTable(props) {
         wellOwner.tags = [[], 0];
         wellOwner.wellsCounter = [];
         wellOwner.isTracked = false;
-
-        // if (dataOwnersWells.ownersWells) {
-        //   for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
-        //     if (wellOwner.globalOwnerId === dataOwnersWells.ownersWells[i].ownerId) {
-        //       wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
-        //         (well) => well.wellId
-        //       );
-        //       break;
-        //     }
-        //   }
-        // }
 
         for (
           let i = 0;
