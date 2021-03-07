@@ -64,7 +64,6 @@ import ProductionDetailsHeaders from '../constants/production-detail-header-sche
 import ContactWellHeadCells from '../constants/contactperwell-header-schema.js'
 
 // import value formatters 
-import capitalizeFirstLetter from "../../Shared/valueformatters/capitalize-first-letter.js";
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
 
 
@@ -76,29 +75,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-
-const joinAddress = (row) => {
-  let rowData = {
-    address1: row.address1,
-    address2: row.address2,
-    city: row.city,
-    state: row.state,
-    zip: row.zip,
-    country: row.country,
-  };
-  let textArray = [];
-  for (const key in rowData) {
-    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
-      if (key === "zip" || key === "country") {
-        textArray = [
-          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
-        ];
-      } else textArray.push(capitalizeFirstLetter(rowData[key]));
-    }
-  }
-
-  return textArray.join(", ");
-};
 
 function M1nTable(props) {
   const classes = useStyles();
@@ -1169,6 +1145,11 @@ function M1nTable(props) {
 
   //////////// Wells Per Owner end///////////////////////////////////////////////
 
+
+
+
+
+
   ////////////Owners Per Well begin///////////////////////////////////////////////
 
   useEffect(() => {
@@ -1189,16 +1170,13 @@ function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
+        
+        console.log('data wells owners',dataWellOwners )
+        
         setLoading(true);
         const objectsIdsArray = dataWellOwners.wellOwners.map(
           (wellOwner) => wellOwner.globalOwnerId
         );
-
-        // getOwnersWells({
-        //   variables: {
-        //     ownersIds: objectsIdsArray,
-        //   },
-        // });
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
@@ -1346,6 +1324,189 @@ function M1nTable(props) {
 
 
 
+  
+  ////////////"detail-well-card-contact-ties" begin///////////////////////////////////////////////
+
+  useEffect(() => {
+    if (props.parent && props.parent === "detail-well-card-contact-ties") {
+      setLoading(true);
+      setTargetLabel("contact");
+      setHeader("Contacts");
+      setOrderByTracks(false);
+      setAddAble({ parent: false, type: "contact" });
+      getPaginatedContacts({variables: { search: stateApp.gridSearchTarget }});
+      getContactsFilterOptions();
+      updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
+      setUploadIcon(false);
+      setStartPaginationAt(25);
+      setColumnsBase(ContactsHeadCells);
+    }
+  }, [props.selectedWell, selectedYear]);
+
+
+
+  
+
+
+
+
+  // useEffect(() => {
+  //   if (props.parent && props.parent === "detail-well-card-contact-ties" && dataWellOwners) {
+  //     if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
+        
+  //       console.log('data wells owners',dataWellOwners )
+        
+  //       setLoading(true);
+  //       const objectsIdsArray = dataWellOwners.wellOwners.map(
+  //         (wellOwner) => wellOwner.globalOwnerId
+  //       );
+  //       getCommentsCounter({
+  //         variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+  //       });
+  //       getTagSamples({
+  //         variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+  //       });
+  //       checkIfOwnersAreContacts({
+  //         variables: { idsArray: objectsIdsArray },
+  //       });
+  //     } else {
+  //       setLoading(false);
+  //       setRows([]);
+  //     }
+  //   }
+  // }, [dataWellOwners]);
+
+  // useEffect(() => {
+  //   if (
+  //     props.parent &&
+  //     props.parent === "detail-well-card-contact-ties" &&
+  //     dataWellOwners &&
+  //     dataWellOwners.wellOwners &&
+  //     dataWellOwners.wellOwners.length > 0 &&
+  //     dataCommentsCounter &&
+  //     dataCommentsCounter.commentsCounter &&
+  //     dataTagSamples &&
+  //     dataTagSamples.tagSamples &&
+  //     dataTracks &&
+  //     checkIfOwnersAreContactsData &&
+  //     checkIfOwnersAreContactsData.ifAreContacts
+  //   ) {
+  //     const wellOwners = dataWellOwners.wellOwners.map((o) => {
+  //       let wellOwner = { ...o };
+  //       wellOwner.commentsCounter = 0;
+  //       wellOwner.tags = [[], 0];
+  //       wellOwner.wellsCounter = [];
+  //       wellOwner.isTracked = false;
+
+  //       for (
+  //         let i = 0;
+  //         i < checkIfOwnersAreContactsData.ifAreContacts.length;
+  //         i++
+  //       ) {
+  //         if (
+  //           wellOwner.globalOwnerId ===
+  //           checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+  //         ) {
+  //           wellOwner.isContact =
+  //             checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
+
+  //           wellOwner.entity =
+  //             checkIfOwnersAreContactsData.ifAreContacts[i]._id;
+  //           break;
+  //         }
+  //       }
+
+  //       for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+  //         if (
+  //           wellOwner.globalOwnerId ===
+  //           dataCommentsCounter.commentsCounter[i]._id
+  //         ) {
+  //           wellOwner.commentsCounter =
+  //             dataCommentsCounter.commentsCounter[i].total;
+  //           break;
+  //         }
+  //       }
+
+  //       for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+  //         if (wellOwner.globalOwnerId === dataTagSamples.tagSamples[i]._id) {
+  //           wellOwner.tags = [
+  //             dataTagSamples.tagSamples[i].tags,
+  //             dataTagSamples.tagSamples[i].total,
+  //           ];
+
+  //           break;
+  //         }
+  //       }
+
+  //       for (let i = 0; i < dataTracks.length; i++) {
+  //         if (
+  //           wellOwner.globalOwnerId === dataTracks[i]
+  //         ) {
+  //           wellOwner.isTracked = true;
+  //           break;
+  //         }
+  //       }
+
+  //       return wellOwner;
+  //     });
+
+  //     let availableTags = [];
+  //     dataTagSamples.tagSamples.map((sample) => {
+  //       availableTags = [...availableTags, ...sample.tags];
+  //     });
+  //     const cleanAvailableTags = [...new Set(availableTags)];
+
+  //     setColumns(
+  //       cleanAvailableTags.length > 0
+  //         ? OwnersPerWellHeadCells.map((column) => {
+  //           if (column.name === "tags") {
+  //             return {
+  //               ...column,
+  //               options: {
+  //                 ...column.options,
+  //                 filterOptions: {
+  //                   ...column.options.filterOptions,
+  //                   names: cleanAvailableTags,
+  //                 },
+  //               },
+  //             };
+  //           }
+  //           return column;
+  //         })
+  //         : OwnersPerWellHeadCells.map((column) => {
+  //           if (column.name === "tags") {
+  //             return {
+  //               ...column,
+  //               options: {
+  //                 ...column.options,
+  //                 filter: false,
+  //               },
+  //             };
+  //           }
+  //           return column;
+  //         })
+  //     );
+
+  //     setRows(wellOwners);
+  //     setLoading(false);
+  //   }
+  // }, [
+  //   dataWellOwners,
+  //   dataTracks,
+  //   dataTagSamples,
+  //   dataCommentsCounter,
+  //   // dataOwnersWells,
+  //   checkIfOwnersAreContactsData,
+  //   dataTracks,
+  // ]);
+
+  ////////////Owners Per Well end///////////////////////////////////////////////
+
+
+
+
+
+
 
 
 
@@ -1396,8 +1557,12 @@ function M1nTable(props) {
 
       props.parent 
       && constDataContacts 
-      && ((props.parent === "Contacts")  // for parent of contact screen 
-              || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
+      && (
+                 (props.parent === "Contacts")  // for parent of contact screen 
+              || (props.parent ==='search' && props.targetLabel === "contacts") // for parent of search grid 
+              || (props.parent === "detail-well-card-contact-ties") // for parent of detail well card 
+              ) 
+
 
     ) {
       if (
@@ -1424,7 +1589,7 @@ function M1nTable(props) {
 
         // this initial load is to make the grid appear more performantly 
         // the descriptors come in a later use effect 
-        
+        console.log('data data', tmpDataContacts)
         setDataContacts(tmpDataContacts);
         setRows([
           ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
@@ -1580,8 +1745,6 @@ function M1nTable(props) {
       tmpDataContacts.paginatedContacts.edges.forEach(({ node }) => {
         node.commentsCounter = 0;
         node.tags = [[], 0];
-        // node.fullContactAddress = joinAddress(node);
-        // node.contactName = node.name;
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (node._id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -2942,10 +3105,6 @@ function M1nTable(props) {
         shapeWellsPageProps={{
           getPaginatedShapeWells,
           shapeWellsCount: (dataShapeWellsCount && dataShapeWellsCount.shapeWellsCount) ? dataShapeWellsCount.shapeWellsCount : 0,
-          /*getWellOptions,
-          wellInterestsCount: selectedOwnerWellIntsSummary?.interestsCount
-            ? selectedOwnerWellIntsSummary.interestsCount
-            : 0,*/
           setLoading,
         }}
         parent={props.parent}

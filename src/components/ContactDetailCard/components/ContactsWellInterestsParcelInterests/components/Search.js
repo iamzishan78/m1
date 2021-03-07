@@ -18,7 +18,7 @@ import { setMapGridCardState } from "../../../../../actions";
 import { deepEqualObjects } from "../../../../Shared/functions";
 
 // import value formatters 
-import capitalizeFirstLetter from "../../../../Shared/valueformatters/capitalize-first-letter.js";
+import joinAddress from "../../../../Shared/valueformatters/join-address.js";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -41,27 +41,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-const joinAddress = (row) => {
-  let rowData = {
-    StreetAddress: row.StreetAddress,
-    City: row.City,
-    State: row.State,
-    Zip: row.Zip,
-    Country: row.Country,
-  };
-  let textArray = [];
-  for (const key in rowData) {
-    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
-      if (key === "Zip" || key === "Country") {
-        textArray = [
-          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
-        ];
-      } else textArray.push(capitalizeFirstLetter(rowData[key]));
-    }
-  }
-
-  return textArray.join(", ");
-};
 
 function Search(props) {
   const classes = useStyles();

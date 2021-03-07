@@ -11,8 +11,8 @@ import { setMapGridCardState } from "../../../actions";
 
 
 // import value formatters 
-import capitalizeFirstLetter from "../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
+import joinAddress from "../../Shared/valueformatters/join-address.js";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -38,28 +38,6 @@ function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-
-
-const joinAddress = (row) => {
-  let rowData = {
-    city: row.city,
-    state: row.state,
-    zip: row.zip,
-    country: row.country,
-  };
-  let textArray = [];
-  for (const key in rowData) {
-    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
-      if (key === "zip" || key === "country") {
-        textArray = [
-          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
-        ];
-      } else textArray.push(capitalizeFirstLetter(rowData[key]));
-    }
-  }
-
-  return textArray.join(", ");
-};
 export default function WellInterestsTopSumary(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
