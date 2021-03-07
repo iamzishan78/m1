@@ -60,6 +60,8 @@ import {
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 import MapGridCard from "../MapGridCard/MapGridCard";
+import MapGridCardProvider from "../MapGridCard/MapGridProvider";
+
 import { useDispatch, useSelector } from "react-redux";
 import MarkerIcon from "./sprites/marker-icon.png";
 import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
@@ -4661,7 +4663,7 @@ function Map() {
         )}
 
       {mapGridCardActivated && (
-        <MapGridCard mapGridCardActivated={mapGridCardActivated} />
+        <MapGridCardProvider mapGridCardActivated={mapGridCardActivated} />
       )}
        
       {stateApp.selectedWell !== null && showExpandableCard &&

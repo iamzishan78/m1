@@ -23,7 +23,7 @@ import OwnersSummaryCard from "../OwnersSummaryCard/OwnersSummaryCard";
 
 import ContactsHeadCells from '../Shared/constants/contacts-header-schema.js'
 import WellsHeadCells from '../Shared/constants/well-header-schema.js'
-import wellsColumnHeaders from '../Shared/constants/well-header-schema.js'
+import wellsColumnHeaders from '../Shared/constants/well-interests-header-grid-schema.js'
 import parcelsColumnHeaders from '../Shared/constants/parcel-header-grid.js'
 
 

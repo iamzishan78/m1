@@ -1,21 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../../AppContext";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
-import parse from "autosuggest-highlight/parse";
-import throttle from "lodash/throttle";
 import debounce from "lodash/debounce";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
-import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
-import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
-import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { setMapGridCardState } from "../../../actions";
-
 
 // import value formatters 
 import capitalizeFirstLetter from "../../Shared/valueformatters/capitalize-first-letter.js";
@@ -80,6 +71,7 @@ function MapGridCardSearch(props) {
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, callback) => {
+
         const endpoint =
           "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
           searchTop +
@@ -231,14 +223,14 @@ function MapGridCardSearch(props) {
   );
 
   React.useEffect(() => {
-    if (searchInputValue === "") {
-      if (searchResultData.length !== 0 && searchloading !== false) {
-        dispatch(
-          setMapGridCardState({ searchResultData: [], searchloading: false })
-        );
-      }
-      return undefined;
-    }
+    // if (searchInputValue === "") {
+    //   if (searchResultData.length !== 0 && searchloading !== false) {
+    //     dispatch(
+    //       setMapGridCardState({ searchResultData: [], searchloading: false })
+    //     );
+    //   }
+    //   return undefined;
+    // }
 
     (async () => {
       let newOptions = [];
@@ -253,7 +245,6 @@ function MapGridCardSearch(props) {
                 );
                 newOptions = [...results.value];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],
@@ -279,7 +270,6 @@ function MapGridCardSearch(props) {
                   }),
                 ];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],
@@ -297,7 +287,6 @@ function MapGridCardSearch(props) {
                 );
                 newOptions = [...results.value];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],
@@ -331,7 +320,6 @@ function MapGridCardSearch(props) {
                   }),
                 ];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],
@@ -361,7 +349,6 @@ function MapGridCardSearch(props) {
                   }),
                 ];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],

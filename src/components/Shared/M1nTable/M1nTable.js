@@ -1396,7 +1396,6 @@ function M1nTable(props) {
 
       props.parent 
       && constDataContacts 
-
       && ((props.parent === "Contacts")  // for parent of contact screen 
               || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
 
@@ -1423,6 +1422,9 @@ function M1nTable(props) {
           },
         };
 
+        // this initial load is to make the grid appear more performantly 
+        // the descriptors come in a later use effect 
+        
         setDataContacts(tmpDataContacts);
         setRows([
           ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
@@ -1612,7 +1614,7 @@ function M1nTable(props) {
       setRows([
         ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
       ]);
-      // setLoading(false);
+      setLoading(false);
     }
   }, [
     // dataTracks,
