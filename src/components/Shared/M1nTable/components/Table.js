@@ -5,7 +5,7 @@ import React, {
   useRef,
   Fragment,
 } from "react";
-import {MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
@@ -71,6 +71,7 @@ import moment from "moment";
 import CheckIcon from "@material-ui/icons/Check";
 import AlertDialogSlide from "../../../Contacts/components/RightDialog";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
+import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
 import Chip from '@material-ui/core/Chip';
 
 // import value formatters 
@@ -178,7 +179,7 @@ const productionStyle = makeStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    },
+  },
   table: {
     "& .MuiTableBody-root": {
       height: '50px',
@@ -223,7 +224,7 @@ const useStyles = makeStyles((theme) => ({
     "& tbody": {
       opacity: "1",
       transition: "opacity 1s ease-out",
-      WebkitTransition: "opacity 1s ease-out",
+      webkitTransition: "opacity 1s ease-out",
       height: "50px"
     },
   },
@@ -324,7 +325,7 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     top: "19px"
   },
-  clickableCell:{
+  clickableCell: {
     cursor: "pointer",
     padding: "10px 30px 10px 10px",
     position: "relative",
@@ -982,16 +983,16 @@ function SubTable(props) {
                                   selectedWellId:
                                     props.targetLabel == "well"
                                       ? tableMeta.rowData[0]
-                                      : null, 
-                                   //adding in fitbounds to center in right side of screen                           
-                                   fitBounds: {
-                                        maxLat: value.center[1],
-                                        minLat: value.center[1],
-                                        minLong: value.center[0] - 1.5 * .02,
-                                        maxLong: value.center[0] + 0.5 * .02,
-                                      },
-                                  
-                                      flyTo: {
+                                      : null,
+                                  //adding in fitbounds to center in right side of screen                           
+                                  fitBounds: {
+                                    maxLat: value.center[1],
+                                    minLat: value.center[1],
+                                    minLong: value.center[0] - 1.5 * .02,
+                                    maxLong: value.center[0] + 0.5 * .02,
+                                  },
+
+                                  flyTo: {
                                     longitude: value.center[0],
                                     latitude: value.center[1],
                                   },
@@ -1249,6 +1250,10 @@ function SubTable(props) {
                           }`}
                         onClick={(e) => {
                           e.stopPropagation();
+                          if (m1nSelectedRowsIndexes?.length > 1) {
+                            const selectedRows = m1nSelectedRowsIndexes.map((index) => rows[index]);
+                            return handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, selectedRows, "multipleOwnerToContact");
+                          }
 
                           if (value && value !== "false") {
                             setTargetLabelToExpand("contact");
@@ -1649,7 +1654,7 @@ function SubTable(props) {
                   }
 
                   return (
-                    <div style={{ display: "flex",alignItems: "center", justifyContent: "left" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "left" }}>
                       {props.targetLabel === "contact" &&
                         column.name === "name" && (
                           <Avatar
@@ -1667,52 +1672,52 @@ function SubTable(props) {
                           />
                         )}
                       {props.targetLabel !== "contact" &&
-                     (
+                        (
                           <CellContentEdition
-                          id={tableMeta.rowData[0]}
-                          content={{ [column.name]: valueFormatter(value) }}
-                          targetLabel={props.targetLabel}
-                          dropDownOptions={
-                            column.dropDownOptions ? column.dropDownOptions : null
-                          }
-                          entityId={
-                            props.targetLabel === "Parcel Interest" ||
-                              props.targetLabel === "Parcel Ownershipship" ||
-                              props.targetLabel === "contact"
-                              ? tableMeta.rowData[1]
-                              : null
-                          }
-                          nonEditable={!column.editable}
-                        />
+                            id={tableMeta.rowData[0]}
+                            content={{ [column.name]: valueFormatter(value) }}
+                            targetLabel={props.targetLabel}
+                            dropDownOptions={
+                              column.dropDownOptions ? column.dropDownOptions : null
+                            }
+                            entityId={
+                              props.targetLabel === "Parcel Interest" ||
+                                props.targetLabel === "Parcel Ownershipship" ||
+                                props.targetLabel === "contact"
+                                ? tableMeta.rowData[1]
+                                : null
+                            }
+                            nonEditable={!column.editable}
+                          />
                         )}
-                     {props.targetLabel === "contact" &&
+                      {props.targetLabel === "contact" &&
                         column.name !== "name" && (
                           <CellContentEdition
-                          id={tableMeta.rowData[0]}
-                          content={{ [column.name]: valueFormatter(value) }}
-                          targetLabel={props.targetLabel}
-                          dropDownOptions={
-                            column.dropDownOptions ? column.dropDownOptions : null
-                          }
-                          entityId={
-                            props.targetLabel === "Parcel Interest" ||
-                              props.targetLabel === "Parcel Ownershipship" ||
-                              props.targetLabel === "contact"
-                              ? tableMeta.rowData[1]
-                              : null
-                          }
-                          nonEditable={!column.editable}
-                        />
+                            id={tableMeta.rowData[0]}
+                            content={{ [column.name]: valueFormatter(value) }}
+                            targetLabel={props.targetLabel}
+                            dropDownOptions={
+                              column.dropDownOptions ? column.dropDownOptions : null
+                            }
+                            entityId={
+                              props.targetLabel === "Parcel Interest" ||
+                                props.targetLabel === "Parcel Ownershipship" ||
+                                props.targetLabel === "contact"
+                                ? tableMeta.rowData[1]
+                                : null
+                            }
+                            nonEditable={!column.editable}
+                          />
                         )}
-                       {props.targetLabel === "contact" &&
+                      {props.targetLabel === "contact" &&
                         column.name === "name" && (
-                          <p  className ={classes.clickableCell}
-                            onClick = {() => {
+                          <p className={classes.clickableCell}
+                            onClick={() => {
                               setStateApp((stateApp) => ({
                                 ...stateApp,
                                 selectedContact: tableMeta.rowData[0],
                               }));
-                      
+
                               setSubComponent(
                                 <ContactDetailCard
                                   selectRowOpenContact={selectRowOpenContact}
@@ -1725,7 +1730,7 @@ function SubTable(props) {
                             }}
                           >{value}</p>
                         )}
-                  
+
                       {props.targetLabel === "contact" &&
                         column.name === "name" &&
                         tableMeta.rowData[
@@ -2294,7 +2299,7 @@ function SubTable(props) {
       }
     },
 
-    
+
     onTableChange: (action, tableState) => {
       if (props.header === "Contacts") {
         let filters = [];
@@ -2590,11 +2595,11 @@ function SubTable(props) {
   };
 
   return (
-    <div style={{ 
-      width: "100%", 
-      height: "100%", 
-      position: "relative" 
-      }}>
+    <div style={{
+      width: "100%",
+      height: "100%",
+      position: "relative"
+    }}>
       <div
         className={`${classes.table} ${rows && !props.loading ? "" : classes.loadingTable
           } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
@@ -2615,45 +2620,45 @@ function SubTable(props) {
             print: false,
           }}
         />
-		{
-			openDialog 
-			&& openDialog === "sendMailers" 
-			&& (<RightDialog
-				  open = {openDialog ? true : false}
-				  handleClickDialogClose = {handleCloseDialog}
-          width = {"700px"}
-				>
-    			  <SendMailersDialogContent
-                    onClose={handleCloseDialog}
-                    rows={expandedObject}
-                    setRows={setExpandedObject}
-                    setSelectedRow={setSelectedRow}
-                  />
-				</RightDialog>) 
-		}
+        {
+          openDialog
+          && openDialog === "sendMailers"
+          && (<RightDialog
+            open={openDialog ? true : false}
+            handleClickDialogClose={handleCloseDialog}
+            width={"700px"}
+          >
+            <SendMailersDialogContent
+              onClose={handleCloseDialog}
+              rows={expandedObject}
+              setRows={setExpandedObject}
+              setSelectedRow={setSelectedRow}
+            />
+          </RightDialog>)
+        }
 
-		{
-			openDialog 
-			&& openDialog === "buyContactsInfo" 
-			&& (<RightDialog
-				  open = {openDialog ? true : false}
-				  handleClickDialogClose = {handleCloseDialog}
-				  width = {"700px"}
-				>
-    			    <BuyContactsInfoDialogContent
-                onClose={handleCloseDialog}
-                rows={expandedObject}
-                setRows={setExpandedObject}
-                setSelectedRow={setSelectedRow}
-              />
-				</RightDialog>) 
-		}
+        {
+          openDialog
+          && openDialog === "buyContactsInfo"
+          && (<RightDialog
+            open={openDialog ? true : false}
+            handleClickDialogClose={handleCloseDialog}
+            width={"700px"}
+          >
+            <BuyContactsInfoDialogContent
+              onClose={handleCloseDialog}
+              rows={expandedObject}
+              setRows={setExpandedObject}
+              setSelectedRow={setSelectedRow}
+            />
+          </RightDialog>)
+        }
 
-        {openDialog 
-		&& openDialog !== "addDeals" 
-		&& openDialog !== "sendMailers"
-		&& openDialog !== "buyContactsInfo" 
-		&&(<Dialog
+        {openDialog
+          && openDialog !== "addDeals"
+          && openDialog !== "sendMailers"
+          && openDialog !== "buyContactsInfo"
+          && (<Dialog
             className={classes.dialog}
             open={openDialog ? true : false}
             onClose={handleCloseDialog}
@@ -2838,10 +2843,10 @@ function SubTable(props) {
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to delete the owner${m1nSelectedRowsIds &&
-                    m1nSelectedRowsIds.length > 1 &&
-                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-                    ? "s"
-                    : ""
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                  ? "s"
+                  : ""
                   }?`}
               </DeleteConfirmationDialogContent>
             )}
@@ -2882,6 +2887,14 @@ function SubTable(props) {
             )}
             {openDialog === "merge" && (
               <MergeContactDrawer
+                onClose={handleCloseDialog}
+                rows={expandedObject}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+                setRows={setExpandedObject}
+              />
+            )}
+            {openDialog === "multipleOwnerToContact" && (
+              <MultipleOwnerToContactDrawer
                 onClose={handleCloseDialog}
                 rows={expandedObject}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
@@ -2940,7 +2953,7 @@ function SubTable(props) {
               </DeleteConfirmationDialogContent>
             )}
           </Dialog>
-        )}
+          )}
 
         {multipleExpandableCard && targetLabelToExpand == "contact" && (
           <Dialog
