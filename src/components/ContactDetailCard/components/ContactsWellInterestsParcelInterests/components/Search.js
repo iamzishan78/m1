@@ -152,6 +152,8 @@ function Search(props) {
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+  let selectedWellIds = [];
+
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, callback) => {
@@ -308,7 +310,19 @@ function Search(props) {
   ) {
     optionsWithHeader = [header, { ...header, Source: "loader" }];
   }
-  console.log("optionsWithHeader", optionsWithHeader)
+  
+  const selectWellId = (WellId, selected) => {
+    if (!selected) {
+      selectedWellIds.push(WellId);
+    } else {
+      selectedWellIds = selectedWellIds.filter(e => e !== WellId)
+    }
+  }
+
+  const addSelectedWellsToContact = () => {
+    
+    console.log("selectedWellIds", selectedWellIds);
+  };
 
   return (
     <form
@@ -404,7 +418,7 @@ function Search(props) {
                   size="small"
                   color="secondary"
                   onClick={() => {
-                    console.log("Add to Contact")
+                    addSelectedWellsToContact();
                   }}
                 >
                   Add to Contact
@@ -528,6 +542,7 @@ function Search(props) {
                     checked={selected}
                     color="primary"
                     onChange={(e) => {
+                      selectWellId(option.Id, selected);
                       console.log("checkbox changed", e);
                       console.log("checkbox checked:", e.target.checked);
                     }}
