@@ -183,6 +183,16 @@ const ContactsHeadCells = [
     },
   },
   {
+    name: "contactOwner",
+    label: "Contact Owner",
+    options: {
+      // display: true,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
     name: "melissaRowsCount",
     options: {
       display: false,
@@ -214,6 +224,7 @@ const ContactsHeadCells = [
       sort: false,
     },
   },
+
   {
     name: "AltPhone",
     label: "Primary Work Phone",
@@ -638,6 +649,6 @@ const SearchsHeadCells = [
     },
   },
 ];
-  
+
 
 export default ContactsHeadCells;

@@ -296,11 +296,11 @@ export default function FieldContent({
         }).then((res) => {
           let entries = Object.entries(editContent);
           entries.forEach((entry) => {
-            content = {...content, [entry[0]]: entry[1]}
+            content = { ...content, [entry[0]]: entry[1] }
           });
-          setShowContent({...content});
+          setShowContent({ ...content });
           setEditContent({ ...content });
-          setStateApp({...stateApp, contactUpdated: id});
+          setStateApp({ ...stateApp, contactUpdated: id });
         });
       }
     } else if (fieldType == FieldTypes.MelissaRecord) {
@@ -320,9 +320,9 @@ export default function FieldContent({
         setIsCurEdited(true);
         let entries = Object.entries(editContent);
         entries.forEach((entry) => {
-          content = {...content, [entry[0]]: entry[1]}
+          content = { ...content, [entry[0]]: entry[1] }
         });
-        setShowContent({...content});
+        setShowContent({ ...content });
         setEditContent({ ...content });
       });
     } else if (fieldType == FieldTypes.MelissaAddressRecord) {
@@ -342,9 +342,9 @@ export default function FieldContent({
         setIsCurEdited(true);
         let entries = Object.entries(editContent);
         entries.forEach((entry) => {
-          content = {...content, [entry[0]]: entry[1]}
+          content = { ...content, [entry[0]]: entry[1] }
         });
-        setShowContent({...content});
+        setShowContent({ ...content });
         setEditContent({ ...content });
       });
     }
@@ -447,9 +447,8 @@ export default function FieldContent({
   const getHrefValue = (linkValue, linkType) => {
     if (linkType == LinkTypes.Mail) return `mailto:${linkValue}`;
     if (linkType == LinkTypes.Simple)
-      return `${
-        !linkValue.startsWith("http") && !linkValue.startsWith("//") ? "//" : ""
-      }${linkValue}`;
+      return `${!linkValue.startsWith("http") && !linkValue.startsWith("//") ? "//" : ""
+        }${linkValue}`;
     else return linkValue;
   };
 
@@ -480,22 +479,21 @@ export default function FieldContent({
   return (
     <React.Fragment>
       <p
-        className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${
-          classes.fieldContentP
-        }`}
+        className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP
+          }`}
       >
         {(linkType == LinkTypes.Mail || linkType == LinkTypes.Simple) &&
-        textArray.length > 0 ? (
-          <a
-            href={getHrefValue(textArray.join(", "), linkType)}
-            target="_blank"
-            className={classes.noTextDecoration}
-          >
-            {renderOutput}
-          </a>
-        ) : (
-          renderOutput
-        )}
+          textArray.length > 0 ? (
+            <a
+              href={getHrefValue(textArray.join(", "), linkType)}
+              target="_blank"
+              className={classes.noTextDecoration}
+            >
+              {renderOutput}
+            </a>
+          ) : (
+            renderOutput
+          )}
       </p>
       {loading && (
         <div style={{ height: "0", width: "0" }}>

@@ -10,6 +10,7 @@ export const UPDATECONTACT = gql`
         _id
         entity
         name
+        contactOwner
         address1
         address2
         city

@@ -413,6 +413,10 @@ export default function DetailInfo(props) {
       data: { status: props.contactData.status },
       linkType: LinkTypes.None,
     },
+    "Contact Owner": {
+      data: { contactOwner: props.contactData.contactOwner },
+      linkType: LinkTypes.None,
+    },
     "Created By": {
       data: { createByRow },
       linkType: LinkTypes.None,
