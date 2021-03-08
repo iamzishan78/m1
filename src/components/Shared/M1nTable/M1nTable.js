@@ -101,9 +101,7 @@ function M1nTable(props) {
     setStateIfDeepEqual(Columns, newState);
   };
   const [columnsBase, ColumnsBase] = useState([]);
-  const setColumnsBase = (newState) => {
-    setStateIfDeepEqual(ColumnsBase, newState);
-  };
+  const setColumnsBase = (newState) => {setStateIfDeepEqual(ColumnsBase, newState);};
   const [loading, Loading] = useState(true);
   const setLoading = (newState) => {
     setStateIfDeepEqual(Loading, newState);
@@ -146,11 +144,8 @@ function M1nTable(props) {
   const setWarningShowed = (newState) => {
     setStateIfDeepEqual(WarningShowed, newState);
   };
-
   const [dataContacts, DataContacts] = useState(null);
-  const setDataContacts = (newState) => {
-    setStateIfDeepEqual(DataContacts, newState);
-  };
+  const setDataContacts = (newState) => {setStateIfDeepEqual(DataContacts, newState);};
 
   const [dataWellInterests, DataWellInterests] = useState(null);
   const setDataWellInterests = (newState) => {
@@ -209,54 +204,21 @@ function M1nTable(props) {
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(
     CONTACTWELLS
   );
-  // const [getContactInM1nTable, { data: dataContact }] = useLazyQuery(CONTACT, {
-  //   fetchPolicy: "cache-and-network",
-  // });
+
 
   /////////
-  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
-    fetchPolicy: "cache-and-network",
-  });
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {fetchPolicy: "cache-and-network",});
   const [removeUser] = useMutation(REMOVEUSER);
-  //////////
-
-  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
-  const [
-    getContactsFilterOptions,
-    { data: dataContactsFilterOptions },
-  ] = useLazyQuery(CONTACTSFILTEROPTIONS, {
-    fetchPolicy: "cache-and-network",
-  });
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY,{fetchPolicy: "no-cache",});
+  const [getContactsFilterOptions,{ data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, {fetchPolicy: "cache-and-network",});
   const [updateMailerStatuses] = useMutation(UPDATEMAILERSTATUSES);
-  //////////
-  // const [getTransactionData, { data: dataDeals }] = useLazyQuery(
-  //   TRANSACTIONDATA
-  // );
-
-  const [getContactDeals, { data: dataDeals }] = useLazyQuery(CONTACTDEALS, {
-    fetchPolicy: "cache-and-network",
-  });
-
-  //////////
+  const [getContactDeals, { data: dataDeals }] = useLazyQuery(CONTACTDEALS, {fetchPolicy: "cache-and-network",});
   const [removeContact] = useMutation(REMOVECONTACT);
-
   const [updateContact] = useMutation(UPDATECONTACT);
-  //////////
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
-  //////////
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
-  //////////
-  const [getParcelOwners, { data: dataParcelOwners }] = useLazyQuery(
-    PARCELOWNERSQUERY
-  );
-  //////////
+  const [getParcelOwners, { data: dataParcelOwners }] = useLazyQuery(PARCELOWNERSQUERY);
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
-  //////////
   const [getMelissaRowsCount, { data: dataMelissaRowsCount }] = useLazyQuery(
     MELISSARECORDSCOUNTBYIDS,
     {
@@ -1327,181 +1289,6 @@ function M1nTable(props) {
   
   ////////////"detail-well-card-contact-ties" begin///////////////////////////////////////////////
 
-  useEffect(() => {
-    if (props.parent && props.parent === "detail-well-card-contact-ties") {
-      setLoading(true);
-      setTargetLabel("contact");
-      setHeader("Contacts");
-      setOrderByTracks(false);
-      setAddAble({ parent: false, type: "contact" });
-      getPaginatedContacts({variables: { search: stateApp.gridSearchTarget }});
-      getContactsFilterOptions();
-      updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
-      setUploadIcon(false);
-      setStartPaginationAt(25);
-      setColumnsBase(ContactsHeadCells);
-    }
-  }, [props.selectedWell, selectedYear]);
-
-
-
-  
-
-
-
-
-  // useEffect(() => {
-  //   if (props.parent && props.parent === "detail-well-card-contact-ties" && dataWellOwners) {
-  //     if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
-        
-  //       console.log('data wells owners',dataWellOwners )
-        
-  //       setLoading(true);
-  //       const objectsIdsArray = dataWellOwners.wellOwners.map(
-  //         (wellOwner) => wellOwner.globalOwnerId
-  //       );
-  //       getCommentsCounter({
-  //         variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-  //       });
-  //       getTagSamples({
-  //         variables: { objectsIdsArray, userId: stateApp.user.mongoId },
-  //       });
-  //       checkIfOwnersAreContacts({
-  //         variables: { idsArray: objectsIdsArray },
-  //       });
-  //     } else {
-  //       setLoading(false);
-  //       setRows([]);
-  //     }
-  //   }
-  // }, [dataWellOwners]);
-
-  // useEffect(() => {
-  //   if (
-  //     props.parent &&
-  //     props.parent === "detail-well-card-contact-ties" &&
-  //     dataWellOwners &&
-  //     dataWellOwners.wellOwners &&
-  //     dataWellOwners.wellOwners.length > 0 &&
-  //     dataCommentsCounter &&
-  //     dataCommentsCounter.commentsCounter &&
-  //     dataTagSamples &&
-  //     dataTagSamples.tagSamples &&
-  //     dataTracks &&
-  //     checkIfOwnersAreContactsData &&
-  //     checkIfOwnersAreContactsData.ifAreContacts
-  //   ) {
-  //     const wellOwners = dataWellOwners.wellOwners.map((o) => {
-  //       let wellOwner = { ...o };
-  //       wellOwner.commentsCounter = 0;
-  //       wellOwner.tags = [[], 0];
-  //       wellOwner.wellsCounter = [];
-  //       wellOwner.isTracked = false;
-
-  //       for (
-  //         let i = 0;
-  //         i < checkIfOwnersAreContactsData.ifAreContacts.length;
-  //         i++
-  //       ) {
-  //         if (
-  //           wellOwner.globalOwnerId ===
-  //           checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
-  //         ) {
-  //           wellOwner.isContact =
-  //             checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
-
-  //           wellOwner.entity =
-  //             checkIfOwnersAreContactsData.ifAreContacts[i]._id;
-  //           break;
-  //         }
-  //       }
-
-  //       for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-  //         if (
-  //           wellOwner.globalOwnerId ===
-  //           dataCommentsCounter.commentsCounter[i]._id
-  //         ) {
-  //           wellOwner.commentsCounter =
-  //             dataCommentsCounter.commentsCounter[i].total;
-  //           break;
-  //         }
-  //       }
-
-  //       for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-  //         if (wellOwner.globalOwnerId === dataTagSamples.tagSamples[i]._id) {
-  //           wellOwner.tags = [
-  //             dataTagSamples.tagSamples[i].tags,
-  //             dataTagSamples.tagSamples[i].total,
-  //           ];
-
-  //           break;
-  //         }
-  //       }
-
-  //       for (let i = 0; i < dataTracks.length; i++) {
-  //         if (
-  //           wellOwner.globalOwnerId === dataTracks[i]
-  //         ) {
-  //           wellOwner.isTracked = true;
-  //           break;
-  //         }
-  //       }
-
-  //       return wellOwner;
-  //     });
-
-  //     let availableTags = [];
-  //     dataTagSamples.tagSamples.map((sample) => {
-  //       availableTags = [...availableTags, ...sample.tags];
-  //     });
-  //     const cleanAvailableTags = [...new Set(availableTags)];
-
-  //     setColumns(
-  //       cleanAvailableTags.length > 0
-  //         ? OwnersPerWellHeadCells.map((column) => {
-  //           if (column.name === "tags") {
-  //             return {
-  //               ...column,
-  //               options: {
-  //                 ...column.options,
-  //                 filterOptions: {
-  //                   ...column.options.filterOptions,
-  //                   names: cleanAvailableTags,
-  //                 },
-  //               },
-  //             };
-  //           }
-  //           return column;
-  //         })
-  //         : OwnersPerWellHeadCells.map((column) => {
-  //           if (column.name === "tags") {
-  //             return {
-  //               ...column,
-  //               options: {
-  //                 ...column.options,
-  //                 filter: false,
-  //               },
-  //             };
-  //           }
-  //           return column;
-  //         })
-  //     );
-
-  //     setRows(wellOwners);
-  //     setLoading(false);
-  //   }
-  // }, [
-  //   dataWellOwners,
-  //   dataTracks,
-  //   dataTagSamples,
-  //   dataCommentsCounter,
-  //   // dataOwnersWells,
-  //   checkIfOwnersAreContactsData,
-  //   dataTracks,
-  // ]);
-
-  ////////////Owners Per Well end///////////////////////////////////////////////
-
 
 
 
@@ -1552,6 +1339,30 @@ function M1nTable(props) {
   }, [props.parent,
       stateApp.gridSearchTarget]);
 
+
+
+
+      useEffect(() => {
+        if (props.parent && props.parent === "detail-well-card-contact-ties") {
+          setLoading(true);
+          setTargetLabel("contact");
+          setHeader("Contacts");
+          setOrderByTracks(false);
+          setAddAble({ parent: false, type: "contact" });    
+          // getPaginatedContacts({variables: { search: "jacob" }});
+          // getContactsFilterOptions();
+          // updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
+          // setUploadIcon(false);
+          setStartPaginationAt(25);
+          setColumnsBase(ContactsHeadCells);
+        }
+      }, [props.selectedWell, selectedYear]);
+    
+    
+    
+
+
+
   useEffect(() => {
     if (
 
@@ -1562,9 +1373,25 @@ function M1nTable(props) {
               || (props.parent ==='search' && props.targetLabel === "contacts") // for parent of search grid 
               || (props.parent === "detail-well-card-contact-ties") // for parent of detail well card 
               ) 
-
-
     ) {
+
+
+      setColumns(
+        columnsBase.map((column) => {
+          switch (column.name) {
+            default:
+              return column;
+          }
+        })
+      );
+    } else {
+      setLoading(false);
+    }
+
+
+
+
+
       if (
         constDataContacts?.paginatedContacts?.edges &&
         constDataContacts.paginatedContacts.edges.length > 0
@@ -1589,7 +1416,6 @@ function M1nTable(props) {
 
         // this initial load is to make the grid appear more performantly 
         // the descriptors come in a later use effect 
-        console.log('data data', tmpDataContacts)
         setDataContacts(tmpDataContacts);
         setRows([
           ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
@@ -1599,12 +1425,11 @@ function M1nTable(props) {
         setLoading(false);
         setRows([]);
       }
-    }
+    
   }, [
     constDataContacts,
-    // dataContactsFilterOptions,
-    // dataTracks
   ]);
+
 
   useEffect(() => {
     if (
@@ -1630,6 +1455,9 @@ function M1nTable(props) {
       });
     }
   }, [dataContacts]);
+
+
+
 
   useEffect(() => {
     if (
@@ -1707,9 +1535,9 @@ function M1nTable(props) {
           })
         );
       } else {
-        // setLoading(false);
+        setLoading(false);
       }
-    }
+      }
   }, [dataContactsFilterOptions, columnsBase]);
 
   useEffect(() => {

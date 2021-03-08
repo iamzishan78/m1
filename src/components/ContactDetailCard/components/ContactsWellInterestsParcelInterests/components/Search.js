@@ -196,14 +196,6 @@ function Search(props) {
         value={inputValue}
         onChange={(event) => {
           setInputValue(event.target.value);
-          // if (!searchLoading) {
-          // dispatch(
-          //   setMapGridCardState({
-          //     searchLoading: true,
-          //     searchInputValue: event.target.value,
-          //   })
-          // );
-          // }
         }}
       />
     </form>

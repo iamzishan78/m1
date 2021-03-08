@@ -203,15 +203,6 @@ function MapGridCardSearch(props) {
   );
 
   React.useEffect(() => {
-    // if (searchInputValue === "") {
-    //   if (searchResultData.length !== 0 && searchloading !== false) {
-    //     dispatch(
-    //       setMapGridCardState({ searchResultData: [], searchloading: false })
-    //     );
-    //   }
-    //   return undefined;
-    // }
-
     (async () => {
       let newOptions = [];
 
