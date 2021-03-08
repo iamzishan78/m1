@@ -8,6 +8,7 @@ import Search from "./components/Search";
 import M1nTable from "../../../Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import Button from "@material-ui/core/Button";
+//import { setMapGridCardState } from "../../../../actions";
 //import TabLabels from "../../../MapGridCard/MapGridCard";
 //import TabPanels from "../../../MapGridCard/MapGridCard";
 
@@ -44,8 +45,31 @@ function ContactsWellInterestsParcelInterests(props) {
 
   const classes = useStyles({});
 
+  /*const handleMainTapChange = (event, newValue) => {
+    console.log(`contacts well interests handlemaintapchange newValue: ${newValue}`);
+    console.log(`contacts well interests handlemaintapchange event: ${event}`);
+
+    dispatch(
+      setMapGridCardState({
+        mapGridCardActiveTap: newValue,
+        selectedOwner: null,
+        selectedOwnerWellIntsSummary: null,
+      })
+    );
+  };*/
+
   return (
     <div>
+      <Search
+        /*ativateSearchPanel={() => {
+          if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
+          if (mapGridCardActivated === "min") {
+            dispatch(
+              setMapGridCardState({ mapGridCardActivated: true })
+            );
+          }
+        }}*/
+      />
       <div style={{ position: "relative" }}>
         <M1nTable
           parent="assocTaxRollInterests"

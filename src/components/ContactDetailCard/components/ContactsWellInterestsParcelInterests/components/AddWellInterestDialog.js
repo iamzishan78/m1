@@ -171,7 +171,7 @@ function AddWellInterestDialog(props) {
               //className={classes.inputField}
             />
 
-<FormControl
+            <FormControl
               variant="outlined"
               fullWidth
               //className={classes.inputField}
