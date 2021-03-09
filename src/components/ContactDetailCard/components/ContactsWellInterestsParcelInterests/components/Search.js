@@ -145,7 +145,6 @@ function Search(props) {
   const [inputValue, setInputValue] = React.useState("");
   const [searchOption, setSearchOption] = React.useState("all");
   const [searchResultData, setSearchResultData] = React.useState([]);
-  const [searchLoading, setSearchLoading] = React.useState(false);
   const [loadingWells, setLoadingWells] = React.useState(false);
   const [searchTop, setSearchTop] = React.useState(5);
 
@@ -158,8 +157,8 @@ function Search(props) {
     () =>
       debounce((request, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
-          searchTop +
+          "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&$top=" +
+          request.top +
           "&search=" +
           encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
 
@@ -193,7 +192,7 @@ function Search(props) {
     () =>
       debounce((request, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName&top=" +
+          "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName&$top=" +
           searchTop +
           "&search=" +
           encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
@@ -227,26 +226,24 @@ function Search(props) {
 
   React.useEffect(() => {
     if (inputValue === "") {
-      if (searchResultData.length !== 0 && searchLoading !== false) {
+      if (searchResultData.length !== 0 && loadingWells !== false) {
         setSearchResultData([]);
-        setSearchLoading(false);
+        setLoadingWells(false);
       }
       return undefined;
     }
 
-    console.log("React.useEffect, inputValue = ", inputValue);
     (async () => {
       let newOptions = [];
 
       Promise.all([
-        callWellSearch({ input: inputValue }, (results) => {
+        callWellSearch({ input: inputValue, top: searchTop }, (results) => {
           if (results) {
             const indexSource = results["@odata.context"].substring(
               results["@odata.context"].indexOf("('") + 2,
               results["@odata.context"].indexOf("')")
             );
 
-            console.log(indexSource);
             newOptions = [
               ...results.value.map((result) => {
                 result.Score = result["@search.score"];
@@ -264,9 +261,8 @@ function Search(props) {
             //setMaxMinWellsScore(maxMinScore(results.value));
           }
 
-          console.log("newOptions", newOptions)
           setSearchResultData([...newOptions]);
-          setSearchLoading(false);
+          setLoadingWells(false);
         }),
         /*props.searchOption == "owner"
           ? callOwnerSearch({ input: inputValue }, (results) => {
@@ -288,12 +284,12 @@ function Search(props) {
               }
 
               setSearchResultData([...newOptions]);
-              setSearchLoading(false);
+              setLoadingWells(false);
             })
           : null,*/
       ]);
     })();
-  }, [inputValue, callWellSearch, callOwnerSearch, props.searchOption]);
+  }, [inputValue, searchTop, callWellSearch, callOwnerSearch, props.searchOption]);
 
   const header = {
     Source: "header",
@@ -320,7 +316,7 @@ function Search(props) {
   }
 
   const addSelectedWellsToContact = () => {
-    
+
     console.log("selectedWellIds", selectedWellIds);
   };
 
@@ -332,7 +328,7 @@ function Search(props) {
         id="cognitive-search-autocomplete"
         multiple
         disableCloseOnSelect
-        getOptionLabel={(option, value) => { console.log("getOptionLabel", option, value, "=> " + option.Primary); return option.Primary }}
+        getOptionLabel={(option, value) => option.Primary}
         forcePopupIcon
         filterOptions={(x) => x}
         options={optionsWithHeader}
@@ -342,7 +338,6 @@ function Search(props) {
           return "header";
         }}
         renderGroup={(option) => {
-          console.log('renderGroup option', option)
           if (option.group === "loader")
             return (
               <CircularProgress
@@ -410,7 +405,8 @@ function Search(props) {
                     setSearchOption("owners");
                   }}
                 >
-                  Owners
+                  Parcel Interests
+                  {/* TODO */}
                 </Button>
                 <Button
                   className={[classes.headerButtons, classes.floatRight]}
@@ -446,6 +442,9 @@ function Search(props) {
                         size="small"
                         className={classes.groupsButton}
                         onClick={() => {
+                          if (searchOption === "all" || searchOption === "wells") {
+                            setLoadingWells(true);
+                          }
                           setSearchTop(200);
                           setSearchOption(
                             option.group === "Owners"
@@ -463,8 +462,10 @@ function Search(props) {
                         size="small"
                         className={classes.groupsButton}
                         onClick={() => {
+                          if (searchOption === "all" || searchOption === "wells") {
+                            setLoadingWells(true);
+                          }
                           setSearchTop(5);
-                          // setSearchOption("all");
                         }}
                       >
                         See Less
@@ -479,16 +480,7 @@ function Search(props) {
             )
           );
         }}
-        //autoComplete
         includeInputInList
-        //value={inputValue}
-        /*onInputChange={(event, newInputValue, reason) => {
-          console.log("onInputChange", event, reason)
-          if (reason == "input") {
-            console.log("onInputChange111", event, newInputValue)
-            setInputValue(newInputValue);
-          }
-        }}*/
         renderInput={(params) => (
           <TextField
             {...params}
@@ -512,8 +504,9 @@ function Search(props) {
             //onClick={props.ativateSearchPanel}
             //value={"meow"}
             onChange={(event) => {
-              console.log("tf params", params)
-              console.log("inputValue changed", event.target.value)
+              if (searchOption === "all" || searchOption === "wells") {
+                setLoadingWells(true);
+              }
               setInputValue(event.target.value);
               // if (!searchLoading) {
               // dispatch(
@@ -543,8 +536,6 @@ function Search(props) {
                     color="primary"
                     onChange={(e) => {
                       selectWellId(option.Id, selected);
-                      console.log("checkbox changed", e);
-                      console.log("checkbox checked:", e.target.checked);
                     }}
                   />
                 </Grid>
@@ -610,12 +601,6 @@ function Search(props) {
           );
         }}
       />}
-      {/*<Autocomplete
-        //options={["abc", "abd", "abe", "abf", "cba"]}
-        options={optionsWithHeader}
-        getOptionLabel={(option, value) => { console.log("getOptionLabel", option, value); return option.Primary }}
-        renderInput={(params) => <TextField {...params} label="Combo box" variant="outlined" />}
-      />*/}
     </form>
   );
 }
