@@ -79,134 +79,67 @@ const useStyles = makeStyles((theme) => ({
 function M1nTable(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
+
+  // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
+
+  // function states 
   const [addDealOpen, setAddDealOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState();
   const [rows, Rows] = useState([]);
-  const setRows = (newState) => {
-    setStateIfDeepEqual(Rows, newState);
-  };
-
+  const setRows = (newState) => {setStateIfDeepEqual(Rows, newState);};
   const [total, Total] = useState(false);
-  const setTotal = (newState) => {
-    setStateIfDeepEqual(Total, newState);
-  };
-
+  const setTotal = (newState) => {setStateIfDeepEqual(Total, newState);};
   const [header, Header] = useState("");
-  const setHeader = (newState) => {
-    setStateIfDeepEqual(Header, newState);
-  };
+  const setHeader = (newState) => {setStateIfDeepEqual(Header, newState);};
   const [columns, Columns] = useState([]);
-  const setColumns = (newState) => {
-    setStateIfDeepEqual(Columns, newState);
-  };
+  const setColumns = (newState) => {setStateIfDeepEqual(Columns, newState);};
   const [columnsBase, ColumnsBase] = useState([]);
   const setColumnsBase = (newState) => {setStateIfDeepEqual(ColumnsBase, newState);};
   const [loading, Loading] = useState(true);
-  const setLoading = (newState) => {
-    setStateIfDeepEqual(Loading, newState);
-  };
+  const setLoading = (newState) => {setStateIfDeepEqual(Loading, newState);};
   const [addAble, AddAble] = useState(true);
-  const setAddAble = (newState) => {
-    setStateIfDeepEqual(AddAble, newState);
-  };
+  const setAddAble = (newState) => {setStateIfDeepEqual(AddAble, newState);};
   const [uploadIcon, UploadIcon] = useState(null);
-  const setUploadIcon = (newState) => {
-    setStateIfDeepEqual(UploadIcon, newState);
-  };
+  const setUploadIcon = (newState) => {setStateIfDeepEqual(UploadIcon, newState);};
   const [targetLabel, TargetLabel] = useState(null);
-  const setTargetLabel = (newState) => {
-    setStateIfDeepEqual(TargetLabel, newState);
-  };
+  const setTargetLabel = (newState) => {setStateIfDeepEqual(TargetLabel, newState);};
   const [targetLabelToExpand, TargetLabelToExpand] = useState(null);
-  const setTargetLabelToExpand = (newState) => {
-    setStateIfDeepEqual(TargetLabelToExpand, newState);
-  };
-
+  const setTargetLabelToExpand = (newState) => {setStateIfDeepEqual(TargetLabelToExpand, newState);};
   const [deleteFunc, setDeleteFunc] = useState(null);
   const [showTracks, ShowTracks] = useState(true);
-  const setShowTracks = (newState) => {
-    setStateIfDeepEqual(ShowTracks, newState);
-  };
+  const setShowTracks = (newState) => {setStateIfDeepEqual(ShowTracks, newState);};
   const [orderByTracks, OrderByTracks] = useState(true);
-  const setOrderByTracks = (newState) => {
-    setStateIfDeepEqual(OrderByTracks, newState);
-  };
+  const setOrderByTracks = (newState) => {setStateIfDeepEqual(OrderByTracks, newState);};
   const [startPaginationAt, StartPaginationAt] = useState();
-  const setStartPaginationAt = (newState) => {
-    setStateIfDeepEqual(StartPaginationAt, newState);
-  };
+  const setStartPaginationAt = (newState) => {setStateIfDeepEqual(StartPaginationAt, newState);};
   const [viewportFeatures, ViewportFeatures] = useState(null);
-  const setViewportFeatures = (newState) => {
-    setStateIfDeepEqual(ViewportFeatures, newState);
-  };
+  const setViewportFeatures = (newState) => {setStateIfDeepEqual(ViewportFeatures, newState);};
   const [warningShowed, WarningShowed] = useState(false);
-  const setWarningShowed = (newState) => {
-    setStateIfDeepEqual(WarningShowed, newState);
-  };
+  const setWarningShowed = (newState) => {setStateIfDeepEqual(WarningShowed, newState);};
   const [dataContacts, DataContacts] = useState(null);
   const setDataContacts = (newState) => {setStateIfDeepEqual(DataContacts, newState);};
-
   const [dataWellInterests, DataWellInterests] = useState(null);
-  const setDataWellInterests = (newState) => {
-    setStateIfDeepEqual(DataWellInterests, newState);
-  };
-
+  const setDataWellInterests = (newState) => {setStateIfDeepEqual(DataWellInterests, newState);};
   const [dataTracks, DataTracks] = useState(null);
-  const setDataTracks = (newState) => {
-    setStateIfDeepEqual(DataTracks, newState);
-  };
+  const setDataTracks = (newState) => {setStateIfDeepEqual(DataTracks, newState);};
+  const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
-  // year state
-  const [selectedYear, setSelectedYear] = useState(2020)
+  // selectors
+  const {searchloading,searchResultData,selectedOwnerWellIntsSummary,} = useSelector(({ MapGridCard }) => MapGridCard);
 
-  const {
-    searchloading,
-    searchResultData,
-    selectedOwnerWellIntsSummary,
-  } = useSelector(({ MapGridCard }) => MapGridCard);
 
-  const { pipeToShowTab } = useSelector(({ Flow }) => Flow);
-
-  ////////////Queries begin///////////////////////////////////////////////
-
+  // queries 
   const [tracksByObjectType, { data: constDataTracks }] = useLazyQuery(TRACKSBYOBJECTTYPE,{fetchPolicy: "cache-and-network",});
   const [tracksWell, { data: dataWellTracks }] = useLazyQuery(TRACKSWELL,{fetchPolicy: "cache-and-network",});
-  const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(
-    COMMENTSCOUNTER,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
-  const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES, {
-    fetchPolicy: "cache-and-network",
-  });
-  //////////
-  const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY, {
-    fetchPolicy: "cache-and-network",
-  });
-  const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
-    OWNERSWELLSQUERY
-  );
-  //////////
+  const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(COMMENTSCOUNTER,{fetchPolicy: "cache-and-network",});
+  const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES, {fetchPolicy: "cache-and-network",});
+  const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY, {fetchPolicy: "cache-and-network",});
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-  const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, {
-    fetchPolicy: "cache-and-network",
-  });
-  const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, {
-    fetchPolicy: "cache-and-network",
-  });
-  //////////
-  const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(
-    WELLOWNERSQUERY
-  );
-  //////////
-  const [getContactWells, { data: dataContactWells }] = useLazyQuery(
-    CONTACTWELLS
-  );
-
-
-  /////////
+  const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, {fetchPolicy: "cache-and-network",});
+  const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, {fetchPolicy: "cache-and-network",});
+  const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
+  const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {fetchPolicy: "cache-and-network",});
   const [removeUser] = useMutation(REMOVEUSER);
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY,{fetchPolicy: "no-cache",});
@@ -219,12 +152,7 @@ function M1nTable(props) {
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
   const [getParcelOwners, { data: dataParcelOwners }] = useLazyQuery(PARCELOWNERSQUERY);
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
-  const [getMelissaRowsCount, { data: dataMelissaRowsCount }] = useLazyQuery(
-    MELISSARECORDSCOUNTBYIDS,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const [getMelissaRowsCount, { data: dataMelissaRowsCount }] = useLazyQuery(MELISSARECORDSCOUNTBYIDS,{fetchPolicy: "cache-and-network",});
   //////////
   const [
     getContactParcelInterests,
@@ -240,10 +168,6 @@ function M1nTable(props) {
     fetchPolicy: "cache-and-network",
   });
   //////////
-  const [
-    getOwner_WellInterests,
-    { data: dataOwner_WellInterests },
-  ] = useLazyQuery(OWNER_WELLINTERESTS);
 
   const [
     getPaginatedWellInterests,
@@ -259,11 +183,8 @@ function M1nTable(props) {
     fetchPolicy: "cache-and-network",
   });
 
-  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(
-    ABSTRACTWELLGEOQUERY
-  );
 
-  ////////////Queries end///////////////////////////////////////////////
+
 
   ////////////General begin///////////////////////////////////////////////
 
@@ -335,11 +256,6 @@ function M1nTable(props) {
             ownerIdArray: dataTracks,
           },
         });
-        // getOwnersWells({
-        //   variables: {
-        //     ownersIds: dataTracks,
-        //   },
-        // });
         getCommentsCounter({
           variables: {
             objectsIdsArray: dataTracks,
