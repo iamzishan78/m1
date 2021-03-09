@@ -15,6 +15,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { makeStyles } from "@material-ui/core/styles";
+import { GETMONGOUSERS as GETUSERS } from "../../../../../graphQL/useQueryGetUsers";
 
 const phonenumber = (inputtxt) => {
   if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
@@ -63,6 +64,7 @@ export default function AddContactDialogContent(props) {
   const [validated, setValidated] = useState(false);
   const [activeTapIndex, setActiveTapIndex] = useState(0);
   const [contacts, setContacts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [existingContact, setExistingContact] = useState({ name: "" });
   const [newContact, setNewContact] = useState({
     name: "",
@@ -85,6 +87,10 @@ export default function AddContactDialogContent(props) {
   ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
+  });
+
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
+    fetchPolicy: "cache-and-network",
   });
 
   const [
@@ -129,6 +135,21 @@ export default function AddContactDialogContent(props) {
   useEffect(() => {
     emptyStates();
   }, [activeTapIndex]);
+
+  useEffect(() => {
+    getAllUsers();
+  }, []);
+
+  useEffect(() => {
+    if (userLists && userLists.allUsers) {
+      setUsers(
+        userLists.allUsers.map((user) => ({
+          value: user._id,
+          text: user.name
+        }))
+      );
+    }
+  }, [userLists]);
 
   const emptyStates = () => {
     setExistingContact({ name: "" });
@@ -432,17 +453,16 @@ export default function AddContactDialogContent(props) {
           </Grid>
           <Grid item xs={12}>
             <h3>Contact Owner</h3>
-            <TextField
-              size="small"
-              className={classes.maxWidth}
-              multiline
-              value={newContact.contactOwner}
-              onChange={(e) => {
-                setNewContact({
-                  ...newContact,
-                  contactOwner: e.target.value,
-                });
-              }}
+            <Autocomplete
+              className={classes.fieldWidth}
+              options={users}
+              onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+              value={users.find((user) => user?.value === newContact.contactOwner) || null}
+              getOptionLabel={(option) => option.text}
+              getOptionSelected={(option) => option.value === newContact.contactOwner}
+              renderInput={(params) => (
+                <TextField size="small" {...params} className={classes.maxWidth} multiline value={newContact.contactOwner} />
+              )}
             />
           </Grid>
         </Grid>
