@@ -62,7 +62,6 @@ export default function FilterDefaultListProd(props) {
   },[props])
   
   const removeNameFromType = (string) => { 
-    console.log(string)
   if (string.includes("cumulativeWater")) {
     return string.replace("cumulativeWater", "Cum H2O -")
   }

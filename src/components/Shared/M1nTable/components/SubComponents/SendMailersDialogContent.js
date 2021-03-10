@@ -20,7 +20,8 @@ import { showSuccessMessage, showErrorMessage } from '../../../../../actions';
 import { UPLOADRECIPIENTS } from '../../../../../graphQL/useMutationUploadStorefrontRecipientsList';
 
 // import value formatters
-import capitalizeFirstLetter from '../../../../Shared/valueformatters/capitalize-first-letter.js';
+import joinAddress from "../../../../Shared/valueformatters/join-address.js";
+
 
 const styles = (theme) => ({
 	root: {
@@ -55,44 +56,6 @@ const DialogTitle = withStyles(styles)((props) => {
 		</MuiDialogTitle>
 	);
 });
-
-const joinAddress = (row) => {
-	let rowData =
-		row.address1 ||
-		row.address2 ||
-		row.city ||
-		row.state ||
-		row.zip ||
-		row.country
-			? {
-					address1: row.address1,
-					address2: row.address2,
-					city: row.city,
-					state: row.state,
-					zip: row.zip,
-					country: row.country,
-			  }
-			: {
-					address1: row.address1Alt,
-					address2: row.address2Alt,
-					city: row.cityAlt,
-					state: row.stateAlt,
-					zip: row.zipAlt,
-					country: row.countryAlt,
-			  };
-	let textArray = [];
-	for (const key in rowData) {
-		if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== '') {
-			if (key === 'zip' || key === 'country') {
-				textArray = [
-					[textArray.join(', '), capitalizeFirstLetter(rowData[key])].join(' '),
-				];
-			} else textArray.push(capitalizeFirstLetter(rowData[key]));
-		}
-	}
-
-	return textArray.join(', ');
-};
 
 const useStyles = makeStyles({});
 

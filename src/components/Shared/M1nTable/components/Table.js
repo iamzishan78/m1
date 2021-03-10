@@ -490,7 +490,6 @@ function SubTable(props) {
       });
 
       selectedWell = { ...selectedWell, ...dataWell.well };
-      console.log('esteban did it again my friends')
       //// temporary to fix the ticks dates fields comming from the rest api
       if (
         selectedWell.permitApprovedDate &&
@@ -1539,7 +1538,6 @@ function SubTable(props) {
             break;
           default:
             //// this is where the column names get mapped 
-            console.log('run default', column.options)
             {
               column.options = {
                 ...column.options,
@@ -1781,7 +1779,6 @@ function SubTable(props) {
 
   const handleOpenExpandableCard = () => {
     setShowExpandableCard(true);
-    console.log("Expandable card opened");
   };
 
   const handleCloseExpandableCard = () => {
@@ -1804,8 +1801,6 @@ function SubTable(props) {
     const rowIndex = rows.findIndex((r) => r._id === contact._id);
     const row = rows[rowIndex];
     setSelectedRow(rows);
-    console.log("STATE APP", contact, row);
-
     setStateApp((stateApp) => ({
       ...stateApp,
       selectedContact: row._id,
@@ -2165,8 +2160,6 @@ function SubTable(props) {
       setSelectedRow(rows[dataIndex]);
 
       if (props.targetLabel === "deal") {
-        console.log("ROW DATA: ", rows[dataIndex]);
-        console.log("ROW DATA 0 INDEX: ", rowData[0]);
         let card = { ...rows[dataIndex] };
         delete card["dealStage"];
         setStateApp((stateApp) => ({
@@ -2358,11 +2351,8 @@ function SubTable(props) {
             userId: stateApp.user.mongoId,
           },
         };
-        console.log("userId---=---", stateApp.user.mongoId);
-        console.log("action", action);
         switch (action) {
           case "changeRowsPerPage":
-            console.log("changeRowsPerPage");
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
             setPageInd(tableState.page);
@@ -2416,7 +2406,6 @@ function SubTable(props) {
             props.contactsPageProps.getContactsFilterOptions();
             break;
           case "propsUpdate":
-            console.log("work propsUpdate");
             break;
           case "filterChange":
             props.contactsPageProps.setLoading(true);
@@ -2431,7 +2420,6 @@ function SubTable(props) {
             props.contactsPageProps.getPaginatedContacts(pageVariables);
             break;
           default:
-            console.log("action not handled.");
         }
       }
 
@@ -2468,7 +2456,6 @@ function SubTable(props) {
 
         switch (action) {
           case "changeRowsPerPage":
-            console.log("changeRowsPerPage");
             props.wellInterestsPageProps.setLoading(true);
             tableState.page = 0;
             setPageInd(tableState.page);
@@ -2510,21 +2497,18 @@ function SubTable(props) {
           case "onSearchClose":
             break;
           case "propsUpdate":
-            console.log("work propsUpdate");
             break;
           case "filterChange":
             break;
           case "resetFilters":
             break;
           default:
-            console.log("action not handled.");
         }
       }
     },
   };
 
   if (props.header === "Well Interests") {
-    console.log('props.header === "Well Interests"');
     options.rowsPerPageOptions =
       props.wellInterestsPageProps.wellInterestsCount > 25
         ? [10, 25, 50, 100]
@@ -2578,8 +2562,6 @@ function SubTable(props) {
   };
 
   const TableFilterList = (props) => {
-    console.log('Custom fiter props', props);
-
     return <Box className={classes.customDropDown} >
       <Select
         labelId="demo-simple-select-label"

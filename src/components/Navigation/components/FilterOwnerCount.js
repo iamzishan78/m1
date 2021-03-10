@@ -75,17 +75,14 @@ export default function FilterOwnerCount() {
     }
     if (!min && max) {
       filter = ["all", ["<=", ["get", "ownerCount"], max]];
-      console.log("add filter", filter);
     } else if (min && !max) {
       filter = ["all", [">=", ["get", "ownerCount"], min]];
-      console.log("add filter", filter);
     } else if (min && max) {
       filter = [
         "all",
         [">=", ["get", "ownerCount"], min],
         ["<=", ["get", "ownerCount"], max],
       ];
-      console.log("add filter", filter);
     } else {
       filter = null;
     }

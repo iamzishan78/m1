@@ -64,7 +64,6 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
       awaitRefetchQueries: true
     }).then(
       res => {
-        console.log(res)
         dispatch(showSuccessMessage("Contacts Merged Successfully"));
         setM1nSelectedRowsIndexes([])
         onClose();
@@ -88,7 +87,6 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
     onClose();
   }
 
-  console.log(rows)
   return (
     <AlertDialogSlide open={true}>
       <Container maxWidth="sm" className={classes.gridWidthScroll}>

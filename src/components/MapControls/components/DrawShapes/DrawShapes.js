@@ -98,7 +98,6 @@ export default function DrawShapes(props) {
   );
 
   const DEBUGGER = (source, value) => {
-    console.log(`%c[DrawShapes.js] ${source}`, DEBUG_GREEN, value);
   };
 
   const createShapeMarker = (feature) => {

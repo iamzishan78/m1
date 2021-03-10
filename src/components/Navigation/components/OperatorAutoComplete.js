@@ -38,8 +38,7 @@ export default function OperatorAutoComplete() {
         const {data,loading,error} = useQueryOperators()
 
         const handleOperatorChange = value => {
-           // console.log(value)
-           let filter;
+\           let filter;
            if(value && value.Name) {
             filter = ['match', ['get', 'Operator'], value.Name, true, false]
             setStateNav(stateNav => ({ ...stateNav, operatorName:value}))
@@ -65,7 +64,6 @@ export default function OperatorAutoComplete() {
                 }
             }
             else {
-               // console.log(stateNav.operators[0])
             }
         
     },[stateNav.operators,data])
@@ -140,11 +138,7 @@ export default function OperatorAutoComplete() {
   ListboxComponent.propTypes = {
     children: PropTypes.node,
   };
-  
-  // console.log('+++++++++++++++')
-  // console.log(stateNav.operatorName)
-  // console.log('--------------------')
- 
+
 
   return  stateNav.operators ? (
 

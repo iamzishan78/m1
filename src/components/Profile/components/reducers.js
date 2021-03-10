@@ -48,7 +48,6 @@ export const ProfileTabReducer = (state, action) => {
                 const index = temp.indexOf(action.value);
                 temp.splice(index, 1);
             }else{
-                console.log("VALUE:", action.value);
                 temp.push(action.value);
             }
             return {...state, investingExperience: temp};

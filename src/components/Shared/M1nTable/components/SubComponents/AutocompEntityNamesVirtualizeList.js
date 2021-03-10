@@ -14,32 +14,9 @@ import { Grid } from "@material-ui/core";
 import debounce from "lodash/debounce";
 
 // import value formatters 
-import capitalizeFirstLetter from "../../../../Shared/valueformatters/capitalize-first-letter.js";
+import joinAddress from "../../../../Shared/valueformatters/join-address.js";
 
 const filter = createFilterOptions();
-
-const joinAddress = (row) => {
-  let rowData = {
-    address1: row.address1,
-    address2: row.address2,
-    city: row.city,
-    state: row.state,
-    zip: row.zip,
-    country: row.country,
-  };
-  let textArray = [];
-  for (const key in rowData) {
-    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
-      if (key === "zip" || key === "country") {
-        textArray = [
-          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
-        ];
-      } else textArray.push(capitalizeFirstLetter(rowData[key]));
-    }
-  }
-
-  return textArray.join(", ");
-};
 
 const LISTBOX_PADDING = 8; // px
 

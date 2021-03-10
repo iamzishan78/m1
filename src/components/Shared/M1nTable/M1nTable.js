@@ -64,7 +64,6 @@ import ProductionDetailsHeaders from '../constants/production-detail-header-sche
 import ContactWellHeadCells from '../constants/contactperwell-header-schema.js'
 
 // import value formatters 
-import capitalizeFirstLetter from "../../Shared/valueformatters/capitalize-first-letter.js";
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
 
 
@@ -77,38 +76,12 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-const joinAddress = (row) => {
-  let rowData = {
-    address1: row.address1,
-    address2: row.address2,
-    city: row.city,
-    state: row.state,
-    zip: row.zip,
-    country: row.country,
-  };
-  let textArray = [];
-  for (const key in rowData) {
-    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
-      if (key === "zip" || key === "country") {
-        textArray = [
-          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
-        ];
-      } else textArray.push(capitalizeFirstLetter(rowData[key]));
-    }
-  }
-
-  return textArray.join(", ");
-};
-
 function M1nTable(props) {
-  console.log('M1NTABLE PROPS', props)
   const classes = useStyles();
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-
   const [addDealOpen, setAddDealOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState();
-
   const [rows, Rows] = useState([]);
   const setRows = (newState) => {
     setStateIfDeepEqual(Rows, newState);
@@ -128,9 +101,7 @@ function M1nTable(props) {
     setStateIfDeepEqual(Columns, newState);
   };
   const [columnsBase, ColumnsBase] = useState([]);
-  const setColumnsBase = (newState) => {
-    setStateIfDeepEqual(ColumnsBase, newState);
-  };
+  const setColumnsBase = (newState) => {setStateIfDeepEqual(ColumnsBase, newState);};
   const [loading, Loading] = useState(true);
   const setLoading = (newState) => {
     setStateIfDeepEqual(Loading, newState);
@@ -153,9 +124,6 @@ function M1nTable(props) {
   };
 
   const [deleteFunc, setDeleteFunc] = useState(null);
-  // const setDeleteFunc = (newState) => {
-  //   setStateIfDeepEqual(DeleteFunc, newState);
-  // };
   const [showTracks, ShowTracks] = useState(true);
   const setShowTracks = (newState) => {
     setStateIfDeepEqual(ShowTracks, newState);
@@ -176,11 +144,8 @@ function M1nTable(props) {
   const setWarningShowed = (newState) => {
     setStateIfDeepEqual(WarningShowed, newState);
   };
-
   const [dataContacts, DataContacts] = useState(null);
-  const setDataContacts = (newState) => {
-    setStateIfDeepEqual(DataContacts, newState);
-  };
+  const setDataContacts = (newState) => {setStateIfDeepEqual(DataContacts, newState);};
 
   const [dataWellInterests, DataWellInterests] = useState(null);
   const setDataWellInterests = (newState) => {
@@ -205,18 +170,8 @@ function M1nTable(props) {
 
   ////////////Queries begin///////////////////////////////////////////////
 
-  const [tracksByObjectType, { data: constDataTracks }] = useLazyQuery(
-    TRACKSBYOBJECTTYPE,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
-  const [tracksWell, { data: dataWellTracks }] = useLazyQuery(
-    TRACKSWELL,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const [tracksByObjectType, { data: constDataTracks }] = useLazyQuery(TRACKSBYOBJECTTYPE,{fetchPolicy: "cache-and-network",});
+  const [tracksWell, { data: dataWellTracks }] = useLazyQuery(TRACKSWELL,{fetchPolicy: "cache-and-network",});
   const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(
     COMMENTSCOUNTER,
     {
@@ -249,54 +204,21 @@ function M1nTable(props) {
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(
     CONTACTWELLS
   );
-  // const [getContactInM1nTable, { data: dataContact }] = useLazyQuery(CONTACT, {
-  //   fetchPolicy: "cache-and-network",
-  // });
+
 
   /////////
-  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
-    fetchPolicy: "cache-and-network",
-  });
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {fetchPolicy: "cache-and-network",});
   const [removeUser] = useMutation(REMOVEUSER);
-  //////////
-
-  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
-  const [
-    getContactsFilterOptions,
-    { data: dataContactsFilterOptions },
-  ] = useLazyQuery(CONTACTSFILTEROPTIONS, {
-    fetchPolicy: "cache-and-network",
-  });
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY,{fetchPolicy: "no-cache",});
+  const [getContactsFilterOptions,{ data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, {fetchPolicy: "cache-and-network",});
   const [updateMailerStatuses] = useMutation(UPDATEMAILERSTATUSES);
-  //////////
-  // const [getTransactionData, { data: dataDeals }] = useLazyQuery(
-  //   TRANSACTIONDATA
-  // );
-
-  const [getContactDeals, { data: dataDeals }] = useLazyQuery(CONTACTDEALS, {
-    fetchPolicy: "cache-and-network",
-  });
-
-  //////////
+  const [getContactDeals, { data: dataDeals }] = useLazyQuery(CONTACTDEALS, {fetchPolicy: "cache-and-network",});
   const [removeContact] = useMutation(REMOVECONTACT);
-
   const [updateContact] = useMutation(UPDATECONTACT);
-  //////////
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
-  //////////
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
-  //////////
-  const [getParcelOwners, { data: dataParcelOwners }] = useLazyQuery(
-    PARCELOWNERSQUERY
-  );
-  //////////
+  const [getParcelOwners, { data: dataParcelOwners }] = useLazyQuery(PARCELOWNERSQUERY);
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
-  //////////
   const [getMelissaRowsCount, { data: dataMelissaRowsCount }] = useLazyQuery(
     MELISSARECORDSCOUNTBYIDS,
     {
@@ -370,7 +292,6 @@ function M1nTable(props) {
       constDataTracks &&
       constDataTracks.tracksByObjectType
     ) {
-      console.log("ue mintable 3");
       if (constDataTracks.tracksByObjectType.length !== 0) {
         const tracksIdArray = constDataTracks.tracksByObjectType.map(
           (track) => track.trackOn
@@ -389,7 +310,6 @@ function M1nTable(props) {
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners") {
-      console.log("ue mintable 2");
       setTargetLabel("owner");
 
       if (props.header) {
@@ -407,7 +327,6 @@ function M1nTable(props) {
       props.parent === "trackOwners" &&
       dataTracks
     ) {
-      console.log("ue mintable 3");
       if (dataTracks.length !== 0) {
         // setLoading(true);
 
@@ -455,7 +374,6 @@ function M1nTable(props) {
         checkIfOwnersAreContactsData &&
         checkIfOwnersAreContactsData.ifAreContacts
       ) {
-        console.log('dataowners',dataOwners)
         let owners = [...dataOwners.owners];
         owners = owners.map((o) => {
           let owner = { ...o };
@@ -573,9 +491,7 @@ function M1nTable(props) {
   ////////////Tracked Wells begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackWells") {
-      console.log("ue mintable 5");
       setTargetLabel("well");
-
       if (props.header) {
         setHeader(props.header);
       } else {
@@ -591,10 +507,7 @@ function M1nTable(props) {
       props.parent === "trackWells" &&
       dataTracks
     ) {
-      console.log("ue mintable 6");
       if (dataTracks.length !== 0) {
-        // setLoading(true);
-
         getWells({
           variables: {
             wellIdArray: dataTracks,
@@ -634,8 +547,6 @@ function M1nTable(props) {
           let wells = [...dataWells.wells.results];
           wells = wells.map((w) => {
             let well = { ...w };
-
-          console.log('wells',wells)
 
             //// temporary to fix the ticks dates fields comming from the rest api
             if (well.permitApprovedDate && well.permitApprovedDate != "null")
@@ -692,11 +603,6 @@ function M1nTable(props) {
           });
           const cleanAvailableTags = [...new Set(availableTags)];
 
-
-          console.log('datawells', dataWells)
-          console.log('WellsHeadCells',WellsHeadCells)
-  
-
           setRows(wells);
 
           const flyToColumn = {
@@ -744,43 +650,7 @@ function M1nTable(props) {
             flyToColumn,
           ]);
 
-
-          console.log('colmns ',
           
-          [
-            ...(cleanAvailableTags.length > 0
-              ? WellsHeadCells.map((column) => {
-                  if (column.name === "tags") {
-                    return {
-                      ...column,
-                      options: {
-                        ...column.options,
-                        filterOptions: {
-                          ...column.options.filterOptions,
-                          names: cleanAvailableTags,
-                        },
-                      },
-                    };
-                  }
-                  return column;
-                })
-              : WellsHeadCells.map((column) => {
-                  if (column.name === "tags") {
-                    return {
-                      ...column,
-                      options: {
-                        ...column.options,
-                        filter: false,
-                      },
-                    };
-                  }
-                  return column;
-                })),
-            flyToColumn,
-          ]
-          
-          
-          )
 
           setStateApp((state) => ({
             ...state,
@@ -1118,7 +988,6 @@ function M1nTable(props) {
       stateApp.user &&
       stateApp.user.mongoId
     ) {
-      console.log("ue mintable 8");
       setTargetLabel("well");
       setHeader("Wells");
       setAddAble(false);
@@ -1144,7 +1013,6 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "WellsPerOwner" && dataWells) {
-      console.log("ue mintable 9");
       if (
         dataWells.wells &&
         dataWells.wells.results &&
@@ -1239,12 +1107,16 @@ function M1nTable(props) {
 
   //////////// Wells Per Owner end///////////////////////////////////////////////
 
+
+
+
+
+
   ////////////Owners Per Well begin///////////////////////////////////////////////
 
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell") {
       setLoading(true);
-      console.log("ue mintable 10");
       setTargetLabel("owner");
       setHeader("Tax Roll Ownership");
       setAddAble(false);
@@ -1259,18 +1131,14 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
-      console.log("ue mintable 11");
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
+        
+        console.log('data wells owners',dataWellOwners )
+        
         setLoading(true);
         const objectsIdsArray = dataWellOwners.wellOwners.map(
           (wellOwner) => wellOwner.globalOwnerId
         );
-
-        // getOwnersWells({
-        //   variables: {
-        //     ownersIds: objectsIdsArray,
-        //   },
-        // });
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
@@ -1298,7 +1166,6 @@ function M1nTable(props) {
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
-      // dataOwnersWells &&
       dataTracks &&
       checkIfOwnersAreContactsData &&
       checkIfOwnersAreContactsData.ifAreContacts
@@ -1309,17 +1176,6 @@ function M1nTable(props) {
         wellOwner.tags = [[], 0];
         wellOwner.wellsCounter = [];
         wellOwner.isTracked = false;
-
-        // if (dataOwnersWells.ownersWells) {
-        //   for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
-        //     if (wellOwner.globalOwnerId === dataOwnersWells.ownersWells[i].ownerId) {
-        //       wellOwner.wellsCounter = dataOwnersWells.ownersWells[i].wells.map(
-        //         (well) => well.wellId
-        //       );
-        //       break;
-        //     }
-        //   }
-        // }
 
         for (
           let i = 0;
@@ -1430,6 +1286,14 @@ function M1nTable(props) {
 
 
 
+  
+  ////////////"detail-well-card-contact-ties" begin///////////////////////////////////////////////
+
+
+
+
+
+
 
 
 
@@ -1442,14 +1306,11 @@ function M1nTable(props) {
             props.parent  
             && (props.parent === "Contacts")  // for parent of contact screen 
         ) {
-          console.log('props -', props)
           setLoading(true);
-          console.log("ue mintable 22- contact");
           setTargetLabel("contact");
           setHeader("Contacts");
           setOrderByTracks(false);
           setAddAble({ parent: false, type: "contact" });
-          console.log('search target', stateApp.gridSearchTarget)
           getPaginatedContacts({variables: { search: stateApp.gridSearchTarget }});
           getContactsFilterOptions();
           updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
@@ -1462,14 +1323,11 @@ function M1nTable(props) {
           props.parent  
           && (props.parent ==='search' && props.targetLabel === "contacts")  // for parent of contact screen              
       ) {
-        console.log('props -', props)
         setLoading(true);
-        console.log("ue mintable 22- contact");
         setTargetLabel("contact");
         setHeader("Contacts");
         setOrderByTracks(false);
         setAddAble({ parent: false, type: "contact" });
-        console.log('search target', stateApp.gridSearchTarget)
         getPaginatedContacts({variables: { search: stateApp.gridSearchTarget }});
         getContactsFilterOptions();
         updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
@@ -1481,17 +1339,59 @@ function M1nTable(props) {
   }, [props.parent,
       stateApp.gridSearchTarget]);
 
+
+
+
+      useEffect(() => {
+        if (props.parent && props.parent === "detail-well-card-contact-ties") {
+          setLoading(true);
+          setTargetLabel("contact");
+          setHeader("Contacts");
+          setOrderByTracks(false);
+          setAddAble({ parent: false, type: "contact" });    
+          // getPaginatedContacts({variables: { search: "jacob" }});
+          // getContactsFilterOptions();
+          // updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
+          // setUploadIcon(false);
+          setStartPaginationAt(25);
+          setColumnsBase(ContactsHeadCells);
+        }
+      }, [props.selectedWell, selectedYear]);
+    
+    
+    
+
+
+
   useEffect(() => {
     if (
 
       props.parent 
       && constDataContacts 
-
-      && ((props.parent === "Contacts")  // for parent of contact screen 
-              || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
-
+      && (
+                 (props.parent === "Contacts")  // for parent of contact screen 
+              || (props.parent ==='search' && props.targetLabel === "contacts") // for parent of search grid 
+              || (props.parent === "detail-well-card-contact-ties") // for parent of detail well card 
+              ) 
     ) {
-      console.log("ue mintable 23");
+
+
+      setColumns(
+        columnsBase.map((column) => {
+          switch (column.name) {
+            default:
+              return column;
+          }
+        })
+      );
+    } else {
+      setLoading(false);
+    }
+
+
+
+
+
       if (
         constDataContacts?.paginatedContacts?.edges &&
         constDataContacts.paginatedContacts.edges.length > 0
@@ -1514,6 +1414,8 @@ function M1nTable(props) {
           },
         };
 
+        // this initial load is to make the grid appear more performantly 
+        // the descriptors come in a later use effect 
         setDataContacts(tmpDataContacts);
         setRows([
           ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
@@ -1523,12 +1425,11 @@ function M1nTable(props) {
         setLoading(false);
         setRows([]);
       }
-    }
+    
   }, [
     constDataContacts,
-    // dataContactsFilterOptions,
-    // dataTracks
   ]);
+
 
   useEffect(() => {
     if (
@@ -1538,8 +1439,6 @@ function M1nTable(props) {
       && dataContacts?.paginatedContacts?.edges
       && dataContacts?.paginatedContacts?.edges.length > 0
     ) {
-      console.log("ue mintable 23");
-
       const objectsIdsArray = [];
       dataContacts.paginatedContacts.edges.forEach(({ node }) => {
         objectsIdsArray.push(node._id);
@@ -1557,6 +1456,9 @@ function M1nTable(props) {
     }
   }, [dataContacts]);
 
+
+
+
   useEffect(() => {
     if (
       props.parent
@@ -1564,7 +1466,6 @@ function M1nTable(props) {
             || (props.parent ==='search' && props.targetLabel === "contacts")) // for grid card on map 
       && dataContactsFilterOptions
     ) {
-      console.log("ue mintable 23.5");
       if (
         dataContactsFilterOptions &&
         dataContactsFilterOptions.contactsFilterOptions
@@ -1634,9 +1535,9 @@ function M1nTable(props) {
           })
         );
       } else {
-        // setLoading(false);
+        setLoading(false);
       }
-    }
+      }
   }, [dataContactsFilterOptions, columnsBase]);
 
   useEffect(() => {
@@ -1654,8 +1555,6 @@ function M1nTable(props) {
       dataMelissaRowsCount &&
       dataMelissaRowsCount.getMelissaRecordsCountForContactIds
     ) {
-      console.log("ue mintable 24");
-
       let tmpDataContacts = {
         ...dataContacts,
         paginatedContacts: {
@@ -1674,8 +1573,6 @@ function M1nTable(props) {
       tmpDataContacts.paginatedContacts.edges.forEach(({ node }) => {
         node.commentsCounter = 0;
         node.tags = [[], 0];
-        // node.fullContactAddress = joinAddress(node);
-        // node.contactName = node.name;
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
           if (node._id === dataCommentsCounter.commentsCounter[i]._id) {
@@ -1708,7 +1605,7 @@ function M1nTable(props) {
       setRows([
         ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
       ]);
-      // setLoading(false);
+      setLoading(false);
     }
   }, [
     // dataTracks,
@@ -1726,7 +1623,6 @@ function M1nTable(props) {
       stateApp.user &&
       stateApp.user.mongoId
     ) {
-      console.log("ue mintable 25");
       setDeleteFunc(() => (contactsIdsToDelete) => {
         if (contactsIdsToDelete) {
           for (let i = 0; i < contactsIdsToDelete.length; i++) {
@@ -2004,7 +1900,6 @@ function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "ownersPerParcel") {
       setLoading(true);
-      // console.log("ue mintable 10");
       setTargetLabel("Parcel Ownership");
       setHeader("Parcel Ownership");
       setAddAble({
@@ -2156,22 +2051,6 @@ function M1nTable(props) {
     dataTracks,
   ]);
 
-  //////////// SELECTED POLYGON WELL //////////////////////////////////////
-
-  // useEffect(()=> {
-  //   if (stateApp.selectedPolygonString) {
-  //     getAbstractWellGeo({
-  //       variables: {
-  //         polygon: stateApp.selectedPolygonString,
-  //       },
-  //     });
-  //   }
-  // }, [stateApp.selectedPolygonString]);
-
-  useEffect(() => {
-
-  }, []);
-
   useEffect(() => {
     if (abstractWellData) {
       const objectsIdsArray = abstractWellData.abstractWellGeo.map(
@@ -2184,28 +2063,6 @@ function M1nTable(props) {
       getTagSamples({
         variables: { objectsIdsArray, userId: stateApp.user.mongoId },
       });
-      // let set_tracked = [];
-      // let reconstruct_wells = [];
-      // stateApp.trackedwells.forEach(element => {
-      //   const found = abstractWellData.abstractWellGeo.find(x => x.wellId == element.id);
-      //   if (found) {
-      //     set_tracked.push(found);
-      //   }
-      // });
-      // // Tags = 0
-      // // Tracks = 1
-      // // Comments =0
-      // abstractWellData.abstractWellGeo.forEach(element => {
-      //   if (element in set_tracked) {
-      //     reconstruct_wells.push({...element, isTracked: true});
-      //   } else {
-      //     reconstruct_wells.push({...element, isTracked: false});
-      //   }
-      // });
-      // setStateApp({
-      //   ...stateApp,
-      //   selectedBoundaryWell: reconstruct_wells
-      // });
     }
   }, [abstractWellData]);
 
@@ -2506,7 +2363,6 @@ function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "Deals" && stateApp.user) {
       setLoading(true);
-      console.log("ue mintable 22 - deals");
       setTargetLabel("deal");
       setHeader("Deals");
       getContactDeals({
@@ -2528,66 +2384,12 @@ function M1nTable(props) {
       dataDeals?.contactDeals &&
       props.contact
     ) {
-      console.log("DATA DEALS : ", dataDeals);
-      // const lanes = dataDeals?.transactionData?.allData?.lanes;
-
-      // const all = [];
-      // console.log("ALL : ", all, lanes);
-      // if (lanes) {
-      //   lanes.forEach((deal) => {
-      //     deal.cards.forEach((card) => {
-      //       if (props.contact?._id === card.contactId && !card.isDeleted)
-      //         all.push(card);
-      //     });
-      //   });
-      // }
-
-      // const dealsRowsData = all.map((deal) => ({
-      //   ...deal,
-      //   id: deal.id,
-      //   dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
-      // }));
-      // all.forEach((deal) => {
-      //   console.log("DEAL: ", deal)
-      //   let dealData = {
-      //     name: deal.title,
-      //     contact: deal.contactName,
-      //     dealStage: lanes.find((lane) => lane.id === deal.laneId).title,
-      //     dealAmount: deal.label,
-      //     dealDetails: deal.description,
-      //     id: deal.id, //// "deal.laneId" check if this is the rigth id to delete the data
-      //   };
-
-      //   dealsRowsData.push(dealData);
-      // });
-
-      // let contactDealRows = [
-      //   ...dataDeals.contactDeals.map((deal) => {
-      //     return {
-      //       ...deal,
-      //       offerPrice: !isNaN(deal.offerPrice)
-      //         ? currencyFormat.format(deal.offerPrice)
-      //         : deal.offerPrice,
-      //       closeDate: anyToDate(deal.closeDate).toLocaleString("en-US", {
-      //         year: "numeric",
-      //         day: "numeric",
-      //         month: "numeric",
-      //       })
-      //     }
-      //   })
-      // ]
-
       setTargetLabel("deal");
       setRows([...dataDeals.contactDeals]);
       setColumns([...DealsHeadCells]);
       setLoading(false);
     }
 
-    console.log(
-      "%cCONTACT ID : ",
-      "font-size:20px; color:green;",
-      props.contact
-    );
   }, [dataDeals]);
 
   // deals delete
@@ -2609,11 +2411,6 @@ function M1nTable(props) {
           });
 
           const newData = { ...dataDeals.transactionData.allData, lanes };
-
-          console.log({
-            transactionId: dataDeals.transactionData._id,
-            transaction: { allData: newData, user: stateApp.user.mongoId },
-          });
 
           updateTransaction({
             variables: {
@@ -2903,7 +2700,6 @@ function M1nTable(props) {
       props.parent === "owner_WellInterests" &&
       constDataWellInterests
     ) {
-      console.log("ue mintable 23");
       if (
         constDataWellInterests?.paginatedWellInterests?.edges &&
         constDataWellInterests.paginatedWellInterests.edges.length > 0
@@ -3137,10 +2933,6 @@ function M1nTable(props) {
         shapeWellsPageProps={{
           getPaginatedShapeWells,
           shapeWellsCount: (dataShapeWellsCount && dataShapeWellsCount.shapeWellsCount) ? dataShapeWellsCount.shapeWellsCount : 0,
-          /*getWellOptions,
-          wellInterestsCount: selectedOwnerWellIntsSummary?.interestsCount
-            ? selectedOwnerWellIntsSummary.interestsCount
-            : 0,*/
           setLoading,
         }}
         parent={props.parent}

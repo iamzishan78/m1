@@ -161,7 +161,6 @@ export default function Activities({ activityLog, user_id, ...props }) {
     setActivityModalOpen(true);
   };
 
-  console.log("Activities: ", activityLog);
 
   const sortedActivityLog =
     activityLog && activityLog.length > 0
@@ -169,8 +168,6 @@ export default function Activities({ activityLog, user_id, ...props }) {
           .filter((activity) => activity.user_id === user_id)
           .sort((a, b) => moment(b.dateTime).diff(moment(a.dateTime)))
       : [];
-
-  console.log("Sorted: ", sortedActivityLog);
 
   return (
     <Card className={classes.root} variant="outlined">

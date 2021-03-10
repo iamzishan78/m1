@@ -23,6 +23,8 @@ import OwnersSummaryCard from "../OwnersSummaryCard/OwnersSummaryCard";
 
 import ContactsHeadCells from '../Shared/constants/contacts-header-schema.js'
 import WellsHeadCells from '../Shared/constants/well-header-schema.js'
+import wellsColumnHeaders from '../Shared/constants/well-interests-header-grid-schema.js'
+import parcelsColumnHeaders from '../Shared/constants/parcel-header-grid.js'
 
 
 function TabPanel(props) {
@@ -206,7 +208,6 @@ const TabLabels = ({ labels, value, setValue }) => {
 };
 
 function tabPanelsPropsAreEqual(prevProps, nextProps) {
-  console.log(`${prevProps.value} ... ${nextProps.value}`);
   return Object.is(prevProps.value, nextProps.value);
 }
 
@@ -223,41 +224,6 @@ const TabPanels = ({ panels, value }) => {
     ))
   );
 };
-
-const wellsColumnHeaders = [
-  {
-    name: "ApiNumber",
-    label: "API",
-  },
-  {
-    name: "State",
-    label: "State",
-  },
-  {
-    name: "County",
-    label: "County",
-  },
-  {
-    name: "WellName",
-    label: "Well Name",
-  },
-  {
-    name: "CurrentOperator",
-    label: "Operator",
-  },
-  {
-    name: "WellType",
-    label: "Type",
-  },
-  {
-    name: "WellBoreProfile",
-    label: "Profile",
-  },
-  {
-    name: "WellStatus",
-    label: "Status",
-  },
-];
 
 
 const ownersColumnHeaders = [
@@ -418,36 +384,7 @@ const locationsColumnHeaders = [
   },
 ];
 
-const parcelColumnHeaders = [
-  {
-    name: "Operator",
-    label: "Name",
-  },
-  {
-    name: "State",
-    label: "State",
-  },
-  {
-    name: "County",
-    label: "County",
-  },
-  {
-    name: "Survey",
-    label: "Survey/Meridian",
-  },
-  {
-    name: "Block",
-    label: "Block/Township",
-  },
-  {
-    name: "Section",
-    label: "Section/Range",
-  },
-  {
-    name: "Abstract",
-    label: "Abstract/Section",
-  },
-];
+
 
 
 function MapGridCard(props) {
@@ -509,10 +446,10 @@ function MapGridCard(props) {
     /// value will control the cog api 
 
     switch (searchTapValue) {
-      case 4:
+      case 5:
         return "location";
-      // case 6:
-      //   return "contacts";  
+      case 4:
+        return "contacts";  
       // case 5:
       //   return "permits";      
       // case 4:
@@ -537,7 +474,7 @@ function MapGridCard(props) {
         "Leases",
         // "Parcels",
         // "Recent Permits",
-        // "Contacts",
+        "Contacts",
         "Locations",
       ]}
       value={searchTapValue}
@@ -638,12 +575,13 @@ function MapGridCard(props) {
         {selectedOwner ? (
           <OwnersSummaryCard />
         ) : (
-            <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`}>
+            <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{position:"relative"}}>
               {/* //// search panel //// */}
               <TabPanel
                 value={mapGridCardActiveTap}
                 index={0}
                 className={classes.tapsPanelsPadding}
+                style={{position:"absolute",width:"96vw"}}
               >
                 <MapGridCardSearch
                   ativateSearchPanel={() => {
@@ -712,13 +650,15 @@ function MapGridCard(props) {
                   //     targetLabel={getTargetFromSearchTaps()}
                   //     header={<SearchTabPanels />}
                   //   />,
-                  //   <M1nTable
-                  //   dense
-                  //   parent="search"
-                  //   privateColumns={[ContactsHeadCells]}
-                  //   targetLabel={getTargetFromSearchTaps()}
-                  //   header={<SearchTabPanels />}
-                  // />,
+
+
+                      <M1nTable
+                        dense
+                        parent="search"
+                        privateColumns={[ContactsHeadCells]}
+                        targetLabel={getTargetFromSearchTaps()}
+                        header={<SearchTabPanels />}
+                      />,
 
                       <M1nTable
                         dense
@@ -737,6 +677,9 @@ function MapGridCard(props) {
                 value={mapGridCardActiveTap}
                 index={1}
                 className={classes.tapsPanelsPadding}
+                // 
+                style ={{position:"absolute",width:"96vw"}}
+                // 
               >
                 <div style={{ position: "relative" }}>
                   <TabPanels
@@ -792,6 +735,7 @@ function MapGridCard(props) {
                 value={mapGridCardActiveTap}
                 index={2}
                 className={classes.tapsPanelsPadding}
+                style ={{position:"absolute",width:"96vw"}}
               >
                 <div style={{ position: "relative" }}>
                   {/* <TabLabels
@@ -810,7 +754,7 @@ function MapGridCard(props) {
                           header={"Wells"}
                         />
 
-                        <h6 id="minimumZoomRequired">
+                        <h6 id="minimumZoomRequired" style={{textAlign:"left", marginLeft:"5rem"}}>
                           Please zoom in to leverage this feature (min zoom level
                         = {stateApp.minZoomToQueryViewport})
                       </h6>

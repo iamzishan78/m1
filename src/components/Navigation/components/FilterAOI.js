@@ -49,7 +49,6 @@ export default () => {
       filter = layers.map((basinShape) => {
         return JSON.parse(basinShape.shape);
       });
-      console.log(layers, filter);
       setStateNav((stateNav) => ({ ...stateNav, aoiName: value }));
       setAOIName(value);
 

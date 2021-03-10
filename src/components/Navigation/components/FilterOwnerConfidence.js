@@ -58,10 +58,8 @@ export default function FilterOwnerConfidence() {
     }
     if (!min && max) {
       filter = ["all", ["<=", ["get", "ownerMatchConfidence"], max / 100]];
-      console.log("add filter", filter);
     } else if (min && !max) {
       filter = ["all", [">=", ["get", "ownerMatchConfidence"], min / 100]];
-      console.log("add filter", filter);
     } else if (min && max) {
       if (min < max) {
         filter = [
@@ -69,7 +67,6 @@ export default function FilterOwnerConfidence() {
           [">=", ["get", "ownerMatchConfidence"], min / 100],
           ["<=", ["get", "ownerMatchConfidence"], max / 100],
         ];
-        console.log("add filter", filter);
       }
     } else {
       filter = null;

@@ -18,7 +18,7 @@ import { setMapGridCardState } from "../../../../../actions";
 import { deepEqualObjects } from "../../../../Shared/functions";
 
 // import value formatters 
-import capitalizeFirstLetter from "../../../../Shared/valueformatters/capitalize-first-letter.js";
+import joinAddress from "../../../../Shared/valueformatters/join-address.js";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -41,27 +41,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-const joinAddress = (row) => {
-  let rowData = {
-    StreetAddress: row.StreetAddress,
-    City: row.City,
-    State: row.State,
-    Zip: row.Zip,
-    Country: row.Country,
-  };
-  let textArray = [];
-  for (const key in rowData) {
-    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
-      if (key === "Zip" || key === "Country") {
-        textArray = [
-          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
-        ];
-      } else textArray.push(capitalizeFirstLetter(rowData[key]));
-    }
-  }
-
-  return textArray.join(", ");
-};
 
 function Search(props) {
   const classes = useStyles();
@@ -94,14 +73,9 @@ function Search(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to wellheader-index-en-ms search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -128,11 +102,6 @@ function Search(props) {
           method: "GET",
           headers: headers,
         };
-
-        console.log(
-          "request made to globalowner-index search at: " +
-            new Date().toString()
-        );
 
         fetch(endpoint, options)
           .then((response) => response.json())
@@ -167,8 +136,6 @@ function Search(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-
-                console.log(indexSource);
                 newOptions = [...results.value];
               }
 
@@ -183,7 +150,6 @@ function Search(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
                 newOptions = [
                   ...results.value.map((result) => {
                     return {
@@ -230,14 +196,6 @@ function Search(props) {
         value={inputValue}
         onChange={(event) => {
           setInputValue(event.target.value);
-          // if (!searchLoading) {
-          // dispatch(
-          //   setMapGridCardState({
-          //     searchLoading: true,
-          //     searchInputValue: event.target.value,
-          //   })
-          // );
-          // }
         }}
       />
     </form>

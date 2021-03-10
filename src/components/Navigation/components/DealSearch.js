@@ -80,69 +80,13 @@ const useStyles = makeStyles((theme) => ({
 const DealSearch = () => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-
   const [allDeals, setAllDeals] = useState([]);
-  // const [searchQuery, setSearchQuery] = useState("");
-  // const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
-  //   TRANSACTIONDATA
-  // );
-
-  // const [
-  //   getPipelines,
-  //   { loading: loadingPipelines, data: pipelinesData },
-  // ] = useLazyQuery(GETPIPELINES);
-
-  // useEffect(() => {
-  //   getPipelines();
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log("PIPELINES DATA: ", pipelinesData);
-  // }, [pipelinesData]);
-
   const { pipeToShow, pipeToShowTab } = useSelector(({ Flow }) => Flow);
 
   useEffect(() => {
     if (pipeToShowTab) setAllDeals(pipeToShowTab);
     else setAllDeals([]);
   }, [pipeToShowTab]);
-
-  // console.log("PIPE TO SHOW: ", pipeToShow);
-
-  // useEffect(() => {
-  //   if (stateApp.user && stateApp.user.mongoId) {
-  //     getTransactionData({
-  //       variables: {
-  //         userId: stateApp.user.mongoId,
-  //       },
-  //     });
-  //   }
-  // }, [stateApp.user]);
-
-  // useEffect(() => {
-  //   if (tData) {
-  //     console.log("TDATA: ", tData);
-  //     let deals = [];
-  //     tData &&
-  //       tData.transactionData.forEach((pipeline) => {
-  //         pipeline &&
-  //           pipeline.allData &&
-  //           pipeline.allData.lanes &&
-  //           pipeline.allData.lanes.forEach((lane) => {
-  //             lane &&
-  //               lane.cards &&
-  //               lane.cards.forEach((card) => {
-  //                 deals.push(card);
-  //               });
-  //           });
-  //       });
-  //     setAllDeals(deals);
-  //   }
-  // }, [tData]);
-
-  // useEffect(() => {
-  //   if (allDeals) console.log("ALL DEALS: ", allDeals);
-  // }, [allDeals]);
 
   const handleSelectDeal = (deal) => {
     setStateApp((stateApp) => ({
@@ -168,7 +112,6 @@ const DealSearch = () => {
         }}
         options={allDeals}
         onChange={(e, deal) => {
-          console.log("Selected: ", deal);
           deal && handleSelectDeal(deal);
         }}
         disableClearable={false}
@@ -193,8 +136,6 @@ const DealSearch = () => {
         }}
         renderInput={(params) => (
           <TextField
-            // value={searchQuery}
-            // onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               margin: 0,
             }}

@@ -1,24 +1,15 @@
 import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../../AppContext";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
-import parse from "autosuggest-highlight/parse";
-import throttle from "lodash/throttle";
 import debounce from "lodash/debounce";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
-import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
-import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
-import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { setMapGridCardState } from "../../../actions";
 
-
 // import value formatters 
-import capitalizeFirstLetter from "../../Shared/valueformatters/capitalize-first-letter.js";
+import joinAddress from "../../Shared/valueformatters/join-address.js";
 
 
 
@@ -41,27 +32,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const joinAddress = (row) => {
-  let rowData = {
-    StreetAddress: row.StreetAddress,
-    City: row.City,
-    State: row.State,
-    Zip: row.Zip,
-    Country: row.Country,
-  };
-  let textArray = [];
-  for (const key in rowData) {
-    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
-      if (key === "Zip" || key === "Country") {
-        textArray = [
-          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
-        ];
-      } else textArray.push(capitalizeFirstLetter(rowData[key]));
-    }
-  }
 
-  return textArray.join(", ");
-};
 
 function MapGridCardSearch(props) {
   const classes = useStyles();
@@ -80,6 +51,7 @@ function MapGridCardSearch(props) {
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, callback) => {
+
         const endpoint =
           "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
           searchTop +
@@ -95,14 +67,9 @@ function MapGridCardSearch(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to wellheader-index-en-ms search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -132,14 +99,9 @@ function MapGridCardSearch(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to globalowner-index search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -167,14 +129,9 @@ function MapGridCardSearch(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to operator-index search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -202,14 +159,9 @@ function MapGridCardSearch(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to lease-index search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -251,15 +203,6 @@ function MapGridCardSearch(props) {
   );
 
   React.useEffect(() => {
-    if (searchInputValue === "") {
-      if (searchResultData.length !== 0 && searchloading !== false) {
-        dispatch(
-          setMapGridCardState({ searchResultData: [], searchloading: false })
-        );
-      }
-      return undefined;
-    }
-
     (async () => {
       let newOptions = [];
 
@@ -273,7 +216,6 @@ function MapGridCardSearch(props) {
                 );
                 newOptions = [...results.value];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],
@@ -299,7 +241,6 @@ function MapGridCardSearch(props) {
                   }),
                 ];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],
@@ -317,7 +258,6 @@ function MapGridCardSearch(props) {
                 );
                 newOptions = [...results.value];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],
@@ -351,7 +291,6 @@ function MapGridCardSearch(props) {
                   }),
                 ];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],
@@ -381,7 +320,6 @@ function MapGridCardSearch(props) {
                   }),
                 ];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],

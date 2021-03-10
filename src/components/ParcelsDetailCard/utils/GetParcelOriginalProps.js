@@ -18,12 +18,6 @@ export function getParcelOriginalProperties(parcel) {
     originalProperties = JSON.parse(originalProperties);
   }
 
-  // Continue PLSS Data
-  // console.log("---------------------------------------");
-  // console.log(originalProperties[0]);
-  // console.log("---------------------------------------");
-
-
   if (originalProperties && originalProperties.length > 0) {
     originalProperty.county = originalProperties[0].County;
     if ("State" in originalProperties[0]) {
