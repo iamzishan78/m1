@@ -596,7 +596,10 @@ export default function Transact() {
 
   return (
     <div className={classes.root}>
-      <AddDealDialog
+      
+      <Drawer />
+      
+      {/* <AddDealDialog
         open={stateApp.dealDialog ? true : false}
         width="450px"
         isTransactPage
@@ -607,8 +610,8 @@ export default function Transact() {
             activeDeal: { cardId: null, laneId: null },
           }))
         }
-      />
-      <Drawer />
+        // view={view}
+      /> */}
       <TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} />
       {pipeToShow ? (
         <div className={classes.boardAndTable}>

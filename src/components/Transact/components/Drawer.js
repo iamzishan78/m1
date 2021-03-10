@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import MessageIcon from "@material-ui/icons/Message";
 import DescriptionIcon from "@material-ui/icons/DescriptionSharp";
@@ -7,6 +7,8 @@ import ShareIcon from "@material-ui/icons/Share";
 import FolderIcon from "@material-ui/icons/Folder";
 import IdentityIcon from "@material-ui/icons/PermIdentity";
 import Tooltip from "@material-ui/core/Tooltip";
+import { AppContext } from "../../../AppContext";
+import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     right: 0,
     top: 0,
-    zIndex: 9999,
+    zIndex: 999999,
     backgroundColor: "rgb(240,245,248)",
   },
   icon: {
@@ -45,20 +47,37 @@ const useStyles = makeStyles((theme) => ({
 export default function Drawer() {
   const classes = useStyles();
 
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [view, setView] = useState("");
+
   const drawerIcons = {
-    Messages: (props) => <MessageIcon {...props} />,
-    Description: (props) => <DescriptionIcon {...props} />,
-    Checkmark: (props) => <CheckmarkIcon {...props} />,
-    Share: (props) => <ShareIcon {...props} />,
-    Folder: (props) => <FolderIcon {...props} />,
-    Identity: (props) => <IdentityIcon {...props} />
+    Comments: (props) => <MessageIcon {...props} />,
+    Documents: (props) => <DescriptionIcon {...props} />,
+    "Lane Progress": (props) => <CheckmarkIcon {...props} />,
+    History: (props) => <ShareIcon {...props} />,
+    Groups: (props) => <FolderIcon {...props} />,
+    Contacts: (props) => <IdentityIcon {...props} />,
   };
 
   return (
     <div className={classes.root}>
+      <AddDealDialog
+        open={stateApp.dealDialog ? true : false}
+        width="450px"
+        isTransactPage
+        onClose={() =>
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            dealDialog: false,
+            activeDeal: { cardId: null, laneId: null },
+          }))
+        }
+        view={view}
+        setView={setView}
+      />
       {Object.keys(drawerIcons).map((key) => (
         <Tooltip title={key} placement="left">
-          <div className={classes.icon}>
+          <div className={classes.icon} onClick={() => setView(key)}>
             {drawerIcons[key]({
               opacity: "1",
               height: "30",

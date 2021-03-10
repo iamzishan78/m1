@@ -18,11 +18,12 @@ export default function AlertDialogSlide(props) {
       "&  .MuiPaper-root": {
         position: "fixed",
         top: "0 !important",
-        right: "0px !important",
+        right: "60px !important",
         width: props.width ? String(props.width) : null,
         maxWidth: "100% !important",
         minHeight: "100vh !important",
         margin: "0 !important",
+        borderTopRightRadius: "0 !important"
       },
       "& .MuiListItem-container": {
         borderBottom: "1px solid #c7c7c7",
