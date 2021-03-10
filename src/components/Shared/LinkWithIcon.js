@@ -4,7 +4,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { useLazyQuery } from "@apollo/client";
 import Tooltip from "@material-ui/core/Tooltip";
 import LinkIcon from '@material-ui/icons/Link';
-import { Grid, Container, Box, Typography } from "@material-ui/core";
+import { Grid, Container, Box, Typography, Badge } from "@material-ui/core";
 import AlertDialogSlide from "../Contacts/components/RightDialog";
 import CloseSharp from "@material-ui/icons/CloseSharp";
 import { LINKED_GLOBAL_OWNERS } from "../../graphQL/useQueryLinkedGlobalOwners";
@@ -53,20 +53,20 @@ export default function LinkWithIcon(props) {
         title={"Linked Global Owner"}
         placement="top"
       >
-        <IconButton
-          size={props.iconZiseSmall ? "small" : "medium"}
-          color="primary"
-          className={`${classes.icons}  ${openDialog || (getGlobalOwners().length > 0)
-            ? classes.iconSelected
-            : ""
-            }`}
-          onClick={() => {
-            setOpenDialog(true);
-          }}
-          aria-label="show linked global owner"
-        >
-          <LinkIcon />
-        </IconButton>
+        <Badge badgeContent={props.iconZiseSmall ? null : getGlobalOwners().length} color="secondary">
+          <IconButton
+            size={props.iconZiseSmall ? "small" : "medium"}
+            color="primary"
+            className={`${classes.icons}  ${openDialog || (getGlobalOwners().length > 0)
+              ? classes.iconSelected
+              : ""
+              }`}
+            onClick={() => { setOpenDialog(true) }}
+            aria-label="show linked global owner"
+          >
+            <LinkIcon />
+          </IconButton>
+        </Badge>
       </Tooltip>
       {openDialog && (
         <AlertDialogSlide open={true}>
@@ -87,7 +87,7 @@ export default function LinkWithIcon(props) {
                   </Grid>
                 </Grid>
                 {
-                  data?.linkedGlobalOwners?.data?.length > 0 ?
+                  getGlobalOwners().length > 0 ?
                     <>
                       <Box mt={2}>
                         <Typography>
@@ -107,7 +107,7 @@ export default function LinkWithIcon(props) {
                 }
               </Box>
 
-              {data?.linkedGlobalOwners?.data?.map((row) => (
+              {getGlobalOwners().map((row) => (
                 <Grid container direction="row" spacing={2} alignItems="center">
                   <Grid item md={12}>
                     <Typography style={{ backgroundColor: "#edfbff" }}>
