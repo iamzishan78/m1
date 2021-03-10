@@ -154,6 +154,7 @@ const AppProvider = (props) => {
     prevAOIVisible: false,
     prevParcelVisible: false,
     prevBasinVisible: false,
+    transactBarView: "",
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;

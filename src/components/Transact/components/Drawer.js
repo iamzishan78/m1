@@ -48,7 +48,6 @@ export default function Drawer() {
   const classes = useStyles();
 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [view, setView] = useState("");
 
   const drawerIcons = {
     Comments: (props) => <MessageIcon {...props} />,
@@ -61,23 +60,14 @@ export default function Drawer() {
 
   return (
     <div className={classes.root}>
-      <AddDealDialog
-        open={stateApp.dealDialog ? true : false}
-        width="450px"
-        isTransactPage
-        onClose={() =>
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            dealDialog: false,
-            activeDeal: { cardId: null, laneId: null },
-          }))
-        }
-        view={view}
-        setView={setView}
-      />
       {Object.keys(drawerIcons).map((key) => (
         <Tooltip title={key} placement="left">
-          <div className={classes.icon} onClick={() => setView(key)}>
+          <div
+            className={classes.icon}
+            onClick={() =>
+              setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))
+            }
+          >
             {drawerIcons[key]({
               opacity: "1",
               height: "30",

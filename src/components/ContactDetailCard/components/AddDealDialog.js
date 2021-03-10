@@ -542,8 +542,8 @@ function AddDealDialog(props) {
       ...stateApp,
       dealDialog: false,
       activeDeal: { cardId: null, laneId: null },
+      transactBarView: ""
     }));
-    props.setView("")
   };
 
   const handleCloseContactDialog = () => {
@@ -844,12 +844,14 @@ function AddDealDialog(props) {
   });
 
   const getView = () => {
-    if (props.isTransactPage && props.view !== "") {
+    if (props.isTransactPage && stateApp.transactBarView !== "") {
       return (
         <RightDialog
           open={props.open}
           width={props.width}
-          onClose={() => props.setView("")}
+          onClose={() =>
+            setStateApp((stateApp) => ({ ...stateApp, transactBarView: "" }))
+          }
         >
           <div style={{ padding: "30px" }}>
             <Grid item xs={12} style={{ minHeight: "35px" }}>
@@ -860,7 +862,7 @@ function AddDealDialog(props) {
                   fontSize: "1.1rem",
                 }}
               >
-                {props.view}
+                {stateApp.transactBarView}
               </h4>
 
               <div style={{ float: "right" }}>
@@ -881,7 +883,6 @@ function AddDealDialog(props) {
 
   return (
     <>
-      {/* {props.isTransactPage && <Drawer />} */}
       {deleteDialogOpen && (
         <Dialog
           className={classes.dialog}
@@ -903,7 +904,7 @@ function AddDealDialog(props) {
       )}
       {getView()}
       {(!props.isTransactPage ||
-        (props.isTransactPage && props.view === "")) && (
+        (props.isTransactPage && stateApp.transactBarView === "")) && (
         <RightDialog
           open={props.open}
           handleClickDialogClose={() => {
