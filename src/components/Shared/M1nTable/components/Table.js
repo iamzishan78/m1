@@ -1851,6 +1851,7 @@ function SubTable(props) {
     selectableRows:
       props.targetLabel == "production_detail" ? false : "multiple",
     print: false,
+    download: props.parent == "Contacts" ? true : false,
     viewColumns: props.targetLabel !== "usermanagement",
     onColumnViewChange: (changedColumn, action) => {
       if (
@@ -2523,7 +2524,8 @@ function SubTable(props) {
           : [];
     options.count = props.contactsPageProps.contactsCount;
     options.serverSide = true;
-    options.print = false;
+    //options.print = true;
+    //options.export = true;
   }
 
   const displayCumulative = (data, total, cumulative, rowsPerPage = 25) => {
@@ -2592,9 +2594,9 @@ function SubTable(props) {
           }}
           options={{
             ...options,
-            download: false,
+            //download: false,
             search: props.parent != "search",  // removing the double search on the grid search bar 
-            print: false,
+            //print: false,
           }}
         />
 		{
