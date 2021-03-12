@@ -4779,4 +4779,5 @@ function Map() {
 }
 
 Map.whyDidYouRender = true
+
 export default React.memo(Map);

@@ -1,13 +1,10 @@
 import React, { useState, createContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import {
-  MSALB2CObj,
-  B2CTenantCredentials,
-} from "./components/Login/AADB2CAuthConfig";
+import {MSALB2CObj,B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
-import { isNullishCoalesce } from "typescript";
+import { heatLayers, baseMapLayers,} from "./LayerConfig";
 
 const AppContext = createContext([{}, () => {}]);
 
@@ -34,8 +31,8 @@ const AppProvider = (props) => {
     myMSALObj: null,
     myMSALB2CObj: null,
 
-    baseMapLayers: null,
-    heatLayers: null,
+    baseMapLayers: baseMapLayers,
+    heatLayers: heatLayers,
     
     selectedRoute: "/",
     apolloClientEndpoint: "",
