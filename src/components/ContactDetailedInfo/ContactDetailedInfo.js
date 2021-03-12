@@ -414,7 +414,10 @@ export default function DetailInfo(props) {
       linkType: LinkTypes.None,
     },
     "Contact Owner": {
-      data: { contactOwner: props.contactData.contactOwner },
+      data: {
+        contactOwner: props.contactData.contactOwner,
+        contactOwnerId: props.contactData.contactOwnerId
+      },
       linkType: LinkTypes.None,
     },
     "Created By": {

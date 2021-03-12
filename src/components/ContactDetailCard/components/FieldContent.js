@@ -17,6 +17,7 @@ import {
 } from "../../../graphQL/useMutationUpdateMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../../AppContext";
+import ContactAutoComplete from "../../Shared/ContactAutoComplete";
 
 const useStyles = makeStyles((theme) => ({
   fieldContentP: {
@@ -232,14 +233,18 @@ export default function FieldContent({
   );
   const classes = useStyles({ noMargin, loading, fieldsCount });
 
+  // contactOwnerId field used in autocomplete of contact owner
+  const ignorableFieldsInCount = ['contactOwnerId'];
+
   useEffect(() => {
     if (content) {
       setEditContent({ ...content });
       setShowContent({ ...content });
 
+
       let count = 0;
       for (const fieldName in content) {
-        if (content.hasOwnProperty(fieldName)) {
+        if (content.hasOwnProperty(fieldName) && !ignorableFieldsInCount.includes(fieldName)) {
           count++;
         }
       }
@@ -354,7 +359,36 @@ export default function FieldContent({
   let inputsArray = [];
   if (edit) {
     for (const fieldName in editContent) {
-      if (editContent.hasOwnProperty(fieldName)) {
+
+      if (fieldName === 'contactOwner' || fieldName === 'contactOwnerId') {
+        if (fieldName === 'contactOwner')
+          inputsArray.push(
+            <ContactAutoComplete
+              value={editContent.contactOwnerId ? editContent.contactOwnerId : ''}
+              onChange={(e, user) => {
+                setEditContent({ 'contactOwner': user.text, 'contactOwnerId': user.value });
+                setTimeout(() => handleUpdating(), 1000)
+              }}
+              onKeyDown={(event) => {
+                event.stopPropagation();
+                if (event.key === "Escape") {
+                  setEdit(null);
+                  setEditContent({ 'contactOwner': content.contactOwner, 'contactOwnerId': content.contactOwnerId });
+                }
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  handleUpdating();
+                }
+              }}
+              onBlur={() => {
+                setEdit(null);
+                setEditContent({ 'contactOwner': content.contactOwner, 'contactOwnerId': content.contactOwnerId });
+              }}
+            />
+          )
+      }
+
+      else if (editContent.hasOwnProperty(fieldName)) {
         inputsArray.push(
           <TextField
             key={"fieldContentInput" + fieldName}
@@ -440,6 +474,10 @@ export default function FieldContent({
         textArray = [[textArray.join(", "), showContent[key]].join(" ")];
       } else if (key === "jobTitle") {
         textArray = [[textArray.join(", "), showContent[key]].join(" - ")];
+      } else if (key === "contactOwner" || key === "contactOwnerId") {
+        if (key === "contactOwner")
+          textArray.push(showContent[key] || '');
+
       } else textArray.push(showContent[key]);
     }
   }
