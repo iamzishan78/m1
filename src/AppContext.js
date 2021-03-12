@@ -7,6 +7,7 @@ import {
 } from "./components/Login/AADB2CAuthConfig";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
+import { isNullishCoalesce } from "typescript";
 
 const AppContext = createContext([{}, () => {}]);
 
@@ -32,6 +33,10 @@ const AppProvider = (props) => {
     ],
     myMSALObj: null,
     myMSALB2CObj: null,
+
+    baseMapLayers: null,
+    heatLayers: null,
+    
     selectedRoute: "/",
     apolloClientEndpoint: "",
     graphqlScope: null,
