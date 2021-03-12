@@ -2429,9 +2429,9 @@ function M1nTable(props) {
     WELLOWNERSQUERY
   );
   //////////
-  const [getContactWells, { data: dataContactWells }] = useLazyQuery(
-    CONTACTWELLS
-  );
+  const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS, {
+    fetchPolicy: "cache-and-network",
+  });
   // const [getContactInM1nTable, { data: dataContact }] = useLazyQuery(CONTACT, {
   //   fetchPolicy: "cache-and-network",
   // });
@@ -5198,7 +5198,7 @@ function M1nTable(props) {
               //activeDeal: { cardId: null, laneId: null },
             }))
           }
-          contactId={props.contact?._id}
+          contactId={props.contactId}
         />
       )}
 
