@@ -49,6 +49,7 @@ import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
 import Drawer from "../../Transact/components/Drawer";
+import Documents from "../../Shared/Documents";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -542,7 +543,7 @@ function AddDealDialog(props) {
       ...stateApp,
       dealDialog: false,
       activeDeal: { cardId: null, laneId: null },
-      transactBarView: ""
+      transactBarView: "",
     }));
   };
 
@@ -844,8 +845,40 @@ function AddDealDialog(props) {
   });
 
   const getView = () => {
-    if (props.isTransactPage && stateApp.transactBarView !== "") {
+    if (stateApp.transactBarView === "Documents") {
       return (
+        <Documents
+          id={stateApp.activeDeal?.cardId}
+          user_id={stateApp.user.email}
+          isTransactPage={true}
+        />
+      );
+    }
+  };
+
+  return (
+    <>
+      {deleteDialogOpen && (
+        <Dialog
+          className={classes.dialog}
+          open={deleteDialogOpen ? true : false}
+          onClose={handleCloseDialog}
+          fullWidth={false}
+          maxWidth="sm"
+        >
+          <DeleteConfirmationDialogContent
+            header={`Delete Deal`}
+            onClose={handleCloseDialog}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => {}}
+          >
+            Do you want to delete the selected deal?
+          </DeleteConfirmationDialogContent>
+        </Dialog>
+      )}
+
+      {props.isTransactPage && stateApp.transactBarView !== "" && (
         <RightDialog
           open={props.open}
           width={props.width}
@@ -875,34 +908,12 @@ function AddDealDialog(props) {
                 </IconButton>
               </div>
             </Grid>
+
+            {getView()}
           </div>
         </RightDialog>
-      );
-    }
-  };
-
-  return (
-    <>
-      {deleteDialogOpen && (
-        <Dialog
-          className={classes.dialog}
-          open={deleteDialogOpen ? true : false}
-          onClose={handleCloseDialog}
-          fullWidth={false}
-          maxWidth="sm"
-        >
-          <DeleteConfirmationDialogContent
-            header={`Delete Deal`}
-            onClose={handleCloseDialog}
-            deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
-          >
-            Do you want to delete the selected deal?
-          </DeleteConfirmationDialogContent>
-        </Dialog>
       )}
-      {getView()}
+
       {(!props.isTransactPage ||
         (props.isTransactPage && stateApp.transactBarView === "")) && (
         <RightDialog

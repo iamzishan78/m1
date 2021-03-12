@@ -166,7 +166,7 @@ export default function ViewDocuments(props) {
   useEffect(() => {
     getAllFiles({
       variables: {
-        contactId: props.contactId,
+        relatedObjectId: props.contactId,
       },
     });
   }, []);

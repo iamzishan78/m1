@@ -12,8 +12,6 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import { CircularProgress } from "@material-ui/core";
-import { DropzoneAreaBase } from "material-ui-dropzone";
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
 import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
@@ -24,7 +22,7 @@ import { GETRECENTCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { DELETEDESCRIPTORFILE } from "../../graphQL/useMutationDeleteDescriptorFile";
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 import { useDispatch } from "react-redux";
-import { showErrorMessage, showWarningMessage } from "../../actions";
+import UploadZone from "./UploadZone";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -116,120 +114,9 @@ const useStyles = makeStyles((theme) => ({
   fileDropError: {
     color: "red",
   },
-  dropzoneClass: {
-    "&:hover": { backgroundColor: "#dddddd" },
-    "& .MuiDropzoneArea-text": {
-      fontSize: "0.83em",
-      marginBlockStart: "1.67em",
-      marginBlockEnd: "1.67em",
-      fontWeight: "bold",
-    },
-    "& .MuiDropzoneArea-icon": { display: "none" },
-    minHeight: "125px",
-    width: "100%",
-    padding: "10px 40px",
-    color: "#757575",
-    fontWeight: "normal",
-    backgroundColor: "#eee",
-    textAlign: "center",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    border: "2px dashed rgb(176, 176, 176)",
-    marginBottom: "30px",
-  },
 }));
 
-function UploadZone(props) {
-  const dispatch = useDispatch();
-  const [inputFile, setInputFile] = useState(null);
-
-  useEffect(() => {
-    if (props.addFileData && props.addFileData?.addFileDescriptor?.success) {
-      console.log("HALLO ADD FILE DATA HERE", props.addFileData);
-      const uri = props.addFileData.addFileDescriptor.file.uri;
-      const interal_key = props.addFileData.addFileDescriptor.file.internalKey;
-      const file_id = props.addFileData.addFileDescriptor.file.id;
-      const file_name = props.addFileData.addFileDescriptor.file.name;
-
-      if (file_id) {
-        fetch(uri, {
-          headers: {
-            "X-Ms-Blob-Content-Disposition": `attachment; filename="${file_name}"`,
-            "X-Ms-Blob-Type": "BlockBlob",
-            "X-Ms-Meta-Internalkey": interal_key,
-            "X-Ms-Version": "2015-02-21",
-          },
-          method: "PUT",
-          body: inputFile,
-        })
-          .then((res) => {
-            console.log(res);
-            if (res?.status == 201) {
-              // props.getRecentFiles();
-            } else dispatch(showErrorMessage("Upload failed"));
-          })
-          .catch((err) => console.log(err));
-      }
-    }
-  }, [props.addFileData]);
-
-  const handleFileInput = (files) => {
-    if (Array.isArray(files)) {
-      let inputFile = files[0]?.file;
-      let fileName = files[0]?.file?.name;
-
-      if (inputFile && fileName) {
-        setInputFile(inputFile);
-
-        props.addFile({
-          variables: {
-            fileName,
-            userId: props.userId,
-            contactId: props.contactId,
-          },
-        });
-      }
-    }
-  };
-
-  const classes = useStyles();
-
-  return (
-    <>
-      <DropzoneAreaBase
-        onAdd={handleFileInput}
-        // onDelete={(fileObj) => console.log("Removed File:", fileObj)}
-        onAlert={(message, variant) => {
-          console.log(`${variant}: ${message}`);
-        }}
-        filesLimit={1}
-        dropzoneText={"Drag a file here or click to select a file to upload"}
-        acceptedFiles={[
-          "image/*",
-          "video/*",
-          "application/*",
-          ".*",
-          ".geojson",
-          ".csv",
-          ".pdf",
-          ".docx",
-          ".doc",
-          ".ppt",
-          ".pptx",
-          ".txt",
-          ".xls",
-          ".xlsx",
-        ]}
-        maxFileSize={104857600}
-        dropzoneClass={classes.dropzoneClass}
-      ></DropzoneAreaBase>
-    </>
-  );
-}
-
 export default function Documents(props) {
-  const dispatch = useDispatch();
   const classes = useStyles();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
@@ -243,6 +130,7 @@ export default function Documents(props) {
       onCompleted: ({ getFileDescriptors }) => {
         let allActive = true;
 
+        console.log("File descriptors: ", getFileDescriptors)
         if (getFileDescriptors)
           for (let i = 0; i < getFileDescriptors.length; i++) {
             if (getFileDescriptors[i].fileState !== "active") {
@@ -257,7 +145,7 @@ export default function Documents(props) {
               setFileRequestCounter(fileRequestCounter + 1);
               getRecentFiles({
                 variables: {
-                  contactId: props.id,
+                  relatedObjectId: props.id,
                 },
               });
               clearTimeout(waitBeforeRequestAgain);
@@ -275,22 +163,22 @@ export default function Documents(props) {
     }
   );
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
-  const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
-    ADDDESCRIPTORFILE,
-    {
-      refetchQueries: ["getRecentContactFiles"],
-      awaitRefetchQueries: true,
-      //   onCompleted: () => {
-      //     // setTimeout(() => {
-      //     //   getRecentFiles({
-      //     //     variables: {
-      //     //       contactId: props.id,
-      //     //     },
-      //     //   });
-      //     // }, 3000);
-      //   },
-    }
-  );
+  // const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
+  //   ADDDESCRIPTORFILE,
+  //   {
+  //     refetchQueries: ["getRecentContactFiles"],
+  //     awaitRefetchQueries: true,
+  //     //   onCompleted: () => {
+  //     //     // setTimeout(() => {
+  //     //     //   getRecentFiles({
+  //     //     //     variables: {
+  //     //     //       contactId: props.id,
+  //     //     //     },
+  //     //     //   });
+  //     //     // }, 3000);
+  //     //   },
+  //   }
+  // );
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
@@ -298,7 +186,7 @@ export default function Documents(props) {
   useEffect(() => {
     getRecentFiles({
       variables: {
-        contactId: props.id,
+        relatedObjectId: props.id,
       },
     });
   }, [props.id]);
@@ -342,6 +230,8 @@ export default function Documents(props) {
     viewFile({ variables: { fileId: id } });
   };
 
+  console.log("GOT FILES: ", files)
+
   return (
     <div className={classes.root} variant="outlined">
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
@@ -349,31 +239,33 @@ export default function Documents(props) {
           <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
             Recent Documents
           </h4>
-          <h4
-            className={classes.viewAll}
-            // onClick={(e) => {
-            //   e.preventDefault();
-            //   props.viewAll("comments");
-            // }}
+          {!props.isTransactPage && (
+            <h4
+              className={classes.viewAll}
+              // onClick={(e) => {
+              //   e.preventDefault();
+              //   props.viewAll("comments");
+              // }}
 
-            onClick={() => {
-              props.handleOpenExpandableCard(
-                <ViewDocuments
-                  contactId={props.id}
-                  user_id={props.user_id}
-                  activityLog={props.activityLog}
-                  openDeleteConfirmDialog={openDeleteConfirmDialog}
-                  handleClose={handleDeleteCancel}
-                  handleAccept={handleDeleteAccept}
-                  setOpenDeleteConfirmDialog={setOpenDeleteConfirmDialog}
-                  setFileIdToDelete={setFileIdToDelete}
-                />,
-                "Documents"
-              );
-            }}
-          >
-            View All
-          </h4>
+              onClick={() => {
+                props.handleOpenExpandableCard(
+                  <ViewDocuments
+                    contactId={props.id}
+                    user_id={props.user_id}
+                    activityLog={props.activityLog}
+                    openDeleteConfirmDialog={openDeleteConfirmDialog}
+                    handleClose={handleDeleteCancel}
+                    handleAccept={handleDeleteAccept}
+                    setOpenDeleteConfirmDialog={setOpenDeleteConfirmDialog}
+                    setFileIdToDelete={setFileIdToDelete}
+                  />,
+                  "Documents"
+                );
+              }}
+            >
+              View All
+            </h4>
+          )}
         </Grid>
       </CardActions>
       <CardContent style={{ padding: "0 23px" }}>
@@ -420,23 +312,19 @@ export default function Documents(props) {
             }}
           />
           <UploadZone
-            contactId={props.id}
+            relatedObjectId={props.id}
             userId={userId}
-            addFile={addFile}
-            addFileData={addFileData}
-            getRecentFiles={() => {
-              getRecentFiles({
-                variables: {
-                  contactId: props.id,
-                },
-              });
-            }}
+            relatedObjectType={props.isTransactPage ? "Deal" : "Contact"}
+            // addFile={addFile}
+            // addFileData={addFileData}
+            // getRecentFiles={() => {
+            //   getRecentFiles({
+            //     variables: {
+            //       relatedObjectId: props.id,
+            //     },
+            //   });
+            // }}
           />
-          {addFileLoading && (
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <CircularProgress size="20px" />
-            </div>
-          )}
         </div>
       </CardContent>
     </div>
