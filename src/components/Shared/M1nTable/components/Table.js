@@ -325,6 +325,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "10px",
     color: "#155388",
   },
+  blue: { color: theme.palette.secondary.main, fontWeight: "bold" },
 }));
 
 var formatter = new Intl.NumberFormat("en-US", {
@@ -1694,7 +1695,10 @@ function SubTable(props) {
                   }
 
                   return (
-                    <div style={{ display: "flex",alignItems: "center", justifyContent: "left" }}>
+                    <div
+                      style={{ display: "flex",alignItems: "center", justifyContent: "left" }}
+                      className={ props.parent === "assocTaxRollInterests" ? [classes.blue] : [] }
+                    >
                       {props.targetLabel === "contact" &&
                         column.name === "name" && (
                           <Avatar
