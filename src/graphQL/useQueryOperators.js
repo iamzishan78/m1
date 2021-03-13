@@ -15,11 +15,3 @@ export default function useQueryOperators() {
   return { data, loading, error };
 }
 
-/////////////////////////////////////////////////////
-// export const OPERATORSQUERY = gql`
-//   query getOperators ($search:String){
-//     operators(search:$search) {
-//       Name
-//     }
-//   }
-// `;
