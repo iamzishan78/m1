@@ -12,7 +12,7 @@ import FilterWellStatusJ from "./FilterWellStatusJ";
 import FilterPlay from "./FilterGeoPlay";
 import FilterPrimaryFormation from "./FilterGeoPrimaryFormation";
 import FilterField from "./FilterGeoField";
-import OperatorsFilter from "./FilterTopOperators";
+import OperatorsFilter from "./OperatorFilterJ";
 import Grid from "@material-ui/core/Grid";
 
 export default function FilterFormWell() {

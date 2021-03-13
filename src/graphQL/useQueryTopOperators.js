@@ -1,11 +1,13 @@
-import gql from "graphql-tag";
-import { useLazyQuery } from "@apollo/client";
+// query is intended to get the top operators by well count 
+// for use in the application 
+// in particular the filters 
 
-export default function useQueryTopOperators() {
-const TopOperatorsFilterQUERY = gql`query {
-    topOperators 
+import gql from "graphql-tag";
+
+export const TOPOPERATORS = gql`
+query {
+    topOperators {
+      CurrentOperator
+    }
   }
 `;
-
-return useLazyQuery(TopOperatorsFilterQUERY);
-}
