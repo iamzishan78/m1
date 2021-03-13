@@ -2191,6 +2191,8 @@ const ContactWellHeadCells = [
   { name: "amount", label: "Amount" },
   { name: "taxValue", label: "Tax Value" },
   { name: "nra", label: "NRA" },
+  { name: "year", label: "Year", options: { display: false } },
+  { name: "globalLod", label: "Global LOD", options: { display: false } },
   {
     name: "tags",
     label: "Tags ",

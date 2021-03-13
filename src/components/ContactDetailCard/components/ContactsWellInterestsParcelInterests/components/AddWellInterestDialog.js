@@ -140,16 +140,22 @@ function AddWellInterestDialog(props) {
   }, []);
 
   const handleClose = () => {
+    setFoundWells([]);
+    setSelectedWell({});
+    setFormOwnerName("");
+    setFormInterestOwnerType({});
+    setFormInterestType({});
+    setFormInterestAmount("");
+    setFormRoyaltyAcres("");
+    setFormTaxValue("");
     setStateApp((stateApp) => ({
       ...stateApp,
       wellInterestDialog: false,
     }));
   }
 
-  console.log("props.contactId", props.contactId)
   const handleSave = () => {
     setLoading(true);
-    console.log("props.contactId", props.contactId)
     addWellInterest({
       variables: {
         globalWellId: selectedWell.Id,
@@ -254,7 +260,7 @@ function AddWellInterestDialog(props) {
                     </Grid>
                   );
                 }}
-                //value={users.find((user) => user?.value === ownerId) || null}
+                //value={selectedWell}
                 //getOptionLabel={(option) => option.text}
                 renderInput={(params) => (
                   <TextField
