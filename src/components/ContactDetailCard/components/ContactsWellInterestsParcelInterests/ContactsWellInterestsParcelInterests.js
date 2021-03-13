@@ -12,6 +12,72 @@ import Button from "@material-ui/core/Button";
 //import TabLabels from "../../../MapGridCard/MapGridCard";
 //import TabPanels from "../../../MapGridCard/MapGridCard";
 
+const TabPanels = ({ panels, value }) => {
+  console.log(`ue mapgridcard tabpanels ${(panels, value)}`);
+
+  const classes = useStyles();
+  return (
+    panels &&
+    panels.length &&
+    panels.map((panel, i) => (
+      <TabPanel key={i} value={value} index={i} className={classes.tapsPanels}>
+        {panel}
+      </TabPanel>
+    ))
+  );
+};
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box p={3}>{children}</Box>}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
+
+const TabLabels = ({ labels, value, setValue }) => {
+  console.log(`ue mapgridcard tablabels ${(labels, value, setValue)}`);
+  const classes = useStyles();
+
+  return (
+    <>
+      {labels &&
+        labels.length &&
+        labels.map((label, i) => (
+          <Button
+            key={i}
+            size="small"
+            variant="contained"
+            className={
+              value === i
+                ? classes.tapsLabelsButtonsSelected
+                : classes.tapsLabelsButtons
+            }
+            onClick={() => {
+              setValue(i);
+            }}
+          >
+            {label}
+          </Button>
+        ))}
+    </>
+  );
+};
+
 const useStyles = makeStyles((theme) => ({
   tapsPanels: {
     "& .MuiBox-root": { padding: "0" },
@@ -22,6 +88,19 @@ const useStyles = makeStyles((theme) => ({
         "&>:nth-child(3)": { minHeight: "calc(100vh - 370px) !important" },
       },
     },
+  },
+  tapsLabelsButtons: {
+    boxShadow: "none",
+    backgroundColor: "#fff",
+    color: "#757575",
+    marginRight: "10px",
+    "&:hover": { boxShadow: "none !important" },
+  },
+  tapsLabelsButtonsSelected: {
+    boxShadow: "none",
+    color: "#fff",
+    backgroundColor: theme.palette.secondary.main,
+    "&:hover": { color: "#757575", boxShadow: "none !important" },
   },
 }));
 
@@ -34,14 +113,14 @@ function ContactsWellInterestsParcelInterests(props) {
     }
   };
 
-  /*const header = <TabLabels
+  const header = <TabLabels
     labels={[
       `Tax Roll Interests`,
       `Parcel Interests`,
     ]}
     value={assocTapValue}
     setValue={setAssocTapValue}
-  />;*/
+  />
 
   const classes = useStyles({});
 
@@ -70,10 +149,29 @@ function ContactsWellInterestsParcelInterests(props) {
           }
         }}*/
       />
-      <div style={{ position: "relative" }}>
+      
+      {/*<div style={{ position: "relative" }}>
         <M1nTable
           parent="assocTaxRollInterests"
           contactId={ props.contactData._id }
+        />
+      </div>*/}
+      
+      <div style={{ position: "relative" }}>
+        <TabPanels
+          value={assocTapValue}
+          panels={[
+            <M1nTable
+              parent="assocTaxRollInterests"
+              header={header}
+              contactId={ props.contactData._id }
+            />,
+            <M1nTable
+              parent="assocTaxRollInterests"
+              header={header}
+              contactId={ props.contactData._id }
+            />,
+          ]}
         />
       </div>
     </div>

@@ -2430,7 +2430,7 @@ function M1nTable(props) {
   );
   //////////
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS, {
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "network-only",
   });
   // const [getContactInM1nTable, { data: dataContact }] = useLazyQuery(CONTACT, {
   //   fetchPolicy: "cache-and-network",
