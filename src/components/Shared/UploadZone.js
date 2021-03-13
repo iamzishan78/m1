@@ -109,6 +109,7 @@ export default function UploadZone(props) {
       <DropzoneAreaBase
         onAdd={handleFileInput}
         // onDelete={(fileObj) => console.log("Removed File:", fileObj)}
+        // showAlerts={props.relatedObjectType === "Contact"}
         onAlert={(message, variant) => {
           console.log(`${variant}: ${message}`);
         }}

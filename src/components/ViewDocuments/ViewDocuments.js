@@ -167,6 +167,7 @@ export default function ViewDocuments(props) {
     getAllFiles({
       variables: {
         relatedObjectId: props.contactId,
+        relatedObjectType: "Contact"
       },
     });
   }, []);

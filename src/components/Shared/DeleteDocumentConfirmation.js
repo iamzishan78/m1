@@ -11,7 +11,7 @@ export default function DeleteDocumentConfirmation({
 }) {
   return (
     <div>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} style={{zIndex: 99999999999}}>
         <DialogTitle id="alert-dialog-title">
           Are you sure you want to delete the selected document(s)?
         </DialogTitle>

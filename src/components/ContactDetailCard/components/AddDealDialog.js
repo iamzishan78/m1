@@ -901,7 +901,7 @@ function AddDealDialog(props) {
               <div style={{ float: "right" }}>
                 <IconButton
                   disabled={updateDealLoading || addContactLoading}
-                  onClick={handleClose}
+                  onClick={() => setStateApp((stateApp) => ({...stateApp, transactBarView: ""}))}
                   size="small"
                 >
                   <CloseIcon className={classes.closeIcon} fontSize="small" />

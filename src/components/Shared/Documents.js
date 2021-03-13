@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import gql from "graphql-tag";
@@ -123,6 +123,12 @@ export default function Documents(props) {
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [stateApp] = React.useContext(AppContext);
   const userId = stateApp.user.mongoId;
+
+  const [relatedObjectType, limit] = useMemo(() => {
+    if (props.isTransactPage) return ["Deal", 99];
+    else return ["Contact", 2];
+  }, [props.isTransactPage]);
+
   const [getRecentFiles, { data: files }] = useLazyQuery(
     GETRECENTCONTACTFILES,
     {
@@ -130,7 +136,7 @@ export default function Documents(props) {
       onCompleted: ({ getFileDescriptors }) => {
         let allActive = true;
 
-        console.log("File descriptors: ", getFileDescriptors)
+        console.log("File descriptors: ", getFileDescriptors);
         if (getFileDescriptors)
           for (let i = 0; i < getFileDescriptors.length; i++) {
             if (getFileDescriptors[i].fileState !== "active") {
@@ -146,6 +152,7 @@ export default function Documents(props) {
               getRecentFiles({
                 variables: {
                   relatedObjectId: props.id,
+                  relatedObjectType,
                 },
               });
               clearTimeout(waitBeforeRequestAgain);
@@ -163,6 +170,7 @@ export default function Documents(props) {
     }
   );
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
+
   // const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
   //   ADDDESCRIPTORFILE,
   //   {
@@ -187,6 +195,8 @@ export default function Documents(props) {
     getRecentFiles({
       variables: {
         relatedObjectId: props.id,
+        relatedObjectType,
+        limit,
       },
     });
   }, [props.id]);
@@ -230,16 +240,14 @@ export default function Documents(props) {
     viewFile({ variables: { fileId: id } });
   };
 
-  console.log("GOT FILES: ", files)
-
   return (
     <div className={classes.root} variant="outlined">
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
-        <Grid item xs={12} style={{ minHeight: "35px" }}>
-          <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
-            Recent Documents
-          </h4>
-          {!props.isTransactPage && (
+        {!props.isTransactPage && (
+          <Grid item xs={12} style={{ minHeight: "35px" }}>
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
+              Recent Documents
+            </h4>
             <h4
               className={classes.viewAll}
               // onClick={(e) => {
@@ -265,8 +273,8 @@ export default function Documents(props) {
             >
               View All
             </h4>
-          )}
-        </Grid>
+          </Grid>
+        )}
       </CardActions>
       <CardContent style={{ padding: "0 23px" }}>
         <div className={classes.fileUploadSection}>
@@ -314,7 +322,7 @@ export default function Documents(props) {
           <UploadZone
             relatedObjectId={props.id}
             userId={userId}
-            relatedObjectType={props.isTransactPage ? "Deal" : "Contact"}
+            relatedObjectType={relatedObjectType}
             // addFile={addFile}
             // addFileData={addFileData}
             // getRecentFiles={() => {
