@@ -13,11 +13,17 @@ export default function OperatorFilterJ() {
   const [getOperators, { data: topOperatorData }] = useLazyQuery(TOPOPERATORS);
 
   useEffect(() => {
-    console.log('getting')
+    // use effect is querying the top operator data 
+    // top operator data is used for the autocomplete filter 
+    
     getOperators();
   }, []);
 
   useEffect(() => {
+    // this use effect is taking the top operator data response 
+    // reformatting into an array 
+    // and setting the operator list for the filter 
+
     if (topOperatorData) {
       const operatorList = topOperatorData.topOperators.map((item) => item.CurrentOperator);
       setOperatorsList(operatorList);
