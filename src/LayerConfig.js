@@ -159,6 +159,10 @@ export const heatLayers = [
         "admin-0-boundary-bg",
         "admin-1-boundary-bg",
         "countyBoundaries",
+        "PLSSTownships",
+        "TexasBlockBoundaries",
+        "PLSSFirstDivision",
+        "TexasLandSurvey",
       ],
     },
   
