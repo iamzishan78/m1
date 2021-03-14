@@ -323,7 +323,7 @@ function AddWellInterestDialog(props) {
               value={selectedWell?.lease}
               label="Lease Name"
               fullWidth
-              disabled
+              //disabled
             />
 
             <TextField
@@ -332,7 +332,7 @@ function AddWellInterestDialog(props) {
               value={selectedWell?.acres}
               label="Lease Acres"
               fullWidth
-              disabled
+              //disabled
             />
           </div>
 
