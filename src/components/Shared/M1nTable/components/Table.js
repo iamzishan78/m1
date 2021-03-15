@@ -1851,8 +1851,9 @@ function SubTable(props) {
     selectableRows:
       props.targetLabel == "production_detail" ? false : "multiple",
     print: false,
-    download: props.parent == "Contacts" ? true : false,
+    download: props.parent == "OwnersPerWell" ? true : false,
     viewColumns: props.targetLabel !== "usermanagement",
+
     onColumnViewChange: (changedColumn, action) => {
       if (
         props.parent === "Contacts" &&

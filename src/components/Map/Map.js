@@ -1,3 +1,6 @@
+
+
+// react imports 
 import React, {
   useContext,
   useState,
@@ -6,16 +9,17 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+// contexts 
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
-import mapboxgl from "mapbox-gl";
-import * as turf from "@turf/turf";
-import { makeStyles } from "@material-ui/core/styles";
+
+// custom components 
 import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
-import Portal from "@material-ui/core/Portal";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
 import ZoomFault from "./components/ZoomFault";
@@ -23,6 +27,21 @@ import HugeRequest from "./components/HugeRequest";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
+import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
+import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
+import MapGridCardProvider from "../MapGridCard/MapGridProvider";
+import MarkerIcon from "./sprites/marker-icon.png";
+import DefaultFiltersTest from "./filtersDefaultTest";
+import FilterControl from "./components/FilterControl";
+import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
+import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
+import { deepEqual, deepEqualObjects } from "../Shared/functions";
+import gjv from "geojson-validation";
+import { setMainMapState, showErrorMessage } from "../../actions";
+
+// 3rd party packages 
+import mapboxgl from "mapbox-gl";
+import * as turf from "@turf/turf";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import {
   CircleMode,
@@ -31,17 +50,19 @@ import {
   SimpleSelectMode,
 } from "mapbox-gl-draw-circle";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
-import * as MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import DefaultFiltersTest from "./filtersDefaultTest";
-import FilterControl from "./components/FilterControl";
+import debounce from "lodash/debounce";
+
+// material-ui
+import { makeStyles } from "@material-ui/core/styles";
+import Portal from "@material-ui/core/Portal";
+
+// queries 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLSQUERY } from "../../graphQL/useQueryWells";
 import { TRACKSBYOBJECTTYPE } from "../../graphQL/useQueryTracksByObjectType";
 import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
-import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
-import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
@@ -50,22 +71,14 @@ import { PLSSSECONDDIVISIONGEO } from "../../graphQL/useQueryPLSSSecondDivisionG
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 import { OWNERSQUERY } from "../../graphQL/useQueryOwners";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
-import {
-  ABSTRACTGEOQUERYCONTAINS,
-  ABSTRACTGEOCONTAINSQUERY,
-} from "../../graphQL/useQueryAbstractGeoContains";
-import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
-import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
-import MapGridCardProvider from "../MapGridCard/MapGridProvider";
+import { ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
 
-import { useDispatch, useSelector } from "react-redux";
-import MarkerIcon from "./sprites/marker-icon.png";
-import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
-import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
-import { deepEqual, deepEqualObjects } from "../Shared/functions";
-import gjv from "geojson-validation";
-import { setMainMapState, showErrorMessage } from "../../actions";
-import debounce from "lodash/debounce";
+// mutations 
+import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
+import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
+
+
+
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {

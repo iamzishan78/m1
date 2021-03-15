@@ -153,16 +153,16 @@ export const heatLayers = [
     {
       name: "Borders",
       id: [
-        "admin-0-boundary-disputed",
-        "admin-0-boundary",
-        "admin-1-boundary",
-        "admin-0-boundary-bg",
-        "admin-1-boundary-bg",
         "countyBoundaries",
         "PLSSTownships",
         "TexasBlockBoundaries",
         "PLSSFirstDivision",
         "TexasLandSurvey",
+        "admin-0-boundary-disputed",
+        "admin-0-boundary",
+        "admin-1-boundary",
+        "admin-0-boundary-bg",
+        "admin-1-boundary-bg",
       ],
     },
   
