@@ -116,7 +116,7 @@ function ContactsWellInterestsParcelInterests(props) {
   const header = <TabLabels
     labels={[
       `Tax Roll Interests`,
-      `Parcel Interests`,
+      //`Parcel Interests`,
     ]}
     value={assocTapValue}
     setValue={setAssocTapValue}
@@ -138,24 +138,26 @@ function ContactsWellInterestsParcelInterests(props) {
   };*/
 
   return (
-    <div>
-      <Search
-        /*ativateSearchPanel={() => {
-          if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
-          if (mapGridCardActivated === "min") {
-            dispatch(
-              setMapGridCardState({ mapGridCardActivated: true })
-            );
-          }
-        }}*/
-      />
+    // <div>
+    //   {/* temporarily comment search out until we have a chance to build it out fully */}  
+    //   <Search
+    //     /*ativateSearchPanel={() => {
+    //       if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
+    //       if (mapGridCardActivated === "min") {
+    //         dispatch(
+    //           setMapGridCardState({ mapGridCardActivated: true })
+    //         );
+    //       }
+    //     }}*/
+    //   /> 
+
       
-      {/*<div style={{ position: "relative" }}>
-        <M1nTable
-          parent="assocTaxRollInterests"
-          contactId={ props.contactData._id }
-        />
-      </div>*/}
+      // /*<div style={{ position: "relative" }}>
+      //   <M1nTable
+      //     parent="assocTaxRollInterests"
+      //     contactId={ props.contactData._id }
+      //   />
+      // </div>*/
       
       <div style={{ position: "relative" }}>
         <TabPanels
@@ -166,15 +168,15 @@ function ContactsWellInterestsParcelInterests(props) {
               header={header}
               contactId={ props.contactData._id }
             />,
-            <M1nTable
-              parent="assocTaxRollInterests"
-              header={header}
-              contactId={ props.contactData._id }
-            />,
+            // <M1nTable
+            //   parent="assocTaxRollInterests"
+            //   header={header}
+            //   contactId={ props.contactData._id }
+            // />,
           ]}
         />
       </div>
-    </div>
+    // </div>
   );
 }
 
