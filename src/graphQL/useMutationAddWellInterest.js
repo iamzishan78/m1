@@ -5,21 +5,27 @@ export const ADDWELLINTEREST = gql`
     $globalWellId: String,
     $userId: ID,
     $contactId: ID,
-    $entity: String,
+    $interestOwner: String,
+    $interestOwnerType: String,
     $type: String,
     $interest: Float,
     $value: Float,
-    $nra: Float
+    $nra: Float,
+    $year: Int,
+    $globalLod: String
   ) {
     addWellInterest(
       globalWellId: $globalWellId,
       userId: $userId,
       contactId: $contactId,
-      entity: $entity,
+      interestOwner: $interestOwner,
+      interestOwnerType: $interestOwnerType,
       type: $type,
       interest: $interest,
       value: $value,
-      nra: $nra
+      nra: $nra,
+      year: $year,
+      globalLod: $globalLod,
     )
   }
 `;

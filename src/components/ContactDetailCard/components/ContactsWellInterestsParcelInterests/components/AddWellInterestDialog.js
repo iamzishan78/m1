@@ -161,7 +161,8 @@ function AddWellInterestDialog(props) {
         globalWellId: selectedWell.Id,
         userId: stateApp.user.mongoId,
         contactId: props.contactId,
-        entity: formInterestOwnerType,
+        interestOwner: formOwnerName,
+        interestOwnerType: formInterestOwnerType,
         type: formInterestType,
         interest: formInterestAmount,
         value: formTaxValue,
@@ -303,7 +304,7 @@ function AddWellInterestDialog(props) {
               variant="outlined"
               margin="dense"
               value={selectedWell?.WellName}
-              label={selectedWell ? "" : "Well Name"}
+              label={selectedWell?.WellName ? "" : "Well Name"}
               fullWidth
               disabled
             />
@@ -312,7 +313,7 @@ function AddWellInterestDialog(props) {
               variant="outlined"
               margin="dense"
               value={selectedWell?.ApiNumber}
-              label={selectedWell ? "" : "API Number"}
+              label={selectedWell?.ApiNumber ? "" : "API Number"}
               fullWidth
               disabled
             />
@@ -320,8 +321,8 @@ function AddWellInterestDialog(props) {
             <TextField
               variant="outlined"
               margin="dense"
-              value={selectedWell?.lease}
-              label="Lease Name"
+              value={selectedWell?.Lease}
+              label={selectedWell?.Lease ? "" : "Lease Name"}
               fullWidth
               disabled
             />
@@ -329,8 +330,8 @@ function AddWellInterestDialog(props) {
             <TextField
               variant="outlined"
               margin="dense"
-              value={selectedWell?.acres}
-              label="Lease Acres"
+              value={selectedWell?.LeaseAcreage}
+              label={selectedWell?.LeaseAcreage ? "" : "Lease Acres"}
               fullWidth
               disabled
             />
