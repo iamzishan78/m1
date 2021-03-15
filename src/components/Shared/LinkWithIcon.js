@@ -77,7 +77,7 @@ export default function LinkWithIcon(props) {
                 <Grid container direction="row" spacing={4} justify="space-between" alignItems="center">
                   <Grid item>
                     <Typography className={classes.topHeading} style={{ fontWeight: "bold" }} variant="h5" component="h2">
-                      Link Platform Owners
+                      Linked Platform Owners
                       </Typography>
                   </Grid>
                   <Grid item>
@@ -91,7 +91,7 @@ export default function LinkWithIcon(props) {
                     <>
                       <Box mt={2}>
                         <Typography>
-                          The below platform owners are linked to the selected contact:
+                          The below platform owners are linked to the selected contact.
                         </Typography>
                       </Box>
 
@@ -101,7 +101,7 @@ export default function LinkWithIcon(props) {
                     </> :
                     <Box mt={2}>
                       <Typography>
-                        No Platform Owner is linked with this contact yet.
+                        No Platform Owner linked to selected contact.
                       </Typography>
                     </Box>
                 }
