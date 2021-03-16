@@ -1235,7 +1235,7 @@ function M1nTable(props) {
       }
 
   }, [props.parent,
-      stateApp.gridSearchTarget]);
+      stateGrid.gridSearchTarget]);
 
 
 

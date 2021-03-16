@@ -15,7 +15,6 @@ import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Button from '@material-ui/core/Button';
 
 
@@ -275,7 +274,8 @@ function WellCard() {
               </Button>
 
               <Button
-                              className={classes.button}
+                className={classes.button}
+                onClick = {() => {handleOpenDetails()}}
                               >
               <div className={classes.iconContainer}>
                 <ProductionIcon
@@ -301,7 +301,8 @@ function WellCard() {
               </Button>
 
               <Button
-                              className={classes.button}
+                className={classes.button}
+                onClick = {() => {handleOpenDetails()}}
                               >
               <div className={classes.iconContainer}>
                 <OwnershipIcon
@@ -330,6 +331,7 @@ function WellCard() {
 
               <Button
                 className={classes.button}
+                onClick = {() => {handleOpenDetails()}}
                               >
               <div className={classes.iconContainer}>
                 <Avatar variant="circle" className={classes.avatar}>
