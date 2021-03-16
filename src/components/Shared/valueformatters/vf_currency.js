@@ -2,16 +2,15 @@
 // this function is intended to convert a numeric string to currency
 
 export default function vf_currency(value) {
-    var formatter = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        maximumSignificantDigits: 21,
-      });
+  var formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumSignificantDigits: 21,
+  });
 
-    const valueFormatter = (v) => {
-        return formatter.format(parseInt(v));
-      };
+  const valueFormatter = (v) => {
+    if (v) return formatter.format(parseInt(v));
+  };
 
-          
-    return valueFormatter(value)
+  return valueFormatter(value)
 }
