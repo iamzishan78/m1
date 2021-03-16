@@ -12,19 +12,19 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import ViewDocuments from "../ViewDocuments/ViewDocuments";
+import ViewDocuments from "../../ViewDocuments/ViewDocuments";
 import { useDropzone } from "react-dropzone";
-import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
-import { ADDFILE } from "../../graphQL/useMutationAddFile";
-import { AppContext } from "../../AppContext";
-import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
-import { GETRECENTCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
-import { DELETEDESCRIPTORFILE } from "../../graphQL/useMutationDeleteDescriptorFile";
-import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
+import DeleteDocumentConfirmation from "../../Shared/DeleteDocumentConfirmation";
+import { ADDFILE } from "../../../graphQL/useMutationAddFile";
+import { AppContext } from "../../../AppContext";
+import { ADDDESCRIPTORFILE } from "../../../graphQL/useMutationAddDescriptorFile";
+import { GETRECENTCONTACTFILES } from "../../../graphQL/useQueryGetContactFiles";
+import { DELETEDESCRIPTORFILE } from "../../../graphQL/useMutationDeleteDescriptorFile";
+import { VIEWFILEQUERY } from "../../../graphQL/useQueryViewFile";
 import { useDispatch } from "react-redux";
-import UploadZone from "./UploadZone";
+import UploadZone from "./DailogUploadZone";
+import "./Dailog.css";
 import CardMedia from "@material-ui/core/CardMedia";
-
 const useStyles = makeStyles((theme) => ({
 	root: {
 		// backgroundColor: "#fff",
@@ -241,11 +241,6 @@ export default function Documents(props) {
 		viewFile({ variables: { fileId: id } });
 	};
 
-	const HandleShowFile = async (id) => {
-		console.log(id, "ShowFIle");
-		console.log(GETRECENTCONTACTFILES, "Recentdata");
-	};
-
 	return (
 		<div className={classes.root} variant="outlined">
 			<CardActions style={{ padding: "23px 23px 8px 23px" }}>
@@ -284,42 +279,41 @@ export default function Documents(props) {
 			</CardActions>
 			<CardContent style={{ padding: "0 23px" }}>
 				<div className={classes.fileUploadSection}>
-					{/* Show two recent docs */}
-					{files?.getFileDescriptors?.map((file) => {
-						return (
-							<div key={file.fileId}>
-								<div className={classes.fileUploadTopSection}>
-									<div>
-										<h4 className={classes.uploadTitle}>{file.fileName}</h4>
-										{/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
-										<h5 className={classes.uploadSubtext}>
-											{moment.utc(file.dateTime).format("MMM DD, YYYY")}
-										</h5>
-									</div>
-									<div className={classes.IconSection}>
-										<IconButton
-											size="small"
-											style={{ marginBottom: "8px" }}
-											onClick={() => {
-												setOpenDeleteConfirmDialog(true);
-												setFileIdToDelete(file.descriptorId);
-											}}
-										>
-											<DeleteIcon />
-										</IconButton>
+					{files?.getFileDescriptors?.map((file) => (
+						<div key={file.fileId}>
+							<div className={classes.fileUploadTopSection}>
+								<div>
+									<h4 className={classes.uploadTitle}>{file.fileName}</h4>
+									{/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
+									<h5 className={classes.uploadSubtext}>
+										{moment.utc(file.dateTime).format("MMM DD, YYYY")}
+									</h5>
+								</div>
+								<div className={classes.IconSection}>
+									<IconButton
+										size="small"
+										style={{ marginBottom: "8px" }}
+										onClick={() => {
+											setOpenDeleteConfirmDialog(true);
+											setFileIdToDelete(file.descriptorId);
+										}}
+									>
+										<DeleteIcon />
+									</IconButton>
 
-										<IconButton
-											disabled={file.fileState !== "active"}
-											size="small"
-											onClick={() => handleViewFile(file.fileId)}
-										>
-											<GetAppIcon />
-										</IconButton>
-									</div>
+									<IconButton
+										disabled={file.fileState !== "active"}
+										size="small"
+										onClick={() => handleViewFile(file.fileId)}
+									>
+										<GetAppIcon />
+									</IconButton>
 								</div>
 							</div>
-						);
-					})}
+						</div>
+					))}
+					{/* Show two recent docs */}
+
 					<DeleteDocumentConfirmation
 						open={openDeleteConfirmDialog}
 						handleClose={handleDeleteCancel}
@@ -327,20 +321,30 @@ export default function Documents(props) {
 							handleDeleteAccept();
 						}}
 					/>
-					<UploadZone
-						relatedObjectId={props.id}
-						userId={userId}
-						relatedObjectType={relatedObjectType} //Contact or Deal
-						// addFile={addFile}
-						// addFileData={addFileData}
-						// getRecentFiles={() => {
-						//   getRecentFiles({
-						//     variables: {
-						//       relatedObjectId: props.id,
-						//     },
-						//   });
-						// }}
-					/>
+					<Grid container spacing={3}>
+						<Grid item xs={6}>
+							<img src={props.fileUrl} className="forImage"></img>
+						</Grid>
+						<Grid item xs={6}>
+							<div className="Uploadcomp">
+								<UploadZone
+									style={{ width: "30px", height: "30px" }}
+									relatedObjectId={props.id}
+									userId={userId}
+									relatedObjectType={relatedObjectType} //Contact or Deal
+									// addFile={addFile}
+									// addFileData={addFileData}
+									// getRecentFiles={() => {
+									//   getRecentFiles({
+									//     variables: {
+									//       relatedObjectId: props.id,
+									//     },
+									//   });
+									// }}
+								/>
+							</div>
+						</Grid>
+					</Grid>
 				</div>
 			</CardContent>
 		</div>

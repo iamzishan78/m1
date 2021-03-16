@@ -4,8 +4,8 @@ import { DropzoneAreaBase } from "material-ui-dropzone";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { CircularProgress } from "@material-ui/core";
-import { showErrorMessage, showWarningMessage } from "../../actions";
-import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
+import { showErrorMessage, showWarningMessage } from "../../../actions";
+import { ADDDESCRIPTORFILE } from "../../../graphQL/useMutationAddDescriptorFile";
 
 const useStyles = makeStyles((theme) => ({
 	dropzoneClass: {
@@ -107,6 +107,7 @@ export default function UploadZone(props) {
 	return (
 		<>
 			<DropzoneAreaBase
+				style={{ width: "30px !important", height: "30px !important" }}
 				onAdd={handleFileInput}
 				// onDelete={(fileObj) => console.log("Removed File:", fileObj)}
 				showAlerts={props.relatedObjectType === "Contact"}
@@ -114,7 +115,7 @@ export default function UploadZone(props) {
 					console.log(`${variant}: ${message}`);
 				}}
 				filesLimit={1}
-				dropzoneText={"Drag a file here or click to select a file to upload"}
+				dropzoneText={"+"}
 				acceptedFiles={[
 					"image/*",
 					"video/*",
