@@ -29,10 +29,12 @@ import moment from "moment";
 
 import WellCardDetails from "./WellCardDetails";
 
-
+// queries 
 import { useLazyQuery } from "@apollo/client";
 import { WELLSUMMARYDETAILQUERY } from "../../graphQL/useQueryWellSummaryDetail";
-import { PRODUCTIONDETAILQUERY } from "../../graphQL/useQueryProductionDetail";
+
+// value formatters 
+import formatBOE from "../Shared/valueformatters/format_boe.js"
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -146,12 +148,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-/// can be abstracted
-const formatBOE = (boe) => {
-  if (!boe || isNaN(boe)) return "--";
-
-  return Math.round(boe).toLocaleString();
-};
 
 function WellCard() {
 
