@@ -75,7 +75,6 @@ function AddWellInterestDialog(props) {
   const [loading, setLoading] = useState(false);
   const [foundWells, setFoundWells] = useState([]);
   const [selectedWell, setSelectedWell] = useState(null);
-  const [selectedWellName, setSelectedWellName] = useState("");
   const [formLeaseName, setFormLeaseName] = useState("");
   const [formLeaseAcres, setFormLeaseAcres] = useState("");
   const [formOwnerName, setFormOwnerName] = useState("");
@@ -158,7 +157,6 @@ function AddWellInterestDialog(props) {
       WellName: "",
       ApiNumber: ""
     });
-    setSelectedWellName("");
     setFormLeaseName("");
     setFormLeaseAcres("");
     setFormOwnerName("");
@@ -234,7 +232,6 @@ function AddWellInterestDialog(props) {
                 options={foundWells || []}
                 onChange={(e, well) => {
                   setSelectedWell(well);
-                  setSelectedWellName(well?.WellName || "");
                   setFormLeaseName(well?.Lease || "");
                   setFormLeaseAcres(well?.LeaseAcreage || "");
                 }}
@@ -286,14 +283,11 @@ function AddWellInterestDialog(props) {
                     </Grid>
                   );
                 }}
-                //getOptionLabel={(option) => option.text}
                 renderInput={(params) => (
                   <TextField
                     margin="dense"
                     {...params}
                     variant="outlined"
-                    //value={selectedWellName}
-                    //label={(selectedWellName && selectedWellName !== "") ? "" : "Search for a well by name or API"}
                     label="Search for a well by name or API"
                     InputLabelProps={{ shrink: true }}
                     onChange={(event) => {
