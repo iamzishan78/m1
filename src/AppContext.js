@@ -68,7 +68,6 @@ const AppProvider = (props) => {
     filtersDefaultOnoff: null,
     filterSelectAllAbstract: false,
     selectedContact: null,
-    // trackFilterOn: null,
     trackedWellArray: [],
     userSnap: false,
     mapVars: {

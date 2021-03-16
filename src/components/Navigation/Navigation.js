@@ -41,34 +41,23 @@ import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import PersonIcon from "@material-ui/icons/Person";
-import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
 import { Link } from "react-router-dom";
 
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { green } from "@material-ui/core/colors";
 import SupportCenterModal from "./components/SupportCenter";
+
 //icons
 import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
-import ClearIcon from "@material-ui/icons/Clear";
-
 import HeadsetIcon from "@material-ui/icons/Headset";
 import DesktopWindowsIcon from "@material-ui/icons/DesktopWindows";
-import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
-// import SettingsIcon from '@material-ui/icons/Settings';
-import SettingsIcon from "./components/Utils/SettingsIcon";
-import MyLocationIcon from "@material-ui/icons/MyLocation";
-import SvgIcon from "@material-ui/core/SvgIcon";
 import GeographicIcon from "../Shared/svgIcons/geographic";
 import WellIcon from "../Shared/svgIcons/well";
 import ProductionIcon from "../Shared/svgIcons/production";
 import ValuationIcon from "../Shared/svgIcons/valuation";
 import OwnershipIcon from "../Shared/svgIcons/ownership";
-import PredictiveIcon from "../Shared/svgIcons/predictive";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -845,6 +834,10 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
       }));
     } else if (location.pathname === "/contacts") {
+      setStateApp((state) => ({
+        ...state,
+        gridSearchTarget: null,
+      }));
       setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
