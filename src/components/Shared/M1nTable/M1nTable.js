@@ -3218,7 +3218,7 @@ function M1nTable(props) {
       dataCommentsCounter && dataCommentsCounter.commentsCounter &&
       dataTagSamples && dataTagSamples.tagSamples
     ) {
-      let wells = rows;
+      let wells = dataContactWells.contactWells;
       wells = wells.map((w) => {
         let well = { ...w };
 

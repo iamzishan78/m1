@@ -82,7 +82,7 @@ function AddWellInterestDialog(props) {
   const [foundWells, setFoundWells] = useState([]);
   const [selectedWell, setSelectedWell] = useState(null);
   const [formLeaseName, setFormLeaseName] = useState("");
-  const [formLeaseAcres, setFormLeaseAcres] = useState("");
+  const [formLeaseAcres, setFormLeaseAcres] = useState(null);
   const [formOwnerName, setFormOwnerName] = useState("");
   const [formInterestOwnerType, setFormInterestOwnerType] = useState("");
   const [formInterestType, setFormInterestType] = useState("");
@@ -202,13 +202,13 @@ function AddWellInterestDialog(props) {
       ApiNumber: ""
     });
     setFormLeaseName("");
-    setFormLeaseAcres("");
+    setFormLeaseAcres(null);
     setFormOwnerName("");
     setFormInterestOwnerType("");
     setFormInterestType("");
-    setFormInterestAmount("");
-    setFormRoyaltyAcres("");
-    setFormTaxValue("");
+    setFormInterestAmount(null);
+    setFormRoyaltyAcres(null);
+    setFormTaxValue(null);
     setStateApp((stateApp) => ({
       ...stateApp,
       wellInterestDialog: false,
@@ -366,7 +366,7 @@ function AddWellInterestDialog(props) {
                 onChange={(e, well) => {
                   setSelectedWell(well);
                   setFormLeaseName(well?.Lease || "");
-                  setFormLeaseAcres(well?.LeaseAcreage || "");
+                  setFormLeaseAcres(well?.LeaseAcreage);
                 }}
                 value={selectedWell}
                 getOptionLabel={(option, value) => option.Primary}
