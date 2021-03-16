@@ -75,6 +75,7 @@ function AddWellInterestDialog(props) {
   const [loading, setLoading] = useState(false);
   const [foundWells, setFoundWells] = useState([]);
   const [selectedWell, setSelectedWell] = useState(null);
+  const [selectedWellName, setSelectedWellName] = useState("");
   const [formLeaseName, setFormLeaseName] = useState("");
   const [formLeaseAcres, setFormLeaseAcres] = useState("");
   const [formOwnerName, setFormOwnerName] = useState("");
@@ -83,14 +84,13 @@ function AddWellInterestDialog(props) {
   const [formInterestAmount, setFormInterestAmount] = useState(null);
   const [formRoyaltyAcres, setFormRoyaltyAcres] = useState(null);
   const [formTaxValue, setFormTaxValue] = useState(null);
-  const [selectedWellString, setSelectedWellString] = useState("");
-  const [interestOwnerTypeString, setInterestOwnerTypeString] = useState("");
-  const [interestTypeString, setInterestTypeString] = useState("");
+  const [interestOwnerTypes, setInterestOwnerTypes] = useState([]);
+  const [interestTypes, setInterestTypes] = useState([]);
 
-  const [getInterestOwnerTypes, { data: interestOwnerTypes }] = useLazyQuery(INTERESTOWNERTYPESQUERY, {
+  const [getInterestOwnerTypes, { data: dataInterestOwnerTypes }] = useLazyQuery(INTERESTOWNERTYPESQUERY, {
     fetchPolicy: "cache-and-network",
   });
-  const [getInterestTypes, { data: interestTypes }] = useLazyQuery(INTERESTTYPESQUERY, {
+  const [getInterestTypes, { data: dataInterestTypes }] = useLazyQuery(INTERESTTYPESQUERY, {
     fetchPolicy: "cache-and-network",
   });
   const [addWellInterest, ] = useMutation(ADDWELLINTEREST, {
@@ -144,20 +144,26 @@ function AddWellInterestDialog(props) {
     getInterestTypes();
   }, []);
 
+  useEffect(() => {
+    setInterestOwnerTypes(dataInterestOwnerTypes?.interestOwnerTypes?.res?.map(e => e.Desc));
+  }, dataInterestOwnerTypes);
+
+  useEffect(() => {
+    setInterestTypes(dataInterestTypes?.interestTypes?.res?.map(e => e.Desc));
+  }, dataInterestTypes);
+
   const handleClose = () => {
-    setSelectedWellString("");
-    setInterestOwnerTypeString("");
-    setInterestTypeString("");
     setFoundWells([]);
     setSelectedWell({
       WellName: "",
       ApiNumber: ""
     });
+    setSelectedWellName("");
     setFormLeaseName("");
     setFormLeaseAcres("");
     setFormOwnerName("");
-    setFormInterestOwnerType({});
-    setFormInterestType({});
+    setFormInterestOwnerType("");
+    setFormInterestType("");
     setFormInterestAmount("");
     setFormRoyaltyAcres("");
     setFormTaxValue("");
@@ -225,12 +231,14 @@ function AddWellInterestDialog(props) {
               size="small"
             >
               <Autocomplete
-                options={foundWells}
+                options={foundWells || []}
                 onChange={(e, well) => {
                   setSelectedWell(well);
+                  setSelectedWellName(well?.WellName || "");
                   setFormLeaseName(well?.Lease || "");
                   setFormLeaseAcres(well?.LeaseAcreage || "");
                 }}
+                value={selectedWell}
                 getOptionLabel={(option, value) => option.Primary}
                 filterOptions={(x) => x}
                 renderOption={(option) => {
@@ -278,13 +286,14 @@ function AddWellInterestDialog(props) {
                     </Grid>
                   );
                 }}
-                value={selectedWellString}
                 //getOptionLabel={(option) => option.text}
                 renderInput={(params) => (
                   <TextField
                     margin="dense"
                     {...params}
                     variant="outlined"
+                    //value={selectedWellName}
+                    //label={(selectedWellName && selectedWellName !== "") ? "" : "Search for a well by name or API"}
                     label="Search for a well by name or API"
                     InputLabelProps={{ shrink: true }}
                     onChange={(event) => {
@@ -384,11 +393,11 @@ function AddWellInterestDialog(props) {
             >
 
               <Autocomplete
-                options={interestOwnerTypes?.interestOwnerTypes?.res?.map(e => e.Desc)}
+                options={interestOwnerTypes || []}
                 onChange={(e, interestOwnerType) => {
                   setFormInterestOwnerType(interestOwnerType)
                 }}
-                //value={interestOwnerTypeString}
+                value={formInterestOwnerType}
                 renderInput={(params) => (
                   <TextField
                     margin="dense"
@@ -401,14 +410,11 @@ function AddWellInterestDialog(props) {
               />
 
               <Autocomplete
-                options={interestTypes?.interestTypes?.res?.map(e => e.Desc)}
+                options={interestTypes || []}
                 onChange={(e, interestType) => {
                   setFormInterestType(interestType)
                 }}
-                //value={interestTypeString}
-                //value={users.find((user) => user?.value === ownerId) || null}
-                //getOptionLabel={(option) => option.text}
-                //getOptionSelected={(option) => option.value === ownerId}
+                value={formInterestType}
                 renderInput={(params) => (
                   <TextField
                     margin="dense"
