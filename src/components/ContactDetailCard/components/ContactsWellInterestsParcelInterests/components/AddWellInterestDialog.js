@@ -354,6 +354,8 @@ function AddWellInterestDialog(props) {
           </Grid>
 
           <div>
+
+
             <FormControl
               variant="outlined"
               fullWidth
@@ -451,11 +453,24 @@ function AddWellInterestDialog(props) {
               />
             </FormControl>
 
+
+            <h4
+              style={{
+                //margin: "0 0 15px 0",
+                //float: "left",
+                //fontSize: "1.1rem",
+              }}
+            >
+              Selected well and lease information
+            </h4>
+
             <TextField
               variant="outlined"
               margin="dense"
               value={selectedWell?.WellName}
-              label={selectedWell?.WellName ? "" : "Well Name"}
+              label={selectedWell?.WellName ? "Well Name" : "Well Name"}
+              //label={"Well Name"}
+              InputLabelProps={{ shrink: true }}
               fullWidth
               disabled
             />
@@ -464,7 +479,9 @@ function AddWellInterestDialog(props) {
               variant="outlined"
               margin="dense"
               value={selectedWell?.ApiNumber}
-              label={selectedWell?.ApiNumber ? "" : "API Number"}
+              label={selectedWell?.ApiNumber ? "API Number" : "API Number"}
+              //label={"API Number"}
+              InputLabelProps={{ shrink: true }}
               fullWidth
               disabled
             />
