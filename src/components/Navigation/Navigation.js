@@ -1,37 +1,35 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import { borders } from "@material-ui/system";
-import { shadows } from "@material-ui/system";
-import { Grid, Paper, TextField } from "@material-ui/core";
 import { NavigationContext } from "./NavigationContext";
-import { TransactContext } from "../Transact/TransactContext";
+
+// contexts 
 import { AppContext } from "../../AppContext";
+import { MapGridContext } from "../../components/MapGridCard/MapGridContext.js";
+
+
 import { useHistory, useLocation } from "react-router-dom";
 import clsx from "clsx";
 import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
+
 //3rd party packages
-//import SwipeableViews from 'react-swipeable-views'
 import PropTypes from "prop-types";
 import styled from "styled-components";
+
 //@material-ui components
 import AppBar from "@material-ui/core/AppBar";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import LayersIcon from "@material-ui/icons/Layers";
-//import Avatar from "@material-ui/core/Avatar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Tab from "@material-ui/core/Tab";
 import Badge from "@material-ui/core/Badge";
 import Tabs from "@material-ui/core/Tabs";
 import Button from "@material-ui/core/Button";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import Input from "@material-ui/core/Input";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -713,8 +711,14 @@ export default function Navigation(props) {
   );
   const { pipelines } = useSelector(({ Flow }) => Flow);
   const theme = useTheme();
+
+  // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [stateGrid, setStateGrid] = useContext(MapGridContext);
+
+
+
   const [openSupportCenter, setOpenSupportCenter] = useState(false);
   const [openContactForm, setOpenContactForm] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -834,10 +838,10 @@ export default function Navigation(props) {
         selectedMenuIndexActivities: 0,
       }));
     } else if (location.pathname === "/contacts") {
-      setStateApp((state) => ({
+      setStateGrid((state) => ({
         ...state,
         gridSearchTarget: null,
-      }));
+      }));      
       setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,

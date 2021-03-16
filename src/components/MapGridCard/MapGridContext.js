@@ -4,7 +4,7 @@ const MapGridContext = createContext([{}, () => {}]);
 
 const MapGridContextProvider = (props) => {
   const [stateGrid, setStateGrid] = useState({
-    selectedMenuIndexFind: 0,
+    gridSearchTarget: null,
   });
 
   return (

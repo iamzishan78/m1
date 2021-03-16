@@ -10,7 +10,6 @@ const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
-    gridSearchTarget: null, 
     loading: false,
     registeredRoutes: [
       "/",

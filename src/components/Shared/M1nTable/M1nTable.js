@@ -1,7 +1,11 @@
 
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+
+// context
 import { AppContext } from "../../../AppContext";
+import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
+
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
 
@@ -82,6 +86,8 @@ function M1nTable(props) {
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateGrid, setStateGrid] = useContext(MapGridContext);
+
 
   // function states 
   const [addDealOpen, setAddDealOpen] = useState(false);
@@ -1203,7 +1209,7 @@ function M1nTable(props) {
           setHeader("Contacts");
           setOrderByTracks(false);
           setAddAble({ parent: false, type: "contact" });
-          getPaginatedContacts({variables: { search: stateApp.gridSearchTarget }});
+          getPaginatedContacts({variables: { search: stateGrid.gridSearchTarget }});
           getContactsFilterOptions();
           updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
           setUploadIcon(true);
@@ -1220,7 +1226,7 @@ function M1nTable(props) {
         setHeader("Contacts");
         setOrderByTracks(false);
         setAddAble({ parent: false, type: "contact" });
-        getPaginatedContacts({variables: { search: stateApp.gridSearchTarget }});
+        getPaginatedContacts({variables: { search: stateGrid.gridSearchTarget }});
         getContactsFilterOptions();
         updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
         setUploadIcon(false);

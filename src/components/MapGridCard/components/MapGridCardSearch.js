@@ -1,6 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+
+// context 
 import { AppContext } from "../../../AppContext";
+import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
+
+
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
@@ -41,7 +46,13 @@ function MapGridCardSearch(props) {
     ({ MapGridCard }) => MapGridCard,
     shallowEqual
   );
+  
+  // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateGrid, setStateGrid] = useContext(MapGridContext);
+
+
+
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState([]);
   const [searchTop] = React.useState(100);
@@ -370,19 +381,16 @@ function MapGridCardSearch(props) {
         onClick={props.ativateSearchPanel}
         value={searchInputValue}
         onChange={(event) => {
-          // setInputValue(event.target.value);
-          // if (!searchloading) {
             dispatch(
               setMapGridCardState({
                 searchloading: true,
                 searchInputValue: event.target.value,
               })
             );
-            setStateApp((state) => ({
+            setStateGrid((state) => ({
               ...state,
               gridSearchTarget: event.target.value,
             }));
-          // }
         }}
       />
     </form>
