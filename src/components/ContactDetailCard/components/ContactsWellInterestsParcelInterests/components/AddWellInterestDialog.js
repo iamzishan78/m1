@@ -468,8 +468,8 @@ function AddWellInterestDialog(props) {
               variant="outlined"
               margin="dense"
               value={selectedWell?.WellName}
-              label={selectedWell?.WellName ? "Well Name" : "Well Name"}
-              //label={"Well Name"}
+              //label={selectedWell?.WellName ? "Well Name" : "Well Name"}
+              label={"Well Name"}
               InputLabelProps={{ shrink: true }}
               fullWidth
               disabled
@@ -479,8 +479,8 @@ function AddWellInterestDialog(props) {
               variant="outlined"
               margin="dense"
               value={selectedWell?.ApiNumber}
-              label={selectedWell?.ApiNumber ? "API Number" : "API Number"}
-              //label={"API Number"}
+              //label={selectedWell?.ApiNumber ? "API Number" : "API Number"}
+              label={"API Number"}
               InputLabelProps={{ shrink: true }}
               fullWidth
               disabled
@@ -576,7 +576,9 @@ function AddWellInterestDialog(props) {
                     margin="dense"
                     value={formInterestAmount}
                     onChange={event => setFormInterestAmount(parseFloat(event.target.value)) }
-                    label={formInterestAmount ? "" : "Interest Amount"}
+                    //label={formInterestAmount ? "" : "Interest Amount"}
+                    label = "Interest Amount"
+                    InputLabelProps={{ shrink: true }}
                     fullWidth
                   />
                 </Grid>
@@ -587,7 +589,9 @@ function AddWellInterestDialog(props) {
                     margin="dense"
                     value={formRoyaltyAcres}
                     onChange={event => setFormRoyaltyAcres(parseFloat(event.target.value)) }
-                    label={formRoyaltyAcres ? "" : "Net Royalty Acres"}
+                    //label={formRoyaltyAcres ? "" : "Net Royalty Acres"}
+                    label = "Net Royalty Acres"
+                    InputLabelProps={{ shrink: true }}
                     fullWidth
                     
                   />
