@@ -2221,6 +2221,15 @@ function SubTable(props) {
         }));
       }
 
+      if (props.parent === "assocTaxRollInterests") {
+        let card = { ...rows[dataIndex] };
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          wellInterestDialog: true,
+          activeWellInterest: card,
+        }));
+      }
+
       if (props.targetLabel === "activity") {
         if (rows[dataIndex]?._id)
           setStateApp((stateApp) => ({

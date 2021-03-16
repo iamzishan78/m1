@@ -24,6 +24,9 @@ import NumberFormat from "react-number-format";
 import { INTERESTOWNERTYPESQUERY } from "../../../../../graphQL/useQueryInterestOwnerTypes";
 import { INTERESTTYPESQUERY } from "../../../../../graphQL/useQueryInterestTypes";
 import { ADDWELLINTEREST } from "../../../../../graphQL/useMutationAddWellInterest";
+import { UPDATEWELLINTEREST } from "../../../../../graphQL/useMutationUpdateWellInterest";
+import { REMOVEWELLINTEREST } from "../../../../../graphQL/useMutationRemoveWellInterest";
+import DeleteConfirmationDialogContent from "../../../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, name, ...other } = props;
@@ -65,6 +68,9 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     padding: "8px 20px",
   },
+  dialog: {
+    zIndex: "9999999999 !important",
+  },
 }));
 
 function AddWellInterestDialog(props) {
@@ -92,7 +98,27 @@ function AddWellInterestDialog(props) {
   const [getInterestTypes, { data: dataInterestTypes }] = useLazyQuery(INTERESTTYPESQUERY, {
     fetchPolicy: "cache-and-network",
   });
-  const [addWellInterest, ] = useMutation(ADDWELLINTEREST, {
+  const [addWellInterest] = useMutation(ADDWELLINTEREST, {
+    onCompleted: () => {
+      setLoading(false);
+      handleClose();
+    },
+    refetchQueries: [
+      "getContactWells",
+    ],
+    awaitRefetchQueries: true,
+  });
+  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, {
+    onCompleted: () => {
+      setLoading(false);
+      handleClose();
+    },
+    refetchQueries: [
+      "getContactWells",
+    ],
+    awaitRefetchQueries: true,
+  });
+  const [removeWellInterest] = useMutation(REMOVEWELLINTEREST, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
@@ -151,6 +177,24 @@ function AddWellInterestDialog(props) {
     setInterestTypes(dataInterestTypes?.interestTypes?.res?.map(e => e.Desc));
   }, dataInterestTypes);
 
+  useEffect(() => {
+    if (stateApp.activeWellInterest) {
+      setSelectedWell({
+        Id: stateApp.activeWellInterest.wellId,
+        WellName: stateApp.activeWellInterest.wellName,
+        ApiNumber: stateApp.activeWellInterest.api
+      });
+      setFormLeaseName(stateApp.activeWellInterest.lease);
+      setFormLeaseAcres(stateApp.activeWellInterest.leaseAcres);
+      setFormOwnerName(stateApp.activeWellInterest.interestOwner);
+      setFormInterestOwnerType(stateApp.activeWellInterest.interestOwnerType);
+      setFormInterestType(stateApp.activeWellInterest.type);
+      setFormInterestAmount(stateApp.activeWellInterest.amount);
+      setFormRoyaltyAcres(stateApp.activeWellInterest.nra);
+      setFormTaxValue(stateApp.activeWellInterest.taxValue);
+    }
+  }, [stateApp.activeWellInterest]);
+
   const handleClose = () => {
     setFoundWells([]);
     setSelectedWell({
@@ -168,34 +212,102 @@ function AddWellInterestDialog(props) {
     setStateApp((stateApp) => ({
       ...stateApp,
       wellInterestDialog: false,
+      activeWellInterest: null,
     }));
   }
 
   const handleSave = () => {
     setLoading(true);
-    addWellInterest({
-      variables: {
-        globalWellId: selectedWell.Id,
-        userId: stateApp.user.mongoId,
-        contactId: props.contactId,
-        lease: formLeaseName,
-        leaseAcres: formLeaseAcres,
-        interestOwner: formOwnerName,
-        interestOwnerType: formInterestOwnerType,
-        type: formInterestType,
-        interest: formInterestAmount,
-        value: formTaxValue,
-        nra: formRoyaltyAcres,
-      },
-      refetchQueries: [
-        "getContactWells",
-      ],
-      awaitRefetchQueries: true,
-    });
+    if (stateApp.activeWellInterest) {
+      console.log("formLeaseName", formLeaseName);
+      updateWellInterest({
+        variables: {
+          id: stateApp.activeWellInterest._id,
+          globalWellId: selectedWell.Id,
+          lease: formLeaseName,
+          leaseAcres: formLeaseAcres,
+          interestOwner: formOwnerName,
+          interestOwnerType: formInterestOwnerType,
+          type: formInterestType,
+          interest: formInterestAmount,
+          value: formTaxValue,
+          nra: formRoyaltyAcres,
+        },
+        refetchQueries: [
+          "getContactWells",
+        ],
+        awaitRefetchQueries: true,
+      });
+    } else {
+      addWellInterest({
+        variables: {
+          globalWellId: selectedWell.Id,
+          userId: stateApp.user.mongoId,
+          contactId: props.contactId,
+          lease: formLeaseName,
+          leaseAcres: formLeaseAcres,
+          interestOwner: formOwnerName,
+          interestOwnerType: formInterestOwnerType,
+          type: formInterestType,
+          interest: formInterestAmount,
+          value: formTaxValue,
+          nra: formRoyaltyAcres,
+        },
+        refetchQueries: [
+          "getContactWells",
+        ],
+        awaitRefetchQueries: true,
+      });
+    }
   }
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  
+  const openConfirmationDialog = () => {
+    setDeleteDialogOpen(true);
+  };
+  const handleCloseDialog = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const deleteFunc = async () => {
+    try {
+      setLoading(true);
+      removeWellInterest({
+        variables: {
+          id: stateApp.activeWellInterest._id,
+        },
+        refetchQueries: [
+          "getContactWells",
+        ],
+        awaitRefetchQueries: true,
+      });
+    } catch {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
+      {deleteDialogOpen && (
+        <Dialog
+          className={classes.dialog}
+          open={deleteDialogOpen ? true : false}
+          onClose={handleCloseDialog}
+          fullWidth={false}
+          maxWidth="sm"
+        >
+          <DeleteConfirmationDialogContent
+            header={`Delete Well Interest`}
+            onClose={handleCloseDialog}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => {}}
+          >
+            Do you want to delete the selected well interest?
+          </DeleteConfirmationDialogContent>
+        </Dialog>
+      )}
       <RightDialog
         open={props.open}
         handleClickDialogClose={handleClose}
@@ -210,9 +322,28 @@ function AddWellInterestDialog(props) {
                 fontSize: "1.1rem",
               }}
             >
-              Add Well Interest
+              {stateApp.activeWellInterest ? "Update Well Interest" : "Add Well Interest"}
             </h4>
             <div style={{ float: "right" }}>
+              {(stateApp.activeWellInterest && (
+                <>
+                  <IconButton
+                    disabled={loading}
+                    onClick={openConfirmationDialog}
+                    size="small"
+                    style={{ margin: "0 8px" }}
+                  >
+                    {loading ? (
+                      <CircularProgress size={20} color="secondary" />
+                    ) : (
+                      <DeleteIcon
+                        className={classes.closeIcon}
+                        fontSize="small"
+                      />
+                    )}
+                  </IconButton>
+                </>
+              ))}
               <IconButton
                 onClick={handleClose}
                 size="small"
@@ -428,7 +559,7 @@ function AddWellInterestDialog(props) {
                     margin="dense"
                     value={formInterestAmount}
                     onChange={event => setFormInterestAmount(parseFloat(event.target.value)) }
-                    label="Interest Amount"
+                    label={formInterestAmount ? "" : "Interest Amount"}
                     fullWidth
                   />
                 </Grid>
@@ -439,7 +570,7 @@ function AddWellInterestDialog(props) {
                     margin="dense"
                     value={formRoyaltyAcres}
                     onChange={event => setFormRoyaltyAcres(parseFloat(event.target.value)) }
-                    label="Net Royalty Acres"
+                    label={formRoyaltyAcres ? "" : "Net Royalty Acres"}
                     fullWidth
                     
                   />

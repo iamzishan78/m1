@@ -5197,7 +5197,6 @@ function M1nTable(props) {
             setStateApp((stateApp) => ({
               ...stateApp,
               wellInterestDialog: false,
-              //activeDeal: { cardId: null, laneId: null },
             }))
           }
           contactId={props.contactId}
