@@ -75,12 +75,17 @@ function AddWellInterestDialog(props) {
   const [loading, setLoading] = useState(false);
   const [foundWells, setFoundWells] = useState([]);
   const [selectedWell, setSelectedWell] = useState(null);
+  const [formLeaseName, setFormLeaseName] = useState("");
+  const [formLeaseAcres, setFormLeaseAcres] = useState("");
   const [formOwnerName, setFormOwnerName] = useState("");
   const [formInterestOwnerType, setFormInterestOwnerType] = useState("");
   const [formInterestType, setFormInterestType] = useState("");
   const [formInterestAmount, setFormInterestAmount] = useState(null);
   const [formRoyaltyAcres, setFormRoyaltyAcres] = useState(null);
   const [formTaxValue, setFormTaxValue] = useState(null);
+  const [selectedWellString, setSelectedWellString] = useState("");
+  const [interestOwnerTypeString, setInterestOwnerTypeString] = useState("");
+  const [interestTypeString, setInterestTypeString] = useState("");
 
   const [getInterestOwnerTypes, { data: interestOwnerTypes }] = useLazyQuery(INTERESTOWNERTYPESQUERY, {
     fetchPolicy: "cache-and-network",
@@ -140,8 +145,16 @@ function AddWellInterestDialog(props) {
   }, []);
 
   const handleClose = () => {
+    setSelectedWellString("");
+    setInterestOwnerTypeString("");
+    setInterestTypeString("");
     setFoundWells([]);
-    setSelectedWell({});
+    setSelectedWell({
+      WellName: "",
+      ApiNumber: ""
+    });
+    setFormLeaseName("");
+    setFormLeaseAcres("");
     setFormOwnerName("");
     setFormInterestOwnerType({});
     setFormInterestType({});
@@ -161,6 +174,8 @@ function AddWellInterestDialog(props) {
         globalWellId: selectedWell.Id,
         userId: stateApp.user.mongoId,
         contactId: props.contactId,
+        lease: formLeaseName,
+        leaseAcres: formLeaseAcres,
         interestOwner: formOwnerName,
         interestOwnerType: formInterestOwnerType,
         type: formInterestType,
@@ -213,6 +228,8 @@ function AddWellInterestDialog(props) {
                 options={foundWells}
                 onChange={(e, well) => {
                   setSelectedWell(well);
+                  setFormLeaseName(well?.Lease || "");
+                  setFormLeaseAcres(well?.LeaseAcreage || "");
                 }}
                 getOptionLabel={(option, value) => option.Primary}
                 filterOptions={(x) => x}
@@ -261,7 +278,7 @@ function AddWellInterestDialog(props) {
                     </Grid>
                   );
                 }}
-                //value={selectedWell}
+                value={selectedWellString}
                 //getOptionLabel={(option) => option.text}
                 renderInput={(params) => (
                   <TextField
@@ -321,17 +338,20 @@ function AddWellInterestDialog(props) {
             <TextField
               variant="outlined"
               margin="dense"
-              value={selectedWell?.Lease}
-              label={selectedWell?.Lease ? "" : "Lease Name"}
+              value={formLeaseName}
+              onChange={event => setFormLeaseName(event.target.value) }
+              label={"Lease Name"}
               fullWidth
               //disabled
             />
 
             <TextField
+              type="number"
               variant="outlined"
               margin="dense"
-              value={selectedWell?.LeaseAcreage}
-              label={selectedWell?.LeaseAcreage ? "" : "Lease Acres"}
+              value={formLeaseAcres}
+              onChange={event => setFormLeaseAcres(parseFloat(event.target.value)) }
+              label={"Lease Acres"}
               fullWidth
               //disabled
             />
@@ -368,6 +388,7 @@ function AddWellInterestDialog(props) {
                 onChange={(e, interestOwnerType) => {
                   setFormInterestOwnerType(interestOwnerType)
                 }}
+                //value={interestOwnerTypeString}
                 renderInput={(params) => (
                   <TextField
                     margin="dense"
@@ -384,6 +405,7 @@ function AddWellInterestDialog(props) {
                 onChange={(e, interestType) => {
                   setFormInterestType(interestType)
                 }}
+                //value={interestTypeString}
                 //value={users.find((user) => user?.value === ownerId) || null}
                 //getOptionLabel={(option) => option.text}
                 //getOptionSelected={(option) => option.value === ownerId}
