@@ -452,6 +452,8 @@ function SubTable(props) {
       selectedWell: null,
       selectedWellId: value.wellId ? value.wellId : null,
       wellSelectedCoordinates: [value.center[0], value.center[1]],
+      // wellListFromSearch: [...dataWells.wells.results],
+
       // flyTo:{
       //   longitude: value.center[0],
       //   latitude: value.center[1],
