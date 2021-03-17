@@ -69,15 +69,21 @@ import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
 import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
 import moment from "moment";
 import CheckIcon from "@material-ui/icons/Check";
-import AlertDialogSlide from "../../../Contacts/components/RightDialog";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
-import Chip from '@material-ui/core/Chip';
 
 // import value formatters 
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
 import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
 import RightDialog from "../../../ContactDetailCard/components/RightDialog"
+
+
+// queries 
+import { OWNERSLATSLONS } from "../../../../graphQL/useQueryOwnerLatsLonsArray";
+import { OPERATORSLATSLONS } from "../../../../graphQL/useQueryOperatorLatsLonsArray";
+import { LEASELATSLONS } from "../../../../graphQL/useQueryLeaseLatsLonsArray";
+import { CONTACTWELLS } from "../../../../graphQL/useQueryContactWells";
+
 
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
@@ -419,6 +425,11 @@ function SubTable(props) {
 
   // queries 
   const [getWell, { data: dataWell }] = useLazyQuery(WELLQUERY);
+  const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
+  const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
+  const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
+  const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
+
 
   // handlers 
   const handleWellFlyTo = (value) => {
@@ -445,22 +456,11 @@ function SubTable(props) {
 
   const handleOwnerFlyTo = (value) => {
 
-    // // setting state to fly to the selected well 
-    // setStateApp((stateApp) => ({
-    //   ...stateApp,
-    //   fitBounds: null,
-    //   selectedWell: null,
-    //   selectedWellId: value.wellId ? value.wellId.toLowerCase() : null,
-    //   wellSelectedCoordinates: [value.center[0], value.center[1]],
-    //   wellListFromSearch: [
-    //     {
-    //       id: value.wellId,
-    //       longitude: value.center[0],
-    //       latitude: value.center[1],
-    //     },
-    //   ],
-    // }));
-    // stateApp.toggleLayersActivity("Search", true);
+    getOwnerWells({
+      variables: {
+        ownerId: value.Id,
+      },
+    });
   
   };
 
@@ -934,32 +934,11 @@ function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
                   
-                  // console.log('value check', value)
-                  // console.log('value meta', tableMeta)
-                  // console.log('value columns', column)
-                  // console.log('value target', props.targetLabel)
-                  // console.log('value columindex', tableMeta.columnIndex)
-
 
                   return (
 
-
-
                     // this whole implementation is a mesteban patch 
                     // it is all kinds of fucked up 
-
-                    // <Tooltip
-                    //   title={
-                    //     value &&
-                    //       (value.bbox ||
-                    //         value.center ||
-                    //         value.objToPopulateSearchLayer)
-                    //       ? "Fly To Map"
-                    //       : "Not Available"
-                    //   }
-                    //   placement="top"
-                    //   style={{ marginRight: "10px" }}
-                    // >
 
                     <Tooltip
                       title={
@@ -974,100 +953,10 @@ function SubTable(props) {
                         id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
-
-                        // className={`${classes.icons} ${value &&
-                        //   (value.bbox ||
-                        //     value.center ||
-                        //     value.objToPopulateSearchLayer)
-                        //   ? ""
-                        //   : classes.noCommentsIcon
-                        //   }`}
-
                         className={`${classes.icons}`}
-
                         onClick={(e) => {
                           e.stopPropagation();
                           handleClickFlyToIcon(props.targetLabel,value)
-                          // handleSearch();
-
-
-                          // setStateApp((stateApp) => ({
-                          //   ...stateApp,
-                          //   fitBounds: null,
-                          //   selectedWell: null,
-                          //   selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
-                          //   wellSelectedCoordinates: [newValue.Longitude, newValue.Latitude],
-                          //   wellListFromSearch: [
-                          //     {
-                          //       id: newValue.Id,
-                          //       longitude: newValue.Longitude,
-                          //       latitude: newValue.Latitude,
-                          //     },
-                          //   ],
-                          // }));
-
-                          // stateApp.toggleLayersActivity("Search", true);
-
-                          // if (value) {
-                          //   if (value.bbox || value.center) {
-                          //     setStateApp((state) => {
-                          //       if (value.bbox)
-                          //         return {
-                          //           ...state,
-                          //           popupOpen: false,
-                          //           selectedWell: null,
-                          //           selectedWellId: null,
-                          //           fitBounds: {
-                          //             maxLat: value.bbox[3],
-                          //             minLat: value.bbox[1],
-                          //             maxLong: value.bbox[2],
-                          //             minLong: value.bbox[0],
-                          //           },
-                          //         };
-
-                          //       //// value.center
-                          //       return {
-                          //         ...state,
-                          //         popupOpen: false,
-                          //         selectedWell: null,
-                          //         activateWellDetailsFromTable: false,
-                          //         selectedWellId:
-                          //           props.targetLabel == "well"
-                          //             ? tableMeta.rowData[0]
-                          //             : null, 
-                          //          //adding in fitbounds to center in right side of screen                           
-                          //          fitBounds: {
-                          //               maxLat: value.center[1],
-                          //               minLat: value.center[1],
-                          //               minLong: value.center[0] - 1.5 * .02,
-                          //               maxLong: value.center[0] + 0.5 * .02,
-                          //             },
-                                  
-                          //             flyTo: {
-                          //           longitude: value.center[0],
-                          //           latitude: value.center[1],
-                          //         },
-
-                          //       };
-                          //     });
-
-                          //     dispatch(
-                          //       setMapGridCardState({
-                          //         mapGridCardActivated: "min",
-                          //       })
-                          //     );
-                          //   } else if (value.objToPopulateSearchLayer) {
-                          //     dispatch(
-                          //       setMapGridCardState({
-                          //         objToPopulateSearchLayer:
-                          //           value.objToPopulateSearchLayer,
-                          //         mapGridCardActivated: "min",
-                          //       })
-                          //     );
-                          //   }
-                          // }
-
-
                         }}
                         aria-label="fly"
                       >
