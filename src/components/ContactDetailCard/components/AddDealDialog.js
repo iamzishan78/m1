@@ -885,6 +885,7 @@ function AddDealDialog(props) {
           onClose={() =>
             setStateApp((stateApp) => ({ ...stateApp, transactBarView: "" }))
           }
+          isTransactPage={props.isTransactPage}
         >
           <div style={{ padding: "30px" }}>
             <Grid item xs={12} style={{ minHeight: "35px" }}>
@@ -929,6 +930,7 @@ function AddDealDialog(props) {
             }
           }}
           width={props.width}
+          isTransactpage={props.isTransactPage}
         >
           <div style={{ padding: "30px" }}>
             {/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>

@@ -18,7 +18,7 @@ export default function AlertDialogSlide(props) {
       "&  .MuiPaper-root": {
         position: "fixed",
         top: "0 !important",
-        right: "60px !important",
+        right: props.isTransactPage ? "60px !important" : "0px !important",
         width: props.width ? String(props.width) : null,
         maxWidth: "100% !important",
         minHeight: "100vh !important",
