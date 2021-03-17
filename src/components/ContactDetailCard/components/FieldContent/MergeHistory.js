@@ -35,10 +35,10 @@ function MergeHistory({
         <React.Fragment>
             <EditionPopover anchorEl={edit} setAnchorEl={setEdit}>
 
-                <Grid container spacing={0} style={{ width: "200px" }}>
+                <Grid container spacing={0} style={{ width: "100%" }}>
                     {
                         loading ? (
-                            <div style={{ height: "40px", width: "40px", zIndex: 100, marginLeft: "90px", marginTop: "8px" }}>
+                            <div style={{ height: "40px", width: "150px", zIndex: 100, marginLeft: "130px", marginTop: "8px" }}>
                                 <CircularProgress
                                     size={22}
                                     color="secondary"
@@ -52,7 +52,7 @@ function MergeHistory({
                                 {data?.getContactMergeHistory?.data.map((obj) =>
                                     <Typography variant="subtitle2" gutterBottom>
                                         {Object.keys(obj.fields).map((field, i, arr) =>
-                                            <span key={obj.fields[field]}>
+                                            <span key={obj.fields[field] + i}>
                                                 {obj.fields[field]}{i !== arr.length - 1 ? ', ' : ''}
                                             </span>
                                         )
