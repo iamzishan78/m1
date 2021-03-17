@@ -362,111 +362,63 @@ function SubTable(props) {
 
   const dispatch = useDispatch();
 
+  // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [tableStyle, setTableStyle] = useState(classes);
-  const [year, setYear] = React.useState(2020);
 
-  const [rows, Rows] = useState([]);
-  const setRows = (newState) => {
-    setStateIfDeepEqual(Rows, newState);
-  };
 
-  const [total, Total] = useState(false);
-  const setTotal = (newState) => {
-    setStateIfDeepEqual(Total, newState);
-  };
-
-  const [cumulative, Cumulative] = useState({});
-  const setCumulative = (newState) => {
-    setStateIfDeepEqual(Cumulative, newState);
-  };
-
-  const [columns, setColumns] = useState([]);
-
-  const [viewColumns, ViewColumns] = useState([]);
-  const setViewColumns = (newState) => {
-    setStateIfDeepEqual(ViewColumns, newState);
-  };
-
-  const [colInd, ColInd] = useState();
-  const setColInd = (newState) => {
-    setStateIfDeepEqual(ColInd, newState);
-  };
-  const [rowInd, RowInd] = useState();
-  const setRowInd = (newState) => {
-    setStateIfDeepEqual(RowInd, newState);
-  };
-  const [pageInd, PageInd] = useState(0);
-  const setPageInd = (newState) => {
-    setStateIfDeepEqual(PageInd, newState);
-  };
-  const [expandedObject, ExpandedObject] = useState();
-  const setExpandedObject = (newState) => {
-    setStateIfDeepEqual(ExpandedObject, newState);
-  };
-  const [openDialog, OpenDialog] = useState(false);
-  const setOpenDialog = (newState) => {
-    setStateIfDeepEqual(OpenDialog, newState);
-  };
-
-  const [showExpandableCard, ShowExpandableCard] = useState(false);
-  const setShowExpandableCard = (newState) => {
-    setStateIfDeepEqual(ShowExpandableCard, newState);
-  };
-
-  const [multipleExpandableCard, MultipleExpandableCard] = useState(false);
-  const setMultipleExpandableCard = (newState) => {
-    setStateIfDeepEqual(MultipleExpandableCard, newState);
-  };
-
-  const [selectedRow, SelectedRow] = useState();
-  const setSelectedRow = (newState) => {
-    setStateIfDeepEqual(SelectedRow, newState);
-  };
-
-  const [subComponent, SubComponent] = useState(null);
-  const setSubComponent = (newState) => {
-    setStateIfDeepEqual(SubComponent, newState);
-  };
-  const [targetLabelToExpand, TargetLabelToExpand] = useState(null);
-  const setTargetLabelToExpand = (newState) => {
-    setStateIfDeepEqual(TargetLabelToExpand, newState);
-  };
-
-  const [title, Title] = useState("");
-  const setTitle = (newState) => {
-    setStateIfDeepEqual(Title, newState);
-  };
-  const [subTitle, SubTitle] = useState("");
-  const setSubTitle = (newState) => {
-    setStateIfDeepEqual(SubTitle, newState);
-  };
-
-  const [m1nSelectedRowsIndexes, M1nSelectedRowsIndexes] = useState([]);
-  const setM1nSelectedRowsIndexes = (newState) => {
-    setStateIfDeepEqual(M1nSelectedRowsIndexes, newState);
-  };
-
-  const [m1nSelectedRowsIds, M1nSelectedRowsIds] = useState([]);
-  const setM1nSelectedRowsIds = (newState) => {
-    setStateIfDeepEqual(M1nSelectedRowsIds, newState);
-  };
-
-  const [m1nSelectedRowsTracks, M1nSelectedRowsTracks] = useState([]);
-  const setM1nSelectedRowsTracks = (newState) => {
-    setStateIfDeepEqual(M1nSelectedRowsTracks, newState);
-  };
-
+  // function state 
   const [trueTargetLabel, TrueTargetLabel] = useState(null);
   const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
   const [firstMount, FirstMount] = useState(true);
+  const [title, Title] = useState("");
+  const [subTitle, SubTitle] = useState("");
+  const [m1nSelectedRowsIndexes, M1nSelectedRowsIndexes] = useState([]);
+  const [m1nSelectedRowsIds, M1nSelectedRowsIds] = useState([]);
+  const [m1nSelectedRowsTracks, M1nSelectedRowsTracks] = useState([]);
+  const [subComponent, SubComponent] = useState(null);
+  const [targetLabelToExpand, TargetLabelToExpand] = useState(null);
+  const [multipleExpandableCard, MultipleExpandableCard] = useState(false);
+  const [selectedRow, SelectedRow] = useState();
+  const [showExpandableCard, ShowExpandableCard] = useState(false);
+  const [openDialog, OpenDialog] = useState(false);
+  const [expandedObject, ExpandedObject] = useState();
+  const [pageInd, PageInd] = useState(0);
+  const [rowInd, RowInd] = useState();
+  const [colInd, ColInd] = useState();
+  const [viewColumns, ViewColumns] = useState([]);
+  const [cumulative, Cumulative] = useState({});
+  const [columns, setColumns] = useState([]);
+  const [tableStyle, setTableStyle] = useState(classes);
+  const [year, setYear] = React.useState(2020);
+  const [total, Total] = useState(false);
+  const [rows, Rows] = useState([]);
 
-
+  // deep state 
+  const setFirstMount = (newState) => {setStateIfDeepEqual(FirstMount, newState);};
+  const setRowsPerPage = (newState) => {setStateIfDeepEqual(RowsPerPage, newState);};
+  const setTrueTargetLabel = (newState) => {setStateIfDeepEqual(TrueTargetLabel, newState);};
+  const setM1nSelectedRowsTracks = (newState) => {setStateIfDeepEqual(M1nSelectedRowsTracks, newState);};
+  const setM1nSelectedRowsIds = (newState) => {setStateIfDeepEqual(M1nSelectedRowsIds, newState);};
+  const setM1nSelectedRowsIndexes = (newState) => {setStateIfDeepEqual(M1nSelectedRowsIndexes, newState);};
+  const setSubTitle = (newState) => {setStateIfDeepEqual(SubTitle, newState);};
+  const setTitle = (newState) => {setStateIfDeepEqual(Title, newState);};
+  const setTargetLabelToExpand = (newState) => {setStateIfDeepEqual(TargetLabelToExpand, newState);};
+  const setSubComponent = (newState) => {setStateIfDeepEqual(SubComponent, newState);};
+  const setSelectedRow = (newState) => {setStateIfDeepEqual(SelectedRow, newState);};
+  const setMultipleExpandableCard = (newState) => {setStateIfDeepEqual(MultipleExpandableCard, newState);};
+  const setShowExpandableCard = (newState) => {setStateIfDeepEqual(ShowExpandableCard, newState);};
+  const setColInd = (newState) => {setStateIfDeepEqual(ColInd, newState);};
+  const setRowInd = (newState) => {setStateIfDeepEqual(RowInd, newState);};
+  const setPageInd = (newState) => {setStateIfDeepEqual(PageInd, newState);};
+  const setExpandedObject = (newState) => {setStateIfDeepEqual(ExpandedObject, newState);};
+  const setOpenDialog = (newState) => {setStateIfDeepEqual(OpenDialog, newState);};
+  const setTotal = (newState) => {setStateIfDeepEqual(Total, newState);};
+  const setCumulative = (newState) => {setStateIfDeepEqual(Cumulative, newState);};
+  const setViewColumns = (newState) => {setStateIfDeepEqual(ViewColumns, newState);};
+  const setRows = (newState) => {setStateIfDeepEqual(Rows, newState);};
 
   // queries 
   const [getWell, { data: dataWell }] = useLazyQuery(WELLQUERY);
-
-
 
   // handlers 
   const handleClickFlyToIcon = (entityType,searchTarget) => {
@@ -474,17 +426,7 @@ function SubTable(props) {
     console.log('target', searchTarget)
   };
 
-  const setFirstMount = (newState) => {
-    setStateIfDeepEqual(FirstMount, newState);
-  };
 
-  const setRowsPerPage = (newState) => {
-    setStateIfDeepEqual(RowsPerPage, newState);
-  };
-
-  const setTrueTargetLabel = (newState) => {
-    setStateIfDeepEqual(TrueTargetLabel, newState);
-  };
 
 
   //// opening the well detail card after fetch the extra well data needed
