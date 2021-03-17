@@ -328,43 +328,6 @@ export default function BaseMapStyles(props) {
           ))}
         </div>
 
-        {/* <StyledListItem2 button onClick={handleClick}>
-          <ListItemIcon>
-            <LayersIcon />
-          </ListItemIcon>
-          <ListItemText primary="Map Layers" />
-          {open ? <ExpandLess /> : <ExpandMore />}
-        </StyledListItem2>
-
-
-        {stateApp.baseMapLayers.map((layer, index) => {
-          const labelId = `checkbox-list-label-${index}`;
-
-          return (
-            <Collapse in={open} timeout="auto" unmountOnExit>
-            <StyledListItem button className={classes.nested}>
-              <ListItemIcon>
-                <Checkbox
-                  icon={<VisibilityOffIcon htmlColor="#fff" />}
-                  checkedIcon={<VisibilityIcon htmlColor="#fff" />}
-                  edge="start"
-                  checked={
-                    stateApp.checkedBaseLayers
-                      ? stateApp.checkedBaseLayers.indexOf(index) !== -1
-                      : false
-                  }
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ "aria-labelledby": labelId }}
-                  onChange={handleToggle(index)}
-                />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={layer.name} />
-            </StyledListItem>
-            </Collapse>
-          );
-        })} */}
-
         <StyledListItem2 button onClick={handleClick}>
           <ListItemIcon>
             <LayersIcon />

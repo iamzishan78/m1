@@ -363,117 +363,160 @@ function SubTable(props) {
 
   const dispatch = useDispatch();
 
+  // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
+
+
+  // function state 
+  const [trueTargetLabel, TrueTargetLabel] = useState(null);
+  const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
+  const [firstMount, FirstMount] = useState(true);
+  const [title, Title] = useState("");
+  const [subTitle, SubTitle] = useState("");
+  const [m1nSelectedRowsIndexes, M1nSelectedRowsIndexes] = useState([]);
+  const [m1nSelectedRowsIds, M1nSelectedRowsIds] = useState([]);
+  const [m1nSelectedRowsTracks, M1nSelectedRowsTracks] = useState([]);
+  const [subComponent, SubComponent] = useState(null);
+  const [targetLabelToExpand, TargetLabelToExpand] = useState(null);
+  const [multipleExpandableCard, MultipleExpandableCard] = useState(false);
+  const [selectedRow, SelectedRow] = useState();
+  const [showExpandableCard, ShowExpandableCard] = useState(false);
+  const [openDialog, OpenDialog] = useState(false);
+  const [expandedObject, ExpandedObject] = useState();
+  const [pageInd, PageInd] = useState(0);
+  const [rowInd, RowInd] = useState();
+  const [colInd, ColInd] = useState();
+  const [viewColumns, ViewColumns] = useState([]);
+  const [cumulative, Cumulative] = useState({});
+  const [columns, setColumns] = useState([]);
   const [tableStyle, setTableStyle] = useState(classes);
   const [year, setYear] = React.useState(2020);
-
-  const [rows, Rows] = useState([]);
-  const setRows = (newState) => {
-    setStateIfDeepEqual(Rows, newState);
-  };
-
   const [total, Total] = useState(false);
-  const setTotal = (newState) => {
-    setStateIfDeepEqual(Total, newState);
-  };
+  const [rows, Rows] = useState([]);
 
-  const [cumulative, Cumulative] = useState({});
-  const setCumulative = (newState) => {
-    setStateIfDeepEqual(Cumulative, newState);
-  };
+  // deep state 
+  const setFirstMount = (newState) => { setStateIfDeepEqual(FirstMount, newState); };
+  const setRowsPerPage = (newState) => { setStateIfDeepEqual(RowsPerPage, newState); };
+  const setTrueTargetLabel = (newState) => { setStateIfDeepEqual(TrueTargetLabel, newState); };
+  const setM1nSelectedRowsTracks = (newState) => { setStateIfDeepEqual(M1nSelectedRowsTracks, newState); };
+  const setM1nSelectedRowsIds = (newState) => { setStateIfDeepEqual(M1nSelectedRowsIds, newState); };
+  const setM1nSelectedRowsIndexes = (newState) => { setStateIfDeepEqual(M1nSelectedRowsIndexes, newState); };
+  const setSubTitle = (newState) => { setStateIfDeepEqual(SubTitle, newState); };
+  const setTitle = (newState) => { setStateIfDeepEqual(Title, newState); };
+  const setTargetLabelToExpand = (newState) => { setStateIfDeepEqual(TargetLabelToExpand, newState); };
+  const setSubComponent = (newState) => { setStateIfDeepEqual(SubComponent, newState); };
+  const setSelectedRow = (newState) => { setStateIfDeepEqual(SelectedRow, newState); };
+  const setMultipleExpandableCard = (newState) => { setStateIfDeepEqual(MultipleExpandableCard, newState); };
+  const setShowExpandableCard = (newState) => { setStateIfDeepEqual(ShowExpandableCard, newState); };
+  const setColInd = (newState) => { setStateIfDeepEqual(ColInd, newState); };
+  const setRowInd = (newState) => { setStateIfDeepEqual(RowInd, newState); };
+  const setPageInd = (newState) => { setStateIfDeepEqual(PageInd, newState); };
+  const setExpandedObject = (newState) => { setStateIfDeepEqual(ExpandedObject, newState); };
+  const setOpenDialog = (newState) => { setStateIfDeepEqual(OpenDialog, newState); };
+  const setTotal = (newState) => { setStateIfDeepEqual(Total, newState); };
+  const setCumulative = (newState) => { setStateIfDeepEqual(Cumulative, newState); };
+  const setViewColumns = (newState) => { setStateIfDeepEqual(ViewColumns, newState); };
+  const setRows = (newState) => { setStateIfDeepEqual(Rows, newState); };
 
-  const [columns, setColumns] = useState([]);
-
-  const [viewColumns, ViewColumns] = useState([]);
-  const setViewColumns = (newState) => {
-    setStateIfDeepEqual(ViewColumns, newState);
-  };
-
-  const [colInd, ColInd] = useState();
-  const setColInd = (newState) => {
-    setStateIfDeepEqual(ColInd, newState);
-  };
-  const [rowInd, RowInd] = useState();
-  const setRowInd = (newState) => {
-    setStateIfDeepEqual(RowInd, newState);
-  };
-  const [pageInd, PageInd] = useState(0);
-  const setPageInd = (newState) => {
-    setStateIfDeepEqual(PageInd, newState);
-  };
-  const [expandedObject, ExpandedObject] = useState();
-  const setExpandedObject = (newState) => {
-    setStateIfDeepEqual(ExpandedObject, newState);
-  };
-  const [openDialog, OpenDialog] = useState(false);
-  const setOpenDialog = (newState) => {
-    setStateIfDeepEqual(OpenDialog, newState);
-  };
-
-  const [showExpandableCard, ShowExpandableCard] = useState(false);
-  const setShowExpandableCard = (newState) => {
-    setStateIfDeepEqual(ShowExpandableCard, newState);
-  };
-
-  const [multipleExpandableCard, MultipleExpandableCard] = useState(false);
-  const setMultipleExpandableCard = (newState) => {
-    setStateIfDeepEqual(MultipleExpandableCard, newState);
-  };
-
-  const [selectedRow, SelectedRow] = useState();
-  const setSelectedRow = (newState) => {
-    setStateIfDeepEqual(SelectedRow, newState);
-  };
-
-  const [subComponent, SubComponent] = useState(null);
-  const setSubComponent = (newState) => {
-    setStateIfDeepEqual(SubComponent, newState);
-  };
-  const [targetLabelToExpand, TargetLabelToExpand] = useState(null);
-  const setTargetLabelToExpand = (newState) => {
-    setStateIfDeepEqual(TargetLabelToExpand, newState);
-  };
-
-  const [title, Title] = useState("");
-  const setTitle = (newState) => {
-    setStateIfDeepEqual(Title, newState);
-  };
-  const [subTitle, SubTitle] = useState("");
-  const setSubTitle = (newState) => {
-    setStateIfDeepEqual(SubTitle, newState);
-  };
-
-  const [m1nSelectedRowsIndexes, M1nSelectedRowsIndexes] = useState([]);
-  const setM1nSelectedRowsIndexes = (newState) => {
-    setStateIfDeepEqual(M1nSelectedRowsIndexes, newState);
-  };
-
-  const [m1nSelectedRowsIds, M1nSelectedRowsIds] = useState([]);
-  const setM1nSelectedRowsIds = (newState) => {
-    setStateIfDeepEqual(M1nSelectedRowsIds, newState);
-  };
-
-  const [m1nSelectedRowsTracks, M1nSelectedRowsTracks] = useState([]);
-  const setM1nSelectedRowsTracks = (newState) => {
-    setStateIfDeepEqual(M1nSelectedRowsTracks, newState);
-  };
-
-  const [trueTargetLabel, TrueTargetLabel] = useState(null);
-  const setTrueTargetLabel = (newState) => {
-    setStateIfDeepEqual(TrueTargetLabel, newState);
-  };
-
-  const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
-  const setRowsPerPage = (newState) => {
-    setStateIfDeepEqual(RowsPerPage, newState);
-  };
-
-  const [firstMount, FirstMount] = useState(true);
-  const setFirstMount = (newState) => {
-    setStateIfDeepEqual(FirstMount, newState);
-  };
-
+  // queries 
   const [getWell, { data: dataWell }] = useLazyQuery(WELLQUERY);
+
+  // handlers 
+  const handleWellFlyTo = (value) => {
+    console.log('value', value)
+
+    //   setStateApp((stateApp) =>
+
+
+    //   dataWells.wells.results.length === 1
+    //     ? {
+    //         ...stateApp,
+    //         selectedWell: null,
+    //         fitBounds: null,
+    //         selectedWellId: dataWells.wells.results[0].id.toLowerCase(),
+    //         wellSelectedCoordinates: [
+    //           dataWells.wells.results[0].longitude,
+    //           dataWells.wells.results[0].latitude,
+    //         ],
+    //         wellListFromSearch: [...dataWells.wells.results],
+    //       }
+    //     : {
+    //         ...stateApp,
+    //         fitBounds: null,
+    //         wellListFromSearch: [...dataWells.wells.results],
+    //       }
+    // );
+
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      fitBounds: null,
+      selectedWell: null,
+      selectedWellId: value.wellId ? value.wellId : null,
+      wellSelectedCoordinates: [value.center[0], value.center[1]],
+      // flyTo:{
+      //   longitude: value.center[0],
+      //   latitude: value.center[1],
+      //       }
+    }));
+
+    stateApp.toggleLayersActivity("Search", true);
+
+    // setStateApp((stateApp) => ({
+    //   ...stateApp,
+    //   fitBounds: null,
+    //   selectedWell: null,
+    //   //selectedWellId: value.Id ? newValue.Id.toLowerCase() : null,
+    //   wellSelectedCoordinates: [value.center[0], value.center[1]],
+    //   flyTo:{
+    //     longitude: value.center[0],
+    //     latitude: value.center[1],
+    //         }
+
+
+    // wellListFromSearch: [
+    //   {
+    //     id: newValue.Id,
+    //     longitude: newValue.Longitude,
+    //     latitude: newValue.Latitude,
+    //   },
+    // ],
+
+
+
+    //         popupOpen: false,
+    //         selectedWell: null,
+    //         activateWellDetailsFromTable: false,
+    //         selectedWellId:
+    //           props.targetLabel == "well"
+    //             ? tableMeta.rowData[0]
+    //             : null, 
+    //          //adding in fitbounds to center in right side of screen                           
+    //          fitBounds: {
+    //               maxLat: value.center[1],
+    //               minLat: value.center[1],
+    //               minLong: value.center[0] - 1.5 * .02,
+    //               maxLong: value.center[0] + 0.5 * .02,
+    //             },
+
+    //             flyTo: {
+    //           longitude: value.center[0],
+    //           latitude: value.center[1],
+    //         },
+
+
+    // }));
+  };
+
+
+  const handleClickFlyToIcon = (entityType, searchTarget) => {
+    if (entityType == "well") {
+      handleWellFlyTo(searchTarget)
+    }
+
+  };
+
+
+
 
   //// opening the well detail card after fetch the extra well data needed
   useEffect(() => {
@@ -926,94 +969,145 @@ function SubTable(props) {
             {
               column.options = {
                 ...column.options,
+
+
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
 
+                  // console.log('value check', value)
+                  // console.log('value meta', tableMeta)
+                  // console.log('value columns', column)
+                  // console.log('value target', props.targetLabel)
+                  // console.log('value columindex', tableMeta.columnIndex)
+
+
                   return (
+
+
+
+                    // this whole implementation is a mesteban patch 
+                    // it is all kinds of fucked up 
+
+                    // <Tooltip
+                    //   title={
+                    //     value &&
+                    //       (value.bbox ||
+                    //         value.center ||
+                    //         value.objToPopulateSearchLayer)
+                    //       ? "Fly To Map"
+                    //       : "Not Available"
+                    //   }
+                    //   placement="top"
+                    //   style={{ marginRight: "10px" }}
+                    // >
+
                     <Tooltip
                       title={
-                        value &&
-                          (value.bbox ||
-                            value.center ||
-                            value.objToPopulateSearchLayer)
-                          ? "Fly To Map"
-                          : "Not Available"
+                        "Fly To Map"
                       }
                       placement="top"
                       style={{ marginRight: "10px" }}
                     >
+
+
                       <IconButton
                         id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
-                        className={`${classes.icons} ${value &&
-                          (value.bbox ||
-                            value.center ||
-                            value.objToPopulateSearchLayer)
-                          ? ""
-                          : classes.noCommentsIcon
-                          }`}
+
+                        // className={`${classes.icons} ${value &&
+                        //   (value.bbox ||
+                        //     value.center ||
+                        //     value.objToPopulateSearchLayer)
+                        //   ? ""
+                        //   : classes.noCommentsIcon
+                        //   }`}
+
+                        className={`${classes.icons}`}
+
                         onClick={(e) => {
                           e.stopPropagation();
+                          handleClickFlyToIcon(props.targetLabel, value)
+                          // handleSearch();
 
-                          if (value) {
-                            if (value.bbox || value.center) {
-                              setStateApp((state) => {
-                                if (value.bbox)
-                                  return {
-                                    ...state,
-                                    popupOpen: false,
-                                    selectedWell: null,
-                                    selectedWellId: null,
-                                    fitBounds: {
-                                      maxLat: value.bbox[3],
-                                      minLat: value.bbox[1],
-                                      maxLong: value.bbox[2],
-                                      minLong: value.bbox[0],
-                                    },
-                                  };
 
-                                //// value.center
-                                return {
-                                  ...state,
-                                  popupOpen: false,
-                                  selectedWell: null,
-                                  activateWellDetailsFromTable: false,
-                                  selectedWellId:
-                                    props.targetLabel == "well"
-                                      ? tableMeta.rowData[0]
-                                      : null,
-                                  //adding in fitbounds to center in right side of screen                           
-                                  fitBounds: {
-                                    maxLat: value.center[1],
-                                    minLat: value.center[1],
-                                    minLong: value.center[0] - 1.5 * .02,
-                                    maxLong: value.center[0] + 0.5 * .02,
-                                  },
+                          // setStateApp((stateApp) => ({
+                          //   ...stateApp,
+                          //   fitBounds: null,
+                          //   selectedWell: null,
+                          //   selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
+                          //   wellSelectedCoordinates: [newValue.Longitude, newValue.Latitude],
+                          //   wellListFromSearch: [
+                          //     {
+                          //       id: newValue.Id,
+                          //       longitude: newValue.Longitude,
+                          //       latitude: newValue.Latitude,
+                          //     },
+                          //   ],
+                          // }));
 
-                                  flyTo: {
-                                    longitude: value.center[0],
-                                    latitude: value.center[1],
-                                  },
+                          // stateApp.toggleLayersActivity("Search", true);
 
-                                };
-                              });
+                          // if (value) {
+                          //   if (value.bbox || value.center) {
+                          //     setStateApp((state) => {
+                          //       if (value.bbox)
+                          //         return {
+                          //           ...state,
+                          //           popupOpen: false,
+                          //           selectedWell: null,
+                          //           selectedWellId: null,
+                          //           fitBounds: {
+                          //             maxLat: value.bbox[3],
+                          //             minLat: value.bbox[1],
+                          //             maxLong: value.bbox[2],
+                          //             minLong: value.bbox[0],
+                          //           },
+                          //         };
 
-                              dispatch(
-                                setMapGridCardState({
-                                  mapGridCardActivated: "min",
-                                })
-                              );
-                            } else if (value.objToPopulateSearchLayer) {
-                              dispatch(
-                                setMapGridCardState({
-                                  objToPopulateSearchLayer:
-                                    value.objToPopulateSearchLayer,
-                                  mapGridCardActivated: "min",
-                                })
-                              );
-                            }
-                          }
+                          //       //// value.center
+                          //       return {
+                          //         ...state,
+                          //         popupOpen: false,
+                          //         selectedWell: null,
+                          //         activateWellDetailsFromTable: false,
+                          //         selectedWellId:
+                          //           props.targetLabel == "well"
+                          //             ? tableMeta.rowData[0]
+                          //             : null, 
+                          //          //adding in fitbounds to center in right side of screen                           
+                          //          fitBounds: {
+                          //               maxLat: value.center[1],
+                          //               minLat: value.center[1],
+                          //               minLong: value.center[0] - 1.5 * .02,
+                          //               maxLong: value.center[0] + 0.5 * .02,
+                          //             },
+
+                          //             flyTo: {
+                          //           longitude: value.center[0],
+                          //           latitude: value.center[1],
+                          //         },
+
+                          //       };
+                          //     });
+
+                          //     dispatch(
+                          //       setMapGridCardState({
+                          //         mapGridCardActivated: "min",
+                          //       })
+                          //     );
+                          //   } else if (value.objToPopulateSearchLayer) {
+                          //     dispatch(
+                          //       setMapGridCardState({
+                          //         objToPopulateSearchLayer:
+                          //           value.objToPopulateSearchLayer,
+                          //         mapGridCardActivated: "min",
+                          //       })
+                          //     );
+                          //   }
+                          // }
+
+
                         }}
                         aria-label="fly"
                       >
@@ -1856,7 +1950,9 @@ function SubTable(props) {
     selectableRows:
       props.targetLabel == "production_detail" ? false : "multiple",
     print: false,
+    download: props.parent == "OwnersPerWell" ? true : false,
     viewColumns: props.targetLabel !== "usermanagement",
+
     onColumnViewChange: (changedColumn, action) => {
       if (
         props.parent === "Contacts" &&
@@ -2528,7 +2624,8 @@ function SubTable(props) {
           : [];
     options.count = props.contactsPageProps.contactsCount;
     options.serverSide = true;
-    options.print = false;
+    //options.print = true;
+    //options.export = true;
   }
 
   const displayCumulative = (data, total, cumulative, rowsPerPage = 25) => {
@@ -2597,9 +2694,9 @@ function SubTable(props) {
           }}
           options={{
             ...options,
-            download: false,
+            //download: false,
             search: props.parent != "search",  // removing the double search on the grid search bar 
-            print: false,
+            //print: false,
           }}
         />
         {

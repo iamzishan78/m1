@@ -331,7 +331,7 @@ export default function WellCardDetails(props) {
             tabLabels={[
               "Production",
               "Interest Owners",
-              "Contacts",
+              // "Contacts",
               "Completion",
               "Stimulation",
               "Formation",
@@ -406,12 +406,12 @@ export default function WellCardDetails(props) {
                   selectedWell={stateApp.selectedWell}
                 />
               </Paper>,
-              <Paper elevation={3} style={{ padding: "10px" }}>
-                <M1nTable
-                  parent="detail-well-card-contact-ties"
-                  selectedWell={stateApp.selectedWell}
-                />
-            </Paper>,
+            //   <Paper elevation={3} style={{ padding: "10px" }}>
+            //     <M1nTable
+            //       parent="detail-well-card-contact-ties"
+            //       selectedWell={stateApp.selectedWell}
+            //     />
+            // </Paper>,
               <CompletionsContainer />,
               <SimulationContainer />,
               <FormationContainer />,

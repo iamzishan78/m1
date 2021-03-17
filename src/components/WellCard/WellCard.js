@@ -7,42 +7,33 @@ import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import CloseIcon from "@material-ui/icons/Close";
-import MyLocationIcon from "@material-ui/icons/MyLocation";
+import Button from '@material-ui/core/Button';
+
+
+
 //custom components
 import WellIcon from "./components/svgIcons/WellIcon";
-import ExpandIcon from "./components/svgIcons/ExpandIcon";
-//import ShrinkIcon from './components/svgIcons/ShrinkIcon';
-//import TrackIcon from './components/svgIcons/TrackIcon'
 import ProductionIcon from "./components/svgIcons/ProductionIcon";
 import OwnershipIcon from "./components/svgIcons/OwnershipIcon";
 import Link from "@material-ui/core/Link";
 import moment from "moment";
 
 import WellCardDetails from "./WellCardDetails";
-//import { WellData } from './data/welldata'
 
-import TrackToggleButton from "../Shared/TrackToggleButton";
-
-// import useQueryWell from "../../graphQL/useQueryWell";
+// queries 
 import { useLazyQuery } from "@apollo/client";
-// import { VERTEXEDGESQUERY } from "../../graphQL/useQueryVertexEdges";/////////////////
 import { WELLSUMMARYDETAILQUERY } from "../../graphQL/useQueryWellSummaryDetail";
-import { PRODUCTIONDETAILQUERY } from "../../graphQL/useQueryProductionDetail";
+
+// value formatters 
+import formatBOE from "../Shared/valueformatters/format_boe.js"
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -147,47 +138,41 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   loadingWrapper: {
-    width: "400px",
+    width: "450px",
+  },
+  button: {
+    height: "110px",
+    width: "100px",
   },
 }));
 
-const formatDateString = (dateString) => {
-  if (!dateString) return "--";
 
-  return new Date(dateString).toLocaleDateString();
-};
-
-const formatBOE = (boe) => {
-  if (!boe || isNaN(boe)) return "--";
-
-  return Math.round(boe).toLocaleString();
-};
 
 function WellCard() {
+
+  // context
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateExpandableCard, setStateExpandableCard] = useContext(
-    ExpandableCardContext
-  );
-  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
-  // const [
-  //   getVertexEdges,
-  //   { loading: loadingGraph, data: dataGraph },
-  // ] = useLazyQuery(VERTEXEDGESQUERY);
+  const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
+
+
+
+
+  // function state
+  const [target, setTarget] = useState(null);
+  const [summary, setSummary] = useState(null);
+  const [source, setSource] = useState(null);
+
+  // theme / styles 
+  const theme = useTheme();
+  const classes = useStyles();
+
+  // queries 
   const [
     getWellSummaryDetail,
     { loading: loadingWellSummary, data: dataWellSummary },
   ] = useLazyQuery(WELLSUMMARYDETAILQUERY);
 
-  const [
-    getProductionDetail,
-    { loading: loadingProductionDetail, data: productionDetail },
-  ] = useLazyQuery(PRODUCTIONDETAILQUERY);
 
-  const [target, setTarget] = useState(null);
-  const [summary, setSummary] = useState(null);
-  const [source, setSource] = useState(null);
-  const theme = useTheme();
-  const classes = useStyles();
 
   useEffect(() => {
     if (!source) {
@@ -216,28 +201,18 @@ function WellCard() {
     }
   }, [dataWellSummary]);
 
-  //make fire and forget call to REST api so that it begins to cache other well related api calls
-  // const { data, loading, error } = useQueryWell(stateApp.selectedWell.id);
-  /* useEffect(() => {
-    setStateApp(state => ({ ...state, selectedWell: props.selectedWell }))
-   
-  }, [props.selectedWell, props.isSelectedWellLoading, setStateWellCard]) */
-
-  const fullScreen = useMediaQuery(theme.breakpoints.down("xl"));
 
   const handleOpenDetails = () => {
-    setStateWellCard((state) => ({ ...state, openWellDetails: true }));
+    setStateApp((state) => ({
+      ...state,
+      expandedCard: true,
+      wellDetailCardOpen: true,
+      popupOpen: false,
+    }));
   };
 
-  const handleCloseDetails = () => {
-    setStateWellCard((state) => ({ ...state, openWellDetails: false }));
-  };
-  const handleCloseWellCard = () => {
-    setStateApp((state) => ({ ...state, popupOpen: false }));
-    let popUps = document.getElementsByClassName("mapboxgl-popup");
-    if (popUps[0]) popUps[0].remove();
-  };
 
+  /// can be abstracted 
   const convertDate = (unixStamp) => {
     const date = moment.utc(unixStamp).format("MM/DD/YYYY");
 
@@ -267,6 +242,10 @@ function WellCard() {
                 root: classes.cardAction,
               }}
             >
+              <Button
+                className={classes.button}
+                onClick = {() => {handleOpenDetails()}}
+              >
               <div className={classes.iconContainer}>
                 <WellIcon
                   htmlColor="black"
@@ -280,6 +259,7 @@ function WellCard() {
                   variant="subtitle2"
                 >
                   Well Status
+
                 </Typography>
                 <Typography
                   align="center"
@@ -291,7 +271,12 @@ function WellCard() {
                     : "--"}
                 </Typography>
               </div>
+              </Button>
 
+              <Button
+                className={classes.button}
+                onClick = {() => {handleOpenDetails()}}
+                              >
               <div className={classes.iconContainer}>
                 <ProductionIcon
                   htmlColor="black"
@@ -313,6 +298,12 @@ function WellCard() {
                   {`${formatBOE(stateApp.selectedWell.lastTwelveMonthBOE)} BOE`}
                 </Typography>
               </div>
+              </Button>
+
+              <Button
+                className={classes.button}
+                onClick = {() => {handleOpenDetails()}}
+                              >
               <div className={classes.iconContainer}>
                 <OwnershipIcon
                   htmlColor="black"
@@ -336,6 +327,12 @@ function WellCard() {
                     : "--"}
                 </Typography>
               </div>
+              </Button>
+
+              <Button
+                className={classes.button}
+                onClick = {() => {handleOpenDetails()}}
+                              >
               <div className={classes.iconContainer}>
                 <Avatar variant="circle" className={classes.avatar}>
                   {stateApp.selectedWell.wellBoreProfile
@@ -359,6 +356,8 @@ function WellCard() {
                     : "--"}
                 </Typography>
               </div>
+              </Button>
+
             </CardActions>
             <CardContent className={classes.content}>
               <Table
@@ -433,16 +432,6 @@ function WellCard() {
                       </TableCell>
                     </TableRow>
                   : null}
-
-                  {/* <TableRow>
-                  <TableCell className={classes.cell1} align="left">
-                        Plug Date
-                      </TableCell>
-                      <TableCell className={classes.cell2} align="right">
-                        {convertDate(stateApp.selectedWell.plugDate)}
-                      </TableCell>
-                  </TableRow> */}
-
                 </TableBody>
               </Table>
             </CardContent>
@@ -551,16 +540,6 @@ function WellCard() {
                           : '--'}
                       </TableCell>
                     </TableRow>
-                    {/* <TableRow className={classes.rowWhite}>
-                      <TableCell className={classes.cell1} align="left">
-                        Submitted Date
-                      </TableCell>
-                      <TableCell className={classes.cell2} align="right">
-                        {stateApp.selectedWell.permitSubmitDate
-                          ? stateApp.selectedWell.permitSubmitDate
-                          : '--'}
-                      </TableCell>
-                    </TableRow> */}
                     <TableRow className={classes.rowWhite}>
                       <TableCell className={classes.cell1} align="left">
                         Approved Date

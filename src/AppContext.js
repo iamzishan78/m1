@@ -1,26 +1,15 @@
 import React, { useState, createContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import {
-  MSALB2CObj,
-  B2CTenantCredentials,
-} from "./components/Login/AADB2CAuthConfig";
-import {
-  //styleLayers,
-  //userDefinedLayers,
-  heatLayers,
-  baseMapLayers,
-  //layers,
-  // defaultLayers,
-} from "./LayerConfig";
+import {MSALB2CObj,B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
+import { heatLayers, baseMapLayers,} from "./LayerConfig";
 
 const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
-    gridSearchTarget: null, 
     loading: false,
     registeredRoutes: [
       "/",
@@ -40,6 +29,10 @@ const AppProvider = (props) => {
     ],
     myMSALObj: null,
     myMSALB2CObj: null,
+
+    baseMapLayers: baseMapLayers,
+    heatLayers: heatLayers,
+    
     selectedRoute: "/",
     apolloClientEndpoint: "",
     graphqlScope: null,
@@ -74,7 +67,6 @@ const AppProvider = (props) => {
     filtersDefaultOnoff: null,
     filterSelectAllAbstract: false,
     selectedContact: null,
-    // trackFilterOn: null,
     trackedWellArray: [],
     userSnap: false,
     mapVars: {
@@ -91,12 +83,6 @@ const AppProvider = (props) => {
       bearing: 0,
       styleId: "Outdoors",
     },
-
-    // layerData: {
-    //   trackedWellsWells: null,
-    //   trackedOwnerWells: null,
-    //   taggedWells: null,
-    // },
     wellSelectedCoordinates: [],
     universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
 
@@ -105,17 +91,11 @@ const AppProvider = (props) => {
     mapboxglAccessToken:
       "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJja2V6MHd2bnQwYzRqMnlwaTV6ejU2cTMyIn0.ghyrh-G8uQtyg4N4VcfTOw",
     selectedWellApi: null,
-    //styleLayers: styleLayers,
-    heatLayers: heatLayers,
     layers: null,
-    // defaultLayers: defaultLayers,
-    baseMapLayers: baseMapLayers,
-    //userDefinedLayers: userDefinedLayers,
     searchLayerIndex: null,
     trackedOwnersLayerIndex: null,
     trackedWellsLayerIndex: null,
     tagsLayerIndex: null,
-    // tempCheckedLayer: null,
     checkedLayers: [2, 5],
     wellsLayerIndex: null,
     checkedHeats: [],
@@ -123,8 +103,6 @@ const AppProvider = (props) => {
     checkedUserDefinedLayers: [],
     checkedFileLayers: [],
     tempCheckedUserDefinedLayer: null,
-    // tempCheckedAOILayer: null,
-    // tempCheckedParcleLayer: null,
     checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
     checkedFileLayersInteraction: [],
     editingUserDefinedLayers: [],
@@ -156,6 +134,7 @@ const AppProvider = (props) => {
     prevAOIVisible: false,
     prevParcelVisible: false,
     prevBasinVisible: false,
+    
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;
@@ -177,16 +156,6 @@ const AppProvider = (props) => {
               },
             };
             res = updatedLayer.layerSettings.visiable;
-
-            //// saving to mongo
-            // updateLayerSettings({
-            //   variables: {
-            //     settings: {
-            //       _id: updatedLayer._id,
-            //       layerSettings: updatedLayer.layerSettings,
-            //     },
-            //   },
-            // });
 
             //// saving to stateApp
             currentLayers[index] = updatedLayer;

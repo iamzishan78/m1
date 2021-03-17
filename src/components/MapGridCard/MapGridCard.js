@@ -69,17 +69,8 @@ const useStyles = makeStyles((theme) => {
       },
     },
     rootList: {
-      //removing the shrinking of the search card on fly to for now
-      // opacity: ({ mapGridCardActivated }) =>
-      //   mapGridCardActivated === "min" ? ".6" : "1",
-      // transition:
-      //   "opacity 0.2s ease-out, transform 0.05s ease-out, width 0.3s ease-out, height 0.3s ease-out",
-      // WebkitTransition:
-      //   "opacity 0.2s ease-out, transform 0.05s ease-out, width 0.3s ease-out, height 0.3s ease-out",
       width: ({ mapGridCardActivated }) =>
         mapGridCardActivated === "min"
-        //removed shrinking for now
-        // ? "600px"
          ? "57vw"
 
           : mapGridCardActivated === "exp"
@@ -87,8 +78,6 @@ const useStyles = makeStyles((theme) => {
             : "57vw",
       height: ({ mapGridCardActivated }) =>
         mapGridCardActivated === "min"
-        //removed shrinking for now  
-        // ? "114px"
          ? "60vh"
 
           : mapGridCardActivated === "exp"
@@ -108,10 +97,6 @@ const useStyles = makeStyles((theme) => {
       },
     },
     appBar: {
-      // cursor: ({ mapGridCardActivated }) =>
-      //   mapGridCardActivated === "exp" || mapGridCardActivated === "min"
-      //     ? "context-menu"
-      //     : "move", 
       cursor: "context-menu",
       "& .MuiIconButton-root:hover": {
         backgroundColor: "rgba(255, 255, 255, 0.08)",
@@ -130,14 +115,9 @@ const useStyles = makeStyles((theme) => {
       height: "calc(100% - 64px)",
       maxHeight: "calc(100% - 64px)",
       overflow: "auto",
-      // overflowX: "auto",
       "& div": {
         "&>.MuiPaper-root": {
           "&>:nth-child(3)": {
-            //   transition:
-            //   "min-height 0.3s ease-out",
-            // WebkitTransition:
-            //   "min-height 0.3s ease-out",
             minHeight: ({ mapGridCardActiveTap, mapGridCardActivated }) =>
               mapGridCardActiveTap === 0
                 ? mapGridCardActivated === "exp"
@@ -388,8 +368,17 @@ const locationsColumnHeaders = [
 
 
 function MapGridCard(props) {
+
+  // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const dispatch = useDispatch();
+
+  // function state 
+  const [searchTapValue, SearchTapValue] = useState(0);
+  const [viewportTapValue, ViewportTapValue] = useState(0);
+  const [trackedTapValue, TrackedTapValue] = useState(0);
+  const [gridTapValue, GridTapValue] = useState(0);
+
+  // selectors 
   const {
     mapGridCardActivated,
     mapGridCardActiveTap,
@@ -398,31 +387,34 @@ function MapGridCard(props) {
     trackedDataCount,
     selectedOwner,
   } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
-  const [searchTapValue, SearchTapValue] = useState(0);
+
+  // queries 
+  const dispatch = useDispatch();
+
+
+  // handlers 
   const setSearchTapValue = (state) => {
     if (searchTapValue != state) {
       SearchTapValue(state);
     }
   };
-  const [viewportTapValue, ViewportTapValue] = useState(0);
   const setViewportTapValue = (state) => {
     if (viewportTapValue != state) {
       ViewportTapValue(state);
     }
   };
-  const [trackedTapValue, TrackedTapValue] = useState(0);
   const setTrackedTapValue = (state) => {
     if (trackedTapValue != state) {
       TrackedTapValue(state);
     }
   };
-  const [gridTapValue, GridTapValue] = useState(0);
   const setGridTapValue = (state) => {
     if (gridTapValue != state) {
       GridTapValue(state);
     }
   };
 
+  // styles 
   const classes = useStyles({
     mapGridCardActivated,
     mapGridCardActiveTap,
@@ -738,11 +730,7 @@ function MapGridCard(props) {
                 style ={{position:"absolute",width:"96vw"}}
               >
                 <div style={{ position: "relative" }}>
-                  {/* <TabLabels
-                labels={["Wells", "Interests", "Parcels", "AOI"]}
-                value={viewportTapValue}
-                setValue={setViewportTapValue}
-              /> */}
+
                   <TabPanels
                     value={viewportTapValue}
                     panels={[

@@ -1,3 +1,6 @@
+
+
+// react imports 
 import React, {
   useContext,
   useState,
@@ -6,26 +9,39 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+// contexts 
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
-import Popover from "@material-ui/core/Popover";
-import mapboxgl from "mapbox-gl";
-import * as turf from "@turf/turf";
-import { makeStyles } from "@material-ui/core/styles";
+
+// custom components 
 import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
-import Portal from "@material-ui/core/Portal";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
-import Draggable from "react-draggable";
-import DrawStatus from "./components/DrawStatus";
 import ZoomFault from "./components/ZoomFault";
 import HugeRequest from "./components/HugeRequest";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
+import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
+import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
+import MapGridCardProvider from "../MapGridCard/MapGridProvider";
+import MarkerIcon from "./sprites/marker-icon.png";
+import DefaultFiltersTest from "./filtersDefaultTest";
+import FilterControl from "./components/FilterControl";
+import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
+import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
+import { deepEqual, deepEqualObjects } from "../Shared/functions";
+import gjv from "geojson-validation";
+import { setMainMapState, showErrorMessage } from "../../actions";
+
+// 3rd party packages 
+import mapboxgl from "mapbox-gl";
+import * as turf from "@turf/turf";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import {
   CircleMode,
@@ -34,17 +50,19 @@ import {
   SimpleSelectMode,
 } from "mapbox-gl-draw-circle";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
-import * as MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import DefaultFiltersTest from "./filtersDefaultTest";
-import FilterControl from "./components/FilterControl";
+import debounce from "lodash/debounce";
+
+// material-ui
+import { makeStyles } from "@material-ui/core/styles";
+import Portal from "@material-ui/core/Portal";
+
+// queries 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLSQUERY } from "../../graphQL/useQueryWells";
 import { TRACKSBYOBJECTTYPE } from "../../graphQL/useQueryTracksByObjectType";
 import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
-import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
-import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
@@ -53,27 +71,14 @@ import { PLSSSECONDDIVISIONGEO } from "../../graphQL/useQueryPLSSSecondDivisionG
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 import { OWNERSQUERY } from "../../graphQL/useQueryOwners";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
-import {
-  ABSTRACTGEOQUERYCONTAINS,
-  ABSTRACTGEOCONTAINSQUERY,
-} from "../../graphQL/useQueryAbstractGeoContains";
-import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
-import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
-import MapGridCard from "../MapGridCard/MapGridCard";
-import MapGridCardProvider from "../MapGridCard/MapGridProvider";
+import { ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
 
-import { useDispatch, useSelector } from "react-redux";
-import MarkerIcon from "./sprites/marker-icon.png";
-import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
-import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
-import { deepEqual, deepEqualObjects } from "../Shared/functions";
-import gjv from "geojson-validation";
-import { setMainMapState, showErrorMessage } from "../../actions";
-import { ZoomOutMapSharp } from "@material-ui/icons";
-import debounce from "lodash/debounce";
-import { createFalse } from "typescript";
-import { geojsonTypes } from "@mapbox/mapbox-gl-draw/src/constants";
-//import { AvSortByAlpha } from "material-ui/svg-icons";
+// mutations 
+import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
+import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
+
+
+
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -120,13 +125,22 @@ const random_hex_color_code = () => {
 let hoveredAbstractId = null;
 
 function Map() {
+
+  // context states
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
+
+  // function states 
+  const [flyVar1, setFlyVar1] = useState([null]);
+  const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
+
+  // styles 
   let classes = useStyles({
     drawingCircle:
       stateApp.draw && stateApp.draw.getMode() == "drag_circle" ? true : false,
   });
-  const [flyVar1, setFlyVar1] = useState([null]);
-  const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
+
   const dispatch = useDispatch();
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
@@ -135,10 +149,7 @@ function Map() {
     ({ MainMap }) => MainMap.removeLayerFromMap
   );
   const clustersOff = useSelector(({ MainMap }) => MainMap.clustersOff);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
+
   const [filtersDefault, FiltersDefault] = useState(
     stateApp.user.defaultFilters ? stateApp.user.defaultFilters : []
   );
@@ -147,13 +158,16 @@ function Map() {
       FiltersDefault(state);
     }
   };
+
   const [lng, Lng] = useState();
+  const [lat, Lat] = useState();
+
+
   const setLng = (state) => {
     if (lng != state) {
       Lng(state);
     }
   };
-  const [lat, Lat] = useState();
   const setLat = (state) => {
     if (lat != state) {
       Lat(state);
@@ -281,74 +295,47 @@ function Map() {
 
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
-  //////////// TEMP UNTIL PROVIDER IS MADE //////////
-
-  //////begin////////temporary
 
   const [rows, Rows] = React.useState([]);
+  const [loading, Loading] = useState(true);
+
+
+
   const setRows = (state) => {
     if (rows != state) {
       Rows(state);
     }
   };
-  const [loading, Loading] = useState(true);
   const setLoading = (state) => {
     if (loading != state) {
       Loading(state);
     }
   };
+
+
+  // queries 
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
   const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
-  const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
-    TRACKSBYOBJECTTYPE
-  );
-  const [tracksByObjectTypeOwner, { data: dataTracksOwner }] = useLazyQuery(
-    TRACKSBYOBJECTTYPE
-  );
+  const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(TRACKSBYOBJECTTYPE);
+  const [tracksByObjectTypeOwner, { data: dataTracksOwner }] = useLazyQuery(TRACKSBYOBJECTTYPE);
+  const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(OWNERSWELLSQUERY);
+  const [getCustomLayers, { data: customLayerData }] = useLazyQuery(CUSTOMLAYERSQUERY);
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {fetchPolicy: "network-only",});
+  const [getWellsForLayer,{ data: dataWellsForOwnerWellTrackLayer }] = useLazyQuery(WELLSQUERY);
+  const [getPermits, { data: permitData }] = useLazyQuery(PERMITSQUERY);
+  const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
+  const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
+  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(ABSTRACTWELLGEOQUERY);
+  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
+  const [getPLSSSecondDivisionGeo, { data: plssSecondDivisionData }] = useLazyQuery(PLSSSECONDDIVISIONGEO);
+  const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(ALLLAYERSETTINGSBYUSER);
 
-  const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
-    OWNERSWELLSQUERY
-  );
 
-  const [getCustomLayers, { data: customLayerData }] = useLazyQuery(
-    CUSTOMLAYERSQUERY
-  );
-
-  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "network-only",
-  });
-
+  // mutations 
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
-
   const [removeCustomLayer] = useMutation(REMOVECUSTOMLAYER);
 
-  const [
-    getWellsForLayer,
-    { data: dataWellsForOwnerWellTrackLayer },
-  ] = useLazyQuery(WELLSQUERY);
 
-  const [getPermits, { data: permitData }] = useLazyQuery(PERMITSQUERY);
-
-  const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
-
-  const [getAbstractGeo, { data: abstractData }] = useLazyQuery(
-    ABSTRACTGEOQUERY
-  );
-
-  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(
-    ABSTRACTWELLGEOQUERY
-  );
-
-  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(
-    ABSTRACTGEOCONTAINSQUERY
-  );
-  const [getPLSSSecondDivisionGeo, { data: plssSecondDivisionData }] = useLazyQuery(
-    PLSSSECONDDIVISIONGEO
-  );
-
-  const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(
-    ALLLAYERSETTINGSBYUSER
-  );
 
   /////end/////////temporary
 
@@ -440,6 +427,9 @@ function Map() {
 
   useEffect(() => {
     if (layerStates && layerStates.allLayerSettingsByUser) {
+
+      console.log('layer states', layerStates)
+
       setStateApp({
         ...stateApp,
         layers: [...layerStates.allLayerSettingsByUser],
@@ -1346,7 +1336,7 @@ function Map() {
   useEffect(() => {
 
     // USE EFFECT FOR BASEMAP LAYER HANDLING
-    if (stateApp.baseMapLayers.length > 0 && map) {
+    if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
       stateApp.baseMapLayers.forEach((l) => {
         l.id.forEach((k) => {
           if (map.getLayer(k)) {
@@ -1387,7 +1377,7 @@ function Map() {
   useEffect(() => {
 
     // USE EFFECT FOR HEATMAP LAYER HANDLES
-    if (stateApp.heatLayers.length > 0 && map) {
+    if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
       stateApp.heatLayers.forEach((l) => {
         l.id.forEach((k) => {
           if (map.getLayer(k)) {
@@ -4802,4 +4792,5 @@ function Map() {
 }
 
 Map.whyDidYouRender = true
+
 export default React.memo(Map);

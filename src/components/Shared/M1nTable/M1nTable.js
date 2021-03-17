@@ -1,7 +1,13 @@
 
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+
+// context
 import { AppContext } from "../../../AppContext";
+import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
+
+
+
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
 
@@ -79,134 +85,69 @@ const useStyles = makeStyles((theme) => ({
 function M1nTable(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
+
+  // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateGrid, setStateGrid] = useContext(MapGridContext);
+
+
+  // function states 
   const [addDealOpen, setAddDealOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState();
   const [rows, Rows] = useState([]);
-  const setRows = (newState) => {
-    setStateIfDeepEqual(Rows, newState);
-  };
-
+  const setRows = (newState) => {setStateIfDeepEqual(Rows, newState);};
   const [total, Total] = useState(false);
-  const setTotal = (newState) => {
-    setStateIfDeepEqual(Total, newState);
-  };
-
+  const setTotal = (newState) => {setStateIfDeepEqual(Total, newState);};
   const [header, Header] = useState("");
-  const setHeader = (newState) => {
-    setStateIfDeepEqual(Header, newState);
-  };
+  const setHeader = (newState) => {setStateIfDeepEqual(Header, newState);};
   const [columns, Columns] = useState([]);
-  const setColumns = (newState) => {
-    setStateIfDeepEqual(Columns, newState);
-  };
+  const setColumns = (newState) => {setStateIfDeepEqual(Columns, newState);};
   const [columnsBase, ColumnsBase] = useState([]);
   const setColumnsBase = (newState) => {setStateIfDeepEqual(ColumnsBase, newState);};
   const [loading, Loading] = useState(true);
-  const setLoading = (newState) => {
-    setStateIfDeepEqual(Loading, newState);
-  };
+  const setLoading = (newState) => {setStateIfDeepEqual(Loading, newState);};
   const [addAble, AddAble] = useState(true);
-  const setAddAble = (newState) => {
-    setStateIfDeepEqual(AddAble, newState);
-  };
+  const setAddAble = (newState) => {setStateIfDeepEqual(AddAble, newState);};
   const [uploadIcon, UploadIcon] = useState(null);
-  const setUploadIcon = (newState) => {
-    setStateIfDeepEqual(UploadIcon, newState);
-  };
+  const setUploadIcon = (newState) => {setStateIfDeepEqual(UploadIcon, newState);};
   const [targetLabel, TargetLabel] = useState(null);
-  const setTargetLabel = (newState) => {
-    setStateIfDeepEqual(TargetLabel, newState);
-  };
+  const setTargetLabel = (newState) => {setStateIfDeepEqual(TargetLabel, newState);};
   const [targetLabelToExpand, TargetLabelToExpand] = useState(null);
-  const setTargetLabelToExpand = (newState) => {
-    setStateIfDeepEqual(TargetLabelToExpand, newState);
-  };
-
+  const setTargetLabelToExpand = (newState) => {setStateIfDeepEqual(TargetLabelToExpand, newState);};
   const [deleteFunc, setDeleteFunc] = useState(null);
   const [showTracks, ShowTracks] = useState(true);
-  const setShowTracks = (newState) => {
-    setStateIfDeepEqual(ShowTracks, newState);
-  };
+  const setShowTracks = (newState) => {setStateIfDeepEqual(ShowTracks, newState);};
   const [orderByTracks, OrderByTracks] = useState(true);
-  const setOrderByTracks = (newState) => {
-    setStateIfDeepEqual(OrderByTracks, newState);
-  };
+  const setOrderByTracks = (newState) => {setStateIfDeepEqual(OrderByTracks, newState);};
   const [startPaginationAt, StartPaginationAt] = useState();
-  const setStartPaginationAt = (newState) => {
-    setStateIfDeepEqual(StartPaginationAt, newState);
-  };
+  const setStartPaginationAt = (newState) => {setStateIfDeepEqual(StartPaginationAt, newState);};
   const [viewportFeatures, ViewportFeatures] = useState(null);
-  const setViewportFeatures = (newState) => {
-    setStateIfDeepEqual(ViewportFeatures, newState);
-  };
+  const setViewportFeatures = (newState) => {setStateIfDeepEqual(ViewportFeatures, newState);};
   const [warningShowed, WarningShowed] = useState(false);
-  const setWarningShowed = (newState) => {
-    setStateIfDeepEqual(WarningShowed, newState);
-  };
+  const setWarningShowed = (newState) => {setStateIfDeepEqual(WarningShowed, newState);};
   const [dataContacts, DataContacts] = useState(null);
   const setDataContacts = (newState) => {setStateIfDeepEqual(DataContacts, newState);};
-
   const [dataWellInterests, DataWellInterests] = useState(null);
-  const setDataWellInterests = (newState) => {
-    setStateIfDeepEqual(DataWellInterests, newState);
-  };
-
+  const setDataWellInterests = (newState) => {setStateIfDeepEqual(DataWellInterests, newState);};
   const [dataTracks, DataTracks] = useState(null);
-  const setDataTracks = (newState) => {
-    setStateIfDeepEqual(DataTracks, newState);
-  };
+  const setDataTracks = (newState) => {setStateIfDeepEqual(DataTracks, newState);};
+  const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
-  // year state
-  const [selectedYear, setSelectedYear] = useState(2020)
+  // selectors
+  const {searchloading,searchResultData,selectedOwnerWellIntsSummary,} = useSelector(({ MapGridCard }) => MapGridCard);
 
-  const {
-    searchloading,
-    searchResultData,
-    selectedOwnerWellIntsSummary,
-  } = useSelector(({ MapGridCard }) => MapGridCard);
 
-  const { pipeToShowTab } = useSelector(({ Flow }) => Flow);
-
-  ////////////Queries begin///////////////////////////////////////////////
-
+  // queries 
   const [tracksByObjectType, { data: constDataTracks }] = useLazyQuery(TRACKSBYOBJECTTYPE,{fetchPolicy: "cache-and-network",});
   const [tracksWell, { data: dataWellTracks }] = useLazyQuery(TRACKSWELL,{fetchPolicy: "cache-and-network",});
-  const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(
-    COMMENTSCOUNTER,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
-  const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES, {
-    fetchPolicy: "cache-and-network",
-  });
-  //////////
-  const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY, {
-    fetchPolicy: "cache-and-network",
-  });
-  const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
-    OWNERSWELLSQUERY
-  );
-  //////////
+  const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(COMMENTSCOUNTER,{fetchPolicy: "cache-and-network",});
+  const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES, {fetchPolicy: "cache-and-network",});
+  const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY, {fetchPolicy: "cache-and-network",});
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-  const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, {
-    fetchPolicy: "cache-and-network",
-  });
-  const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, {
-    fetchPolicy: "cache-and-network",
-  });
-  //////////
-  const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(
-    WELLOWNERSQUERY
-  );
-  //////////
-  const [getContactWells, { data: dataContactWells }] = useLazyQuery(
-    CONTACTWELLS
-  );
-
-
-  /////////
+  const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, {fetchPolicy: "cache-and-network",});
+  const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, {fetchPolicy: "cache-and-network",});
+  const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
+  const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {fetchPolicy: "cache-and-network",});
   const [removeUser] = useMutation(REMOVEUSER);
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY,{fetchPolicy: "no-cache",});
@@ -219,51 +160,15 @@ function M1nTable(props) {
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
   const [getParcelOwners, { data: dataParcelOwners }] = useLazyQuery(PARCELOWNERSQUERY);
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
-  const [getMelissaRowsCount, { data: dataMelissaRowsCount }] = useLazyQuery(
-    MELISSARECORDSCOUNTBYIDS,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
-  //////////
-  const [
-    getContactParcelInterests,
-    { data: dataContactParcelInterests },
-  ] = useLazyQuery(CONTACTPARCELINTERESTS, {
-    fetchPolicy: "cache-and-network",
-  });
-  /////////
-  const [
-    checkIfOwnersAreContacts,
-    { data: checkIfOwnersAreContactsData },
-  ] = useLazyQuery(IFARECONTACTS, {
-    fetchPolicy: "cache-and-network",
-  });
-  //////////
-  const [
-    getOwner_WellInterests,
-    { data: dataOwner_WellInterests },
-  ] = useLazyQuery(OWNER_WELLINTERESTS);
+  const [getMelissaRowsCount, { data: dataMelissaRowsCount }] = useLazyQuery(MELISSARECORDSCOUNTBYIDS,{fetchPolicy: "cache-and-network",});
+  const [getContactParcelInterests,{ data: dataContactParcelInterests },] = useLazyQuery(CONTACTPARCELINTERESTS, {fetchPolicy: "cache-and-network",});
+  const [checkIfOwnersAreContacts,{ data: checkIfOwnersAreContactsData },] = useLazyQuery(IFARECONTACTS, {fetchPolicy: "cache-and-network",});
+  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(ABSTRACTWELLGEOQUERY);
+  const [getPaginatedWellInterests,{ data: constDataWellInterests },] = useLazyQuery(PAGINATEDWELLINTERESTSQUERY, {fetchPolicy: "cache-and-network",});
+  const [getWellInterestsFilterOptions,{ data: dataWellInterestsFilterOptions },] = useLazyQuery(WELLINTERESTSFILTEROPTIONS, {fetchPolicy: "cache-and-network",});
 
-  const [
-    getPaginatedWellInterests,
-    { data: constDataWellInterests },
-  ] = useLazyQuery(PAGINATEDWELLINTERESTSQUERY, {
-    fetchPolicy: "cache-and-network",
-  });
 
-  const [
-    getWellInterestsFilterOptions,
-    { data: dataWellInterestsFilterOptions },
-  ] = useLazyQuery(WELLINTERESTSFILTEROPTIONS, {
-    fetchPolicy: "cache-and-network",
-  });
 
-  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(
-    ABSTRACTWELLGEOQUERY
-  );
-
-  ////////////Queries end///////////////////////////////////////////////
 
   ////////////General begin///////////////////////////////////////////////
 
@@ -335,11 +240,6 @@ function M1nTable(props) {
             ownerIdArray: dataTracks,
           },
         });
-        // getOwnersWells({
-        //   variables: {
-        //     ownersIds: dataTracks,
-        //   },
-        // });
         getCommentsCounter({
           variables: {
             objectsIdsArray: dataTracks,
@@ -1311,7 +1211,7 @@ function M1nTable(props) {
           setHeader("Contacts");
           setOrderByTracks(false);
           setAddAble({ parent: false, type: "contact" });
-          getPaginatedContacts({variables: { search: stateApp.gridSearchTarget }});
+          getPaginatedContacts({variables: { search: stateGrid.gridSearchTarget }});
           getContactsFilterOptions();
           updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
           setUploadIcon(true);
@@ -1328,7 +1228,7 @@ function M1nTable(props) {
         setHeader("Contacts");
         setOrderByTracks(false);
         setAddAble({ parent: false, type: "contact" });
-        getPaginatedContacts({variables: { search: stateApp.gridSearchTarget }});
+        getPaginatedContacts({variables: { search: stateGrid.gridSearchTarget }});
         getContactsFilterOptions();
         updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
         setUploadIcon(false);
@@ -1337,7 +1237,7 @@ function M1nTable(props) {
       }
 
   }, [props.parent,
-      stateApp.gridSearchTarget]);
+      stateGrid.gridSearchTarget]);
 
 
 
@@ -1739,22 +1639,35 @@ function M1nTable(props) {
       if (searchResultData.length > 0) {
         searchResultData.forEach((result) => {
           result.id = result.Id;
+          console.log('value result', result)
 
+          // setting flyto coordinates for well 
           if (props.targetLabel && props.targetLabel == "well") {
             if (result.Longitude) result.longitude = result.Longitude;
             if (result.Latitude) result.latitude = result.Latitude;
 
             result.coordinates = {};
-            if (result.Longitude && result.Latitude)
+            if (result.Longitude && result.Latitude){
               result.coordinates.center = [result.Longitude, result.Latitude];
-
+              result.coordinates.wellId = result.Id
+            }
             //// set in the detailCard column
             result.detailCard = result.Id;
+
+            // setting flyto coordinates for location 
           } else if (props.targetLabel && props.targetLabel == "location") {
             result.coordinates = {};
             if (result.bbox) result.coordinates.bbox = result.bbox;
             if (result.center) result.coordinates.center = result.center;
+
+          } else if (props.targetLabel && props.targetLabel == "operator") {
+            result.coordinates = {};
+            if (result.bbox) result.coordinates.bbox = result.bbox;
+            if (result.center) result.coordinates.center = result.center;           
+
+          // setting flyto for owners 
           } else if (props.targetLabel && props.targetLabel == "owner") {
+            
             result.coordinates = {
               objToPopulateSearchLayer: {
                 objectType: "owner",
@@ -1867,10 +1780,20 @@ function M1nTable(props) {
           //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);
         if (
-          props.targetLabel &&
-          (props.targetLabel == "well" ||
-            props.targetLabel == "location" ||
-            props.targetLabel == "owner")
+          // this is the fly-to labeler for grid ... 
+          // seems to be running really slow 
+          // also in general doesnt seem to work except for wells 
+          // and locations 
+          // probably need to somehow refactor 
+          
+          props.targetLabel 
+           &&( props.targetLabel == "well" 
+            || props.targetLabel == "location" 
+            || props.targetLabel == "operator"
+            // props.targetLabel == "lease" ||
+            // props.targetLabel == "contacts" ||
+            || props.targetLabel == "owner"
+            )
         )
           //would only set flyto for wells, locations & owners
           buildingColumns.push(SearchsHeadCells[4]);
@@ -2164,7 +2087,165 @@ function M1nTable(props) {
     }
 
   }, [abstractWellData, dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData])
+
+
+
+//////////// SELECTED POLYGON WELL //////////////////////////////////////
+
+  // useEffect(()=> {
+  //   if (stateApp.selectedPolygonString) {
+  //     getAbstractWellGeo({
+  //       variables: {
+  //         polygon: stateApp.selectedPolygonString,
+  //       },
+  //     });
+  //   }
+  // }, [stateApp.selectedPolygonString]);
+
+  useEffect(() => {
+
+  }, []);
+
+  useEffect(() => {
+    if (abstractWellData) {
+      const objectsIdsArray = abstractWellData.abstractWellGeo.map(
+        (wellInterest) => wellInterest.wellId
+      );
+
+      getCommentsCounter({
+        variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+      });
+      getTagSamples({
+        variables: { objectsIdsArray, userId: stateApp.user.mongoId },
+      });
+      // let set_tracked = [];
+      // let reconstruct_wells = [];
+      // stateApp.trackedwells.forEach(element => {
+      //   const found = abstractWellData.abstractWellGeo.find(x => x.wellId == element.id);
+      //   if (found) {
+      //     set_tracked.push(found);
+      //   }
+      // });
+      // // Tags = 0
+      // // Tracks = 1
+      // // Comments =0
+      // abstractWellData.abstractWellGeo.forEach(element => {
+      //   if (element in set_tracked) {
+      //     reconstruct_wells.push({...element, isTracked: true});
+      //   } else {
+      //     reconstruct_wells.push({...element, isTracked: false});
+      //   }
+      // });
+      // setStateApp({
+      //   ...stateApp,
+      //   selectedBoundaryWell: reconstruct_wells
+      // });
+    }
+  }, [abstractWellData]);
+
+
+  useEffect(() => {
+    if (props.parent && props.parent === "ownersPerParcelWells") {
+      setHeader("Associated Wells");
+      if (abstractWellData) {
+        if (
+          abstractWellData.abstractWellGeo &&
+          abstractWellData.abstractWellGeo.length > 0 &&
+          dataCommentsCounter &&
+          dataCommentsCounter.commentsCounter &&
+          dataTagSamples &&
+          dataTagSamples.tagSamples
+        ) {
+          let wells = [...abstractWellData.abstractWellGeo];
+          wells = wells.map((o) => {
+            let wells = { ...o };
+            wells.commentsCounter = 0;
+            wells.tags = [[], 0];
+
+            for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+              if (wells.wellId === dataCommentsCounter.commentsCounter[i]._id) {
+                wells.commentsCounter =
+                  dataCommentsCounter.commentsCounter[i].total;
+                break;
+              }
+            }
+
+            for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+              if (wells.wellId === dataTagSamples.tagSamples[i]._id) {
+                wells.tags = [
+                  dataTagSamples.tagSamples[i].tags,
+                  dataTagSamples.tagSamples[i].total,
+                ];
+
+                break;
+              }
+            }
+            return wells;
+          });
+
+          let availableTags = [];
+          dataTagSamples.tagSamples.map((sample) => {
+            availableTags = [...availableTags, ...sample.tags];
+          });
+          const cleanAvailableTags = [...new Set(availableTags)];
+
+          wells.forEach(element => {
+            if (stateApp.trackedWells) {
+              const found = stateApp.trackedWells.find((x) => x.id == element.wellId);
+              if (found) {
+                element.isTracked = true;
+              } else {
+                element.isTracked = false;
+              }
+            } else {
+              element.isTracked = false;
+            }
+          });
+
+          setRows(wells);
+          setColumns(
+            cleanAvailableTags.length > 0
+              ? CustomWellsHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags
+                      },
+                    },
+                  };
+                }
+                return column;
+              })
+              : CustomWellsHeadCells.map((column) => {
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions
+                      },
+                    },
+                  };
+                }
+                return column;
+              })
+          );
+        }
+      }
+      setLoading(false);
+    }
+
+  }, [abstractWellData, dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData])
   //////////// SELECTED POLYGON WELL //////////////////////////////////////
+
+
+
+
 
   ////////////Owners Per Parcel begin//////////Delete//////////////////////////////
 
