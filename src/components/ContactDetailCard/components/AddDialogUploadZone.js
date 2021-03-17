@@ -25,7 +25,8 @@ import { useDispatch } from "react-redux";
 import UploadZone from "./DailogUploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
 import { CircularProgress } from "@material-ui/core";
-
+import { Document, Page, pdfjs } from "react-pdf";
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const useStyles = makeStyles((theme) => ({
 	root: {
 		// backgroundColor: "#fff",
@@ -257,6 +258,11 @@ export default function Documents(props) {
 			fontSize: 11,
 		},
 	}))(Tooltip);
+	const [numPages, setNumPages] = useState(null);
+	const [pageNumber, setPageNumber] = useState(1);
+	function onDocumentLoadSuccess({ numPages }) {
+		setNumPages(numPages);
+	}
 	return (
 		<div className={classes.root} variant="outlined">
 			<CardActions style={{ padding: "23px 23px 8px 23px" }}>
@@ -316,7 +322,7 @@ export default function Documents(props) {
 						)}
 						{console.log(props.filesData, "Files data in Adddialog")}
 						{props.filesData?.viewFiles?.map((value, key) => {
-							if (key <= 1) {
+							if (key <= 0) {
 								return (
 									<Grid item xs={3} key={key}>
 										<LightTooltip
@@ -355,13 +361,25 @@ export default function Documents(props) {
 											{/* <img src={value.uri} className={classes.forImage}></img> */}
 											{/* <iframe src={value.uri} frameborder="0"></iframe> */}
 											{value.name.includes("pdf") ? (
-												<object
+												// <object
+												// 	className={classes.forImage}
+												// 	data={`data/${value.uri}`}
+												// 	type="application/pdf"
+												// >
+												// 	<a href={value.uri}>test.pdf</a>
+												// </object>
+												<Document
 													className={classes.forImage}
-													data={`data/${value.uri}`}
-													type="application/pdf"
+													file={value.uri}
+													onLoadSuccess={onDocumentLoadSuccess}
 												>
-													<a href={value.uri}>test.pdf</a>
-												</object>
+													<Page
+														className={classes.forImage}
+														pageNumber={pageNumber}
+														width={79}
+														height={70}
+													/>
+												</Document>
 											) : (
 												<img src={value.uri} className={classes.forImage}></img>
 											)}

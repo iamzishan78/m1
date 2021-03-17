@@ -188,7 +188,7 @@ const useStyles = makeStyles((theme) => ({
 		},
 	},
 	dialogExpCard: {
-		zIndex: 9999999999999999999,
+		zIndex: "9999999999999999999 !important",
 	},
 }));
 
@@ -918,7 +918,7 @@ function AddDealDialog(props) {
 			variables: {
 				relatedObjectId: stateApp.activeDeal?.cardId,
 				relatedObjectType: "Deal",
-				limit: 2,
+				limit: 1,
 			},
 		});
 	}, [stateApp.activeDeal?.cardId]);
