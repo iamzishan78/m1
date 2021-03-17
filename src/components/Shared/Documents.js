@@ -3,8 +3,9 @@ import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import moment from "moment";
-import Card from "@material-ui/core/Card";
-import Button from "@material-ui/core/Button";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import TextField from "@material-ui/core/TextField";
+import SearchIcon from "@material-ui/icons/Search";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
@@ -26,323 +27,399 @@ import UploadZone from "./UploadZone";
 import CardMedia from "@material-ui/core/CardMedia";
 
 const useStyles = makeStyles((theme) => ({
-	root: {
-		// backgroundColor: "#fff",
-	},
-	timelineItemRight: {
-		"&:before": {
-			content: "none",
-		},
-	},
+  root: {
+    // backgroundColor: "#fff",
+  },
+  timelineItemRight: {
+    "&:before": {
+      content: "none",
+    },
+  },
 
-	viewAll: {
-		textDecoration: "underline",
-		margin: "0 0 8px 0",
-		float: "right",
-		color: theme.palette.secondary.main,
-		cursor: "pointer",
-		fontWeight: "normal",
-		"&:hover": { color: "#757575" },
-		transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-	},
-	timelineText: {
-		"& .MuiTypography-body1": { fontSize: "0.85rem" },
-		"& .MuiTypography-body2": { fontSize: "0.7rem" },
-		"&  p": {
-			margin: "0",
-		},
-	},
-	blue: {
-		color: theme.palette.secondary.main,
-	},
-	todayDot: {
-		fontSize: "8px",
-	},
-	dealTitle: {
-		cursor: "pointer",
-		"&:hover": {
-			fontWeight: "bold",
-			textDecoration: "underline",
-		},
-	},
-	fileUploadSection: {
-		minHeight: "50px",
-		display: "flex",
-		justifyContent: "space-between",
-		flexDirection: "column",
-		width: "100%",
-	},
-	fileUploadTopSection: {
-		minHeight: "50px",
-		display: "flex",
-		justifyContent: "space-between",
-		alignItems: "center",
-		width: "100%",
-		marginBottom: "23px",
-	},
-	uploadTitle: {
-		margin: "0",
-		color: "#757575",
-		fontWeight: "normal",
-		marginBottom: "8px",
-	},
-	uploadSubtext: {
-		color: "rgb(176, 176, 176)",
-		margin: "0",
-		fontWeight: "normal",
-	},
-	IconSection: {
-		minHeight: "35px",
-		display: "flex",
-		justifyContent: "center",
-		flexDirection: "column",
-		width: "fit-content",
-	},
-	fileDrop: {
-		minHeight: "125px",
-		width: "100%",
-		padding: "10px 40px",
-		color: "#757575",
-		fontWeight: "normal",
-		backgroundColor: "#eee",
-		textAlign: "center",
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
-		border: "2px dashed rgb(176, 176, 176)",
-		marginBottom: "30px",
-	},
-	fileDropError: {
-		color: "red",
-	},
+  viewAll: {
+    textDecoration: "underline",
+    margin: "0 0 8px 0",
+    float: "right",
+    color: theme.palette.secondary.main,
+    cursor: "pointer",
+    fontWeight: "normal",
+    "&:hover": { color: "#757575" },
+    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+  },
+  timelineText: {
+    "& .MuiTypography-body1": { fontSize: "0.85rem" },
+    "& .MuiTypography-body2": { fontSize: "0.7rem" },
+    "&  p": {
+      margin: "0",
+    },
+  },
+  blue: {
+    color: theme.palette.secondary.main,
+  },
+  todayDot: {
+    fontSize: "8px",
+  },
+  dealTitle: {
+    cursor: "pointer",
+    "&:hover": {
+      fontWeight: "bold",
+      textDecoration: "underline",
+    },
+  },
+  fileUploadSection: {
+    minHeight: "50px",
+    display: "flex",
+    justifyContent: "space-between",
+    flexDirection: "column",
+    width: "100%",
+  },
+  fileUploadTopSection: {
+    minHeight: "50px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: "23px",
+  },
+  flexIcon: {
+    display: "flex",
+  },
+  uploadTitle: {
+    margin: "0",
+    color: "#757575",
+    fontWeight: "normal",
+    marginBottom: "8px",
+  },
+  uploadSubtext: {
+    color: "rgb(176, 176, 176)",
+    margin: "0",
+    fontWeight: "normal",
+  },
+  IconSection: {
+    minHeight: "35px",
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    width: "fit-content",
+  },
+  fileDrop: {
+    minHeight: "125px",
+    width: "100%",
+    padding: "10px 40px",
+    color: "#757575",
+    fontWeight: "normal",
+    backgroundColor: "#eee",
+    textAlign: "center",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    border: "2px dashed rgb(176, 176, 176)",
+    marginBottom: "30px",
+  },
+  fileDropError: {
+    color: "red",
+  },
+
+  greySquare: {
+    cursor: "pointer",
+    borderRadius: "12px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: "30px",
+    height: "80px",
+    width: "80px",
+    backgroundColor: "#cecece",
+    marginRight: "10px",
+
+    "& svg": {
+      fill: "#999 !important",
+    },
+  },
+  disabledDownload: {
+    cursor: "auto !important",
+    backgroundColor: "#e9e9e978 !important",
+    "& svg": {
+      fill: "#d3d3d3ab !important",
+    },
+  },
 }));
 
 export default function Documents(props) {
-	const classes = useStyles();
-	const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
-	const [fileIdToDelete, setFileIdToDelete] = useState(null);
-	const [fileRequestCounter, setFileRequestCounter] = useState(1);
-	const [stateApp] = React.useContext(AppContext);
-	const userId = stateApp.user.mongoId;
+  const classes = useStyles();
+  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
+  const [fileIdToDelete, setFileIdToDelete] = useState(null);
+  const [fileRequestCounter, setFileRequestCounter] = useState(1);
+  const [documentSearch, setDocumentSearch] = useState("");
+  const [filteredDocuments, setFilteredDocuments] = useState([]);
 
-	const [relatedObjectType, limit] = useMemo(() => {
-		if (props.isTransactPage) return ["Deal", 99];
-		else return ["Contact", 2];
-	}, [props.isTransactPage]);
+  const [stateApp] = React.useContext(AppContext);
+  const userId = stateApp.user.mongoId;
 
-	const [getRecentFiles, { data: files }] = useLazyQuery(
-		GETRECENTCONTACTFILES,
-		{
-			fetchPolicy: "cache-and-network",
-			onCompleted: ({ getFileDescriptors }) => {
-				let allActive = true;
+  const [relatedObjectType, limit] = useMemo(() => {
+    if (props.isTransactPage) return ["Deal", 99];
+    else return ["Contact", 2];
+  }, [props.isTransactPage]);
 
-				console.log("File descriptors: ", getFileDescriptors);
-				if (getFileDescriptors)
-					for (let i = 0; i < getFileDescriptors.length; i++) {
-						if (getFileDescriptors[i].fileState !== "active") {
-							allActive = false;
-							break;
-						}
-					}
+  const [getRecentFiles, { data: files }] = useLazyQuery(
+    GETRECENTCONTACTFILES,
+    {
+      fetchPolicy: "cache-and-network",
+      onCompleted: ({ getFileDescriptors }) => {
+        let allActive = true;
 
-				if (!allActive) {
-					if (fileRequestCounter <= 40) {
-						let waitBeforeRequestAgain = setTimeout(() => {
-							setFileRequestCounter(fileRequestCounter + 1);
-							getRecentFiles({
-								variables: {
-									relatedObjectId: props.id,
-									relatedObjectType,
-								},
-							});
-							clearTimeout(waitBeforeRequestAgain);
-						}, 1000);
-					} else {
-						setFileRequestCounter(1);
-						// dispatch(
-						//   showWarningMessage(
-						//     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
-						//   )
-						// );
-					}
-				} else setFileRequestCounter(1);
-			},
-		}
-	);
-	const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
+        console.log("File descriptors: ", getFileDescriptors);
+        if (getFileDescriptors)
+          for (let i = 0; i < getFileDescriptors.length; i++) {
+            if (getFileDescriptors[i].fileState !== "active") {
+              allActive = false;
+              break;
+            }
+          }
 
-	// const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
-	//   ADDDESCRIPTORFILE,
-	//   {
-	//     refetchQueries: ["getRecentContactFiles"],
-	//     awaitRefetchQueries: true,
-	//     //   onCompleted: () => {
-	//     //     // setTimeout(() => {
-	//     //     //   getRecentFiles({
-	//     //     //     variables: {
-	//     //     //       contactId: props.id,
-	//     //     //     },
-	//     //     //   });
-	//     //     // }, 3000);
-	//     //   },
-	//   }
-	// );
-	const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
-		fetchPolicy: "no-cache",
-	});
+        if (!allActive) {
+          if (fileRequestCounter <= 40) {
+            let waitBeforeRequestAgain = setTimeout(() => {
+              setFileRequestCounter(fileRequestCounter + 1);
+              getRecentFiles({
+                variables: {
+                  relatedObjectId: props.id,
+                  relatedObjectType,
+                },
+              });
+              clearTimeout(waitBeforeRequestAgain);
+            }, 1000);
+          } else {
+            setFileRequestCounter(1);
+            // dispatch(
+            //   showWarningMessage(
+            //     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
+            //   )
+            // );
+          }
+        } else setFileRequestCounter(1);
+      },
+    }
+  );
+  const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
 
-	useEffect(() => {
-		getRecentFiles({
-			variables: {
-				relatedObjectId: props.id,
-				relatedObjectType,
-				limit,
-			},
-		});
-	}, [props.id]);
+  // const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
+  //   ADDDESCRIPTORFILE,
+  //   {
+  //     refetchQueries: ["getRecentContactFiles"],
+  //     awaitRefetchQueries: true,
+  //     //   onCompleted: () => {
+  //     //     // setTimeout(() => {
+  //     //     //   getRecentFiles({
+  //     //     //     variables: {
+  //     //     //       contactId: props.id,
+  //     //     //     },
+  //     //     //   });
+  //     //     // }, 3000);
+  //     //   },
+  //   }
+  // );
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "no-cache",
+  });
 
-	useEffect(() => {
-		console.log("VIEW FILE RESULT", viewFileResult);
-		if (viewFileResult?.viewFile?.uri) {
-			let a = document.createElement("a");
-			a.href = viewFileResult.viewFile.uri;
-			a.download = viewFileResult.viewFile.name;
+  useEffect(() => {
+    getRecentFiles({
+      variables: {
+        relatedObjectId: props.id,
+        relatedObjectType,
+        limit,
+      },
+    });
+  }, [props.id]);
 
-			// if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
-			// a.target = "_blank";
+  useEffect(() => {
+    console.log("VIEW FILE RESULT", viewFileResult);
+    if (viewFileResult?.viewFile?.uri) {
+      let a = document.createElement("a");
+      a.href = viewFileResult.viewFile.uri;
+      a.download = viewFileResult.viewFile.name;
 
-			// file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
-			a.click();
-		}
-	}, [viewFileResult]);
+      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
+      // a.target = "_blank";
 
-	const handleDeleteCancel = () => {
-		setFileIdToDelete(null);
-		setOpenDeleteConfirmDialog(false);
-	};
+      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
+      a.click();
+    }
+  }, [viewFileResult]);
 
-	const handleDeleteAccept = () => {
-		// Delete Document Logic goes here
-		if (fileIdToDelete) {
-			deleteFile({
-				variables: {
-					id: fileIdToDelete,
-				},
-				refetchQueries: ["getRecentContactFiles", "getContactFiles"],
-				awaitRefetchQueries: true,
-			});
-			setFileIdToDelete(null);
-			setOpenDeleteConfirmDialog(false);
-		}
-	};
+  const handleDeleteCancel = () => {
+    setFileIdToDelete(null);
+    setOpenDeleteConfirmDialog(false);
+  };
 
-	const handleViewFile = async (id) => {
-		viewFile({ variables: { fileId: id } });
-	};
+  const handleDeleteAccept = () => {
+    // Delete Document Logic goes here
+    if (fileIdToDelete) {
+      deleteFile({
+        variables: {
+          id: fileIdToDelete,
+        },
+        refetchQueries: ["getRecentContactFiles", "getContactFiles"],
+        awaitRefetchQueries: true,
+      });
+      setFileIdToDelete(null);
+      setOpenDeleteConfirmDialog(false);
+    }
+  };
 
-	const HandleShowFile = async (id) => {
-		console.log(id, "ShowFIle");
-		console.log(GETRECENTCONTACTFILES, "Recentdata");
-	};
+  const handleViewFile = async (id) => {
+    viewFile({ variables: { fileId: id } });
+  };
 
-	return (
-		<div className={classes.root} variant="outlined">
-			<CardActions style={{ padding: "23px 23px 8px 23px" }}>
-				{!props.isTransactPage && (
-					<Grid item xs={12} style={{ minHeight: "35px" }}>
-						<h4 style={{ margin: "0 0 8px 0", float: "left" }}>
-							Recent Documents
-						</h4>
-						<h4
-							className={classes.viewAll}
-							// onClick={(e) => {
-							//   e.preventDefault();
-							//   props.viewAll("comments");
-							// }}
+  const HandleShowFile = async (id) => {
+    console.log(id, "ShowFIle");
+    console.log(GETRECENTCONTACTFILES, "Recentdata");
+  };
 
-							onClick={() => {
-								props.handleOpenExpandableCard(
-									<ViewDocuments
-										contactId={props.id}
-										user_id={props.user_id}
-										activityLog={props.activityLog}
-										openDeleteConfirmDialog={openDeleteConfirmDialog}
-										handleClose={handleDeleteCancel}
-										handleAccept={handleDeleteAccept}
-										setOpenDeleteConfirmDialog={setOpenDeleteConfirmDialog}
-										setFileIdToDelete={setFileIdToDelete}
-									/>,
-									"Documents"
-								);
-							}}
-						>
-							View All
-						</h4>
-					</Grid>
-				)}
-			</CardActions>
-			<CardContent style={{ padding: "0 23px" }}>
-				<div className={classes.fileUploadSection}>
-					{/* Show two recent docs */}
-					{files?.getFileDescriptors?.map((file) => {
-						return (
-							<div key={file.fileId}>
-								<div className={classes.fileUploadTopSection}>
-									<div>
-										<h4 className={classes.uploadTitle}>{file.fileName}</h4>
-										{/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
-										<h5 className={classes.uploadSubtext}>
-											{moment.utc(file.dateTime).format("MMM DD, YYYY")}
-										</h5>
-									</div>
-									<div className={classes.IconSection}>
-										<IconButton
-											size="small"
-											style={{ marginBottom: "8px" }}
-											onClick={() => {
-												setOpenDeleteConfirmDialog(true);
-												setFileIdToDelete(file.descriptorId);
-											}}
-										>
-											<DeleteIcon />
-										</IconButton>
+  useEffect(() => {
+    let filtered = files?.getFileDescriptors?.filter((doc) =>
+      doc.fileName.toLowerCase().includes(documentSearch.toLowerCase())
+    );
+    setFilteredDocuments(filtered);
+  }, [documentSearch, files?.getFileDescriptors]);
 
-										<IconButton
-											disabled={file.fileState !== "active"}
-											size="small"
-											onClick={() => handleViewFile(file.fileId)}
-										>
-											<GetAppIcon />
-										</IconButton>
-									</div>
-								</div>
-							</div>
-						);
-					})}
-					<DeleteDocumentConfirmation
-						open={openDeleteConfirmDialog}
-						handleClose={handleDeleteCancel}
-						handleAccept={() => {
-							handleDeleteAccept();
-						}}
-					/>
-					<UploadZone
-						relatedObjectId={props.id}
-						userId={userId}
-						relatedObjectType={relatedObjectType} //Contact or Deal
-						// addFile={addFile}
-						// addFileData={addFileData}
-						// getRecentFiles={() => {
-						//   getRecentFiles({
-						//     variables: {
-						//       relatedObjectId: props.id,
-						//     },
-						//   });
-						// }}
-					/>
-				</div>
-			</CardContent>
-		</div>
-	);
+  return (
+    <div className={classes.root} variant="outlined">
+      <CardActions style={{ padding: "23px 23px 8px 23px" }}>
+        {!props.isTransactPage && (
+          <Grid item xs={12} style={{ minHeight: "35px" }}>
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
+              Recent Documents
+            </h4>
+            <h4
+              className={classes.viewAll}
+              // onClick={(e) => {
+              //   e.preventDefault();
+              //   props.viewAll("comments");
+              // }}
+
+              onClick={() => {
+                props.handleOpenExpandableCard(
+                  <ViewDocuments
+                    contactId={props.id}
+                    user_id={props.user_id}
+                    activityLog={props.activityLog}
+                    openDeleteConfirmDialog={openDeleteConfirmDialog}
+                    handleClose={handleDeleteCancel}
+                    handleAccept={handleDeleteAccept}
+                    setOpenDeleteConfirmDialog={setOpenDeleteConfirmDialog}
+                    setFileIdToDelete={setFileIdToDelete}
+                  />,
+                  "Documents"
+                );
+              }}
+            >
+              View All
+            </h4>
+          </Grid>
+        )}
+      </CardActions>
+      <CardContent style={{ padding: "0 23px" }}>
+        {props.isTransactPage && (
+          <UploadZone
+            relatedObjectId={props.id}
+            userId={userId}
+            relatedObjectType={relatedObjectType} //Contact or Deal
+          />
+        )}
+        {props.isTransactPage && (
+          <div style={{ marginBottom: "20px" }}>
+            <TextField
+              fullWidth
+              value={documentSearch}
+              onChange={(e) => setDocumentSearch(e.target.value)}
+              variant="outlined"
+              label={"Search Documents"}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              labelWidth={70}
+            />
+          </div>
+        )}
+        <div className={classes.fileUploadSection}>
+          {/* Show two recent docs */}
+          {filteredDocuments?.map((file) => {
+            return (
+              <div key={file.fileId}>
+                <div className={classes.fileUploadTopSection}>
+                  <div className={classes.flexIcon}>
+                    {props.isTransactPage && (
+                      <div
+                        className={`${classes.greySquare} ${
+                          file.fileState !== "active"
+                            ? classes.disabledDownload
+                            : ""
+                        }`}
+                        onClick={() => handleViewFile(file.fileId)}
+                      >
+                        <GetAppIcon fontSize="large" />
+                      </div>
+                    )}
+                    <div>
+                      <h4 className={classes.uploadTitle}>
+                        {file?.fileName?.length > 22
+                          ? file?.fileName?.slice(0, 20) + "..."
+                          : file?.fileName}
+                      </h4>
+                      {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
+                      <h5 className={classes.uploadSubtext}>
+                        {moment.utc(file.dateTime).format("MMM DD, YYYY")}
+                      </h5>
+                    </div>
+                  </div>
+                  <div className={classes.IconSection}>
+                    <IconButton
+                      size="small"
+                      style={{ marginBottom: "8px" }}
+                      onClick={() => {
+                        setOpenDeleteConfirmDialog(true);
+                        setFileIdToDelete(file.descriptorId);
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+
+                    {!props.isTransactPage && (
+                      <IconButton
+                        disabled={file.fileState !== "active"}
+                        size="small"
+                        onClick={() => handleViewFile(file.fileId)}
+                      >
+                        <GetAppIcon />
+                      </IconButton>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          <DeleteDocumentConfirmation
+            open={openDeleteConfirmDialog}
+            handleClose={handleDeleteCancel}
+            handleAccept={() => {
+              handleDeleteAccept();
+            }}
+          />
+          {!props.isTransactPage && (
+            <UploadZone
+              relatedObjectId={props.id}
+              userId={userId}
+              relatedObjectType={relatedObjectType} //Contact or Deal
+            />
+          )}
+        </div>
+      </CardContent>
+    </div>
+  );
 }

@@ -59,12 +59,12 @@ const useStyles = makeStyles((theme) => ({
     color: "#555",
     textTransform: "uppercase",
     paddingTop: "30px",
-	cursor: "pointer",
-	marginBottom: "5px"
+    cursor: "pointer",
+    marginBottom: "5px",
   },
   imageSubText: {
-	  letterSpacing: "0.5px",
-	  textAlign: "center"
+    letterSpacing: "0.5px",
+    textAlign: "center",
   },
   viewAll: {
     textDecoration: "underline",
@@ -152,7 +152,7 @@ export default function Documents(props) {
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
-  const [stateApp] = React.useContext(AppContext);
+  const [stateApp, setStateApp] = React.useContext(AppContext);
   const userId = stateApp.user.mongoId;
 
   const [relatedObjectType, limit] = useMemo(() => {
@@ -296,19 +296,10 @@ export default function Documents(props) {
               // }}
 
               onClick={() => {
-                props.handleOpenExpandableCard(
-                  <ViewDocuments
-                    contactId={props.id}
-                    user_id={stateApp.user.email}
-                    openDeleteConfirmDialog={openDeleteConfirmDialog}
-                    handleClose={handleDeleteCancel}
-                    handleAccept={handleDeleteAccept}
-                    setOpenDeleteConfirmDialog={setOpenDeleteConfirmDialog}
-                    setFileIdToDelete={setFileIdToDelete}
-                    relatedObjectType={relatedObjectType}
-                  />,
-                  "Documents"
-                );
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  transactBarView: "Documents",
+                }));
               }}
             >
               View All
