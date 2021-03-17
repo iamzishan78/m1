@@ -182,7 +182,10 @@ function AddWellInterestDialog(props) {
       setSelectedWell({
         Id: stateApp.activeWellInterest.wellId,
         WellName: stateApp.activeWellInterest.wellName,
-        ApiNumber: stateApp.activeWellInterest.api
+        ApiNumber: stateApp.activeWellInterest.api,
+        LeaseId: stateApp.activeWellInterest.leaseId,
+        Lease: stateApp.activeWellInterest.lease,
+        LeaseAcreage: stateApp.activeWellInterest.leaseAcres
       });
       setFormLeaseName(stateApp.activeWellInterest.lease);
       setFormLeaseAcres(stateApp.activeWellInterest.leaseAcres);
@@ -197,10 +200,7 @@ function AddWellInterestDialog(props) {
 
   const handleClose = () => {
     setFoundWells([]);
-    setSelectedWell({
-      WellName: "",
-      ApiNumber: ""
-    });
+    setSelectedWell(null);
     setFormLeaseName("");
     setFormLeaseAcres(null);
     setFormOwnerName("");
@@ -224,8 +224,9 @@ function AddWellInterestDialog(props) {
         variables: {
           id: stateApp.activeWellInterest._id,
           globalWellId: selectedWell.Id,
-          lease: formLeaseName,
-          leaseAcres: formLeaseAcres,
+          // ...(selectedWell?.LeaseId !== formLeaseId) && {leaseId: formLeaseId},
+          ...(selectedWell?.Lease !== formLeaseName) && {lease: formLeaseName},
+          ...(selectedWell?.LeaseAcreage !== formLeaseAcres) && {leaseAcres: formLeaseAcres},
           interestOwner: formOwnerName,
           interestOwnerType: formInterestOwnerType,
           type: formInterestType,
@@ -244,8 +245,9 @@ function AddWellInterestDialog(props) {
           globalWellId: selectedWell.Id,
           userId: stateApp.user.mongoId,
           contactId: props.contactId,
-          lease: formLeaseName,
-          leaseAcres: formLeaseAcres,
+          // ...(selectedWell?.LeaseId !== formLeaseId) && {leaseId: formLeaseId},
+          ...(selectedWell?.Lease !== formLeaseName) && {lease: formLeaseName},
+          ...(selectedWell?.LeaseAcreage !== formLeaseAcres) && {leaseAcres: formLeaseAcres},
           interestOwner: formOwnerName,
           interestOwnerType: formInterestOwnerType,
           type: formInterestType,
@@ -467,23 +469,25 @@ function AddWellInterestDialog(props) {
             <TextField
               variant="outlined"
               margin="dense"
-              value={selectedWell?.WellName}
+              value={selectedWell?.WellName || ""}
               //label={selectedWell?.WellName ? "Well Name" : "Well Name"}
               label={"Well Name"}
               InputLabelProps={{ shrink: true }}
               fullWidth
               disabled
+              defaultValue=""
             />
 
             <TextField
               variant="outlined"
               margin="dense"
-              value={selectedWell?.ApiNumber}
+              value={selectedWell?.ApiNumber || ""}
               //label={selectedWell?.ApiNumber ? "API Number" : "API Number"}
-              label={"API Number"}
+              label="API Number"
               InputLabelProps={{ shrink: true }}
               fullWidth
               disabled
+              defaultValue=""
             />
 
             <TextField
@@ -494,17 +498,20 @@ function AddWellInterestDialog(props) {
               label={"Lease Name"}
               fullWidth
               //disabled
+              defaultValue=""
             />
 
             <TextField
               type="number"
               variant="outlined"
               margin="dense"
-              value={formLeaseAcres}
+              value={formLeaseAcres || ""}
               onChange={event => setFormLeaseAcres(parseFloat(event.target.value)) }
               label={"Lease Acres"}
+              // InputLabelProps={{ shrink: true }}
               fullWidth
               //disabled
+              defaultValue=""
             />
           </div>
 
@@ -526,6 +533,7 @@ function AddWellInterestDialog(props) {
               onChange={event => setFormOwnerName(event.target.value) }
               label="Interest Owner Name"
               fullWidth
+              defaultValue=""
             />
 
             <FormControl
@@ -574,12 +582,13 @@ function AddWellInterestDialog(props) {
                     type="number"
                     variant="outlined"
                     margin="dense"
-                    value={formInterestAmount}
+                    value={formInterestAmount || ""}
                     onChange={event => setFormInterestAmount(parseFloat(event.target.value)) }
                     //label={formInterestAmount ? "" : "Interest Amount"}
                     label = "Interest Amount"
-                    InputLabelProps={{ shrink: true }}
+                    // InputLabelProps={{ shrink: true }}
                     fullWidth
+                    defaultValue=""
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -587,13 +596,13 @@ function AddWellInterestDialog(props) {
                     type="number"
                     variant="outlined"
                     margin="dense"
-                    value={formRoyaltyAcres}
+                    value={formRoyaltyAcres || ""}
                     onChange={event => setFormRoyaltyAcres(parseFloat(event.target.value)) }
                     //label={formRoyaltyAcres ? "" : "Net Royalty Acres"}
                     label = "Net Royalty Acres"
-                    InputLabelProps={{ shrink: true }}
+                    // InputLabelProps={{ shrink: true }}
                     fullWidth
-                    
+                    defaultValue=""
                   />
                 </Grid>
               </Grid>
@@ -601,14 +610,15 @@ function AddWellInterestDialog(props) {
               <TextField
                 variant="outlined"
                 margin="dense"
-                value={selectedWell?.acres}
+                // value={selectedWell?.acres}
                 label="Tax Appraisal Value"
                 fullWidth
                 InputProps={{
                   inputComponent: NumberFormatCustom,
                 }}
-                value={formTaxValue}
+                value={formTaxValue || ""}
                 onChange={event => setFormTaxValue(parseFloat(event.target.value)) }
+                defaultValue=""
               />
             </FormControl>
           </div>
