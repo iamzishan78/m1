@@ -918,7 +918,7 @@ function AddDealDialog(props) {
 			variables: {
 				relatedObjectId: stateApp.activeDeal?.cardId,
 				relatedObjectType: "Deal",
-				limit: 1,
+				limit: 2,
 			},
 		});
 	}, [stateApp.activeDeal?.cardId]);
