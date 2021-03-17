@@ -422,96 +422,55 @@ function SubTable(props) {
 
   // handlers 
   const handleWellFlyTo = (value) => {
-    console.log('value', value)
 
-  //   setStateApp((stateApp) =>
-
-
-  //   dataWells.wells.results.length === 1
-  //     ? {
-  //         ...stateApp,
-  //         selectedWell: null,
-  //         fitBounds: null,
-  //         selectedWellId: dataWells.wells.results[0].id.toLowerCase(),
-  //         wellSelectedCoordinates: [
-  //           dataWells.wells.results[0].longitude,
-  //           dataWells.wells.results[0].latitude,
-  //         ],
-  //         wellListFromSearch: [...dataWells.wells.results],
-  //       }
-  //     : {
-  //         ...stateApp,
-  //         fitBounds: null,
-  //         wellListFromSearch: [...dataWells.wells.results],
-  //       }
-  // );
-
-   setStateApp((stateApp) => ({
+    // setting state to fly to the selected well 
+    setStateApp((stateApp) => ({
       ...stateApp,
       fitBounds: null,
       selectedWell: null,
-      selectedWellId: value.wellId ? value.wellId : null,
+      selectedWellId: value.wellId ? value.wellId.toLowerCase() : null,
       wellSelectedCoordinates: [value.center[0], value.center[1]],
-      // wellListFromSearch: [...dataWells.wells.results],
+      wellListFromSearch: [
+        {
+          id: value.wellId,
+          longitude: value.center[0],
+          latitude: value.center[1],
+        },
+      ],
+    }));
+    stateApp.toggleLayersActivity("Search", true);
+  
+  };
 
-      // flyTo:{
-      //   longitude: value.center[0],
-      //   latitude: value.center[1],
-      //       }
-   }));
 
-  stateApp.toggleLayersActivity("Search", true);
+  const handleOwnerFlyTo = (value) => {
 
+    // // setting state to fly to the selected well 
     // setStateApp((stateApp) => ({
     //   ...stateApp,
     //   fitBounds: null,
     //   selectedWell: null,
-    //   //selectedWellId: value.Id ? newValue.Id.toLowerCase() : null,
+    //   selectedWellId: value.wellId ? value.wellId.toLowerCase() : null,
     //   wellSelectedCoordinates: [value.center[0], value.center[1]],
-    //   flyTo:{
-    //     longitude: value.center[0],
-    //     latitude: value.center[1],
-    //         }
-
-
-      // wellListFromSearch: [
-      //   {
-      //     id: newValue.Id,
-      //     longitude: newValue.Longitude,
-      //     latitude: newValue.Latitude,
-      //   },
-      // ],
-
-
-
-      //         popupOpen: false,
-      //         selectedWell: null,
-      //         activateWellDetailsFromTable: false,
-      //         selectedWellId:
-      //           props.targetLabel == "well"
-      //             ? tableMeta.rowData[0]
-      //             : null, 
-      //          //adding in fitbounds to center in right side of screen                           
-      //          fitBounds: {
-      //               maxLat: value.center[1],
-      //               minLat: value.center[1],
-      //               minLong: value.center[0] - 1.5 * .02,
-      //               maxLong: value.center[0] + 0.5 * .02,
-      //             },
-              
-      //             flyTo: {
-      //           longitude: value.center[0],
-      //           latitude: value.center[1],
-      //         },
-
-      
+    //   wellListFromSearch: [
+    //     {
+    //       id: value.wellId,
+    //       longitude: value.center[0],
+    //       latitude: value.center[1],
+    //     },
+    //   ],
     // }));
+    // stateApp.toggleLayersActivity("Search", true);
+  
   };
 
 
   const handleClickFlyToIcon = (entityType,searchTarget) => {
     if(entityType == "well"){
       handleWellFlyTo(searchTarget)
+    }
+    if(entityType == "owner"){
+      handleOwnerFlyTo(searchTarget)
     }
 
   };

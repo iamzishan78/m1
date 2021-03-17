@@ -6,22 +6,23 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import parse from "autosuggest-highlight/parse";
-import throttle from "lodash/throttle";
 import debounce from "lodash/debounce";
-import { AppContext } from "../../../AppContext";
 import Button from "@material-ui/core/Button";
 import PersonIcon from "@material-ui/icons/Person";
-import WellIcon from "../../Shared/svgIcons/well";
-import OperatorIcon from "../../Shared/svgIcons/operator";
-import LeaseIcon from "../../Shared/svgIcons/lease";
+
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
 
-import { OWNERWELLSQUERY } from "../../../graphQL/useQueryOwnerWells ";
+// contexts 
+import { AppContext } from "../../../AppContext";
+import { NavigationContext } from "../NavigationContext";
+
+// queries 
 import { useLazyQuery, useMutation } from "@apollo/client";
+import { OWNERWELLSQUERY } from "../../../graphQL/useQueryOwnerWells ";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { OWNERSLATSLONS } from "../../../graphQL/useQueryOwnerLatsLonsArray";
 import { OPERATORSLATSLONS } from "../../../graphQL/useQueryOperatorLatsLonsArray";
@@ -33,16 +34,24 @@ import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHis
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
 
+// custom components 
+import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
+import { deepEqualObjects, deepEqual, setStateIfDeepEqual } from "../../Shared/functions";
+import WellIcon from "../../Shared/svgIcons/well";
+import OperatorIcon from "../../Shared/svgIcons/operator";
+import LeaseIcon from "../../Shared/svgIcons/lease";
 
-import { NavigationContext } from "../NavigationContext";
+
+// 3rd party components
 import Popover from "@material-ui/core/Popover";
 import Tooltip from "@material-ui/core/Tooltip";
 import Box from "@material-ui/core/Box";
 import { CircularProgress } from "@material-ui/core";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
-import { deepEqualObjects, deepEqual, setStateIfDeepEqual } from "../../Shared/functions";
 import ClearIcon from "@material-ui/icons/Clear";
+
+
+
+import { useDispatch, useSelector } from "react-redux";
 
 
 const leaseIndexName = 'lease-index-v2';
@@ -198,7 +207,6 @@ function Search() {
 
   // queries 
   const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
-  const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
@@ -765,36 +773,40 @@ function Search() {
     }
   }, [dataOwnerWells]);
 
-  useEffect(() => {
-    if (
-      dataWells &&
-      dataWells.wells &&
-      dataWells.wells.results &&
-      dataWells.wells.results.length !== 0
-    ) {
+  // useEffect(() => {
+  //   if (
+  //     dataWells &&
+  //     dataWells.wells &&
+  //     dataWells.wells.results &&
+  //     dataWells.wells.results.length !== 0
+  //   ) {
 
-      setStateApp((stateApp) =>
-        dataWells.wells.results.length === 1
-          ? {
-              ...stateApp,
-              selectedWell: null,
-              fitBounds: null,
-              selectedWellId: dataWells.wells.results[0].id.toLowerCase(),
-              wellSelectedCoordinates: [
-                dataWells.wells.results[0].longitude,
-                dataWells.wells.results[0].latitude,
-              ],
-              wellListFromSearch: [...dataWells.wells.results],
-            }
-          : {
-              ...stateApp,
-              fitBounds: null,
-              wellListFromSearch: [...dataWells.wells.results],
-            }
-      );
-      stateApp.toggleLayersActivity("Search", true);
-    }
-  }, [dataWells]);
+  //     console.log('results', dataWells.wells)
+  //     console.log('well list',...dataWells.wells.results )
+
+  //     // setStateApp((stateApp) =>
+  //     //   dataWells.wells.results.length === 1
+  //     //     ? {
+  //     //         ...stateApp,
+  //     //         selectedWell: null,
+  //     //         fitBounds: null,
+  //     //         selectedWellId: dataWells.wells.results[0].id.toLowerCase(),
+  //     //         wellSelectedCoordinates: [
+  //     //           dataWells.wells.results[0].longitude,
+  //     //           dataWells.wells.results[0].latitude,
+  //     //         ],
+  //     //         wellListFromSearch: [...dataWells.wells.results],
+  //     //       }
+  //     //     : {
+  //     //         ...stateApp,
+  //     //         fitBounds: null,
+  //     //         wellListFromSearch: [...dataWells.wells.results],
+  //     //       }
+  //     // );
+  //     // stateApp.toggleLayersActivity("Search", true);
+
+  //   }
+  // }, [dataWells]);
 
   //// getting wells data from  operators////
   useEffect(() => {
@@ -1027,6 +1039,7 @@ function Search() {
         newValue.Longitude &&
         newValue.Latitude
       ) {
+
         setStateApp((stateApp) => ({
           ...stateApp,
           fitBounds: null,
