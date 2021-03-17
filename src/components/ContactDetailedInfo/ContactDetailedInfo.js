@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MelissaTable from "./components/MelissaTable";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import FieldContent, {
-  LinkTypes,
-} from "./../ContactDetailCard/components/FieldContent";
+import FieldContent from "../ContactDetailCard/components/FieldContent";
+import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -513,6 +512,7 @@ export default function DetailInfo(props) {
                     <FieldContent
                       id={props.contactData._id}
                       entity={props.contactData.entity}
+                      isMerged={!!props.contactData.mergedContacts}
                       content={row.data}
                       linkType={row.linkType}
                     />
@@ -537,6 +537,7 @@ export default function DetailInfo(props) {
                       <FieldContent
                         id={props.contactData._id}
                         entity={props.contactData.entity}
+                        isMerged={!!props.contactData.mergedContacts}
                         content={row.data}
                         linkType={row.linkType}
                       />
@@ -562,6 +563,7 @@ export default function DetailInfo(props) {
                         onlyChildren={row.inner ? true : false}
                         id={props.contactData._id}
                         entity={props.contactData.entity}
+                        isMerged={!!props.contactData.mergedContacts}
                         content={row.data}
                         linkType={row.linkType}
                       >
@@ -591,6 +593,7 @@ export default function DetailInfo(props) {
                           onlyChildren={row.inner ? true : false}
                           id={props.contactData._id}
                           entity={props.contactData.entity}
+                          isMerged={!!props.contactData.mergedContacts}
                           content={row.data}
                           linkType={row.linkType}
                         >

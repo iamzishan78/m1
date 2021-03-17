@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
-import FieldContent, {
-  FieldTypes,
-} from "./../../ContactDetailCard/components/FieldContent";
+import React, { useState } from "react";
+import FieldContent from "../../ContactDetailCard/components/FieldContent";
+import { FieldTypes } from "../../ContactDetailCard/components/FieldContent/helper";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { excludeList } from "./ExcludeList";
 import { Grid } from "@material-ui/core";
