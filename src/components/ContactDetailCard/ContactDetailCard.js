@@ -47,638 +47,638 @@ import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
 
 const useStyles = makeStyles((theme) => ({
-  Contacts: {
-    color: "#011133",
-    "&:hover": {
-      cursor: "pointer",
-      color: "rgb(18, 150, 194)",
-    },
-  },
-  topBar: {
-    color: "#12ABE0",
-    backgroundColor: "rgb(239,239,239)",
-    margin: "0 !important",
-    paddingLeft: "10px !important",
-    paddingTop: "15px",
-    paddingBottom: "15px",
-  },
-  border: {
-    borderBottom: "solid 1px #eaeaea",
-  },
-  rightColumnGrid: {
-    display: "block",
-    margin: "0",
-    minHeight: "100%",
-    backgroundColor: "#F0F6F8",
-    position: "relative",
-    transition: "width 0.3s ease-out",
-    WebkitTransition: "width 0.3s ease-out",
-    width: ({ shrinkRightColumn }) => (shrinkRightColumn ? "68px" : "37%"),
-  },
-  gridStyling: {
-    "& .MuiListItem-container": {
-      borderBottom: "1px solid #c7c7c7",
-    },
-  },
-  SectMargin: {
-    margin: "23px 28px",
-  },
-  pDealCard: {
-    fontWeight: "bold !important",
-    marginTop: "7 !important",
-    marginBottom: "7!important",
-  },
-  divDealCard: {
-    padding: "11px",
-    paddingLeft: "15px",
-    paddingRight: "15px",
-  },
-  userIcon: {
-    marginRight: "15px",
-    float: "left",
-  },
-  userName: {
-    color: "#919191",
-    minWidth: "50%",
-    maxWidth: "calc( 100% - 400px)",
-    float: "left",
-    "& h2": {
-      margin: "0",
-      color: "#202020",
-      fontSize: "1.7em",
-      maxWidth: "100%",
-    },
-    "& p": {
-      margin: "0",
-      maxWidth: "100%",
-    },
-    "& h4": { margin: "0" },
-    "& a": { color: "#12ABE0 !important" },
-  },
-  tags: {
-    "& fieldset": {
-      border: "none",
-    },
-  },
-  Comments: {
-    "& fieldset": {
-      border: "2px solid #DADEDF",
-    },
-    "& textarea": {
-      fontSize: "0.85rem",
-    },
-  },
-  CustomDialogBox: {
-    "& fieldset": {
-      border: "2px solid #DADEDF",
-    },
-    "& textarea": {
-      fontSize: "0.85rem",
-    },
-  },
-  ownersTable: {
-    visibility: "hidden",
-    "&  .MuiPaper-root>*": {
-      visibility: "visible",
-    },
-  },
-  addressIcon: { top: "3px", position: "relative" },
-  socialMediaSection: {
-    verticalAlign: "sub",
-    "& svg": { fontSize: "1.7rem" },
-  },
-  mainGridContainer: {
-    display: "flex",
-    "& a": { color: "#757575" },
-    "& .MuiPopover-paper": {
-      zIndex: "1700",
-    },
-  },
-  twitterIcon: {
-    background: "#17AADD",
-    color: "#fff",
-    height: "21px",
-    width: "21px",
-    padding: "1px",
-    margin: "3px",
-    borderRadius: "2px",
-  },
-  notAvailableP: { color: "#898989b0", fontSize: "13px" },
-  leftColumnTopRigthCorner: {
-    width: "max-content",
-    position: "relative",
-    zIndex: "600",
-    height: "0",
-    float: "right",
-    color: "#757575",
-    "& a": {
-      textDecoration: "none !important",
-    },
-    "& button": {
-      backgroundColor: "#D5F4FF",
-      color: theme.palette.secondary.main,
-      margin: "0 5px",
-      padding: "2px 12px",
-      fontSize: "0.85rem",
-      boxShadow: "none",
-      textTransform: "none",
-    },
-    "& .MuiButton-contained:hover": {
-      color: "#1da2cf",
-      backgroundColor: "rgba(0, 0, 0, 0.08)",
-      boxShadow:
-        "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
-    },
-  },
-  userSmallLoader: {
-    height: "0px",
-    width: "22px",
-    position: "relative",
-    top: "6px",
-    left: "2px",
-  },
-  noTextDecoration: { textDecoration: "none" },
-  grey: {
-    color: theme.palette.getContrastText("#808080"),
-    backgroundColor: "#808080 !important",
-  },
-  dialogExpCard: {
-    "& .MuiDialog-paperScrollPaper": {
-      height: "100%",
-    },
-  },
-  expTardTopBarNav: {
-    fontWeight: "normal",
-    flexGrow: 1,
-    "& span": {
-      color: theme.palette.secondary.main,
-    },
-  },
-  expTardTopBarNavContName: {
-    cursor: "pointer",
-    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-    "&:hover": { color: "#757575" },
-  },
-  leftColumn: {
-    MinHeight: "100%",
-    backgroundColor: "#fff",
-    flexGrow: "1",
-    transition: "width 0.3s ease-out",
-    WebkitTransition: "width 0.3s ease-out",
-  },
-  shrinkRightColumn: {
-    position: "absolute",
-    top: "55px",
-    left: "-13px",
-    backgroundColor: theme.palette.secondary.main,
-    color: "#fff",
-    boxShadow:
-      "0px 2px 7px 2px rgba(0,0,0,0.15), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
-    padding: "5px",
-    "& svg": { fontSize: "1rem" },
-    "&:hover": {
-      backgroundColor: "#EBEBEB",
-      color: theme.palette.secondary.main,
-    },
-  },
-  shrinkRightColumnIcons: {
-    backgroundColor: "#6094a030",
-    color: theme.palette.secondary.main,
-    margin: "10px",
-  },
-  viewAll: {
-    margin: "0 0 8px 0",
-    float: "right",
-    color: theme.palette.secondary.main,
-    cursor: "pointer",
-    fontWeight: "normal",
-    "&:hover": { color: "#757575" },
-    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-  },
+	Contacts: {
+		color: "#011133",
+		"&:hover": {
+			cursor: "pointer",
+			color: "rgb(18, 150, 194)",
+		},
+	},
+	topBar: {
+		color: "#12ABE0",
+		backgroundColor: "rgb(239,239,239)",
+		margin: "0 !important",
+		paddingLeft: "10px !important",
+		paddingTop: "15px",
+		paddingBottom: "15px",
+	},
+	border: {
+		borderBottom: "solid 1px #eaeaea",
+	},
+	rightColumnGrid: {
+		display: "block",
+		margin: "0",
+		minHeight: "100%",
+		backgroundColor: "#F0F6F8",
+		position: "relative",
+		transition: "width 0.3s ease-out",
+		WebkitTransition: "width 0.3s ease-out",
+		width: ({ shrinkRightColumn }) => (shrinkRightColumn ? "68px" : "37%"),
+	},
+	gridStyling: {
+		"& .MuiListItem-container": {
+			borderBottom: "1px solid #c7c7c7",
+		},
+	},
+	SectMargin: {
+		margin: "23px 28px",
+	},
+	pDealCard: {
+		fontWeight: "bold !important",
+		marginTop: "7 !important",
+		marginBottom: "7!important",
+	},
+	divDealCard: {
+		padding: "11px",
+		paddingLeft: "15px",
+		paddingRight: "15px",
+	},
+	userIcon: {
+		marginRight: "15px",
+		float: "left",
+	},
+	userName: {
+		color: "#919191",
+		minWidth: "50%",
+		maxWidth: "calc( 100% - 400px)",
+		float: "left",
+		"& h2": {
+			margin: "0",
+			color: "#202020",
+			fontSize: "1.7em",
+			maxWidth: "100%",
+		},
+		"& p": {
+			margin: "0",
+			maxWidth: "100%",
+		},
+		"& h4": { margin: "0" },
+		"& a": { color: "#12ABE0 !important" },
+	},
+	tags: {
+		"& fieldset": {
+			border: "none",
+		},
+	},
+	Comments: {
+		"& fieldset": {
+			border: "2px solid #DADEDF",
+		},
+		"& textarea": {
+			fontSize: "0.85rem",
+		},
+	},
+	CustomDialogBox: {
+		"& fieldset": {
+			border: "2px solid #DADEDF",
+		},
+		"& textarea": {
+			fontSize: "0.85rem",
+		},
+	},
+	ownersTable: {
+		visibility: "hidden",
+		"&  .MuiPaper-root>*": {
+			visibility: "visible",
+		},
+	},
+	addressIcon: { top: "3px", position: "relative" },
+	socialMediaSection: {
+		verticalAlign: "sub",
+		"& svg": { fontSize: "1.7rem" },
+	},
+	mainGridContainer: {
+		display: "flex",
+		"& a": { color: "#757575" },
+		"& .MuiPopover-paper": {
+			zIndex: "1700",
+		},
+	},
+	twitterIcon: {
+		background: "#17AADD",
+		color: "#fff",
+		height: "21px",
+		width: "21px",
+		padding: "1px",
+		margin: "3px",
+		borderRadius: "2px",
+	},
+	notAvailableP: { color: "#898989b0", fontSize: "13px" },
+	leftColumnTopRigthCorner: {
+		width: "max-content",
+		position: "relative",
+		zIndex: "600",
+		height: "0",
+		float: "right",
+		color: "#757575",
+		"& a": {
+			textDecoration: "none !important",
+		},
+		"& button": {
+			backgroundColor: "#D5F4FF",
+			color: theme.palette.secondary.main,
+			margin: "0 5px",
+			padding: "2px 12px",
+			fontSize: "0.85rem",
+			boxShadow: "none",
+			textTransform: "none",
+		},
+		"& .MuiButton-contained:hover": {
+			color: "#1da2cf",
+			backgroundColor: "rgba(0, 0, 0, 0.08)",
+			boxShadow:
+				"0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
+		},
+	},
+	userSmallLoader: {
+		height: "0px",
+		width: "22px",
+		position: "relative",
+		top: "6px",
+		left: "2px",
+	},
+	noTextDecoration: { textDecoration: "none" },
+	grey: {
+		color: theme.palette.getContrastText("#808080"),
+		backgroundColor: "#808080 !important",
+	},
+	dialogExpCard: {
+		"& .MuiDialog-paperScrollPaper": {
+			height: "100%",
+		},
+	},
+	expTardTopBarNav: {
+		fontWeight: "normal",
+		flexGrow: 1,
+		"& span": {
+			color: theme.palette.secondary.main,
+		},
+	},
+	expTardTopBarNavContName: {
+		cursor: "pointer",
+		transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+		"&:hover": { color: "#757575" },
+	},
+	leftColumn: {
+		MinHeight: "100%",
+		backgroundColor: "#fff",
+		flexGrow: "1",
+		transition: "width 0.3s ease-out",
+		WebkitTransition: "width 0.3s ease-out",
+	},
+	shrinkRightColumn: {
+		position: "absolute",
+		top: "55px",
+		left: "-13px",
+		backgroundColor: theme.palette.secondary.main,
+		color: "#fff",
+		boxShadow:
+			"0px 2px 7px 2px rgba(0,0,0,0.15), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
+		padding: "5px",
+		"& svg": { fontSize: "1rem" },
+		"&:hover": {
+			backgroundColor: "#EBEBEB",
+			color: theme.palette.secondary.main,
+		},
+	},
+	shrinkRightColumnIcons: {
+		backgroundColor: "#6094a030",
+		color: theme.palette.secondary.main,
+		margin: "10px",
+	},
+	viewAll: {
+		margin: "0 0 8px 0",
+		float: "right",
+		color: theme.palette.secondary.main,
+		cursor: "pointer",
+		fontWeight: "normal",
+		"&:hover": { color: "#757575" },
+		transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+	},
 }));
 
 export default function ContactDetailCard(props) {
-  const dispatch = useDispatch();
-  const shrinkRightColumn = useSelector(
-    ({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn
-  );
-  const classes = useStyles({ ...props, shrinkRightColumn });
-  const [openDialog, setOpenDialog] = useState(false);
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [transactData, setTransactData] = useState();
-  const [transactId, setTransactId] = useState();
-  const [contactData, setContactData] = useState(null);
-  const [melissaData, setMelissaData] = useState(null);
-  const [rightDialogOpen, setRightDialogOpen] = useState(false);
-  const [showExpandableCard, setShowExpandableCard] = useState(false);
-  const [expCardSubComponent, setExpCardSubComponent] = useState(null);
-  const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
+	const dispatch = useDispatch();
+	const shrinkRightColumn = useSelector(
+		({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn
+	);
+	const classes = useStyles({ ...props, shrinkRightColumn });
+	const [openDialog, setOpenDialog] = useState(false);
+	const [stateApp, setStateApp] = useContext(AppContext);
+	const [transactData, setTransactData] = useState();
+	const [transactId, setTransactId] = useState();
+	const [contactData, setContactData] = useState(null);
+	const [melissaData, setMelissaData] = useState(null);
+	const [rightDialogOpen, setRightDialogOpen] = useState(false);
+	const [showExpandableCard, setShowExpandableCard] = useState(false);
+	const [expCardSubComponent, setExpCardSubComponent] = useState(null);
+	const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
 
-  const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(
-    null
-  );
+	const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(
+		null
+	);
 
-  const [getContact, { loading, data }] = useLazyQuery(CONTACT);
-  // const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
-  //   TRANSACTIONDATA
-  // );
+	const [getContact, { loading, data }] = useLazyQuery(CONTACT);
+	// const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
+	//   TRANSACTIONDATA
+	// );
 
-  const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
-    TRANSACTIONDATA
-  );
+	const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
+		TRANSACTIONDATA
+	);
 
-  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(
-    LASTMELISSARECORD,
-    {
-      fetchPolicy: "network-only",
-    }
-  );
-  const [updateContact] = useMutation(UPDATECONTACT);
+	const [getLastMelissaRecord, { data: mData }] = useLazyQuery(
+		LASTMELISSARECORD,
+		{
+			fetchPolicy: "network-only",
+		}
+	);
+	const [updateContact] = useMutation(UPDATECONTACT);
 
-  const handleClickRightDialogOpen = (childrenToOpen) => {
-    setRightDialogOpen(childrenToOpen);
-  };
-  const handleClickRightDialogClose = (e) => {
-    e.preventDefault();
-    setRightDialogOpen(false);
-  };
+	const handleClickRightDialogOpen = (childrenToOpen) => {
+		setRightDialogOpen(childrenToOpen);
+	};
+	const handleClickRightDialogClose = (e) => {
+		e.preventDefault();
+		setRightDialogOpen(false);
+	};
 
-  const handleCloseExpandableCard = () => {
-    setShowExpandableCard(false);
-    setStateApp((state) => ({
-      ...state,
-      contactUpdated: null,
-    }));
-  };
-  const handleOpenExpandableCard = (subComponent, subComponentTitle) => {
-    setExpCardSubComponent(subComponent);
-    setExpCardSubComponentTitle(subComponentTitle);
-    setShowExpandableCard(true);
-  };
-  const handleExpandClick = async (type) => {
-    setOpenDialog(type);
-  };
-  const handleCloseDialog = () => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      contactUpdated: null,
-    }));
-    setOpenDialog(false);
-  };
+	const handleCloseExpandableCard = () => {
+		setShowExpandableCard(false);
+		setStateApp((state) => ({
+			...state,
+			contactUpdated: null,
+		}));
+	};
+	const handleOpenExpandableCard = (subComponent, subComponentTitle) => {
+		setExpCardSubComponent(subComponent);
+		setExpCardSubComponentTitle(subComponentTitle);
+		setShowExpandableCard(true);
+	};
+	const handleExpandClick = async (type) => {
+		setOpenDialog(type);
+	};
+	const handleCloseDialog = () => {
+		setStateApp((stateApp) => ({
+			...stateApp,
+			contactUpdated: null,
+		}));
+		setOpenDialog(false);
+	};
 
-  useEffect(() => {
-    setTimeout(() => {
-      setShowShrinkColumnContent(shrinkRightColumn);
-    }, 300);
-  }, [shrinkRightColumn]);
+	useEffect(() => {
+		setTimeout(() => {
+			setShowShrinkColumnContent(shrinkRightColumn);
+		}, 300);
+	}, [shrinkRightColumn]);
 
-  useEffect(() => {
-    if (stateApp.selectedContact) {
-      getContact({
-        variables: {
-          contactId: stateApp.selectedContact,
-        },
-      });
-    }
-  }, [stateApp.selectedContact]);
+	useEffect(() => {
+		if (stateApp.selectedContact) {
+			getContact({
+				variables: {
+					contactId: stateApp.selectedContact,
+				},
+			});
+		}
+	}, [stateApp.selectedContact]);
 
-  useEffect(() => {
-    if (data && data.contact) {
-      setContactData(data.contact);
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        currentContatcAtivities: data.contact.activityLog,
-      }));
-    }
-  }, [data, stateApp.contactUpdated]);
+	useEffect(() => {
+		if (data && data.contact) {
+			setContactData(data.contact);
+			setStateApp((stateApp) => ({
+				...stateApp,
+				currentContatcAtivities: data.contact.activityLog,
+			}));
+		}
+	}, [data, stateApp.contactUpdated]);
 
-  useEffect(() => {
-    if (stateApp.selectedContact) {
-      getLastMelissaRecord({
-        variables: {
-          contactId: stateApp.selectedContact,
-        },
-      });
-    }
-  }, [stateApp.selectedContact]);
+	useEffect(() => {
+		if (stateApp.selectedContact) {
+			getLastMelissaRecord({
+				variables: {
+					contactId: stateApp.selectedContact,
+				},
+			});
+		}
+	}, [stateApp.selectedContact]);
 
-  useEffect(() => {
-    if (mData && mData.getLastMelissaRecord.success === true) {
-      setMelissaData(mData.getLastMelissaRecord);
-    }
-  }, [mData]);
+	useEffect(() => {
+		if (mData && mData.getLastMelissaRecord.success === true) {
+			setMelissaData(mData.getLastMelissaRecord);
+		}
+	}, [mData]);
 
-  useEffect(() => {
-    if (stateApp.user && stateApp.user.mongoId) {
-      getTransactionData({
-        variables: {
-          userId: stateApp.user.mongoId,
-        },
-      });
-    }
-  }, [stateApp.user]);
+	useEffect(() => {
+		if (stateApp.user && stateApp.user.mongoId) {
+			getTransactionData({
+				variables: {
+					userId: stateApp.user.mongoId,
+				},
+			});
+		}
+	}, [stateApp.user]);
 
-  const StyleBadge = withStyles({
-    badge: {
-      transform: "unset",
-      background: "#38c52e",
-      color: "#fff",
-      border: "2px solid",
-      width: "30px",
-      height: "30px",
-      borderRadius: "50%",
-    },
-  })((props) => <Badge {...props} />);
+	const StyleBadge = withStyles({
+		badge: {
+			transform: "unset",
+			background: "#38c52e",
+			color: "#fff",
+			border: "2px solid",
+			width: "30px",
+			height: "30px",
+			borderRadius: "50%",
+		},
+	})((props) => <Badge {...props} />);
 
-  useEffect(() => {
-    if (tData && tData.transactionData && tData.transactionData.allData) {
-      setTransactData(tData.transactionData.allData);
-      setTransactId(tData.transactionData._id);
-    }
-  }, [tData, tLoading]);
+	useEffect(() => {
+		if (tData && tData.transactionData && tData.transactionData.allData) {
+			setTransactData(tData.transactionData.allData);
+			setTransactId(tData.transactionData._id);
+		}
+	}, [tData, tLoading]);
 
-  return contactData ? (
-    <div className={classes.mainGridContainer}>
-      {/*/////////// left column //////////// */}
-      <Grid container className={classes.leftColumn}>
-        {/*/////////// section 1 //////////// */}
+	return contactData ? (
+		<div className={classes.mainGridContainer}>
+			{/*/////////// left column //////////// */}
+			<Grid container className={classes.leftColumn}>
+				{/*/////////// section 1 //////////// */}
 
-        <Grid
-          item
-          xs={12}
-          style={{
-            padding: "20px 25px",
-          }}
-          className={classes.border}
-        >
-          <div className={classes.leftColumnTopRigthCorner}>
-            <Button
-              variant="contained"
-              // size="small"
-              onClick={() => {
-                handleExpandClick("buyContactsInfo");
-              }}
-            >
-              Buy Contact Info
-            </Button>
-            {contactData.primaryEmail && (
-              <a href={"mailto:" + contactData.primaryEmail}>
-                <Button
-                  variant="contained"
-                  //  size="small"
-                >
-                  Email
-                </Button>
-              </a>
-            )}
+				<Grid
+					item
+					xs={12}
+					style={{
+						padding: "20px 25px",
+					}}
+					className={classes.border}
+				>
+					<div className={classes.leftColumnTopRigthCorner}>
+						<Button
+							variant="contained"
+							// size="small"
+							onClick={() => {
+								handleExpandClick("buyContactsInfo");
+							}}
+						>
+							Buy Contact Info
+						</Button>
+						{contactData.primaryEmail && (
+							<a href={"mailto:" + contactData.primaryEmail}>
+								<Button
+									variant="contained"
+									//  size="small"
+								>
+									Email
+								</Button>
+							</a>
+						)}
 
-            <Button
-              variant="contained"
-              // size="small"
-              onClick={() => {
-                handleExpandClick("deleteConfirmation");
-                //setOpenDialog(true);
-              }}
-            >
-              Delete
-            </Button>
-          </div>
-          <div>
-            <div className={classes.userIcon}>
-              <StyleBadge
-              //badgeContent={5}
-              //color={"#f6c16b"}
-              >
-                <Avatar
-                  className={classes.grey}
-                  name={contactData.name}
-                  size="93"
-                  round
-                />
-              </StyleBadge>
-            </div>
-            <div className={classes.userName}>
-              <h2 style={{ width: "max-content" }}>
-                {/* {contactData.name} */}
+						<Button
+							variant="contained"
+							// size="small"
+							onClick={() => {
+								handleExpandClick("deleteConfirmation");
+								//setOpenDialog(true);
+							}}
+						>
+							Delete
+						</Button>
+					</div>
+					<div>
+						<div className={classes.userIcon}>
+							<StyleBadge
+							//badgeContent={5}
+							//color={"#f6c16b"}
+							>
+								<Avatar
+									className={classes.grey}
+									name={contactData.name}
+									size="93"
+									round
+								/>
+							</StyleBadge>
+						</div>
+						<div className={classes.userName}>
+							<h2 style={{ width: "max-content" }}>
+								{/* {contactData.name} */}
 
-                <FieldContent
-                  noInputFooter
-                  noMargin
-                  id={contactData._id}
-                  entity={contactData.entity}
-                  content={{ name: contactData.name }}
-                >
-                  {(contactData.facebook ||
-                    contactData.twitter ||
-                    contactData.linkedIn) && (
-                    <span className={classes.socialMediaSection}>
-                      {contactData.facebook && (
-                        <a
-                          href={`${
-                            !contactData.facebook.startsWith("http") &&
-                            !contactData.facebook.startsWith("//")
-                              ? "//"
-                              : ""
-                          }${contactData.facebook}`}
-                          target="_blank"
-                        >
-                          <FacebookIcon />
-                        </a>
-                      )}
-                      {contactData.twitter && (
-                        <a
-                          href={`${
-                            !contactData.twitter.startsWith("http") &&
-                            !contactData.twitter.startsWith("//")
-                              ? "//"
-                              : ""
-                          }${contactData.twitter}`}
-                          target="_blank"
-                        >
-                          <TwitterIcon className={classes.twitterIcon} />
-                        </a>
-                      )}
-                      {contactData.linkedIn && (
-                        <a
-                          href={`${
-                            !contactData.linkedIn.startsWith("http") &&
-                            !contactData.linkedIn.startsWith("//")
-                              ? "//"
-                              : ""
-                          }${contactData.linkedIn}`}
-                          target="_blank"
-                        >
-                          <LinkedInIcon />
-                        </a>
-                      )}
-                    </span>
-                  )}
-                </FieldContent>
-              </h2>
-              <h4>
-                <FieldContent
-                  childrenLeft
-                  noMargin
-                  name="Address"
-                  id={contactData._id}
-                  entity={contactData.entity}
-                  content={{
-                    address1: contactData.address1,
-                    address2: contactData.address2,
-                    city: contactData.city,
-                    state: contactData.state,
-                    zip: contactData.zip,
-                    country: contactData.country,
-                  }}
-                />
-              </h4>
-              <h4>
-                <FieldContent
-                  childrenLeft
-                  noMargin
-                  name={"Company Name Or Job Title"}
-                  id={contactData._id}
-                  entity={contactData.entity}
-                  content={{
-                    companyName: contactData.companyName,
-                    jobTitle: contactData.jobTitle,
-                  }}
-                />
-              </h4>
-            </div>
-          </div>
-        </Grid>
-        {/*/////////// section 2 //////////// */}
-        <Grid
-          item
-          xs={12}
-          style={{
-            padding: "10px 15px 0px 15px",
-          }}
-          className={classes.border}
-        >
-          <div className={classes.tags}>
-            <Tags
-              width="100%"
-              targetSourceId={contactData._id}
-              targetLabel="contact"
-              publicLeftBottom
-            />
-          </div>
-        </Grid>
+								<FieldContent
+									noInputFooter
+									noMargin
+									id={contactData._id}
+									entity={contactData.entity}
+									content={{ name: contactData.name }}
+								>
+									{(contactData.facebook ||
+										contactData.twitter ||
+										contactData.linkedIn) && (
+										<span className={classes.socialMediaSection}>
+											{contactData.facebook && (
+												<a
+													href={`${
+														!contactData.facebook.startsWith("http") &&
+														!contactData.facebook.startsWith("//")
+															? "//"
+															: ""
+													}${contactData.facebook}`}
+													target="_blank"
+												>
+													<FacebookIcon />
+												</a>
+											)}
+											{contactData.twitter && (
+												<a
+													href={`${
+														!contactData.twitter.startsWith("http") &&
+														!contactData.twitter.startsWith("//")
+															? "//"
+															: ""
+													}${contactData.twitter}`}
+													target="_blank"
+												>
+													<TwitterIcon className={classes.twitterIcon} />
+												</a>
+											)}
+											{contactData.linkedIn && (
+												<a
+													href={`${
+														!contactData.linkedIn.startsWith("http") &&
+														!contactData.linkedIn.startsWith("//")
+															? "//"
+															: ""
+													}${contactData.linkedIn}`}
+													target="_blank"
+												>
+													<LinkedInIcon />
+												</a>
+											)}
+										</span>
+									)}
+								</FieldContent>
+							</h2>
+							<h4>
+								<FieldContent
+									childrenLeft
+									noMargin
+									name="Address"
+									id={contactData._id}
+									entity={contactData.entity}
+									content={{
+										address1: contactData.address1,
+										address2: contactData.address2,
+										city: contactData.city,
+										state: contactData.state,
+										zip: contactData.zip,
+										country: contactData.country,
+									}}
+								/>
+							</h4>
+							<h4>
+								<FieldContent
+									childrenLeft
+									noMargin
+									name={"Company Name Or Job Title"}
+									id={contactData._id}
+									entity={contactData.entity}
+									content={{
+										companyName: contactData.companyName,
+										jobTitle: contactData.jobTitle,
+									}}
+								/>
+							</h4>
+						</div>
+					</div>
+				</Grid>
+				{/*/////////// section 2 //////////// */}
+				<Grid
+					item
+					xs={12}
+					style={{
+						padding: "10px 15px 0px 15px",
+					}}
+					className={classes.border}
+				>
+					<div className={classes.tags}>
+						<Tags
+							width="100%"
+							targetSourceId={contactData._id}
+							targetLabel="contact"
+							publicLeftBottom
+						/>
+					</div>
+				</Grid>
 
-        {/*/////////// section 3 //////////// */}
-        <Grid
-          item
-          xs={12}
-          container
-          className={classes.border}
-          spacing={0}
-          style={{ padding: "23px 28px" }}
-        >
-          <ContactDetailedInfo
-            header={"Detailed Information"}
-            contactData={contactData}
-            handleOpenExpandableCard={handleOpenExpandableCard}
-            melissaData={melissaData}
-            id={contactData._id}
-          />
-        </Grid>
-        {/*/////////// new section - lead stage //////////// */}
-        <Grid item xs={12} className={`${classes.border}`}>
-          <div className={classes.SectMargin}>
-            <Grid item xs={12} style={{ minHeight: "33px" }}>
-              <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-                Lead Stage changed:{" "}
-                <span style={{ fontWeight: "normal" }}>
-                  {anyToDate(
-                    contactData.lastUpdateLeadStageAt
-                      ? contactData.lastUpdateLeadStageAt
-                      : contactData.lastUpdateAt
-                  ).toLocaleString()}
-                </span>
-              </h4>
-            </Grid>
+				{/*/////////// section 3 //////////// */}
+				<Grid
+					item
+					xs={12}
+					container
+					className={classes.border}
+					spacing={0}
+					style={{ padding: "23px 28px" }}
+				>
+					<ContactDetailedInfo
+						header={"Detailed Information"}
+						contactData={contactData}
+						handleOpenExpandableCard={handleOpenExpandableCard}
+						melissaData={melissaData}
+						id={contactData._id}
+					/>
+				</Grid>
+				{/*/////////// new section - lead stage //////////// */}
+				<Grid item xs={12} className={`${classes.border}`}>
+					<div className={classes.SectMargin}>
+						<Grid item xs={12} style={{ minHeight: "33px" }}>
+							<h4 style={{ margin: "0 0 13px 0", float: "left" }}>
+								Lead Stage changed:{" "}
+								<span style={{ fontWeight: "normal" }}>
+									{anyToDate(
+										contactData.lastUpdateLeadStageAt
+											? contactData.lastUpdateLeadStageAt
+											: contactData.lastUpdateAt
+									).toLocaleString()}
+								</span>
+							</h4>
+						</Grid>
 
-            <Grid
-              item
-              xs={12}
-              style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
-            >
-              <LeadStage
-                leadStage={
-                  contactData.leadStage ? contactData.leadStage : "New"
-                }
-                id={contactData._id}
-              />
-            </Grid>
-          </div>
-        </Grid>
+						<Grid
+							item
+							xs={12}
+							style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
+						>
+							<LeadStage
+								leadStage={
+									contactData.leadStage ? contactData.leadStage : "New"
+								}
+								id={contactData._id}
+							/>
+						</Grid>
+					</div>
+				</Grid>
 
-        {/*/////////// new section -associated interests and deals //////////// */}
-        <Grid
-          container
-          item
-          xs={12}
-          className={`${classes.border}`}
-          style={{ padding: "23px 28px" }}
-          spacing={0}
-        >
-          <Grid item xs={12}>
-            <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-              Associated Interests & Deals
-            </h4>
-          </Grid>
+				{/*/////////// new section -associated interests and deals //////////// */}
+				<Grid
+					container
+					item
+					xs={12}
+					className={`${classes.border}`}
+					style={{ padding: "23px 28px" }}
+					spacing={0}
+				>
+					<Grid item xs={12}>
+						<h4 style={{ margin: "0 0 13px 0", float: "left" }}>
+							Associated Interests & Deals
+						</h4>
+					</Grid>
 
-          <Grid item xs={12}>
-            <Grid container spacing={2}>
-              <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                  <WellsCard
-                    handleOpenExpandableCard={handleOpenExpandableCard}
-                    contactData={contactData}
-                  />
-                </Card>
-              </Grid>
-              <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                  <ParcelsCard
-                    handleOpenExpandableCard={handleOpenExpandableCard}
-                    contactData={contactData}
-                  />
-                </Card>
-              </Grid>
-              <Grid item xs={4}>
-                <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                  <DealsNew
-                    handleOpenExpandableCard={handleOpenExpandableCard}
-                    contact={contactData}
-                    transactData={transactData}
-                    transactId={transactId}
-                    selectRowOpenContact={props.selectRowOpenContact}
-                  />
-                </Card>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+					<Grid item xs={12}>
+						<Grid container spacing={2}>
+							<Grid item xs={4}>
+								<Card raised style={{ minHeight: "35px", height: "100%" }}>
+									<WellsCard
+										handleOpenExpandableCard={handleOpenExpandableCard}
+										contactData={contactData}
+									/>
+								</Card>
+							</Grid>
+							<Grid item xs={4}>
+								<Card raised style={{ minHeight: "35px", height: "100%" }}>
+									<ParcelsCard
+										handleOpenExpandableCard={handleOpenExpandableCard}
+										contactData={contactData}
+									/>
+								</Card>
+							</Grid>
+							<Grid item xs={4}>
+								<Card raised style={{ minHeight: "35px", height: "100%" }}>
+									<DealsNew
+										handleOpenExpandableCard={handleOpenExpandableCard}
+										contact={contactData}
+										transactData={transactData}
+										transactId={transactId}
+										selectRowOpenContact={props.selectRowOpenContact}
+									/>
+								</Card>
+							</Grid>
+						</Grid>
+					</Grid>
+				</Grid>
 
-        {/*/////////// Recent Activities. //////////// */}
-        <Grid item xs={12} className={`${classes.border}`}>
-          <div className={classes.SectMargin}>
-            <RecentActivities
-              header={"Recent Activities"}
-              handleOpenExpandableCard={handleOpenExpandableCard}
-              id={contactData._id}
-              user_id={stateApp.user.email}
-              contactData={contactData}
-              activityLog={contactData.activityLog}
-            />
-          </div>
-        </Grid>
+				{/*/////////// Recent Activities. //////////// */}
+				<Grid item xs={12} className={`${classes.border}`}>
+					<div className={classes.SectMargin}>
+						<RecentActivities
+							header={"Recent Activities"}
+							handleOpenExpandableCard={handleOpenExpandableCard}
+							id={contactData._id}
+							user_id={stateApp.user.email}
+							contactData={contactData}
+							activityLog={contactData.activityLog}
+						/>
+					</div>
+				</Grid>
 
-        {/*/////////// Recent Converstaion. //////////// */}
-        {/* <Grid item xs={12} className={`${classes.border}`}>
+				{/*/////////// Recent Converstaion. //////////// */}
+				{/* <Grid item xs={12} className={`${classes.border}`}>
           <div className={classes.SectMargin}>
             <RecentConversations
               header={"Recent Conversations"}
@@ -687,9 +687,9 @@ export default function ContactDetailCard(props) {
           </div>
         </Grid> */}
 
-        {/*/////////// new section //////////// */}
-        <Grid item xs={12} className={`${classes.border}`}>
-          {/* <div className={classes.SectMargin}>
+				{/*/////////// new section //////////// */}
+				<Grid item xs={12} className={`${classes.border}`}>
+					{/* <div className={classes.SectMargin}>
             <Grid item xs={12}>
               <h4 style={{ marginBottom: "8px" }}>
                 Add Wells and Parcels to this contact
@@ -718,10 +718,10 @@ export default function ContactDetailCard(props) {
               />
             </Grid>
           </div> */}
-        </Grid>
+				</Grid>
 
-        {/*/////////// table section //////////// */}
-        {/* {contactData && contactData.owners && contactData.owners.length > 0 && (
+				{/*/////////// table section //////////// */}
+				{/* {contactData && contactData.owners && contactData.owners.length > 0 && (
             <Grid
               item
               xs={12}
@@ -736,34 +736,34 @@ export default function ContactDetailCard(props) {
               </div>
             </Grid>
           )} */}
-      </Grid>
+			</Grid>
 
-      {/*/////////// rigth column //////////// */}
-      <div className={classes.rightColumnGrid}>
-        <IconButton
-          size="small"
-          className={classes.shrinkRightColumn}
-          onClick={() => {
-            dispatch(toggleRightColumn());
-          }}
-        >
-          {shrinkRightColumn ? (
-            <ArrowBackIosRoundedIcon />
-          ) : (
-            <ArrowForwardIosRoundedIcon />
-          )}
-        </IconButton>
-        {shrinkRightColumn || showShrinkColumnContent ? (
-          <div style={{ width: "68px" }}>
-            <IconButton className={classes.shrinkRightColumnIcons}>
-              <MessageRoundedIcon
-                onClick={() => {
-                  dispatch(toggleRightColumn());
-                }}
-              />
-            </IconButton>
+			{/*/////////// rigth column //////////// */}
+			<div className={classes.rightColumnGrid}>
+				<IconButton
+					size="small"
+					className={classes.shrinkRightColumn}
+					onClick={() => {
+						dispatch(toggleRightColumn());
+					}}
+				>
+					{shrinkRightColumn ? (
+						<ArrowBackIosRoundedIcon />
+					) : (
+						<ArrowForwardIosRoundedIcon />
+					)}
+				</IconButton>
+				{shrinkRightColumn || showShrinkColumnContent ? (
+					<div style={{ width: "68px" }}>
+						<IconButton className={classes.shrinkRightColumnIcons}>
+							<MessageRoundedIcon
+								onClick={() => {
+									dispatch(toggleRightColumn());
+								}}
+							/>
+						</IconButton>
 
-            {/* <IconButton className={classes.shrinkRightColumnIcons}>
+						{/* <IconButton className={classes.shrinkRightColumnIcons}>
               <DescriptionRoundedIcon
                 onClick={() =>
                   handleOpenExpandableCard(
@@ -777,13 +777,13 @@ export default function ContactDetailCard(props) {
                 }
               />
             </IconButton> */}
-          </div>
-        ) : (
-          <Grid container spacing={0} id="expandedRCContent">
-            {/* //////////// Deal Card ////////////// */}
+					</div>
+				) : (
+					<Grid container spacing={0} id="expandedRCContent">
+						{/* //////////// Deal Card ////////////// */}
 
-            {/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
-            {/* <Grid item xs={12}>
+						{/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
+						{/* <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <div className={classes.divDealCard}>
                   <p className={classes.pDealCard}>
@@ -797,7 +797,7 @@ export default function ContactDetailCard(props) {
             </Grid>
              */}
 
-            {/* <Grid item xs={12}>
+						{/* <Grid item xs={12}>
               <Deals
                 contact={contactData}
                 transactData={transactData}
@@ -807,31 +807,31 @@ export default function ContactDetailCard(props) {
               <Divider />
             </Grid> */}
 
-            <Grid item xs={12} className={classes.Comments}>
-              <Comments
-                targetSourceId={contactData._id}
-                targetLabel="contact"
-                detailCard
-                top={2}
-                viewAll={handleClickRightDialogOpen}
-              />
-              <Divider />
-            </Grid>
+						<Grid item xs={12} className={classes.Comments}>
+							<Comments
+								targetSourceId={contactData._id}
+								targetLabel="contact"
+								detailCard
+								top={2}
+								viewAll={handleClickRightDialogOpen}
+							/>
+							<Divider />
+						</Grid>
 
-            <Grid item xs={12} className={classes.Comments}>
-              <Documents
-                // contact={contactData}
-                // transactData={transactData}
-                // transactId={transactId}
-                // selectRowOpenContact={props.selectRowOpenContact}
-                handleOpenExpandableCard={handleOpenExpandableCard}
-                id={contactData._id}
-                user_id={stateApp.user.email}
-              />
-              <Divider />
-            </Grid>
+						<Grid item xs={12} className={classes.Comments}>
+							<Documents
+								// contact={contactData}
+								// transactData={transactData}
+								// transactId={transactId}
+								// selectRowOpenContact={props.selectRowOpenContact}
+								handleOpenExpandableCard={handleOpenExpandableCard}
+								id={contactData._id}
+								user_id={stateApp.user.email}
+							/>
+							<Divider />
+						</Grid>
 
-            {/* <Grid item xs={12} className={classes.Comments}>
+						{/* <Grid item xs={12} className={classes.Comments}>
               <Card
                 raised
                 style={{
@@ -845,7 +845,7 @@ export default function ContactDetailCard(props) {
               <Divider />
             </Grid> */}
 
-            {/* <Grid item xs={12}>
+						{/* <Grid item xs={12}>
                 <Activities
                   id={contactData._id}
                   user_id={stateApp.user.email}
@@ -853,140 +853,140 @@ export default function ContactDetailCard(props) {
                 />
                 <Divider />
               </Grid> */}
-          </Grid>
-        )}
-      </div>
+					</Grid>
+				)}
+			</div>
 
-      {openDialog && (
-        <Dialog
-          className={classes.dialog}
-          open={openDialog ? true : false}
-          onClose={handleCloseDialog}
-          fullWidth={true}
-          maxWidth={"sm"}
-        >
-          {openDialog === "buyContactsInfo" && (
-            <BuyContactsInfoDialogContent
-              onClose={handleCloseDialog}
-              rows={[contactData]}
-              setRows={() => {}}
-              updateMelissaTable={() => {
-                getLastMelissaRecord({
-                  variables: {
-                    contactId: stateApp.selectedContact,
-                  },
-                });
-                updateContact({
-                  variables: {
-                    contact: {
-                      _id: stateApp.selectedContact,
-                      lastUpdateBy: stateApp.user.mongoId,
-                    },
-                    ignoreResponse: true,
-                  },
-                  refetchQueries: ["getPaginatedContacts", "getContact"],
-                  awaitRefetchQueries: false,
-                });
-              }}
-            />
-          )}
-          {openDialog === "deleteConfirmation" && (
-            <ConfirmationDialog
-              openDialog={openDialog}
-              handleDialogClose={setOpenDialog}
-              handleCloseExpandableCard={props.handleCloseExpandableCard}
-              id={contactData._id}
-            />
-          )}
-        </Dialog>
-      )}
+			{openDialog && (
+				<Dialog
+					className={classes.dialog}
+					open={openDialog ? true : false}
+					onClose={handleCloseDialog}
+					fullWidth={true}
+					maxWidth={"sm"}
+				>
+					{openDialog === "buyContactsInfo" && (
+						<BuyContactsInfoDialogContent
+							onClose={handleCloseDialog}
+							rows={[contactData]}
+							setRows={() => {}}
+							updateMelissaTable={() => {
+								getLastMelissaRecord({
+									variables: {
+										contactId: stateApp.selectedContact,
+									},
+								});
+								updateContact({
+									variables: {
+										contact: {
+											_id: stateApp.selectedContact,
+											lastUpdateBy: stateApp.user.mongoId,
+										},
+										ignoreResponse: true,
+									},
+									refetchQueries: ["getPaginatedContacts", "getContact"],
+									awaitRefetchQueries: false,
+								});
+							}}
+						/>
+					)}
+					{openDialog === "deleteConfirmation" && (
+						<ConfirmationDialog
+							openDialog={openDialog}
+							handleDialogClose={setOpenDialog}
+							handleCloseExpandableCard={props.handleCloseExpandableCard}
+							id={contactData._id}
+						/>
+					)}
+				</Dialog>
+			)}
 
-      {/* //// ViewAll in a right dialog //// */}
+			{/* //// ViewAll in a right dialog //// */}
 
-      <RightDialog
-        open={rightDialogOpen ? true : false}
-        handleClickDialogClose={handleClickRightDialogClose}
-        width="450px"
-      >
-        {rightDialogOpen === "comments" && (
-          <Grid item xs={12} className={classes.Comments}>
-            <Comments
-              className={classes.gridStyling}
-              targetSourceId={contactData._id}
-              targetLabel="contact"
-              handleRightDialogClose={handleClickRightDialogClose}
-            />
-          </Grid>
-        )}
-      </RightDialog>
+			<RightDialog
+				open={rightDialogOpen ? true : false}
+				handleClickDialogClose={handleClickRightDialogClose}
+				width="450px"
+			>
+				{rightDialogOpen === "comments" && (
+					<Grid item xs={12} className={classes.Comments}>
+						<Comments
+							className={classes.gridStyling}
+							targetSourceId={contactData._id}
+							targetLabel="contact"
+							handleRightDialogClose={handleClickRightDialogClose}
+						/>
+					</Grid>
+				)}
+			</RightDialog>
 
-      {/* //// ViewAll in a full screen dialog //// */}
-      {showExpandableCard && (
-        <Dialog
-          className={classes.dialogExpCard}
-          fullWidth
-          maxWidth="xl"
-          open={showExpandableCard}
-          onClose={handleCloseDialog}
-        >
-          <ExpandableCardProvider
-            expanded={true}
-            handleCloseExpandableCard={handleCloseExpandableCard}
-            title={"Contact Details"}
-            subTitle={" "}
-            parent="table"
-            mouseX={0}
-            mouseY={0}
-            position="relative"
-            cardLeft={"0"}
-            cardTop={"0"}
-            zIndex={1201}
-            cardWidthExpanded="100%"
-            cardHeightExpanded="100%"
-            targetSourceId={stateApp.selectedContact}
-            targetLabel={"contact"}
-            noTrackAvailable={true}
-            component={
-              <div
-                style={{
-                  width: "100%",
-                  backgroundColor: "#fff",
-                  minHeight: "100%",
-                }}
-              >
-                {/* //// ViewAll card top bar //// */}
-                <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-                  <h3 className={classes.expTardTopBarNav}>
-                    <span>Contacts</span>
-                    {" > "}
-                    <span
-                      className={classes.expTardTopBarNavContName}
-                      onClick={handleCloseExpandableCard}
-                    >
-                      {contactData && contactData.name ? contactData.name : ""}
-                    </span>
-                    {" > "}
-                    {expCardSubComponentTitle}
-                  </h3>
-                </Toolbar>
-                {expCardSubComponent}
-              </div>
-            }
-          />
-        </Dialog>
-      )}
-    </div>
-  ) : (
-    <div
-      style={{
-        padding: "20px",
-        position: "absolute",
-        height: "100%",
-        width: "100%",
-        zIndex: "50",
-      }}
-    >
-      <CircularProgress size={80} disableShrink color="secondary" />
-    </div>
-  );
+			{/* //// ViewAll in a full screen dialog //// */}
+			{showExpandableCard && (
+				<Dialog
+					className={classes.dialogExpCard}
+					fullWidth
+					maxWidth="xl"
+					open={showExpandableCard}
+					onClose={handleCloseDialog}
+				>
+					<ExpandableCardProvider
+						expanded={true}
+						handleCloseExpandableCard={handleCloseExpandableCard}
+						title={"Contact Details"}
+						subTitle={" "}
+						parent="table"
+						mouseX={0}
+						mouseY={0}
+						position="relative"
+						cardLeft={"0"}
+						cardTop={"0"}
+						zIndex={1201}
+						cardWidthExpanded="100%"
+						cardHeightExpanded="100%"
+						targetSourceId={stateApp.selectedContact}
+						targetLabel={"contact"}
+						noTrackAvailable={true}
+						component={
+							<div
+								style={{
+									width: "100%",
+									backgroundColor: "#fff",
+									minHeight: "100%",
+								}}
+							>
+								{/* //// ViewAll card top bar //// */}
+								<Toolbar style={{ backgroundColor: "#F0F6F8" }}>
+									<h3 className={classes.expTardTopBarNav}>
+										<span>Contacts</span>
+										{" > "}
+										<span
+											className={classes.expTardTopBarNavContName}
+											onClick={handleCloseExpandableCard}
+										>
+											{contactData && contactData.name ? contactData.name : ""}
+										</span>
+										{" > "}
+										{expCardSubComponentTitle}
+									</h3>
+								</Toolbar>
+								{expCardSubComponent}
+							</div>
+						}
+					/>
+				</Dialog>
+			)}
+		</div>
+	) : (
+		<div
+			style={{
+				padding: "20px",
+				position: "absolute",
+				height: "100%",
+				width: "100%",
+				zIndex: "50",
+			}}
+		>
+			<CircularProgress size={80} disableShrink color="secondary" />
+		</div>
+	);
 }
