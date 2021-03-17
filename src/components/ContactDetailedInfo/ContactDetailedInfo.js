@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     margin: "0 0 8px 22px",
-    cssFloat: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textBtn: {
     margin: "0 0 8px 0",
-    cssFloat: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -156,7 +156,7 @@ const useStyles = makeStyles((theme) => ({
   },
   showAll: {
     margin: "8px 0 0 0",
-    cssFloat: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -164,7 +164,7 @@ const useStyles = makeStyles((theme) => ({
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
   switchButtom: {
-    cssFloat: "right",
+    "float": "right",
     width: "fit-content",
     alignSelf: "flex-end",
     marginRight: 0,
@@ -473,7 +473,7 @@ export default function DetailInfo(props) {
   return (
     <div className={classes.root}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
-        <h4 style={{ margin: "0 0 10px 0", cssFloat: "left" }}>
+        <h4 style={{ margin: "0 0 10px 0", "float": "left" }}>
           Basic Information
         </h4>
         <Box display="flex" justifyContent="flex-end">

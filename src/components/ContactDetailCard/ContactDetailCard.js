@@ -95,13 +95,13 @@ const useStyles = makeStyles((theme) => ({
   },
   userIcon: {
     marginRight: "15px",
-    cssFloat: "left",
+    "float": "left",
   },
   userName: {
     color: "#919191",
     minWidth: "50%",
     maxWidth: "calc( 100% - 400px)",
-    cssFloat: "left",
+    "float": "left",
     "& h2": {
       margin: "0",
       color: "#202020",
@@ -169,7 +169,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     zIndex: "600",
     height: "0",
-    cssFloat: "right",
+    "float": "right",
     color: "#757575",
     "& a": {
       textDecoration: "none !important",
@@ -248,7 +248,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     margin: "0 0 8px 0",
-    cssFloat: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -476,9 +476,9 @@ export default function ContactDetailCard(props) {
                         {contactData.facebook && (
                           <a
                             href={`${!contactData.facebook.startsWith("http") &&
-                                !contactData.facebook.startsWith("//")
-                                ? "//"
-                                : ""
+                              !contactData.facebook.startsWith("//")
+                              ? "//"
+                              : ""
                               }${contactData.facebook}`}
                             target="_blank"
                           >
@@ -488,9 +488,9 @@ export default function ContactDetailCard(props) {
                         {contactData.twitter && (
                           <a
                             href={`${!contactData.twitter.startsWith("http") &&
-                                !contactData.twitter.startsWith("//")
-                                ? "//"
-                                : ""
+                              !contactData.twitter.startsWith("//")
+                              ? "//"
+                              : ""
                               }${contactData.twitter}`}
                             target="_blank"
                           >
@@ -500,9 +500,9 @@ export default function ContactDetailCard(props) {
                         {contactData.linkedIn && (
                           <a
                             href={`${!contactData.linkedIn.startsWith("http") &&
-                                !contactData.linkedIn.startsWith("//")
-                                ? "//"
-                                : ""
+                              !contactData.linkedIn.startsWith("//")
+                              ? "//"
+                              : ""
                               }${contactData.linkedIn}`}
                             target="_blank"
                           >
@@ -586,7 +586,7 @@ export default function ContactDetailCard(props) {
         <Grid item xs={12} className={`${classes.border}`}>
           <div className={classes.SectMargin}>
             <Grid item xs={12} style={{ minHeight: "33px" }}>
-              <h4 style={{ margin: "0 0 13px 0", cssFloat: "left" }}>
+              <h4 style={{ margin: "0 0 13px 0", "float": "left" }}>
                 Lead Stage changed:{" "}
                 <span style={{ fontWeight: "normal" }}>
                   {anyToDate(
@@ -623,7 +623,7 @@ export default function ContactDetailCard(props) {
           spacing={0}
         >
           <Grid item xs={12}>
-            <h4 style={{ margin: "0 0 13px 0", cssFloat: "left" }}>
+            <h4 style={{ margin: "0 0 13px 0", "float": "left" }}>
               Associated Interests & Deals
             </h4>
           </Grid>

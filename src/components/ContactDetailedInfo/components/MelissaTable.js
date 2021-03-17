@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     margin: "0 0 8px 0",
-    cssFloat: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textBtn: {
     margin: "0 0 8px 0",
-    cssFloat: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -120,7 +120,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
   switchButtom: {
-    cssFloat: "right",
+    "float": "right",
     width: "fit-content",
     alignSelf: "flex-end",
     marginRight: 0,
