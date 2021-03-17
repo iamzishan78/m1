@@ -52,7 +52,11 @@ import Drawer from "../../Transact/components/Drawer";
 import Documents from "../../Shared/Documents";
 import AddDialogeUploadZone from "./AddDialogUploadZone";
 import { GETRECENTCONTACTFILES } from "../../../graphQL/useQueryGetContactFiles";
-import { VIEWFILEQUERY } from "../../../graphQL/useQueryViewFile";
+import {
+	VIEWFILEQUERY,
+	VIEWFILESQUERY,
+} from "../../../graphQL/useQueryViewFile";
+import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
 
 function NumberFormatCustom(props) {
 	const { inputRef, onChange, ...other } = props;
@@ -182,6 +186,9 @@ const useStyles = makeStyles((theme) => ({
 		"& .MuiOutlinedInput-root": {
 			width: "100%",
 		},
+	},
+	dialogExpCard: {
+		zIndex: 9999999999999999999,
 	},
 }));
 
@@ -900,7 +907,10 @@ function AddDealDialog(props) {
 			},
 		}
 	);
-	const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
+	const [
+		viewFiles,
+		{ data: viewFileResult, loading: viewFileLoading },
+	] = useLazyQuery(VIEWFILESQUERY, {
 		fetchPolicy: "no-cache",
 	});
 	useEffect(() => {
@@ -908,25 +918,81 @@ function AddDealDialog(props) {
 			variables: {
 				relatedObjectId: stateApp.activeDeal?.cardId,
 				relatedObjectType: "Deal",
-				limit: 1,
+				limit: 2,
 			},
 		});
 	}, [stateApp.activeDeal?.cardId]);
 	useEffect(() => {
-		console.log(
-			files?.getFileDescriptors[0]?.fileId,
-			"File from addDealDailog"
-		);
-
-		if (files?.getFileDescriptors[0]?.fileId) {
-			viewFile({ variables: { fileId: files?.getFileDescriptors[0]?.fileId } });
+		let ID = [];
+		for (let i = 0; i < files?.getFileDescriptors.length; i++) {
+			ID.push(files?.getFileDescriptors[i].fileId);
 		}
+
+		viewFiles({
+			variables: { fileIds: ID },
+		});
 	}, [files]);
-	useEffect(() => {
-		console.log(viewFileResult, "AddDealDailog");
-	}, [viewFileResult]);
+
+	const [expCardSubComponent, setExpCardSubComponent] = useState(null);
+	const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(
+		null
+	);
+	const [showExpandableCard, setShowExpandableCard] = useState(false);
+	const handleOpenExpandableCard = (subComponent, subComponentTitle) => {
+		setExpCardSubComponent(subComponent);
+		setExpCardSubComponentTitle(subComponentTitle);
+		setShowExpandableCard(true);
+	};
+	const handleCloseExpandableCard = () => {
+		setShowExpandableCard(false);
+		setStateApp((state) => ({
+			...state,
+			contactUpdated: null,
+		}));
+	};
 	return (
 		<>
+			{showExpandableCard && (
+				<Dialog
+					className={classes.dialogExpCard}
+					fullWidth
+					maxWidth="xl"
+					open={showExpandableCard}
+					onClose={handleCloseDialog}
+				>
+					<ExpandableCardProvider
+						expanded={true}
+						handleCloseExpandableCard={handleCloseExpandableCard}
+						title={"Documents"}
+						subTitle={" "}
+						parent="table"
+						mouseX={0}
+						mouseY={0}
+						position="relative"
+						cardLeft={"0"}
+						cardTop={"0"}
+						zIndex={1201}
+						cardWidthExpanded="100%"
+						cardHeightExpanded="100%"
+						targetSourceId={stateApp?.activeDeal?.cardId}
+						targetLabel={"deals"}
+						noTrackAvailable={true}
+						component={
+							<div
+								style={{
+									width: "100%",
+									backgroundColor: "#fff",
+									minHeight: "100%",
+								}}
+							>
+								{/* //// ViewAll card top bar //// */}
+
+								{expCardSubComponent}
+							</div>
+						}
+					/>
+				</Dialog>
+			)}
 			{deleteDialogOpen && (
 				<Dialog
 					className={classes.dialog}
@@ -1349,7 +1415,10 @@ function AddDealDialog(props) {
 								{/* AddDailogeUploadZone */}
 								<AddDialogeUploadZone
 									isTransactPage={true}
-									fileUrl={viewFileResult?.viewFile?.uri}
+									filesData={viewFileResult}
+									id={stateApp.activeDeal?.cardId}
+									loading={viewFileLoading}
+									handleOpenExpandableCard={handleOpenExpandableCard}
 								></AddDialogeUploadZone>
 							</div>
 							<div className={classes.dialogFooter}>

@@ -6,7 +6,6 @@ import { useDispatch } from "react-redux";
 import { CircularProgress } from "@material-ui/core";
 import { showErrorMessage, showWarningMessage } from "../../../actions";
 import { ADDDESCRIPTORFILE } from "../../../graphQL/useMutationAddDescriptorFile";
-
 const useStyles = makeStyles((theme) => ({
 	dropzoneClass: {
 		"&:hover": { backgroundColor: "#dddddd" },
@@ -17,9 +16,9 @@ const useStyles = makeStyles((theme) => ({
 			fontWeight: "bold",
 		},
 		"& .MuiDropzoneArea-icon": { display: "none" },
-		minHeight: "125px",
-		width: "100%",
-		padding: "10px 40px",
+		minHeight: "0px",
+		width: "50px",
+		padding: "6px 37px",
 		color: "#757575",
 		fontWeight: "normal",
 		backgroundColor: "#eee",
@@ -29,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 		justifyContent: "center",
 		border: "2px dashed rgb(176, 176, 176)",
 		marginBottom: "30px",
+		borderRadius: "10px",
 	},
 }));
 
@@ -107,7 +107,6 @@ export default function UploadZone(props) {
 	return (
 		<>
 			<DropzoneAreaBase
-				style={{ width: "30px !important", height: "30px !important" }}
 				onAdd={handleFileInput}
 				// onDelete={(fileObj) => console.log("Removed File:", fileObj)}
 				showAlerts={props.relatedObjectType === "Contact"}

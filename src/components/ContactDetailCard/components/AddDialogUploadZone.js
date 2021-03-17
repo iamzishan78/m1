@@ -23,8 +23,9 @@ import { DELETEDESCRIPTORFILE } from "../../../graphQL/useMutationDeleteDescript
 import { VIEWFILEQUERY } from "../../../graphQL/useQueryViewFile";
 import { useDispatch } from "react-redux";
 import UploadZone from "./DailogUploadZone";
-import "./Dailog.css";
-import CardMedia from "@material-ui/core/CardMedia";
+import Tooltip from "@material-ui/core/Tooltip";
+import { CircularProgress } from "@material-ui/core";
+
 const useStyles = makeStyles((theme) => ({
 	root: {
 		// backgroundColor: "#fff",
@@ -33,6 +34,16 @@ const useStyles = makeStyles((theme) => ({
 		"&:before": {
 			content: "none",
 		},
+	},
+	Uploadcomp: {
+		width: "150px !important",
+		height: " 150px !important",
+	},
+	forImage: {
+		width: "79px !important",
+		height: "70px !important",
+		backgroundColor: "transparent !important",
+		borderRadius: "10px !important",
 	},
 
 	viewAll: {
@@ -95,7 +106,6 @@ const useStyles = makeStyles((theme) => ({
 		minHeight: "35px",
 		display: "flex",
 		justifyContent: "center",
-		flexDirection: "column",
 		width: "fit-content",
 	},
 	fileDrop: {
@@ -203,7 +213,6 @@ export default function Documents(props) {
 	}, [props.id]);
 
 	useEffect(() => {
-		console.log("VIEW FILE RESULT", viewFileResult);
 		if (viewFileResult?.viewFile?.uri) {
 			let a = document.createElement("a");
 			a.href = viewFileResult.viewFile.uri;
@@ -240,15 +249,20 @@ export default function Documents(props) {
 	const handleViewFile = async (id) => {
 		viewFile({ variables: { fileId: id } });
 	};
-
+	const LightTooltip = withStyles((theme) => ({
+		tooltip: {
+			backgroundColor: theme.palette.common.white,
+			color: "rgba(0, 0, 0, 0.87)",
+			boxShadow: theme.shadows[1],
+			fontSize: 11,
+		},
+	}))(Tooltip);
 	return (
 		<div className={classes.root} variant="outlined">
 			<CardActions style={{ padding: "23px 23px 8px 23px" }}>
-				{!props.isTransactPage && (
+				{props.isTransactPage && (
 					<Grid item xs={12} style={{ minHeight: "35px" }}>
-						<h4 style={{ margin: "0 0 8px 0", float: "left" }}>
-							Recent Documents
-						</h4>
+						<h4 style={{ margin: "0 0 8px 0", float: "left" }}>Docs</h4>
 						<h4
 							className={classes.viewAll}
 							// onClick={(e) => {
@@ -260,13 +274,13 @@ export default function Documents(props) {
 								props.handleOpenExpandableCard(
 									<ViewDocuments
 										contactId={props.id}
-										user_id={props.user_id}
-										activityLog={props.activityLog}
+										user_id={stateApp.user.email}
 										openDeleteConfirmDialog={openDeleteConfirmDialog}
 										handleClose={handleDeleteCancel}
 										handleAccept={handleDeleteAccept}
 										setOpenDeleteConfirmDialog={setOpenDeleteConfirmDialog}
 										setFileIdToDelete={setFileIdToDelete}
+										relatedObjectType={relatedObjectType}
 									/>,
 									"Documents"
 								);
@@ -279,39 +293,6 @@ export default function Documents(props) {
 			</CardActions>
 			<CardContent style={{ padding: "0 23px" }}>
 				<div className={classes.fileUploadSection}>
-					{files?.getFileDescriptors?.map((file) => (
-						<div key={file.fileId}>
-							<div className={classes.fileUploadTopSection}>
-								<div>
-									<h4 className={classes.uploadTitle}>{file.fileName}</h4>
-									{/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
-									<h5 className={classes.uploadSubtext}>
-										{moment.utc(file.dateTime).format("MMM DD, YYYY")}
-									</h5>
-								</div>
-								<div className={classes.IconSection}>
-									<IconButton
-										size="small"
-										style={{ marginBottom: "8px" }}
-										onClick={() => {
-											setOpenDeleteConfirmDialog(true);
-											setFileIdToDelete(file.descriptorId);
-										}}
-									>
-										<DeleteIcon />
-									</IconButton>
-
-									<IconButton
-										disabled={file.fileState !== "active"}
-										size="small"
-										onClick={() => handleViewFile(file.fileId)}
-									>
-										<GetAppIcon />
-									</IconButton>
-								</div>
-							</div>
-						</div>
-					))}
 					{/* Show two recent docs */}
 
 					<DeleteDocumentConfirmation
@@ -321,12 +302,76 @@ export default function Documents(props) {
 							handleDeleteAccept();
 						}}
 					/>
-					<Grid container spacing={3}>
-						<Grid item xs={6}>
-							<img src={props.fileUrl} className="forImage"></img>
-						</Grid>
-						<Grid item xs={6}>
-							<div className="Uploadcomp">
+					<Grid container spacing={1}>
+						{props.loading && (
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									marginTop: "5px",
+								}}
+							>
+								<CircularProgress size="20px" />
+							</div>
+						)}
+						{console.log(props.filesData, "Files data in Adddialog")}
+						{props.filesData?.viewFiles?.map((value, key) => {
+							if (key <= 1) {
+								return (
+									<Grid item xs={3} key={key}>
+										<LightTooltip
+											title={
+												<div className={classes.IconSection}>
+													<IconButton
+														size="small"
+														onClick={() => {
+															setOpenDeleteConfirmDialog(true);
+															setFileIdToDelete(
+																files?.getFileDescriptors[key].descriptorId
+															);
+														}}
+													>
+														<DeleteIcon />
+													</IconButton>
+
+													<IconButton
+														disabled={
+															files?.getFileDescriptors[key]?.fileState !==
+															"active"
+														}
+														size="small"
+														onClick={() =>
+															handleViewFile(
+																files?.getFileDescriptors[key].fileId
+															)
+														}
+													>
+														<GetAppIcon />
+													</IconButton>
+												</div>
+											}
+											interactive
+										>
+											{/* <img src={value.uri} className={classes.forImage}></img> */}
+											{/* <iframe src={value.uri} frameborder="0"></iframe> */}
+											{value.name.includes("pdf") ? (
+												<object
+													className={classes.forImage}
+													data={`data/${value.uri}`}
+													type="application/pdf"
+												>
+													<a href={value.uri}>test.pdf</a>
+												</object>
+											) : (
+												<img src={value.uri} className={classes.forImage}></img>
+											)}
+										</LightTooltip>
+									</Grid>
+								);
+							}
+						})}
+						<Grid item xs={3}>
+							<div className={classes.Uploadcomp}>
 								<UploadZone
 									style={{ width: "30px", height: "30px" }}
 									relatedObjectId={props.id}
