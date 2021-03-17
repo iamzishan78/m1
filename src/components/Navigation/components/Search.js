@@ -741,7 +741,6 @@ function Search() {
     if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray) {
       if (dataOwnerWells.ownerLatsLonsArray.length !== 0) {
 
-
         setStateApp((stateApp) =>
           dataOwnerWells.ownerLatsLonsArray.length === 1
             ? {
@@ -916,66 +915,67 @@ function Search() {
     }, [dataContactWells]);
 
 
+  // appears to be another esteban thing 
+  // //////////////////////////////////// populating the search layer from external resource ////
+  // useEffect(() => {
+  //   if (objToPopulateSearchLayer) {
+  //     //// if owner
+  //     if (
+  //       objToPopulateSearchLayer.objectType === "owner" &&
+  //       objToPopulateSearchLayer.objectId
+  //     ) {
+  //       console.log('result 2', objToPopulateSearchLayer.objectId)
+  //       getOwnerWells({
+  //         variables: {
+  //           ownerId: objToPopulateSearchLayer.objectId,
+  //         },
+  //       });
+  //     }
 
-  //////////////////////////////////// populating the search layer from external resource ////
-  useEffect(() => {
-    if (objToPopulateSearchLayer) {
-      //// if owner
-      if (
-        objToPopulateSearchLayer.objectType === "owner" &&
-        objToPopulateSearchLayer.objectId
-      ) {
-        getOwnerWells({
-          variables: {
-            ownerId: objToPopulateSearchLayer.objectId,
-          },
-        });
-      }
+  //     //// if multiple wells
+  //     if (
+  //       objToPopulateSearchLayer.objectType === "wells" &&
+  //       objToPopulateSearchLayer.wells
+  //     ) {
+  //       if (objToPopulateSearchLayer.wells.length !== 0) {
+  //         setStateApp((stateApp) =>
+  //           objToPopulateSearchLayer.wells.length === 1
+  //             ? {
+  //                 ...stateApp,
+  //                 selectedWell: null,
+  //                 fitBounds: null,
+  //                 selectedWellId: objToPopulateSearchLayer.wells[0].id.toLowerCase(),
+  //                 wellSelectedCoordinates: [
+  //                   objToPopulateSearchLayer.wells[0].longitude,
+  //                   objToPopulateSearchLayer.wells[0].latitude,
+  //                 ],
+  //                 wellListFromSearch: [...objToPopulateSearchLayer.wells],
+  //               }
+  //             : {
+  //                 ...stateApp,
+  //                 fitBounds: null,
+  //                 wellListFromSearch: [...objToPopulateSearchLayer.wells],
+  //               }
+  //         );
+  //         stateApp.toggleLayersActivity("Search", true);
+  //       } else {
+  //         stateApp.toggleLayersActivity("Search", false);
+  //         setStateApp((stateApp) => ({
+  //           ...stateApp,
+  //           wellListFromSearch: [],
+  //         }));
+  //       }
+  //     }
 
-      //// if multiple wells
-      if (
-        objToPopulateSearchLayer.objectType === "wells" &&
-        objToPopulateSearchLayer.wells
-      ) {
-        if (objToPopulateSearchLayer.wells.length !== 0) {
-          setStateApp((stateApp) =>
-            objToPopulateSearchLayer.wells.length === 1
-              ? {
-                  ...stateApp,
-                  selectedWell: null,
-                  fitBounds: null,
-                  selectedWellId: objToPopulateSearchLayer.wells[0].id.toLowerCase(),
-                  wellSelectedCoordinates: [
-                    objToPopulateSearchLayer.wells[0].longitude,
-                    objToPopulateSearchLayer.wells[0].latitude,
-                  ],
-                  wellListFromSearch: [...objToPopulateSearchLayer.wells],
-                }
-              : {
-                  ...stateApp,
-                  fitBounds: null,
-                  wellListFromSearch: [...objToPopulateSearchLayer.wells],
-                }
-          );
-          stateApp.toggleLayersActivity("Search", true);
-        } else {
-          stateApp.toggleLayersActivity("Search", false);
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            wellListFromSearch: [],
-          }));
-        }
-      }
-
-      //// add others types here
-      /////////////////////////////////
-      dispatch(
-        setMapGridCardState({
-          objToPopulateSearchLayer: null,
-        })
-      );
-    }
-  }, [objToPopulateSearchLayer]);
+  //     //// add others types here
+  //     /////////////////////////////////
+  //     dispatch(
+  //       setMapGridCardState({
+  //         objToPopulateSearchLayer: null,
+  //       })
+  //     );
+  //   }
+  // }, [objToPopulateSearchLayer]);
 
   ///////////////////////////////////////
 
@@ -1059,6 +1059,7 @@ function Search() {
 
       //// if owner
       if (newValue && newValue.Source === ownerCogIndexName && newValue.Id) {
+        console.log('newvalue id',newValue)
         getOwnerWells({
           variables: {
             ownerId: newValue.Id,

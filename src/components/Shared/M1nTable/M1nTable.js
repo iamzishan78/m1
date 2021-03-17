@@ -1665,9 +1665,11 @@ function M1nTable(props) {
             if (result.bbox) result.coordinates.bbox = result.bbox;
             if (result.center) result.coordinates.center = result.center;           
 
-          // setting flyto for owners 
+          // setting flyto coordinates for owners 
           } else if (props.targetLabel && props.targetLabel == "owner") {
             
+
+            console.log('owner result', result)
             result.coordinates = {
               objToPopulateSearchLayer: {
                 objectType: "owner",

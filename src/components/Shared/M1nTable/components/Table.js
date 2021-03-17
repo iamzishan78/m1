@@ -456,9 +456,11 @@ function SubTable(props) {
 
   const handleOwnerFlyTo = (value) => {
 
+    console.log('value', value)
+
     getOwnerWells({
       variables: {
-        ownerId: value.Id,
+        ownerId: value.objectId,
       },
     });
   
@@ -466,6 +468,7 @@ function SubTable(props) {
 
 
   const handleClickFlyToIcon = (entityType,searchTarget) => {
+    console.log('entity type', entityType)
     if(entityType == "well"){
       handleWellFlyTo(searchTarget)
     }
@@ -533,6 +536,43 @@ function SubTable(props) {
       }
     }
   }, [dataWell]);
+
+  useEffect(() => {
+    if(dataOwnerWells){console.log('dataownerwells', dataOwnerWells)}
+    if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray) {
+      if (dataOwnerWells.ownerLatsLonsArray.length !== 0) {
+
+        console.log('data owners', dataOwnerWells)
+        setStateApp((stateApp) =>
+          dataOwnerWells.ownerLatsLonsArray.length === 1
+            ? {
+                ...stateApp,
+                selectedWell: null,
+                fitBounds: null,
+                selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
+                wellSelectedCoordinates: [
+                  dataOwnerWells.ownerLatsLonsArray[0].longitude,
+                  dataOwnerWells.ownerLatsLonsArray[0].latitude,
+                ],
+                wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
+              }
+            : {
+                ...stateApp,
+                fitBounds: null,
+                wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
+              }
+        );
+
+        stateApp.toggleLayersActivity("Search", true);
+      } else {
+        stateApp.toggleLayersActivity("Search", false);
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          wellListFromSearch: [],
+        }));
+      }
+    }
+  }, [dataOwnerWells]);
 
   useEffect(() => {
     if (props.targetLabel === "Parcel Interest")

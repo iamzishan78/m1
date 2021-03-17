@@ -11,29 +11,13 @@ const AppContext = createContext([{}, () => {}]);
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
     loading: false,
-    registeredRoutes: [
-      "/",
-      "/signup",
-      "/loginb2c",
-      "/forgotpassword",
-      "/track",
-      "/transact",
-      "/activities",
-      "/title",
-      "/titleopinion",
-      "/alerts",
-      "/contacts",
-      "/dashboard",
-      "/studio",
-      "/bulkupload",
-    ],
     myMSALObj: null,
     myMSALB2CObj: null,
 
-    baseMapLayers: baseMapLayers,
-    heatLayers: heatLayers,
+    baseMapLayers: baseMapLayers, // move to a map context -- will be changed with mepler anyways
+    heatLayers: heatLayers, // move to a map context -- will be changed with mepler anyways 
     
-    selectedRoute: "/",
+    selectedRoute: "/", // move to a nav context
     apolloClientEndpoint: "",
     graphqlScope: null,
     user: null,
@@ -54,7 +38,7 @@ const AppProvider = (props) => {
     selectedOwner: null,
     owners: null,
     popupOpen: false, //map used in flyto
-    expandedCard: false,
+    expandedCard: false, // probably need in a map card context 
     flyTo: null, //map used in flyto
     fitBounds: null, //map used in fitBounds
     selectedTitleOpinionId: null,
@@ -75,14 +59,14 @@ const AppProvider = (props) => {
       pitch: 0,
       bearing: 0,
       styleId: "Outdoors",
-    },
+    }, // move to a map context. check if this is somehow duplicated. 
     defaultMapVars: {
       zoom: 4.88,
       center: { lng: -98.8, lat: 38 },
       pitch: 0,
       bearing: 0,
       styleId: "Outdoors",
-    },
+    }, // move to a map context 
     wellSelectedCoordinates: [],
     universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
 
@@ -113,10 +97,10 @@ const AppProvider = (props) => {
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,
-    toggle3d: null,
-    toggleZoomOut: null,
-    map: null,
-    draw: null,
+    toggle3d: null,  // move to a map context
+    toggleZoomOut: null, // move to a map context 
+    map: null, // move to a map context
+    draw: null, 
     zoomFault: null,
     hugeRequest: null,
     currentFeature: undefined,
