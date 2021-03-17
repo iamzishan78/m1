@@ -1647,9 +1647,10 @@ function M1nTable(props) {
             if (result.Latitude) result.latitude = result.Latitude;
 
             result.coordinates = {};
-            if (result.Longitude && result.Latitude)
+            if (result.Longitude && result.Latitude){
               result.coordinates.center = [result.Longitude, result.Latitude];
-
+              result.coordinates.wellId = result.Id
+            }
             //// set in the detailCard column
             result.detailCard = result.Id;
 

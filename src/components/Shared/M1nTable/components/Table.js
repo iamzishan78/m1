@@ -421,9 +421,97 @@ function SubTable(props) {
   const [getWell, { data: dataWell }] = useLazyQuery(WELLQUERY);
 
   // handlers 
+  const handleWellFlyTo = (value) => {
+    console.log('value', value)
+
+  //   setStateApp((stateApp) =>
+
+
+  //   dataWells.wells.results.length === 1
+  //     ? {
+  //         ...stateApp,
+  //         selectedWell: null,
+  //         fitBounds: null,
+  //         selectedWellId: dataWells.wells.results[0].id.toLowerCase(),
+  //         wellSelectedCoordinates: [
+  //           dataWells.wells.results[0].longitude,
+  //           dataWells.wells.results[0].latitude,
+  //         ],
+  //         wellListFromSearch: [...dataWells.wells.results],
+  //       }
+  //     : {
+  //         ...stateApp,
+  //         fitBounds: null,
+  //         wellListFromSearch: [...dataWells.wells.results],
+  //       }
+  // );
+
+   setStateApp((stateApp) => ({
+      ...stateApp,
+      fitBounds: null,
+      selectedWell: null,
+      selectedWellId: value.wellId ? value.wellId : null,
+      wellSelectedCoordinates: [value.center[0], value.center[1]],
+      // flyTo:{
+      //   longitude: value.center[0],
+      //   latitude: value.center[1],
+      //       }
+   }));
+
+  stateApp.toggleLayersActivity("Search", true);
+
+    // setStateApp((stateApp) => ({
+    //   ...stateApp,
+    //   fitBounds: null,
+    //   selectedWell: null,
+    //   //selectedWellId: value.Id ? newValue.Id.toLowerCase() : null,
+    //   wellSelectedCoordinates: [value.center[0], value.center[1]],
+    //   flyTo:{
+    //     longitude: value.center[0],
+    //     latitude: value.center[1],
+    //         }
+
+
+      // wellListFromSearch: [
+      //   {
+      //     id: newValue.Id,
+      //     longitude: newValue.Longitude,
+      //     latitude: newValue.Latitude,
+      //   },
+      // ],
+
+
+
+      //         popupOpen: false,
+      //         selectedWell: null,
+      //         activateWellDetailsFromTable: false,
+      //         selectedWellId:
+      //           props.targetLabel == "well"
+      //             ? tableMeta.rowData[0]
+      //             : null, 
+      //          //adding in fitbounds to center in right side of screen                           
+      //          fitBounds: {
+      //               maxLat: value.center[1],
+      //               minLat: value.center[1],
+      //               minLong: value.center[0] - 1.5 * .02,
+      //               maxLong: value.center[0] + 0.5 * .02,
+      //             },
+              
+      //             flyTo: {
+      //           longitude: value.center[0],
+      //           latitude: value.center[1],
+      //         },
+
+      
+    // }));
+  };
+
+
   const handleClickFlyToIcon = (entityType,searchTarget) => {
-    console.log('entityType', entityType)
-    console.log('target', searchTarget)
+    if(entityType == "well"){
+      handleWellFlyTo(searchTarget)
+    }
+
   };
 
 
@@ -888,8 +976,8 @@ function SubTable(props) {
                   // console.log('value check', value)
                   // console.log('value meta', tableMeta)
                   // console.log('value columns', column)
-                  console.log('value target', props.targetLabel)
-                  console.log('value columindex', tableMeta.columnIndex)
+                  // console.log('value target', props.targetLabel)
+                  // console.log('value columindex', tableMeta.columnIndex)
 
 
                   return (
@@ -938,7 +1026,7 @@ function SubTable(props) {
 
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleClickFlyToIcon(props.targetLabel,"")
+                          handleClickFlyToIcon(props.targetLabel,value)
                           // handleSearch();
 
 
