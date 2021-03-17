@@ -134,6 +134,7 @@ const AppProvider = (props) => {
     prevAOIVisible: false,
     prevParcelVisible: false,
     prevBasinVisible: false,
+    
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;

@@ -458,21 +458,34 @@ function SubTable(props) {
   };
 
   const [trueTargetLabel, TrueTargetLabel] = useState(null);
-  const setTrueTargetLabel = (newState) => {
-    setStateIfDeepEqual(TrueTargetLabel, newState);
-  };
-
   const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
-  const setRowsPerPage = (newState) => {
-    setStateIfDeepEqual(RowsPerPage, newState);
+  const [firstMount, FirstMount] = useState(true);
+
+
+
+  // queries 
+  const [getWell, { data: dataWell }] = useLazyQuery(WELLQUERY);
+
+
+
+  // handlers 
+  const handleClickFlyToIcon = (entityType,searchTarget) => {
+    console.log('entityType', entityType)
+    console.log('target', searchTarget)
   };
 
-  const [firstMount, FirstMount] = useState(true);
   const setFirstMount = (newState) => {
     setStateIfDeepEqual(FirstMount, newState);
   };
 
-  const [getWell, { data: dataWell }] = useLazyQuery(WELLQUERY);
+  const setRowsPerPage = (newState) => {
+    setStateIfDeepEqual(RowsPerPage, newState);
+  };
+
+  const setTrueTargetLabel = (newState) => {
+    setStateIfDeepEqual(TrueTargetLabel, newState);
+  };
+
 
   //// opening the well detail card after fetch the extra well data needed
   useEffect(() => {
@@ -925,94 +938,145 @@ function SubTable(props) {
             {
               column.options = {
                 ...column.options,
+
+
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
+                  
+                  // console.log('value check', value)
+                  // console.log('value meta', tableMeta)
+                  // console.log('value columns', column)
+                  console.log('value target', props.targetLabel)
+                  console.log('value columindex', tableMeta.columnIndex)
+
 
                   return (
+
+
+
+                    // this whole implementation is a mesteban patch 
+                    // it is all kinds of fucked up 
+
+                    // <Tooltip
+                    //   title={
+                    //     value &&
+                    //       (value.bbox ||
+                    //         value.center ||
+                    //         value.objToPopulateSearchLayer)
+                    //       ? "Fly To Map"
+                    //       : "Not Available"
+                    //   }
+                    //   placement="top"
+                    //   style={{ marginRight: "10px" }}
+                    // >
+
                     <Tooltip
                       title={
-                        value &&
-                          (value.bbox ||
-                            value.center ||
-                            value.objToPopulateSearchLayer)
-                          ? "Fly To Map"
-                          : "Not Available"
+                        "Fly To Map"
                       }
                       placement="top"
                       style={{ marginRight: "10px" }}
                     >
+
+
                       <IconButton
                         id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
-                        className={`${classes.icons} ${value &&
-                          (value.bbox ||
-                            value.center ||
-                            value.objToPopulateSearchLayer)
-                          ? ""
-                          : classes.noCommentsIcon
-                          }`}
+
+                        // className={`${classes.icons} ${value &&
+                        //   (value.bbox ||
+                        //     value.center ||
+                        //     value.objToPopulateSearchLayer)
+                        //   ? ""
+                        //   : classes.noCommentsIcon
+                        //   }`}
+
+                        className={`${classes.icons}`}
+
                         onClick={(e) => {
                           e.stopPropagation();
+                          handleClickFlyToIcon(props.targetLabel,"")
+                          // handleSearch();
 
-                          if (value) {
-                            if (value.bbox || value.center) {
-                              setStateApp((state) => {
-                                if (value.bbox)
-                                  return {
-                                    ...state,
-                                    popupOpen: false,
-                                    selectedWell: null,
-                                    selectedWellId: null,
-                                    fitBounds: {
-                                      maxLat: value.bbox[3],
-                                      minLat: value.bbox[1],
-                                      maxLong: value.bbox[2],
-                                      minLong: value.bbox[0],
-                                    },
-                                  };
 
-                                //// value.center
-                                return {
-                                  ...state,
-                                  popupOpen: false,
-                                  selectedWell: null,
-                                  activateWellDetailsFromTable: false,
-                                  selectedWellId:
-                                    props.targetLabel == "well"
-                                      ? tableMeta.rowData[0]
-                                      : null, 
-                                   //adding in fitbounds to center in right side of screen                           
-                                   fitBounds: {
-                                        maxLat: value.center[1],
-                                        minLat: value.center[1],
-                                        minLong: value.center[0] - 1.5 * .02,
-                                        maxLong: value.center[0] + 0.5 * .02,
-                                      },
+                          // setStateApp((stateApp) => ({
+                          //   ...stateApp,
+                          //   fitBounds: null,
+                          //   selectedWell: null,
+                          //   selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
+                          //   wellSelectedCoordinates: [newValue.Longitude, newValue.Latitude],
+                          //   wellListFromSearch: [
+                          //     {
+                          //       id: newValue.Id,
+                          //       longitude: newValue.Longitude,
+                          //       latitude: newValue.Latitude,
+                          //     },
+                          //   ],
+                          // }));
+
+                          // stateApp.toggleLayersActivity("Search", true);
+
+                          // if (value) {
+                          //   if (value.bbox || value.center) {
+                          //     setStateApp((state) => {
+                          //       if (value.bbox)
+                          //         return {
+                          //           ...state,
+                          //           popupOpen: false,
+                          //           selectedWell: null,
+                          //           selectedWellId: null,
+                          //           fitBounds: {
+                          //             maxLat: value.bbox[3],
+                          //             minLat: value.bbox[1],
+                          //             maxLong: value.bbox[2],
+                          //             minLong: value.bbox[0],
+                          //           },
+                          //         };
+
+                          //       //// value.center
+                          //       return {
+                          //         ...state,
+                          //         popupOpen: false,
+                          //         selectedWell: null,
+                          //         activateWellDetailsFromTable: false,
+                          //         selectedWellId:
+                          //           props.targetLabel == "well"
+                          //             ? tableMeta.rowData[0]
+                          //             : null, 
+                          //          //adding in fitbounds to center in right side of screen                           
+                          //          fitBounds: {
+                          //               maxLat: value.center[1],
+                          //               minLat: value.center[1],
+                          //               minLong: value.center[0] - 1.5 * .02,
+                          //               maxLong: value.center[0] + 0.5 * .02,
+                          //             },
                                   
-                                      flyTo: {
-                                    longitude: value.center[0],
-                                    latitude: value.center[1],
-                                  },
+                          //             flyTo: {
+                          //           longitude: value.center[0],
+                          //           latitude: value.center[1],
+                          //         },
 
-                                };
-                              });
+                          //       };
+                          //     });
 
-                              dispatch(
-                                setMapGridCardState({
-                                  mapGridCardActivated: "min",
-                                })
-                              );
-                            } else if (value.objToPopulateSearchLayer) {
-                              dispatch(
-                                setMapGridCardState({
-                                  objToPopulateSearchLayer:
-                                    value.objToPopulateSearchLayer,
-                                  mapGridCardActivated: "min",
-                                })
-                              );
-                            }
-                          }
+                          //     dispatch(
+                          //       setMapGridCardState({
+                          //         mapGridCardActivated: "min",
+                          //       })
+                          //     );
+                          //   } else if (value.objToPopulateSearchLayer) {
+                          //     dispatch(
+                          //       setMapGridCardState({
+                          //         objToPopulateSearchLayer:
+                          //           value.objToPopulateSearchLayer,
+                          //         mapGridCardActivated: "min",
+                          //       })
+                          //     );
+                          //   }
+                          // }
+
+
                         }}
                         aria-label="fly"
                       >

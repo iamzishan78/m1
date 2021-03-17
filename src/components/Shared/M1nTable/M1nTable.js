@@ -6,6 +6,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
 
+
+
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
 
@@ -1637,7 +1639,9 @@ function M1nTable(props) {
       if (searchResultData.length > 0) {
         searchResultData.forEach((result) => {
           result.id = result.Id;
+          console.log('value result', result)
 
+          // setting flyto coordinates for well 
           if (props.targetLabel && props.targetLabel == "well") {
             if (result.Longitude) result.longitude = result.Longitude;
             if (result.Latitude) result.latitude = result.Latitude;
@@ -1648,11 +1652,21 @@ function M1nTable(props) {
 
             //// set in the detailCard column
             result.detailCard = result.Id;
+
+            // setting flyto coordinates for location 
           } else if (props.targetLabel && props.targetLabel == "location") {
             result.coordinates = {};
             if (result.bbox) result.coordinates.bbox = result.bbox;
             if (result.center) result.coordinates.center = result.center;
+
+          } else if (props.targetLabel && props.targetLabel == "operator") {
+            result.coordinates = {};
+            if (result.bbox) result.coordinates.bbox = result.bbox;
+            if (result.center) result.coordinates.center = result.center;           
+
+          // setting flyto for owners 
           } else if (props.targetLabel && props.targetLabel == "owner") {
+            
             result.coordinates = {
               objToPopulateSearchLayer: {
                 objectType: "owner",
@@ -1765,10 +1779,20 @@ function M1nTable(props) {
           //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);
         if (
-          props.targetLabel &&
-          (props.targetLabel == "well" ||
-            props.targetLabel == "location" ||
-            props.targetLabel == "owner")
+          // this is the fly-to labeler for grid ... 
+          // seems to be running really slow 
+          // also in general doesnt seem to work except for wells 
+          // and locations 
+          // probably need to somehow refactor 
+          
+          props.targetLabel 
+           &&( props.targetLabel == "well" 
+            || props.targetLabel == "location" 
+            || props.targetLabel == "operator"
+            // props.targetLabel == "lease" ||
+            // props.targetLabel == "contacts" ||
+            || props.targetLabel == "owner"
+            )
         )
           //would only set flyto for wells, locations & owners
           buildingColumns.push(SearchsHeadCells[4]);

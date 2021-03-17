@@ -1207,13 +1207,13 @@ function Search() {
                       loadingOwners ||
                       loadingOperators ||
                       loadingLeases ||
-                      // loadingContacts ||
+                      loadingContacts ||
                       loadingMapboxSearch)) ||
                   (searchOption === "wells" && loadingWells) ||
                   (searchOption === "owners" && loadingOwners) ||
                   (searchOption === "operators" && loadingOperators) ||
                   (searchOption === "leases" && loadingLeases) ||
-                  // (searchOption === "contacts" && loadingContacts) ||
+                  (searchOption === "contacts" && loadingContacts) ||
                   (searchOption === "locations" && loadingMapboxSearch) ||
                   options.length === 0
                     ? "0"
