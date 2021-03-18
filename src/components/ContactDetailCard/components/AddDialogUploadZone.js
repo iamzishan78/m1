@@ -287,7 +287,7 @@ export default function Documents(props) {
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
         {props.isTransactPage && (
           <Grid item xs={12} style={{ minHeight: "35px" }}>
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Docs</h4>
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Related Documents</h4>
             <h4
               className={classes.viewAll}
               // onClick={(e) => {
