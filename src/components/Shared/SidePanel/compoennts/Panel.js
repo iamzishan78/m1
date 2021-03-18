@@ -193,7 +193,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			(type === "layer" || type === "heatMaps" || type === "marketplace") &&
 			items
 		) {
-\			setLayerMap(items);
+			setLayerMap(items);
 		} else if (type === "base" && items) {
 			setLayerMap(
 				items.filter((item) => item.name !== "Water" && item.name !== "Land")

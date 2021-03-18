@@ -374,10 +374,8 @@ function AddDealDialog(props) {
 	}, []);
 
 	useEffect(() => {
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< master
-========================================================================
+
 		console.log("ALL CONTACTS: ", allContacts);
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> kumail/documentsDrawer
 		if (allContacts?.paginatedContacts) {
 			setMongoEntitiesArray(
 				allContacts?.paginatedContacts?.edges?.map((el) => el.node)
@@ -388,15 +386,10 @@ function AddDealDialog(props) {
 	}, [allContacts]);
 
 	useEffect(() => {
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< master
-========================================================================
 		console.log("AUTOCOMPLETE INPUT CHANGE: ", nameAutInputValue);
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> kumail/documentsDrawer
 		if (props.isTransactPage) {
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< master
-========================================================================
+
 			//will also run during initial mount
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> kumail/documentsDrawer
 			setIsNextPageLoading(true);
 			getPaginatedContacts({
 				variables: {
@@ -754,10 +747,7 @@ function AddDealDialog(props) {
 								);
 						})
 						.catch((reason) => {
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< master
-========================================================================
 							console.log(reason);
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> kumail/documentsDrawer
 						});
 			} else {
 				//// add a new deal
