@@ -1669,7 +1669,14 @@ function M1nTable(props) {
                   objectName: result.Operator,
                 },
               };
-              
+            } else if (props.targetLabel && props.targetLabel == "lease") {
+              result.coordinates = {
+                objToPopulateSearchLayer: {
+                  objectType: props.targetLabel,
+                  objectId: result.LeaseId,
+                  objectName: result.Lease,
+                },
+              };              
           // setting flyto coordinates for owners 
           } else if (props.targetLabel && props.targetLabel == "owner") {
             
@@ -1790,13 +1797,14 @@ function M1nTable(props) {
           // also in general doesnt seem to work except for wells 
           // and locations 
           // probably need to somehow refactor 
+
           
           props.targetLabel 
            &&( props.targetLabel == "well" 
             || props.targetLabel == "location" 
             || props.targetLabel == "operator"
-            // props.targetLabel == "lease" ||
-            // props.targetLabel == "contacts" ||
+            || props.targetLabel == "lease" 
+            || props.targetLabel == "contact" 
             || props.targetLabel == "owner"
             )
         )

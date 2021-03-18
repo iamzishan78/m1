@@ -470,6 +470,27 @@ function SubTable(props) {
     });
   };
 
+  const handleLeaseFlyTo = (value) => {
+    if (value.objToPopulateSearchLayer.objectName 
+      && value.objToPopulateSearchLayer.objectName !== "") {
+      getLeaseWells({
+        variables: {
+          fieldName: "Lease",
+          value: value.objToPopulateSearchLayer.objectName,
+        },
+      });
+    } else {
+      getLeaseWells({
+        variables: {
+          fieldName: "LeaseId",
+          value: value.objToPopulateSearchLayer.objectId,
+        },
+      });
+    }
+
+  };
+
+
 
   const handleClickFlyToIcon = (entityType,searchTarget) => {
     console.log('entity type', entityType)
@@ -481,6 +502,9 @@ function SubTable(props) {
     }
     if(entityType == "operator"){
       handleOperatorFlyTo(searchTarget)
+    }
+    if(entityType == "lease"){
+      handleLeaseFlyTo(searchTarget)
     }
   };
 
@@ -619,6 +643,44 @@ function SubTable(props) {
     }
   }, [dataOperatorWells]);
 
+  useEffect(() => {
+    // effect to fly to the lease wells  
+    // i duplicated this code to get things moving 
+    // will probably need to be combined w/ code in search.js 
+
+    if (dataLeaseWells && dataLeaseWells.leaseLatsLonsArray) {
+      if (dataLeaseWells.leaseLatsLonsArray.length !== 0) {
+
+
+        setStateApp((stateApp) =>
+          dataLeaseWells.leaseLatsLonsArray.length === 1
+            ? {
+                ...stateApp,
+                selectedWell: null,
+                fitBounds: null,
+                selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
+                wellSelectedCoordinates: [
+                  dataLeaseWells.leaseLatsLonsArray[0].longitude,
+                  dataLeaseWells.leaseLatsLonsArray[0].latitude,
+                ],
+                wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
+              }
+            : {
+                ...stateApp,
+                fitBounds: null,
+                wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
+              }
+        );
+        stateApp.toggleLayersActivity("Search", true);
+      } else {
+        stateApp.toggleLayersActivity("Search", false);
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          wellListFromSearch: [],
+        }));
+      }
+    }
+  }, [dataLeaseWells]);
 
 
   useEffect(() => {
@@ -1034,8 +1096,6 @@ function SubTable(props) {
                       placement="top"
                       style={{ marginRight: "10px" }}
                     >
-
-
                       <IconButton
                         id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                         size={props.dense ? "small" : "medium"}
