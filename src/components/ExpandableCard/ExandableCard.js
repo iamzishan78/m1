@@ -363,13 +363,8 @@ function ExpandableCard(props) {
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
             <div className={classes.headerIcons}>
-              {targetLabel !== "activity" ? (
+              {targetLabel !== "activity" && targetLabel !== "contact" ? (
                 <>
-                  <LinkWithIcon
-                    objectId={targetSourceId.toLowerCase()}
-                    targetLabel={props.targetLabel}
-                    iconZiseSmall={!stateExpandableCard.expanded}
-                  />
 
                   <CommentsWithIcon
                     objectId={targetSourceId.toLowerCase()}
@@ -383,7 +378,31 @@ function ExpandableCard(props) {
                     iconZiseSmall={!stateExpandableCard.expanded}
                   />
                 </>
-              ) : null}
+              ) 
+
+               : targetLabel == "contact" ? (
+                <>
+                <LinkWithIcon
+                  objectId={targetSourceId.toLowerCase()}
+                  targetLabel={props.targetLabel}
+                  iconZiseSmall={!stateExpandableCard.expanded}
+                />
+
+                <CommentsWithIcon
+                  objectId={targetSourceId.toLowerCase()}
+                  targetLabel={props.targetLabel}
+                  iconZiseSmall={!stateExpandableCard.expanded}
+                />
+
+                <TaggerWithIcon
+                  objectId={targetSourceId.toLowerCase()}
+                  targetLabel={props.targetLabel}
+                  iconZiseSmall={!stateExpandableCard.expanded}
+                />
+              </>
+              )      
+              : null}
+
               {!props.noTrackAvailable && (
                 <TrackToggleButton
                   target={target}
@@ -395,7 +414,9 @@ function ExpandableCard(props) {
 
               {stateExpandableCard.expanded &&
                 targetLabel !== "activity" &&
-                targetLabel !== "contact" && targetLabel !== "expandedParcel" && (
+                targetLabel !== "contact" && 
+                targetLabel !== "parcel" &&
+                targetLabel !== "expandedParcel" && (
                   <Tooltip title={"Report Bug"} placement="top">
                     <IconButton
                       size="medium"

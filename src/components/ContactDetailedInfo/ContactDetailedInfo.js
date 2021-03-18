@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MelissaTable from "./components/MelissaTable";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import FieldContent, {
-  LinkTypes,
-} from "./../ContactDetailCard/components/FieldContent";
+import FieldContent from "../ContactDetailCard/components/FieldContent";
+import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -70,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     margin: "0 0 8px 22px",
-    float: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -86,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textBtn: {
     margin: "0 0 8px 0",
-    float: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -157,7 +156,7 @@ const useStyles = makeStyles((theme) => ({
   },
   showAll: {
     margin: "8px 0 0 0",
-    float: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -165,7 +164,7 @@ const useStyles = makeStyles((theme) => ({
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
   switchButtom: {
-    float: "right",
+    "float": "right",
     width: "fit-content",
     alignSelf: "flex-end",
     marginRight: 0,
@@ -413,6 +412,13 @@ export default function DetailInfo(props) {
       data: { status: props.contactData.status },
       linkType: LinkTypes.None,
     },
+    "Contact Owner": {
+      data: {
+        contactOwner: props.contactData.contactOwner,
+        contactOwnerId: props.contactData.contactOwnerId
+      },
+      linkType: LinkTypes.None,
+    },
     "Created By": {
       data: { createByRow },
       linkType: LinkTypes.None,
@@ -467,7 +473,7 @@ export default function DetailInfo(props) {
   return (
     <div className={classes.root}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
-        <h4 style={{ margin: "0 0 10px 0", float: "left" }}>
+        <h4 style={{ margin: "0 0 10px 0", "float": "left" }}>
           Basic Information
         </h4>
         <Box display="flex" justifyContent="flex-end">
@@ -506,6 +512,7 @@ export default function DetailInfo(props) {
                     <FieldContent
                       id={props.contactData._id}
                       entity={props.contactData.entity}
+                      isMerged={!!props.contactData.mergedContacts}
                       content={row.data}
                       linkType={row.linkType}
                     />
@@ -514,13 +521,13 @@ export default function DetailInfo(props) {
               )
             } else {
               let objName = Object.keys(row.data)[0];
-              if (row.data[objName] != undefined 
-                  && row.data[objName] != `""` 
-                  && row.data[objName] != '' 
-                  && row.data[objName] != ""                  
-                  && row.data[objName].length != 0
-                  && row.data[objName] != null 
-                  ) {
+              if (row.data[objName] != undefined
+                && row.data[objName] != `""`
+                && row.data[objName] != ''
+                && row.data[objName] != ""
+                && row.data[objName].length != 0
+                && row.data[objName] != null
+              ) {
                 return (
                   <React.Fragment>
                     <Grid item xs={3} className="fieldName">
@@ -530,6 +537,7 @@ export default function DetailInfo(props) {
                       <FieldContent
                         id={props.contactData._id}
                         entity={props.contactData.entity}
+                        isMerged={!!props.contactData.mergedContacts}
                         content={row.data}
                         linkType={row.linkType}
                       />
@@ -555,6 +563,7 @@ export default function DetailInfo(props) {
                         onlyChildren={row.inner ? true : false}
                         id={props.contactData._id}
                         entity={props.contactData.entity}
+                        isMerged={!!props.contactData.mergedContacts}
                         content={row.data}
                         linkType={row.linkType}
                       >
@@ -567,14 +576,14 @@ export default function DetailInfo(props) {
                 let objName = Object.keys(row.data)[0];
 
                 if (row.data[objName] != undefined
-                  && row.data[objName] != `""` 
-                  && row.data[objName] != '' 
-                  && row.data[objName] != ""                  
+                  && row.data[objName] != `""`
+                  && row.data[objName] != ''
+                  && row.data[objName] != ""
                   && row.data[objName].length != 0
-                  && row.data[objName] != null 
-                  ) {
+                  && row.data[objName] != null
+                ) {
                   return (
-                  
+
                     <React.Fragment key={key}>
                       <Grid item xs={3} className="fieldName">
                         <p className="dataLabels">{key}</p>
@@ -584,6 +593,7 @@ export default function DetailInfo(props) {
                           onlyChildren={row.inner ? true : false}
                           id={props.contactData._id}
                           entity={props.contactData.entity}
+                          isMerged={!!props.contactData.mergedContacts}
                           content={row.data}
                           linkType={row.linkType}
                         >
