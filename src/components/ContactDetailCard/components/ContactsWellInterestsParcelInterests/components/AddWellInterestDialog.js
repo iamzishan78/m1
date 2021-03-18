@@ -222,17 +222,19 @@ function AddWellInterestDialog(props) {
       console.log("formLeaseName", formLeaseName);
       updateWellInterest({
         variables: {
-          id: stateApp.activeWellInterest._id,
-          globalWellId: selectedWell.Id,
-          // ...(selectedWell?.LeaseId !== formLeaseId) && {leaseId: formLeaseId},
-          ...(selectedWell?.Lease !== formLeaseName) && {lease: formLeaseName},
-          ...(selectedWell?.LeaseAcreage !== formLeaseAcres) && {leaseAcres: formLeaseAcres},
-          interestOwner: formOwnerName,
-          interestOwnerType: formInterestOwnerType,
-          type: formInterestType,
-          interest: formInterestAmount,
-          value: formTaxValue,
-          nra: formRoyaltyAcres,
+          wellInterest: {
+            id: stateApp.activeWellInterest._id,
+            globalWellId: selectedWell.Id,
+            // ...(selectedWell?.LeaseId !== formLeaseId) && {leaseId: formLeaseId},
+            ...(selectedWell?.Lease !== formLeaseName) && {lease: formLeaseName},
+            ...(selectedWell?.LeaseAcreage !== formLeaseAcres) && {leaseAcres: formLeaseAcres},
+            interestOwner: formOwnerName,
+            interestOwnerType: formInterestOwnerType,
+            type: formInterestType,
+            interest: formInterestAmount,
+            value: formTaxValue,
+            nra: formRoyaltyAcres,
+          },
         },
         refetchQueries: [
           "getContactWells",
@@ -242,18 +244,20 @@ function AddWellInterestDialog(props) {
     } else {
       addWellInterest({
         variables: {
-          globalWellId: selectedWell.Id,
-          userId: stateApp.user.mongoId,
-          contactId: props.contactId,
-          // ...(selectedWell?.LeaseId !== formLeaseId) && {leaseId: formLeaseId},
-          ...(selectedWell?.Lease !== formLeaseName) && {lease: formLeaseName},
-          ...(selectedWell?.LeaseAcreage !== formLeaseAcres) && {leaseAcres: formLeaseAcres},
-          interestOwner: formOwnerName,
-          interestOwnerType: formInterestOwnerType,
-          type: formInterestType,
-          interest: formInterestAmount,
-          value: formTaxValue,
-          nra: formRoyaltyAcres,
+          wellInterest: {
+            globalWellId: selectedWell.Id,
+            userId: stateApp.user.mongoId,
+            contactId: props.contactId,
+            // ...(selectedWell?.LeaseId !== formLeaseId) && {leaseId: formLeaseId},
+            ...(selectedWell?.Lease !== formLeaseName) && {lease: formLeaseName},
+            ...(selectedWell?.LeaseAcreage !== formLeaseAcres) && {leaseAcres: formLeaseAcres},
+            interestOwner: formOwnerName,
+            interestOwnerType: formInterestOwnerType,
+            type: formInterestType,
+            interest: formInterestAmount,
+            value: formTaxValue,
+            nra: formRoyaltyAcres,
+          }
         },
         refetchQueries: [
           "getContactWells",
