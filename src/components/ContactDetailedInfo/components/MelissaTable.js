@@ -2,9 +2,49 @@ import React, { useEffect, useState } from "react";
 import FieldContent, {
   FieldTypes,
 } from "./../../ContactDetailCard/components/FieldContent";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { excludeList } from "./ExcludeList";
 import { Grid } from "@material-ui/core";
+import {
+  Box,
+  FormControlLabel,
+  FormGroup,
+  Switch
+} from "@material-ui/core";
+
+const AntSwitch = withStyles((theme) => ({
+  root: {
+    width: 28,
+    height: 16,
+    padding: 0,
+    display: "flex",
+  },
+  switchBase: {
+    padding: 2,
+    color: theme.palette.grey[500],
+    "&$checked": {
+      transform: "translateX(12px)",
+      color: theme.palette.common.white,
+      "& + $track": {
+        opacity: 1,
+        backgroundColor: "#12ABE0",
+        borderColor: "#12ABE0",
+      },
+    },
+  },
+  thumb: {
+    width: 12,
+    height: 12,
+    boxShadow: "none",
+  },
+  track: {
+    border: `1px solid ${theme.palette.grey[500]}`,
+    borderRadius: 16 / 2,
+    opacity: 1,
+    backgroundColor: theme.palette.common.white,
+  },
+  checked: {},
+}))(Switch);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -80,37 +120,114 @@ const useStyles = makeStyles((theme) => ({
     color: "#7B7B7B",
     textAlign: "center",
   },
+  switchButtom: {
+    float: "right",
+    width: "fit-content",
+    alignSelf: "flex-end",
+    marginRight: 0,
+    "& span.MuiTypography-body1": {
+      fontSize: "0.9rem",
+      marginLeft: "5px"
+    },
+  },
+  switchTextDeselected: {
+    color: "rgb(141, 141, 141)",
+  },
 }));
 
 export default ({ ...props }) => {
   const classes = useStyles();
+  const [showEmpty, setShowEmpty] = useState(true);
+
+  const handleEmptyFields = () => {
+    setShowEmpty(!showEmpty);
+  }
+
+  const ToggleEmptyFieldButton = () => {
+    return (
+      <FormGroup style={{ display: "block" }}>
+        <FormControlLabel
+          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""
+            } ${!showEmpty ? classes.switchTextDeselected : ""}`}
+          control={
+            <React.Fragment>
+              <AntSwitch
+                checked={showEmpty}
+                onChange={() => {
+                  handleEmptyFields();
+                }}
+                name="checkedC"
+              />
+            </React.Fragment>
+          }
+          label="Show empty fields"
+          labelPlacement="end"
+
+        />
+      </FormGroup>
+    );
+  };
 
   return (
     <div style={{ padding: "23px 28px" }}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
-        <h4 style={{ margin: "0 0 13px 0" }}>Basic Information</h4>
+        <Box display="flex" justifyContent="space-between">
 
+          <h4 style={{ margin: "0 0 13px 0" }}>Basic Information</h4>
+          <ToggleEmptyFieldButton />
+        </Box>
         <Grid item xs={12} container className={props.wrapperClass} spacing={0}>
           {Object.entries(props.rows).map(([key, value]) => {
             if (!excludeList.includes(key)) {
-              return (
-                <React.Fragment>
-                  <Grid item xs={3} className="fieldName">
-                    <p className="dataLabels">{key}</p>
-                  </Grid>
-                  <Grid item xs={9}>
-                    <FieldContent
-                      id={props.id}
-                      entity={props.entity}
-                      onlyChildren={value.inner ? true : false}
-                      content={value.data}
-                      linkType={value.linkType}
-                    >
-                      {value.inner}
-                    </FieldContent>
-                  </Grid>
-                </React.Fragment>
-              );
+              if (showEmpty) {
+
+                return (
+                  <React.Fragment>
+                    <Grid item xs={3} className="fieldName">
+                      <p className="dataLabels">{key}</p>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <FieldContent
+                        id={props.id}
+                        entity={props.entity}
+                        onlyChildren={value.inner ? true : false}
+                        content={value.data}
+                        linkType={value.linkType}
+                      >
+                        {value.inner}
+                      </FieldContent>
+                    </Grid>
+                  </React.Fragment>
+                );
+              } else {
+                let objName = Object.keys(value.data)[0];
+                if (value.data[objName] != undefined
+                  && value.data[objName] != `""` 
+                  && value.data[objName] != '' 
+                  && value.data[objName] != ""                  
+                  && value.data[objName].length != 0
+                  && value.data[objName] != null 
+                  ) {
+                  return (
+                    <React.Fragment>
+                      <Grid item xs={3} className="fieldName">
+                        <p className="dataLabels">{key}</p>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <FieldContent
+                          id={props.id}
+                          entity={props.entity}
+                          onlyChildren={value.inner ? true : false}
+                          content={value.data}
+                          linkType={value.linkType}
+                        >
+                          {value.inner}
+                        </FieldContent>
+                      </Grid>
+                    </React.Fragment>
+                  );
+                }
+              }
             }
             return null;
           })}
@@ -210,10 +327,10 @@ export default ({ ...props }) => {
             </Grid>
           </>
         ) : (
-          <h4 style={{ margin: "13px 0 13px 0" }}>
-            No Purchased Contact Information to Display
-          </h4>
-        )}
+            <h4 style={{ margin: "13px 0 13px 0" }}>
+              No Purchased Contact Information to Display
+            </h4>
+          )}
       </Grid>
     </div>
   );

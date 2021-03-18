@@ -16,6 +16,9 @@ const Modals = makeStyles((theme) => ({
           backgroundColor: "#011133",
           color: "#fff",
       },
+	  closeIcon: {
+		cursor:'pointer', float:'right', marginTop: '7px'  
+	  },
       titleClose: {
         cursor:'pointer', float:'right'
       },

@@ -178,7 +178,6 @@ const TransactAppBar = ({
 
   useEffect(() => {
     if (pipeToShow?.lanes) {
-      console.log(pipeToShow.lanes)
       setOpenDeals(sumDeals(pipeToShow.lanes, "open"));
       setWonDeals(sumDeals(pipeToShow.lanes, "won"));
       setLostDeals(sumDeals(pipeToShow.lanes, "lost"));
@@ -195,8 +194,37 @@ const TransactAppBar = ({
         variant="outlined"
       >
         <div className={classes.top} style={{ marginTop: 15 }}>
+          <Pipelines />
+
+
           <div className={classes.right}>
-            {/* <h1>DEAL FLOW</h1> */}
+            <div className={classes.activeDeals}>
+              <OfflineBolt />
+              <span>
+                {openDeals.count}{" "}
+                {openDeals.count !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
+                {openDeals.amount}
+              </span>
+            </div>
+            <div className={classes.closedDeals}>
+              <CheckBox />
+              <span>
+                {wonDeals.count}{" "}
+                {wonDeals.count !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
+                {wonDeals.amount}
+              </span>
+            </div>
+            <div className={classes.lostDeals}>
+              <NotInterested />
+              <span>
+                {lostDeals.count}{" "}
+                {lostDeals.count !== 1 ? "LOST DEALS" : "LOST DEAL"} |{" "}
+                {lostDeals.amount}
+              </span>
+            </div>
+          </div>
+
+          <div className={classes.left}>
 
             <ButtonGroup style={{ minHeight: 36 }}>
               <Button
@@ -236,147 +264,10 @@ const TransactAppBar = ({
               >
                 Lost
               </Button>
-
-              {/* <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "deleted" && classes.activeBtn
-                }`}
-                onClick={() => setDealFilter("deleted")}
-              >
-                Deleted
-              </Button> */}
             </ButtonGroup>
           </div>
-          <div className={classes.left}>
-            <div className={classes.activeDeals}>
-              <OfflineBolt />
-              <span>
-                {openDeals.count}{" "}
-                {openDeals.count !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
-                {openDeals.amount}
-              </span>
-            </div>
-            <div className={classes.closedDeals}>
-              <CheckBox />
-              <span>
-                {wonDeals.count}{" "}
-                {wonDeals.count !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
-                {wonDeals.amount}
-              </span>
-            </div>
-            <div className={classes.lostDeals}>
-              <NotInterested />
-              <span>
-                {lostDeals.count}{" "}
-                {lostDeals.count !== 1 ? "LOST DEALS" : "LOST DEAL"} |{" "}
-                {lostDeals.amount}
-              </span>
-            </div>
-            {/* <Button className={classes.import} color="default" size="small">
-              IMPORT
-            </Button> */}
-            <Pipelines />
-          </div>
         </div>
-        {/* <div className={classes.bottom}>
-          <ButtonGroup>
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                dealFilter === "all" && classes.activeBtn
-              }`}
-              onClick={() => setDealFilter("all")}
-            >
-              ALL
-            </Button>
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                dealFilter === "open" && classes.activeBtn
-              }`}
-              onClick={() => setDealFilter("open")}
-            >
-              OPEN
-            </Button>
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                dealFilter === "won" && classes.activeBtn
-              }`}
-              onClick={() => setDealFilter("won")}
-            >
-              Won
-            </Button>
-
-                <Button
-                  size="small"
-                  className={`${classes.filterToggleBtn} ${
-                    dealFilter === "lost" && classes.activeBtn
-                  }`}
-                  onClick={() => setDealFilter("lost")}
-                >
-                  Lost
-                </Button>
-
-            <Button
-              size="small"
-              className={`${classes.filterToggleBtn} ${
-                dealFilter === "deleted" && classes.activeBtn
-              }`}
-              onClick={() => setDealFilter("deleted")}
-            >
-              Deleted
-            </Button>
-          </ButtonGroup>
-
-          <FormControl variant="outlined" className={classes.pipelineControl}>
-            <InputLabel id="pipeline-select-label">Pipeline</InputLabel>
-            <Select
-              margin="dense"
-              labelId="pipeline-select-label"
-              id="pipeline-select"
-              value={index}
-              label="Pipeline"
-              onChange={(e) => {
-                if (!["add", "edit"].includes(e.target.value)) {
-                  // Later on change to work with id's instead on index cuz drag and drop
-                  setIndex(parseInt(e.target.value));
-                }
-              }}
-            >
-              {pipelines.map((pipeline, i) => (
-                <MenuItem key={pipeline.id} value={pipeline.index}>
-                  {pipeline.name || `Pipeline ${i + 1}`}
-                </MenuItem>
-              ))}
-              <Divider />
-              <MenuItem value="add">
-                <AddIcon
-                  style={{
-                    marginRight: 8,
-                  }}
-                />{" "}
-                New Pipeline
-              </MenuItem>
-              <MenuItem value="edit">
-                <EditIcon
-                  style={{
-                    marginRight: 8,
-                  }}
-                />{" "}
-                Edit Pipeline
-              </MenuItem>
-            </Select>
-          </FormControl> */}
         <div className={classes.top} style={{ marginBottom: 4, marginTop: 2 }}>
-          {/* <div className={classes.right}> */}
-          {/* <div className={classes.bottomLeft}>
-          </div> */}
-          {/* <div className={classes.bottomRight}>
-            
-          </div> */}
-          {/* </div> */}
         </div>
       </AppBar>
     </>

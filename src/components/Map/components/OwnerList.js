@@ -52,13 +52,6 @@ export default function OwnerList() {
   const classes = useStyles();
 
   const handleClick = (owner) => {
-    console.log('flyto',owner)
-    
-    //setStateApp(state => ({...state, popupOpen:false}))
-    //setStateApp(state => ({ ...state, selectedOwner:owner }))
-   // setStateApp(state => ({ ...state, selectedWellId:well.Id }))
-    //setStateApp(state => ({...state,flyTo:well}))
-    
 }
 
 

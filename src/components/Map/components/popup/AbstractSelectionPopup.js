@@ -60,7 +60,6 @@ export default (props) => {
     UPSERTCUSTOMLAYER,
     {
       update(cache, { data: { upsertCustomLayer: { customLayer } } }) {
-        console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
         cache.modify({
           fields: {
             allCustomLayers(existingCustomLayers = [], { readField }) {
@@ -169,10 +168,10 @@ export default (props) => {
 
   const saveAndOpenParcelDetail = function () {
     if (!user._id) {
-      console.log("No user found!");
       return;
     }
     const abstractShape = stateApp.selectedAbstracts[0];
+
 
     const properties = abstractShape?.properties;
     let township = properties?.Township;
@@ -232,7 +231,8 @@ export default (props) => {
         "sdNotes": "",
         "sdGrossAcres": "",
         "shapeArea": calculateLandArea(abstractShape),
-        "shapeCenter": calculateShapeCenter(abstractShape.geometry.coordinates),
+        // needs to be a string to be consistent with queried data
+        "shapeCenter": JSON.stringify(calculateShapeCenter(abstractShape.geometry.coordinates)),
         "shapeLabelLayer": "",
         "id": featureId
       },

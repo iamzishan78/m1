@@ -135,7 +135,6 @@ export default function FilterFormOwner() {
   };
 
   const handleChangeInterest = (event) => {
-    // console.log(event);
     setInterestName(event);
     setFilterInterest(event);
     setStateNav((stateNav) => ({
@@ -145,7 +144,6 @@ export default function FilterFormOwner() {
   };
 
   const handleChangeOwnerType = (event) => {
-    // console.log(event);
     setOwnerTypeName(event);
     setFilterOwnerType(event);
     setStateNav((stateNav) => ({

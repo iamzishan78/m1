@@ -130,11 +130,9 @@ const SignUpCard = props => {
   const [showSignUp, setShowSignUp] = useState(false);
 
   useEffect(() => {
-    console.log("it changed");
   }, [showSignUp]);
 
   const handleNewUserSignUp = userData => {
-    console.log("userData", userData);
   };
 
   const showForm = () => {

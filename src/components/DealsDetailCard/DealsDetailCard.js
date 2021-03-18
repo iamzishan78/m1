@@ -51,7 +51,6 @@ export default function DealsDetailCard(props) {
 
   useEffect(() => {
     if (props.contact) {
-      console.log(props.contact);
       getContactDeals({
         variables: {
           contactId: props.contact._id,
@@ -85,7 +84,6 @@ export default function DealsDetailCard(props) {
       setWonDeals(won);
       setLostDeals(lost);
       setActiveDeals(others);
-      console.log("ALL DEALS UPDATED: ", allDeals);
     }
   }, [allDeals]);
 

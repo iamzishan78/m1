@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import uuid from "uuid";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -14,15 +13,12 @@ import Grid from "@material-ui/core/Grid";
 import { AppContext } from "../../../AppContext";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
-import getLaneTitle from "../../Transact/getLaneTitle";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
-import { ALLENTITYNAMESFORPARCEL } from "../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CircularProgress, Dialog, Typography } from "@material-ui/core";
 import RightDialog from "./RightDialog";
-import { DatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import {
   deepEqual,
@@ -48,7 +44,6 @@ import {
 import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
-import { toDate } from "date-fns";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -193,10 +188,7 @@ const newContact = {
   state: "",
   zip: "",
 };
-const wonStyle = { borderColor: "#35DA97" };
-const lostStyle = { borderColor: "#F74E1E" };
-const defaultStyle = { borderColor: "#e2e2e2" };
-const openStyle = { borderColor: "#EBC253" };
+
 
 function AddDealDialog(props) {
   const dispatch = useDispatch();
@@ -370,7 +362,6 @@ function AddDealDialog(props) {
   }, []);
 
   useEffect(() => {
-    console.log("ALL CONTACTS: ", allContacts);
     if (allContacts?.paginatedContacts) {
       setMongoEntitiesArray(
         allContacts?.paginatedContacts?.edges?.map((el) => el.node)
@@ -381,10 +372,7 @@ function AddDealDialog(props) {
   }, [allContacts]);
 
   useEffect(() => {
-    console.log("AUTOCOMPLETE INPUT CHANGE: ", nameAutInputValue);
-
     if (props.isTransactPage) {
-      //will also run during initial mount
       setIsNextPageLoading(true);
       getPaginatedContacts({
         variables: {
@@ -400,7 +388,6 @@ function AddDealDialog(props) {
   };
 
   useEffect(() => {
-    console.log("CDATA", cData);
     if (cData?.contact) {
       setNameAutValue(
         cData?.contact
@@ -411,7 +398,6 @@ function AddDealDialog(props) {
   }, [cData]);
 
   useEffect(() => {
-    console.log("CONTACT", nameAutValue);
     if (nameAutValue?.name) {
       setContact(nameAutValue);
     }
@@ -458,7 +444,6 @@ function AddDealDialog(props) {
   }, [props.contactId]);
 
   useEffect(() => {
-    console.log("ACTIVE DEAL: ", stateApp.activeDeal);
     const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
     const laneId = stateApp.activeDeal?.laneId;
 
@@ -741,7 +726,6 @@ function AddDealDialog(props) {
                 );
             })
             .catch((reason) => {
-              console.log(reason);
             });
       } else {
         //// add a new deal
@@ -928,14 +912,6 @@ function AddDealDialog(props) {
                     </IconButton>
                   </>
                 )}
-
-              <IconButton
-                disabled={updateDealLoading || addContactLoading}
-                onClick={handleClose}
-                size="small"
-              >
-                <CloseIcon className={classes.closeIcon} fontSize="small" />
-              </IconButton>
             </div>
           </Grid>
           <div
@@ -1092,7 +1068,6 @@ function AddDealDialog(props) {
                 placeholder=""
                 fullWidth
                 onChange={(e) => {
-                  console.log("DATE", e.target.value);
                   setCloseDate(e.target.value);
                 }}
               />
@@ -1145,8 +1120,6 @@ function AddDealDialog(props) {
                 native
                 value={stageId}
                 onChange={(e) => {
-                  console.log("Stage: ", e.target.value);
-                  // setStageId(e.target.value);
                   settingNewStageAndFindNextAvailablePosition(
                     e.target.value,
                     true

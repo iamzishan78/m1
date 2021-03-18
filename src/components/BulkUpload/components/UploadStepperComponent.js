@@ -41,8 +41,6 @@ export default function BulkUpload(props) {
 
   useEffect(() => {
     const { csvContactsListToSend } = stateApp;
-    console.log("UPLOAD:", csvContactsListToSend)
-
   }, []);
 
   return (

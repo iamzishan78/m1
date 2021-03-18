@@ -131,7 +131,6 @@ const RssFeed = () => {
           image,
         }));
       } catch (error) {
-        console.log(error, url);
       }
     };
     Promise.all(rsslist.map((source) => fetchRss(source))).then((articles) => {

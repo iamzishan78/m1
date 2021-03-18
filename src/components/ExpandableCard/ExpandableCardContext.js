@@ -1,7 +1,7 @@
 import React, { useState, createContext } from 'react'
 const ExpandableCardContext = createContext([{}, () => {}])
 
-const ExpandableCardContextProvider = props => {
+const ExpandableCardContextProvider = React.memo((props) => {
   const [stateExpandableCard, setStateExpandableCard] = useState({
     expanded:false
   })
@@ -10,6 +10,8 @@ const ExpandableCardContextProvider = props => {
       {props.children}
     </ExpandableCardContext.Provider>
   )
-}
+})
 
+ExpandableCardContext.whyDidYouRender = true
+ExpandableCardContextProvider.whyDidYouRender = true
 export { ExpandableCardContext, ExpandableCardContextProvider }

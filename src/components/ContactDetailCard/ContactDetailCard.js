@@ -412,7 +412,8 @@ export default function ContactDetailCard(props) {
           className={classes.border}
         >
           <div className={classes.leftColumnTopRigthCorner}>
-            <Button
+            {/* temporary removal until melissa is reactivated */}
+            {/* <Button
               variant="contained"
               // size="small"
               onClick={() => {
@@ -420,7 +421,7 @@ export default function ContactDetailCard(props) {
               }}
             >
               Buy Contact Info
-            </Button>
+            </Button> */}
             {contactData.primaryEmail && (
               <a href={"mailto:" + contactData.primaryEmail}>
                 <Button

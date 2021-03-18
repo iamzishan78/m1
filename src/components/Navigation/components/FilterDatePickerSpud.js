@@ -5,6 +5,8 @@ import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
 import ClearIcon from "@material-ui/icons/Clear";
 import { IconButton } from "@material-ui/core";
+import {useForm,Controller} from 'react-hook-form';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -26,6 +28,8 @@ const useStyles = makeStyles((theme) => ({
 export default function FilterDatePickerSpud(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
+  const { control, watch, setValue, getValues } = useForm();
+
 
   useEffect(() => {
     let filter = null;
@@ -79,73 +83,98 @@ export default function FilterDatePickerSpud(props) {
   return (
     <div className={classes.root}>
       <div className={classes.datesRow}>
-        <KeyboardDatePicker
-          label={props.labelDates + " " + "From"}
-          className={`${classes.datePicker} ${
-            stateNav.spudDateFrom ? classes.blue : ""
-          }`}
-          maxDate={moment().subtract(1, "day")}
-          variant="inline"
-          value={
-            stateNav.spudDateFrom
-              ? stateNav.spudDateFrom
-              : new Date("1900-01-01T00:00:00")
-          }
-          onChange={(date) => handleStartDate(date)}
-          //inputVariant="outlined"
-          minDateMessage="Date should not be before minimal date"
-          maxDateMessage="Date should not be after max date"
-          disableToolbar
-          KeyboardButtonProps={{ "aria-label": "change date" }}
-          autoOk="true"
-          format="MM/DD/YYYY"
-          // orientation = 'landscape'
-          // margin = 'normal'
-          PopoverProps={{ disablePortal: true }}
-          fullWidth={true}
-          InputProps={{
-            endAdornment: (
-              <IconButton onClick={() => handleStartDate(null)}>
-                <ClearIcon style={{ height: "22px", width: "22px" }} />
-              </IconButton>
-            ),
-          }}
-          InputAdornmentProps={{
-            position: "start",
-          }}
+
+
+      <Controller
+            control={control}
+            name="spudDateFrom"          
+            defaultValue={stateNav.spudDateFrom}
+            render ={({onChange, onClick, value}
+            ) => (
+
+            <KeyboardDatePicker
+              label={props.labelDates + " " + "From"}
+              className={`${classes.datePicker} ${
+                stateNav.spudDateFrom ? classes.blue : ""
+              }`}
+              variant="inline"
+              value={watch('spudDateFrom')}
+              onChange={(date) => {
+                setValue('spudDateFrom',date);
+                if(date && date.isValid()){handleStartDate(date)}
+                if(!date || !date.isValid()){handleStartDate(null)}
+                return {value: date}
+              }}
+              disableToolbar
+              KeyboardButtonProps={{ "aria-label": "change date" }}
+              autoOk="true"
+              format="MM/DD/YYYY"
+              PopoverProps={{ disablePortal: true }}
+              fullWidth={true}
+              InputProps={{
+                endAdornment: (
+                  <IconButton onClick={() => {
+                    setValue('spudDateFrom',null);
+                    handleStartDate(null);
+              }}>
+                    <ClearIcon style={{ height: "22px", width: "22px" }} />
+                  </IconButton>
+                ),
+              }}
+              InputAdornmentProps={{
+                position: "start",
+              }}
+            />
+
+        )}
         />
 
-        <KeyboardDatePicker
-          label={props.labelDates + " " + "To"}
-          className={`${classes.datePicker} ${
-            stateNav.spudDateTo ? classes.blue : ""
-          }`}
-          variant="inline"
-          maxDate={moment()}
-          value={stateNav.spudDateTo ? stateNav.spudDateTo : moment()}
-          onChange={(date) => handleEndDate(date)}
-          //inputVariant="outlined"
-          minDateMessage="Date should not be before minimal date"
-          maxDateMessage="Date should not be after max date"
-          disableToolbar
-          KeyboardButtonProps={{ "aria-label": "change date" }}
-          autoOk="true"
-          format="MM/DD/YYYY"
-          // orientation = 'landscape'
-          // margin = 'normal'
-          PopoverProps={{ disablePortal: true }}
-          fullWidth={true}
-          InputProps={{
-            endAdornment: (
-              <IconButton onClick={() => handleEndDate(null)}>
-                <ClearIcon style={{ height: "22px", width: "22px" }} />
-              </IconButton>
-            ),
-          }}
-          InputAdornmentProps={{
-            position: "start",
-          }}
+
+          <Controller
+            control={control}
+            name="spudDateTo"          
+            defaultValue={stateNav.spudDateTo}
+            render ={({onChange, onClick, value}
+            ) => (
+
+
+            <KeyboardDatePicker
+              label={props.labelDates + " " + "To"}
+              className={`${classes.datePicker} ${
+                stateNav.spudDateTo ? classes.blue : ""
+              }`}
+              variant="inline"
+              value={watch('spudDateTo')}
+              onChange={(date) => {
+                setValue('spudDateTo',date);
+                if(date && date.isValid()){handleEndDate(date)}
+                if(!date || !date.isValid()){handleEndDate(null)}
+                return {value: date}
+              }}
+              disableToolbar
+              KeyboardButtonProps={{ "aria-label": "change date" }}
+              autoOk="true"
+              format="MM/DD/YYYY"
+              PopoverProps={{ disablePortal: true }}
+              fullWidth={true}
+              InputProps={{
+                endAdornment: (
+                  <IconButton onClick={() => {
+                    setValue('spudDateTo',null);
+                    handleEndDate(null);
+                  }}>
+                  <ClearIcon style={{ height: "22px", width: "22px" }} />
+                  </IconButton>
+                ),
+              }}
+              InputAdornmentProps={{
+                position: "start",
+              }}
+            />
+
+        )}
         />
+
       </div>
     </div>
   );

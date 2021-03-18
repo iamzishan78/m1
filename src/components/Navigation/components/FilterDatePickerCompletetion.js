@@ -1,10 +1,13 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
 import ClearIcon from "@material-ui/icons/Clear";
 import { IconButton } from "@material-ui/core";
+import { formatDiagnostics } from "typescript";
+import {useForm,Controller} from 'react-hook-form';
+
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -23,9 +26,15 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const format = "MM/DD/YYYY"
+
+
 export default function FilterDatePickerCompletetion(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [displayValue, setDisplayValue] = useState(null);
+  const { control, watch, setValue, getValues } = useForm();
+
 
   useEffect(() => {
     let filter = null;
@@ -70,6 +79,7 @@ export default function FilterDatePickerCompletetion(props) {
       ...stateNav,
       completetionDateFrom: !date ? null : moment(date),
     }));
+
   };
 
   const handleEndDate = (date) => {
@@ -79,74 +89,102 @@ export default function FilterDatePickerCompletetion(props) {
     }));
   };
 
+
   return (
     <div className={classes.root}>
       <div className={classes.datesRow}>
-        <KeyboardDatePicker
-          label={props.labelDates + " " + "From"}
-          className={`${classes.datePicker} ${
-            stateNav.completetionDateFrom ? classes.blue : ""
-          }`}
-          maxDate={moment().subtract(1, "day")}
-          variant="inline"
-          value={
-            stateNav.completetionDateFrom
-              ? stateNav.completetionDateFrom
-              : new Date("1900-01-01T00:00:00")
-          }
-          onChange={(date) => handleStartDate(date)}
-          //inputVariant="outlined"
-          minDateMessage="Date should not be before minimal date"
-          maxDateMessage="Date should not be after max date"
-          disableToolbar
-          KeyboardButtonProps={{ "aria-label": "change date" }}
-          autoOk="true"
-          format="MM/DD/YYYY"
-          PopoverProps={{ disablePortal: true }}
-          fullWidth={true}
-          InputProps={{
-            endAdornment: (
-              <IconButton onClick={() => handleStartDate(null)}>
-                <ClearIcon style={{ height: "22px", width: "22px" }} />
-              </IconButton>
-            ),
-          }}
-          InputAdornmentProps={{
-            position: "start",
-          }}
+
+          <Controller
+            control={control}
+            name="completetionDateFrom"          
+            defaultValue={stateNav.completetionDateFrom}
+            render ={({onChange, onClick, value}
+            ) => (
+
+            <KeyboardDatePicker
+              label={props.labelDates + " " + "From"}
+              className={`${classes.datePicker} ${
+                stateNav.completetionDateFrom ? classes.blue : ""
+              }`}
+              variant="inline"
+              value={ watch('completetionDateFrom')}
+              onChange={(date) => {
+                setValue('completetionDateFrom',date);
+                if(!date || !date.isValid()){handleStartDate(null)}
+                if(date && date.isValid()){handleStartDate(date)}
+                return {value: date}
+            }}
+              disableToolbar
+              KeyboardButtonProps={{ "aria-label": "change date" }}
+              autoOk="true"
+              format = {format}
+              PopoverProps={{ disablePortal: true }}
+              fullWidth={true}
+              InputProps={{
+                endAdornment: (
+                  <IconButton onClick={() => {
+                    setValue('completetionDateFrom',null);
+                    handleStartDate(null);
+              }}>                    
+                  <ClearIcon style={{ height: "22px", width: "22px" }} />
+                  </IconButton>
+                ),
+              }}
+              InputAdornmentProps={{
+                position: "start",
+              }}
+            />
+
+        )}
         />
 
-        <KeyboardDatePicker
-          label={props.labelDates + " " + "To"}
-          className={`${classes.datePicker} ${
-            stateNav.completetionDateTo ? classes.blue : ""
-          }`}
-          variant="inline"
-          value={
-            stateNav.completetionDateTo ? stateNav.completetionDateTo : moment()
-          }
-          onChange={(date) => handleEndDate(date)}
-          maxDate={moment()}
-          //inputVariant="outlined"
-          minDateMessage="Date should not be before minimal date"
-          maxDateMessage="Date should not be after max date"
-          disableToolbar
-          KeyboardButtonProps={{ "aria-label": "change date" }}
-          autoOk="true"
-          format="MM/DD/YYYY"
-          PopoverProps={{ disablePortal: true }}
-          fullWidth={true}
-          InputProps={{
-            endAdornment: (
-              <IconButton onClick={() => handleEndDate(null)}>
-                <ClearIcon style={{ height: "22px", width: "22px" }} />
-              </IconButton>
-            ),
-          }}
-          InputAdornmentProps={{
-            position: "start",
-          }}
+
+        <Controller
+            control={control}
+            name="completetionDateTo"          
+            defaultValue={stateNav.completetionDateTo}
+            render ={({onChange, onClick, value}
+            ) => (
+
+            <KeyboardDatePicker
+              label={props.labelDates + " " + "To"}
+              className={`${classes.datePicker} ${
+                stateNav.completetionDateTo ? classes.blue : ""
+              }`}
+              variant="inline"
+              value={watch('completetionDateTo')}
+              onChange={(date) => {
+                setValue('completetionDateTo',date);
+                if(date && date.isValid()){handleEndDate(date)}
+                if(!date || !date.isValid()){handleEndDate(null)}
+                return {value: date}
+              }}
+              maxDate={moment()}
+              disableToolbar
+              KeyboardButtonProps={{ "aria-label": "change date" }}
+              autoOk="true"
+              format="MM/DD/YYYY"
+              PopoverProps={{ disablePortal: true }}
+              fullWidth={true}
+              InputProps={{
+                endAdornment: (
+                  <IconButton onClick={() => {
+                    setValue('completetionDateTo',null);
+                    handleEndDate(null);
+                  }}>
+                  <ClearIcon style={{ height: "22px", width: "22px" }} />
+                  </IconButton>
+                ),
+              }}
+              InputAdornmentProps={{
+                position: "start",
+              }}
+            />
+
+        )}
         />
+
+
       </div>
     </div>
   );

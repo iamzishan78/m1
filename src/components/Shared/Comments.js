@@ -26,7 +26,10 @@ import { REMOVECOMMENT } from "../../graphQL/useMutationRemoveComment";
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import CloseIcon from "@material-ui/icons/Close";
-import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
+
+// import value formatters 
+import capitalizeFirstLetter from "../Shared/valueformatters/capitalize-first-letter.js";
+
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -431,9 +434,6 @@ export default function Comments(props) {
     }
   };
 
-  const capitalizeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  };
 
   useEffect(() => {
     if (props.focus) {

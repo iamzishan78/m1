@@ -32,7 +32,6 @@ export const B2CPolicies = {
 
 // Config object to be passed to Msal on creation
 export const msalB2CConfig = (tenantId, clientId) => {
-  console.log(`tenantId: ${tenantId}, clientId: ${clientId}`);
   const path = `${window.location.origin}/loginb2c`;
 
   return {

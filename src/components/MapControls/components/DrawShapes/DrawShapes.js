@@ -97,13 +97,7 @@ export default function DrawShapes(props) {
     UPSERTCUSTOMLAYER
   );
 
-  //   const [
-  //     getCustomLayers,
-  //     { data: customLayerData },
-  //   ] = useLazyQuery(CUSTOMLAYERSQUERY, { fetchPolicy: "network-only" });
-
   const DEBUGGER = (source, value) => {
-    console.log(`%c[DrawShapes.js] ${source}`, DEBUG_GREEN, value);
   };
 
   const createShapeMarker = (feature) => {
@@ -114,28 +108,10 @@ export default function DrawShapes(props) {
     return el;
   };
 
-  // useEffect(() => {
-  //   loadCSS(
-  //     'https://use.fontawesome.com/releases/v5.1.0/css/all.css',
-  //     document.querySelector('#font-awesome-css'),
-  //   );
-  // }, []);
 
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
 
   const [user, setUser] = useState({ _id: "" });
-
-  //   useEffect(() => {
-  //     console.log(customLayerData);
-  //     if (customLayerData && customLayerData.customLayers) {
-  //       setStateApp((state) => ({
-  //         ...state,
-  //         customLayers: customLayerData.customLayers,
-  //         currentFeature: undefined,
-  //         editDraw: false,
-  //       }));
-  //     }
-  //   }, [customLayerData]);
 
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.email) {
@@ -167,7 +143,6 @@ export default function DrawShapes(props) {
     map.on("draw.selectionchange", ({ features }) => {
       const [feature] = features;
       if (feature && !feature.id.includes("edit_polygon")) {
-        console.log("draw shape check feature", feature);
         setStateApp((stateApp) => {
           return {
             ...stateApp,
@@ -234,9 +209,6 @@ export default function DrawShapes(props) {
     const { currentFeature } = stateApp;
     if (currentFeature) {
       const elem = document.getElementById(currentFeature.id);
-      // elem.parentNode.removeChild(elem);
-      console.log("elem", elem);
-
       setStateApp((state) => ({
         ...state,
         editDraw: false,
@@ -260,7 +232,6 @@ export default function DrawShapes(props) {
     // save data onto geoJSON properties fields
 
     spatialDataAttributes.forEach((attribute) => {
-      // console.log(attribute, spatialData[attribute]);
       stateApp.draw.setFeatureProperty(
         stateApp.currentFeature.id,
         attribute,
@@ -279,22 +250,6 @@ export default function DrawShapes(props) {
     const { currentFeature } = stateApp;
     stateApp.draw.delete(currentFeature.id);
 
-    // handleDeleteSpatialDataAndShape();
-    // if (currentFeature) {
-    //     setStateApp((state) => ({
-    //         ...state,
-    //         editDraw: false,
-    //         currentFeature: undefined,
-    //     }));
-    //     if (currentFeature.id.includes("draw_polygon")
-    //         || currentFeature.id.includes("drag_circle")
-    //         || currentFeature.id.includes("draw_rectangle")) {
-    //         setStateNav((stateNav) => ({
-    //             ...stateNav,
-    //             filterDrawing: []
-    //         }));
-    //     }
-    // }
 
     //////cleaning the selected title opinion and redirecting to title opinion page//
 

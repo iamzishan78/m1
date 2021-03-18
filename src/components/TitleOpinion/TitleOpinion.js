@@ -149,9 +149,6 @@ export default function TitleOpinion() {
 
   /////////////////////////////
   useEffect(() => {
-    console.log(
-      "selectedTitleOpinion=== " + JSON.stringify(stateTitleOpinion.TOData)
-    );
   }, [stateTitleOpinion.TOData]);
 
   const handleAdd = e => {

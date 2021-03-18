@@ -130,16 +130,6 @@ const BootstrapInput = withStyles((theme) => ({
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
     ].join(','),
-
-    // '&:hover': {
-    //   backgroundColor: '#fff',
-    // },
-
-    // '&$focused': {
-    //   backgroundColor: '#fff',
-    //   boxShadow: `${fade(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
-    //   borderColor: theme.palette.secondary.main,
-    // },
   },
 }))(InputBase);
 
@@ -246,7 +236,6 @@ const SignInCard = props => {
 
   const handleTenantChange = (e) => {
     setTenant(e.target.value)
-    console.log(tenant)
     let t = e.target.value;
     let graphQL;
     if(t === 'M1neral') {
@@ -259,13 +248,6 @@ const SignInCard = props => {
     else if(t === 'c2') {
       graphQL = 'https://m1graphql.azurewebsites.net/api/tenant2?code=XxuZEkb91cXRlu5px2VqW7O5u0XyO1kEKSAzVzBXagf01nyG7jqryg=='
     }
-    // else if (t === 'm1dev') {
-    //   graphQL = 'https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA=='
-  
-    // }
-    // else if (t === 'm1auth') {
-    // graphQL = 'https://m1graph.azurewebsites.net/api/m1graphauth'
-    // }
     setStateApp(state => ({...state,apolloClientEndpoint:graphQL}))
   }
 

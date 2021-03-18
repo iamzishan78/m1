@@ -49,8 +49,6 @@ export default function Deals({ contact, ...props }) {
   const [lostDeals, setLostDeals] = useState([]); // deal rejected
   const [activeDeals, setActiveDeals] = useState([]); // all other deals
   const [allDeals, setAllDeals] = useState([]); // all other deals
-  const [stateApp, setStateApp] = useContext(AppContext);
-  // const [getTransactionData, { data, loading }] = useLazyQuery(TRANSACTIONDATA);
   const [getContactDeals, { data, loading }] = useLazyQuery(CONTACTDEALS, {
     fetchPolicy: "cache-and-network",
   });
@@ -59,7 +57,6 @@ export default function Deals({ contact, ...props }) {
 
   useEffect(() => {
     if (contact) {
-      console.log(contact);
       getContactDeals({
         variables: {
           contactId: contact._id,

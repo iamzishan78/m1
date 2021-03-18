@@ -1,3 +1,6 @@
+
+
+// react imports 
 import React, {
   useContext,
   useState,
@@ -6,26 +9,39 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+// contexts 
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
-import Popover from "@material-ui/core/Popover";
-import mapboxgl from "mapbox-gl";
-import * as turf from "@turf/turf";
-import { makeStyles } from "@material-ui/core/styles";
+
+// custom components 
 import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
-import Portal from "@material-ui/core/Portal";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
-import Draggable from "react-draggable";
-import DrawStatus from "./components/DrawStatus";
 import ZoomFault from "./components/ZoomFault";
 import HugeRequest from "./components/HugeRequest";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
+import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
+import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
+import MapGridCardProvider from "../MapGridCard/MapGridProvider";
+import MarkerIcon from "./sprites/marker-icon.png";
+import DefaultFiltersTest from "./filtersDefaultTest";
+import FilterControl from "./components/FilterControl";
+import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
+import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
+import { deepEqual, deepEqualObjects } from "../Shared/functions";
+import gjv from "geojson-validation";
+import { setMainMapState, showErrorMessage } from "../../actions";
+
+// 3rd party packages 
+import mapboxgl from "mapbox-gl";
+import * as turf from "@turf/turf";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import {
   CircleMode,
@@ -34,17 +50,19 @@ import {
   SimpleSelectMode,
 } from "mapbox-gl-draw-circle";
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
-import * as MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import DefaultFiltersTest from "./filtersDefaultTest";
-import FilterControl from "./components/FilterControl";
+import debounce from "lodash/debounce";
+
+// material-ui
+import { makeStyles } from "@material-ui/core/styles";
+import Portal from "@material-ui/core/Portal";
+
+// queries 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLSQUERY } from "../../graphQL/useQueryWells";
 import { TRACKSBYOBJECTTYPE } from "../../graphQL/useQueryTracksByObjectType";
 import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
-import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
-import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
@@ -53,25 +71,14 @@ import { PLSSSECONDDIVISIONGEO } from "../../graphQL/useQueryPLSSSecondDivisionG
 import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 import { OWNERSQUERY } from "../../graphQL/useQueryOwners";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
-import {
-  ABSTRACTGEOQUERYCONTAINS,
-  ABSTRACTGEOCONTAINSQUERY,
-} from "../../graphQL/useQueryAbstractGeoContains";
-import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
-import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
-import MapGridCard from "../MapGridCard/MapGridCard";
-import { useDispatch, useSelector } from "react-redux";
-import MarkerIcon from "./sprites/marker-icon.png";
-import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
-import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
-import { deepEqual, deepEqualObjects } from "../Shared/functions";
-import gjv from "geojson-validation";
-import { setMainMapState, showErrorMessage } from "../../actions";
-import { ZoomOutMapSharp } from "@material-ui/icons";
-import debounce from "lodash/debounce";
-import { createFalse } from "typescript";
-import { geojsonTypes } from "@mapbox/mapbox-gl-draw/src/constants";
-//import { AvSortByAlpha } from "material-ui/svg-icons";
+import { ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
+
+// mutations 
+import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
+import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
+
+
+
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -109,16 +116,6 @@ const useStyles = makeStyles((theme) => ({
     left: "47%",
     transform: "translate(-50%, -50%)",
   },
-  // draggable: {
-  //   width: 0,
-  //   height: 0,
-  //   "& div.MuiCardHeader-root": {
-  //     cursor: "move",
-  //     "& .MuiCardHeader-content": {
-  //       cursor: "text",
-  //     },
-  //   },
-  // },
 }));
 
 const random_hex_color_code = () => {
@@ -127,14 +124,23 @@ const random_hex_color_code = () => {
 };
 let hoveredAbstractId = null;
 
-export default function Map() {
+function Map() {
+
+  // context states
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
+
+  // function states 
+  const [flyVar1, setFlyVar1] = useState([null]);
+  const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
+
+  // styles 
   let classes = useStyles({
     drawingCircle:
       stateApp.draw && stateApp.draw.getMode() == "drag_circle" ? true : false,
   });
-  const [flyVar1, setFlyVar1] = useState([null]);
-  const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
+
   const dispatch = useDispatch();
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
@@ -143,10 +149,7 @@ export default function Map() {
     ({ MainMap }) => MainMap.removeLayerFromMap
   );
   const clustersOff = useSelector(({ MainMap }) => MainMap.clustersOff);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
+
   const [filtersDefault, FiltersDefault] = useState(
     stateApp.user.defaultFilters ? stateApp.user.defaultFilters : []
   );
@@ -155,13 +158,16 @@ export default function Map() {
       FiltersDefault(state);
     }
   };
+
   const [lng, Lng] = useState();
+  const [lat, Lat] = useState();
+
+
   const setLng = (state) => {
     if (lng != state) {
       Lng(state);
     }
   };
-  const [lat, Lat] = useState();
   const setLat = (state) => {
     if (lat != state) {
       Lat(state);
@@ -286,89 +292,55 @@ export default function Map() {
 
   const [filterAbstract, setFilterAbstract] = useState(false);
 
-  const [mapMouseMoveHandler, setMapMouseMoveHandler] = useState(null);
-  const [mapMouseRClickHandler, setMapMouseRClickHandler] = useState(null);
-
-  const [isLoadedLayerConfig, setIsLoadedLayerConfig] = useState(false);
-  const [isLoadedLayerState, setIsLoadedLayerState] = useState(false);
 
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
-  //////////// TEMP UNTIL PROVIDER IS MADE //////////
-
-  //////begin////////temporary
 
   const [rows, Rows] = React.useState([]);
+  const [loading, Loading] = useState(true);
+
+
+
   const setRows = (state) => {
     if (rows != state) {
       Rows(state);
     }
   };
-  const [loading, Loading] = useState(true);
   const setLoading = (state) => {
     if (loading != state) {
       Loading(state);
     }
   };
+
+
+  // queries 
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
   const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
-  const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(
-    TRACKSBYOBJECTTYPE
-  );
-  const [tracksByObjectTypeOwner, { data: dataTracksOwner }] = useLazyQuery(
-    TRACKSBYOBJECTTYPE
-  );
+  const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(TRACKSBYOBJECTTYPE);
+  const [tracksByObjectTypeOwner, { data: dataTracksOwner }] = useLazyQuery(TRACKSBYOBJECTTYPE);
+  const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(OWNERSWELLSQUERY);
+  const [getCustomLayers, { data: customLayerData }] = useLazyQuery(CUSTOMLAYERSQUERY);
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {fetchPolicy: "network-only",});
+  const [getWellsForLayer,{ data: dataWellsForOwnerWellTrackLayer }] = useLazyQuery(WELLSQUERY);
+  const [getPermits, { data: permitData }] = useLazyQuery(PERMITSQUERY);
+  const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
+  const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
+  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(ABSTRACTWELLGEOQUERY);
+  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
+  const [getPLSSSecondDivisionGeo, { data: plssSecondDivisionData }] = useLazyQuery(PLSSSECONDDIVISIONGEO);
+  const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(ALLLAYERSETTINGSBYUSER);
 
-  const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
-    OWNERSWELLSQUERY
-  );
 
-  const [getCustomLayers, { data: customLayerData }] = useLazyQuery(
-    CUSTOMLAYERSQUERY
-  );
-
-  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "network-only",
-  });
-
+  // mutations 
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
-
   const [removeCustomLayer] = useMutation(REMOVECUSTOMLAYER);
 
-  const [
-    getWellsForLayer,
-    { data: dataWellsForOwnerWellTrackLayer },
-  ] = useLazyQuery(WELLSQUERY);
 
-  const [getPermits, { data: permitData }] = useLazyQuery(PERMITSQUERY);
-
-  const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
-
-  const [getAbstractGeo, { data: abstractData }] = useLazyQuery(
-    ABSTRACTGEOQUERY
-  );
-
-  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(
-    ABSTRACTWELLGEOQUERY
-  );
-
-  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(
-    ABSTRACTGEOCONTAINSQUERY
-  );
-  const [getPLSSSecondDivisionGeo, { data: plssSecondDivisionData }] = useLazyQuery(
-    PLSSSECONDDIVISIONGEO
-  );
-
-  const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(
-    ALLLAYERSETTINGSBYUSER
-  );
 
   /////end/////////temporary
 
   useEffect(() => {
-    console.log("useEffect line310");
     if (stateApp.user && stateApp.user.mongoId) {
-      console.log("useEffect 1");
       setLoading(true);
 
       tracksByObjectType({
@@ -413,7 +385,6 @@ export default function Map() {
   }, [dataTracks]);
 
   useEffect(() => {
-    console.log("useEffect 2");
     if (dataTracksOwner && dataTracksOwner.tracksByObjectType) {
       if (dataTracksOwner.tracksByObjectType.length !== 0) {
         var objectsIdsArray = dataTracksOwner.tracksByObjectType.map(
@@ -444,8 +415,6 @@ export default function Map() {
   }, [dataOwners]);
 
   useEffect(() => {
-    console.log("useEffect 3");
-
     if (customLayerData && customLayerData.allCustomLayers) {
       setStateApp((state) => ({
         ...state,
@@ -457,8 +426,10 @@ export default function Map() {
   }, [customLayerData]);
 
   useEffect(() => {
-    console.log("useEffect 4l");
     if (layerStates && layerStates.allLayerSettingsByUser) {
+
+      console.log('layer states', layerStates)
+
       setStateApp({
         ...stateApp,
         layers: [...layerStates.allLayerSettingsByUser],
@@ -561,10 +532,8 @@ export default function Map() {
   }, [viewFileResult]);
 
   useEffect(() => {
-    console.log("useEffect 4");
 
     if (dataOwnersWells && dataOwnersWells.length !== 0) {
-      console.log(dataOwnersWells.ownersWells);
       var ownerObjectIds = dataOwnersWells.ownersWells.map(
         (item) => item.wells
       );
@@ -582,7 +551,6 @@ export default function Map() {
   }, [dataOwnersWells]);
 
   useEffect(() => {
-    console.log("useEffect 5");
 
     if (dataWells) {
       if (
@@ -720,7 +688,6 @@ export default function Map() {
       }
 
         
-      console.log("NEW NEW NEW",sourceId )
       if(sourceId=="parcels_source" || sourceId=="interests_source" ){
         
         let pointSource = geoJson.features.map(feature => {
@@ -728,7 +695,6 @@ export default function Map() {
           var output = feature
 
           if(feature.geometry.type == "Point"){
-            console.log('output1')
             output = feature 
           } else {
             output =  {...turf.centroid(feature), properties: feature.properties}
@@ -1000,7 +966,6 @@ export default function Map() {
   }, [rigData]);
 
   useEffect(() => {
-    console.log("useEffect 10");
 
     if (dataWellsForOwnerWellTrackLayer) {
       if (
@@ -1022,41 +987,23 @@ export default function Map() {
   }, [dataWellsForOwnerWellTrackLayer]);
 
   useEffect(() => {
-    console.log("useEffect 12");
-
-    // const wellLineClick = (currentFeature) => {
-    //   console.log("clicked well lines", currentFeature);
-
-    //   setStateApp((state) => ({
-    //     ...state,
-    //     popupOpen: false,
-    //     selectedUserDefinedLayer: undefined,
-    //     selectedParcel: null,
-    //   }));
-    //   setStateApp((state) => ({
-    //     ...state,
-    //     selectedWell: currentFeature.properties,
-    //     selectedWellId: currentFeature.properties.id,
-    //     wellSelectedCoordinates: [
-    //       currentFeature.properties.longitude,
-    //       currentFeature.properties.latitude,
-    //     ],
-    //   }));
-
-    //   createPopUp(currentFeature.properties);
-    // };
 
     const wellPointClick = (feature) => {
+
+      // this function is intended to organize the data 
+      // when a well point is clicked 
+      // and initiate the mapbox popup 
+
       if (feature && feature.properties) {
-        const objFiledsToLowerCase = (feature) => {
-          let newObj = {};
-          for (let key in feature)
-            newObj[key.charAt(0).toLowerCase() + key.slice(1)] = feature[key];
 
-          return newObj;
-        };
-        let properties = objFiledsToLowerCase(feature.properties);
+        let properties = feature.properties;
 
+        // tmp fix because it appears that the data coming back 
+        // from contacts api is slightly different than other apis
+        // need to setup in a standard format         
+        if(!properties.id){properties.id = properties.wellId}
+
+        if (properties.id){
         setStateApp((state) => ({
           ...state,
           popupOpen: false,
@@ -1065,44 +1012,17 @@ export default function Map() {
         }));
         setStateApp((state) => ({
           ...state,
-          selectedWell:
-            properties.wellName && properties.operator ? properties : null,
-          selectedWellId: properties.id ? properties.id.toLowerCase() : null,
+          selectedWellId: properties.id.toLowerCase(),
           wellSelectedCoordinates: [properties.longitude, properties.latitude],
         }));
 
-        if (properties.wellName && properties.operator) {
-          createPopUp(properties);
-          map.resize();
-        }
       }
+      }
+
     };
 
-    // const layerClickHander = (feature) => {
-    //   let zVal;
-    //   if (map && map.getZoom() && map.getZoom() > 12) zVal = map.getZoom();
-
-    //   setStateApp((state) => ({
-    //     ...state,
-    //     popupOpen: false,
-    //     selectedUserDefinedLayer: undefined,
-    //     selectedWell: null,
-    //     selectedWellId: feature.properties.id
-    //       ? feature.properties.id.toLowerCase()
-    //       : null,
-    //     flyTo: zVal
-    //       ? { ...feature.properties, zoom: zVal }
-    //       : feature.properties,
-    //   }));
-    // };
 
     const udLayerClickHandler = (feature) => {
-        //     const featureState = map.getFeatureState({
-        //       source: "abstract_geo_source",
-        //       id: "A38D232C-44FD-4255-B69B-4A1D312691E6",
-        //     });
-        // console.log("FEATURE:", featureState);
-        // ON HOLD MUNA ANG HIRAP
       setStateApp((state) => ({
         ...state,
         expandedCard: false,
@@ -1128,23 +1048,6 @@ export default function Map() {
       map.resize();
     };
 
-    // const udLayerHighlightHandler = (feature) => {
-    //   const id = feature.id;
-    //   if (hoverUdIds.indexOf(id) > -1) {
-    //     console.log("remove Hover");
-    //     map.setFeatureState(
-    //       { source: feature.source, id: feature.id },
-    //       { hover: false }
-    //     );
-    //   } else {
-    //     console.log("set Hover");
-    //     map.setFeatureState(
-    //       { source: feature.source, id: feature.id },
-    //       { hover: true }
-    //     );
-    //   }
-    //   setHoverUdIds(id);
-    // };
 
     const clusterClickHandler = (feature, map) => {
       if (feature && feature.properties && feature.properties.cluster_id) {
@@ -1291,21 +1194,15 @@ export default function Map() {
             layerId === "permits":
             wellPointClick(feature);
             break;
-          // case layerId === "welllines":
-          //   wellLineClick(feature);
-          //   break;
           default:
             break;
         }
       }
     };
     if (map) {
-      console.log(mapClick);
       if (mapClick && mapClick.mapClickHandler) {
-        console.log("off click action");
         map.off("click", mapClick.mapClickHandler);
       }
-      console.log("on click action");
       map.on("click", mapClickHandler);
       setMapClick({ mapClickHandler });
     }
@@ -1313,7 +1210,6 @@ export default function Map() {
 
   useEffect(() => {
     let beforeLayer = null;
-    console.log("stateApp check ", stateApp.layers);
 
     if (stateApp.layers && stateApp.layers.length > 0 && map) {
       for (let i = 0; i < stateApp.layers.length; i++) {
@@ -1350,7 +1246,6 @@ export default function Map() {
               if (layer.layerSettings.interaction.interactionDetail.hover) {
                 map.on("mousemove", id, mouseMoveHandler);
                 map.on("mouseleave", id, mouseLeaveHandler);
-                console.log("set move hover and leave action");
               }
             }
           });
@@ -1391,7 +1286,6 @@ export default function Map() {
         }
       }
 
-      console.log("after set data", map);
     }
   }, [
     stateApp.layers,
@@ -1440,11 +1334,9 @@ export default function Map() {
   }, [removeLayerFromMap]);
 
   useEffect(() => {
-    console.log("useEffect 15");
 
     // USE EFFECT FOR BASEMAP LAYER HANDLING
-    console.log("basemap layer ue start");
-    if (stateApp.baseMapLayers.length > 0 && map) {
+    if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
       stateApp.baseMapLayers.forEach((l) => {
         l.id.forEach((k) => {
           if (map.getLayer(k)) {
@@ -1483,11 +1375,9 @@ export default function Map() {
   }, [map, stateApp.checkedBaseLayers, stateApp.baseMapLayers]);
 
   useEffect(() => {
-    console.log("useEffect 16");
 
     // USE EFFECT FOR HEATMAP LAYER HANDLES
-    console.log("heatmap layer ue start");
-    if (stateApp.heatLayers.length > 0 && map) {
+    if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
       stateApp.heatLayers.forEach((l) => {
         l.id.forEach((k) => {
           if (map.getLayer(k)) {
@@ -1526,7 +1416,6 @@ export default function Map() {
   }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
   useEffect(() => {
-    console.log("useEffect 19");
 
     if (showExpandableCard) {
       setTransform("transform: none");
@@ -1536,7 +1425,6 @@ export default function Map() {
   }, [showExpandableCard]);
 
   useEffect(() => {
-    console.log("useEffect 20");
 
     if (stateNav.m1neralDefaultsOnOff) {
       setDefaultsCheckOnOff((defaultsCheckOnOff) => !defaultsCheckOnOff);
@@ -1547,9 +1435,6 @@ export default function Map() {
   }, [stateNav.m1neralCehckOnOff, stateNav.m1neralDefaultsOnOff]);
 
   useEffect(() => {
-    console.log("useEffect 21");
-
-    console.log("filter ue start");
     //applies filter when one of the filters change
     if (map) {
       let isFilterSet = false;
@@ -1597,9 +1482,6 @@ export default function Map() {
 
         let wellTypeFilter = null;
         let wellStatusFilter = null;
-
-        // console.log('***********',defaultTypeName[1])
-        // console.log('***********',defaultStatusName[1].length)
 
         if (defaultTypeName[1].length > 0) {
           wellTypeFilter = defaultFiltersWellType[1];
@@ -2894,7 +2776,6 @@ export default function Map() {
         });
       }
     }
-    console.log("filters applied");
   }, [
     map,
     setStateNav,
@@ -2967,7 +2848,6 @@ export default function Map() {
   ]);
 
   useEffect(() => {
-    console.log("useEffect 22");
 
     //sets style of map when changed in Map Controls
     if (stateApp.selectedLayerId && map) {
@@ -2981,7 +2861,9 @@ export default function Map() {
     (currentFeature) => {
       let coordinates = [currentFeature.longitude, currentFeature.latitude];
       let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
+      if (popUps[0]) {
+        popUps[0].remove();
+      }
       new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
         .setMaxWidth("none")
@@ -3002,7 +2884,9 @@ export default function Map() {
       const { geometry } = filterFeature;
       const coordinates = geometry.coordinates;
       let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
+      if (popUps[0]) {
+        popUps[0].remove();
+      }
       if (coordinates.length > 0) {
         const minLatitude = coordinates.reduce((a, b) =>
           a[0] < b[0] ? a : b
@@ -3012,7 +2896,6 @@ export default function Map() {
         )[0][1];
 
         let popupCoordinate = [minLatitude, maxLongitude];
-        console.log(popupCoordinate);
 
         let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
           .setLngLat(popupCoordinate)
@@ -3033,7 +2916,9 @@ export default function Map() {
   const createSelectedAbstractPopup = useCallback(
     (currentFeature) => {
       let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
+      if (popUps[0]) {
+        popUps[0].remove();
+      }
 
       if (!currentFeature) return;
 
@@ -3078,7 +2963,9 @@ export default function Map() {
         coordinates = JSON.parse(currentFeature.shapeCenter);
       }
       let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
+      if (popUps[0]) {
+        popUps[0].remove();
+      }
 
       new mapboxgl.Popup({ offset: 0, closeOnClick: false })
         .setLngLat(coordinates)
@@ -3093,17 +2980,6 @@ export default function Map() {
   );
 
   useEffect(() => {
-    console.log("useEffect 23");
-
-    console.log("wellSelected", stateApp.wellSelected);
-    console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
-
-    // if( map
-    //     && stateApp.wellSelected === false
-    //     ){
-    //       map.removeLayer('well-point');
-    //       map.removeSource('well-select-point')
-    //     }
 
     if (map && stateApp.wellSelectedCoordinates) {
       if (map.getLayer("well-point")) map.removeLayer("well-point");
@@ -3141,10 +3017,6 @@ export default function Map() {
 
   useEffect(() => {
     (async () => {
-      // console.log("useEffect 24");
-      // console.log("selectedWell", stateApp.selectedWell);
-      // console.log("selectedWellId", stateApp.selectedWellId);
-      // console.log("wellSelectedCoordinates", stateApp.wellSelectedCoordinates);
 
       if (
         map &&
@@ -3153,7 +3025,6 @@ export default function Map() {
         stateApp.wellSelectedCoordinates.length > 0 &&
         !stateApp.selectedWell
       ) {
-        //console.log('useeffect for well selections that are not map driven (aka grid selections)')
 
         let point = map.project(stateApp.wellSelectedCoordinates);
 
@@ -3170,7 +3041,6 @@ export default function Map() {
           (element) =>
             element.properties.id.toLowerCase() == stateApp.selectedWellId
         );
-        console.log("current feature", currentFeature);
 
         if (!currentFeature) {
           features = map.querySourceFeatures("composite", {
@@ -3197,14 +3067,9 @@ export default function Map() {
             headers: headers,
           };
 
-          console.log(
-            "request made to lod2019-index search at: " + new Date().toString()
-          );
-
           await fetch(endpoint, options)
             .then((response) => response.json())
             .then((response) => {
-              console.log(response);
               features = response.features;
               currentFeature = features.find(
                 (element) =>
@@ -3214,66 +3079,31 @@ export default function Map() {
             .catch((error) => {
               console.log(error);
             });
-
-          console.log("current feature", currentFeature);
         }
 
         if (currentFeature) {
           let popUps = document.getElementsByClassName("mapboxgl-popup");
-          if (popUps[0]) popUps[0].remove();
+          setStateApp((state) => ({
+            ...state,
+            popupOpen: false,
+            selectedUserDefinedLayer: null,
+            selectedParcel: null,
+          }));
           setStateApp((state) => ({
             ...state,
             selectedWell: currentFeature.properties,
           }));
 
-          // map.fire('click', { lngLat: stateApp.wellSelectedCoordinates, point: point, originalEvent: {} })
           createPopUp(currentFeature.properties);
           map.resize();
 
-          // var el = document.createElement("div");
-          // el.style.backgroundImage = "url(icons/favicon-inverted.png)";
-          // el.style.width = "28px";
-          // el.style.height = "64px";
-
-          // new mapboxgl.Marker(el)
-          // .setLngLat([
-          //   stateApp.selectedWell.longitude,
-          //   stateApp.selectedWell.latitude,
-          // ])
-          // .addTo(map);
-
-          // map.addSource("well-select-point", {
-          //   type: "geojson",
-          //   data: {
-          //     type: "FeatureCollection",
-          //     features: [
-          //       {
-          //         type: "Feature",
-          //         geometry: {
-          //           type: "Point",
-          //           coordinates: stateApp.wellSelectedCoordinates,
-          //         },
-          //       },
-          //     ],
-          //   },
-          // });
-
-          // map.addLayer({
-          //   id: "well-point",
-          //   type: "circle",
-          //   source: "well-select-point",
-          //   paint: {
-          //     "circle-radius": 5,
-          //     "circle-color": "yellow",
-          //   },
-          // });
+      
         }
       }
     })();
   }, [stateApp.wellSelectedCoordinates]);
 
   useEffect(() => {
-    console.log("useEffect 25");
 
     const req = new Request(
       "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
@@ -3291,18 +3121,9 @@ export default function Map() {
     const abortController = new AbortController();
     const signal = abortController.signal;
 
-    getPermits({
-      // variables: {
-      //   offset: 0,
-      //   amount: 500,
-      // },
-    });
-    getRigs({
-      // variables: {
-      //   offset: 0,
-      //   amount: 500,
-      // },
-    });
+    getPermits({});
+
+    getRigs({});
 
     fetch(req, { signal: signal })
       .then((results) => results.json())
@@ -3324,7 +3145,6 @@ export default function Map() {
   }, []);
 
   useEffect(() => {
-    console.log("useEffect 26");
 
     if (map) {
       setStateApp((stateApp) => ({
@@ -3435,6 +3255,7 @@ export default function Map() {
       abstractContainsData.abstractGeoContains.length > 0
     ) {
       const data = abstractContainsData.abstractGeoContains;
+
       const makeGeoJSON = (data) => {
         return {
           type: "FeatureCollection",
@@ -3466,7 +3287,9 @@ export default function Map() {
   useLayoutEffect(() => {
     if (stateApp.popupOpen === false) {
       let popUps = document.getElementsByClassName("mapboxgl-popup");
-      if (popUps[0]) popUps[0].remove();
+      if (popUps[0]) {
+        popUps[0].remove();
+      }
 
       setStateApp((state) => ({
         ...state,
@@ -3608,9 +3431,7 @@ export default function Map() {
   }, [map, stateApp.customLayers]);
 
   useEffect(() => {
-    console.log("useEffect 27");
 
-    console.log("map ue start");
     if (mapStyles.length > 0) {
       // const SET_INITIAL_MAP_STYLE = "Satellite";
 
@@ -3618,11 +3439,6 @@ export default function Map() {
         let id = mapEl.current.id;
 
         var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
-
-        console.log("tileset api loaded - style selected", stateApp.mapStyle);
-        console.log(stateApp.mapVars);
-        console.log(mapStyles[index]);
-        console.log(mapStyles);
 
         const newMap = new mapboxgl.Map({
           container: `${id}`,
@@ -3633,20 +3449,12 @@ export default function Map() {
           bearing: stateApp.mapVars.bearing,
         });
 
-        console.log(
-          `Setting wellsTileset: ${mapStyles[index].sources.composite.url
-            .split(",")
-            .find((element) => element.indexOf("m1neral.wells") > -1)
-            .replace("mapbox://", "")}`
-        );
         setWellsTileset(
           mapStyles[index].sources.composite.url
             .split(",")
             .find((element) => element.indexOf("m1neral.wells") > -1)
             .replace("mapbox://", "")
         );
-
-        console.log("new map generated");
 
         /// optimized interactions w/ map
         newMap.scrollZoom.enable();
@@ -3792,19 +3600,6 @@ export default function Map() {
           abstractControl(e);
         });
 
-        const mapFilterPolyOnRight = (e) => {
-          console.log("right click on the map");
-          let id = "draw_polygon" + Date.now();
-          setStateNav((stateNav) => ({
-            ...stateNav,
-            drawingMode: "draw_polygon",
-            filterFeatureId: id,
-          }));
-        };
-
-        // Buggy Code, temporarily disabling it
-        // newMap.on("contextmenu", mapFilterPolyOnRight);
-
         setStateApp({ ...stateApp, map: newMap, draw: Draw });
 
         newMap.on("load", function (e) {
@@ -3929,21 +3724,16 @@ export default function Map() {
 
           setDraw(Draw);
           setMap(newMap);
-          console.log("set new map complete", newMap.loaded());
         });
       };
 
       if (!map) {
-        console.log("initialize map start");
         initializeMap({ setMap, mapEl, setStateApp, setDraw });
-        console.log("initialize map finish");
       } else {
-        console.log("map extra components start");
 
         map.on("mousemove", mapMouseMove);
         map.on("zoom", mapZoom);
 
-        console.log("map extra components complete");
       }
     }
   }, [
@@ -3998,7 +3788,6 @@ export default function Map() {
 
   // Use effect for removing shape filter
   useEffect(() => {
-    console.log("useEffect 28");
 
     if (stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
       if (draw) draw.delete(drawingFilterFeatureId);
@@ -4018,7 +3807,6 @@ export default function Map() {
 
   // Use effect for adding shape filter
   useEffect(() => {
-    console.log("useEffect 29");
 
     function drawCreateListener(e) {
       if (stateNav.drawingMode !== null) {
@@ -4105,10 +3893,7 @@ export default function Map() {
   }, [stateNav.filterFeatureId]);
 
   useEffect(() => {
-    console.log("useEffect 30");
-
     if (draw && stateNav.filterDrawing && stateNav.filterDrawing.length == 2) {
-      console.log("initialize filter draw");
       const feature = stateNav.filterDrawing[1];
       setDrawingFilterFeatureId(feature.id);
       draw.delete(feature.id);
@@ -4117,8 +3902,6 @@ export default function Map() {
   }, [draw]);
 
   useEffect(() => {
-    console.log("useEffect 31");
-
     if (map) {
       return () => {
         var list = document.getElementById("searchBar");
@@ -4130,7 +3913,6 @@ export default function Map() {
         var pitch = map.getPitch();
         var bearing = map.getBearing();
 
-        console.log(stateApp.mapVars);
 
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -4143,35 +3925,21 @@ export default function Map() {
           },
         }));
 
-        console.log("save map state variables");
-        console.log(stateApp.mapVars);
+
   //Loading state is not being handled and causes undefined mapList Array
   //Added '?' to mapList, temp fix to avoid undefined errors.
         var mapList = document.getElementById("map");
-        console.log(mapList?.childNodes);
         if (mapList?.childNodes?.length > 1) {
           mapList.removeChild(mapList.childNodes[1]);
           mapList.removeChild(mapList.childNodes[1]);
           mapList.removeChild(mapList.childNodes[1]);
         }
-        console.log(mapList?.childNodes);
-        console.log("end map unmount");
       };
     }
   }, [map]);
 
-  // useEffect(() => {
-  //   console.log("1111111111111111111111", createPopUp);
-  // }, [createPopUp]);
-  // useEffect(() => {
-  //   console.log("22222222222222222222222", map);
-  // }, [map]);
-  // useEffect(() => {
-  //   console.log("33333333333333333333333", stateApp.flyTo);
-  // }, [stateApp.flyTo]);
 
   useEffect(() => {
-    console.log("useEffect 32");
 
     ////// USE EFFECT TO MANAGE THE FLY TO FEATURE
 
@@ -4196,8 +3964,6 @@ export default function Map() {
   }, [map, stateApp.flyTo]); //createPopUp
 
   useEffect(() => {
-    console.log("useEffect 33");
-
     ////// USE EFFECT TO MANAGE THE FIT BOUNDS TO FEATURE
 
     if (
@@ -4327,7 +4093,6 @@ export default function Map() {
   }, [map, stateApp.wellListFromSearch]);
 
   useEffect(() => {
-    //console.log("useEffect 35");
 
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
@@ -4371,7 +4136,7 @@ export default function Map() {
   }, [stateApp.toggleZoomOut]);
 
   useEffect(() => {
-    console.log("useEffect 36");
+    // use effect to toggle the map into a 3d state 
 
     if (map && stateApp.toggle3d) {
       if (stateApp.toggle3d === true) {
@@ -4439,13 +4204,7 @@ export default function Map() {
   };
 
   useEffect(() => {
-    console.log("useEffect 38");
 
-    console.log(
-      "Drawing status check",
-      stateApp.editDraw,
-      stateNav.drawingMode
-    );
     if (stateApp.editDraw === true || stateNav.drawingMode) {
       setDrawStatus(true);
       if (mapClick && mapClick.mapClickHandler != null) {
@@ -4481,7 +4240,6 @@ export default function Map() {
   };
 
   const handleCloseSpatialDataCard = (complete = true) => {
-    console.log("close card on map here");
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
@@ -4496,7 +4254,6 @@ export default function Map() {
   };
 
   const handleCloseSpatialDataCardEdit = () => {
-    console.log("close card on map here");
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
@@ -4515,7 +4272,6 @@ export default function Map() {
         spatialData[attribute] != null ||
         typeof spatialData[attribute] !== "undefined"
       ) {
-        console.log("set attribute", spatialData[attribute], attribute);
         selectedUserDefinedLayer.properties[attribute] = spatialData[attribute];
       }
     });
@@ -4537,7 +4293,6 @@ export default function Map() {
           spatialData[attribute] != null ||
           typeof spatialData[attribute] !== "undefined"
         ) {
-          console.log("set attribute", spatialData[attribute], attribute);
           current_feature.properties[attribute] = spatialData[attribute];
         }
       });
@@ -4687,7 +4442,7 @@ export default function Map() {
   };
 
   useEffect(() => {
-    //console.log("useEffect usersnap");
+    // use effect to add usersnap to the application 
 
     if (stateApp.userSnap === true) {
       var script = document.createElement("script");
@@ -4714,8 +4469,6 @@ export default function Map() {
   }, [stateApp.userSnap]);
 
   useEffect(() => {
-    //console.log("useEffect 41");
-
     if (stateApp.editingUserDefinedLayers.length > 0) {
       const { map } = stateApp;
 
@@ -4782,7 +4535,10 @@ export default function Map() {
     if ((stateApp.parcelDetailCardOpen && stateApp.parcelDetailCardOpen === true)) {
       // set and remove map marker
       
-      const coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter)
+      let coordinates = stateApp.selectedParcel.shapeCenter
+      if (typeof stateApp.selectedParcel.shapeCenter === "string") {
+        coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter);
+      }
       const longitude = coordinates[0]
       const latitude = coordinates[1]
 
@@ -4862,7 +4618,6 @@ export default function Map() {
   }, [parcelBoundaryId])
 
   useEffect(() => {
-    // console.log("SELECTED PARCEL!: ", stateApp.selectedParcel);
     if(map && stateApp.selectedParcel){
       setParcelBoundaryId(stateApp.selectedParcel.id);
     } else if(map) {
@@ -4872,53 +4627,7 @@ export default function Map() {
     }
   }, [stateApp.selectedParcel])
 
-  // useEffect(() => {
-  //   if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
-  //     map.flyTo({
-  //       center: [
-  //         stateApp.selectedWell.longitude,
-  //         stateApp.selectedWell.latitude,
-  //       ],
-  //       zoom: 16,
-  //       speed: 0.4,
-  //       bearing: -10,
-  //       pitch: 80,
-  //       easing: function (t) {
-  //         return Math.sin((t * Math.PI) / 2);
-  //       },
-  //     });
-
-  //     setFlyVar1(false);
-
-  //     map.on("moveend", function (e) {
-  //       if (
-  //         map.getBearing() === -10 &&
-  //         map.getZoom() === 16
-  //       ) {
-  //         map.flyTo({
-  //           center: [
-  //             stateApp.selectedWell?.longitude,
-  //             stateApp.selectedWell?.latitude,
-  //           ],
-  //           zoom: 16,
-  //           //speed: 0.4,
-  //           bearing: 540,
-  //           duration: 100000,
-  //           easing: function (t) {
-  //             return Math.sin((t * Math.PI) / 2);
-  //           },
-  //         });
-  //       }
-  //     });
-  //   }
-  // }, [stateApp.wellDetailCardOpen]);
-
-  // console.log(
-  //   "stateApp.selectedAbstracts",
-  //   stateApp.popupOpen,
-  //   stateApp.abstractPopupOpen,
-  //   stateApp.selectedAbstracts
-  // );
+ 
 
   return (
     <div className={classes.mapWrapper}>
@@ -4929,8 +4638,6 @@ export default function Map() {
         </div>
       </div>
       <MapControlsProvider />
-      {/* <DrawStatus drawingStatus={drawStatus} /> */}
-      {/* <TrackAbstract showAbstractPopup={stateApp.showAbstractPopup} /> */}
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <HugeRequest />
       <Coordinates long={lng} lat={lat} zoom={zoom} />
@@ -4946,16 +4653,11 @@ export default function Map() {
         )}
 
       {mapGridCardActivated && (
-        <MapGridCard mapGridCardActivated={mapGridCardActivated} />
+        <MapGridCardProvider mapGridCardActivated={mapGridCardActivated} />
       )}
        
       {stateApp.selectedWell !== null && showExpandableCard &&
         stateApp.expandedCard && (
-              // <Draggable 
-                // handle=".MuiCardHeader-root"
-                // cancel={".MuiCardHeader-content"}
-                // disabled={false}
-              // >
               <div className={classes.draggable}>
                 <ExpandableCardProvider
                   expanded
@@ -4971,21 +4673,15 @@ export default function Map() {
                   cardWidthExpanded="50vw"
                   cardHeightExpanded="90vh"
                   targetSourceId={stateApp.selectedWell.id}
-                  // targetLabel="expandedWell"
                   targetLabel="well"
                 />
               </div>
-            // </Draggable>
           )
         }
 
         {stateApp.selectedParcel !== null &&
           stateApp.expandedCard && (
-            // <Draggable 
-              // handle=".MuiCardHeader-root"
-              // cancel={".MuiCardHeader-content"}
-              // disabled={false}
-            // >
+
               <div className={classes.draggable}>
                 <ExpandableCardProvider
                   expanded={true}
@@ -5001,11 +4697,9 @@ export default function Map() {
                   cardWidthExpanded="50vw"
                   cardHeightExpanded="90vh"
                   targetSourceId={stateApp.selectedParcel.id}
-                  // targetLabel="expandedParcel"
                   targetLabel="parcel"
                 ></ExpandableCardProvider>
               </div>
-            // </Draggable>
           )
         }
 
@@ -5065,7 +4759,6 @@ export default function Map() {
                     cardTop={70}
                     zIndex={99}
                     cardWidth="350px"
-                    // cardHeight="350px"
                     cardWidthExpanded="50vw"
                     cardHeightExpanded="90vh"
                     targetSourceId={stateApp.selectedParcel.id}
@@ -5097,3 +4790,7 @@ export default function Map() {
     </div>
   );
 }
+
+Map.whyDidYouRender = true
+
+export default React.memo(Map);

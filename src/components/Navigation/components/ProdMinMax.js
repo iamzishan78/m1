@@ -62,10 +62,8 @@ export default function FirstMonthWater(props) {
     }
     if (!min && max) {
       filter = ["all", ["<=", ["get", id.toString()], max]];
-      console.log("add filter", filter);
     } else if (min && !max) {
       filter = ["all", [">=", ["get", id.toString()], min]];
-      console.log("add filter", filter);
     } else if (min && max) {
       if (min < max) {
         filter = [
@@ -73,7 +71,6 @@ export default function FirstMonthWater(props) {
           [">=", ["get", id.toString()], min],
           ["<=", ["get", id.toString()], max],
         ];
-        console.log("add filter", filter);
       }
     } else {
       filter = null;

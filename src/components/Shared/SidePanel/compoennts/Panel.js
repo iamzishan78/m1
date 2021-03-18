@@ -163,7 +163,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	}, [type]);
 
 	useEffect(() => {
-		console.log("type and layer", type, items);
 		if ((type === "layer" || type === "heatMaps") && items) {
 			setLayerMap(items);
 		} else if (type === "base" && items) {
@@ -223,56 +222,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	};
 
 	const StyledMenu = withStyles({
-		// paper: {
-		// 	position: "absolute",
-		// 	border: "1px solid #011133",
-		// },
 	})((props) => (
-		// <Menu
-		// 	elevation={0}
-		// 	variant="menu"
-		// 	transitionDuration={0}
-		// 	getContentAnchorEl={null}
-		// 	// anchorOrigin={{
-		// 	//   vertical: "top",
-		// 	//   horizontal: "left",
-		// 	// }}
-		// 	MenuListProps={{
-		// 		disablePadding: true,
-		// 	}}
-		// 	// transformOrigin={{
-		// 	//   vertical: "top",
-		// 	//   horizontal: "right",
-		// 	// }}
-		// 	{...props}
-		// />
 		<Paper
 			elevation={0}
 			variant="elevation"
 			{...props}
-			// style={{
-			// 	maxWidth: "500px",
-			// 	width: "500px",
-			// 	position: "absolute",
-			// 	//left: "30px !important",
-			// 	top: "90px !important",
-			// 	left: stateMapControls.panelExpanded
-			// 		? "-30px !important"
-			// 		: "-500px !important",
-			// }}
-			// transitionDuration={0}
-			// getContentAnchorEl={null}
-			// anchorOrigin={{
-			// 	vertical: "top",
-			// 	horizontal: "left",
-			// }}
-			// MenuListProps={{
-			// 	disablePadding: true,
-			// }}
-			// transformOrigin={{
-			// 	vertical: "top",
-			// 	horizontal: "right",
-			// }}
 		/>
 	));
 
@@ -451,8 +405,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 									...stateApp,
 									mapVars: { ...stateApp.mapVars, styleId: style.name },
 								}));
-
-								// handleClose();
 							}}
 						>
 							<ThemeProvider theme={theme}>
@@ -480,16 +432,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		);
 	};
 
-	//   const WithBox = ({ children, layer, ...defaultProps }) => {
-	//     console.log("Children default props", children, defaultProps);
-	//     return type === "layer " ? (
-	//       <Box borderColor={getLayerColor(layer)} {...defaultProps}>
-	//         {children}
-	//       </Box>
-	//     ) : (
-	//       { children }
-	//     );
-	//   };
 
 	const getLayerControls = (layer, labelId, index) => {
 		const control1 = layer.layerSettings.colorable && (
@@ -568,13 +510,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			return false;
 		}
 	};
-
-	// const handleClose = () => {
-	// 	setStateMapControls((stateMapControls) => ({
-	// 		...stateMapControls,
-	// 		anchorEl: null,
-	// 	}));
-	// };
 
 	const checkIfNoLayerData = (layer) => {
 		return type === "layer" && !ifLayerHaveData(layer);

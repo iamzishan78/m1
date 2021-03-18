@@ -50,15 +50,12 @@ export default () => {
       filter = layers.map((basinShape) => {
         return JSON.parse(basinShape.shape);
       });
-      console.log(layers, filter);
       setStateNav((stateNav) => ({ ...stateNav, parcelName: value }));
       setParcelName(value);
-      
       setStateApp((stateApp) => ({ ...stateApp, prevParcelVisible: currentLayers[index].layerSettings.visiable }))
     } else {
       filter = null;
       setStateNav((stateNav) => ({ ...stateNav, parcelName: null }));
-    
       stateApp.toggleLayersActivity("Parcels", stateApp.prevParcelVisible);
     }
     setStateNav((stateNav) => ({ ...stateNav, filterParcel: filter }));
