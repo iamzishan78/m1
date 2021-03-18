@@ -28,7 +28,35 @@ import { UPDATEWELLINTEREST } from "../../../../../graphQL/useMutationUpdateWell
 import { REMOVEWELLINTEREST } from "../../../../../graphQL/useMutationRemoveWellInterest";
 import DeleteConfirmationDialogContent from "../../../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
+
 function NumberFormatCustom(props) {
+  const { inputRef, onChange, name, ...other } = props;
+
+  return (
+    <NumberFormat
+      {...other}
+      getInputRef={inputRef}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      // thousandSeparator
+      // isNumericString
+      // prefix="$"
+    />
+  );
+}
+
+NumberFormatCustom.propTypes = {
+  inputRef: PropTypes.func.isRequired,
+  name: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+function CurrencyFormatCustom(props) {
   const { inputRef, onChange, name, ...other } = props;
 
   return (
@@ -50,7 +78,7 @@ function NumberFormatCustom(props) {
   );
 }
 
-NumberFormatCustom.propTypes = {
+CurrencyFormatCustom.propTypes = {
   inputRef: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
@@ -506,16 +534,20 @@ function AddWellInterestDialog(props) {
             />
 
             <TextField
-              type="number"
+              // type="number"
               variant="outlined"
               margin="dense"
-              value={formLeaseAcres || ""}
+              // error={isNaN(formLeaseAcres)}
+              value={formLeaseAcres}
               onChange={event => setFormLeaseAcres(parseFloat(event.target.value)) }
               label={"Lease Acres"}
               // InputLabelProps={{ shrink: true }}
               fullWidth
               //disabled
               defaultValue=""
+              InputProps={{
+                inputComponent: NumberFormatCustom,
+              }}
             />
           </div>
 
@@ -583,30 +615,41 @@ function AddWellInterestDialog(props) {
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <TextField
-                    type="number"
+                    // type="number"
                     variant="outlined"
                     margin="dense"
-                    value={formInterestAmount || ""}
-                    onChange={event => setFormInterestAmount(parseFloat(event.target.value)) }
+                    // error={isNaN(formInterestAmount)}
+                    value={formInterestAmount}
+                    onChange={(event) => {
+                      console.log(parseFloat(event.target.value))
+                      setFormInterestAmount(parseFloat(event.target.value))
+                     }}
                     //label={formInterestAmount ? "" : "Interest Amount"}
                     label = "Interest Amount"
                     // InputLabelProps={{ shrink: true }}
                     fullWidth
                     defaultValue=""
+                    InputProps={{
+                      inputComponent: NumberFormatCustom,
+                    }}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
-                    type="number"
+                    // type="number"
                     variant="outlined"
                     margin="dense"
-                    value={formRoyaltyAcres || ""}
+                    // error={isNaN(formRoyaltyAcres)}
+                    value={formRoyaltyAcres}
                     onChange={event => setFormRoyaltyAcres(parseFloat(event.target.value)) }
                     //label={formRoyaltyAcres ? "" : "Net Royalty Acres"}
                     label = "Net Royalty Acres"
                     // InputLabelProps={{ shrink: true }}
                     fullWidth
                     defaultValue=""
+                    InputProps={{
+                      inputComponent: NumberFormatCustom,
+                    }}
                   />
                 </Grid>
               </Grid>
@@ -614,13 +657,14 @@ function AddWellInterestDialog(props) {
               <TextField
                 variant="outlined"
                 margin="dense"
+                // error={isNaN(formTaxValue)}
                 // value={selectedWell?.acres}
                 label="Tax Appraisal Value"
                 fullWidth
                 InputProps={{
-                  inputComponent: NumberFormatCustom,
+                  inputComponent: CurrencyFormatCustom,
                 }}
-                value={formTaxValue || ""}
+                value={formTaxValue}
                 onChange={event => setFormTaxValue(parseFloat(event.target.value)) }
                 defaultValue=""
               />
