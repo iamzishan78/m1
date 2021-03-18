@@ -13,6 +13,7 @@ import TransactTable from "./components/TransactTable";
 import { useDispatch, useSelector } from "react-redux";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import M1nTable from "../Shared/M1nTable/M1nTable";
+import Drawer from "./components/Drawer";
 import moment from "moment";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
 
@@ -552,6 +553,7 @@ export default function Transact() {
 
   return (
     <div className={classes.root}>
+      {stateApp.dealDialog && <Drawer />}
       <AddDealDialog
         open={stateApp.dealDialog ? true : false}
         width="450px"

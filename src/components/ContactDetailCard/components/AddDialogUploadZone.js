@@ -3,9 +3,8 @@ import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import moment from "moment";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import TextField from "@material-ui/core/TextField";
-import SearchIcon from "@material-ui/icons/Search";
+import Card from "@material-ui/core/Card";
+import Button from "@material-ui/core/Button";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
@@ -13,19 +12,21 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import ViewDocuments from "../ViewDocuments/ViewDocuments";
+import ViewDocuments from "../../ViewDocuments/ViewDocuments";
 import { useDropzone } from "react-dropzone";
-import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
-import { ADDFILE } from "../../graphQL/useMutationAddFile";
-import { AppContext } from "../../AppContext";
-import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
-import { GETRECENTCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
-import { DELETEDESCRIPTORFILE } from "../../graphQL/useMutationDeleteDescriptorFile";
-import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
+import DeleteDocumentConfirmation from "../../Shared/DeleteDocumentConfirmation";
+import { ADDFILE } from "../../../graphQL/useMutationAddFile";
+import { AppContext } from "../../../AppContext";
+import { ADDDESCRIPTORFILE } from "../../../graphQL/useMutationAddDescriptorFile";
+import { GETRECENTCONTACTFILES } from "../../../graphQL/useQueryGetContactFiles";
+import { DELETEDESCRIPTORFILE } from "../../../graphQL/useMutationDeleteDescriptorFile";
+import { VIEWFILEQUERY } from "../../../graphQL/useQueryViewFile";
 import { useDispatch } from "react-redux";
-import UploadZone from "./UploadZone";
-import CardMedia from "@material-ui/core/CardMedia";
-
+import UploadZone from "./DailogUploadZone";
+import Tooltip from "@material-ui/core/Tooltip";
+import { CircularProgress } from "@material-ui/core";
+import { Document, Page, pdfjs } from "react-pdf";
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const useStyles = makeStyles((theme) => ({
   root: {
     // backgroundColor: "#fff",
@@ -35,7 +36,36 @@ const useStyles = makeStyles((theme) => ({
       content: "none",
     },
   },
-
+  Uploadcomp: {
+    width: "200px !important",
+    height: "200px !important",
+  },
+  forImage: {
+    width: "100px !important",
+    height: "100px !important",
+    backgroundColor: "transparent !important",
+    border: "1px solid #999",
+    borderRadius: "10px !important",
+  },
+  forImageContainer: {
+    width: "100px !important",
+    height: "100px !important",
+    borderRadius: "10px !important",
+    backgroundColor: "#eeeeee !important",
+    border: "1px solid #999",
+    textAlign: "center",
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    color: "#555",
+    textTransform: "uppercase",
+    paddingTop: "30px",
+    cursor: "pointer",
+    marginBottom: "5px",
+  },
+  imageSubText: {
+    letterSpacing: "0.5px",
+    textAlign: "center",
+  },
   viewAll: {
     textDecoration: "underline",
     margin: "0 0 8px 0",
@@ -81,9 +111,6 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     marginBottom: "23px",
   },
-  flexIcon: {
-    display: "flex",
-  },
   uploadTitle: {
     margin: "0",
     color: "#757575",
@@ -99,7 +126,6 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "35px",
     display: "flex",
     justifyContent: "center",
-    flexDirection: "column",
     width: "fit-content",
   },
   fileDrop: {
@@ -119,30 +145,6 @@ const useStyles = makeStyles((theme) => ({
   fileDropError: {
     color: "red",
   },
-
-  greySquare: {
-    cursor: "pointer",
-    borderRadius: "12px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    fontSize: "30px",
-    height: "80px",
-    width: "80px",
-    backgroundColor: "#cecece",
-    marginRight: "10px",
-
-    "& svg": {
-      fill: "#999 !important",
-    },
-  },
-  disabledDownload: {
-    cursor: "auto !important",
-    backgroundColor: "#e9e9e978 !important",
-    "& svg": {
-      fill: "#d3d3d3ab !important",
-    },
-  },
 }));
 
 export default function Documents(props) {
@@ -150,10 +152,7 @@ export default function Documents(props) {
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
-  const [documentSearch, setDocumentSearch] = useState("");
-  const [filteredDocuments, setFilteredDocuments] = useState([]);
-
-  const [stateApp] = React.useContext(AppContext);
+  const [stateApp, setStateApp] = React.useContext(AppContext);
   const userId = stateApp.user.mongoId;
 
   const [relatedObjectType, limit] = useMemo(() => {
@@ -234,7 +233,6 @@ export default function Documents(props) {
   }, [props.id]);
 
   useEffect(() => {
-    console.log("VIEW FILE RESULT", viewFileResult);
     if (viewFileResult?.viewFile?.uri) {
       let a = document.createElement("a");
       a.href = viewFileResult.viewFile.uri;
@@ -271,27 +269,25 @@ export default function Documents(props) {
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
   };
-
-  const HandleShowFile = async (id) => {
-    console.log(id, "ShowFIle");
-    console.log(GETRECENTCONTACTFILES, "Recentdata");
-  };
-
-  useEffect(() => {
-    let filtered = files?.getFileDescriptors?.filter((doc) =>
-      doc.fileName.toLowerCase().includes(documentSearch.toLowerCase())
-    );
-    setFilteredDocuments(filtered);
-  }, [documentSearch, files?.getFileDescriptors]);
-
+  const LightTooltip = withStyles((theme) => ({
+    tooltip: {
+      backgroundColor: theme.palette.common.white,
+      color: "rgba(0, 0, 0, 0.87)",
+      boxShadow: theme.shadows[1],
+      fontSize: 11,
+    },
+  }))(Tooltip);
+  const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages);
+  }
   return (
     <div className={classes.root} variant="outlined">
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
-        {!props.isTransactPage && (
+        {props.isTransactPage && (
           <Grid item xs={12} style={{ minHeight: "35px" }}>
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
-              Recent Documents
-            </h4>
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Related Documents</h4>
             <h4
               className={classes.viewAll}
               // onClick={(e) => {
@@ -300,19 +296,10 @@ export default function Documents(props) {
               // }}
 
               onClick={() => {
-                props.handleOpenExpandableCard(
-                  <ViewDocuments
-                    contactId={props.id}
-                    user_id={props.user_id}
-                    activityLog={props.activityLog}
-                    openDeleteConfirmDialog={openDeleteConfirmDialog}
-                    handleClose={handleDeleteCancel}
-                    handleAccept={handleDeleteAccept}
-                    setOpenDeleteConfirmDialog={setOpenDeleteConfirmDialog}
-                    setFileIdToDelete={setFileIdToDelete}
-                  />,
-                  "Documents"
-                );
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  transactBarView: "Documents",
+                }));
               }}
             >
               View All
@@ -321,89 +308,9 @@ export default function Documents(props) {
         )}
       </CardActions>
       <CardContent style={{ padding: "0 23px" }}>
-        {props.isTransactPage && (
-          <UploadZone
-            relatedObjectId={props.id}
-            userId={userId}
-            relatedObjectType={relatedObjectType} //Contact or Deal
-          />
-        )}
-        {props.isTransactPage && (
-          <div style={{ marginBottom: "20px" }}>
-            <TextField
-              fullWidth
-              value={documentSearch}
-              onChange={(e) => setDocumentSearch(e.target.value)}
-              variant="outlined"
-              label={"Search Documents"}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-              labelWidth={70}
-            />
-          </div>
-        )}
         <div className={classes.fileUploadSection}>
           {/* Show two recent docs */}
-          {filteredDocuments?.map((file) => {
-            return (
-              <div key={file.fileId}>
-                <div className={classes.fileUploadTopSection}>
-                  <div className={classes.flexIcon}>
-                    {props.isTransactPage && (
-                      <div
-                        className={`${classes.greySquare} ${
-                          file.fileState !== "active"
-                            ? classes.disabledDownload
-                            : ""
-                        }`}
-                        onClick={() => handleViewFile(file.fileId)}
-                      >
-                        <GetAppIcon fontSize="large" />
-                      </div>
-                    )}
-                    <div>
-                      <h4 className={classes.uploadTitle}>
-                        {file?.fileName?.length > 22
-                          ? file?.fileName?.slice(0, 20) + "..."
-                          : file?.fileName}
-                      </h4>
-                      {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
-                      <h5 className={classes.uploadSubtext}>
-                        {moment.utc(file.dateTime).format("MMM DD, YYYY")}
-                      </h5>
-                    </div>
-                  </div>
-                  <div className={classes.IconSection}>
-                    <IconButton
-                      size="small"
-                      style={{ marginBottom: "8px" }}
-                      onClick={() => {
-                        setOpenDeleteConfirmDialog(true);
-                        setFileIdToDelete(file.descriptorId);
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
 
-                    {!props.isTransactPage && (
-                      <IconButton
-                        disabled={file.fileState !== "active"}
-                        size="small"
-                        onClick={() => handleViewFile(file.fileId)}
-                      >
-                        <GetAppIcon />
-                      </IconButton>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
           <DeleteDocumentConfirmation
             open={openDeleteConfirmDialog}
             handleClose={handleDeleteCancel}
@@ -411,13 +318,122 @@ export default function Documents(props) {
               handleDeleteAccept();
             }}
           />
-          {!props.isTransactPage && (
-            <UploadZone
-              relatedObjectId={props.id}
-              userId={userId}
-              relatedObjectType={relatedObjectType} //Contact or Deal
-            />
-          )}
+          <Grid container spacing={2}>
+            {props.loading && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "5px",
+                }}
+              >
+                <CircularProgress size="20px" />
+              </div>
+            )}
+            {console.log(props.filesData, "Files data in Adddialog")}
+            {props.filesData?.viewFiles?.map((value, key) => {
+              let fileExtension = value?.name?.slice(
+                value.name.lastIndexOf(".") + 1
+              );
+              if (key <= 1) {
+                return (
+                  <Grid item xs={4} key={key}>
+                    <LightTooltip
+                      title={
+                        <div className={classes.IconSection}>
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              setOpenDeleteConfirmDialog(true);
+                              setFileIdToDelete(
+                                files?.getFileDescriptors[key].descriptorId
+                              );
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+
+                          <IconButton
+                            disabled={
+                              files?.getFileDescriptors[key]?.fileState !==
+                              "active"
+                            }
+                            size="small"
+                            onClick={() =>
+                              handleViewFile(
+                                files?.getFileDescriptors[key].fileId
+                              )
+                            }
+                          >
+                            <GetAppIcon />
+                          </IconButton>
+                        </div>
+                      }
+                      interactive
+                    >
+                      <div>
+                        {/* <img src={value.uri} className={classes.forImage}></img> */}
+                        {/* <iframe src={value.uri} frameborder="0"></iframe> */}
+                        {/* {value.name.includes("pdf") ? (
+												<Document
+													className={classes.forImage}
+													file={value.uri}
+													onLoadSuccess={onDocumentLoadSuccess}
+												>
+													<Page
+														className={classes.forImage}
+														pageNumber={pageNumber}
+														width={79}
+														height={70}
+													/>
+												</Document>
+											) : (
+												<img src={value.uri} className={classes.forImage}></img>
+											)} */}
+                        {new RegExp(
+                          ["jpg", "jpeg", "png", "bmp"].join("|")
+                        ).test(fileExtension) ? (
+                          <img
+                            src={value.uri}
+                            alt={value.name}
+                            className={classes.forImage}
+                          ></img>
+                        ) : (
+                          <div className={classes.forImageContainer}>
+                            {fileExtension}
+                          </div>
+                        )}
+                        <div className={classes.imageSubText}>
+                          {value?.name?.length > 12
+                            ? value.name.slice(0, 8) + "..."
+                            : value.name}
+                        </div>
+                      </div>
+                    </LightTooltip>
+                  </Grid>
+                );
+              }
+            })}
+            <Grid item xs={4}>
+              <div className={classes.Uploadcomp}>
+                <UploadZone
+                  style={{ width: "150px", height: "150px" }}
+                  relatedObjectId={props.id}
+                  userId={userId}
+                  relatedObjectType={relatedObjectType} //Contact or Deal
+                  // addFile={addFile}
+                  // addFileData={addFileData}
+                  // getRecentFiles={() => {
+                  //   getRecentFiles({
+                  //     variables: {
+                  //       relatedObjectId: props.id,
+                  //     },
+                  //   });
+                  // }}
+                />
+              </div>
+            </Grid>
+          </Grid>
         </div>
       </CardContent>
     </div>
