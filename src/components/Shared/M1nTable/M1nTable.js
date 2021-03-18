@@ -1640,6 +1640,7 @@ function M1nTable(props) {
         searchResultData.forEach((result) => {
           result.id = result.Id;
           console.log('value result', result)
+          console.log('props.target', props.targetLabel)
 
           // setting flyto coordinates for well 
           if (props.targetLabel && props.targetLabel == "well") {
@@ -1661,15 +1662,17 @@ function M1nTable(props) {
             if (result.center) result.coordinates.center = result.center;
 
           } else if (props.targetLabel && props.targetLabel == "operator") {
-            result.coordinates = {};
-            if (result.bbox) result.coordinates.bbox = result.bbox;
-            if (result.center) result.coordinates.center = result.center;           
-
+              result.coordinates = {
+                objToPopulateSearchLayer: {
+                  objectType: props.targetLabel,
+                  objectId: result.Id,
+                  objectName: result.Operator,
+                },
+              };
+              
           // setting flyto coordinates for owners 
           } else if (props.targetLabel && props.targetLabel == "owner") {
             
-
-            console.log('owner result', result)
             result.coordinates = {
               objToPopulateSearchLayer: {
                 objectType: "owner",

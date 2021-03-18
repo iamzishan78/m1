@@ -1059,7 +1059,6 @@ function Search() {
 
       //// if owner
       if (newValue && newValue.Source === ownerCogIndexName && newValue.Id) {
-        console.log('newvalue id',newValue)
         getOwnerWells({
           variables: {
             ownerId: newValue.Id,

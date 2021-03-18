@@ -460,7 +460,14 @@ function SubTable(props) {
         ownerId: value.objToPopulateSearchLayer.objectId,
       },
     });
-  
+  };
+
+  const handleOperatorFlyTo = (value) => {
+    getOperatorWells({
+      variables: {
+        operatorName: value.objToPopulateSearchLayer.objectName,
+      },
+    });
   };
 
 
@@ -472,7 +479,9 @@ function SubTable(props) {
     if(entityType == "owner"){
       handleOwnerFlyTo(searchTarget)
     }
-
+    if(entityType == "operator"){
+      handleOperatorFlyTo(searchTarget)
+    }
   };
 
 
@@ -566,6 +575,51 @@ function SubTable(props) {
       }
     }
   }, [dataOwnerWells]);
+
+
+  useEffect(() => {
+    // effect to fly to the operator wells  
+    // i duplicated this code to get things moving 
+    // will probably need to be combined w/ code in search.js 
+
+    if (dataOperatorWells && dataOperatorWells.operatorLatsLonsArray) {
+      if (dataOperatorWells.operatorLatsLonsArray.length !== 0) {
+
+        setStateApp((stateApp) =>
+          dataOperatorWells.operatorLatsLonsArray.length === 1
+            ? {
+                ...stateApp,
+                selectedWell: null,
+                fitBounds: null,
+                selectedWellId: dataOperatorWells.operatorLatsLonsArray[0].id.toLowerCase(),
+                wellSelectedCoordinates: [
+                  dataOperatorWells.operatorLatsLonsArray[0].longitude,
+                  dataOperatorWells.operatorLatsLonsArray[0].latitude,
+                ],
+                wellListFromSearch: [
+                  ...dataOperatorWells.operatorLatsLonsArray,
+                ],
+              }
+            : {
+                ...stateApp,
+                fitBounds: null,
+                wellListFromSearch: [
+                  ...dataOperatorWells.operatorLatsLonsArray,
+                ],
+              }
+        );
+        stateApp.toggleLayersActivity("Search", true);
+      } else {
+        stateApp.toggleLayersActivity("Search", false);
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          wellListFromSearch: [],
+        }));
+      }
+    }
+  }, [dataOperatorWells]);
+
+
 
   useEffect(() => {
     if (props.targetLabel === "Parcel Interest")
