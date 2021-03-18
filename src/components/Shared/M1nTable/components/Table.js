@@ -1594,7 +1594,7 @@ function SubTable(props) {
                   return (
                     <div
                       style={{ display: "flex",alignItems: "center", justifyContent: "left" }}
-                      className={ props.parent === "assocTaxRollInterests" && !tableMeta.rowData[12] ? [classes.blue] : [] }
+                      className={ props.parent === "assocTaxRollInterests" && !tableMeta.rowData[14] ? [classes.blue] : [] }
                     >
                       {props.targetLabel === "contact" &&
                         column.name === "name" && (
