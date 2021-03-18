@@ -1821,7 +1821,9 @@ function SubTable(props) {
                           >{value}</p>
                         )}
 
-                      {props.targetLabel === "contact" &&
+
+                      {/* temporarily removing the purchased data icon as we do not have functionality to actually purchase contact data currently - KC 3/17/21 */}
+                      {/* {props.targetLabel === "contact" &&
                         column.name === "name" &&
                         tableMeta.rowData[
                         props.columns.findIndex(
@@ -1836,7 +1838,7 @@ function SubTable(props) {
                           <MonetizationOnIcon
                             className={classes.monetizationIcon}
                           />
-                        )}
+                        )} */}
                     </div>
                   );
                 },
@@ -2616,7 +2618,7 @@ function SubTable(props) {
   if (props.header === "Contacts") {
     options.rowsPerPageOptions =
       props.contactsPageProps.contactsCount > 25
-        ? [10, 25, 50, 100]
+        ? [10, 25, 50]
         : props.contactsPageProps.contactsCount > 10
           ? [10, 25]
           : [];
