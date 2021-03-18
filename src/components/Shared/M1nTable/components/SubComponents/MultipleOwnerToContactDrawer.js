@@ -9,7 +9,7 @@ import DoneSharpIcon from "@material-ui/icons/DoneSharp";
 import RemoveSharpIcon from "@material-ui/icons/RemoveSharp";
 import Typography from "@material-ui/core/Typography";
 import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeList";
-import AlertDialogSlide from "../../../../Contacts/components/RightDialog";
+import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import { AppContext } from "../../../../../AppContext";
 import { setStateIfDeepEqual } from "../../../functions";
@@ -19,15 +19,6 @@ import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from "../../../../../graphQL/useMu
 const styles = () => ({
   topHeading: { fontWeight: "bold" },
   loading: { position: "absolute", left: "250px", bottom: "148px", zIndex: "150" },
-  gridWidthScroll: {
-    backgroundColor: "#fff",
-    "& .formLabel": {
-      color: "#757575",
-      fontWeight: "bold",
-      width: "100%",
-      marginBottom: "0",
-    },
-  },
 });
 
 const useStyles = makeStyles(styles);
@@ -116,8 +107,8 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   };
 
   return (
-    <AlertDialogSlide open={true}>
-      <Container maxWidth="sm" className={classes.gridWidthScroll}>
+    <RightDialog open={true}>
+      <Container maxWidth="sm" >
         <div >
           <Box p={3} pt={1}>
             <Grid container direction="row" spacing={4} justify="space-between" alignItems="center" >
@@ -171,7 +162,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           </Box>
 
           {rows.map((row) => (
-            <Grid container direction="row" spacing={2} alignItems="center">
+            <Grid container direction="row" spacing={2} alignItems="center" key={row.id}>
 
               {
                 tab === 0 && <Grid item md={1}>
@@ -187,9 +178,12 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                 </Grid>
               }
 
-              <Grid item md={10}>
+              <Grid item md={tab === 0 ? 10 : 11}>
                 <Typography style={{ backgroundColor: "#edfbff" }}>
-                  <Box display='inline' pr={2}>{row.name}</Box> {row.StreetAddress} {row.City}, {row.State} {row.Zip}
+                  <Grid container justify='center' alignItems='center'>
+                    <Grid item md={4}>{row.name}</Grid>
+                    <Grid item md={8}>{row.StreetAddress} {row.City}, {row.State} {row.Zip}</Grid>
+                  </Grid>
                 </Typography>
               </Grid>
 
@@ -227,6 +221,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           <CircularProgress size={80} disableShrink color="secondary" />
         </div>
       )}
-    </AlertDialogSlide>
+    </RightDialog>
   );
 }
