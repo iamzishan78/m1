@@ -322,6 +322,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "10px",
     color: "#155388",
   },
+  blue: { color: theme.palette.secondary.main, fontWeight: "bold" },
   customDropDown: {
     height: "31px",
     // border: "1px solid red",
@@ -1738,7 +1739,10 @@ function SubTable(props) {
                   }
 
                   return (
-                    <div style={{ display: "flex",alignItems: "center", justifyContent: "left" }}>
+                    <div
+                      style={{ display: "flex",alignItems: "center", justifyContent: "left" }}
+                      className={ props.parent === "assocTaxRollInterests" && !tableMeta.rowData[14] ? [classes.blue] : [] }
+                    >
                       {props.targetLabel === "contact" &&
                         column.name === "name" && (
                           <Avatar
@@ -2192,12 +2196,15 @@ function SubTable(props) {
             //////Add Icon/////////////////////////
             <span className={classes.addIcon}>
               <Tooltip
-                title={`Add${props.targetLabel
-                  ? " " +
-                  props.targetLabel.charAt(0).toUpperCase() +
-                  props.targetLabel.slice(1)
-                  : ""
-                  }`}
+                title={`Add${
+                  props.parent === "assocTaxRollInterests"
+                    ? " Well Interest"
+                    : props.targetLabel
+                    ? " " +
+                      props.targetLabel.charAt(0).toUpperCase() +
+                      props.targetLabel.slice(1)
+                    : ""
+                }`}
               >
                 <IconButton
                   size="medium"
@@ -2218,6 +2225,15 @@ function SubTable(props) {
                         dealDialog: true,
                         activeDeal: { cardId: null, laneId: null },
                       }));
+
+                    if (props.addAble.type && props.addAble.type === "wellInterest") {
+                      setStateApp((stateApp) => ({
+                        ...stateApp,
+                        wellInterestDialog: true,
+                        //activeDeal: { cardId: null, laneId: null },
+                      }));
+                    }
+
                     if (
                       props.addAble.type &&
                       props.addAble.type === "parcelInterestsToEntity"
@@ -2254,6 +2270,15 @@ function SubTable(props) {
           ...stateApp,
           dealDialog: true,
           activeDeal: card,
+        }));
+      }
+
+      if (props.parent === "assocTaxRollInterests") {
+        let card = { ...rows[dataIndex] };
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          wellInterestDialog: true,
+          activeWellInterest: card,
         }));
       }
 
