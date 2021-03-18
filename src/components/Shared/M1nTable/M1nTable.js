@@ -1640,6 +1640,7 @@ function M1nTable(props) {
         searchResultData.forEach((result) => {
           result.id = result.Id;
           console.log('value result', result)
+          console.log('props.target', props.targetLabel)
 
           // setting flyto coordinates for well 
           if (props.targetLabel && props.targetLabel == "well") {
@@ -1661,11 +1662,22 @@ function M1nTable(props) {
             if (result.center) result.coordinates.center = result.center;
 
           } else if (props.targetLabel && props.targetLabel == "operator") {
-            result.coordinates = {};
-            if (result.bbox) result.coordinates.bbox = result.bbox;
-            if (result.center) result.coordinates.center = result.center;           
-
-          // setting flyto for owners 
+              result.coordinates = {
+                objToPopulateSearchLayer: {
+                  objectType: props.targetLabel,
+                  objectId: result.Id,
+                  objectName: result.Operator,
+                },
+              };
+            } else if (props.targetLabel && props.targetLabel == "lease") {
+              result.coordinates = {
+                objToPopulateSearchLayer: {
+                  objectType: props.targetLabel,
+                  objectId: result.LeaseId,
+                  objectName: result.Lease,
+                },
+              };              
+          // setting flyto coordinates for owners 
           } else if (props.targetLabel && props.targetLabel == "owner") {
             
             result.coordinates = {
@@ -1785,13 +1797,14 @@ function M1nTable(props) {
           // also in general doesnt seem to work except for wells 
           // and locations 
           // probably need to somehow refactor 
+
           
           props.targetLabel 
            &&( props.targetLabel == "well" 
             || props.targetLabel == "location" 
             || props.targetLabel == "operator"
-            // props.targetLabel == "lease" ||
-            // props.targetLabel == "contacts" ||
+            || props.targetLabel == "lease" 
+            || props.targetLabel == "contact" 
             || props.targetLabel == "owner"
             )
         )
