@@ -11,6 +11,14 @@ import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFilePdf,
+  faFilePowerpoint,
+  faFileWord,
+  faFileExcel,
+} from "@fortawesome/free-solid-svg-icons";
+// import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import ViewDocuments from "../../ViewDocuments/ViewDocuments";
 import { useDropzone } from "react-dropzone";
@@ -153,6 +161,12 @@ export default function Documents(props) {
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const [recentFiles, setRecentFiles] = useState([]);
+
+  useEffect(() => {
+    if (props.filesData?.viewFiles) setRecentFiles(props.filesData.viewFiles);
+  }, [props.filesData]);
+
   const userId = stateApp.user.mongoId;
 
   const [relatedObjectType, limit] = useMemo(() => {
@@ -202,22 +216,6 @@ export default function Documents(props) {
   );
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
 
-  // const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
-  //   ADDDESCRIPTORFILE,
-  //   {
-  //     refetchQueries: ["getRecentContactFiles"],
-  //     awaitRefetchQueries: true,
-  //     //   onCompleted: () => {
-  //     //     // setTimeout(() => {
-  //     //     //   getRecentFiles({
-  //     //     //     variables: {
-  //     //     //       contactId: props.id,
-  //     //     //     },
-  //     //     //   });
-  //     //     // }, 3000);
-  //     //   },
-  //   }
-  // );
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
@@ -282,6 +280,48 @@ export default function Documents(props) {
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
   }
+
+  const getFileIcon = (fileExtension) => {
+    switch (fileExtension) {
+      case "pdf":
+        return (
+          <FontAwesomeIcon
+            icon={faFilePdf}
+            style={{ fontSize: "2rem", color: "#F15642" }}
+          />
+        );
+      case "csv":
+      case "xlsx":
+      case "xlsb":
+      case "xlsm":
+      case "xltx":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
+      case ".doc":
+      case ".docx":
+        return (
+          <FontAwesomeIcon
+            icon={faFileWord}
+            style={{ fontSize: "2rem", color: "#2A5599" }}
+          />
+        );
+      case ".ppt":
+      case ".pptx":
+        return (
+          <FontAwesomeIcon
+            icon={faFilePowerpoint}
+            style={{ fontSize: "5.5rem", color: "#D04424" }}
+          />
+        );
+      default:
+        return <span>{fileExtension}</span>;
+    }
+  };
+
   return (
     <div className={classes.root} variant="outlined">
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
@@ -318,23 +358,13 @@ export default function Documents(props) {
               handleDeleteAccept();
             }}
           />
+
           <Grid container spacing={2}>
-            {props.loading && (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  marginTop: "5px",
-                }}
-              >
-                <CircularProgress size="20px" />
-              </div>
-            )}
-            {console.log(props.filesData, "Files data in Adddialog")}
-            {props.filesData?.viewFiles?.map((value, key) => {
-              let fileExtension = value?.name?.slice(
-                value.name.lastIndexOf(".") + 1
-              );
+            {console.log(recentFiles, "Files data in Adddialog")}
+            {recentFiles?.map((value, key) => {
+              let fileExtension = value?.name
+                ?.slice(value.name.lastIndexOf(".") + 1)
+                ?.toLowerCase();
               if (key <= 1) {
                 return (
                   <Grid item xs={4} key={key}>
@@ -400,7 +430,8 @@ export default function Documents(props) {
                           ></img>
                         ) : (
                           <div className={classes.forImageContainer}>
-                            {fileExtension}
+                            {/* {fileExtension} */}
+                            {getFileIcon(fileExtension)}
                           </div>
                         )}
                         <div className={classes.imageSubText}>
@@ -421,6 +452,7 @@ export default function Documents(props) {
                   relatedObjectId={props.id}
                   userId={userId}
                   relatedObjectType={relatedObjectType} //Contact or Deal
+                  loading={props.loading}
                   // addFile={addFile}
                   // addFileData={addFileData}
                   // getRecentFiles={() => {
