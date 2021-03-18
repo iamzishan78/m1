@@ -10,28 +10,24 @@ const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
-    loading: false,
     myMSALObj: null,
     myMSALB2CObj: null,
 
     baseMapLayers: baseMapLayers, // move to a map context -- will be changed with mepler anyways
     heatLayers: heatLayers, // move to a map context -- will be changed with mepler anyways 
-    
-    selectedRoute: "/", // move to a nav context
     apolloClientEndpoint: "",
-    graphqlScope: null,
-    user: null,
-    signUpUserType: null,
-    wellCount: 500,
-    wells: null,
-    wellDetailCardOpen: null,
-    parcelDetailCardOpen: false,
-    trackedwells: null,
-    trackedOwnerWells: null,
-    selectedWell: null,
-    selectedWellId: null,
-    selectedAbstracts: [],
-    selectedParcel: null,
+    graphqlScope: null, /// potentially login context? 
+    user: null, /// potenitally login context or maybe a specific user context?? 
+    signUpUserType: null,/// potenitally login context or maybe a specific user context?? 
+    wellDetailCardOpen: null, // move to map data card context 
+    parcelDetailCardOpen: false, // move to map data card context 
+    trackedwells: null, // move to a grid context or query context 
+    trackedOwnerWells: null, // move to a grid context or query context 
+    selectedWell: null, // move to a selected object context (maybe flyto)
+    selectedWellId: null, // move to a selected object context (maybe flyto)
+    selectedAbstracts: [], // move to a selected object context (maybe flyto)
+    selectedParcel: null, // move to a selected object context (maybe flyto)
+
     customLayers: [],
     editDraw: false,
     editLayer: true,
