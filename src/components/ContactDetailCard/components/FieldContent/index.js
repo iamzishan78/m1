@@ -1,190 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Grid } from "@material-ui/core";
-import { IconButton } from "@material-ui/core";
-import Tooltip from "@material-ui/core/Tooltip";
-import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import TextField from "@material-ui/core/TextField";
-import EditionPopover from "./EditionPopover";
-import ClearSharpIcon from "@material-ui/icons/ClearSharp";
-import CheckSharpIcon from "@material-ui/icons/CheckSharp";
-import Button from "@material-ui/core/Button";
 import { useMutation } from "@apollo/client";
-import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
+import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 import {
   UPDATEMELISSA,
   UPDATEMELISSAADDRESS,
-} from "../../../graphQL/useMutationUpdateMelissaRecords";
+} from "graphQL/useMutationUpdateMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { AppContext } from "../../../AppContext";
-
-const useStyles = makeStyles((theme) => ({
-  fieldContentP: {
-    visibility: ({ loading }) => (loading ? "hidden" : "visible"),
-    margin: ({ noMargin }) => (noMargin ? "0" : "5px 10px"),
-    width: ({ noMargin }) => {
-      if (noMargin) return "fit-content";
-    },
-    borderRadius: "4px",
-    "&:hover": {
-      background: ({ noMargin }) => (noMargin ? "whitesmoke" : "#FFFFFF"),
-    },
-    "& #contPencilIcon": {
-      visibility: "hidden",
-    },
-    "&:hover #contPencilIcon": {
-      visibility: "visible",
-    },
-  },
-  pencilIcon: {
-    fontSize: "22px",
-  },
-  editTextField: {
-    paddingRight: ({ fieldsCount }) => (fieldsCount > 1 ? null : "0"),
-    "& .MuiInputBase-root": {
-      fontSize: "0.875rem",
-      padding: "9px 10px",
-      lineHeight: "1.43",
-    },
-  },
-  notAvailableP: { color: "#bababaab", fontSize: "13px" },
-  loader: {
-    position: "relative",
-    top: "-37px",
-    left: "10px",
-  },
-  popoverButton: {
-    margin: "0 0 4px 8px",
-    padding: "2px",
-    minWidth: "0",
-    "& .MuiButton-startIcon.MuiButton-iconSizeSmall": { margin: "0" },
-  },
-  buttonsRow: { textAlign: "right", top: "-2px", position: "relative" },
-  foodText: {
-    zIndex: "50",
-    position: "absolute",
-    right: "5px",
-    bottom: "14px",
-    fontSize: "10px",
-    color: "#6e6e6e",
-    margin: "0 !important",
-    textAlign: "right",
-    height: "0",
-    paddingRight: "0",
-    "& span": {
-      fontWeight: "bold",
-    },
-  },
-}));
-
-function PencilEditIcon({
-  onClick,
-  anchorEl,
-  setAnchorEl,
-  content,
-  handleUpdating,
-}) {
-  const classes = useStyles();
-  return (
-    <React.Fragment>
-      <EditionPopover anchorEl={anchorEl} setAnchorEl={setAnchorEl}>
-        <Grid container spacing={0} style={{ width: "200px" }}>
-          <Grid className={classes.buttonsRow} item xs={12}>
-            <Button
-              variant="contained"
-              size="small"
-              variant="outlined"
-              className={classes.popoverButton}
-              startIcon={<CheckSharpIcon />}
-              onClick={() => {
-                handleUpdating();
-              }}
-            >
-              {" "}
-            </Button>
-            <Button
-              variant="contained"
-              size="small"
-              variant="outlined"
-              className={classes.popoverButton}
-              startIcon={<ClearSharpIcon />}
-              onClick={() => {
-                setAnchorEl(null);
-              }}
-            >
-              {" "}
-            </Button>
-          </Grid>
-
-          {content.map((textF, i) => (
-            <Grid key={i} item xs={12} style={{ marginBottom: "8px" }}>
-              {textF}
-            </Grid>
-          ))}
-        </Grid>
-      </EditionPopover>
-      <Tooltip title={"Edit"} placement="top">
-        <IconButton
-          size="small"
-          onClick={(e) => {
-            onClick(e);
-          }}
-        >
-          <CreateTwoToneIcon
-            id="contPencilIcon"
-            className={classes.pencilIcon}
-          />
-        </IconButton>
-      </Tooltip>
-    </React.Fragment>
-  );
-}
-
-const textFieldLabels = (field) => {
-  const fieldsOpt = [
-    "companyName",
-    "jobTitle",
-    "address2Alt",
-    "address1Alt",
-    "cityAlt",
-    "stateAlt",
-    "zipAlt",
-    "countryAlt",
-    "zip",
-  ];
-  const labelsOpt = [
-    "Company Name",
-    "Job Title",
-    "Address2",
-    "Address1",
-    "City",
-    "State",
-    "ZipCode",
-    "Country",
-    "ZipCode",
-  ];
-
-  if (fieldsOpt.indexOf(field) !== -1) {
-    return labelsOpt[fieldsOpt.indexOf(field)];
-  }
-
-  return field.charAt(0).toUpperCase() + field.slice(1);
-};
-
-export const LinkTypes = Object.freeze({
-  None: 0,
-  Mail: 1,
-  Simple: 2,
-});
-
-export const FieldTypes = Object.freeze({
-  Contact: 0,
-  MelissaAddressRecord: 1,
-  MelissaRecord: 2,
-});
-
-const ConditionalWrap = ({ condition, wrap, children }) =>
-  condition ? wrap(children) : children;
+import { AppContext } from "AppContext";
+import ContactAutoComplete from "components/Shared/ContactAutoComplete";
+import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon'
+import MergeHistory from 'components/ContactDetailCard/components/FieldContent/MergeHistory'
+import { textFieldLabels, getHrefValue, LinkTypes, FieldTypes } from 'components/ContactDetailCard/components/FieldContent/helper'
+import useStyles from 'components/ContactDetailCard/components/FieldContent/style'
 
 export default function FieldContent({
   children,
@@ -201,6 +29,7 @@ export default function FieldContent({
   linkType,
   fieldType = FieldTypes.Contact,
   isEdited = false,
+  isMerged = false,
   ...props
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
@@ -217,6 +46,7 @@ export default function FieldContent({
   //////////// linkType - LinkTypes value //optional///////////////////////////////////////////////////////////////
   //////////// fieldType - FieldTypes value //default value = Contact /////////////////////////////////////////////
   //////////// isEdited - if value previously edited, show corresponding icon //default value = false /////////////
+  //////////// isMerged - if contact is created by merge or not ///////////////////////////////////////////////////
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [edit, setEdit] = useState(null);
@@ -232,14 +62,18 @@ export default function FieldContent({
   );
   const classes = useStyles({ noMargin, loading, fieldsCount });
 
+  // contactOwnerId field used in autocomplete of contact owner
+  const ignorableFieldsInCount = ['contactOwnerId'];
+
   useEffect(() => {
     if (content) {
       setEditContent({ ...content });
       setShowContent({ ...content });
 
+
       let count = 0;
       for (const fieldName in content) {
-        if (content.hasOwnProperty(fieldName)) {
+        if (content.hasOwnProperty(fieldName) && !ignorableFieldsInCount.includes(fieldName)) {
           count++;
         }
       }
@@ -296,11 +130,11 @@ export default function FieldContent({
         }).then((res) => {
           let entries = Object.entries(editContent);
           entries.forEach((entry) => {
-            content = {...content, [entry[0]]: entry[1]}
+            content = { ...content, [entry[0]]: entry[1] }
           });
-          setShowContent({...content});
+          setShowContent({ ...content });
           setEditContent({ ...content });
-          setStateApp({...stateApp, contactUpdated: id});
+          setStateApp({ ...stateApp, contactUpdated: id });
         });
       }
     } else if (fieldType == FieldTypes.MelissaRecord) {
@@ -320,9 +154,9 @@ export default function FieldContent({
         setIsCurEdited(true);
         let entries = Object.entries(editContent);
         entries.forEach((entry) => {
-          content = {...content, [entry[0]]: entry[1]}
+          content = { ...content, [entry[0]]: entry[1] }
         });
-        setShowContent({...content});
+        setShowContent({ ...content });
         setEditContent({ ...content });
       });
     } else if (fieldType == FieldTypes.MelissaAddressRecord) {
@@ -342,9 +176,9 @@ export default function FieldContent({
         setIsCurEdited(true);
         let entries = Object.entries(editContent);
         entries.forEach((entry) => {
-          content = {...content, [entry[0]]: entry[1]}
+          content = { ...content, [entry[0]]: entry[1] }
         });
-        setShowContent({...content});
+        setShowContent({ ...content });
         setEditContent({ ...content });
       });
     }
@@ -354,7 +188,35 @@ export default function FieldContent({
   let inputsArray = [];
   if (edit) {
     for (const fieldName in editContent) {
-      if (editContent.hasOwnProperty(fieldName)) {
+
+      if (fieldName === 'contactOwner' || fieldName === 'contactOwnerId') {
+        if (fieldName === 'contactOwner')
+          inputsArray.push(
+            <ContactAutoComplete
+              value={editContent.contactOwnerId ? editContent.contactOwnerId : ''}
+              onChange={(e, user) => {
+                setEditContent({ 'contactOwner': user.text, 'contactOwnerId': user.value });
+              }}
+              onKeyDown={(event) => {
+                event.stopPropagation();
+                if (event.key === "Escape") {
+                  setEdit(null);
+                  setEditContent({ 'contactOwner': content.contactOwner, 'contactOwnerId': content.contactOwnerId });
+                }
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  handleUpdating();
+                }
+              }}
+              onBlur={() => {
+                setEdit(null);
+                setEditContent({ 'contactOwner': content.contactOwner, 'contactOwnerId': content.contactOwnerId });
+              }}
+            />
+          )
+      }
+
+      else if (editContent.hasOwnProperty(fieldName)) {
         inputsArray.push(
           <TextField
             key={"fieldContentInput" + fieldName}
@@ -440,18 +302,13 @@ export default function FieldContent({
         textArray = [[textArray.join(", "), showContent[key]].join(" ")];
       } else if (key === "jobTitle") {
         textArray = [[textArray.join(", "), showContent[key]].join(" - ")];
+      } else if (key === "contactOwner" || key === "contactOwnerId") {
+        if (key === "contactOwner")
+          textArray.push(showContent[key] || '');
+
       } else textArray.push(showContent[key]);
     }
   }
-
-  const getHrefValue = (linkValue, linkType) => {
-    if (linkType == LinkTypes.Mail) return `mailto:${linkValue}`;
-    if (linkType == LinkTypes.Simple)
-      return `${
-        !linkValue.startsWith("http") && !linkValue.startsWith("//") ? "//" : ""
-      }${linkValue}`;
-    else return linkValue;
-  };
 
   const renderOutput = (
     <span>
@@ -472,6 +329,10 @@ export default function FieldContent({
           onClick={handleEditClick}
         />
       )}
+      {
+        fieldType == FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
+      }
+
       {!childrenLeft && !onlyChildren && children ? children : ""}
       {isCurEdited ? " (edited)" : ""}
     </span>
@@ -480,22 +341,21 @@ export default function FieldContent({
   return (
     <React.Fragment>
       <p
-        className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${
-          classes.fieldContentP
-        }`}
+        className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP
+          }`}
       >
         {(linkType == LinkTypes.Mail || linkType == LinkTypes.Simple) &&
-        textArray.length > 0 ? (
-          <a
-            href={getHrefValue(textArray.join(", "), linkType)}
-            target="_blank"
-            className={classes.noTextDecoration}
-          >
-            {renderOutput}
-          </a>
-        ) : (
-          renderOutput
-        )}
+          textArray.length > 0 ? (
+            <a
+              href={getHrefValue(textArray.join(", "), linkType)}
+              target="_blank"
+              className={classes.noTextDecoration}
+            >
+              {renderOutput}
+            </a>
+          ) : (
+            renderOutput
+          )}
       </p>
       {loading && (
         <div style={{ height: "0", width: "0" }}>

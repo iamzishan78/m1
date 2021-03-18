@@ -4,8 +4,8 @@ import IconButton from "@material-ui/core/IconButton";
 import { useLazyQuery } from "@apollo/client";
 import Tooltip from "@material-ui/core/Tooltip";
 import LinkIcon from '@material-ui/icons/Link';
-import { Grid, Container, Box, Typography } from "@material-ui/core";
-import AlertDialogSlide from "../Contacts/components/RightDialog";
+import { Grid, Container, Box, Typography, Badge } from "@material-ui/core";
+import RightDialog from "../ContactDetailCard/components/RightDialog";
 import CloseSharp from "@material-ui/icons/CloseSharp";
 import { LINKED_GLOBAL_OWNERS } from "../../graphQL/useQueryLinkedGlobalOwners";
 
@@ -39,6 +39,12 @@ export default function LinkWithIcon(props) {
         fill: `${theme.palette.secondary.main} !important`,
       },
     },
+    heading: {
+      fontSize: "initial",
+      fontWeight: 800,
+      marginBottom: "10px"
+    }
+
   }));
 
   const classes = useStyles();
@@ -49,84 +55,91 @@ export default function LinkWithIcon(props) {
 
   return (
     <React.Fragment>
-      {
-        getGlobalOwners().length > 0 &&
-        <>
-          <Tooltip
-            title={"Linked Global Owner"}
-            placement="top"
+      <Tooltip
+        title={"Linked Global Owner"}
+        placement="top"
+      >
+        <Badge badgeContent={props.iconZiseSmall ? null : getGlobalOwners().length} color="secondary">
+          <IconButton
+            size={props.iconZiseSmall ? "small" : "medium"}
+            color="primary"
+            className={`${classes.icons}  ${openDialog || (getGlobalOwners().length > 0)
+              ? classes.iconSelected
+              : ""
+              }`}
+            onClick={() => { setOpenDialog(true) }}
+            aria-label="show linked global owner"
           >
-            <IconButton
-              size={props.iconZiseSmall ? "small" : "medium"}
-              color="primary"
-              className={`${classes.icons}  ${openDialog || (getGlobalOwners().length > 0)
-                ? classes.iconSelected
-                : ""
-                }`}
-              onClick={() => {
-                setOpenDialog(true);
-              }}
-              aria-label="show linked global owner"
-            >
-              <LinkIcon />
-            </IconButton>
-          </Tooltip>
-          {openDialog && (
-            <AlertDialogSlide open={true}>
-              <Container maxWidth="sm" className={classes.gridWidthScroll}>
-                <div className={classes.dealContainer}>
+            <LinkIcon />
+          </IconButton>
+        </Badge>
+      </Tooltip>
+      {openDialog && (
+        <RightDialog open={true}>
+          <Container maxWidth="sm" className={classes.gridWidthScroll}>
+            <div className={classes.dealContainer}>
 
-                  <Box p={3} pt={1}>
-                    <Grid
-                      container
-                      direction="row"
-                      spacing={4}
-                      justify="space-between"
-                      alignItems="center"
-                    >
-                      <Grid item>
-                        <Typography
-                          className={classes.topHeading}
-                          style={{ fontWeight: "bold" }}
-                          variant="h5"
-                          component="h2"
-                        >
-                          Link Platform Owners
-                    </Typography>
-                      </Grid>
-                      <Grid item>
-                        <IconButton aria-label="delete" color="primary" onClick={() => setOpenDialog(false)}>
-                          <CloseSharp />
-                        </IconButton>
-                      </Grid>
-                    </Grid>
+              <Box pb={3} pt={1}>
+                <Grid container direction="row" spacing={4} justify="space-between" alignItems="center">
+                  <Grid item>
+                    <Typography className={classes.topHeading} style={{ fontWeight: "bold" }} variant="h5" component="h2">
+                      Linked Platform Owners
+                      </Typography>
+                  </Grid>
+                  <Grid item>
+                    <IconButton aria-label="delete" color="primary" onClick={() => setOpenDialog(false)}>
+                      <CloseSharp />
+                    </IconButton>
+                  </Grid>
+                </Grid>
+                {
+                  getGlobalOwners().length > 0 ?
+                    <>
+                      <Box mt={2}>
+                        <Typography>
+                          The below platform owners are linked to the selected contact.
+                        </Typography>
+                      </Box>
 
+                      <Box pt={3}>
+                        <Typography style={{ fontWeight: "bold" }}>Platform owners</Typography>
+                      </Box>
+                    </> :
                     <Box mt={2}>
                       <Typography>
-                        The below platform owners are linked to the selected contact:
-                  </Typography>
+                        No Platform Owner linked to selected contact.
+                      </Typography>
                     </Box>
+                }
+              </Box>
 
-                    <Box pt={3}>
-                      <Typography style={{ fontWeight: "bold" }}>Platform owners</Typography>
-                    </Box>
-                  </Box>
+              <Grid container justify='center' alignItems='center' className={classes.heading}>
+                <Grid item md={3}>Owner ID</Grid>
+                <Grid item md={9}>Name &amp; Address</Grid>
+              </Grid>
 
-                  {data.linkedGlobalOwners.data.map((row) => (
-                    <Grid container direction="row" spacing={2} alignItems="center">
-                      <Grid item md={12}>
-                        <Typography style={{ backgroundColor: "#edfbff" }}>
-                          <Box display='inline' pr={2} pl={2}>{row.id}</Box> <Box display='inline' pr={2}>{row.name}</Box> {row.address1} {row.address2} {row.city}, {row.state} {row.zip}
-                        </Typography>
+              {getGlobalOwners().map((row) => (
+                <Grid container direction="row" spacing={2} alignItems="center" key={row.id}>
+                  <Grid item md={12}>
+                    <Typography style={{ backgroundColor: "#edfbff" }}>
+                      <Grid container justify='center' alignItems='center'>
+                        <Grid item md={3}>{row.id}</Grid>
+                        <Grid item md={9}>
+                          <Grid container>
+                            <Grid item md={12}>{row.name}</Grid>
+                            <Grid item md={12}>{row.address1} {row.address2} {row.city}, {row.state} {row.zip}</Grid>
+                          </Grid>
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  ))}
-                </div>
-              </Container>
-            </AlertDialogSlide>
-          )}
-        </>
-      }
+                    </Typography>
+                  </Grid>
+                </Grid>
+              ))}
+            </div>
+          </Container>
+        </RightDialog>
+      )}
+
     </React.Fragment>
   );
 }

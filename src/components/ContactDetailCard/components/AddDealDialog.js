@@ -613,7 +613,7 @@ function AddDealDialog(props) {
 					contactId &&
 					((stateApp.activeDeal?.contacts?.length > 0 &&
 						stateApp.activeDeal?.contacts[0]?.relatedObject?._id !==
-							contactId) ||
+            contactId) ||
 						!stateApp.activeDeal.contacts ||
 						stateApp.activeDeal.contacts.length <= 0)
 				) {
@@ -1000,7 +1000,7 @@ function AddDealDialog(props) {
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
 					>
 						Do you want to delete the selected deal?
 					</DeleteConfirmationDialogContent>
@@ -1074,13 +1074,14 @@ function AddDealDialog(props) {
 							<h4
 								style={{
 									margin: "0 0 15px 0",
-									float: "left",
+                "float": "left",
 									fontSize: "1.1rem",
 								}}
 							>
 								Deal Information
 							</h4>
-							<div style={{ float: "right" }}>
+
+            <div style={{ "float": "right" }}>
 								{(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
 									stateApp.activeDeal?.laneId && (
 										<>
@@ -1110,11 +1111,12 @@ function AddDealDialog(props) {
 												{isDeleting ? (
 													<CircularProgress size={20} color="secondary" />
 												) : (
-													<DeleteIcon
-														className={classes.closeIcon}
-														fontSize="small"
-													/>
-												)}
+
+                          <DeleteIcon
+                            className={classes.closeIcon}
+                            fontSize="small"
+                          />
+                        )}
 											</IconButton>
 										</>
 									)}
@@ -1213,38 +1215,38 @@ function AddDealDialog(props) {
 									contact.constructor === Object) ||
 								contact === null
 							) && !props.isTransactPage ? (
-								<div className={classes.inputFieldDateRoot}>
-									<TextField
-										variant="outlined"
-										margin="dense"
-										value={contact?.name}
-										label="Contact Name"
-										fullWidth
-										disabled
-										className={classes.inputField}
-									/>
-								</div>
-							) : (
-								<div className={classes.inputField}>
-									<Grid container>
-										<Grid item xs={12}>
-											<AutocompEntityNamesVirtualizeList
-												mongoEntitiesArray={mongoEntitiesArray}
-												setMongoEntitiesArray={setMongoEntitiesArray}
-												nameAutValue={nameAutValue}
-												setNameAutValue={setNameAutValue}
-												nameAutInputValue={nameAutInputValue}
-												setNameAutInputValue={setNameAutInputValue}
-												variant="outlined"
-												label="Contact Name"
-												hasNextPage={hasNextPage}
-												isNextPageLoading={isNextPageLoading}
-												loadNextPage={loadNextPage}
-											/>
-										</Grid>
-									</Grid>
-								</div>
-							)}
+                <div className={classes.inputFieldDateRoot}>
+                  <TextField
+                    variant="outlined"
+                    margin="dense"
+                    value={contact?.name}
+                    label="Contact Name"
+                    fullWidth
+                    disabled
+                    className={classes.inputField}
+                  />
+                </div>
+              ) : (
+                <div className={classes.inputField}>
+                  <Grid container>
+                    <Grid item xs={12}>
+                      <AutocompEntityNamesVirtualizeList
+                        mongoEntitiesArray={mongoEntitiesArray}
+                        setMongoEntitiesArray={setMongoEntitiesArray}
+                        nameAutValue={nameAutValue}
+                        setNameAutValue={setNameAutValue}
+                        nameAutInputValue={nameAutInputValue}
+                        setNameAutInputValue={setNameAutInputValue}
+                        variant="outlined"
+                        label="Contact Name"
+                        hasNextPage={hasNextPage}
+                        isNextPageLoading={isNextPageLoading}
+                        loadNextPage={loadNextPage}
+                      />
+                    </Grid>
+                  </Grid>
+                </div>
+              )}
 
 							<TextField
 								margin="dense"
@@ -1452,8 +1454,10 @@ function AddDealDialog(props) {
 									{updateDealLoading || addContactLoading ? (
 										<CircularProgress size={14} />
 									) : (
-										"Save"
-									)}
+
+                    "Save"
+
+                  )}
 								</Button>
 							</div>
 						</div>
