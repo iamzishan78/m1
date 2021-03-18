@@ -455,12 +455,9 @@ function SubTable(props) {
 
 
   const handleOwnerFlyTo = (value) => {
-
-    console.log('value', value)
-
     getOwnerWells({
       variables: {
-        ownerId: value.objectId,
+        ownerId: value.objToPopulateSearchLayer.objectId,
       },
     });
   
@@ -538,11 +535,8 @@ function SubTable(props) {
   }, [dataWell]);
 
   useEffect(() => {
-    if(dataOwnerWells){console.log('dataownerwells', dataOwnerWells)}
     if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray) {
       if (dataOwnerWells.ownerLatsLonsArray.length !== 0) {
-
-        console.log('data owners', dataOwnerWells)
         setStateApp((stateApp) =>
           dataOwnerWells.ownerLatsLonsArray.length === 1
             ? {
@@ -562,7 +556,6 @@ function SubTable(props) {
                 wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
               }
         );
-
         stateApp.toggleLayersActivity("Search", true);
       } else {
         stateApp.toggleLayersActivity("Search", false);
