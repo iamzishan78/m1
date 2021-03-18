@@ -17,6 +17,10 @@ import { setMapGridCardState } from "../../../actions";
 import joinAddress from "../../Shared/valueformatters/join-address.js";
 
 
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,10 +56,87 @@ function MapGridCardSearch(props) {
   const [stateGrid, setStateGrid] = useContext(MapGridContext);
 
 
-
+  // function states 
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState([]);
   const [searchTop] = React.useState(100);
+
+
+
+
+  ///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
+
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
+
+
+  const callContactsSearch = React.useMemo(
+    () =>
+    debounce((request, top, callback) => {
+
+      /// this function takes the search request and sends it to gql
+      getPaginatedContacts({
+        variables: {
+          search: request.input,
+        },
+      });
+
+    }, 500),
+    []
+  );
+
+
+  useEffect(() => {
+    // this use effect takes the contactdata once it comes in from the gql query
+    // and flattens things into an array 
+    // that presents options up to the search menu bar (called newOptions)
+
+    if (
+      constDataContacts 
+    ) {
+      var newOptions = [];
+      var newOptions = [
+
+        ...constDataContacts.paginatedContacts.edges.map((result) => {
+
+          result = result.node;
+          //result.Source = contactIndexName;
+          
+          if(result.name){
+            result.Primary = result.name
+          } else {
+            result.Primary = "--"
+          }; 
+
+          if(result.address1 || result.city || result.state){
+            result.Secondary = result.address1 + ' ' + result.city+ ', ' + result.state+ ' ' + result.zip
+          } else {
+            result.Secondary = "--"
+          }; 
+
+          return result
+          
+        }),
+        ...newOptions,
+      ];
+      dispatch(
+        setMapGridCardState({
+          searchResultData: [...newOptions],
+          searchloading: false,
+        })
+      );
+
+    }
+  }, [
+    constDataContacts,
+  ]);
+
+
+
 
 
 
@@ -190,7 +271,7 @@ function MapGridCardSearch(props) {
         }.json?access_token=${
           stateApp.mapboxglAccessToken
         }&autocomplete=true&country=us%2Cca&limit=${
-          searchTop > 10 ? 10 : searchTop
+          searchTop > 50 ? 50 : searchTop
         }`;
 
         const headers = new Headers();
@@ -310,6 +391,14 @@ function MapGridCardSearch(props) {
               );
             })
           : null,
+
+        props.searchOption == "contacts"
+          ? callContactsSearch(
+              { input: searchInputValue },
+              searchTop,
+            )
+          : null,
+
         props.searchOption == "location"
           ? callMapboxSearch({ input: searchInputValue }, (results) => {
               if (results && results.features) {
@@ -347,6 +436,7 @@ function MapGridCardSearch(props) {
     callOwnerSearch,
     callOperatorSearch,
     callLeaseSearch,
+    callContactsSearch,
     callMapboxSearch,
     props.searchOption,
   ]);
