@@ -49,6 +49,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
 import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
+import AddWellInterestDialog from "../../ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 import { setMapGridCardState, showWarningMessage } from "../../../actions";
 
 // Header Schemas 
@@ -71,8 +72,6 @@ import ContactWellHeadCells from '../constants/contactperwell-header-schema.js'
 
 // import value formatters 
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
-
-
 
 const useStyles = makeStyles((theme) => ({
   container: { 
@@ -166,8 +165,6 @@ function M1nTable(props) {
   const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(ABSTRACTWELLGEOQUERY);
   const [getPaginatedWellInterests,{ data: constDataWellInterests },] = useLazyQuery(PAGINATEDWELLINTERESTSQUERY, {fetchPolicy: "cache-and-network",});
   const [getWellInterestsFilterOptions,{ data: dataWellInterestsFilterOptions },] = useLazyQuery(WELLINTERESTSFILTEROPTIONS, {fetchPolicy: "cache-and-network",});
-
-
 
 
   ////////////General begin///////////////////////////////////////////////
@@ -754,7 +751,7 @@ function M1nTable(props) {
       });
       setTargetLabel("well");
       setHeader(props.header);
-      setAddAble(false);
+      setAddAble({ type: "wellInterest" });
     }
   }, [props.parent]);
 
@@ -837,7 +834,7 @@ function M1nTable(props) {
       dataCommentsCounter && dataCommentsCounter.commentsCounter &&
       dataTagSamples && dataTagSamples.tagSamples
     ) {
-      let wells = rows;
+      let wells = dataContactWells.contactWells;
       wells = wells.map((w) => {
         let well = { ...w };
 
@@ -2990,6 +2987,21 @@ function M1nTable(props) {
           contactId={props.contact?._id}
         />
       )}
+
+      {props.parent && props.parent === "assocTaxRollInterests" && (
+        <AddWellInterestDialog
+          open={stateApp.wellInterestDialog ? true : false}
+          width="450px"
+          onClose={() =>
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              wellInterestDialog: false,
+            }))
+          }
+          contactId={props.contactId}
+        />
+      )}
+
       <Table
         style={{ backgroundColor: "#fff" }}
         header={header}

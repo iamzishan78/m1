@@ -14,7 +14,9 @@ const ContactWellHeadCells = [
     },
     { name: "wellName", label: "Well" },
     { name: "api", label: "API" },
-    { name: "lease", label: "Lease" },
+    { name: "leaseId", label: "Lease Id", options: { display: false } },
+    { name: "lease", label: "Lease Name", options: { display: false }  },
+    { name: "leaseDescription", label: "Lease" },
     { name: "leaseAcres", label: "Lease Acres" },
     { name: "interestOwner", label: "Interest Owner" },
     {
@@ -28,6 +30,8 @@ const ContactWellHeadCells = [
     { name: "amount", label: "Amount" },
     { name: "taxValue", label: "Tax Value" },
     { name: "nra", label: "NRA" },
+    { name: "year", label: "Year", options: { display: false } },
+    { name: "globalLod", label: "Global LOD", options: { display: false } },
     {
       name: "tags",
       label: "Tags ",
