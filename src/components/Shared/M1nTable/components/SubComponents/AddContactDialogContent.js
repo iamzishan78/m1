@@ -16,8 +16,7 @@ import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginated
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { makeStyles } from "@material-ui/core/styles";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
-
-
+``
 const phonenumber = (inputtxt) => {
   if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
     return true;
