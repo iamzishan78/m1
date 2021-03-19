@@ -16,7 +16,7 @@ import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginated
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { makeStyles } from "@material-ui/core/styles";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
-``
+
 const phonenumber = (inputtxt) => {
   if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
     return true;
@@ -53,8 +53,7 @@ const useStyles = makeStyles((theme) => ({
       left: "0",
       top: "55px",
     },
-    marginRight:8,
-    marginLeft:8
+    margin: '0 8px 15px 8px'
   },
   dialogTitle: {
     paddingBottom: (dataContacts) => (dataContacts ? "55px" : "16px"),
