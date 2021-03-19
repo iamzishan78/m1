@@ -553,7 +553,9 @@ export default function Transact() {
 
   return (
     <div className={classes.root}>
-      {stateApp.dealDialog && <Drawer />}
+      {stateApp.dealDialog 
+        && <Drawer />
+        }
       <AddDealDialog
         open={stateApp.dealDialog ? true : false}
         width="450px"
