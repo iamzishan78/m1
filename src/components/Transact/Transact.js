@@ -553,7 +553,9 @@ export default function Transact() {
 
   return (
     <div className={classes.root}>
-      {stateApp.dealDialog && <Drawer />}
+      {stateApp.dealDialog 
+        && <Drawer />
+        }
       <AddDealDialog
         open={stateApp.dealDialog ? true : false}
         width="450px"
@@ -633,7 +635,7 @@ export default function Transact() {
         </div>
       ) : pipeToShow === false ? (
         <h1 style={{ marginTop: 80 }}>
-          No pipelines currently exist - please setup a new pipeline and
+          No flowlines currently exist - please setup a new flowline and
           corresponding stages.
         </h1>
       ) : (

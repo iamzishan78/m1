@@ -26,7 +26,7 @@ const DealsHeadCells = [
     },
     {
       name: "pipelineName",
-      label: "Pipeline",
+      label: "Flowline",
     },
     {
       name: "laneName",

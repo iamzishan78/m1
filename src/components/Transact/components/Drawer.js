@@ -50,12 +50,12 @@ export default function Drawer() {
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const drawerIcons = {
-    Comments: (props) => <MessageIcon {...props} />,
+    // Comments: (props) => <MessageIcon {...props} />,
     Documents: (props) => <DescriptionIcon {...props} />,
-    "Lane Progress": (props) => <CheckmarkIcon {...props} />,
-    History: (props) => <ShareIcon {...props} />,
-    Groups: (props) => <FolderIcon {...props} />,
-    Contacts: (props) => <IdentityIcon {...props} />,
+    // "Lane Progress": (props) => <CheckmarkIcon {...props} />,
+    // History: (props) => <ShareIcon {...props} />,
+    // Groups: (props) => <FolderIcon {...props} />,
+    // Contacts: (props) => <IdentityIcon {...props} />,
   };
 
   return (
