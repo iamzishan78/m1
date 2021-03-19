@@ -45,7 +45,7 @@ export default function PlugDateCard() {
     <div className={classes.iconContainer}>
 
       <PlugIcon htmlColor='black'
-        viewBox="0 0 61 62"
+        viewBox="0 0 24 24"
         fontSize="large" />
 
       <Typography
