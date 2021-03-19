@@ -635,7 +635,7 @@ export default function Transact() {
         </div>
       ) : pipeToShow === false ? (
         <h1 style={{ marginTop: 80 }}>
-          No pipelines currently exist - please setup a new pipeline and
+          No flowlines currently exist - please setup a new flowline and
           corresponding stages.
         </h1>
       ) : (

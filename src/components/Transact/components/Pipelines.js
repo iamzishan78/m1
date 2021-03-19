@@ -31,7 +31,6 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
-// import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
 import { GETPIPELINE } from "../../../graphQL/useQueryPipeline";
 import { ADDPIPELINE } from "../../../graphQL/useMutationAddPipeline";
 import { UPDATEPIPELINE } from "../../../graphQL/useMutationUpdatePipeline";
@@ -688,7 +687,7 @@ export default function Pipelines(props) {
             );
           }}
           renderInput={(params) => (
-            <TextField {...params} label="Pipelines" variant="outlined" />
+            <TextField {...params} label="Flowlines" variant="outlined" />
           )}
           autoComplete
           includeInputInList
