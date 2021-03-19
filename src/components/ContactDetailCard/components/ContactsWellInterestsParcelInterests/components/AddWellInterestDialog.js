@@ -538,7 +538,7 @@ function AddWellInterestDialog(props) {
               variant="outlined"
               margin="dense"
               // error={isNaN(formLeaseAcres)}
-              value={formLeaseAcres}
+              value={formLeaseAcres === 0 || formLeaseAcres ? formLeaseAcres : ''}
               onChange={event => setFormLeaseAcres(parseFloat(event.target.value)) }
               label={"Lease Acres"}
               // InputLabelProps={{ shrink: true }}
@@ -619,7 +619,7 @@ function AddWellInterestDialog(props) {
                     variant="outlined"
                     margin="dense"
                     // error={isNaN(formInterestAmount)}
-                    value={formInterestAmount}
+                    value={formInterestAmount === 0 || formInterestAmount ? formInterestAmount : ''}
                     onChange={(event) => {
                       console.log(parseFloat(event.target.value))
                       setFormInterestAmount(parseFloat(event.target.value))
@@ -640,7 +640,7 @@ function AddWellInterestDialog(props) {
                     variant="outlined"
                     margin="dense"
                     // error={isNaN(formRoyaltyAcres)}
-                    value={formRoyaltyAcres}
+                    value={formRoyaltyAcres === 0 || formRoyaltyAcres ? formRoyaltyAcres : ''}
                     onChange={event => setFormRoyaltyAcres(parseFloat(event.target.value)) }
                     //label={formRoyaltyAcres ? "" : "Net Royalty Acres"}
                     label = "Net Royalty Acres"
@@ -664,7 +664,7 @@ function AddWellInterestDialog(props) {
                 InputProps={{
                   inputComponent: CurrencyFormatCustom,
                 }}
-                value={formTaxValue}
+                value={formTaxValue === 0 || formTaxValue ? formTaxValue : ''}
                 onChange={event => setFormTaxValue(parseFloat(event.target.value)) }
                 defaultValue=""
               />
