@@ -391,12 +391,12 @@ function MapGridCardSearch(props) {
             })
           : null,
 
-        // props.searchOption == "contacts"
-        //   ? callContactsSearch(
-        //       { input: searchInputValue },
-        //       searchTop,
-        //     )
-        //   : null,
+        props.searchOption == "contacts"
+          ? callContactsSearch(
+              { input: searchInputValue },
+              searchTop,
+            )
+          : null,
 
         props.searchOption == "location"
           ? callMapboxSearch({ input: searchInputValue }, (results) => {
