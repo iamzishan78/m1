@@ -124,10 +124,12 @@ function MapGridCardSearch(props) {
         ...newOptions,
       ];
 
-        // setMapGridCardState({
-        //   searchResultData: [...newOptions],
-        //   searchloading: false,
-        // })
+      // dispatch(
+        setMapGridCardState({
+          searchResultData: [...newOptions],
+          searchloading: false,
+        })
+      // )
 
     }
   }, [

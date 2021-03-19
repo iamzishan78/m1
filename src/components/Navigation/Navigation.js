@@ -909,17 +909,6 @@ export default function Navigation(props) {
     }
   }, [location, setStateNav]);
 
-  /* old filter counter moved to map.js 
-  useEffect(() => {
-    let operatorCount = stateNav.operatorName ? 1:0;
-    let wellFilterCount = stateNav.statusName.length + stateNav.typeName.length + stateNav.profileName.length + operatorCount;
-      setStateNav(state => ({ ...state, wellFilterCount: wellFilterCount }))
-    
-  }, [stateNav.statusName,
-    stateNav.typeName,
-    stateNav.profileName,
-    stateNav.operatorName
-  ])  */
 
   useEffect(() => {
     if (location.pathname === "/track") {
