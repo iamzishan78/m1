@@ -7,7 +7,7 @@ const useStyles = makeStyles((theme) => ({
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": { 
-          height: "calc(100vh - 192px) !important", 
+          height: "calc(100vh - 183px) !important", 
           overflowY: 'scroll'
        },
      },
