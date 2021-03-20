@@ -20,7 +20,7 @@ const statusList = [
 export default function FilterWellStatusJ() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [statusName, setStatusName] = React.useState(
-    stateNav.statusName ? stateNav.statusName : null
+    stateNav.statusName ? stateNav.statusName : []
   );
 
   const handleStatusChange = (value) => {

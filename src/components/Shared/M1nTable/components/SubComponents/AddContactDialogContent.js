@@ -16,6 +16,7 @@ import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginated
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { makeStyles } from "@material-ui/core/styles";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
+import { GETMONGOUSERS as GETUSERS } from "../../../../../graphQL/useQueryGetUsers";
 
 const phonenumber = (inputtxt) => {
   if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
@@ -78,6 +79,7 @@ export default function AddContactDialogContent(props) {
   const [validated, setValidated] = useState(false);
   const [activeTapIndex, setActiveTapIndex] = useState(0);
   const [contacts, setContacts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [existingContact, setExistingContact] = useState({ name: "" });
   const [newContact, setNewContact] = useState({
     name: "",
@@ -90,14 +92,20 @@ export default function AddContactDialogContent(props) {
     country: "",
     state: "",
     zip: "",
+    contactOwner: ""
     // owners: props.parent ? [props.parent] : [],
   });
+
   const [
     getPaginatedContacts,
     { loading: loadingContacts, data: dataContacts },
   ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
+  });
+
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
+    fetchPolicy: "cache-and-network",
   });
 
   const [
@@ -143,6 +151,21 @@ export default function AddContactDialogContent(props) {
     emptyStates();
   }, [activeTapIndex]);
 
+  useEffect(() => {
+    getAllUsers();
+  }, []);
+
+  useEffect(() => {
+    if (userLists && userLists.allUsers) {
+      setUsers(
+        userLists.allUsers.map((user) => ({
+          value: user._id,
+          text: user.name
+        }))
+      );
+    }
+  }, [userLists]);
+
   const emptyStates = () => {
     setExistingContact({ name: "" });
     setNewContact({
@@ -180,7 +203,6 @@ export default function AddContactDialogContent(props) {
 
   const handleClickAdd = (e) => {
     e.preventDefault();
-
     if (props.dealsPage) {
       if (activeTapIndex === 0) {
         addContact({
@@ -244,8 +266,8 @@ export default function AddContactDialogContent(props) {
                     option && option.name
                       ? option.name
                       : typeof option === "string"
-                      ? option
-                      : ""
+                        ? option
+                        : ""
                   }
                   autoComplete
                   autoSelect
@@ -269,8 +291,8 @@ export default function AddContactDialogContent(props) {
               </Grid>
             </Grid>
           ) : (
-            <CircularProgress size={40} disableShrink color="secondary" />
-          )}
+              <CircularProgress size={40} disableShrink color="secondary" />
+            )}
         </div>
       </React.Fragment>
     );
@@ -444,6 +466,20 @@ export default function AddContactDialogContent(props) {
               }}
             />
           </Grid>
+          <Grid item xs={12}>
+            <h3>Contact Owner</h3>
+            <Autocomplete
+              className={classes.fieldWidth}
+              options={users}
+              onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+              value={users.find((user) => user?.value === newContact.contactOwner) || null}
+              getOptionLabel={(option) => option.text}
+              getOptionSelected={(option) => option.value === newContact.contactOwner}
+              renderInput={(params) => (
+                <TextField size="small" {...params} className={classes.maxWidth} multiline value={newContact.contactOwner} />
+              )}
+            />
+          </Grid>
         </Grid>
       </React.Fragment>
     );
@@ -491,8 +527,8 @@ export default function AddContactDialogContent(props) {
             backgroundColor="#fff"
           />
         ) : (
-          addNew()
-        )}
+            addNew()
+          )}
       </DialogContent>
       <div className={classes.dialogFooter}>
         <Button 
@@ -521,8 +557,8 @@ export default function AddContactDialogContent(props) {
       </RightDialog>
     </>
   ) : (
-    <div style={{ padding: "15px" }}>
-      <CircularProgress size={80} disableShrink color="secondary" />
-    </div>
-  );
+      <div style={{ padding: "15px" }}>
+        <CircularProgress size={80} disableShrink color="secondary" />
+      </div>
+    );
 }

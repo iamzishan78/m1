@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
-import FieldContent, {
-  FieldTypes,
-} from "./../../ContactDetailCard/components/FieldContent";
+import React, { useState } from "react";
+import FieldContent from "../../ContactDetailCard/components/FieldContent";
+import { FieldTypes } from "../../ContactDetailCard/components/FieldContent/helper";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { excludeList } from "./ExcludeList";
 import { Grid } from "@material-ui/core";
@@ -58,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     margin: "0 0 8px 0",
-    float: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -74,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textBtn: {
     margin: "0 0 8px 0",
-    float: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -121,7 +120,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
   switchButtom: {
-    float: "right",
+    "float": "right",
     width: "fit-content",
     alignSelf: "flex-end",
     marginRight: 0,
@@ -202,12 +201,12 @@ export default ({ ...props }) => {
               } else {
                 let objName = Object.keys(value.data)[0];
                 if (value.data[objName] != undefined
-                  && value.data[objName] != `""` 
-                  && value.data[objName] != '' 
-                  && value.data[objName] != ""                  
+                  && value.data[objName] != `""`
+                  && value.data[objName] != ''
+                  && value.data[objName] != ""
                   && value.data[objName].length != 0
-                  && value.data[objName] != null 
-                  ) {
+                  && value.data[objName] != null
+                ) {
                   return (
                     <React.Fragment>
                       <Grid item xs={3} className="fieldName">

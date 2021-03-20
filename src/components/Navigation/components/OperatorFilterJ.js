@@ -8,7 +8,7 @@ import { useLazyQuery } from "@apollo/client";
 
 export default function OperatorFilterJ() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [operatorName, setOperatorName] = React.useState(stateNav.operatorName ? stateNav.operatorName : []);
+  const [operatorName, setOperatorName] = React.useState(stateNav.operatorName);
   const [operatorList, setOperatorsList] = useState([]);
   const [getOperators, { data: topOperatorData }] = useLazyQuery(TOPOPERATORS);
 
@@ -29,10 +29,6 @@ export default function OperatorFilterJ() {
       setOperatorsList(operatorList);
     } else {
       setOperatorsList([]);
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        operatorName: null,
-      }));
      }   
   }, [topOperatorData]);
 
@@ -53,7 +49,8 @@ export default function OperatorFilterJ() {
 
   return (
     <Autocomplete
-      defaultValue={stateNav.operatorName ? stateNav.operatorName : []}
+      ChipProps={{ color: "secondary" }}
+      defaultValue={stateNav.operatorName}
       onChange={(event, newValue) => {
         handleOperatorChange(newValue);
       }}

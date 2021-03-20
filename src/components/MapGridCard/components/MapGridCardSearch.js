@@ -123,12 +123,13 @@ function MapGridCardSearch(props) {
         }),
         ...newOptions,
       ];
-      dispatch(
+
+      // dispatch(
         setMapGridCardState({
           searchResultData: [...newOptions],
           searchloading: false,
         })
-      );
+      // )
 
     }
   }, [

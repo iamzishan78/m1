@@ -19,9 +19,6 @@ import GridOn from "@material-ui/icons/GridOn";
 import TableChartIcon from "@material-ui/icons/TableChart";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-
-// import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
-// import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
 import { AppContext } from "../../../AppContext";
 
 const useStyles = makeStyles((theme) => ({

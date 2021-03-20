@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
   },
   left: {
     display: "flex",
-    alignItems: "center",
+    alignItems: "center"
   },
   closedDeals: {
     marginLeft: 8,
