@@ -5,6 +5,8 @@ import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import TextField from "@material-ui/core/TextField";
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import EditionPopover from "./EditionPopover";
 import ClearSharpIcon from "@material-ui/icons/ClearSharp";
 import CheckSharpIcon from "@material-ui/icons/CheckSharp";
@@ -46,6 +48,14 @@ const useStyles = makeStyles((theme) => ({
       padding: "9px 10px",
       lineHeight: "1.43",
     },
+  },
+  editSelectField:{
+    width : "100%",
+    "& .MuiSelect-select":{
+      fontSize: "0.875rem",
+      padding: "9px 10px",
+      lineHeight: "1",
+    }
   },
   notAvailableP: { color: "#bababaab", fontSize: "13px" },
   loader: {
@@ -247,6 +257,10 @@ export default function FieldContent({
     }
   }, [content]);
 
+  useEffect(() => { 
+    editContent.status && handleUpdating()
+  }, [editContent.status]);
+
   useEffect(() => {
     if (fieldsCount <= 1) {
       let fieldName;
@@ -356,7 +370,45 @@ export default function FieldContent({
     for (const fieldName in editContent) {
       if (editContent.hasOwnProperty(fieldName)) {
         inputsArray.push(
-          <TextField
+          fieldName === 'status' ? 
+            <Select
+            labelId="status-label"
+            id="status-select"
+            className={classes.editSelectField}
+            value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+            onChange={(e) => {
+              e.persist();
+              setEditContent((editContent) => ({
+                ...editContent,
+                [fieldName]: e.target.value,
+              }));          
+            }}
+            onKeyDown={(event) => {
+              event.stopPropagation();
+              if (event.key === "Escape") {
+                if (fieldsCount <= 1) {
+                  setEdit(null);
+                  setEditContent((editContent) => ({
+                    ...editContent,
+                    [fieldName]: content[fieldName],
+                  }));
+                }
+              }
+            }}
+            onBlur={() => {
+              if (fieldsCount <= 1) {
+                setEdit(null);
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  [fieldName]: content[fieldName],
+                }));
+              }
+            }}
+            >
+              <MenuItem value='active'> Active </MenuItem>
+              <MenuItem value='inactive'> Inactive </MenuItem>
+            </Select>:
+            <TextField
             key={"fieldContentInput" + fieldName}
             id={"fieldContentInput" + fieldName}
             className={classes.editTextField}
