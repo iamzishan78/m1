@@ -405,8 +405,8 @@ export default function FieldContent({
               }
             }}
             >
-              <MenuItem value='active'> Active </MenuItem>
-              <MenuItem value='inactive'> Inactive </MenuItem>
+              <MenuItem value='Active'> Active </MenuItem>
+              <MenuItem value='Inactive'> Inactive </MenuItem>
             </Select>:
             <TextField
             key={"fieldContentInput" + fieldName}
