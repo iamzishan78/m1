@@ -5,6 +5,8 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import CloseIcon from "@material-ui/icons/Close";
+import IconButton from "@material-ui/core/IconButton";
 import Taps from "../../../Taps";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
@@ -54,7 +56,8 @@ const useStyles = makeStyles((theme) => ({
       left: "0",
       top: "55px",
     },
-    margin: '0 8px 15px 8px'
+    margin: '0 8px 25px 8px',
+    flex:'none'
   },
   dialogTitle: {
     paddingBottom: (dataContacts) => (dataContacts ? "55px" : "16px"),
@@ -63,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
     paddingTop: "10px",
-    margin:'0 28px 15px 0'
+    margin:'0 28px 15px 0',
   },
   footerButton: {
     letterSpacing: "1px",
@@ -72,6 +75,9 @@ const useStyles = makeStyles((theme) => ({
     padding: "8px 20px",
     width:'120px'
   },
+  closeIcon: {
+		color: theme.palette.secondary.main,
+	},
 }));
 
 export default function AddContactDialogContent(props) {
@@ -509,13 +515,15 @@ export default function AddContactDialogContent(props) {
             >
                Add New Contact
           </h4>
-          <div style={{ float: "right" }}>
-            <HighlightOffIcon
-              fontSize="large"
-              className={modalClass.titleClose}
-              onClick={props.onClose}
-            />
-        </div>
+					<div style={{ float: "right" }}>
+							<IconButton
+									onClick={props.onClose}
+									size="small"
+								>
+									<CloseIcon className={classes.closeIcon} fontSize="small" />
+							</IconButton>
+					</div>
+          
       </Grid>
       <DialogContent className={classes.dialogContent}>
         
