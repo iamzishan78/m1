@@ -12,7 +12,9 @@ import { LINKED_GLOBAL_OWNERS } from "../../graphQL/useQueryLinkedGlobalOwners";
 export default function LinkWithIcon(props) {
   const [openDialog, setOpenDialog] = useState(false);
 
-  const [getLinkedGlobalOwners, { data }] = useLazyQuery(LINKED_GLOBAL_OWNERS);
+  const [getLinkedGlobalOwners, { data }] = useLazyQuery(LINKED_GLOBAL_OWNERS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   useEffect(() => {
     if (props.objectId) {

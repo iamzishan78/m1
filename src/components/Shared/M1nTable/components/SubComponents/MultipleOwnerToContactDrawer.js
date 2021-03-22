@@ -82,7 +82,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const onConvert = () => {
     let ownerIds = rows.filter((row) => row.id !== primaryOwner.id);
     ownerIds.unshift(primaryOwner)
-    ownerIds = ownerIds.reduce((ids, row) => { ids.push(row.id); return ids; }, []);
+    ownerIds = ownerIds.reduce((ids, row) => { ids.push(row.globalOwnerId || row.id); return ids; }, []);
 
     let existingContactId = null;
     if (tab === 1) {
@@ -96,13 +96,21 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       awaitRefetchQueries: true
     }).then(
       res => {
-        console.log(res)
-        dispatch(showSuccessMessage("Contacts Merged Successfully"));
-        setM1nSelectedRowsIndexes([])
-        onClose();
-        setLoading(false);
+        if (res.data && res.data.convertMultitpleOwnerToContact) {
+          const { success, message } = res.data.convertMultitpleOwnerToContact
+          if (success) {
+            dispatch(showSuccessMessage(message));
+            setM1nSelectedRowsIndexes([])
+            onClose();
+            setLoading(false);
+          } else {
+            dispatch(showErrorMessage(message))
+          }
+        } else {
+          dispatch(showErrorMessage("Failed to convert to contact"));
+        }
       },
-      err => { console.log(err); setLoading(false); dispatch(showErrorMessage("Failed to merge")); }
+      err => { console.log(err); setLoading(false); dispatch(showErrorMessage("Failed to convert to contact")); }
     );
   };
 
@@ -181,7 +189,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
               <Grid item md={tab === 0 ? 10 : 11}>
                 <Typography style={{ backgroundColor: "#edfbff" }}>
                   <Grid container justify='center' alignItems='center'>
-                    <Grid item md={4}>{row.name}</Grid>
+                    <Grid item md={4}>{row.name || row.OwnerName}</Grid>
                     <Grid item md={8}>{row.StreetAddress} {row.City}, {row.State} {row.Zip}</Grid>
                   </Grid>
                 </Typography>

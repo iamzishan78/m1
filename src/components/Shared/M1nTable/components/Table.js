@@ -1342,6 +1342,7 @@ function SubTable(props) {
                           }`}
                         onClick={(e) => {
                           e.stopPropagation();
+                          debugger;
                           if (m1nSelectedRowsIndexes?.length > 1) {
                             const selectedRows = m1nSelectedRowsIndexes.map((index) => rows[index]);
                             return handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, selectedRows, "multipleOwnerToContact");
@@ -1746,8 +1747,8 @@ function SubTable(props) {
 
                   return (
                     <div
-                      style={{ display: "flex",alignItems: "center", justifyContent: "left" }}
-                      className={ props.parent === "assocTaxRollInterests" && !tableMeta.rowData[14] ? [classes.blue] : [] }
+                      style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
+                      className={props.parent === "assocTaxRollInterests" && !tableMeta.rowData[14] ? [classes.blue] : []}
                     >
 
                       {props.targetLabel === "contact" &&
@@ -2205,15 +2206,14 @@ function SubTable(props) {
             //////Add Icon/////////////////////////
             <span className={classes.addIcon}>
               <Tooltip
-                title={`Add${
-                  props.parent === "assocTaxRollInterests"
+                title={`Add${props.parent === "assocTaxRollInterests"
                     ? " Well Interest"
                     : props.targetLabel
-                    ? " " +
+                      ? " " +
                       props.targetLabel.charAt(0).toUpperCase() +
                       props.targetLabel.slice(1)
-                    : ""
-                }`}
+                      : ""
+                  }`}
               >
                 <IconButton
                   size="medium"
