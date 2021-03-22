@@ -3316,17 +3316,17 @@ function Map() {
     map.getCanvas().style.cursor = "";
   };
 
-  const mapMouseMove = (e) => {
-    // e.lngLat is the longitude, latitude geographical position of the event
-    let coordinates = e.lngLat.wrap();
-    setLng(coordinates.lng);
-    setLat(coordinates.lat);
-  };
+  // const mapMouseMove = (e) => {
+  //   // e.lngLat is the longitude, latitude geographical position of the event
+  //   let coordinates = e.lngLat.wrap();
+  //   setLng(coordinates.lng);
+  //   setLat(coordinates.lat);
+  // };
 
-  const mapZoom = (e) => {
-    let zooms = map.getZoom();
-    setZoom(zooms);
-  };
+  // const mapZoom = (e) => {
+  //   let zooms = map.getZoom();
+  //   setZoom(zooms);
+  // };
 
   const onAbstactLayerClick = function (feature, action) {
     if (!feature) {
@@ -3731,8 +3731,8 @@ function Map() {
         initializeMap({ setMap, mapEl, setStateApp, setDraw });
       } else {
 
-        map.on("mousemove", mapMouseMove);
-        map.on("zoom", mapZoom);
+        // map.on("mousemove", mapMouseMove);
+        // map.on("zoom", mapZoom);
 
       }
     }
@@ -4640,7 +4640,7 @@ function Map() {
       <MapControlsProvider />
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <HugeRequest />
-      <Coordinates long={lng} lat={lat} zoom={zoom} />
+      {/* <Coordinates long={lng} lat={lat} zoom={zoom} /> */}
       {stateApp.selectedUserDefinedLayer &&
         !stateApp.popupOpen &&
         stateApp.editLayer && (
