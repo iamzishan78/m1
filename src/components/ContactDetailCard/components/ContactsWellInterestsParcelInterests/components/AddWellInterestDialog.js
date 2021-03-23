@@ -23,6 +23,7 @@ import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
 import { INTERESTOWNERTYPESQUERY } from "../../../../../graphQL/useQueryInterestOwnerTypes";
 import { INTERESTTYPESQUERY } from "../../../../../graphQL/useQueryInterestTypes";
+import { TENANTWELL } from "../../../../../graphQL/useQueryTenantWell";
 import { ADDWELLINTEREST } from "../../../../../graphQL/useMutationAddWellInterest";
 import { UPDATEWELLINTEREST } from "../../../../../graphQL/useMutationUpdateWellInterest";
 import { REMOVEWELLINTEREST } from "../../../../../graphQL/useMutationRemoveWellInterest";
@@ -106,6 +107,7 @@ function AddWellInterestDialog(props) {
   const classes = useStyles();
   
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
   const [foundWells, setFoundWells] = useState([]);
   const [selectedWell, setSelectedWell] = useState(null);
@@ -125,6 +127,10 @@ function AddWellInterestDialog(props) {
   });
   const [getInterestTypes, { data: dataInterestTypes }] = useLazyQuery(INTERESTTYPESQUERY, {
     fetchPolicy: "cache-and-network",
+  });
+  const [getTenantWell, { data: dataTenantWell }] = useLazyQuery(TENANTWELL, {
+    // must be network-only to trigger state change for field updates
+    fetchPolicy: "network-only",
   });
   const [addWellInterest] = useMutation(ADDWELLINTEREST, {
     onCompleted: () => {
@@ -206,7 +212,24 @@ function AddWellInterestDialog(props) {
   }, dataInterestTypes);
 
   useEffect(() => {
+    if(!dataTenantWell?.tenantWell) return;
+
+    const leaseToSet = dataTenantWell?.tenantWell?.lease || "";
+    const leaseAcresToSet = dataTenantWell?.tenantWell?.leaseAcres;
+
+    setSelectedWell({
+      ...selectedWell,
+      Lease: leaseToSet,
+      LeaseAcreage: leaseAcresToSet
+    });
+
+    setFormLeaseName(leaseToSet);
+    setFormLeaseAcres(leaseAcresToSet);
+  }, dataTenantWell);
+
+  useEffect(() => {
     if (stateApp.activeWellInterest) {
+      setInitializing(true)
       setSelectedWell({
         Id: stateApp.activeWellInterest.wellId,
         WellName: stateApp.activeWellInterest.wellName,
@@ -226,6 +249,11 @@ function AddWellInterestDialog(props) {
     }
   }, [stateApp.activeWellInterest]);
 
+  useEffect(() => {
+    // if launched from grid row set initializing based on selectedWell state
+    setInitializing(false)
+  }, [selectedWell]);
+
   const handleClose = () => {
     setFoundWells([]);
     setSelectedWell(null);
@@ -242,6 +270,13 @@ function AddWellInterestDialog(props) {
       wellInterestDialog: false,
       activeWellInterest: null,
     }));
+    setInitializing(false)
+  }
+
+  const handleRecalcNRA = (leaseAcres, interest) => {
+    if(initializing || leaseAcres == null || interest == null) return;
+
+    setFormRoyaltyAcres(leaseAcres * interest);
   }
 
   const handleSave = () => {
@@ -399,8 +434,11 @@ function AddWellInterestDialog(props) {
                 options={foundWells || []}
                 onChange={(e, well) => {
                   setSelectedWell(well);
-                  setFormLeaseName(well?.Lease || "");
-                  setFormLeaseAcres(well?.LeaseAcreage);
+                  getTenantWell({
+                    variables: {
+                      globalWellId: well.Id,
+                    },
+                  })
                 }}
                 value={selectedWell}
                 getOptionLabel={(option, value) => option.Primary}
@@ -477,7 +515,7 @@ function AddWellInterestDialog(props) {
                               };
                             })
                           ];
-              
+
                           setFoundWells(newOptions)
                         }
                       });
@@ -539,7 +577,11 @@ function AddWellInterestDialog(props) {
               margin="dense"
               // error={isNaN(formLeaseAcres)}
               value={formLeaseAcres === 0 || formLeaseAcres ? formLeaseAcres : ''}
-              onChange={event => setFormLeaseAcres(parseFloat(event.target.value)) }
+              onChange={(event) => {
+                const leaseAcresToSet = parseFloat(event.target.value);
+                setFormLeaseAcres(leaseAcresToSet);
+                handleRecalcNRA(leaseAcresToSet, formInterestAmount);
+              }}
               label={"Lease Acres"}
               // InputLabelProps={{ shrink: true }}
               fullWidth
@@ -621,8 +663,9 @@ function AddWellInterestDialog(props) {
                     // error={isNaN(formInterestAmount)}
                     value={formInterestAmount === 0 || formInterestAmount ? formInterestAmount : ''}
                     onChange={(event) => {
-                      console.log(parseFloat(event.target.value))
-                      setFormInterestAmount(parseFloat(event.target.value))
+                      const interestAmountToSet = parseFloat(event.target.value);
+                      setFormInterestAmount(interestAmountToSet);
+                      handleRecalcNRA(formLeaseAcres, interestAmountToSet);
                      }}
                     //label={formInterestAmount ? "" : "Interest Amount"}
                     label = "Interest Amount"

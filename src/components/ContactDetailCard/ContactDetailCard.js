@@ -19,7 +19,6 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import Documents from "../Shared/Documents";
-//import LeadScore from "../Shared/LeadScore";
 import ParcelsCard from "./components/ParcelsCard";
 import LeadStage from "../Shared/LeadStage";
 import { AppContext } from "../../AppContext";
@@ -37,7 +36,6 @@ import { toggleRightColumn } from "../../actions";
 import MessageRoundedIcon from "@material-ui/icons/MessageRounded";
 import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
 import Card from "@material-ui/core/Card";
-// import Parcels from "./components/Parcels";
 import DealsNew from "./components/DealsNew";
 import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
@@ -426,7 +424,6 @@ export default function ContactDetailCard(props) {
               <a href={"mailto:" + contactData.primaryEmail}>
                 <Button
                   variant="contained"
-                //  size="small"
                 >
                   Email
                 </Button>
@@ -435,10 +432,8 @@ export default function ContactDetailCard(props) {
 
             <Button
               variant="contained"
-              // size="small"
               onClick={() => {
                 handleExpandClick("deleteConfirmation");
-                //setOpenDialog(true);
               }}
             >
               Delete
@@ -447,8 +442,6 @@ export default function ContactDetailCard(props) {
           <div>
             <div className={classes.userIcon}>
               <StyleBadge
-              //badgeContent={5}
-              //color={"#f6c16b"}
               >
                 <Avatar
                   className={classes.grey}
@@ -460,7 +453,6 @@ export default function ContactDetailCard(props) {
             </div>
             <div className={classes.userName}>
               <h2 style={{ width: "max-content" }}>
-                {/* {contactData.name} */}
 
                 <FieldContent
                   noInputFooter
@@ -674,66 +666,6 @@ export default function ContactDetailCard(props) {
             />
           </div>
         </Grid>
-
-        {/*/////////// Recent Converstaion. //////////// */}
-        {/* <Grid item xs={12} className={`${classes.border}`}>
-          <div className={classes.SectMargin}>
-            <RecentConversations
-              header={"Recent Conversations"}
-              handleOpenExpandableCard={handleOpenExpandableCard}
-            />
-          </div>
-        </Grid> */}
-
-        {/*/////////// new section //////////// */}
-        <Grid item xs={12} className={`${classes.border}`}>
-          {/* <div className={classes.SectMargin}>
-            <Grid item xs={12}>
-              <h4 style={{ marginBottom: "8px" }}>
-                Add Wells and Parcels to this contact
-              </h4>
-            </Grid>
-            <Grid item xs={12}>
-              <Autocomplete
-                options={[]}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    size="small"
-                    placeholder="Search Wells, Parcels"
-                    variant="outlined"
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: (
-                        <InputAdornment>
-                          <SearchIcon htmlColor="#929292" />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              />
-            </Grid>
-          </div> */}
-        </Grid>
-
-        {/*/////////// table section //////////// */}
-        {/* {contactData && contactData.owners && contactData.owners.length > 0 && (
-            <Grid
-              item
-              xs={12}
-              className={`${classes.border} ${classes.ownersTable}`}
-            >
-              <div className={classes.SectMargin}>
-                <M1nTable
-                  parent="ownersPerContacts"
-                  ownersIdsArray={contactData.owners}
-                  contactId={stateApp.selectedContact}
-                />
-              </div>
-            </Grid>
-          )} */}
       </Grid>
 
       {/*/////////// rigth column //////////// */}
@@ -818,39 +750,12 @@ export default function ContactDetailCard(props) {
 
               <Grid item xs={12} className={classes.Comments}>
                 <Documents
-                  // contact={contactData}
-                  // transactData={transactData}
-                  // transactId={transactId}
-                  // selectRowOpenContact={props.selectRowOpenContact}
                   handleOpenExpandableCard={handleOpenExpandableCard}
                   id={contactData._id}
                   user_id={stateApp.user.email}
                 />
                 <Divider />
               </Grid>
-
-              {/* <Grid item xs={12} className={classes.Comments}>
-              <Card
-                raised
-                style={{
-                  minHeight: "35px",
-                  margin: "20px",
-                  paddingBottom: "20px",
-                }}
-              >
-                <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
-              </Card>
-              <Divider />
-            </Grid> */}
-
-              {/* <Grid item xs={12}>
-                <Activities
-                  id={contactData._id}
-                  user_id={stateApp.user.email}
-                  activityLog={contactData.activityLog}
-                />
-                <Divider />
-              </Grid> */}
             </Grid>
           )}
       </div>

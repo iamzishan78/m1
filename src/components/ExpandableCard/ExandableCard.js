@@ -388,7 +388,7 @@ function ExpandableCard(props) {
                   iconZiseSmall={!stateExpandableCard.expanded}
                 />
 
-                <CommentsWithIcon
+                {/* <CommentsWithIcon
                   objectId={targetSourceId.toLowerCase()}
                   targetLabel={props.targetLabel}
                   iconZiseSmall={!stateExpandableCard.expanded}
@@ -398,7 +398,7 @@ function ExpandableCard(props) {
                   objectId={targetSourceId.toLowerCase()}
                   targetLabel={props.targetLabel}
                   iconZiseSmall={!stateExpandableCard.expanded}
-                />
+                /> */}
               </>
               )      
               : null}
