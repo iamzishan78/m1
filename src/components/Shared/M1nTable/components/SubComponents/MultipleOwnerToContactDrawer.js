@@ -171,11 +171,11 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             </Box>
             }
 
-            <Box mt={2}>
+            {/* <Box mt={2}>
               <Typography>
                 Selected interest owners will be combined into a single contact.
             </Typography>
-            </Box>
+            </Box> */}
             {
               tab === TAB.EXISTING &&
               <Box mt={2}>
