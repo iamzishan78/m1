@@ -27,6 +27,14 @@ const useStyles = makeStyles({
       borderRadius: "0 !important",
     },
   },
+  linkStyle:{
+    fontSize: "15px",
+    cursor:'pointer',
+    "&:hover": {
+     textDecorationLine: "underline",
+    },
+   color: "rgba(23, 170, 221, 1)"
+  }
 });
 
 function createData(
@@ -146,11 +154,6 @@ const style_papaer = {
 const uploadText = {
   paddingBottom: "8px",
   color: "#a6a6a6",
-};
-const linkContent = {
-  fontSize: "15px",
-  textDecorationLine: "none",
-  color: "rgba(23, 170, 221, 1)",
 };
 const mainContent = {
   padding: "14px 0px 0px  0px",
@@ -279,7 +282,7 @@ export default function CSVFileReader(props) {
             data={csvColumns}
             filename='Sample_Contacts_Upload'
             type='link'
-            style={linkContent}
+            className={classes.linkStyle}
           >
             Click this link to download sample CSV template
           </CSVDownloader>
