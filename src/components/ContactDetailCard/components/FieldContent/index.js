@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import { useMutation } from "@apollo/client";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 import {
@@ -80,6 +82,10 @@ export default function FieldContent({
       setFieldsCount(count);
     }
   }, [content]);
+
+  useEffect(() => { 
+    editContent.status && handleUpdating()
+  }, [editContent.status]);
 
   useEffect(() => {
     if (fieldsCount <= 1) {
@@ -218,7 +224,45 @@ export default function FieldContent({
 
       else if (editContent.hasOwnProperty(fieldName)) {
         inputsArray.push(
-          <TextField
+          fieldName === 'status' ? 
+            <Select
+            labelId="status-label"
+            id="status-select"
+            className={classes.editSelectField}
+            value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+            onChange={(e) => {
+              e.persist();
+              setEditContent((editContent) => ({
+                ...editContent,
+                [fieldName]: e.target.value,
+              }));          
+            }}
+            onKeyDown={(event) => {
+              event.stopPropagation();
+              if (event.key === "Escape") {
+                if (fieldsCount <= 1) {
+                  setEdit(null);
+                  setEditContent((editContent) => ({
+                    ...editContent,
+                    [fieldName]: content[fieldName],
+                  }));
+                }
+              }
+            }}
+            onBlur={() => {
+              if (fieldsCount <= 1) {
+                setEdit(null);
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  [fieldName]: content[fieldName],
+                }));
+              }
+            }}
+            >
+              <MenuItem value='Active'> Active </MenuItem>
+              <MenuItem value='Inactive'> Inactive </MenuItem>
+            </Select>:
+            <TextField
             key={"fieldContentInput" + fieldName}
             id={"fieldContentInput" + fieldName}
             className={classes.editTextField}

@@ -5,6 +5,8 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import CloseIcon from "@material-ui/icons/Close";
+import IconButton from "@material-ui/core/IconButton";
 import Taps from "../../../Taps";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
@@ -15,6 +17,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { makeStyles } from "@material-ui/core/styles";
+import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { GETMONGOUSERS as GETUSERS } from "../../../../../graphQL/useQueryGetUsers";
 
 const phonenumber = (inputtxt) => {
@@ -53,10 +56,28 @@ const useStyles = makeStyles((theme) => ({
       left: "0",
       top: "55px",
     },
+    margin: '0 8px 25px 8px',
+    flex:'none'
   },
   dialogTitle: {
     paddingBottom: (dataContacts) => (dataContacts ? "55px" : "16px"),
   },
+  dialogFooter: {
+    display: "flex",
+    justifyContent: "flex-end",
+    paddingTop: "10px",
+    margin:'0 28px 15px 0',
+  },
+  footerButton: {
+    letterSpacing: "1px",
+    textTransform: "capitalize",
+    fontWeight: "bold",
+    padding: "8px 20px",
+    width:'120px'
+  },
+  closeIcon: {
+		color: theme.palette.secondary.main,
+	},
 }));
 
 export default function AddContactDialogContent(props) {
@@ -478,16 +499,34 @@ export default function AddContactDialogContent(props) {
   const modalClass = Modals();
 
   return !loadingContacts ? (
-    <React.Fragment>
-      <DialogTitle className={modalClass.title} id="customized-dialog-title">
-        Add a Contact
-        <HighlightOffIcon
-          fontSize="large"
-          className={modalClass.titleClose}
-          onClick={props.onClose}
-        />
-      </DialogTitle>
-      <DialogContent dividers className={classes.dialogContent}>
+    <>
+      <RightDialog
+        open={true}
+        handleClickDialogClose={handleClickDialogClose}
+        width="450px"
+      >
+        <Grid item xs={12} style={{ minHeight: "35px",padding: 22 }}>
+        <h4
+              style={{
+                margin: "0 0 15px 0",
+                float: "left",
+                fontSize: "1.4rem",
+              }}
+            >
+               Add New Contact
+          </h4>
+					<div style={{ float: "right" }}>
+							<IconButton
+									onClick={props.onClose}
+									size="small"
+								>
+									<CloseIcon className={classes.closeIcon} fontSize="small" />
+							</IconButton>
+					</div>
+          
+      </Grid>
+      <DialogContent className={classes.dialogContent}>
+        
         {contacts && contacts.length > 0 ? (
           <Taps
             tabLabels={["Add New", "Select Existing"]}
@@ -499,19 +538,32 @@ export default function AddContactDialogContent(props) {
             addNew()
           )}
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClickDialogClose} color="primary">
+      <div className={classes.dialogFooter}>
+        <Button 
+        onClick={handleClickDialogClose} 
+        color="default"
+        size="medium"
+        variant="contained"
+        className={classes.footerButton}
+        style={{
+          margin: "0px 15px 0px 0px",
+        }}
+        >
           Cancel
         </Button>
         <Button
           disabled={!validated}
           onClick={handleClickAdd}
+          variant="contained"
           color="secondary"
+          className={classes.footerButton}
+          size="medium"
         >
           Add
         </Button>
-      </DialogActions>
-    </React.Fragment>
+      </div>
+      </RightDialog>
+    </>
   ) : (
       <div style={{ padding: "15px" }}>
         <CircularProgress size={80} disableShrink color="secondary" />
