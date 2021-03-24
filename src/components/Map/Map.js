@@ -3400,6 +3400,7 @@ function Map() {
           }
           onAbstactLayerClick(null, "remove");
         }
+        hoveredAbstractId = null
       });
 
       map.on("mousemove", "abstract_geo_fill_layer", function (e) {
@@ -3428,7 +3429,7 @@ function Map() {
         hoveredAbstractId = null;
       });
     }
-  }, [map, stateApp.customLayers]);
+  }, [map]);
 
   useEffect(() => {
 
