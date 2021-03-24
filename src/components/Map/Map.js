@@ -3329,6 +3329,9 @@ function Map() {
   // };
 
   const onAbstactLayerClick = function (feature, action) {
+    console.log("featur--",feature)
+    console.log("action",action)
+
     if (!feature) {
       setStateApp((state) => ({
         ...state,
@@ -3372,6 +3375,7 @@ function Map() {
           .features;
 
         if (window.event.ctrlKey || window.event.metaKey) {
+
           if (featureState && featureState.click) {
             // Unselect feature
             map.setFeatureState(
@@ -3381,7 +3385,8 @@ function Map() {
             onAbstactLayerClick(currentFeature, "remove");
           } else {
             let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
-            if (!isExisting) {
+            
+            if (!isExisting && !stateApp.selectedAbstracts.includes(currentFeature) ) {
               map.setFeatureState(
                 { source: "abstract_geo_source", id: e.features[0].id },
                 { click: true }
@@ -3426,7 +3431,6 @@ function Map() {
             { hover: false }
           );
         }
-        hoveredAbstractId = null;
       });
     }
   }, [map]);
@@ -4238,6 +4242,7 @@ function Map() {
       expandedCard: false,
       activateWellDetailsFromTable: false,
     }));
+    getCustomLayers()
   };
 
   const handleCloseSpatialDataCard = (complete = true) => {
