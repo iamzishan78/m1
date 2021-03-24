@@ -207,26 +207,28 @@ const useStyles = makeStyles((theme) => ({
     "& tr": {
       paddingRight: (props) => (props.dense ? "12px" : null),
       "& td": {
-        "& div": {
-          padding: (props) =>
-            (props.parent === "ownersPerParcel" ||
-              props.parent === "ownersPerParcelWells") &&
-            "0 5px !important",
-          width: (props) =>
-            (props.parent === "ownersPerParcel" ||
-              props.parent === "ownersPerParcelWells") &&
-            "max-content !important",
-          maxWidth: (props) =>
-            (props.parent === "ownersPerParcel" ||
-              props.parent === "ownersPerParcelWells") &&
-            "300px !important",
-        },
+        // "& div": {
+        //   padding: (props) =>
+        //     (props.parent === "ownersPerParcel" ||
+        //       props.parent === "ownersPerParcelWells") &&
+        //     "0 5px !important",
+        //   width: (props) =>
+        //     (props.parent === "ownersPerParcel" ||
+        //       props.parent === "ownersPerParcelWells") &&
+        //     "max-content !important",
+        //   maxWidth: (props) =>
+        //     (props.parent === "ownersPerParcel" ||
+        //       props.parent === "ownersPerParcelWells") &&
+        //     "300px !important",
+        // },
       },
     },
     "& thead": {
       opacity: "1",
       transition: "opacity 1s ease-out",
       webkitTransition: "opacity 1s ease-out",
+      zIndex: 999,
+      position: 'sticky'
     },
     "& tbody": {
       opacity: "1",

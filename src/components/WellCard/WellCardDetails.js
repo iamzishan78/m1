@@ -147,6 +147,24 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "5px",
     paddingLeft: "25px",
   },
+  subContent: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": { 
+          height: "calc(100vh - 56vh ) !important", 
+       },
+     },
+    },
+  },
+  subContent2: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": { 
+          height: "calc(100vh - 56vh + 482px) !important", 
+       },
+     },
+    },
+  },
 }));
 
 const tableGridStyle = makeStyles({
@@ -390,21 +408,26 @@ export default function WellCardDetails(props) {
                   </Grid>
                   <Grid item xs={12}>
                     {
-                      production != null && <M1nTable
-                        dense
-                        parent="production_WellDetails"
-                        productionDetails={production}
-                      />
+                      production != null && 
+                      <div className={showSummary ? classes.subContent : classes.subContent2}>
+                        <M1nTable
+                          dense
+                          parent="production_WellDetails"
+                          productionDetails={production}
+                        />
+                      </div>
                     }
                   </Grid>
                 </Grid>
               </Paper>
               ,
-              <Paper elevation={3} style={{ padding: "10px" }}>
+              <Paper elevation={3} style={{ padding: "10px"}}>
+                <div className={showSummary ? classes.subContent : classes.subContent2}>
                 <M1nTable
                   parent="OwnersPerWell"
                   selectedWell={stateApp.selectedWell}
                 />
+                </div>
               </Paper>,
             //   <Paper elevation={3} style={{ padding: "10px" }}>
             //     <M1nTable
@@ -412,9 +435,9 @@ export default function WellCardDetails(props) {
             //       selectedWell={stateApp.selectedWell}
             //     />
             // </Paper>,
-              <CompletionsContainer />,
-              <SimulationContainer />,
-              <FormationContainer />,
+              <CompletionsContainer showSummary={showSummary}/>,
+              <SimulationContainer showSummary={showSummary}/>,
+              <FormationContainer showSummary={showSummary}/>,
             ]}
           />
         </Grid>

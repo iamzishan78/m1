@@ -133,6 +133,15 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: "bold",
     },
   },
+  subContent: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": { 
+          height: "calc(100vh - 53vh ) !important", 
+       },
+     },
+    },
+  },
 }));
 
 export default function ParcelsDetailCard(props) {
@@ -337,7 +346,9 @@ export default function ParcelsDetailCard(props) {
         <Taps
           tabLabels={["Interest Owners"]}
           tabPanels={[
-            <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense />,
+            <div className={classes.subContent}>
+            <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense />
+            </div>,
             // <M1nTable parent="ownersPerParcelWells" dense />
           ]}
         />

@@ -415,7 +415,7 @@ function Map() {
   }, [dataOwners]);
 
   useEffect(() => {
-    if (customLayerData && customLayerData.allCustomLayers) {
+    if (customLayerData && customLayerData.allCustomLayers && customLayerData.allCustomLayers != stateApp.customLayers) {
       setStateApp((state) => ({
         ...state,
         customLayers: customLayerData.allCustomLayers,
@@ -4340,14 +4340,11 @@ function Map() {
         variables: {
           customLayerId: customLayerId,
           customLayer: customLayerData,
-        }
+        },
+        refetchQueries: ["getCustomLayers"],
+        awaitRefetchQueries: true,
       });
 
-      getCustomLayers({
-        variables: {
-          userId: stateApp.user.mongoId,
-        },
-      });
     }
   };
 
