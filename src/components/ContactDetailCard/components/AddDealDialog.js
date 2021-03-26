@@ -53,6 +53,7 @@ import {
 	VIEWFILESQUERY,
 } from "../../../graphQL/useQueryViewFile";
 import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
+import Contacts from "components/FlowDrawer/Contacts";
 
 function NumberFormatCustom(props) {
 	const { inputRef, onChange, ...other } = props;
@@ -857,6 +858,11 @@ function AddDealDialog(props) {
 					isTransactPage={true}
 				/>
 			);
+		}
+		if(stateApp.transactBarView === "Contacts") {
+			return (
+				<Contacts />
+			)
 		}
 	};
 	const [fileRequestCounter, setFileRequestCounter] = useState(1);
