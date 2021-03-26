@@ -3386,7 +3386,7 @@ function Map() {
           } else {
             let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
             
-            if (!isExisting && !stateApp.selectedAbstracts.includes(currentFeature) ) {
+            if (!isExisting ) {
               map.setFeatureState(
                 { source: "abstract_geo_source", id: e.features[0].id },
                 { click: true }
@@ -3405,7 +3405,6 @@ function Map() {
           }
           onAbstactLayerClick(null, "remove");
         }
-        hoveredAbstractId = null
       });
 
       map.on("mousemove", "abstract_geo_fill_layer", function (e) {
@@ -3433,7 +3432,7 @@ function Map() {
         }
       });
     }
-  }, [map]);
+  }, [map,stateApp.customLayers,customLayerData]);
 
   useEffect(() => {
 
@@ -4245,6 +4244,19 @@ function Map() {
     getCustomLayers()
   };
 
+  const deleteParcel = () => {
+    updateCustomLayer({
+      variables: {
+        customLayerId: stateApp.selectedParcel.id,
+        customLayer: {
+          IsDeleted: true,
+        },
+      },
+      refetchQueries: ["getCustomLayers"],
+      awaitRefetchQueries: true,
+    });
+   }
+
   const handleCloseSpatialDataCard = (complete = true) => {
     setStateApp((state) => ({
       ...state,
@@ -4444,6 +4456,7 @@ function Map() {
     }
   };
 
+
   useEffect(() => {
     // use effect to add usersnap to the application 
 
@@ -4630,8 +4643,6 @@ function Map() {
     }
   }, [stateApp.selectedParcel])
 
- 
-
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
@@ -4701,6 +4712,7 @@ function Map() {
                   cardHeightExpanded="90vh"
                   targetSourceId={stateApp.selectedParcel.id}
                   targetLabel="parcel"
+                  deleteParcel={deleteParcel}
                 ></ExpandableCardProvider>
               </div>
           )
@@ -4766,6 +4778,7 @@ function Map() {
                     cardHeightExpanded="90vh"
                     targetSourceId={stateApp.selectedParcel.id}
                     targetLabel="parcel"
+                    deleteParcel={deleteParcel}
                   ></ExpandableCardProvider>
                 )}
                 </PortalD>
