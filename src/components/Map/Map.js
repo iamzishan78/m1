@@ -415,7 +415,7 @@ function Map() {
   }, [dataOwners]);
 
   useEffect(() => {
-    if (customLayerData && customLayerData.allCustomLayers) {
+    if (customLayerData && customLayerData.allCustomLayers && customLayerData.allCustomLayers != stateApp.customLayers) {
       setStateApp((state) => ({
         ...state,
         customLayers: customLayerData.allCustomLayers,
@@ -3329,6 +3329,9 @@ function Map() {
   // };
 
   const onAbstactLayerClick = function (feature, action) {
+    console.log("featur--",feature)
+    console.log("action",action)
+
     if (!feature) {
       setStateApp((state) => ({
         ...state,
@@ -3372,6 +3375,7 @@ function Map() {
           .features;
 
         if (window.event.ctrlKey || window.event.metaKey) {
+
           if (featureState && featureState.click) {
             // Unselect feature
             map.setFeatureState(
@@ -3381,7 +3385,8 @@ function Map() {
             onAbstactLayerClick(currentFeature, "remove");
           } else {
             let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
-            if (!isExisting) {
+            
+            if (!isExisting ) {
               map.setFeatureState(
                 { source: "abstract_geo_source", id: e.features[0].id },
                 { click: true }
@@ -3425,10 +3430,9 @@ function Map() {
             { hover: false }
           );
         }
-        hoveredAbstractId = null;
       });
     }
-  }, [map, stateApp.customLayers]);
+  }, [map,stateApp.customLayers,customLayerData]);
 
   useEffect(() => {
 
@@ -4237,7 +4241,21 @@ function Map() {
       expandedCard: false,
       activateWellDetailsFromTable: false,
     }));
+    getCustomLayers()
   };
+
+  const deleteParcel = () => {
+    updateCustomLayer({
+      variables: {
+        customLayerId: stateApp.selectedParcel.id,
+        customLayer: {
+          IsDeleted: true,
+        },
+      },
+      refetchQueries: ["getCustomLayers"],
+      awaitRefetchQueries: true,
+    });
+   }
 
   const handleCloseSpatialDataCard = (complete = true) => {
     setStateApp((state) => ({
@@ -4340,14 +4358,11 @@ function Map() {
         variables: {
           customLayerId: customLayerId,
           customLayer: customLayerData,
-        }
+        },
+        refetchQueries: ["getCustomLayers"],
+        awaitRefetchQueries: true,
       });
 
-      getCustomLayers({
-        variables: {
-          userId: stateApp.user.mongoId,
-        },
-      });
     }
   };
 
@@ -4440,6 +4455,7 @@ function Map() {
       }
     }
   };
+
 
   useEffect(() => {
     // use effect to add usersnap to the application 
@@ -4627,8 +4643,6 @@ function Map() {
     }
   }, [stateApp.selectedParcel])
 
- 
-
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
@@ -4698,6 +4712,7 @@ function Map() {
                   cardHeightExpanded="90vh"
                   targetSourceId={stateApp.selectedParcel.id}
                   targetLabel="parcel"
+                  deleteParcel={deleteParcel}
                 ></ExpandableCardProvider>
               </div>
           )
@@ -4763,6 +4778,7 @@ function Map() {
                     cardHeightExpanded="90vh"
                     targetSourceId={stateApp.selectedParcel.id}
                     targetLabel="parcel"
+                    deleteParcel={deleteParcel}
                   ></ExpandableCardProvider>
                 )}
                 </PortalD>

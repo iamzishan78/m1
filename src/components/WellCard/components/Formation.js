@@ -31,6 +31,12 @@ const useStyles = makeStyles({
       border: "2px solid #e3e3e3",
     },
   },
+  tableSize:{
+    height:'calc(100vh - 50vh) !important'
+  },
+  tableSize2:{
+    height:'calc(100vh - 50vh + 482px) !important'
+  }
 });
 
 const headers = [
@@ -67,7 +73,7 @@ export default function Formation(props) {
   return (
     <TableContainer className={classes.tableContainer}>
       {formationData !== null ? (
-      <div>
+      <div className={props.showSummary? classes.tableSize:classes.tableSize2}>
         <Table
           aria-label="simple table"
           className={classes.table}
