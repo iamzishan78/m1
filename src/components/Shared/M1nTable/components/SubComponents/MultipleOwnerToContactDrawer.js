@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, Grid, Container, Box, CircularProgress, Tab, Tabs, IconButton } from "@material-ui/core";
+import { Button, Grid, Container, Box, CircularProgress, Tab, Tabs, IconButton, FormControl, RadioGroup, FormControlLabel, Radio } from "@material-ui/core";
 
 import CloseSharp from "@material-ui/icons/CloseSharp";
 import DoneSharpIcon from "@material-ui/icons/DoneSharp";
@@ -11,17 +11,36 @@ import Typography from "@material-ui/core/Typography";
 import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeList";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
-import { AppContext } from "../../../../../AppContext";
+import { AppContext } from "AppContext";
 import { setStateIfDeepEqual } from "../../../functions";
-import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginatedContacts";
-import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from "../../../../../graphQL/useMutationConvertMultitpleOwnerToContact";
+import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
+import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from "graphQL/useMutationConvertMultitpleOwnerToContact";
+import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 
 const styles = () => ({
   topHeading: { fontWeight: "bold" },
   loading: { position: "absolute", left: "250px", bottom: "148px", zIndex: "150" },
+  tabs: {
+    backgroundColor: 'rgb(20, 171, 223)'
+  },
+  radio: {
+    '& .MuiSvgIcon-root': {
+      fill: 'rgb(20, 171, 223) !important'
+    }
+  },
 });
 
 const useStyles = makeStyles(styles);
+
+const ACTION = Object.freeze({
+  SINGLE: 'single',
+  COMBINE: 'combine'
+});
+
+const TAB = Object.freeze({
+  NEW: 0,
+  EXISTING: 1
+});
 
 export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes }) {
   const [stateApp] = React.useContext(AppContext);
@@ -29,7 +48,9 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const dispatch = useDispatch();
 
   const [primaryOwner, setPrimaryOwner] = useState(rows[0]);
-  const [tab, setTab] = React.useState(0);
+  const [tab, setTab] = useState(TAB.NEW);
+  const [actionType, setActionType] = useState('single');
+  const [contactOwner, setContactOwner] = useState('');
   const [loading, setLoading] = useState(false);
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
@@ -82,27 +103,36 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const onConvert = () => {
     let ownerIds = rows.filter((row) => row.id !== primaryOwner.id);
     ownerIds.unshift(primaryOwner)
-    ownerIds = ownerIds.reduce((ids, row) => { ids.push(row.id); return ids; }, []);
+    ownerIds = ownerIds.reduce((ids, row) => { ids.push(row.globalOwnerId || row.id); return ids; }, []);
 
     let existingContactId = null;
-    if (tab === 1) {
+    let action = actionType
+    if (tab === TAB.EXISTING) {
       existingContactId = nameAutValue._id
+      action = ACTION.COMBINE
     }
-
     setLoading(true);
     convertMultitpleOwnerToContact({
-      variables: { ownerIds, existingContactId, userId: stateApp.user.mongoId },
+      variables: { ownerIds, existingContactId, contactOwner, action, userId: stateApp.user.mongoId },
       refetchQueries: ["checkIfOwnersAreContacts"],
       awaitRefetchQueries: true
     }).then(
       res => {
-        console.log(res)
-        dispatch(showSuccessMessage("Contacts Merged Successfully"));
-        setM1nSelectedRowsIndexes([])
-        onClose();
-        setLoading(false);
+        if (res.data && res.data.convertMultitpleOwnerToContact) {
+          const { success, message } = res.data.convertMultitpleOwnerToContact
+          if (success) {
+            dispatch(showSuccessMessage(message));
+            setM1nSelectedRowsIndexes([])
+            onClose();
+            setLoading(false);
+          } else {
+            dispatch(showErrorMessage(message))
+          }
+        } else {
+          dispatch(showErrorMessage("Failed to convert to contact"));
+        }
       },
-      err => { console.log(err); setLoading(false); dispatch(showErrorMessage("Failed to merge")); }
+      err => { console.log(err); setLoading(false); dispatch(showErrorMessage("Failed to convert to contact")); }
     );
   };
 
@@ -125,19 +155,29 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             </Grid>
 
             <Box mt={2}>
-              <Tabs value={tab} indicatorColor="primary" textColor="primary" onChange={handleTabChange} >
+              <Tabs value={tab} inkBarStyle={classes.tabs} textColor="primary" onChange={handleTabChange} >
                 <Tab label="Create New" />
                 <Tab label="Add to Existing Contact" />
               </Tabs>
             </Box>
 
-            <Box mt={2}>
+            {tab === TAB.NEW && <Box mt={2}>
+              <FormControl component="fieldset" >
+                <RadioGroup aria-label="actionType" name="actionType" value={actionType} onChange={(e) => setActionType(e.target.value)}>
+                  <FormControlLabel value={ACTION.SINGLE} control={<Radio className={actionType === ACTION.SINGLE ? classes.radio : ''} />} label="Convert selected interest owners to new contacts" />
+                  <FormControlLabel value={ACTION.COMBINE} control={<Radio className={actionType === ACTION.COMBINE ? classes.radio : ''} />} disabled={rows.length === 1} label="Combine selected interest owners into single contact" />
+                </RadioGroup>
+              </FormControl>
+            </Box>
+            }
+
+            {/* <Box mt={2}>
               <Typography>
                 Selected interest owners will be combined into a single contact.
             </Typography>
-            </Box>
+            </Box> */}
             {
-              tab === 1 &&
+              tab === TAB.EXISTING &&
               <Box mt={2}>
                 <AutocompEntityNamesVirtualizeList
                   mongoEntitiesArray={mongoEntitiesArray}
@@ -161,39 +201,60 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             </Box>
           </Box>
 
-          {rows.map((row) => (
-            <Grid container direction="row" spacing={2} alignItems="center" key={row.id}>
+          <Box ml={3}>
+            {rows.map((row) => (
 
-              {
-                tab === 0 && <Grid item md={1}>
-                  {primaryOwner.id === row.id ? (
-                    <IconButton>
-                      <DoneSharpIcon fontSize="small" style={{ background: "#00af48", color: "white", borderRadius: 3 }} />
-                    </IconButton>
-                  ) : (
-                      <IconButton onClick={() => setPrimaryOwner(row)}>
-                        <RemoveSharpIcon fontSize="small" style={{ background: "#f70000", color: "white", borderRadius: 3 }} />
+              <Grid container direction="row" spacing={2} alignItems="center" key={row.id}>
+                {
+                  tab === TAB.NEW && actionType === ACTION.COMBINE && <Grid item md={1}>
+                    {primaryOwner.id === row.id ? (
+                      <IconButton>
+                        <DoneSharpIcon fontSize="small" style={{ background: "#00af48", color: "white", borderRadius: 3 }} />
                       </IconButton>
-                    )}
-                </Grid>
-              }
-
-              <Grid item md={tab === 0 ? 10 : 11}>
-                <Typography style={{ backgroundColor: "#edfbff" }}>
-                  <Grid container justify='center' alignItems='center'>
-                    <Grid item md={4}>{row.name}</Grid>
-                    <Grid item md={8}>{row.StreetAddress} {row.City}, {row.State} {row.Zip}</Grid>
+                    ) : (
+                        <IconButton onClick={() => setPrimaryOwner(row)}>
+                          <RemoveSharpIcon fontSize="small" style={{ background: "#f70000", color: "white", borderRadius: 3 }} />
+                        </IconButton>
+                      )}
                   </Grid>
-                </Typography>
+                }
+
+                <Grid item md={tab === TAB.NEW && ACTION.COMBINE ? 10 : 11}>
+                  <Typography style={{ backgroundColor: "#edfbff" }}>
+                    <Grid container justify='center' alignItems='center'>
+                      <Grid item md={4}>{row.name || row.OwnerName}</Grid>
+                      <Grid item md={8}>{row.StreetAddress} {row.City}, {row.State} {row.Zip}</Grid>
+                    </Grid>
+                  </Typography>
+                </Grid>
+
+                <Grid item md={1}>
+                  <IconButton aria-label="delete" onClick={() => onDelete(row)}>
+                    <CloseSharp />
+                  </IconButton>
+                </Grid>
               </Grid>
 
-              <Grid item md={1}>
-                <IconButton aria-label="delete" onClick={() => onDelete(row)}>
-                  <CloseSharp />
-                </IconButton>
+            ))}
+          </Box>
+
+          {tab === TAB.NEW &&
+            <Box p={3} pt={3}>
+              <Grid container direction="column"  >
+                <Grid item>
+                  <Typography style={{ fontWeight: "bold" }}>Contact Owner</Typography>
+                </Grid>
+                <Grid item >
+                  <ContactAutoComplete
+                    value={contactOwner}
+                    onChange={(e, user) => {
+                      setContactOwner(user.value);
+                    }}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
-          ))}
+            </Box>
+          }
 
           <Box pt={6} mt={6}>
             <Grid container direction="row" justify="flex-end" alignItems="flex-end">
@@ -204,7 +265,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                 <Button
                   variant="contained"
                   component="span"
-                  disabled={rows.length < 2}
+                  disabled={rows.length === 0}
                   style={{ backgroundColor: "#00abed", color: "white" }}
                   onClick={onConvert}
                 >

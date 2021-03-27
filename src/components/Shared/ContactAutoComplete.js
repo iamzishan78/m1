@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import { useLazyQuery } from '@apollo/client';
-import { GETMONGOUSERS as GETUSERS } from '../../graphQL/useQueryGetUsers';
+import { GETMONGOUSERS as GETUSERS } from 'graphQL/useQueryGetUsers';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from "@material-ui/core/TextField";
-
-
 
 const useStyles = makeStyles(theme => ({
     iconContainer: {
@@ -18,7 +16,6 @@ const useStyles = makeStyles(theme => ({
         colorPrimary: 'white'
     }
 }))
-
 
 export default function ContactAutoComplete({ value, onChange, onKeyDown, onBlur }) {
     let classes = useStyles();
@@ -46,14 +43,14 @@ export default function ContactAutoComplete({ value, onChange, onKeyDown, onBlur
     return (
         <Autocomplete
             options={users}
-            onChange={onChange}
-            onKeyDown={onKeyDown}
-            onBlur={onBlur}
+            onChange={onChange ? onChange : () => { }}
+            onKeyDown={onKeyDown ? onKeyDown : () => { }}
+            onBlur={onBlur ? onBlur : () => { }}
             value={users.find((user) => user?.value === value) || null}
             getOptionLabel={(option) => option.text}
             getOptionSelected={(option) => option.value === value}
             renderInput={(params) => (
-                <TextField size="small" {...params} className={classes.maxWidth} multiline value={value} />
+                <TextField size="small" placeholder='Select Contact Owner' {...params} className={classes.maxWidth} multiline value={value} />
             )}
         />
     );

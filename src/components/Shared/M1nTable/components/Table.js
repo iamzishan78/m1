@@ -1344,7 +1344,12 @@ function SubTable(props) {
                           }`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (m1nSelectedRowsIndexes?.length > 1) {
+                          // Open same model for single contact as we have in multi contact
+
+                          if ((!value || value === "false") && (m1nSelectedRowsIndexes?.length === 0)) {
+                            m1nSelectedRowsIndexes.push(tableMeta.rowIndex)
+                          }
+                          if (m1nSelectedRowsIndexes?.length > 0) {
                             const selectedRows = m1nSelectedRowsIndexes.map((index) => rows[index]);
                             return handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, selectedRows, "multipleOwnerToContact");
                           }
@@ -1370,6 +1375,7 @@ function SubTable(props) {
                             setSubTitle(" ");
                             handleOpenExpandableCard();
                           } else {
+                            // Code is not used as we are opening different model from above
                             if (props.targetLabel == "owner") {
                               handleExpandClick(
                                 tableMeta.columnIndex,
@@ -1404,6 +1410,7 @@ function SubTable(props) {
                                 tableMeta.rowData[0],
                                 "makeOwnerAContact"
                               );
+                            // Code is not used as we are opening different model from above
                           }
                         }}
                         aria-label="show contact"
@@ -1748,8 +1755,8 @@ function SubTable(props) {
 
                   return (
                     <div
-                      style={{ display: "flex",alignItems: "center", justifyContent: "left" }}
-                      className={ props.parent === "assocTaxRollInterests" && !tableMeta.rowData[14] ? [classes.blue] : [] }
+                      style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
+                      className={props.parent === "assocTaxRollInterests" && !tableMeta.rowData[14] ? [classes.blue] : []}
                     >
 
                       {props.targetLabel === "contact" &&
@@ -2207,15 +2214,14 @@ function SubTable(props) {
             //////Add Icon/////////////////////////
             <span className={classes.addIcon}>
               <Tooltip
-                title={`Add${
-                  props.parent === "assocTaxRollInterests"
-                    ? " Well Interest"
-                    : props.targetLabel
+                title={`Add${props.parent === "assocTaxRollInterests"
+                  ? " Well Interest"
+                  : props.targetLabel
                     ? " " +
-                      props.targetLabel.charAt(0).toUpperCase() +
-                      props.targetLabel.slice(1)
+                    props.targetLabel.charAt(0).toUpperCase() +
+                    props.targetLabel.slice(1)
                     : ""
-                }`}
+                  }`}
               >
                 <IconButton
                   size="medium"
