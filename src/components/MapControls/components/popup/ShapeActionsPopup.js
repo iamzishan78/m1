@@ -8,10 +8,7 @@ import GridOnIcon from "@material-ui/icons/GridOn";
 import GpxFixedIcon from "@material-ui/icons/GpsFixed";
 import FilterAltIcon from "../../../Shared/svgIcons/FilterAltIcon";
 import Typography from "@material-ui/core/Typography";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { area, convertArea, length } from "@turf/turf";
-import polylabel from "polylabel";
-import hat from 'hat';
 import { AppContext } from "../../../../AppContext";
 import { NavigationContext } from "../../../Navigation/NavigationContext";
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
@@ -106,8 +103,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default (props) => {
+const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
+  
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -433,3 +431,5 @@ export default (props) => {
     </Fragment>
   );
 }
+
+export default ShapeActionsPopup;
