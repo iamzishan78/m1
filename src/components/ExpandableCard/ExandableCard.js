@@ -299,18 +299,8 @@ function ExpandableCard(props) {
     }
   };
 
-  const deleteParcel = () => {
-    updateCustomLayer({
-      variables: {
-        customLayerId: targetSourceId,
-        customLayer: {
-          IsDeleted: true,
-        },
-      },
-      refetchQueries: ["getCustomLayers"],
-      awaitRefetchQueries: true,
-    });
-
+  const deleteParcel = async () => {
+    await props.deleteParcel(targetSourceId)
     handleClose();
   };
 

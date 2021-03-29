@@ -33,6 +33,7 @@ function ExpandableCardProvider(props) {
         Api={props.Api}
         noTrackAvailable={props.noTrackAvailable}
         handleDelete={props.handleDelete}
+        deleteParcel={props.deleteParcel}
       />
     </ExpandableCardContextProvider>
   );
