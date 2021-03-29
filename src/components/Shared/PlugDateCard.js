@@ -1,5 +1,5 @@
-import React, { useContext,useState } from 'react';
-import { makeStyles,useTheme } from "@material-ui/core/styles";
+import React, { useContext, useState } from 'react';
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography'
 import { AppContext } from '../../AppContext'
 import PlugIcon from './components/svgIcons/PlugIcon'
@@ -7,45 +7,45 @@ import moment from 'moment'
 
 
 const useStyles = makeStyles(theme => ({
-    iconContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
+  iconContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
 
-    },
-    tex1: {
-      colorPrimary: 'white'
-    }
-  }))
+  },
+  tex1: {
+    colorPrimary: 'white'
+  }
+}))
 
 
 const formatDateString = dateString => {
-    if (!dateString) return '--'
-    return new Date(dateString).toLocaleDateString()
-  }
+  if (!dateString) return '--'
+  return new Date(dateString).toLocaleDateString()
+}
 
 
 const convertDate = unixStamp => {
   const date = moment.utc(unixStamp).format("MM/DD/YYYY");
 
-  if (unixStamp === 'null') {return '--'}
-  else if(unixStamp === null) {return '--'}
-  else if(unixStamp === undefined) {return '--'}
-  else {return date}
+  if (unixStamp === 'null') { return '--' }
+  else if (unixStamp === null) { return '--' }
+  else if (unixStamp === undefined) { return '--' }
+  else { return date }
 }
 
 
 
-  
+
 export default function PlugDateCard() {
-    let classes = useStyles();
-    const [stateApp, setStateApp] = useContext(AppContext)
+  let classes = useStyles();
+  const [stateApp, setStateApp] = useContext(AppContext)
 
-    return (
-      <div className={classes.iconContainer}>
+  return (
+    <div className={classes.iconContainer}>
 
-      <PlugIcon htmlColor='black' 
-        viewBox="0 0 61 62" 
+      <PlugIcon htmlColor='black'
+        viewBox="0 0 24 24"
         fontSize="large" />
 
       <Typography
@@ -60,11 +60,11 @@ export default function PlugDateCard() {
         //className={classes.text2}
         variant="caption"
       >
-      {convertDate(stateApp.selectedWell.plugDate)}
+        {convertDate(stateApp.selectedWell.plugDate)}
 
       </Typography>
-      </div>
+    </div>
 
 
-    );
-  };
+  );
+};

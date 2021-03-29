@@ -13,32 +13,10 @@ import { Typography } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
 import debounce from "lodash/debounce";
 
-const filter = createFilterOptions();
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
-const joinAddress = (row) => {
-  let rowData = {
-    address1: row.address1,
-    address2: row.address2,
-    city: row.city,
-    state: row.state,
-    zip: row.zip,
-    country: row.country,
-  };
-  let textArray = [];
-  for (const key in rowData) {
-    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
-      if (key === "zip" || key === "country") {
-        textArray = [
-          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
-        ];
-      } else textArray.push(capitalizeFirstLetter(rowData[key]));
-    }
-  }
+// import value formatters 
+import joinAddress from "../../../../Shared/valueformatters/join-address.js";
 
-  return textArray.join(", ");
-};
+const filter = createFilterOptions();
 
 const LISTBOX_PADDING = 8; // px
 
@@ -96,8 +74,6 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
     }
 
     if (!data[index]) {
-      // eslint-disable-next-line
-      console.log("isLoaded but no data", { data, index });
       return null;
     }
 
@@ -196,7 +172,6 @@ export default function AutocompEntityNamesVirtualizeList(props) {
     if (isNextPageLoading || !hasNextPage) {
       return () => {};
     } else {
-      console.log(mongoEntitiesArray[startIndex - 1]);
       return loadNextPage({
         variables: {
           pagination: {
@@ -221,7 +196,6 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   const onInputChange = React.useMemo(
     () =>
       debounce((event, value, reason) => {
-        console.log("here");
         setNameAutInputValue(value);
       }, 500),
     []

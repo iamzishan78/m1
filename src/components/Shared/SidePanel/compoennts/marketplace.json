@@ -1,0 +1,25 @@
+[
+  {
+    "name":"Martin, TX - 308 NRA - Permian",
+    "type":"Listing",
+    "properties":[{  "name":"Asking Price","value":"$127K"},{"name":"Avg Revenue","value":"$22K"},{"name":"Wells","value":"26"},{"name":"Permits","value":"3"}]
+  
+    
+    
+    
+  },
+  {
+    "name":"Martin, TX - 308 NRA - Permian",
+    "type":"Auction",
+    "properties":[{  "name":"Asking Price","value":"$127K"},{"name":"Avg Revenue","value":"$22K"},{"name":"Wells","value":"26"},{"name":"Permits","value":"3"}]
+
+    
+  },
+  {
+    "name":"Martin, TX - 308 NRA - Permian",
+    "type":"Sponsor",
+    "properties":[{  "name":"Asking Price","value":"$127K"},{"name":"Avg Revenue","value":"$22K"},{"name":"Wells","value":"26"},{"name":"Permits","value":"3"}]
+
+   
+  }
+]

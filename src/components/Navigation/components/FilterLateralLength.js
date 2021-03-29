@@ -75,17 +75,14 @@ export default function FilterLateralLength() {
     }
     if (!min && max) {
       filter = ["all", ["<=", ["get", "lateralLength"], max]];
-      console.log("add filter", filter);
     } else if (min && !max) {
       filter = ["all", [">=", ["get", "lateralLength"], min]];
-      console.log("add filter", filter);
     } else if (min && max) {
       filter = [
         "all",
         [">=", ["get", "lateralLength"], min],
         ["<=", ["get", "lateralLength"], max],
       ];
-      console.log("add filter", filter);
     } else {
       filter = null;
     }

@@ -52,8 +52,6 @@ export default function CheckboxListHeatmaps(props) {
   //const theme = useTheme()
   const classes = useStyles();
   const handleToggle = (idx) => () => {
-    console.log(idx);
-    console.log("toggle stateApp.checkedHeats before", stateApp.checkedHeats);
     const currentIndex = stateApp.checkedHeats.indexOf(idx);
     const newChecked = [...stateApp.checkedHeats];
 
@@ -62,11 +60,7 @@ export default function CheckboxListHeatmaps(props) {
     } else {
       newChecked.splice(currentIndex, 1);
     }
-    console.log("newchecked", newChecked);
-
     setStateApp((stateApp) => ({ ...stateApp, checkedHeats: newChecked }));
-
-    console.log("toggle stateApp.checkedHeats after", stateApp.checkedHeats);
   };
 
   const onDragEnd = (result) => {

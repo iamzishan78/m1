@@ -60,7 +60,6 @@ export default function AddOwnerToContactDialogContent(props) {
             callback(response);
           })
           .catch((error) => {
-            console.log(error);
           });
       }, 500),
     []

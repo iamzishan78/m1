@@ -69,7 +69,6 @@ export default function TrackToggleButton(props) {
   }, [loading, props.multipleIds]);
 
   useEffect(() => {
-    // console.log("Target: ", props.target);
     if (props.target) {
       if (props.target.isTracked) {
         setSelected(true);

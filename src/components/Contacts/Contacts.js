@@ -4,13 +4,13 @@ import M1nTable from "../Shared/M1nTable/M1nTable";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    // padding: "10px",
-    // background:'#efefef',
-    // height: '100%'
     "& div": {
       "&>.MuiPaper-root": {
-        "&>:nth-child(3)": { minHeight: "calc(100vh - 185px) !important" },
-      },
+        "&>:nth-child(3)": { 
+          height: "calc(100vh - 183px) !important", 
+          overflowY: 'scroll'
+       },
+     },
     },
   },
 }));

@@ -256,40 +256,6 @@ const LoginB2C = (props) => {
   async function finishAADAuth(accountObj) {
     const request = {};
     request.account = accountObj;
-
-    // // !!!cannot directly access MS services using delegated permissions!!!
-    // request.scopes = readProfileRequestB2C.scopes;
-    // request.loginHint = request.account.name;
-    // const readProfileLoginResponse = await ssoSilent(request).catch((error) => {
-    //   //do some error stuff
-    //   console.log(error);
-    // });
-    // if (!readProfileLoginResponse) {
-    //   //do some error stuff
-    //   return;
-    // }
-
-    // const readProfileToken = await getTokenPopup(request).catch((error) => {
-    //   //do some error stuff
-    //   console.log(error);
-    // });
-    // if (!readProfileToken) {
-    //   //do some error stuff
-    //   return;
-    // }
-
-    // const readProfileResponse = await callMSGraph(
-    //   "https://graph.microsoft.com/v1.0/me",
-    //   readProfileToken.accessToken
-    // ).catch((error) => {
-    //   //do some error stuff
-    //   console.log(error);
-    // });
-    // if (!readProfileResponse) {
-    //   //do some error stuff
-    //   return;
-    // }
-
     request.scopes = authGraphQLRequestB2C.scopes;
     request.loginHint = request.account.displayName;
     const authGraphQLLoginResponse = await ssoSilent(request).catch((error) => {
@@ -300,18 +266,6 @@ const LoginB2C = (props) => {
       //do some error stuff
       return;
     }
-
-    // authGraphQLRequestB2C.account = request.account;
-    // const authGraphQLToken = await getTokenPopup(authGraphQLRequestB2C).catch(
-    //   (error) => {
-    //     //do some error stuff
-    //     console.log(error);
-    //   }
-    // );
-    // if (!authGraphQLToken) {
-    //   //do some error stuff
-    //   return;
-    // }
 
     const authGraphQLResponse = await callAuthGraphQL(
       `${new URL(stateApp.apolloClientEndpoint).origin}/.auth/login/aad`,
@@ -336,24 +290,6 @@ const LoginB2C = (props) => {
       //do some error stuff
       return;
     }
-
-    // const graphQLRefreshResponse = await callProfileGraphQL("https://m1graphql.azurewebsites.net/.auth/refresh", authGraphQLResponse.authenticationToken).catch(error => {
-    //   //do some error stuff
-    //   console.log(error);
-    // });
-    // if (!graphQLRefreshResponse) {
-    //   //do some error stuff
-    //   return;
-    // }
-
-    // const graphQLProfileResponse2 = await callProfileGraphQL("https://m1graphql.azurewebsites.net/.auth/me", authGraphQLResponse.authenticationToken).catch(error => {
-    //   //do some error stuff
-    //   console.log(error);
-    // });
-    // if (!graphQLProfileResponse2) {
-    //   //do some error stuff
-    //   return;
-    // }
 
     const mongoUser = await getMongoDBUser(
       {

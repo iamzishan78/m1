@@ -222,7 +222,6 @@ export default function AddLayer(props) {
   async function handleFileAsync(file) {
     let inputFile = null;
     let fileName = null;
-    console.log("111111111111111111111111111111111111111", file);
     if (Array.isArray(file)) {
       inputFile = file[0].data;
       fileName = file[0].file.name;
@@ -233,16 +232,12 @@ export default function AddLayer(props) {
     }
     let res;
     if (fileName.endsWith(".geojson")) {
-      console.log("GEOJSON Feature Service Path");
       res = await new Promise((resolve, reject) => {
         fetch(inputFile)
           .then((response) => {
-            console.log("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr", response);
             return response.json();
           })
-          .then((response) => {
-            console.log("22222222222222222222222222222222222", response);
-            
+          .then((response) => {            
             resolve(response);
           })
           .catch((error) => reject(error));
@@ -252,17 +247,12 @@ export default function AddLayer(props) {
         fetch(inputFile).then((response) => {
           response.arrayBuffer().then((buffer) => {
             shp(buffer).then((geojson) => {
-              console.log(geojson);
               resolve(geojson);
             });
           });
         });
       });
     }
-
-    // if (Array.isArray(res))
-    //   res = geojsonMerge.mergeFeatureCollectionStream(res);
-
     return res;
   }
 
@@ -271,9 +261,7 @@ export default function AddLayer(props) {
       ...stateApp,
       universalCircularLoaderAct: true,
     }));
-    console.log("ADDED FILES:", fileObj);
     let fileContent = await handleFileAsync(fileObj);
-    console.log("FILE CONTENT: ", fileContent);
 
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -304,9 +292,8 @@ export default function AddLayer(props) {
 
           <DropzoneAreaBase
             onAdd={handleFileInput}
-            onDelete={(fileObj) => console.log("Removed File:", fileObj)}
+            onDelete={(fileObj) => ("Removed File:", fileObj)}
             onAlert={(message, variant) => {
-              console.log(`${variant}: ${message}`);
             }}
             filesLimit={1}
             dropzoneText={
@@ -329,7 +316,9 @@ export default function AddLayer(props) {
             acceptedFiles={[".geojson", ".zip"]}
             maxFileSize={10000000}
             dropzoneClass={classes.dropzoneClass}
-          ></DropzoneAreaBase>
+            >
+
+          </DropzoneAreaBase>
           <StyledListItem2 button onClick={handleClickM1List}>
             <ListItemText primary="M1neral Layers" />
             {openM1 ? <ExpandLess /> : <ExpandMore />}

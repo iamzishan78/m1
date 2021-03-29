@@ -75,17 +75,14 @@ export default function FilterMeasuredDistance() {
     }
     if (!min && max) {
       filter = ["all", ["<=", ["get", "measuredDepth"], max]];
-      console.log("add filter", filter);
     } else if (min && !max) {
       filter = ["all", [">=", ["get", "measuredDepth"], min]];
-      console.log("add filter", filter);
     } else if (min && max) {
       filter = [
         "all",
         [">=", ["get", "measuredDepth"], min],
         ["<=", ["get", "measuredDepth"], max],
       ];
-      console.log("add filter", filter);
     } else {
       filter = null;
     }

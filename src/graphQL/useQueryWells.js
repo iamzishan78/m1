@@ -1,4 +1,3 @@
-import React from "react";
 import gql from "graphql-tag";
 
 export const WELLSQUERY = gql`
@@ -10,13 +9,14 @@ export const WELLSQUERY = gql`
         id
         wellName
         api
+        state
+        county
         operator
         wellType
         latitude
         longitude
         wellBoreProfile
         ownerCount
-
         wellStatus
         lastTwelveMonthBOE
         permitApprovedDate

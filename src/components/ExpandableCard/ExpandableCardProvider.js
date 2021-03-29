@@ -2,8 +2,7 @@ import React from "react";
 import { ExpandableCardContextProvider } from "./ExpandableCardContext";
 
 import ExpandableCard from "./ExandableCard";
-
-export default function ExpandableCardProvider(props) {
+function ExpandableCardProvider(props) {
   return (
     <ExpandableCardContextProvider>
       <ExpandableCard
@@ -34,7 +33,11 @@ export default function ExpandableCardProvider(props) {
         Api={props.Api}
         noTrackAvailable={props.noTrackAvailable}
         handleDelete={props.handleDelete}
+        deleteParcel={props.deleteParcel}
       />
     </ExpandableCardContextProvider>
   );
 }
+
+ExpandableCardProvider.whyDidYouRender = true
+export default React.memo(ExpandableCardProvider);

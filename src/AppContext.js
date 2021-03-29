@@ -1,68 +1,40 @@
 import React, { useState, createContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import {
-  MSALB2CObj,
-  B2CTenantCredentials,
-} from "./components/Login/AADB2CAuthConfig";
-import {
-  //styleLayers,
-  //userDefinedLayers,
-  heatLayers,
-  baseMapLayers,
-  //layers,
-  // defaultLayers,
-} from "./LayerConfig";
+import {MSALB2CObj,B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
+import { heatLayers, baseMapLayers,} from "./LayerConfig";
 
 const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
-    loading: false,
-    registeredRoutes: [
-      "/",
-      "/signup",
-      "/loginb2c",
-      "/forgotpassword",
-      "/track",
-      "/transact",
-      "/activities",
-      "/title",
-      "/titleopinion",
-      "/alerts",
-      "/contacts",
-      "/dashboard",
-      "/studio",
-      "/bulkupload",
-    ],
     myMSALObj: null,
     myMSALB2CObj: null,
-    selectedRoute: "/",
+
+    baseMapLayers: baseMapLayers, // move to a map context -- will be changed with mepler anyways
+    heatLayers: heatLayers, // move to a map context -- will be changed with mepler anyways 
     apolloClientEndpoint: "",
-    graphqlScope: null,
-    user: null,
-    signUpUserType: null,
-    wellCount: 500,
-    wells: null,
-    wellDetailCardOpen: null,
-    parcelDetailCardOpen: false,
-    trackedwells: null,
-    trackedOwnerWells: null,
-    gridWellsCount: 0,
-    gridOwnersCount: 0,
-    selectedWell: null,
-    selectedWellId: null,
-    selectedAbstracts: [],
-    selectedParcel: null,
+    graphqlScope: null, /// potentially login context? 
+    user: null, /// potenitally login context or maybe a specific user context?? 
+    signUpUserType: null,/// potenitally login context or maybe a specific user context?? 
+    wellDetailCardOpen: null, // move to map data card context 
+    parcelDetailCardOpen: false, // move to map data card context 
+    trackedwells: null, // move to a grid context or query context 
+    trackedOwnerWells: null, // move to a grid context or query context 
+    selectedWell: null, // move to a selected object context (maybe flyto)
+    selectedWellId: null, // move to a selected object context (maybe flyto)
+    selectedAbstracts: [], // move to a selected object context (maybe flyto)
+    selectedParcel: null, // move to a selected object context (maybe flyto)
+
     customLayers: [],
     editDraw: false,
     editLayer: true,
     selectedOwner: null,
     owners: null,
     popupOpen: false, //map used in flyto
-    expandedCard: false,
+    expandedCard: false, // probably need in a map card context 
     flyTo: null, //map used in flyto
     fitBounds: null, //map used in fitBounds
     selectedTitleOpinionId: null,
@@ -75,7 +47,6 @@ const AppProvider = (props) => {
     filtersDefaultOnoff: null,
     filterSelectAllAbstract: false,
     selectedContact: null,
-    // trackFilterOn: null,
     trackedWellArray: [],
     userSnap: false,
     mapVars: {
@@ -84,20 +55,14 @@ const AppProvider = (props) => {
       pitch: 0,
       bearing: 0,
       styleId: "Outdoors",
-    },
+    }, // move to a map context. check if this is somehow duplicated. 
     defaultMapVars: {
       zoom: 4.88,
       center: { lng: -98.8, lat: 38 },
       pitch: 0,
       bearing: 0,
       styleId: "Outdoors",
-    },
-
-    // layerData: {
-    //   trackedWellsWells: null,
-    //   trackedOwnerWells: null,
-    //   taggedWells: null,
-    // },
+    }, // move to a map context 
     wellSelectedCoordinates: [],
     universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
 
@@ -106,17 +71,11 @@ const AppProvider = (props) => {
     mapboxglAccessToken:
       "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJja2V6MHd2bnQwYzRqMnlwaTV6ejU2cTMyIn0.ghyrh-G8uQtyg4N4VcfTOw",
     selectedWellApi: null,
-    //styleLayers: styleLayers,
-    heatLayers: heatLayers,
     layers: null,
-    // defaultLayers: defaultLayers,
-    baseMapLayers: baseMapLayers,
-    //userDefinedLayers: userDefinedLayers,
     searchLayerIndex: null,
     trackedOwnersLayerIndex: null,
     trackedWellsLayerIndex: null,
     tagsLayerIndex: null,
-    // tempCheckedLayer: null,
     checkedLayers: [2, 5],
     wellsLayerIndex: null,
     checkedHeats: [],
@@ -124,8 +83,6 @@ const AppProvider = (props) => {
     checkedUserDefinedLayers: [],
     checkedFileLayers: [],
     tempCheckedUserDefinedLayer: null,
-    // tempCheckedAOILayer: null,
-    // tempCheckedParcleLayer: null,
     checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
     checkedFileLayersInteraction: [],
     editingUserDefinedLayers: [],
@@ -136,10 +93,10 @@ const AppProvider = (props) => {
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,
-    toggle3d: null,
-    toggleZoomOut: null,
-    map: null,
-    draw: null,
+    toggle3d: null,  // move to a map context
+    toggleZoomOut: null, // move to a map context 
+    map: null, // move to a map context
+    draw: null, 
     zoomFault: null,
     hugeRequest: null,
     currentFeature: undefined,
@@ -156,7 +113,8 @@ const AppProvider = (props) => {
     activityDisplayType: "calendar",
     prevAOIVisible: false,
     prevParcelVisible: false,
-    prevBasinVisible: false,
+    prevBasinVisible: false,    
+    transactBarView: "",
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;
@@ -178,16 +136,6 @@ const AppProvider = (props) => {
               },
             };
             res = updatedLayer.layerSettings.visiable;
-
-            //// saving to mongo
-            // updateLayerSettings({
-            //   variables: {
-            //     settings: {
-            //       _id: updatedLayer._id,
-            //       layerSettings: updatedLayer.layerSettings,
-            //     },
-            //   },
-            // });
 
             //// saving to stateApp
             currentLayers[index] = updatedLayer;

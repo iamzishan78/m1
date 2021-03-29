@@ -164,7 +164,6 @@ const Activities = () => {
 
   useEffect(() => {
     if (activitiesData) {
-      console.log("ACTIVITIES", activitiesData);
       setEvents(
         activitiesData?.activities?.map((act) => {
           const start = new Date(Number(act.dateTime));
@@ -196,7 +195,6 @@ const Activities = () => {
     );
   }, [events, activityFilterByType, activityFilterByTime, view]);
 
-  console.log("ACTIVITIES", activitiesData, events, filteredEvents);
 
   const onModalClose = () => {
     setStateApp((stateApp) => ({
@@ -230,7 +228,6 @@ const Activities = () => {
   }, [stateApp.selectedActivityId]);
 
   const onEventClick = (event) => {
-    console.log("EVENT", event);
     setSelectedActivityId(event._id);
     onModalOpen();
   };

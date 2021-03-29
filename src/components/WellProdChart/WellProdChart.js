@@ -65,7 +65,6 @@ export default function WellProdChart(props) {
 
   useEffect(() => {
     if (!loading && stateWellProdChart.wellProdHistory) {
-      //console.log('wellprodhistory',stateWellProdChart.wellProdHistory);
       let chart = am4core.create("chartDiv", am4charts.XYChart);
 
       chart.dateFormatter.inputDateFormat = "yyyy-MM-dd";

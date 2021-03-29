@@ -9,6 +9,12 @@ import WellIcon from "../../Shared/svgIcons/well";
 import { useDispatch, useSelector } from "react-redux";
 import { setMapGridCardState } from "../../../actions";
 
+
+// import value formatters 
+import vf_currency from "../../Shared/valueformatters/vf_currency.js";
+import joinAddress from "../../Shared/valueformatters/join-address.js";
+
+
 const useStyles = makeStyles((theme) => ({
   Paper: {
     minHeight: "35px",
@@ -32,38 +38,6 @@ function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-var formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumSignificantDigits: 21,
-});
-const valueFormatter = (v) => {
-  return formatter.format(parseInt(v));
-};
-
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
-const joinAddress = (row) => {
-  let rowData = {
-    city: row.city,
-    state: row.state,
-    zip: row.zip,
-    country: row.country,
-  };
-  let textArray = [];
-  for (const key in rowData) {
-    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
-      if (key === "zip" || key === "country") {
-        textArray = [
-          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
-        ];
-      } else textArray.push(capitalizeFirstLetter(rowData[key]));
-    }
-  }
-
-  return textArray.join(", ");
-};
 export default function WellInterestsTopSumary(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -162,7 +136,7 @@ export default function WellInterestsTopSumary(props) {
                   <span>
                     Average Appraisal Value:{" "}
                     {selectedOwnerWellIntsSummary.averageValue
-                      ? valueFormatter(
+                      ? vf_currency(
                           selectedOwnerWellIntsSummary.averageValue
                         )
                       : "N/A"}
@@ -171,14 +145,14 @@ export default function WellInterestsTopSumary(props) {
                   <span>
                     Max Appraisal Value:{" "}
                     {selectedOwnerWellIntsSummary.maxValue
-                      ? valueFormatter(selectedOwnerWellIntsSummary.maxValue)
+                      ? vf_currency(selectedOwnerWellIntsSummary.maxValue)
                       : "N/A"}
                     <br />
                   </span>
                   <span>
                     Total Appraisal Value:{" "}
                     {selectedOwnerWellIntsSummary.totalValue
-                      ? valueFormatter(selectedOwnerWellIntsSummary.totalValue)
+                      ? vf_currency(selectedOwnerWellIntsSummary.totalValue)
                       : "N/A"}
                     <br />
                   </span>

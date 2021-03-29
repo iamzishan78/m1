@@ -12,17 +12,12 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import DialogContent from "@material-ui/core/DialogContent";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableRow from "@material-ui/core/TableRow";
-import DeleteIcon from "@material-ui/icons/Delete";
-import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
-import Tooltip from "@material-ui/core/Tooltip";
+
 import { GETPERSONDATA } from "../../../../../graphQL/useQueryGetPersonData";
 import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import Close from "@material-ui/icons/Close";
+
 
 const styles = (theme) => ({
   root: {
@@ -41,7 +36,7 @@ const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, updateMelissaTable, ...other } = props;
   return (
     <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
+      <Typography variant="h4" style = {{fontWeight: "bold"}}>{children}</Typography>
       {onClose ? (
         <IconButton
           aria-label="close"
@@ -56,47 +51,8 @@ const DialogTitle = withStyles(styles)((props) => {
   );
 });
 
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
 
-const joinAddress = (row) => {
-  let rowData =
-    row.address1 ||
-    row.address2 ||
-    row.city ||
-    row.state ||
-    row.zip ||
-    row.country
-      ? {
-          address1: row.address1,
-          address2: row.address2,
-          city: row.city,
-          state: row.state,
-          zip: row.zip,
-          country: row.country,
-        }
-      : {
-          address1: row.address1Alt,
-          address2: row.address2Alt,
-          city: row.cityAlt,
-          state: row.stateAlt,
-          zip: row.zipAlt,
-          country: row.countryAlt,
-        };
-  let textArray = [];
-  for (const key in rowData) {
-    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
-      if (key === "zip" || key === "country") {
-        textArray = [
-          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
-        ];
-      } else textArray.push(capitalizeFirstLetter(rowData[key]));
-    }
-  }
 
-  return textArray.join(", ");
-};
 
 export default function BuyContactsInfoDialogContent(props) {
   const dispatch = useDispatch();
@@ -162,11 +118,11 @@ export default function BuyContactsInfoDialogContent(props) {
 
   return (
     <React.Fragment>
-      <DialogTitle className={modalClass.title} id="customized-dialog-title">
+      <DialogTitle style={{backgroundColor: "#fff"}} id="customized-dialog-title">
         Contact Info Purchase
-        <HighlightOffIcon
+        <Close
           fontSize="large"
-          className={modalClass.titleClose}
+          className = {modalClass.closeIcon}
           onClick={props.onClose}
         />
       </DialogTitle>
@@ -186,7 +142,7 @@ export default function BuyContactsInfoDialogContent(props) {
               {currentCredits && currentCredits > 1 ? "s" : ""}
             </FormLabel>
           </Grid> */}
-          <Grid item xs={12} style={{ marginTop: "15px" }}>
+          <Grid item xs={12} style={{ marginTop: "50px" }}>
             <h3 style={{ margin: "0" }}>Contact information to purchase</h3>
           </Grid>
           <Grid item xs={12} style={{ margin: 0, paddingTop: 0 }}>

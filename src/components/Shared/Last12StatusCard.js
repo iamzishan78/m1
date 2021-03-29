@@ -4,6 +4,8 @@ import Typography from '@material-ui/core/Typography'
 import ProductionIcon from './components/svgIcons/ProductionIcon'
 import { AppContext } from '../../AppContext'
 
+// value formatters 
+import formatBOE from "../Shared/valueformatters/format_boe.js"
 
 
 const useStyles = makeStyles(theme => ({
@@ -18,10 +20,6 @@ const useStyles = makeStyles(theme => ({
     }
   }))
 
-const formatBOE = boe => {
-    if (!boe || isNaN(boe)) return '--'
-    return Math.round(boe).toLocaleString()
-  }
 
 export default function Last12StatusCard() {
     let classes = useStyles();

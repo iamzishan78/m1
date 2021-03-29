@@ -17,6 +17,8 @@ import { TransactContext } from "../Transact/TransactContext";
 import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import Dialog from "../Transact/components/dialog";
+import vf_currency from "../../Shared/valueformatters/vf_currency.js";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,10 +52,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-let formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
+
 
 export default function Deals({ contact, ...props }) {
   const [wonDeals, setWonDeals] = useState([]); // deal closed
@@ -67,7 +66,6 @@ export default function Deals({ contact, ...props }) {
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
-      console.log(stateApp.user);
       getTransactionData({
         variables: {
           userId: stateApp.user.mongoId,
@@ -94,7 +92,6 @@ export default function Deals({ contact, ...props }) {
           if (contact?._id === card.contactId && !card.isDeleted) all.push(card);
         });
       });
-      console.log("all: ", all);
       setAllDeals(all);
     }
   }, [contact, stringData, data, loading]);
@@ -127,8 +124,7 @@ export default function Deals({ contact, ...props }) {
         sum += card.offerPrice
         // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     });
-    const formatted = formatter.format(sum);
-    return formatted.slice(0, formatted.length - 3);
+    return vf_currency(sum);
   };
 
   const sumWonDeals = () => {
@@ -138,8 +134,7 @@ export default function Deals({ contact, ...props }) {
         sum += card.offerPrice
         // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     });
-    const formatted = formatter.format(sum);
-    return formatted.slice(0, formatted.length - 3);
+    return vf_currency(sum);
   };
 
   const handleDataChange = (newData) => {

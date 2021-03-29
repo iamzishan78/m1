@@ -12,6 +12,7 @@ import FilterWellStatusJ from "./FilterWellStatusJ";
 import FilterPlay from "./FilterGeoPlay";
 import FilterPrimaryFormation from "./FilterGeoPrimaryFormation";
 import FilterField from "./FilterGeoField";
+import OperatorsFilter from "./OperatorFilterJ";
 import Grid from "@material-ui/core/Grid";
 
 export default function FilterFormWell() {
@@ -22,6 +23,9 @@ export default function FilterFormWell() {
       spacing={2}
       style={{ padding: "8px", width: "100%", margin: "0" }}
     >
+      <Grid item sm={12}>
+        <OperatorsFilter />
+      </Grid>
       <Grid item sm={12}>
         <FilterWellTypeJ />
       </Grid>

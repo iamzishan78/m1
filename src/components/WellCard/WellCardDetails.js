@@ -3,18 +3,12 @@ import { AppContext } from "../../AppContext";
 import { WellCardContext } from "./WellCardContext";
 import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core/styles";
-// import { purple } from "@material-ui/core/colors";
 
 //material-ui components
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 
 //custom components
-// import WellIcon from "./components/svgIcons/WellIcon";
-// import ShrinkIcon from "./components/svgIcons/ShrinkIcon";
-// import TrackIcon from "./components/svgIcons/TrackIcon";
-// import ProductionIcon from "./components/svgIcons/ProductionIcon";
-// import OwnershipIcon from "./components/svgIcons/OwnershipIcon";
 import Taps from "../Shared/Taps";
 import CardDetailsMap from "./components/CardDetailsMap";
 import TableSummary from "./components/TableSummary";
@@ -22,7 +16,6 @@ import TableSummary from "./components/TableSummary";
 import QuadProvider from "../Quad/QuadProvider";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import WellProdChartProvider from "../WellProdChart/WellProdChartProvider";
-// import TrackToggleButton from "../Shared/TrackToggleButton";
 import WellStatusCard from "../Shared/WellStatusCard";
 import CompletionDateCard from "../Shared/CompletionDateCard";
 import FirstProdDateCard from "../Shared/FirstProdDateCard";
@@ -44,7 +37,9 @@ import FormationContainer from "./components/Formation";
 import { useLazyQuery } from "@apollo/client";
 import { PRODUCTIONDETAILQUERY } from "../../graphQL/useQueryProductionDetail";
 import moment from 'moment';
-
+import { Box, IconButton } from "@material-ui/core";
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 const useStyles = makeStyles((theme) => ({
   grid: {
     // height: "100%",
@@ -152,6 +147,24 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "5px",
     paddingLeft: "25px",
   },
+  subContent: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": { 
+          height: "calc(100vh - 56vh ) !important", 
+       },
+     },
+    },
+  },
+  subContent2: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": { 
+          height: "calc(100vh - 56vh + 482px) !important", 
+       },
+     },
+    },
+  },
 }));
 
 const tableGridStyle = makeStyles({
@@ -184,31 +197,30 @@ const tableGridStyle = makeStyles({
 export default function WellCardDetails(props) {
   const classes = useStyles();
   const table_classes = tableGridStyle();
-  const [stateApp,setStateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const [tabValue, setTabValue] = React.useState(0);
   const [production, setProduction] = useState(null);
   const [target, setTarget] = useState(null);
   const [chartDisplay, setChartDisplay] = useState([]);
-  const [productionContainer, setProductionContainer] = useState(null);
-
+  const [showSummary, setShowSummary] = useState(true)
   let temp_state = useRef(null);
   const [
     getProductionDetail,
     { loading: loadingProductionDetail, data: productionDetail },
   ] = useLazyQuery(PRODUCTIONDETAILQUERY);
 
-  useEffect(()=> {
+  useEffect(() => {
     getProductionDetail({
       variables: { id: stateApp.selectedWell.id },
     });
   }, []);
 
-  useEffect(()=> {
+  useEffect(() => {
     if (productionDetail) {
       let temp = [];
       productionDetail.productionDetail.forEach(element => {
-        let temp_row = {...element};
+        let temp_row = { ...element };
         temp_row.ReportDate = moment.utc(temp_row.ReportDate).format("MM/YYYY");
         temp.push(temp_row)
       });
@@ -218,7 +230,7 @@ export default function WellCardDetails(props) {
       }
     } else {
     }
-  },[productionDetail, props.target, setTarget]);
+  }, [productionDetail, props.target, setTarget]);
 
   const handleChangeOil = (event) => {
     setStateWellCard({
@@ -294,18 +306,6 @@ export default function WellCardDetails(props) {
     track: {},
   })(Switch);
 
-  const productionGrid = (productionProps) => {
-    if (chartDisplay.length === 0) {
-      setProductionContainer(
-        <M1nTable
-          dense
-          parent="production_WellDetails"
-          productionDetails={productionProps}
-        />
-      );
-    }
-  }
-
 
   return stateApp.selectedWell ? (
     <React.Fragment >
@@ -320,23 +320,36 @@ export default function WellCardDetails(props) {
         <CompletionDateCard />
         <FirstProdDateCard />
         <PlugDateCard />
+        <Box>
+          <IconButton
+            onClick={() => setShowSummary(!showSummary)}
+            aria-label="delete" color="primary">
+            {
+              showSummary ? <KeyboardArrowUpIcon fontSize="large" /> : <KeyboardArrowDownIcon fontSize="large" />
+            }
+
+          </IconButton>
+        </Box>
       </Grid>
       <Grid item sm={12} container className={classes.gridWidthScroll}>
-        <Grid item sm={12} container style={{ height: "482px"}}>
-          <Grid container spacing={2} style={{marginRight: 0, marginLeft: 0}}>
-            <Grid item sm={8} >
-              <TableSummary summary={props.summary} />
-            </Grid>
-            <Grid item xs={4}>
-              <QuadProvider />
+        {showSummary &&
+          <Grid item sm={12} container style={{ height: "482px" }}>
+            <Grid container spacing={2} style={{ marginRight: 0, marginLeft: 0 }}>
+              <Grid item sm={8} >
+                <TableSummary summary={props.summary} />
+              </Grid>
+              <Grid item xs={4}>
+                <QuadProvider />
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
+        }
         <Grid item sm={12}>
           <Taps
             tabLabels={[
               "Production",
               "Interest Owners",
+              // "Contacts",
               "Completion",
               "Stimulation",
               "Formation",
@@ -351,7 +364,7 @@ export default function WellCardDetails(props) {
                           <OilSwitch
                             checked={stateWellCard.chartToggleOil}
                             onChange={handleChangeOil}
-                            //name="chartToggleOil"
+                          //name="chartToggleOil"
                           />
                         }
                         label="Allocated Oil"
@@ -363,7 +376,7 @@ export default function WellCardDetails(props) {
                             onChange={handleChangeGas}
                             name="checkedGas"
                             color="secondary"
-                            // color="#e57373"//invalid color
+                          // color="#e57373"//invalid color
                           />
                         }
                         label="Allocated Gas"
@@ -395,25 +408,36 @@ export default function WellCardDetails(props) {
                   </Grid>
                   <Grid item xs={12}>
                     {
-                      production != null && <M1nTable
-                        dense
-                        parent="production_WellDetails"
-                        productionDetails={production}
-                      />
+                      production != null && 
+                      <div className={showSummary ? classes.subContent : classes.subContent2}>
+                        <M1nTable
+                          dense
+                          parent="production_WellDetails"
+                          productionDetails={production}
+                        />
+                      </div>
                     }
                   </Grid>
                 </Grid>
               </Paper>
               ,
-              <Paper elevation={3} style={{ padding: "10px" }}>
+              <Paper elevation={3} style={{ padding: "10px"}}>
+                <div className={showSummary ? classes.subContent : classes.subContent2}>
                 <M1nTable
                   parent="OwnersPerWell"
                   selectedWell={stateApp.selectedWell}
                 />
+                </div>
               </Paper>,
-              <CompletionsContainer/>,
-              <SimulationContainer/>,
-              <FormationContainer/>,
+            //   <Paper elevation={3} style={{ padding: "10px" }}>
+            //     <M1nTable
+            //       parent="detail-well-card-contact-ties"
+            //       selectedWell={stateApp.selectedWell}
+            //     />
+            // </Paper>,
+              <CompletionsContainer showSummary={showSummary}/>,
+              <SimulationContainer showSummary={showSummary}/>,
+              <FormationContainer showSummary={showSummary}/>,
             ]}
           />
         </Grid>

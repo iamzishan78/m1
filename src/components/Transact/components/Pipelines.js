@@ -2,11 +2,11 @@ import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import EditIcon from "@material-ui/icons/Edit";
+import SettingsIcon from '@material-ui/icons/Settings';
+import IconButton from '@material-ui/core/IconButton';
 import Dialog from "@material-ui/core/Dialog";
 import {
   setFlowState,
@@ -31,7 +31,6 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
-// import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
 import { GETPIPELINE } from "../../../graphQL/useQueryPipeline";
 import { ADDPIPELINE } from "../../../graphQL/useMutationAddPipeline";
 import { UPDATEPIPELINE } from "../../../graphQL/useMutationUpdatePipeline";
@@ -390,19 +389,11 @@ export default function Pipelines(props) {
     );
     //// saving state
     setStages([...reorderedStages]);
-    //   //// saving to mongo
-    //   updateManyUserLayerSettings({
-    //     variables: {
-    //       manySettings: stagesToUpdate,
-    //     },
-    //   });
   };
 
   const handleToggleRotten = (stage, index) => {
-    // if (addingNewPipe) {
     const upStages = [...stages];
     upStages[index] = { ...stage, rotten: !stage.rotten };
-
     setStages([...upStages]);
     // }
   };
@@ -598,7 +589,6 @@ export default function Pipelines(props) {
               );
           })
           .catch((reason) => {
-            console.log(reason);
           });
       }
 
@@ -614,15 +604,7 @@ export default function Pipelines(props) {
     setDeleteDialogOpen(open);
   };
 
-  // const deleteFunc = async () => {
-  //   // try {
-  //   //   setIsDeleting(true);
-  //   //   await deleteDeal();
-  //   //   setIsDeleting(false);
-  //   // } catch {
-  //   //   setIsDeleting(false);
-  //   // }
-  // };
+
 
   //// checking if the something to update in the pipe or the stages
   const checkingIfEdited = () => {
@@ -657,7 +639,7 @@ export default function Pipelines(props) {
         >
           <DeleteConfirmationDialogContent
             header={
-              deleteDialogOpen === "pipe" ? `Delete Pipeline` : `Delete Stage`
+              deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`
             }
             onClose={handleCloseDeleteDialog}
             deleteFunc={deleteFunc ? deleteFunc : () => {}}
@@ -665,7 +647,7 @@ export default function Pipelines(props) {
             setM1nSelectedRowsIndexes={() => {}}
           >
             {deleteDialogOpen === "pipe"
-              ? "Are you sure you want to delete the pipeline?"
+              ? "Are you sure you want to delete the Flowline?"
               : "Are you sure you want to delete the stage?"}
           </DeleteConfirmationDialogContent>
         </Dialog>
@@ -705,7 +687,7 @@ export default function Pipelines(props) {
             );
           }}
           renderInput={(params) => (
-            <TextField {...params} label="Pipelines" variant="outlined" />
+            <TextField {...params} label="Flowlines" variant="outlined" />
           )}
           autoComplete
           includeInputInList
@@ -719,8 +701,7 @@ export default function Pipelines(props) {
             );
           }}
         />
-        <ButtonGroup>
-          <Button
+          <IconButton
             disabled={!selectedPipe}
             size="small"
             onClick={() => {
@@ -731,9 +712,8 @@ export default function Pipelines(props) {
               );
             }}
           >
-            <EditIcon />
-          </Button>
-        </ButtonGroup>
+            <SettingsIcon />
+          </IconButton>
       </ButtonGroup>
 
       {/* //// pipelines dialog //// */}
@@ -746,8 +726,8 @@ export default function Pipelines(props) {
         >
           <DialogTitle className={classes.title}>
             {openPipeDialog !== "newPipe"
-              ? "Edit Pipeline"
-              : "Add a New Pipeline"}
+              ? "Edit Flowline"
+              : "Add a New Flowline"}
 
             <div className={classes.titleClose}>
               {openPipeDialog !== "newPipe" && (
@@ -938,30 +918,6 @@ export default function Pipelines(props) {
                                             />
                                           </Tooltip>
                                         </TableCell>
-
-                                        {/* <TableCell padding="checkbox">
-                                          <Tooltip
-                                            title="Rotten Stats"
-                                            placement="top"
-                                          >
-                                            <FormControlLabel
-                                              control={
-                                                <Switch
-                                                  checked={stage.rotten}
-                                                  onChange={() => {
-                                                    handleToggleRotten(
-                                                      stage,
-                                                      index
-                                                    );
-                                                  }}
-                                                />
-                                              }
-                                            />
-                                          </Tooltip>
-                                        </TableCell> */}
-                                        {/* <TableCell align="left">
-                                          {stage.autoAssign}
-                                        </TableCell> */}
                                       </TableRow>
                                     )}
                                   </Draggable>

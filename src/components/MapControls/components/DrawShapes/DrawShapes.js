@@ -43,10 +43,10 @@ import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import { NavigationContext } from "../../../Navigation/NavigationContext";
 
 // import { availableShapes } from "./constants";
-const DEBUG_GREEN = "background: green; color: white; border: 1px solid black";
-const DEBUG_YELLOW = "background: yellow; color: red; border: 1px solid black";
-const DEBUG_BLUE = "background: blue; color: white; border: 1px solid black";
-const DEBUG_RED = "background: red; color: white; border: 1px solid black";
+// const DEBUG_GREEN = "background: green; color: white; border: 1px solid black";
+// const DEBUG_YELLOW = "background: yellow; color: red; border: 1px solid black";
+// const DEBUG_BLUE = "background: blue; color: white; border: 1px solid black";
+// const DEBUG_RED = "background: red; color: white; border: 1px solid black";
 
 
 const localStyles = makeStyles((theme) => ({
@@ -77,13 +77,8 @@ export default function DrawShapes(props) {
   );
 
   const eventsConfiguredRef = useRef(false);
-  //   const [
-  //     getCustomLayers,
-  //     { data: customLayerData },
-  //   ] = useLazyQuery(CUSTOMLAYERSQUERY, { fetchPolicy: "network-only" });
 
   const DEBUGGER = (source, value) => {
-    console.log(`%c[DrawShapes.js] ${source}`, DEBUG_GREEN, value);
   };
 
   const createShapeMarker = (feature) => {
@@ -163,33 +158,7 @@ export default function DrawShapes(props) {
       toggleSpatialDataCard(false);
     }
   }, [stateApp.currentFeature]);
-
-  // const createShapeDrawOptions = () => {
-  //   return availableShapes.map((shape, index) => {
-  //     return (
-  //       <StyledMenuItem
-  //         key={index}
-  //         onClick={(evt) => {
-  //           stateApp.draw.changeMode(shape.mode);
-  //           setStateApp((state) => ({ ...state, editDraw: true }));
-  //           handleClose();
-  //         }}
-  //       >
-  //         <div style={{ color: "white", paddingRight: "15px" }}>
-  //           <Icon className={shape.icon} color="secondary" />
-  //           {shape.mode === "draw_polygon" && <DrawPoly />}
-  //           {shape.mode === "draw_rectangle" && <Rect />}
-  //           {shape.mode === "drag_circle" && (
-  //             <RadioButtonUncheckedIcon fontSize="small" />
-  //           )}
-  //           {shape.mode === "draw_line_string" && <ShowChartIcon />}
-  //         </div>
-  //         <ListItemText primary={shape.title} id={index} />
-  //       </StyledMenuItem>
-  //     );
-  //   });
-  // };
-
+  
   const handleClose = () => {
     setStateMapControls({ ...stateMapControls, anchorEl: null });
   };
@@ -198,9 +167,6 @@ export default function DrawShapes(props) {
     const { currentFeature } = stateApp;
     if (currentFeature) {
       const elem = document.getElementById(currentFeature.id);
-      // elem.parentNode.removeChild(elem);
-      console.log("elem", elem);
-
       setStateApp((state) => ({
         ...state,
         editDraw: false,
@@ -224,7 +190,6 @@ export default function DrawShapes(props) {
     // save data onto geoJSON properties fields
 
     spatialDataAttributes.forEach((attribute) => {
-      // console.log(attribute, spatialData[attribute]);
       stateApp.draw.setFeatureProperty(
         stateApp.currentFeature.id,
         attribute,
@@ -243,22 +208,6 @@ export default function DrawShapes(props) {
     const { currentFeature } = stateApp;
     stateApp.draw.delete(currentFeature.id);
 
-    // handleDeleteSpatialDataAndShape();
-    // if (currentFeature) {
-    //     setStateApp((state) => ({
-    //         ...state,
-    //         editDraw: false,
-    //         currentFeature: undefined,
-    //     }));
-    //     if (currentFeature.id.includes("draw_polygon")
-    //         || currentFeature.id.includes("drag_circle")
-    //         || currentFeature.id.includes("draw_rectangle")) {
-    //         setStateNav((stateNav) => ({
-    //             ...stateNav,
-    //             filterDrawing: []
-    //         }));
-    //     }
-    // }
 
     //////cleaning the selected title opinion and redirecting to title opinion page//
 
@@ -309,15 +258,6 @@ export default function DrawShapes(props) {
     <React.Fragment>
       {stateApp.showDrawShapesPopup && (
         <ClickAwayListener onClickAway={handleClose}>
-          {/* <StyledMenu
-            id="draw-shapes"
-            keepMounted
-            anchorEl={stateMapControls.anchorEl}
-            open={Boolean(stateMapControls.anchorEl)}
-            onClose={handleClose}
-          >
-            <DrawShapePopup handleClose={handleClose}/>
-          </StyledMenu> */}
           <DrawShapePopup handleClose={handleClose}/>
         </ClickAwayListener>
       )}
@@ -327,12 +267,6 @@ export default function DrawShapes(props) {
       !stateApp.currentFeature.id.includes("drag_circle") &&
       !stateApp.currentFeature.id.includes("draw_rectangle") &&
       !stateApp.currentFeature.id.includes("edit_polygon") ? (
-        /*<SpatialDataCard
-          closeSpatialDataCard={() => toggleSpatialDataCard(false)}
-          saveSpatialData={handleSaveSpatialDataToShape}
-          deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
-          selectedFeature={stateApp.currentFeature}
-        />*/
         <ShapeActionsPopup
           selectedFeature={stateApp.currentFeature}
           saveSpatialData={handleSaveSpatialDataToShape}
