@@ -182,10 +182,8 @@ export default function QuadSummary(props) {
         break;
     }
     setStateQuad((state) => ({ ...state, selectedRange: newRange }));
-    console.log(stateQuad.quadChart, "stateQuad.quadChart");
     if (!stateQuad.quadChart) {
       if (data) {
-        // console.log('quadData',data)
         let quadChart = data.quadChart;
         setStateQuad((state) => ({ ...state, quadChart: quadChart }));
       }

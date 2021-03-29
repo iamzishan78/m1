@@ -19,7 +19,6 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import Documents from "../Shared/Documents";
-//import LeadScore from "../Shared/LeadScore";
 import ParcelsCard from "./components/ParcelsCard";
 import LeadStage from "../Shared/LeadStage";
 import { AppContext } from "../../AppContext";
@@ -37,7 +36,6 @@ import { toggleRightColumn } from "../../actions";
 import MessageRoundedIcon from "@material-ui/icons/MessageRounded";
 import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
 import Card from "@material-ui/core/Card";
-// import Parcels from "./components/Parcels";
 import DealsNew from "./components/DealsNew";
 import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
@@ -72,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#F0F6F8",
     position: "relative",
     transition: "width 0.3s ease-out",
-    WebkitTransition: "width 0.3s ease-out",
+    webkitTransition: "width 0.3s ease-out",
     width: ({ shrinkRightColumn }) => (shrinkRightColumn ? "68px" : "37%"),
   },
   gridStyling: {
@@ -95,13 +93,13 @@ const useStyles = makeStyles((theme) => ({
   },
   userIcon: {
     marginRight: "15px",
-    float: "left",
+    "float": "left",
   },
   userName: {
     color: "#919191",
     minWidth: "50%",
     maxWidth: "calc( 100% - 400px)",
-    float: "left",
+    "float": "left",
     "& h2": {
       margin: "0",
       color: "#202020",
@@ -169,7 +167,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     zIndex: "600",
     height: "0",
-    float: "right",
+    "float": "right",
     color: "#757575",
     "& a": {
       textDecoration: "none !important",
@@ -224,7 +222,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#fff",
     flexGrow: "1",
     transition: "width 0.3s ease-out",
-    WebkitTransition: "width 0.3s ease-out",
+    webkitTransition: "width 0.3s ease-out",
   },
   shrinkRightColumn: {
     position: "absolute",
@@ -248,7 +246,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     margin: "0 0 8px 0",
-    float: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -412,7 +410,8 @@ export default function ContactDetailCard(props) {
           className={classes.border}
         >
           <div className={classes.leftColumnTopRigthCorner}>
-            <Button
+            {/* temporary removal until melissa is reactivated */}
+            {/* <Button
               variant="contained"
               // size="small"
               onClick={() => {
@@ -420,12 +419,11 @@ export default function ContactDetailCard(props) {
               }}
             >
               Buy Contact Info
-            </Button>
+            </Button> */}
             {contactData.primaryEmail && (
               <a href={"mailto:" + contactData.primaryEmail}>
                 <Button
                   variant="contained"
-                  //  size="small"
                 >
                   Email
                 </Button>
@@ -434,10 +432,8 @@ export default function ContactDetailCard(props) {
 
             <Button
               variant="contained"
-              // size="small"
               onClick={() => {
                 handleExpandClick("deleteConfirmation");
-                //setOpenDialog(true);
               }}
             >
               Delete
@@ -446,8 +442,6 @@ export default function ContactDetailCard(props) {
           <div>
             <div className={classes.userIcon}>
               <StyleBadge
-              //badgeContent={5}
-              //color={"#f6c16b"}
               >
                 <Avatar
                   className={classes.grey}
@@ -459,7 +453,6 @@ export default function ContactDetailCard(props) {
             </div>
             <div className={classes.userName}>
               <h2 style={{ width: "max-content" }}>
-                {/* {contactData.name} */}
 
                 <FieldContent
                   noInputFooter
@@ -471,48 +464,45 @@ export default function ContactDetailCard(props) {
                   {(contactData.facebook ||
                     contactData.twitter ||
                     contactData.linkedIn) && (
-                    <span className={classes.socialMediaSection}>
-                      {contactData.facebook && (
-                        <a
-                          href={`${
-                            !contactData.facebook.startsWith("http") &&
-                            !contactData.facebook.startsWith("//")
+                      <span className={classes.socialMediaSection}>
+                        {contactData.facebook && (
+                          <a
+                            href={`${!contactData.facebook.startsWith("http") &&
+                              !contactData.facebook.startsWith("//")
                               ? "//"
                               : ""
-                          }${contactData.facebook}`}
-                          target="_blank"
-                        >
-                          <FacebookIcon />
-                        </a>
-                      )}
-                      {contactData.twitter && (
-                        <a
-                          href={`${
-                            !contactData.twitter.startsWith("http") &&
-                            !contactData.twitter.startsWith("//")
+                              }${contactData.facebook}`}
+                            target="_blank"
+                          >
+                            <FacebookIcon />
+                          </a>
+                        )}
+                        {contactData.twitter && (
+                          <a
+                            href={`${!contactData.twitter.startsWith("http") &&
+                              !contactData.twitter.startsWith("//")
                               ? "//"
                               : ""
-                          }${contactData.twitter}`}
-                          target="_blank"
-                        >
-                          <TwitterIcon className={classes.twitterIcon} />
-                        </a>
-                      )}
-                      {contactData.linkedIn && (
-                        <a
-                          href={`${
-                            !contactData.linkedIn.startsWith("http") &&
-                            !contactData.linkedIn.startsWith("//")
+                              }${contactData.twitter}`}
+                            target="_blank"
+                          >
+                            <TwitterIcon className={classes.twitterIcon} />
+                          </a>
+                        )}
+                        {contactData.linkedIn && (
+                          <a
+                            href={`${!contactData.linkedIn.startsWith("http") &&
+                              !contactData.linkedIn.startsWith("//")
                               ? "//"
                               : ""
-                          }${contactData.linkedIn}`}
-                          target="_blank"
-                        >
-                          <LinkedInIcon />
-                        </a>
-                      )}
-                    </span>
-                  )}
+                              }${contactData.linkedIn}`}
+                            target="_blank"
+                          >
+                            <LinkedInIcon />
+                          </a>
+                        )}
+                      </span>
+                    )}
                 </FieldContent>
               </h2>
               <h4>
@@ -588,7 +578,7 @@ export default function ContactDetailCard(props) {
         <Grid item xs={12} className={`${classes.border}`}>
           <div className={classes.SectMargin}>
             <Grid item xs={12} style={{ minHeight: "33px" }}>
-              <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
+              <h4 style={{ margin: "0 0 13px 0", "float": "left" }}>
                 Lead Stage changed:{" "}
                 <span style={{ fontWeight: "normal" }}>
                   {anyToDate(
@@ -625,7 +615,7 @@ export default function ContactDetailCard(props) {
           spacing={0}
         >
           <Grid item xs={12}>
-            <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
+            <h4 style={{ margin: "0 0 13px 0", "float": "left" }}>
               Associated Interests & Deals
             </h4>
           </Grid>
@@ -676,66 +666,6 @@ export default function ContactDetailCard(props) {
             />
           </div>
         </Grid>
-
-        {/*/////////// Recent Converstaion. //////////// */}
-        {/* <Grid item xs={12} className={`${classes.border}`}>
-          <div className={classes.SectMargin}>
-            <RecentConversations
-              header={"Recent Conversations"}
-              handleOpenExpandableCard={handleOpenExpandableCard}
-            />
-          </div>
-        </Grid> */}
-
-        {/*/////////// new section //////////// */}
-        <Grid item xs={12} className={`${classes.border}`}>
-          {/* <div className={classes.SectMargin}>
-            <Grid item xs={12}>
-              <h4 style={{ marginBottom: "8px" }}>
-                Add Wells and Parcels to this contact
-              </h4>
-            </Grid>
-            <Grid item xs={12}>
-              <Autocomplete
-                options={[]}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    size="small"
-                    placeholder="Search Wells, Parcels"
-                    variant="outlined"
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: (
-                        <InputAdornment>
-                          <SearchIcon htmlColor="#929292" />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              />
-            </Grid>
-          </div> */}
-        </Grid>
-
-        {/*/////////// table section //////////// */}
-        {/* {contactData && contactData.owners && contactData.owners.length > 0 && (
-            <Grid
-              item
-              xs={12}
-              className={`${classes.border} ${classes.ownersTable}`}
-            >
-              <div className={classes.SectMargin}>
-                <M1nTable
-                  parent="ownersPerContacts"
-                  ownersIdsArray={contactData.owners}
-                  contactId={stateApp.selectedContact}
-                />
-              </div>
-            </Grid>
-          )} */}
       </Grid>
 
       {/*/////////// rigth column //////////// */}
@@ -750,8 +680,8 @@ export default function ContactDetailCard(props) {
           {shrinkRightColumn ? (
             <ArrowBackIosRoundedIcon />
           ) : (
-            <ArrowForwardIosRoundedIcon />
-          )}
+              <ArrowForwardIosRoundedIcon />
+            )}
         </IconButton>
         {shrinkRightColumn || showShrinkColumnContent ? (
           <div style={{ width: "68px" }}>
@@ -779,11 +709,11 @@ export default function ContactDetailCard(props) {
             </IconButton> */}
           </div>
         ) : (
-          <Grid container spacing={0} id="expandedRCContent">
-            {/* //////////// Deal Card ////////////// */}
+            <Grid container spacing={0} id="expandedRCContent">
+              {/* //////////// Deal Card ////////////// */}
 
-            {/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
-            {/* <Grid item xs={12}>
+              {/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
+              {/* <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <div className={classes.divDealCard}>
                   <p className={classes.pDealCard}>
@@ -797,7 +727,7 @@ export default function ContactDetailCard(props) {
             </Grid>
              */}
 
-            {/* <Grid item xs={12}>
+              {/* <Grid item xs={12}>
               <Deals
                 contact={contactData}
                 transactData={transactData}
@@ -807,54 +737,27 @@ export default function ContactDetailCard(props) {
               <Divider />
             </Grid> */}
 
-            <Grid item xs={12} className={classes.Comments}>
-              <Comments
-                targetSourceId={contactData._id}
-                targetLabel="contact"
-                detailCard
-                top={2}
-                viewAll={handleClickRightDialogOpen}
-              />
-              <Divider />
-            </Grid>
-
-            <Grid item xs={12} className={classes.Comments}>
-              <Documents
-                // contact={contactData}
-                // transactData={transactData}
-                // transactId={transactId}
-                // selectRowOpenContact={props.selectRowOpenContact}
-                handleOpenExpandableCard={handleOpenExpandableCard}
-                id={contactData._id}
-                user_id={stateApp.user.email}
-              />
-              <Divider />
-            </Grid>
-
-            {/* <Grid item xs={12} className={classes.Comments}>
-              <Card
-                raised
-                style={{
-                  minHeight: "35px",
-                  margin: "20px",
-                  paddingBottom: "20px",
-                }}
-              >
-                <LeadScore score={5} lastContacted={"Jun 24, 2020"} />
-              </Card>
-              <Divider />
-            </Grid> */}
-
-            {/* <Grid item xs={12}>
-                <Activities
-                  id={contactData._id}
-                  user_id={stateApp.user.email}
-                  activityLog={contactData.activityLog}
+              <Grid item xs={12} className={classes.Comments}>
+                <Comments
+                  targetSourceId={contactData._id}
+                  targetLabel="contact"
+                  detailCard
+                  top={2}
+                  viewAll={handleClickRightDialogOpen}
                 />
                 <Divider />
-              </Grid> */}
-          </Grid>
-        )}
+              </Grid>
+
+              <Grid item xs={12} className={classes.Comments}>
+                <Documents
+                  handleOpenExpandableCard={handleOpenExpandableCard}
+                  id={contactData._id}
+                  user_id={stateApp.user.email}
+                />
+                <Divider />
+              </Grid>
+            </Grid>
+          )}
       </div>
 
       {openDialog && (
@@ -869,7 +772,7 @@ export default function ContactDetailCard(props) {
             <BuyContactsInfoDialogContent
               onClose={handleCloseDialog}
               rows={[contactData]}
-              setRows={() => {}}
+              setRows={() => { }}
               updateMelissaTable={() => {
                 getLastMelissaRecord({
                   variables: {
@@ -980,16 +883,16 @@ export default function ContactDetailCard(props) {
       )}
     </div>
   ) : (
-    <div
-      style={{
-        padding: "20px",
-        position: "absolute",
-        height: "100%",
-        width: "100%",
-        zIndex: "50",
-      }}
-    >
-      <CircularProgress size={80} disableShrink color="secondary" />
-    </div>
-  );
+      <div
+        style={{
+          padding: "20px",
+          position: "absolute",
+          height: "100%",
+          width: "100%",
+          zIndex: "50",
+        }}
+      >
+        <CircularProgress size={80} disableShrink color="secondary" />
+      </div>
+    );
 }

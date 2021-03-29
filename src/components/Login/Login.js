@@ -162,7 +162,6 @@ const Login = (props) => {
               })();
 
           if (accountObj) {
-            console.log('hellz yeah!');
 
             // We need to reject id tokens that were not issued with the default sign-in policy.
             // "acr" claim in the token tells us what policy is used (NOTE: for new policies (v2.0), use "tfp" instead of "acr")
@@ -193,7 +192,6 @@ const Login = (props) => {
             }
 
             // Account object was retrieved, continue with app progress
-            console.log("id_token acquired at: " + new Date().toString());
             // Account object is now an array! what do we do if multiple users are signed in on the same browser?
             // Passing first account as default for now
             finishAADAuth(accountObj);
@@ -201,7 +199,6 @@ const Login = (props) => {
             if (tokenResponse && tokenResponse.tokenType === "Bearer") {
               // No account object available, but access token was retrieved
               console.log("access_token acquired at: " + new Date().toString());
-              console.log("now what???");
             } else if (tokenResponse === null) {
               // tokenResponse was null, attempt sign in or enter unauthenticated state for app
             } else {
@@ -323,47 +320,10 @@ const Login = (props) => {
     const request = authGraphQLRequest(stateApp.graphqlScope);
     request.account = accountObj;
 
-    // request.scopes = readProfileRequest.scopes;
-    // request.loginHint = request.account.username;
-    // const readProfileLoginResponse = await ssoSilent(request).catch((error) => {
-    //   //do some error stuff
-    //   console.log(error);
-    // });
-    // if (!readProfileLoginResponse) {
-    //   //do some error stuff
-    //   return;
-    // }
 
-    // const readProfileToken = await getTokenRedirect(request).catch((error) => {
-    //   //do some error stuff
-    //   console.log(error);
-    // });
-    // if (!readProfileToken) {
-    //   //do some error stuff
-    //   return;
-    // }
-
-    // const readProfileResponse = await callMSGraph(
-    //   "https://graph.microsoft.com/v1.0/me",
-    //   readProfileToken.accessToken
-    // ).catch((error) => {
-    //   //do some error stuff
-    //   console.log(error);
-    // });
-    // if (!readProfileResponse) {
-    //   //do some error stuff
-    //   return;
-    // }
 
     request.loginHint = request.account.username;
-    // const authGraphQLLoginResponse = await ssoSilent(request).catch((error) => {
-    //   //do some error stuff
-    //   console.log(error);
-    // });
-    // if (!authGraphQLLoginResponse) {
-    //   //do some error stuff
-    //   return;
-    // }
+
 
     authGraphQLRequest.account = request.account;
     const authGraphQLToken = await getTokenRedirect(request).catch(
@@ -402,23 +362,6 @@ const Login = (props) => {
       return;
     }
 
-    // const graphQLRefreshResponse = await callProfileGraphQL("https://m1graphql.azurewebsites.net/.auth/refresh", authGraphQLResponse.authenticationToken).catch(error => {
-    //   //do some error stuff
-    //   console.log(error);
-    // });
-    // if (!graphQLRefreshResponse) {
-    //   //do some error stuff
-    //   return;
-    // }
-
-    // const graphQLProfileResponse2 = await callProfileGraphQL("https://m1graphql.azurewebsites.net/.auth/me", authGraphQLResponse.authenticationToken).catch(error => {
-    //   //do some error stuff
-    //   console.log(error);
-    // });
-    // if (!graphQLProfileResponse2) {
-    //   //do some error stuff
-    //   return;
-    // }
 
     const authUser = {}
     authUser.issuerUserId = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'http://schemas.microsoft.com/identity/claims/objectidentifier'});

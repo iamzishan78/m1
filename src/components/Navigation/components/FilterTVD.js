@@ -75,17 +75,14 @@ export default function FilterTVD() {
     }
     if (!min && max) {
       filter = ["all", ["<=", ["get", "trueVerticalDepth"], max]];
-      console.log("add filter", filter);
     } else if (min && !max) {
       filter = ["all", [">=", ["get", "trueVerticalDepth"], min]];
-      console.log("add filter", filter);
     } else if (min && max) {
       filter = [
         "all",
         [">=", ["get", "trueVerticalDepth"], min],
         ["<=", ["get", "trueVerticalDepth"], max],
       ];
-      console.log("add filter", filter);
     } else {
       filter = null;
     }

@@ -5,6 +5,8 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import CloseIcon from "@material-ui/icons/Close";
+import IconButton from "@material-ui/core/IconButton";
 import Taps from "../../../Taps";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
@@ -15,6 +17,8 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { makeStyles } from "@material-ui/core/styles";
+import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
+import { GETMONGOUSERS as GETUSERS } from "../../../../../graphQL/useQueryGetUsers";
 
 const phonenumber = (inputtxt) => {
   if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
@@ -52,10 +56,28 @@ const useStyles = makeStyles((theme) => ({
       left: "0",
       top: "55px",
     },
+    margin: '0 8px 25px 8px',
+    flex:'none'
   },
   dialogTitle: {
     paddingBottom: (dataContacts) => (dataContacts ? "55px" : "16px"),
   },
+  dialogFooter: {
+    display: "flex",
+    justifyContent: "flex-end",
+    paddingTop: "10px",
+    margin:'0 28px 15px 0',
+  },
+  footerButton: {
+    letterSpacing: "1px",
+    textTransform: "capitalize",
+    fontWeight: "bold",
+    padding: "8px 20px",
+    width:'120px'
+  },
+  closeIcon: {
+		color: theme.palette.secondary.main,
+	},
 }));
 
 export default function AddContactDialogContent(props) {
@@ -63,6 +85,7 @@ export default function AddContactDialogContent(props) {
   const [validated, setValidated] = useState(false);
   const [activeTapIndex, setActiveTapIndex] = useState(0);
   const [contacts, setContacts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [existingContact, setExistingContact] = useState({ name: "" });
   const [newContact, setNewContact] = useState({
     name: "",
@@ -75,14 +98,20 @@ export default function AddContactDialogContent(props) {
     country: "",
     state: "",
     zip: "",
+    contactOwner: ""
     // owners: props.parent ? [props.parent] : [],
   });
+
   const [
     getPaginatedContacts,
     { loading: loadingContacts, data: dataContacts },
   ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
+  });
+
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
+    fetchPolicy: "cache-and-network",
   });
 
   const [
@@ -128,6 +157,21 @@ export default function AddContactDialogContent(props) {
     emptyStates();
   }, [activeTapIndex]);
 
+  useEffect(() => {
+    getAllUsers();
+  }, []);
+
+  useEffect(() => {
+    if (userLists && userLists.allUsers) {
+      setUsers(
+        userLists.allUsers.map((user) => ({
+          value: user._id,
+          text: user.name
+        }))
+      );
+    }
+  }, [userLists]);
+
   const emptyStates = () => {
     setExistingContact({ name: "" });
     setNewContact({
@@ -165,7 +209,6 @@ export default function AddContactDialogContent(props) {
 
   const handleClickAdd = (e) => {
     e.preventDefault();
-
     if (props.dealsPage) {
       if (activeTapIndex === 0) {
         addContact({
@@ -229,8 +272,8 @@ export default function AddContactDialogContent(props) {
                     option && option.name
                       ? option.name
                       : typeof option === "string"
-                      ? option
-                      : ""
+                        ? option
+                        : ""
                   }
                   autoComplete
                   autoSelect
@@ -254,8 +297,8 @@ export default function AddContactDialogContent(props) {
               </Grid>
             </Grid>
           ) : (
-            <CircularProgress size={40} disableShrink color="secondary" />
-          )}
+              <CircularProgress size={40} disableShrink color="secondary" />
+            )}
         </div>
       </React.Fragment>
     );
@@ -429,6 +472,20 @@ export default function AddContactDialogContent(props) {
               }}
             />
           </Grid>
+          <Grid item xs={12}>
+            <h3>Contact Owner</h3>
+            <Autocomplete
+              className={classes.fieldWidth}
+              options={users}
+              onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+              value={users.find((user) => user?.value === newContact.contactOwner) || null}
+              getOptionLabel={(option) => option.text}
+              getOptionSelected={(option) => option.value === newContact.contactOwner}
+              renderInput={(params) => (
+                <TextField size="small" {...params} className={classes.maxWidth} multiline value={newContact.contactOwner} />
+              )}
+            />
+          </Grid>
         </Grid>
       </React.Fragment>
     );
@@ -442,16 +499,34 @@ export default function AddContactDialogContent(props) {
   const modalClass = Modals();
 
   return !loadingContacts ? (
-    <React.Fragment>
-      <DialogTitle className={modalClass.title} id="customized-dialog-title">
-        Add a Contact
-        <HighlightOffIcon
-          fontSize="large"
-          className={modalClass.titleClose}
-          onClick={props.onClose}
-        />
-      </DialogTitle>
-      <DialogContent dividers className={classes.dialogContent}>
+    <>
+      <RightDialog
+        open={true}
+        handleClickDialogClose={handleClickDialogClose}
+        width="450px"
+      >
+        <Grid item xs={12} style={{ minHeight: "35px",padding: 22 }}>
+        <h4
+              style={{
+                margin: "0 0 15px 0",
+                float: "left",
+                fontSize: "1.4rem",
+              }}
+            >
+               Add New Contact
+          </h4>
+					<div style={{ float: "right" }}>
+							<IconButton
+									onClick={props.onClose}
+									size="small"
+								>
+									<CloseIcon className={classes.closeIcon} fontSize="small" />
+							</IconButton>
+					</div>
+          
+      </Grid>
+      <DialogContent className={classes.dialogContent}>
+        
         {contacts && contacts.length > 0 ? (
           <Taps
             tabLabels={["Add New", "Select Existing"]}
@@ -460,25 +535,38 @@ export default function AddContactDialogContent(props) {
             backgroundColor="#fff"
           />
         ) : (
-          addNew()
-        )}
+            addNew()
+          )}
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClickDialogClose} color="primary">
+      <div className={classes.dialogFooter}>
+        <Button 
+        onClick={handleClickDialogClose} 
+        color="default"
+        size="medium"
+        variant="contained"
+        className={classes.footerButton}
+        style={{
+          margin: "0px 15px 0px 0px",
+        }}
+        >
           Cancel
         </Button>
         <Button
           disabled={!validated}
           onClick={handleClickAdd}
+          variant="contained"
           color="secondary"
+          className={classes.footerButton}
+          size="medium"
         >
           Add
         </Button>
-      </DialogActions>
-    </React.Fragment>
+      </div>
+      </RightDialog>
+    </>
   ) : (
-    <div style={{ padding: "15px" }}>
-      <CircularProgress size={80} disableShrink color="secondary" />
-    </div>
-  );
+      <div style={{ padding: "15px" }}>
+        <CircularProgress size={80} disableShrink color="secondary" />
+      </div>
+    );
 }

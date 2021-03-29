@@ -22,7 +22,7 @@ import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
-import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloProvider, ApolloClient, InMemoryCache, useApolloClient } from "@apollo/client";
 import { relayStylePagination } from "./graphQL/apolloPaginationSchemes.js";
 import { CircularProgress, Typography } from "@material-ui/core";
 // import ProfileProvider from "./components/Profile/ProfileProvider";
@@ -82,7 +82,6 @@ const theme = createMuiTheme({
 
 const SetApolloClient = (props) => {
   const [stateApp] = useContext(AppContext);
-  //console.log('ep',stateApp.apolloClientEndpoint)
 
   useEffect(() => {
     props.setApolloClient();
@@ -90,7 +89,6 @@ const SetApolloClient = (props) => {
 
   useEffect(() => {
     if (stateApp.apolloClientEndpoint) {
-      // console.log('ue endpoint',stateApp.apolloClientEndpoint)
       props.setApolloClientEndpoint(stateApp.apolloClientEndpoint);
     }
   }, [stateApp.apolloClientEndpoint]);
@@ -101,12 +99,12 @@ const SetApolloClient = (props) => {
     }
   }, [stateApp.user]);
 
-  useEffect(()=> {
+  useEffect(() => {
     let draggableArea = document.getElementById("root");
     if (window.location.pathname == "/") {
-      draggableArea.style.overflow='hidden'
+      draggableArea.style.overflow = 'hidden'
     } else {
-      draggableArea.style.overflow='visible'
+      draggableArea.style.overflow = 'visible'
     }
   }, [stateApp]);
 
@@ -141,6 +139,7 @@ const SetApolloClient = (props) => {
 
 const PrivateRoute = ({ component, ...options }) => {
   const [stateApp] = useContext(AppContext);
+  const apolloClient = useApolloClient();
 
   if (
     stateApp.user &&
@@ -154,10 +153,11 @@ const PrivateRoute = ({ component, ...options }) => {
 
   const finalComponent =
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
+      && apolloClient?.link?.options?.headers?.["X-ZUMO-AUTH"]
       ? component
       : (() => {
-          return stateApp.myMSALB2CObj ? LoginB2C : Login;
-        })();
+        return stateApp.myMSALB2CObj ? LoginB2C : Login;
+      })();
 
   return (
     <div>
@@ -165,34 +165,6 @@ const PrivateRoute = ({ component, ...options }) => {
     </div>
   );
 };
-
-// seems like this might have broken b2c auth
-// const NotFoundRedirect = () =>{
-//   const [stateApp] = useContext(AppContext);
-//   const location = window.location;
-//   //redirects after 3 seconds
-//   if (location.pathname !== "/") {
-//     setTimeout(() =>{
-//       if (!stateApp.registeredRoutes.includes(location.pathname)){
-//         location.replace("/");
-//       };
-//     }, 3000);
-//     return ( stateApp.loading === false &&
-//       <div style={{margin: "auto", marginTop:"20%"}}>
-//         <Typography
-//           variant="h6"
-//           align="center"
-//           gutterBottom
-//           color="textSecondary"
-//         >
-//           404 | Page not found. Redirecting...
-//         </Typography>
-//       </div>
-//     );
-//   } else {
-//     return null;
-//   }
-// };
 
 function App() {
   const [apolloClient, setApolloClient] = useState(null);
@@ -202,7 +174,6 @@ function App() {
   //set default to core until login is complete and we can get the tenant's endpoint
   //const apolloEndpoint = "https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA==";
   const updateApolloClientEndpoint = (endpoint) => {
-    //console.log('update apollo end',endpoint)
     setApolloClientEndpoint(endpoint);
     updateApolloClient(endpoint, apolloClientToken);
   };
@@ -214,7 +185,8 @@ function App() {
 
   const updateApolloClient = (endpoint, token) => {
     //uncomment to run against local
-    // endpoint = "http://localhost:7071/api/m1graph"
+    //endpoint = "http://localhost:7071/api/m1graph"
+
 
     if (!apolloClient) {
       let client = new ApolloClient({
@@ -240,7 +212,6 @@ function App() {
     }
 
     if (apolloClient && endpoint) {
-      console.log("endpoint", endpoint);
 
       setApolloClient((state, props) => {
         return new ApolloClient({
@@ -252,7 +223,6 @@ function App() {
     }
 
     if (apolloClient && token) {
-      console.log("token added to graphQL");
       apolloClient.link.options.headers = { ["X-ZUMO-AUTH"]: token };
     }
   };
@@ -339,8 +309,8 @@ function App() {
             </MuiThemeProvider>
           </ApolloProvider>
         ) : (
-          <CircularProgress></CircularProgress>
-        )}
+            <CircularProgress></CircularProgress>
+          )}
       </AppProvider>
     </ReduxProvider>
   );

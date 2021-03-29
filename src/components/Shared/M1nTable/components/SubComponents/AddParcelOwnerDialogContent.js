@@ -155,8 +155,6 @@ export default function AddParcelOwnerDialogContent({
   }, [allContacts]);
 
   useEffect(() => {
-    console.log("AUTOCOMPLETE INPUT CHANGE: ", nameAutInputValue);
-
     //will also run during initial mount
     setIsNextPageLoading(true);
     getPaginatedContacts({

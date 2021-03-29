@@ -52,7 +52,7 @@ export default function MakeItAContactConfirmationDialogContent(props) {
       </DialogContent>
       <DialogActions>
 
-      <Button
+        <Button
           onClick={() => {
             props.onClose();
           }}
@@ -68,7 +68,7 @@ export default function MakeItAContactConfirmationDialogContent(props) {
                 universalCircularLoaderAct: true,
               }));
               if (props.targetLabel === "owner" ||
-                  props.targetLabel === "Parcel Ownership") {
+                props.targetLabel === "Parcel Ownership") {
                 addContact({
                   variables: {
                     contact: {

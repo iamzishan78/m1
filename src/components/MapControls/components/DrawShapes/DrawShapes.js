@@ -77,13 +77,8 @@ export default function DrawShapes(props) {
   );
 
   const eventsConfiguredRef = useRef(false);
-  //   const [
-  //     getCustomLayers,
-  //     { data: customLayerData },
-  //   ] = useLazyQuery(CUSTOMLAYERSQUERY, { fetchPolicy: "network-only" });
-
+  
   const DEBUGGER = (source, value) => {
-    console.log(`%c[DrawShapes.js] ${source}`, DEBUG_GREEN, value);
   };
 
   const createShapeMarker = (feature) => {
@@ -198,9 +193,6 @@ export default function DrawShapes(props) {
     const { currentFeature } = stateApp;
     if (currentFeature) {
       const elem = document.getElementById(currentFeature.id);
-      // elem.parentNode.removeChild(elem);
-      console.log("elem", elem);
-
       setStateApp((state) => ({
         ...state,
         editDraw: false,
@@ -224,7 +216,6 @@ export default function DrawShapes(props) {
     // save data onto geoJSON properties fields
 
     spatialDataAttributes.forEach((attribute) => {
-      // console.log(attribute, spatialData[attribute]);
       stateApp.draw.setFeatureProperty(
         stateApp.currentFeature.id,
         attribute,
@@ -243,22 +234,6 @@ export default function DrawShapes(props) {
     const { currentFeature } = stateApp;
     stateApp.draw.delete(currentFeature.id);
 
-    // handleDeleteSpatialDataAndShape();
-    // if (currentFeature) {
-    //     setStateApp((state) => ({
-    //         ...state,
-    //         editDraw: false,
-    //         currentFeature: undefined,
-    //     }));
-    //     if (currentFeature.id.includes("draw_polygon")
-    //         || currentFeature.id.includes("drag_circle")
-    //         || currentFeature.id.includes("draw_rectangle")) {
-    //         setStateNav((stateNav) => ({
-    //             ...stateNav,
-    //             filterDrawing: []
-    //         }));
-    //     }
-    // }
 
     //////cleaning the selected title opinion and redirecting to title opinion page//
 

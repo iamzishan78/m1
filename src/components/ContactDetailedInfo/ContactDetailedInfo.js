@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MelissaTable from "./components/MelissaTable";
-import { makeStyles } from "@material-ui/core/styles";
-import FieldContent, {
-  LinkTypes,
-} from "./../ContactDetailCard/components/FieldContent";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
+import FieldContent from "../ContactDetailCard/components/FieldContent";
+import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -17,7 +16,46 @@ import {
   Button,
   FormControl,
   Typography,
+  Box,
+  FormControlLabel,
+  FormGroup,
+  Switch
 } from "@material-ui/core";
+
+
+const AntSwitch = withStyles((theme) => ({
+  root: {
+    width: 28,
+    height: 16,
+    padding: 0,
+    display: "flex",
+  },
+  switchBase: {
+    padding: 2,
+    color: theme.palette.grey[500],
+    "&$checked": {
+      transform: "translateX(12px)",
+      color: theme.palette.common.white,
+      "& + $track": {
+        opacity: 1,
+        backgroundColor: "#12ABE0",
+        borderColor: "#12ABE0",
+      },
+    },
+  },
+  thumb: {
+    width: 12,
+    height: 12,
+    boxShadow: "none",
+  },
+  track: {
+    border: `1px solid ${theme.palette.grey[500]}`,
+    borderRadius: 16 / 2,
+    opacity: 1,
+    backgroundColor: theme.palette.common.white,
+  },
+  checked: {},
+}))(Switch);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,8 +68,8 @@ const useStyles = makeStyles((theme) => ({
     color: "lightgray",
   },
   viewAll: {
-    margin: "0 0 8px 0",
-    float: "right",
+    margin: "0 0 8px 22px",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -47,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textBtn: {
     margin: "0 0 8px 0",
-    float: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -118,19 +156,33 @@ const useStyles = makeStyles((theme) => ({
   },
   showAll: {
     margin: "8px 0 0 0",
-    float: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
     "&:hover": { color: "#757575" },
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
+  switchButtom: {
+    "float": "right",
+    width: "fit-content",
+    alignSelf: "flex-end",
+    marginRight: 0,
+    "& span.MuiTypography-body1": {
+      fontSize: "0.9rem",
+      marginLeft: "5px"
+    },
+  },
+  switchTextDeselected: {
+    color: "rgb(141, 141, 141)",
+  },
 }));
 
-export default function DetailInfo (props) {
+export default function DetailInfo(props) {
   const [basicInfExp, setBasicInfExp] = useState(false);
+  const [showEmpty, setShowEmpty] = useState(true);
   const classes = useStyles();
-  const [loading, setLoading]= useState(false);
+  const [loading, setLoading] = useState(false);
   const basicInfoContent = {
     // "Full Name": {
     //   data: {
@@ -185,26 +237,24 @@ export default function DetailInfo (props) {
 
   const lastUpdateByRow =
     props.contactData.lastUpdateBy &&
-    props.contactData.lastUpdateBy.name === null ? (
-      <span className={classes.userSmallLoader}>
-        <CircularProgress size={22} color="secondary" />
-      </span>
-    ) : (props.contactData.lastUpdateBy &&
+      props.contactData.lastUpdateBy.name === null ? (
+        <span className={classes.userSmallLoader}>
+          <CircularProgress size={22} color="secondary" />
+        </span>
+      ) : (props.contactData.lastUpdateBy &&
         props.contactData.lastUpdateBy.name) ||
-      props.contactData.lastUpdateAt ? (
-      `${
-        props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name
-          ? props.contactData.lastUpdateBy.name
-          : ""
-      }
-    ${
-      props.contactData.lastUpdateAt
-        ? " - " + anyToDate(props.contactData.lastUpdateAt).toLocaleString()
-        : ""
-    }`
-    ) : (
-      <p className={classes.notAvailableP}>Not Available</p>
-    );
+        props.contactData.lastUpdateAt ? (
+          `${props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name
+            ? props.contactData.lastUpdateBy.name
+            : ""
+          }
+    ${props.contactData.lastUpdateAt
+            ? " - " + anyToDate(props.contactData.lastUpdateAt).toLocaleString()
+            : ""
+          }`
+        ) : (
+          <p className={classes.notAvailableP}>Not Available</p>
+        );
 
   const createByRow =
     props.contactData.createBy && props.contactData.createBy.name === null ? (
@@ -213,19 +263,17 @@ export default function DetailInfo (props) {
       </span>
     ) : (props.contactData.createBy && props.contactData.createBy.name) ||
       props.contactData.createAt ? (
-      `${
-        props.contactData.createBy && props.contactData.createBy.name
-          ? props.contactData.createBy.name
-          : ""
-      }
-    ${
-      props.contactData.createAt
-        ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
-        : ""
-    }`
-    ) : (
-      <p className={classes.notAvailableP}>Not Available</p>
-    );
+          `${props.contactData.createBy && props.contactData.createBy.name
+            ? props.contactData.createBy.name
+            : ""
+          }
+    ${props.contactData.createAt
+            ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
+            : ""
+          }`
+        ) : (
+          <p className={classes.notAvailableP}>Not Available</p>
+        );
 
   const basicInfoExpContent = {
     "Email 2": {
@@ -260,15 +308,15 @@ export default function DetailInfo (props) {
       data: { AltPhone3: props.contactData.AltPhone3 },
       linkType: LinkTypes.None,
     },
-
+    "Relative Names": {
+      data: { relatives: props.contactData.relatives },
+      linkType: LinkTypes.None,
+    },
     // Notes: {
     //   data: { notes: props.contactData.notes },
     //   linkType: LinkTypes.None,
     // },
-    Website: {
-      data: { website: props.contactData.website },
-      linkType: LinkTypes.None,
-    },
+
 
     "LinkedIn Profile": {
       data: { linkedIn: props.contactData.linkedIn },
@@ -321,11 +369,11 @@ export default function DetailInfo (props) {
       //   </a>
       // ),
     },
-
-    "Relative Names": {
-      data: { relatives: props.contactData.relatives },
+    Website: {
+      data: { website: props.contactData.website },
       linkType: LinkTypes.None,
     },
+
     // "Company Name": {
     //   data: { companyName: props.contactData.companyName },
     //   linkType: LinkTypes.None,
@@ -334,10 +382,10 @@ export default function DetailInfo (props) {
     //   data: { jobTitle: props.contactData.jobTitle },
     //   linkType: LinkTypes.None,
     // },
-    "Lead Stage": {
-      data: { leadStage: props.contactData.leadStage },
-      linkType: LinkTypes.None,
-    },
+    // "Lead Stage": {
+    //   data: { leadStage: props.contactData.leadStage },
+    //   linkType: LinkTypes.None,
+    // },
     "Industry Type": {
       data: { industryType: props.contactData.industryType },
       linkType: LinkTypes.None,
@@ -351,16 +399,24 @@ export default function DetailInfo (props) {
       data: { leadSource: props.contactData.leadSource },
       linkType: LinkTypes.None,
     },
-    Status: {
-      data: { status: props.contactData.status },
-      linkType: LinkTypes.None,
-    },
+
     "Time Zone": {
       data: { timeZone: props.contactData.timeZone },
       linkType: LinkTypes.None,
     },
     Territory: {
       data: { territory: props.contactData.territory },
+      linkType: LinkTypes.None,
+    },
+    Status: {
+      data: { status: props.contactData.status },
+      linkType: LinkTypes.None,
+    },
+    "Contact Owner": {
+      data: {
+        contactOwner: props.contactData.contactOwner,
+        contactOwnerId: props.contactData.contactOwnerId
+      },
       linkType: LinkTypes.None,
     },
     "Created By": {
@@ -381,71 +437,175 @@ export default function DetailInfo (props) {
       setLoading(false);
     }
     update();
-  },[props.contactData])
+  }, [props.contactData])
+
+
+
+  const handleEmptyFields = () => {
+    setShowEmpty(!showEmpty);
+  }
+
+  const ToggleEmptyFieldButton = () => {
+    return (
+      <FormGroup style={{ display: "block" }}>
+        <FormControlLabel
+          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""
+            } ${!showEmpty ? classes.switchTextDeselected : ""}`}
+          control={
+            <React.Fragment>
+              <AntSwitch
+                checked={showEmpty}
+                onChange={() => {
+                  handleEmptyFields();
+                }}
+                name="checkedC"
+              />
+            </React.Fragment>
+          }
+          label="Show empty fields"
+          labelPlacement="end"
+
+        />
+      </FormGroup>
+    );
+  };
 
   return (
     <div className={classes.root}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
-        <h4 style={{ margin: "0 0 10px 0", float: "left" }}>
+        <h4 style={{ margin: "0 0 10px 0", "float": "left" }}>
           Basic Information
         </h4>
-        <h4
-          className={classes.viewAll}
-          onClick={() => {
-            props.handleOpenExpandableCard(
-              <MelissaTable
-                id={props.contactData._id}
-                entity={props.contactData.entity}
-                rows={{ ...basicInfoContent, ...basicInfoExpContent }}
-                wrapperClass={classes.dataSect}
-                melissaData={props.melissaData}
-              />,
-              "Detailed Information"
-            );
-          }}
-        >
-          View All
+        <Box display="flex" justifyContent="flex-end">
+          <ToggleEmptyFieldButton />
+          <h4
+            className={classes.viewAll}
+            onClick={() => {
+              props.handleOpenExpandableCard(
+                <MelissaTable
+                  id={props.contactData._id}
+                  entity={props.contactData.entity}
+                  rows={{ ...basicInfoContent, ...basicInfoExpContent }}
+                  wrapperClass={classes.dataSect}
+                  melissaData={props.melissaData}
+                />,
+                "Detailed Information"
+              );
+            }}
+          >
+            View All
         </h4>
+        </Box>
       </Grid>
+
 
       <Grid item xs={12} container className={classes.dataSect} spacing={0}>
         {!loading && basicInfoContent &&
-          Object.entries(basicInfoContent).map(([key, row]) => (
-          <React.Fragment>
-            <Grid item xs={3} className="fieldName">
-              <p className="dataLabels">{key}</p>
-            </Grid>
-            <Grid item xs={9}>
-              <FieldContent
-                id={props.contactData._id}
-                entity={props.contactData.entity}
-                content={row.data}
-                linkType={row.linkType}
-              />
-            </Grid>
-          </React.Fragment>
-        ))}
+          Object.entries(basicInfoContent).map(([key, row]) => {
+            if (showEmpty) {
+              return (
+                <React.Fragment>
+                  <Grid item xs={3} className="fieldName">
+                    <p className="dataLabels">{key}</p>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FieldContent
+                      id={props.contactData._id}
+                      entity={props.contactData.entity}
+                      isMerged={!!props.contactData.mergedContacts}
+                      content={row.data}
+                      linkType={row.linkType}
+                    />
+                  </Grid>
+                </React.Fragment>
+              )
+            } else {
+              let objName = Object.keys(row.data)[0];
+              if (row.data[objName] != undefined
+                && row.data[objName] != `""`
+                && row.data[objName] != ''
+                && row.data[objName] != ""
+                && row.data[objName].length != 0
+                && row.data[objName] != null
+              ) {
+                return (
+                  <React.Fragment>
+                    <Grid item xs={3} className="fieldName">
+                      <p className="dataLabels">{key}</p>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <FieldContent
+                        id={props.contactData._id}
+                        entity={props.contactData.entity}
+                        isMerged={!!props.contactData.mergedContacts}
+                        content={row.data}
+                        linkType={row.linkType}
+                      />
+                    </Grid>
+                  </React.Fragment>
+                )
+              }
+            }
+
+          })}
 
         {basicInfExp && (
           <>
-            {Object.entries(basicInfoExpContent).map(([key, row]) => (
-              <React.Fragment key={key}>
-                <Grid item xs={3} className="fieldName">
-                  <p className="dataLabels">{key}</p>
-                </Grid>
-                <Grid item xs={9}>
-                  <FieldContent
-                    onlyChildren={row.inner ? true : false}
-                    id={props.contactData._id}
-                    entity={props.contactData.entity}
-                    content={row.data}
-                    linkType={row.linkType}
-                  >
-                    {row.inner}
-                  </FieldContent>
-                </Grid>
-              </React.Fragment>
-            ))}
+            {Object.entries(basicInfoExpContent).map(([key, row]) => {
+              if (showEmpty) {
+                return (
+                  <React.Fragment key={key}>
+                    <Grid item xs={3} className="fieldName">
+                      <p className="dataLabels">{key}</p>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <FieldContent
+                        onlyChildren={row.inner ? true : false}
+                        id={props.contactData._id}
+                        entity={props.contactData.entity}
+                        isMerged={!!props.contactData.mergedContacts}
+                        content={row.data}
+                        linkType={row.linkType}
+                      >
+                        {row.inner}
+                      </FieldContent>
+                    </Grid>
+                  </React.Fragment>
+                )
+              } else {
+                let objName = Object.keys(row.data)[0];
+
+                if (row.data[objName] != undefined
+                  && row.data[objName] != `""`
+                  && row.data[objName] != ''
+                  && row.data[objName] != ""
+                  && row.data[objName].length != 0
+                  && row.data[objName] != null
+                ) {
+                  return (
+
+                    <React.Fragment key={key}>
+                      <Grid item xs={3} className="fieldName">
+                        <p className="dataLabels">{key}</p>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <FieldContent
+                          onlyChildren={row.inner ? true : false}
+                          id={props.contactData._id}
+                          entity={props.contactData.entity}
+                          isMerged={!!props.contactData.mergedContacts}
+                          content={row.data}
+                          linkType={row.linkType}
+                        >
+                          {row.inner}
+                        </FieldContent>
+                      </Grid>
+                    </React.Fragment>
+                  )
+                }
+              }
+
+            })}
           </>
         )}
       </Grid>
@@ -460,8 +620,8 @@ export default function DetailInfo (props) {
           {!basicInfExp ? (
             <ExpandMoreIcon style={{ position: "relative", top: "8px" }} />
           ) : (
-            <ExpandLessIcon style={{ position: "relative", top: "8px" }} />
-          )}
+              <ExpandLessIcon style={{ position: "relative", top: "8px" }} />
+            )}
         </h4>
       </Grid>
     </div>

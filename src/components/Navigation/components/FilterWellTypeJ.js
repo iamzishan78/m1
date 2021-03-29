@@ -21,7 +21,6 @@ export default function FilterWellTypeJ() {
     stateNav.typeName ? stateNav.typeName : null
   );
 
-  console.log(stateNav);
   const handleTypeChange = (value) => {
     let filter;
     if (value && value.length) {

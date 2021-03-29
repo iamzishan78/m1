@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../../AppContext";
 import { Button, Grid } from "@material-ui/core";
-import { Link } from "react-router-dom";
-import { CSVReader } from "react-papaparse";
+import { CSVReader,CSVDownloader } from "react-papaparse";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -28,6 +27,14 @@ const useStyles = makeStyles({
       borderRadius: "0 !important",
     },
   },
+  linkStyle:{
+    fontSize: "15px",
+    cursor:'pointer',
+    "&:hover": {
+     textDecorationLine: "underline",
+    },
+   color: "rgba(23, 170, 221, 1)"
+  }
 });
 
 function createData(
@@ -148,15 +155,11 @@ const uploadText = {
   paddingBottom: "8px",
   color: "#a6a6a6",
 };
-const linkContent = {
-  fontSize: "15px",
-  textDecorationLine: "none",
-  color: "rgba(23, 170, 221, 1)",
-};
 const mainContent = {
   padding: "14px 0px 0px  0px",
 };
 
+const csvColumns = `Full Name,Title,First Name,Last Name,Middle Name,Suffix,Primary Address 1,Primary Address 2,City,State,Zip,Country,Primary Email,Primary Home Phone,Primary Mobile Phone,Primary Work Phone,Email 2,LinkedIn Profile,Facebook Profile,Twitter Profile,Lead Source,Company Name,Job Title,Lead Stage,Home Phone 2,Home Phone 3,Mobile Phone 2,Mobile Phone 3,Work Phone 2,Work Phone 3,Email 3,Status,Time Zone,Territory,Campaign Name,Comments,Website,Industry Type`
 const StyledTableCell = withStyles((theme) => ({
   head: {
     fontWeight: "bold",
@@ -209,7 +212,6 @@ export default function CSVFileReader(props) {
       let matchedKeys = [ ...stateApp.m1neralHeaders ]
       for (let index in uniqueKeys) {
         const matchedKey = matchedKeys.find(el => el?.label === uniqueKeys[index])
-        console.log('matchedKey: ', matchedKey);
 
         uniqueKeys[index] = {
           mapped_key: uniqueKeys[index],
@@ -229,13 +231,11 @@ export default function CSVFileReader(props) {
 
   let handleOnError = (err, file, inputElem, reason) => {
     if (!unmounted.current) {
-      console.log(err);
     }
   };
 
   let handleOnRemoveFile = (data) => {
     if (!unmounted.current) {
-      console.log(data);
     }
   };
 
@@ -278,15 +278,15 @@ export default function CSVFileReader(props) {
           <div style={big_grey_text}>
             A CSV with these columns will yield good results
           </div>
-          <Link
-            to="/downloadables/Sample_Contacts_Upload.csv"
-            target="_blank"
-            download
-            style={linkContent}
+          <CSVDownloader
+            data={csvColumns}
+            filename='Sample_Contacts_Upload'
+            type='link'
+            className={classes.linkStyle}
           >
-            Download sample CSV template and then upload with your information
-          </Link>
-        </div>
+            Click this link to download sample CSV template
+          </CSVDownloader>
+         </div>
 
         <div style={{ ...padding_div_top, ...padding_div_bottom }}>
           <TableContainer component={Paper} style={style_papaer}>

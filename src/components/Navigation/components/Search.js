@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -6,20 +6,23 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import parse from "autosuggest-highlight/parse";
-import throttle from "lodash/throttle";
 import debounce from "lodash/debounce";
-import { AppContext } from "../../../AppContext";
 import Button from "@material-ui/core/Button";
 import PersonIcon from "@material-ui/icons/Person";
-import WellIcon from "../../Shared/svgIcons/well";
-import OperatorIcon from "../../Shared/svgIcons/operator";
-import LeaseIcon from "../../Shared/svgIcons/lease";
+
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import { OWNERWELLSQUERY } from "../../../graphQL/useQueryOwnerWells ";
+
+
+// contexts 
+import { AppContext } from "../../../AppContext";
+import { NavigationContext } from "../NavigationContext";
+
+// queries 
 import { useLazyQuery, useMutation } from "@apollo/client";
+import { OWNERWELLSQUERY } from "../../../graphQL/useQueryOwnerWells ";
 import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { OWNERSLATSLONS } from "../../../graphQL/useQueryOwnerLatsLonsArray";
 import { OPERATORSLATSLONS } from "../../../graphQL/useQueryOperatorLatsLonsArray";
@@ -28,29 +31,35 @@ import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
 import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
 import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
 import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
-import { NavigationContext } from "../NavigationContext";
+import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
+
+// custom components 
+import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
+import { deepEqualObjects, deepEqual, setStateIfDeepEqual } from "../../Shared/functions";
+import WellIcon from "../../Shared/svgIcons/well";
+import OperatorIcon from "../../Shared/svgIcons/operator";
+import LeaseIcon from "../../Shared/svgIcons/lease";
+
+
+// 3rd party components
 import Popover from "@material-ui/core/Popover";
 import Tooltip from "@material-ui/core/Tooltip";
 import Box from "@material-ui/core/Box";
 import { CircularProgress } from "@material-ui/core";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
-import { deepEqualObjects } from "../../Shared/functions";
 import ClearIcon from "@material-ui/icons/Clear";
 
-function loadScript(src, position, id) {
-  if (!position) {
-    return;
-  }
 
-  const script = document.createElement("script");
-  script.setAttribute("async", "");
-  script.setAttribute("id", id);
-  script.src = src;
-  position.appendChild(script);
-}
 
-// const autocompleteService = { current: null };
+import { useDispatch, useSelector } from "react-redux";
+
+
+const leaseIndexName = 'lease-index-v2';
+const operatorIndexName = 'operator-index';
+const wellCogIndexName = "wellheader-index-en-ms";
+const ownerCogIndexName = "globalowner-index";
+const contactIndexName = 'contacts-index';
+
 
 const maxMinScore = (options) => {
   let max = 0;
@@ -69,6 +78,7 @@ const calcScoreOpacity = (maxMin, score) => {
 
   return 1 - (score - maxMin[1]) / (maxMin[0] - maxMin[1]);
 };
+
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -179,35 +189,51 @@ function Search() {
   const [maxMinOwnersScore, setMaxMinOwnersScore] = React.useState([0, 0]);
   const [maxMinOperatosScore, setMaxMinOperatosScore] = React.useState([0, 0]);
   const [maxMinLeasesScore, setMaxMinLeasesScore] = React.useState([0, 0]);
+  const [maxMinContactsScore, setMaxMinContactsScore] = React.useState([0, 0]);
   const [maxMinMapboxSearchScore, setMaxMinMapboxSearchScore] = React.useState([
     0,
     0,
   ]);
   const [searchHistoryList, setSearchHistoryList] = React.useState([]);
-  const loaded = React.useRef(false);
+
+  // loaders 
   const [loadingWells, setLoadingWells] = React.useState(false);
   const [loadingOwners, setLoadingOwners] = React.useState(false);
   const [loadingLeases, setLoadingLeases] = React.useState(false);
+  const [loadingContacts, setLoadingContacts] = React.useState(false);
   const [loadingOperators, setLoadingOperators] = React.useState(false);
   const [loadingMapboxSearch, setLoadingMapboxSearch] = React.useState(false);
   const classes = useStyles({ mapGridCardActivated });
 
-  const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(
-    OWNERSLATSLONS
-  );
-  const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-
-  const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(
-    OPERATORSLATSLONS
-  );
+  // queries 
+  const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
+  const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
+  const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
+  const [getSearchHistory, { data: searchHistoryData }] = useLazyQuery(USERSEARCHHISTORY);
+
+
+  const setDataContacts = (newState) => {
+    setStateIfDeepEqual(DataContacts, newState);
+  };
+
+  const [dataContacts, DataContacts] = useState(null);
+
+  const setRows = (newState) => {
+    setStateIfDeepEqual(Rows, newState);
+  };
+  const [rows, Rows] = useState([]);
+  const [loading, Loading] = useState(true);
+  const setLoading = (newState) => {
+    setStateIfDeepEqual(Loading, newState);
+  };
+
+
 
   //////////// Search History Begin//////////////////
 
   // Search History Queries and Mutations
-  const [getSearchHistory, { data: searchHistoryData }] = useLazyQuery(
-    USERSEARCHHISTORY
-  );
+
   const [addSearchHistory] = useMutation(ADDSEARCHHISTORY);
   const [updateSearchHistory] = useMutation(UPDATESEARCHHISTORY);
   const [removeSearchHistory] = useMutation(REMOVESEARCHHISTORY);
@@ -247,17 +273,6 @@ function Search() {
 
   //////////// Search History End//////////////////
 
-  //   if (typeof window !== 'undefined' && !loaded.current) {
-  //     if (!document.querySelector('#google-maps')) {
-  //       loadScript(
-  //         'https://maps.googleapis.com/maps/api/js?key=AIzaSyBwRp1e12ec1vOTtGiA4fcCt2sCUS78UYc&libraries=places',
-  //         document.querySelector('head'),
-  //         'google-maps',
-  //       );
-  //     }
-
-  //     loaded.current = true;
-  //   }
 
   const callWellSearch = React.useMemo(
     () =>
@@ -279,15 +294,9 @@ function Search() {
           headers: headers,
         };
 
-        console.log(
-          "request made to wellheader-index-en-ms search at: " +
-            new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -317,15 +326,9 @@ function Search() {
           headers: headers,
         };
 
-        console.log(
-          "request made to globalowner-index search at: " +
-            new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -339,7 +342,7 @@ function Search() {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2020-06-30&queryType=full&ount=true&searchFields=Operator&top=" +
+          "https://m1search.search.windows.net/indexes/"+operatorIndexName+"/docs?api-version=2020-06-30&queryType=full&ount=true&searchFields=Operator&top=" +
           top +
           "&search=" +
           encodeURIComponent(
@@ -355,14 +358,9 @@ function Search() {
           headers: headers,
         };
 
-        console.log(
-          "request made to operator-index search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -376,7 +374,7 @@ function Search() {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
+          "https://m1search.search.windows.net/indexes/"+leaseIndexName+"/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
           top +
           "&search=" +
           encodeURIComponent(
@@ -392,14 +390,9 @@ function Search() {
           headers: headers,
         };
 
-        console.log(
-          "request made to lease-index search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -409,6 +402,82 @@ function Search() {
     []
   );
 
+
+
+///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
+
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
+
+
+  const callContactsSearch = React.useMemo(
+    () =>
+    debounce((request, top, callback) => {
+
+      /// this function takes the search request and sends it to gql
+      getPaginatedContacts({
+        variables: {
+          search: request.input,
+        },
+      });
+
+    }, 500),
+    []
+  );
+
+  useEffect(() => {
+    // this use effect takes the contactdata once it comes in from the gql query
+    // and flattens things into an array 
+    // that presents options up to the search menu bar (called newOptions)
+
+    if (
+      constDataContacts 
+    ) {
+      var newOptions = [];
+      var newOptions = [
+
+        ...constDataContacts.paginatedContacts.edges.map((result) => {
+
+          result = result.node;
+          result.Source = contactIndexName;
+          
+          if(result.name){
+            result.Primary = result.name
+          } else {
+            result.Primary = "--"
+          }; 
+
+          if(result.address1 || result.city || result.state){
+            result.Secondary = result.address1 + ' ' + result.city+ ', ' + result.state+ ' ' + result.zip
+          } else {
+            result.Secondary = "--"
+          }; 
+
+          return result
+          
+        }),
+        ...newOptions,
+      ];
+
+      setOptions(newOptions);
+      setLoadingContacts(false);
+
+    }
+  }, [
+    constDataContacts,
+  ]);
+
+  //////// >>>>>>>>> END 
+
+
+
+
+
+
   const callMapboxSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
@@ -416,7 +485,7 @@ function Search() {
           request.input
         }.json?access_token=${
           stateApp.mapboxglAccessToken
-        }&autocomplete=true&country=us%2Cca&limit=${top > 10 ? 10 : top}`;
+        }&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -438,13 +507,10 @@ function Search() {
     []
   );
 
+  
+
   React.useEffect(() => {
-    // if (!autocompleteService.current && window.google) {
-    //   autocompleteService.current = new window.google.maps.places.AutocompleteService();
-    // }
-    // if (!autocompleteService.current) {
-    //   return undefined;
-    // }
+
     if (!mapGridCardActivated) {
       if (searchInputValue === "") {
         setOptions(value ? [value] : []);
@@ -468,7 +534,6 @@ function Search() {
                       results["@odata.context"].indexOf("')")
                     );
 
-                    console.log(indexSource);
                     newOptions = [
                       ...results.value.map((result) => {
                         result.Score = result["@search.score"];
@@ -501,7 +566,6 @@ function Search() {
                       results["@odata.context"].indexOf("('") + 2,
                       results["@odata.context"].indexOf("')")
                     );
-                    console.log(indexSource);
                     newOptions = [
                       ...results.value.map((result) => {
                         result.Score = result["@search.score"];
@@ -534,7 +598,6 @@ function Search() {
                       results["@odata.context"].indexOf("('") + 2,
                       results["@odata.context"].indexOf("')")
                     );
-                    console.log(indexSource);
                     newOptions = [
                       ...results.value.map((result) => {
                         result.Score = result["@search.score"];
@@ -567,7 +630,6 @@ function Search() {
                       results["@odata.context"].indexOf("('") + 2,
                       results["@odata.context"].indexOf("')")
                     );
-                    console.log(indexSource);
                     newOptions = [
                       ...results.value.map((result) => {
                         result.Score = result["@search.score"];
@@ -594,7 +656,6 @@ function Search() {
                       }),
                       ...newOptions,
                     ];
-
                     setMaxMinLeasesScore(maxMinScore(results.value));
                   }
 
@@ -603,6 +664,22 @@ function Search() {
                 }
               )
             : null,
+
+          searchOption == "all" || searchOption == "contacts"
+            ? callContactsSearch(
+                { input: searchInputValue },
+                searchTop,
+              )
+            : null,
+
+          
+          // searchOption == "all" || searchOption == "parcels"
+          //   ? callParcelSearch(
+          //       { input: searchInputValue },
+          //       searchTop,
+          //     )
+          //   : null,
+
           searchOption == "all" || searchOption == "locations"
             ? callMapboxSearch(
                 { input: searchInputValue },
@@ -649,6 +726,8 @@ function Search() {
     callOwnerSearch,
     callOperatorSearch,
     callLeaseSearch,
+    callContactsSearch,
+    // callParcelSearch,
     callMapboxSearch,
     searchOption,
     searchTop,
@@ -659,10 +738,6 @@ function Search() {
   useEffect(() => {
     if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray) {
       if (dataOwnerWells.ownerLatsLonsArray.length !== 0) {
-        console.log(
-          "wells data from search",
-          dataOwnerWells.ownerLatsLonsArray
-        );
 
         setStateApp((stateApp) =>
           dataOwnerWells.ownerLatsLonsArray.length === 1
@@ -686,7 +761,6 @@ function Search() {
 
         stateApp.toggleLayersActivity("Search", true);
       } else {
-        console.log("Not wells found for the owner");
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -696,46 +770,11 @@ function Search() {
     }
   }, [dataOwnerWells]);
 
-  useEffect(() => {
-    if (
-      dataWells &&
-      dataWells.wells &&
-      dataWells.wells.results &&
-      dataWells.wells.results.length !== 0
-    ) {
-      console.log("wells data from search", dataWells.wells.results);
-
-      setStateApp((stateApp) =>
-        dataWells.wells.results.length === 1
-          ? {
-              ...stateApp,
-              selectedWell: null,
-              fitBounds: null,
-              selectedWellId: dataWells.wells.results[0].id.toLowerCase(),
-              wellSelectedCoordinates: [
-                dataWells.wells.results[0].longitude,
-                dataWells.wells.results[0].latitude,
-              ],
-              wellListFromSearch: [...dataWells.wells.results],
-            }
-          : {
-              ...stateApp,
-              fitBounds: null,
-              wellListFromSearch: [...dataWells.wells.results],
-            }
-      );
-      stateApp.toggleLayersActivity("Search", true);
-    }
-  }, [dataWells]);
 
   //// getting wells data from  operators////
   useEffect(() => {
     if (dataOperatorWells && dataOperatorWells.operatorLatsLonsArray) {
       if (dataOperatorWells.operatorLatsLonsArray.length !== 0) {
-        console.log(
-          "wells data from search",
-          dataOperatorWells.operatorLatsLonsArray
-        );
 
         setStateApp((stateApp) =>
           dataOperatorWells.operatorLatsLonsArray.length === 1
@@ -762,7 +801,6 @@ function Search() {
         );
         stateApp.toggleLayersActivity("Search", true);
       } else {
-        console.log("Not wells found for the operator");
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -776,10 +814,7 @@ function Search() {
   useEffect(() => {
     if (dataLeaseWells && dataLeaseWells.leaseLatsLonsArray) {
       if (dataLeaseWells.leaseLatsLonsArray.length !== 0) {
-        console.log(
-          "wells data from search",
-          dataLeaseWells.leaseLatsLonsArray
-        );
+
 
         setStateApp((stateApp) =>
           dataLeaseWells.leaseLatsLonsArray.length === 1
@@ -802,7 +837,6 @@ function Search() {
         );
         stateApp.toggleLayersActivity("Search", true);
       } else {
-        console.log("Not wells found for the lease");
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -812,44 +846,25 @@ function Search() {
     }
   }, [dataLeaseWells]);
 
-  //////////////////////////////////// populating the search layer from external resource ////
-  useEffect(() => {
-    if (objToPopulateSearchLayer) {
-      //// if owner
-      if (
-        objToPopulateSearchLayer.objectType === "owner" &&
-        objToPopulateSearchLayer.objectId
-      ) {
-        getOwnerWells({
-          variables: {
-            ownerId: objToPopulateSearchLayer.objectId,
-          },
-        });
-      }
 
-      //// if multiple wells
-      if (
-        objToPopulateSearchLayer.objectType === "wells" &&
-        objToPopulateSearchLayer.wells
-      ) {
-        if (objToPopulateSearchLayer.wells.length !== 0) {
+
+  //// getting wells data from contacts ////
+    useEffect(() => {
+      if (dataContactWells && dataContactWells.contactWells) {
+        if (dataContactWells.contactWells.length !== 0) {
+  
           setStateApp((stateApp) =>
-            objToPopulateSearchLayer.wells.length === 1
+          dataContactWells.contactWells.length === 1
               ? {
                   ...stateApp,
                   selectedWell: null,
                   fitBounds: null,
-                  selectedWellId: objToPopulateSearchLayer.wells[0].id.toLowerCase(),
-                  wellSelectedCoordinates: [
-                    objToPopulateSearchLayer.wells[0].longitude,
-                    objToPopulateSearchLayer.wells[0].latitude,
-                  ],
-                  wellListFromSearch: [...objToPopulateSearchLayer.wells],
+                  wellListFromSearch: [...dataContactWells.contactWells],
                 }
               : {
                   ...stateApp,
                   fitBounds: null,
-                  wellListFromSearch: [...objToPopulateSearchLayer.wells],
+                  wellListFromSearch: [...dataContactWells.contactWells],
                 }
           );
           stateApp.toggleLayersActivity("Search", true);
@@ -861,21 +876,11 @@ function Search() {
           }));
         }
       }
+    }, [dataContactWells]);
 
-      //// add others types here
-      /////////////////////////////////
-      dispatch(
-        setMapGridCardState({
-          objToPopulateSearchLayer: null,
-        })
-      );
-    }
-  }, [objToPopulateSearchLayer]);
 
-  ///////////////////////////////////////
 
   const handleChange = (newValue) => {
-    console.log("search Selected", newValue);
     if (
       !value ||
       (newValue &&
@@ -931,10 +936,11 @@ function Search() {
       //// if well, with lat long
       if (
         newValue &&
-        newValue.Source === "wellheader-index-en-ms" &&
+        newValue.Source === wellCogIndexName &&
         newValue.Longitude &&
         newValue.Latitude
       ) {
+
         setStateApp((stateApp) => ({
           ...stateApp,
           fitBounds: null,
@@ -953,7 +959,7 @@ function Search() {
       }
 
       //// if owner
-      if (newValue && newValue.Source === "globalowner-index" && newValue.Id) {
+      if (newValue && newValue.Source === ownerCogIndexName && newValue.Id) {
         getOwnerWells({
           variables: {
             ownerId: newValue.Id,
@@ -964,7 +970,7 @@ function Search() {
       //// if operator
       if (
         newValue &&
-        newValue.Source === "operator-index" &&
+        newValue.Source === operatorIndexName &&
         newValue.Operator
       ) {
         getOperatorWells({
@@ -977,7 +983,7 @@ function Search() {
       //// if lease
       if (
         newValue &&
-        newValue.Source === "lease-index" &&
+        newValue.Source === leaseIndexName &&
         ((newValue.Lease && newValue.Lease !== "") ||
           (newValue.LeaseId && newValue.LeaseId !== ""))
       ) {
@@ -997,6 +1003,21 @@ function Search() {
           });
         }
       }
+
+
+      // if contact
+      if (
+        newValue &&
+        newValue.Source === contactIndexName 
+        && newValue._id
+      ) {
+          getContactsWells({
+            variables: {
+              contactId: newValue._id,
+            },
+          });
+      }
+      
 
       //// if mapboxSearch
       if (newValue && newValue.Source === "mapboxSearch" && newValue.center) {
@@ -1032,6 +1053,7 @@ function Search() {
     Primary: "",
     Secondary: "",
   };
+  
   let optionsWithHeader = [header, ...options];
   //// adding loader ////
   if (
@@ -1040,15 +1062,18 @@ function Search() {
         loadingOwners ||
         loadingOperators ||
         loadingLeases ||
+        loadingContacts ||
         loadingMapboxSearch)) ||
     (searchOption === "wells" && loadingWells) ||
     (searchOption === "owners" && loadingOwners) ||
     (searchOption === "operators" && loadingOperators) ||
     (searchOption === "leases" && loadingLeases) ||
+    (searchOption === "contacts" && loadingContacts) ||
     (searchOption === "locations" && loadingMapboxSearch)
   ) {
     optionsWithHeader = [header, { ...header, Source: "loader" }];
   }
+  console.log("orig optionsWithHeader", optionsWithHeader)
 
   return (
     <div className={classes.root}>
@@ -1059,10 +1084,11 @@ function Search() {
         filterOptions={(x) => x}
         options={optionsWithHeader}
         groupBy={(option) => {
-          if (option.Source === "globalowner-index") return "Owners";
-          if (option.Source === "wellheader-index-en-ms") return "Wells";
-          if (option.Source === "operator-index") return "Operators";
-          if (option.Source === "lease-index") return "Leases";
+          if (option.Source === ownerCogIndexName) return "Owners";
+          if (option.Source === wellCogIndexName) return "Wells";
+          if (option.Source === operatorIndexName) return "Operators";
+          if (option.Source === leaseIndexName) return "Leases";
+          if (option.Source === contactIndexName) return "Contacts";
           if (option.Source === "mapboxSearch") return "Locations";
           if (option.Source === "loader") return "loader";
           return "header";
@@ -1080,6 +1106,7 @@ function Search() {
             );
 
           return option.group === "header" ? (
+            <div>
             <Grid
               key={option.group}
               container
@@ -1095,11 +1122,13 @@ function Search() {
                       loadingOwners ||
                       loadingOperators ||
                       loadingLeases ||
+                      loadingContacts ||
                       loadingMapboxSearch)) ||
                   (searchOption === "wells" && loadingWells) ||
                   (searchOption === "owners" && loadingOwners) ||
                   (searchOption === "operators" && loadingOperators) ||
                   (searchOption === "leases" && loadingLeases) ||
+                  (searchOption === "contacts" && loadingContacts) ||
                   (searchOption === "locations" && loadingMapboxSearch) ||
                   options.length === 0
                     ? "0"
@@ -1121,7 +1150,7 @@ function Search() {
                   size="small"
                   color={searchOption === "all" ? "secondary" : "primary"}
                   onClick={() => {
-                    setSearchTop(5);
+                    // setSearchTop(5);
                     setSearchOption("all");
                   }}
                 >
@@ -1149,7 +1178,7 @@ function Search() {
                     setSearchOption("owners");
                   }}
                 >
-                  Owners
+                  Tax Owners
                 </Button>
                 <Button
                   className={classes.headerButtons}
@@ -1180,12 +1209,25 @@ function Search() {
                 <Button
                   className={classes.headerButtons}
                   variant={
+                    searchOption === "contacts" ? "contained" : "outlined"
+                  }
+                  size="small"
+                  color={searchOption === "contacts" ? "secondary" : "primary"}
+                  onClick={() => {
+                    setSearchOption("contacts");
+                  }}
+                >
+                  Contacts
+                </Button>
+                <Button
+                  className={classes.headerButtons}
+                  variant={
                     searchOption === "locations" ? "contained" : "outlined"
                   }
                   size="small"
                   color={searchOption === "locations" ? "secondary" : "primary"}
                   onClick={() => {
-                    // setSearchTop(5);
+                    setSearchTop(5);
                     setSearchOption("locations");
                   }}
                 >
@@ -1193,6 +1235,7 @@ function Search() {
                 </Button>
               </Grid>
             </Grid>
+            </div>
           ) : (
             (searchOption === "all" ||
               searchOption === option.group.toLowerCase()) && (
@@ -1219,6 +1262,8 @@ function Search() {
                               ? "operators"
                               : option.group === "Leases"
                               ? "leases"
+                              : option.group === "Contacts"
+                              ? "contacts"
                               : option.group === "Locations"
                               ? "locations"
                               : "all"
@@ -1233,7 +1278,6 @@ function Search() {
                         className={classes.groupsButton}
                         onClick={() => {
                           setSearchTop(5);
-                          // setSearchOption("all");
                         }}
                       >
                         See Less
@@ -1256,7 +1300,6 @@ function Search() {
         }}
         onInputChange={(event, newInputValue, reason) => {
           if (reason == "input") {
-            // setInputValue(newInputValue);
 
             dispatch(
               setMapGridCardState({
@@ -1277,12 +1320,14 @@ function Search() {
                 setLoadingOwners(true);
                 setLoadingOperators(true);
                 setLoadingLeases(true);
+                setLoadingContacts(true);
                 setLoadingMapboxSearch(true);
               }
               if (searchOption === "wells") setLoadingWells(true);
               if (searchOption === "owners") setLoadingOwners(true);
               if (searchOption === "operators") setLoadingOperators(true);
               if (searchOption === "leases") setLoadingLeases(true);
+              if (searchOption === "contacts") setLoadingContacts(true);
               if (searchOption === "locations") setLoadingMapboxSearch(true);
             } else {
               // setValue(null);
@@ -1291,11 +1336,14 @@ function Search() {
               setLoadingOwners(false);
               setLoadingOperators(false);
               setLoadingLeases(false);
+              setLoadingContacts(false);
               setLoadingMapboxSearch(false);
             }
           }
         }}
         renderInput={(params) => (
+
+          <div>
           <TextField
             {...params}
             variant="outlined"
@@ -1383,7 +1431,9 @@ function Search() {
                           let option = search.searchData;
                           const parts = parse(option.Primary, Array());
 
+                          /// THIS IS THEI LIST FOR THE SEARCH HISTORY 
                           return (
+                            <div>
                             <Box
                               p={1}
                               key={i}
@@ -1391,23 +1441,20 @@ function Search() {
                               onClick={() => {
                                 setSearchTop(5);
                                 setSearchOption(
-                                  option.Source === "globalowner-index"
+                                  option.Source === ownerCogIndexName
                                     ? "owners"
-                                    : option.Source === "wellheader-index-en-ms"
+                                    : option.Source === wellCogIndexName
                                     ? "wells"
-                                    : option.Source === "operator-index"
+                                    : option.Source === operatorIndexName
                                     ? "operators"
-                                    : option.Source === "lease-index"
+                                    : option.Source === leaseIndexName
                                     ? "leases"
+                                    : option.Source === contactIndexName
+                                    ? "contacts"
                                     : option.group === "mapboxSearch"
                                     ? "locations"
                                     : "all"
                                 );
-                                // setInputValue(
-                                //   option.Primary
-                                //     ? option.Primary
-                                //     : option.Secondary
-                                // );
 
                                 dispatch(
                                   setMapGridCardState({
@@ -1426,17 +1473,21 @@ function Search() {
                               <Grid container spacing={0}>
                                 <Grid container item xs={9} alignItems="center">
                                   <Grid item>
-                                    {option.Source === "globalowner-index" && (
+                                    {option.Source === ownerCogIndexName && (
                                       <PersonIcon className={classes.icon} />
                                     )}
-                                    {option.Source === "operator-index" && (
+                                    {option.Source === contactIndexName && (
+                                      //will need to change this to something different 
+                                      <PersonIcon className={classes.icon} />
+                                    )}
+                                    {option.Source === operatorIndexName && (
                                       <OperatorIcon
                                         className={classes.icon}
                                         color={"#757575"}
                                       />
                                     )}
                                     {option.Source ===
-                                      "wellheader-index-en-ms" && (
+                                      wellCogIndexName && (
                                       <WellIcon
                                         className={classes.icon}
                                         color={"#757575"}
@@ -1444,7 +1495,7 @@ function Search() {
                                         small
                                       />
                                     )}
-                                    {option.Source === "lease-index" && (
+                                    {option.Source === leaseIndexName && (
                                       <LeaseIcon
                                         className={classes.icon}
                                         color={"#757575"}
@@ -1498,6 +1549,7 @@ function Search() {
                                 </Grid>
                               </Grid>
                             </Box>
+                            </div>
                           );
                         })
                       ) : (
@@ -1512,8 +1564,10 @@ function Search() {
             }}
             className={classes.textF}
           />
+          </div>
         )}
         renderOption={(option) => {
+          console.log("orig renderOption option", option);
           if (option.Source === "header" || option.group === "loader")
             return null;
           const parts = parse(option.Primary, Array());
@@ -1522,13 +1576,13 @@ function Search() {
             <Grid container spacing={0}>
               <Grid container item xs={11} alignItems="center">
                 <Grid item>
-                  {option.Source === "globalowner-index" && (
+                  {option.Source === ownerCogIndexName && (
                     <PersonIcon className={classes.icon} />
                   )}
-                  {option.Source === "operator-index" && (
+                  {option.Source === operatorIndexName && (
                     <OperatorIcon className={classes.icon} color={"#757575"} />
                   )}
-                  {option.Source === "wellheader-index-en-ms" && (
+                  {option.Source === wellCogIndexName && (
                     <WellIcon
                       className={classes.icon}
                       color={"#757575"}
@@ -1536,8 +1590,14 @@ function Search() {
                       small
                     />
                   )}
-                  {option.Source === "lease-index" && (
-                    <LeaseIcon className={classes.icon} color={"#757575"} />
+                  {option.Source === leaseIndexName && (
+                    <div>
+                    <WellIcon className={classes.icon} color={"#757575"} />
+                    </div>
+                  )}
+                  {option.Source === contactIndexName && (
+                    //will need to change this to something different
+                    <PersonIcon className={classes.icon} color={"#757575"} />
                   )}
                   {option.Source === "mapboxSearch" && (
                     <LocationOnIcon className={classes.icon} />
@@ -1576,14 +1636,16 @@ function Search() {
                       backgroundImage:
                         "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
                       opacity: calcScoreOpacity(
-                        option.Source === "globalowner-index"
+                        option.Source === ownerCogIndexName
                           ? maxMinOwnersScore
-                          : option.Source === "wellheader-index-en-ms"
+                          : option.Source === wellCogIndexName
                           ? maxMinWellsScore
-                          : option.Source === "operator-index"
+                          : option.Source === operatorIndexName
                           ? maxMinOperatosScore
-                          : option.Source === "lease-index"
+                          : option.Source === leaseIndexName
                           ? maxMinLeasesScore
+                          : option.Source === contactIndexName
+                          ? maxMinContactsScore
                           : maxMinMapboxSearchScore,
                         option.Score
                       ).toString(),

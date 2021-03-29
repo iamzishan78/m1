@@ -241,7 +241,6 @@ const SignInCard = (props) => {
 };
 
 function areEqual(prevProps, nextProps) {
-  console.log(`${prevProps.tenant} ... ${nextProps.tenant}`)
   return Object.is(prevProps.tenant, nextProps.tenant);
 }
 

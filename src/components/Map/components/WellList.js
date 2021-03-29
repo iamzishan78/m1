@@ -63,9 +63,7 @@ export default function WellList() {
     }
   },[stateApp.trackedwells])
 
-  const handleWellClick = (well) => {
-    //console.log('flyto',well)
-    
+  const handleWellClick = (well) => {    
     setStateApp(state => ({...state, popupOpen:false}))
     setStateApp(state => ({ ...state, selectedWell:well }))
     setStateApp(state => ({ ...state, selectedWellId:well.id }))

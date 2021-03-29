@@ -1,20 +1,26 @@
 import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
+
+// context 
 import { AppContext } from "../../../AppContext";
+import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
+
+
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
-import parse from "autosuggest-highlight/parse";
-import throttle from "lodash/throttle";
 import debounce from "lodash/debounce";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
-import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
-import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
-import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { setMapGridCardState } from "../../../actions";
+
+// import value formatters 
+import joinAddress from "../../Shared/valueformatters/join-address.js";
+
+
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,31 +40,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
 
-const joinAddress = (row) => {
-  let rowData = {
-    StreetAddress: row.StreetAddress,
-    City: row.City,
-    State: row.State,
-    Zip: row.Zip,
-    Country: row.Country,
-  };
-  let textArray = [];
-  for (const key in rowData) {
-    if (rowData.hasOwnProperty(key) && rowData[key] && rowData[key] !== "") {
-      if (key === "Zip" || key === "Country") {
-        textArray = [
-          [textArray.join(", "), capitalizeFirstLetter(rowData[key])].join(" "),
-        ];
-      } else textArray.push(capitalizeFirstLetter(rowData[key]));
-    }
-  }
 
-  return textArray.join(", ");
-};
 
 function MapGridCardSearch(props) {
   const classes = useStyles();
@@ -67,14 +50,101 @@ function MapGridCardSearch(props) {
     ({ MapGridCard }) => MapGridCard,
     shallowEqual
   );
+  
+  // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateGrid, setStateGrid] = useContext(MapGridContext);
+
+
+  // function states 
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState([]);
   const [searchTop] = React.useState(100);
 
+
+
+
+  ///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
+
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
+
+
+  const callContactsSearch = React.useMemo(
+    () =>
+    debounce((request, top, callback) => {
+
+      /// this function takes the search request and sends it to gql
+      getPaginatedContacts({
+        variables: {
+          search: request.input,
+        },
+      });
+
+    }, 500),
+    []
+  );
+
+
+  useEffect(() => {
+    // this use effect takes the contactdata once it comes in from the gql query
+    // and flattens things into an array 
+    // that presents options up to the search menu bar (called newOptions)
+
+    if (
+      constDataContacts 
+    ) {
+      var newOptions = [];
+      var newOptions = [
+
+        ...constDataContacts.paginatedContacts.edges.map((result) => {
+
+          result = result.node;
+          //result.Source = contactIndexName;
+          
+          if(result.name){
+            result.Primary = result.name
+          } else {
+            result.Primary = "--"
+          }; 
+
+          if(result.address1 || result.city || result.state){
+            result.Secondary = result.address1 + ' ' + result.city+ ', ' + result.state+ ' ' + result.zip
+          } else {
+            result.Secondary = "--"
+          }; 
+
+          return result
+          
+        }),
+        ...newOptions,
+      ];
+
+      // dispatch(
+        setMapGridCardState({
+          searchResultData: [...newOptions],
+          searchloading: false,
+        })
+      // )
+
+    }
+  }, [
+    constDataContacts,
+  ]);
+
+
+
+
+
+
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, callback) => {
+
         const endpoint =
           "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
           searchTop +
@@ -90,20 +160,17 @@ function MapGridCardSearch(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to wellheader-index-en-ms search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
             console.log(error);
           });
       }, 500),
+
+
     []
   );
 
@@ -125,14 +192,9 @@ function MapGridCardSearch(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to globalowner-index search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -160,14 +222,9 @@ function MapGridCardSearch(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to operator-index search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -181,7 +238,7 @@ function MapGridCardSearch(props) {
     () =>
       debounce((request, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/lease-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
+          "https://m1search.search.windows.net/indexes/lease-index-v2/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
           searchTop +
           "&search=" +
           encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
@@ -195,14 +252,9 @@ function MapGridCardSearch(props) {
           headers: headers,
         };
 
-        console.log(
-          "request made to lease-index search at: " + new Date().toString()
-        );
-
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
-            console.log(response);
             callback(response);
           })
           .catch((error) => {
@@ -220,7 +272,7 @@ function MapGridCardSearch(props) {
         }.json?access_token=${
           stateApp.mapboxglAccessToken
         }&autocomplete=true&country=us%2Cca&limit=${
-          searchTop > 10 ? 10 : searchTop
+          searchTop > 50 ? 50 : searchTop
         }`;
 
         const headers = new Headers();
@@ -244,15 +296,6 @@ function MapGridCardSearch(props) {
   );
 
   React.useEffect(() => {
-    if (searchInputValue === "") {
-      if (searchResultData.length !== 0 && searchloading !== false) {
-        dispatch(
-          setMapGridCardState({ searchResultData: [], searchloading: false })
-        );
-      }
-      return undefined;
-    }
-
     (async () => {
       let newOptions = [];
 
@@ -264,11 +307,8 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-
-                console.log(indexSource);
                 newOptions = [...results.value];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],
@@ -284,7 +324,6 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
                 newOptions = [
                   ...results.value.map((result) => {
                     return {
@@ -295,7 +334,6 @@ function MapGridCardSearch(props) {
                   }),
                 ];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],
@@ -311,10 +349,8 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
                 newOptions = [...results.value];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],
@@ -330,7 +366,6 @@ function MapGridCardSearch(props) {
                   results["@odata.context"].indexOf("('") + 2,
                   results["@odata.context"].indexOf("')")
                 );
-                console.log(indexSource);
                 newOptions = [
                   ...results.value.map((result) => {
                     return {
@@ -349,7 +384,6 @@ function MapGridCardSearch(props) {
                   }),
                 ];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],
@@ -358,6 +392,14 @@ function MapGridCardSearch(props) {
               );
             })
           : null,
+
+        props.searchOption == "contacts"
+          ? callContactsSearch(
+              { input: searchInputValue },
+              searchTop,
+            )
+          : null,
+
         props.searchOption == "location"
           ? callMapboxSearch({ input: searchInputValue }, (results) => {
               if (results && results.features) {
@@ -379,7 +421,6 @@ function MapGridCardSearch(props) {
                   }),
                 ];
               }
-
               dispatch(
                 setMapGridCardState({
                   searchResultData: [...newOptions],
@@ -396,9 +437,12 @@ function MapGridCardSearch(props) {
     callOwnerSearch,
     callOperatorSearch,
     callLeaseSearch,
+    callContactsSearch,
     callMapboxSearch,
     props.searchOption,
   ]);
+
+ 
 
   return (
     <form
@@ -428,15 +472,16 @@ function MapGridCardSearch(props) {
         onClick={props.ativateSearchPanel}
         value={searchInputValue}
         onChange={(event) => {
-          // setInputValue(event.target.value);
-          // if (!searchloading) {
             dispatch(
               setMapGridCardState({
                 searchloading: true,
                 searchInputValue: event.target.value,
               })
             );
-          // }
+            setStateGrid((state) => ({
+              ...state,
+              gridSearchTarget: event.target.value,
+            }));
         }}
       />
     </form>
@@ -444,7 +489,6 @@ function MapGridCardSearch(props) {
 }
 
 function areEqual(prevProps, nextProps) {
-  console.log(`${prevProps.searchOption} ... ${nextProps.searchOption}`)
   return Object.is(prevProps.searchOption, nextProps.searchOption);
 }
 

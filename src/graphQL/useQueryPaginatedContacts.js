@@ -21,6 +21,7 @@ export const PAGINATEDCONTACTSQUERY = gql`
           _id
           entity
           name
+          contactOwner
           address1
           address2
           city
@@ -34,9 +35,11 @@ export const PAGINATEDCONTACTSQUERY = gql`
           suffix
           mobilePhone
           homePhone
+          AltPhone
           primaryEmail
           owners
           leadSource
+          companyName
           lastUpdateAt
           lastUpdateBy {
             name

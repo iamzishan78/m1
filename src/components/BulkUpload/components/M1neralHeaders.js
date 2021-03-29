@@ -249,7 +249,6 @@ export default function M1neralHeaders(props) {
                             id={"select" + index}
                             defaultValue={(() => {
                               const matchedKeyIndex = data.findIndex(el => el?.actual_key === row?.actual_key)
-                              // console.log('matchedKey: ', matchedKey);
                               return row.actual_key === "" 
                                 ? "initial"
                                 : matchedKeyIndex
