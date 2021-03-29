@@ -1175,7 +1175,7 @@ export default function Map() {
       let udLayers = [];
       let clusterLayers = [];
 
-      stateApp.layers.forEach((layer) => {
+      stateApp.layers?.forEach((layer) => {
         const interaction =
           layer.layerSettings.interaction.interactionAble &&
           layer.layerSettings.interaction.interactionDetail.click;
@@ -4402,7 +4402,7 @@ export default function Map() {
   const handleToggleInteraction = (layerIdentifier, value) => {
     let layer;
     let index;
-    stateApp.layers.forEach((l, i) => {
+    stateApp.layers?.forEach((l, i) => {
       if (l.identifier == layerIdentifier) {
         layer = l;
         index = i;

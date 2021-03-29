@@ -16,6 +16,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 // COMPONENTS
 import SpatialDataCard from "../spatialDataCard";
 import ShapeActionsPopup from "../popup/ShapeActionsPopup";
+import DrawShapePopup from "../popup/DrawShapesPopup";
 // HELPERS
 import { area, convertArea } from "@turf/turf";
 import { spatialDataAttributes } from "./constants";
@@ -47,28 +48,6 @@ const DEBUG_YELLOW = "background: yellow; color: red; border: 1px solid black";
 const DEBUG_BLUE = "background: blue; color: white; border: 1px solid black";
 const DEBUG_RED = "background: red; color: white; border: 1px solid black";
 
-export const availableShapes = [
-  {
-    title: "Polygon",
-    mode: "draw_polygon",
-    //icon: "fa fa-draw-polygon"
-  },
-  {
-    title: "Circle",
-    mode: "drag_circle",
-    //icon: "fa fa-circle"
-  },
-  {
-    title: "Rectangle",
-    mode: "draw_rectangle",
-    //icon: "fa fa-square"
-  },
-  {
-    title: "Line",
-    mode: "draw_line_string",
-    //icon: "fa fa-grip-lines"
-  },
-];
 
 const localStyles = makeStyles((theme) => ({
   label: {
@@ -115,28 +94,9 @@ export default function DrawShapes(props) {
     return el;
   };
 
-  // useEffect(() => {
-  //   loadCSS(
-  //     'https://use.fontawesome.com/releases/v5.1.0/css/all.css',
-  //     document.querySelector('#font-awesome-css'),
-  //   );
-  // }, []);
-
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
 
   const [user, setUser] = useState({ _id: "" });
-
-  //   useEffect(() => {
-  //     console.log(customLayerData);
-  //     if (customLayerData && customLayerData.customLayers) {
-  //       setStateApp((state) => ({
-  //         ...state,
-  //         customLayers: customLayerData.customLayers,
-  //         currentFeature: undefined,
-  //         editDraw: false,
-  //       }));
-  //     }
-  //   }, [customLayerData]);
 
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.email) {
@@ -204,31 +164,31 @@ export default function DrawShapes(props) {
     }
   }, [stateApp.currentFeature]);
 
-  const createShapeDrawOptions = () => {
-    return availableShapes.map((shape, index) => {
-      return (
-        <StyledMenuItem
-          key={index}
-          onClick={(evt) => {
-            stateApp.draw.changeMode(shape.mode);
-            setStateApp((state) => ({ ...state, editDraw: true }));
-            handleClose();
-          }}
-        >
-          <div style={{ color: "white", paddingRight: "15px" }}>
-            <Icon className={shape.icon} color="secondary" />
-            {shape.mode === "draw_polygon" && <DrawPoly />}
-            {shape.mode === "draw_rectangle" && <Rect />}
-            {shape.mode === "drag_circle" && (
-              <RadioButtonUncheckedIcon fontSize="small" />
-            )}
-            {shape.mode === "draw_line_string" && <ShowChartIcon />}
-          </div>
-          <ListItemText primary={shape.title} id={index} />
-        </StyledMenuItem>
-      );
-    });
-  };
+  // const createShapeDrawOptions = () => {
+  //   return availableShapes.map((shape, index) => {
+  //     return (
+  //       <StyledMenuItem
+  //         key={index}
+  //         onClick={(evt) => {
+  //           stateApp.draw.changeMode(shape.mode);
+  //           setStateApp((state) => ({ ...state, editDraw: true }));
+  //           handleClose();
+  //         }}
+  //       >
+  //         <div style={{ color: "white", paddingRight: "15px" }}>
+  //           <Icon className={shape.icon} color="secondary" />
+  //           {shape.mode === "draw_polygon" && <DrawPoly />}
+  //           {shape.mode === "draw_rectangle" && <Rect />}
+  //           {shape.mode === "drag_circle" && (
+  //             <RadioButtonUncheckedIcon fontSize="small" />
+  //           )}
+  //           {shape.mode === "draw_line_string" && <ShowChartIcon />}
+  //         </div>
+  //         <ListItemText primary={shape.title} id={index} />
+  //       </StyledMenuItem>
+  //     );
+  //   });
+  // };
 
   const handleClose = () => {
     setStateMapControls({ ...stateMapControls, anchorEl: null });
@@ -347,28 +307,20 @@ export default function DrawShapes(props) {
 
   return (
     <React.Fragment>
-      {!stateApp.editDraw
-        ? <ClickAwayListener onClickAway={handleClose}>
-          <StyledMenu
+      {stateApp.showDrawShapesPopup && (
+        <ClickAwayListener onClickAway={handleClose}>
+          {/* <StyledMenu
             id="draw-shapes"
             keepMounted
             anchorEl={stateMapControls.anchorEl}
             open={Boolean(stateMapControls.anchorEl)}
             onClose={handleClose}
           >
-            <StyledMenuItem
-              disableRipple
-              key="subheader"
-              role={undefined}
-              dense
-              className={classes.subHeaderItem}
-            >
-              <ListItemText primary="Draw Shapes" />
-            </StyledMenuItem>
-            {createShapeDrawOptions()}
-          </StyledMenu>
+            <DrawShapePopup handleClose={handleClose}/>
+          </StyledMenu> */}
+          <DrawShapePopup handleClose={handleClose}/>
         </ClickAwayListener>
-        : null}
+      )}
       {stateApp.showShapeActionsPopup &&
       stateApp.currentFeature !== undefined &&
       !stateApp.currentFeature.id.includes("draw_polygon") &&
