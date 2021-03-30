@@ -1,21 +1,13 @@
-import React, { useEffect, useContext, useState, Fragment } from "react";
-import { useMutation, useLazyQuery } from "@apollo/client";
+import React, { useEffect, useContext, Fragment } from "react";
+import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
-import LayerIcon from "@material-ui/icons/Layers";
 import CloseIcon from "@material-ui/icons/Close";
-import GridOnIcon from "@material-ui/icons/GridOn";
-import GpxFixedIcon from "@material-ui/icons/GpsFixed";
-import FilterAltIcon from "../../../Shared/svgIcons/FilterAltIcon";
-import Typography from "@material-ui/core/Typography";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { area, convertArea, length } from "@turf/turf";
-import polylabel from "polylabel";
-import hat from "hat";
 import { AppContext } from "../../../../AppContext";
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
 import Tooltip from "@material-ui/core/Tooltip";
-import {default as MouseClicked} from "../../../Shared/svgIcons/MouseClicked";
+import { default as MouseClicked } from "../../../Shared/svgIcons/MouseClicked";
 import { default as DrawPoly } from "../../../Shared/svgIcons/polygon";
 import { default as Rect } from "../../../Shared/svgIcons/rectangle";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
@@ -26,31 +18,26 @@ export const availableShapes = [
   {
     title: "Polygon",
     mode: "draw_polygon",
-    icon: <MouseClicked />
+    icon: <MouseClicked />,
   },
   {
     title: "Polygon",
     mode: "draw_polygon",
-    icon: <DrawPoly />
+    icon: <DrawPoly />,
   },
   {
     title: "Circle",
     mode: "drag_circle",
-    icon: <RadioButtonUncheckedIcon fontSize="small" />
+    icon: <RadioButtonUncheckedIcon fontSize="small" />,
   },
   {
     title: "Rectangle",
     mode: "draw_rectangle",
-    icon: <Rect />
+    icon: <Rect />,
   },
-  // {
-  //   title: "Line",
-  //   mode: "draw_line_string",
-  //   //icon: "fa fa-grip-lines"
-  // },
 ];
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   mapOverlay: {
     position: "absolute",
     minWidth: "320px",
@@ -59,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     transform: "translate(-50%, -50%)",
     background: "rgba(1, 17, 51, 1.0)",
     color: "#fff",
-    borderRadius: '25px'
+    borderRadius: "25px",
   },
   mapOverlayInner: {
     boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
@@ -126,6 +113,9 @@ const useStyles = makeStyles((theme) => ({
         color: "rgb(102 146 202)",
       },
     },
+  },
+  clearAction: {
+    color: "rgb(102 146 202)",
   },
   footer: {
     margin: "5px 0",
@@ -258,43 +248,38 @@ const DrawShapesPopup = (props) => {
     clearMapAndCloseShapeActionsPopup();
   };
 
-  const isLine = () => {
-    return stateApp.currentFeature?.geometry.type === "LineString"
-      ? true
-      : false;
-  };
-
   return (
     <Fragment>
       <div className={classes.mapOverlay}>
         <div class={classes.mapOverlayInner}>
           <div className={classes.content}>
             <span class={classes.label}>Tooltip</span> {calculateLandArea()}
-            <span
-              className={`${classes.actions} ${isLine() ? classes.gray : ""}`}
-            >
+            <span className={classes.actions}>
               {availableShapes.map((shape, index) => (
                 <Fragment key={index}>
                   <Tooltip title={shape.title}>
                     <IconButton
                       size="small"
-                        onClick={() => {
-                          stateApp.draw.changeMode(shape.mode);
-                          setStateApp((state) => ({ ...state, editDraw: true }));
-                          props.handleClose();
-                        }}
+                      onClick={() => {
+                        stateApp.draw.changeMode(shape.mode);
+                        setStateApp((state) => ({ ...state, editDraw: true }));
+                        props.handleClose();
+                      }}
                       aria-label={shape.title}
                     >
                       {shape.icon}
                     </IconButton>
                   </Tooltip>
-                  </Fragment>
+                </Fragment>
               ))}
+            </span>
+            <span className={classes.clearAction}>
               <Tooltip title="Close">
                 <IconButton
                   size="small"
                   onClick={actionClose}
                   aria-label="Close"
+                  className={classes.clearAction}
                 >
                   <CloseIcon className="close" fontSize="small" />
                 </IconButton>
