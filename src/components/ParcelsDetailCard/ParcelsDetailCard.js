@@ -138,6 +138,9 @@ const useStyles = makeStyles((theme) => ({
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": { 
           height: "calc(100vh - 53vh ) !important", 
+          "& .MuiTableCell-paddingCheckbox": {
+            position: 'unset',
+          },
        },
      },
     },

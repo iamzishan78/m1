@@ -24,7 +24,10 @@ const OwnersPerParcelHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "name", label: "Name" },
+  { name: "name", 
+    label: "Name",
+    options:{ setCellProps: () => ({ style: { minWidth: "270px"}})} 
+  },
   {
     name: "entity",
     label: "Entity",
@@ -39,6 +42,7 @@ const OwnersPerParcelHeadCells = [
       "Trust",
       "Unknown",
     ],
+    options:{ setCellProps: () => ({ style: { maxWidth: "185px"}})}
   },
 
   { name: "depthFrom", label: "Depth From", editabe: true },
@@ -60,9 +64,9 @@ const OwnersPerParcelHeadCells = [
       "Working Interest",
     ],
   },
-  { name: "interest", label: "Interest", editable: true },
-  { name: "nma", label: "NMA", editable: true },
-  { name: "nra", label: "NRA", editable: true },
+  { name: "interest", label: "Interest", editable: true, options:{ setCellProps: () => ({ style: { maxWidth: "70px"}})}},
+  { name: "nma", label: "NMA", editable: true, options:{ setCellProps: () => ({ style: { maxWidth: "70px"}})}},
+  { name: "nra", label: "NRA", editable: true, options:{ setCellProps: () => ({ style: { maxWidth: "70px"}})} },
   {
     name: "tags",
     label: "Tags ",
