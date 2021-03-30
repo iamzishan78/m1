@@ -37,7 +37,7 @@ export const availableShapes = [
   },
 ];
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   mapOverlay: {
     position: "absolute",
     minWidth: "320px",
@@ -63,9 +63,9 @@ const useStyles = makeStyles(() => ({
     flexDirection: "row",
     display: "flex",
     placeContent: "center space-between",
-    alignItems: "center",
+    alignItems: "center"
   },
-  label: {
+  label : {
     margin: "0 10px",
     fontWeight: "bold",
   },
@@ -73,52 +73,52 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     alignItems: "center",
     marginLeft: "20px",
-    "& button": {
+    '& button': {
       marginLeft: "5px",
       marginRight: "5px",
     },
-    "& svg": {
+    '& svg': {
       color: "#fff",
-      "&:hover": {
+      '&:hover': {
         color: "rgb(102 146 202)",
       },
-      "&.selected": {
+      '&.selected': {
         color: "rgb(102 146 202)",
       },
     },
   },
   whiteText: {
     color: "#fff",
-    "&:hover": {
+    '&:hover': {
       color: "rgb(102 146 202)",
     },
   },
   gray: {
     color: "#777",
-    "&:hover": {
+    '&:hover': {
       color: "#777",
     },
-    "& svg": {
+    '& svg': {
       color: "#777",
-      "&:hover": {
+      '&:hover': {
         color: "#777",
       },
-      "&.selected": {
+      '&.selected': {
         color: "#777",
       },
     },
-    "& svg.close": {
+    '& svg.close': {
       color: "#fff",
-      "&:hover": {
+      '&:hover': {
         color: "rgb(102 146 202)",
       },
-    },
+    }
   },
   clearAction: {
     color: "rgb(102 146 202)",
   },
   footer: {
-    margin: "5px 0",
+    margin: "5px 0"
   },
 }));
 
@@ -209,12 +209,6 @@ const DrawShapesPopup = (props) => {
     }
   }, [customLayerInsertedData]);
 
-  // useEffect(() => {
-  //   if (stateApp && stateApp.editDraw === false) {
-  //     setStateApp(()=>({editDraw: true}))
-  //   }
-  // }, [stateApp.editDraw]);
-
   const formatNumber = (number) => {
     return number.toLocaleString("en-US", { maximumFractionDigits: 2 });
   };
@@ -244,6 +238,7 @@ const DrawShapesPopup = (props) => {
       currentFeature: undefined,
     }));
   };
+  
   const actionClose = () => {
     clearMapAndCloseShapeActionsPopup();
   };

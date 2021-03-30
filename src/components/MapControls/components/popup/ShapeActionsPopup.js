@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
     transform: "translate(-50%, -50%)",
     background: "rgba(1, 17, 51, 1.0)",
     color: "#fff",
+    borderRadius: "25px",
   },
   mapOverlayInner: {
     boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
@@ -97,6 +98,9 @@ const useStyles = makeStyles((theme) => ({
         color: "rgb(102 146 202)",
       },
     }
+  },
+  clearAction: {
+    color: "rgb(102 146 202)",
   },
   footer: {
     margin: "5px 0"
@@ -229,9 +233,7 @@ const ShapeActionsPopup = (props) => {
     stateApp.draw.delete(stateApp.currentFeature.id);
     setStateApp((state) => ({
       ...state,
-      //selectedAbstracts: [],
       editDraw: false,
-      showShapeActionsPopup: false,
       currentFeature: undefined,
     }));
   }
@@ -414,8 +416,15 @@ const ShapeActionsPopup = (props) => {
                   <GpxFixedIcon />
                 </IconButton>
               </Tooltip>
+            </span>
+            <span className={classes.clearAction}>
               <Tooltip title="Close">
-                <IconButton size="small" onClick={actionClose} aria-label="Close">
+                <IconButton
+                  size="small"
+                  onClick={actionClose}
+                  aria-label="Close"
+                  className={classes.clearAction}
+                >
                   <CloseIcon className="close" fontSize="small" />
                 </IconButton>
               </Tooltip>
