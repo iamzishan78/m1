@@ -154,8 +154,10 @@ export default function DrawShapes(props) {
     const { currentFeature } = stateApp;
     if (currentFeature !== undefined) {
       toggleSpatialDataCard(true);
+      stateApp.showDrawShapesPopup = false;
     } else {
       toggleSpatialDataCard(false);
+      stateApp.showDrawShapesPopup = true;
     }
   }, [stateApp.currentFeature]);
 
@@ -270,12 +272,6 @@ export default function DrawShapes(props) {
           currentFeature: undefined,
           editDraw: false,
         }));
-
-        // getCustomLayers({
-        //   variables: {
-        //     userId: user._id,
-        //   },
-        // });
       }
     }
   };
