@@ -382,7 +382,7 @@ export default function DrawShapes() {
           </div>
         </ClickAwayListener>
       )}
-      {stateApp.showShapeActionsPopup &&
+      {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
       stateApp.currentFeature !== undefined &&
       !stateApp.currentFeature.id.includes("draw_polygon") &&
       !stateApp.currentFeature.id.includes("drag_circle") &&
