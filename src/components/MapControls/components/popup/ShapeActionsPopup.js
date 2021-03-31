@@ -112,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "white",
     height: "20px",
     opacity: 0.8,
-    margin: '5px'
+    margin: "5px",
   },
 }));
 
@@ -444,7 +444,9 @@ const ShapeActionsPopup = (props) => {
                 </IconButton>
               </Tooltip>
 
-              {/* <Tooltip title="AOI">
+              {/**
+                * Commenting APO and Parcel per design implementation
+              <Tooltip title="AOI">
                 <IconButton size="small" onClick={actionAOI} aria-label="AOI" >
                   <span className={`${classes.whiteText} ${isLine() ? classes.gray : ""}`}>AOI</span>
                 </IconButton>
@@ -453,7 +455,8 @@ const ShapeActionsPopup = (props) => {
                 <IconButton size="small" onClick={actionParcel} aria-label="Parcel" >
                   <LayerIcon />
                 </IconButton>
-              </Tooltip> */}
+              </Tooltip>
+                */}
 
               <Tooltip title="Track">
                 <IconButton
@@ -463,9 +466,7 @@ const ShapeActionsPopup = (props) => {
                   <GpxFixedIcon />
                 </IconButton>
               </Tooltip>
-              {/* <Tooltip> */}
-                <span className={classes.divider}></span>
-              {/* </Tooltip> */}
+              <span className={classes.divider}></span>
               <Tooltip title="Edit Active Shape">
                 <IconButton size="small" aria-label="Edit Active Shape">
                   <EditIcon />
