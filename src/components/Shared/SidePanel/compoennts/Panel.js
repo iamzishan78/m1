@@ -1055,6 +1055,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 						: "-405px",
 					transition: "left 0.5s ease-in-out",
 					listStyleType: "none",
+					zIndex:"9999"
 				}}
 			>
 				<StyledMenu

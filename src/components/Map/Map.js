@@ -3431,7 +3431,7 @@ function Map() {
         }
       });
     }
-  }, [map,stateApp.customLayers,customLayerData]);
+  }, [map,stateApp.customLayers]);
 
   useEffect(() => {
 
