@@ -38,6 +38,7 @@ import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
 import { deepEqualObjects, deepEqual, setStateIfDeepEqual } from "../../Shared/functions";
 import WellIcon from "../../Shared/svgIcons/well";
+import LeaseGrayIcon from "../../Shared/svgIcons/lease-gray";
 import OperatorIcon from "../../Shared/svgIcons/operator";
 import LeaseIcon from "../../Shared/svgIcons/lease";
 
@@ -1591,8 +1592,8 @@ function Search() {
                     />
                   )}
                   {option.Source === leaseIndexName && (
-                    <div>
-                    <WellIcon className={classes.icon} color={"#757575"} />
+                    <div>   
+                    <LeaseGrayIcon className={classes.icon} />
                     </div>
                   )}
                   {option.Source === contactIndexName && (
