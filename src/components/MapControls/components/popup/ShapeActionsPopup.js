@@ -2,6 +2,8 @@ import React, { useEffect, useContext, useState, Fragment } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
 import LayerIcon from "@material-ui/icons/Layers";
 import CloseIcon from "@material-ui/icons/Close";
 import GridOnIcon from "@material-ui/icons/GridOn";
@@ -48,9 +50,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     display: "flex",
     placeContent: "center space-between",
-    alignItems: "center"
+    alignItems: "center",
   },
-  label : {
+  label: {
     margin: "0 10px",
     fontWeight: "bold",
   },
@@ -58,102 +60,118 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     marginLeft: "20px",
-    '& button': {
+    "& button": {
       marginLeft: "5px",
       marginRight: "5px",
     },
-    '& svg': {
+    "& svg": {
       color: "#fff",
-      '&:hover': {
+      "&:hover": {
         color: "rgb(102 146 202)",
       },
-      '&.selected': {
+      "&.selected": {
         color: "rgb(102 146 202)",
       },
     },
   },
   whiteText: {
     color: "#fff",
-    '&:hover': {
+    "&:hover": {
       color: "rgb(102 146 202)",
     },
   },
   gray: {
     color: "#777",
-    '&:hover': {
+    "&:hover": {
       color: "#777",
     },
-    '& svg': {
+    "& svg": {
       color: "#777",
-      '&:hover': {
+      "&:hover": {
         color: "#777",
       },
-      '&.selected': {
+      "&.selected": {
         color: "#777",
       },
     },
-    '& svg.close': {
+    "& svg.close": {
       color: "#fff",
-      '&:hover': {
+      "&:hover": {
         color: "rgb(102 146 202)",
       },
-    }
+    },
   },
   clearAction: {
     color: "rgb(102 146 202)",
   },
   footer: {
-    margin: "5px 0"
+    margin: "5px 0",
+  },
+  divider: {
+    borderRight: "1px solid",
+    backgroundColor: "white",
+    height: "20px",
+    opacity: 0.8,
+    margin: '5px'
   },
 }));
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
-  
+
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
-  const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel}] = useMutation(
-    UPSERTCUSTOMLAYER,
-    {
-      update(cache, { data: { upsertCustomLayer: { customLayer } } }) {
-        console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
-        cache.modify({
-          fields: {
-            allCustomLayers(existingCustomLayers = [], { readField }) {
-              const newCustomLayerRef = cache.writeFragment({
-                data: customLayer,
-                fragment: gql`
-                  fragment NewCustomLayer on CustomLayer {
-                    _id
-                    shape
-                    name
-                    layer
-                    user {
-                      _id
-                      name
-                      email
-                    }
-                  }
-                `
-              });
-
-              // Quick safety check - if the new comment is already
-              // present in the cache, we don't need to add it again.
-              if (existingCustomLayers.some(
-                ref => readField('id', ref) === customLayer._id
-              )) {
-                return existingCustomLayers;
-              }
-
-              return [...existingCustomLayers, newCustomLayerRef];
-            }
-          }
-        });
+  const [
+    upsertCustomLayer,
+    { data: customLayerInsertedData, loading: isSavingParcel },
+  ] = useMutation(UPSERTCUSTOMLAYER, {
+    update(
+      cache,
+      {
+        data: {
+          upsertCustomLayer: { customLayer },
+        },
       }
-    }
-  );
+    ) {
+      console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
+      cache.modify({
+        fields: {
+          allCustomLayers(existingCustomLayers = [], { readField }) {
+            const newCustomLayerRef = cache.writeFragment({
+              data: customLayer,
+              fragment: gql`
+                fragment NewCustomLayer on CustomLayer {
+                  _id
+                  shape
+                  name
+                  layer
+                  user {
+                    _id
+                    name
+                    email
+                  }
+                }
+              `,
+            });
+
+            // Quick safety check - if the new comment is already
+            // present in the cache, we don't need to add it again.
+            if (
+              existingCustomLayers.some(
+                (ref) => readField("id", ref) === customLayer._id
+              )
+            ) {
+              return existingCustomLayers;
+            }
+
+            return [...existingCustomLayers, newCustomLayerRef];
+          },
+        },
+      });
+    },
+  });
   const [error, setError] = useState(false);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(
@@ -178,10 +196,13 @@ const ShapeActionsPopup = (props) => {
   }, [dataUser]);
 
   useEffect(() => {
-    if(!customLayerInsertedData) {
+    if (!customLayerInsertedData) {
       return;
     }
-    if (customLayerInsertedData.upsertCustomLayer && customLayerInsertedData.upsertCustomLayer.customLayer) {
+    if (
+      customLayerInsertedData.upsertCustomLayer &&
+      customLayerInsertedData.upsertCustomLayer.customLayer
+    ) {
       setStateApp((state) => ({
         ...state,
         popupOpen: false,
@@ -193,27 +214,32 @@ const ShapeActionsPopup = (props) => {
       feature.properties.id = customLayer._id;
       setStateApp((state) => ({
         ...state,
-        selectedParcel: feature.properties
+        selectedParcel: feature.properties,
       }));
       setStateApp((state) => ({
         ...state,
         popupOpen: true,
-        expandedCard: true
+        expandedCard: true,
       }));
       props.onClickExpand();
       setStateApp((state) => ({
         ...state,
-        selectedAbstracts: []
+        selectedAbstracts: [],
       }));
     }
-    if (customLayerInsertedData.upsertCustomLayer  && customLayerInsertedData.upsertCustomLayer.customLayer && !customLayerInsertedData.upsertCustomLayer.success) {
+    if (
+      customLayerInsertedData.upsertCustomLayer &&
+      customLayerInsertedData.upsertCustomLayer.customLayer &&
+      !customLayerInsertedData.upsertCustomLayer.success
+    ) {
       setError(true);
     }
   }, [customLayerInsertedData]);
 
   const formatNumber = (number) => {
-    return number.toLocaleString('en-US', { maximumFractionDigits:2 });
-  }
+    return number.toLocaleString("en-US", { maximumFractionDigits: 2 });
+  };
+
   const calculateLandArea = () => {
     const { selectedFeature } = props;
     if (selectedFeature) {
@@ -226,7 +252,7 @@ const ShapeActionsPopup = (props) => {
         const distanceInMiles = length(selectedFeature, { units: "miles" });
         return `${formatNumber(Math.round(distanceInMiles * 100) / 100)} miles`;
       }
-    }    
+    }
   };
 
   const clearMapAndCloseShapeActionsPopup = () => {
@@ -236,10 +262,10 @@ const ShapeActionsPopup = (props) => {
       editDraw: false,
       currentFeature: undefined,
     }));
-  }
+  };
   const actionClose = function () {
     clearMapAndCloseShapeActionsPopup();
-  }
+  };
   useEffect(() => {
     if (stateApp && stateApp.editDraw === false) {
       clearMapAndCloseShapeActionsPopup();
@@ -280,8 +306,7 @@ const ShapeActionsPopup = (props) => {
         awaitRefetchQueries: true,
       });
 
-      if ((dataType = "parcel"))
-        stateApp.toggleLayersActivity("Parcels", true);
+      if ((dataType = "parcel")) stateApp.toggleLayersActivity("Parcels", true);
       if ((dataType = "interest"))
         stateApp.toggleLayersActivity("Area of Interest", true);
       setStateApp((state) => ({
@@ -305,7 +330,7 @@ const ShapeActionsPopup = (props) => {
     polygonString += "))";
 
     return polygonString;
-  }
+  };
 
   const actionShowWellsAndOwners = () => {
     if (isLine()) return;
@@ -319,7 +344,7 @@ const ShapeActionsPopup = (props) => {
         mapGridCardActiveTap: 3,
       })
     );
-  }
+  };
 
   const actionFilter = () => {
     if (isLine()) return;
@@ -357,51 +382,69 @@ const ShapeActionsPopup = (props) => {
         shapeActionsFilterSelected: true,
       }));
     }
-  }
+  };
 
   const actionAOI = () => {
     if (isLine()) return;
     props.selectedFeature.properties.sdType = "interest";
     toggleSpatialDataCard(true);
-  }
+  };
 
   const actionParcel = () => {
     if (isLine()) return;
     props.selectedFeature.properties.sdType = "parcel";
     toggleSpatialDataCard(true);
-  }
+  };
 
   const isLine = () => {
-    return stateApp.currentFeature.geometry.type === "LineString" ? true : false;
-  }
+    return stateApp.currentFeature.geometry.type === "LineString"
+      ? true
+      : false;
+  };
 
   return (
     <Fragment>
-      {showSpatialDataCard &&
+      {showSpatialDataCard && (
         <SpatialDataCard
           closeSpatialDataCard={() => toggleSpatialDataCard(false)}
           saveSpatialData={handleSaveSpatialDataToShape}
           selectedFeature={stateApp.currentFeature}
         />
-      }
+      )}
       <div className={classes.mapOverlay}>
         <div class={classes.mapOverlayInner}>
           <div className={classes.content}>
             <span class={classes.label}>
-              { isLine() ? "Calc. Dist" : "Calc. Area" }
-            </span> {calculateLandArea()}
-            <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
+              {isLine() ? "Calc. Dist" : "Calc. Area"}
+            </span>{" "}
+            {calculateLandArea()}
+            <span
+              className={`${classes.actions} ${isLine() ? classes.gray : ""}`}
+            >
               <Tooltip title="Grid">
-                <IconButton size="small" onClick={actionShowWellsAndOwners} aria-label="Grid" >
+                <IconButton
+                  size="small"
+                  onClick={actionShowWellsAndOwners}
+                  aria-label="Grid"
+                >
                   <GridOnIcon />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Filter">
-                <IconButton size="small" onClick={actionFilter} aria-label="Filter" >
-                  <FilterAltIcon className={ stateApp.shapeActionsFilterSelected ? "selected" : "" } />
+                <IconButton
+                  size="small"
+                  onClick={actionFilter}
+                  aria-label="Filter"
+                >
+                  <FilterAltIcon
+                    className={
+                      stateApp.shapeActionsFilterSelected ? "selected" : ""
+                    }
+                  />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="AOI">
+
+              {/* <Tooltip title="AOI">
                 <IconButton size="small" onClick={actionAOI} aria-label="AOI" >
                   <span className={`${classes.whiteText} ${isLine() ? classes.gray : ""}`}>AOI</span>
                 </IconButton>
@@ -410,10 +453,27 @@ const ShapeActionsPopup = (props) => {
                 <IconButton size="small" onClick={actionParcel} aria-label="Parcel" >
                   <LayerIcon />
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
+
               <Tooltip title="Track">
-                <IconButton size="small" /*onClick={saveAndOpenParcelDetail}*/ aria-label="Track" >
+                <IconButton
+                  size="small"
+                  /*onClick={saveAndOpenParcelDetail}*/ aria-label="Track"
+                >
                   <GpxFixedIcon />
+                </IconButton>
+              </Tooltip>
+              {/* <Tooltip> */}
+                <span className={classes.divider}></span>
+              {/* </Tooltip> */}
+              <Tooltip title="Edit Active Shape">
+                <IconButton size="small" aria-label="Edit Active Shape">
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Delete Active Shape">
+                <IconButton size="small" aria-label="Delete Active Shape">
+                  <DeleteIcon />
                 </IconButton>
               </Tooltip>
             </span>
@@ -430,15 +490,15 @@ const ShapeActionsPopup = (props) => {
               </Tooltip>
             </span>
           </div>
-          {error &&
+          {error && (
             <div className={classes.footer}>
               <Typography color="error" align="center"></Typography>
             </div>
-          }
+          )}
         </div>
       </div>
     </Fragment>
   );
-}
+};
 
 export default ShapeActionsPopup;

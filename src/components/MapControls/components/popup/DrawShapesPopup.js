@@ -16,8 +16,8 @@ import { gql } from "@apollo/client";
 
 export const availableShapes = [
   {
-    title: "Polygon",
-    mode: "draw_polygon",
+    title: "Multiple Select",
+    mode: "multiple_select",
     icon: <MouseClicked />,
   },
   {
