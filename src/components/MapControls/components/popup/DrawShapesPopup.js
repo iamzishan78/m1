@@ -1,8 +1,6 @@
 import React, { useEffect, useContext, Fragment } from "react";
 import { useMutation } from "@apollo/client";
-import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 import { area, convertArea, length } from "@turf/turf";
 import { AppContext } from "../../../../AppContext";
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
@@ -37,93 +35,8 @@ export const availableShapes = [
   },
 ];
 
-const useStyles = makeStyles((theme) => ({
-  mapOverlay: {
-    position: "absolute",
-    minWidth: "320px",
-    bottom: "20px",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    background: "rgba(1, 17, 51, 1.0)",
-    color: "#fff",
-    borderRadius: "25px",
-  },
-  mapOverlayInner: {
-    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
-    borderRadius: "3px",
-    padding: "10px 20px",
-  },
-  popUp: {
-    minWidth: "320px",
-    padding: "10px 20px",
-    borderRadius: "15px",
-    backgroundColor: "#ffffff",
-  },
-  content: {
-    flexDirection: "row",
-    display: "flex",
-    placeContent: "center space-between",
-    alignItems: "center"
-  },
-  label : {
-    margin: "0 10px",
-    fontWeight: "bold",
-  },
-  actions: {
-    display: "flex",
-    alignItems: "center",
-    marginLeft: "20px",
-    '& button': {
-      marginLeft: "5px",
-      marginRight: "5px",
-    },
-    '& svg': {
-      color: "#fff",
-      '&:hover': {
-        color: "rgb(102 146 202)",
-      },
-      '&.selected': {
-        color: "rgb(102 146 202)",
-      },
-    },
-  },
-  whiteText: {
-    color: "#fff",
-    '&:hover': {
-      color: "rgb(102 146 202)",
-    },
-  },
-  gray: {
-    color: "#777",
-    '&:hover': {
-      color: "#777",
-    },
-    '& svg': {
-      color: "#777",
-      '&:hover': {
-        color: "#777",
-      },
-      '&.selected': {
-        color: "#777",
-      },
-    },
-    '& svg.close': {
-      color: "#fff",
-      '&:hover': {
-        color: "rgb(102 146 202)",
-      },
-    }
-  },
-  clearAction: {
-    color: "rgb(102 146 202)",
-  },
-  footer: {
-    margin: "5px 0"
-  },
-}));
-
 const DrawShapesPopup = (props) => {
-  const classes = useStyles();
+  const { classes, children } = props;
   const [stateApp, setStateApp] = useContext(AppContext);
   const [
     upsertCustomLayer,
@@ -227,62 +140,29 @@ const DrawShapesPopup = (props) => {
     }
   };
 
-  const clearMapAndCloseShapeActionsPopup = () => {
-    stateApp.draw.delete(stateApp?.currentFeature?.id);
-    setStateApp((state) => ({
-      ...state,
-      //selectedAbstracts: [],
-      editDraw: false,
-      showShapeActionsPopup: false,
-      showDrawShapesPopup: false,
-      currentFeature: undefined,
-    }));
-  };
-  
-  const actionClose = () => {
-    clearMapAndCloseShapeActionsPopup();
-  };
-
   return (
     <Fragment>
-      <div className={classes.mapOverlay}>
-        <div class={classes.mapOverlayInner}>
-          <div className={classes.content}>
-            <span class={classes.label}>Tooltip</span> {calculateLandArea()}
-            <span className={classes.actions}>
-              {availableShapes.map((shape, index) => (
-                <Fragment key={index}>
-                  <Tooltip title={shape.title}>
-                    <IconButton
-                      size="small"
-                      onClick={() => {
-                        stateApp.draw.changeMode(shape.mode);
-                        setStateApp((state) => ({ ...state, editDraw: true }));
-                        props.handleClose();
-                      }}
-                      aria-label={shape.title}
-                    >
-                      {shape.icon}
-                    </IconButton>
-                  </Tooltip>
-                </Fragment>
-              ))}
-            </span>
-            <span className={classes.clearAction}>
-              <Tooltip title="Close">
-                <IconButton
-                  size="small"
-                  onClick={actionClose}
-                  aria-label="Close"
-                  className={classes.clearAction}
-                >
-                  <CloseIcon className="close" fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </span>
-          </div>
-        </div>
-      </div>
+      <span class={classes.label}>Tooltip</span> {calculateLandArea()}
+      <span className={classes.actions}>
+        {availableShapes.map((shape, index) => (
+          <Fragment key={index}>
+            <Tooltip title={shape.title}>
+              <IconButton
+                size="small"
+                onClick={() => {
+                  stateApp.draw.changeMode(shape.mode);
+                  setStateApp((state) => ({ ...state, editDraw: true }));
+                  props.handleClose();
+                }}
+                aria-label={shape.title}
+              >
+                {shape.icon}
+              </IconButton>
+            </Tooltip>
+          </Fragment>
+        ))}
+      </span>
+      {children}
     </Fragment>
   );
 };

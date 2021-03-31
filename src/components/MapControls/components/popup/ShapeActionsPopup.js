@@ -1,11 +1,8 @@
 import React, { useEffect, useContext, useState, Fragment } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
-import LayerIcon from "@material-ui/icons/Layers";
-import CloseIcon from "@material-ui/icons/Close";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import GpxFixedIcon from "@material-ui/icons/GpsFixed";
 import FilterAltIcon from "../../../Shared/svgIcons/FilterAltIcon";
@@ -24,102 +21,9 @@ import { setMapGridCardState } from "../../../../actions";
 
 import { gql } from "@apollo/client";
 
-const useStyles = makeStyles((theme) => ({
-  mapOverlay: {
-    position: "absolute",
-    minWidth: "320px",
-    bottom: "20px",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    background: "rgba(1, 17, 51, 1.0)",
-    color: "#fff",
-    borderRadius: "25px",
-  },
-  mapOverlayInner: {
-    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
-    borderRadius: "3px",
-    padding: "10px 20px",
-  },
-  popUp: {
-    minWidth: "320px",
-    padding: "10px 20px",
-    borderRadius: "15px",
-    backgroundColor: "#ffffff",
-  },
-  content: {
-    flexDirection: "row",
-    display: "flex",
-    placeContent: "center space-between",
-    alignItems: "center",
-  },
-  label: {
-    margin: "0 10px",
-    fontWeight: "bold",
-  },
-  actions: {
-    display: "flex",
-    alignItems: "center",
-    marginLeft: "20px",
-    "& button": {
-      marginLeft: "5px",
-      marginRight: "5px",
-    },
-    "& svg": {
-      color: "#fff",
-      "&:hover": {
-        color: "rgb(102 146 202)",
-      },
-      "&.selected": {
-        color: "rgb(102 146 202)",
-      },
-    },
-  },
-  whiteText: {
-    color: "#fff",
-    "&:hover": {
-      color: "rgb(102 146 202)",
-    },
-  },
-  gray: {
-    color: "#777",
-    "&:hover": {
-      color: "#777",
-    },
-    "& svg": {
-      color: "#777",
-      "&:hover": {
-        color: "#777",
-      },
-      "&.selected": {
-        color: "#777",
-      },
-    },
-    "& svg.close": {
-      color: "#fff",
-      "&:hover": {
-        color: "rgb(102 146 202)",
-      },
-    },
-  },
-  clearAction: {
-    color: "rgb(102 146 202)",
-  },
-  footer: {
-    margin: "5px 0",
-  },
-  divider: {
-    borderRight: "1px solid",
-    backgroundColor: "white",
-    height: "20px",
-    opacity: 0.8,
-    margin: "5px",
-  },
-}));
-
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
-
-  const classes = useStyles();
+  const { classes, children } = props;
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
@@ -255,23 +159,6 @@ const ShapeActionsPopup = (props) => {
     }
   };
 
-  const clearMapAndCloseShapeActionsPopup = () => {
-    stateApp.draw.delete(stateApp.currentFeature.id);
-    setStateApp((state) => ({
-      ...state,
-      editDraw: false,
-      currentFeature: undefined,
-    }));
-  };
-  const actionClose = function () {
-    clearMapAndCloseShapeActionsPopup();
-  };
-  useEffect(() => {
-    if (stateApp && stateApp.editDraw === false) {
-      clearMapAndCloseShapeActionsPopup();
-    }
-  }, [stateApp.editDraw]);
-
   const handleSaveSpatialDataToShape = (spatialData, dataType) => {
     spatialDataAttributes.forEach((attribute) => {
       stateApp.draw.setFeatureProperty(
@@ -384,17 +271,17 @@ const ShapeActionsPopup = (props) => {
     }
   };
 
-  const actionAOI = () => {
-    if (isLine()) return;
-    props.selectedFeature.properties.sdType = "interest";
-    toggleSpatialDataCard(true);
-  };
+  // const actionAOI = () => {
+  //   if (isLine()) return;
+  //   props.selectedFeature.properties.sdType = "interest";
+  //   toggleSpatialDataCard(true);
+  // };
 
-  const actionParcel = () => {
-    if (isLine()) return;
-    props.selectedFeature.properties.sdType = "parcel";
-    toggleSpatialDataCard(true);
-  };
+  // const actionParcel = () => {
+  //   if (isLine()) return;
+  //   props.selectedFeature.properties.sdType = "parcel";
+  //   toggleSpatialDataCard(true);
+  // };
 
   const isLine = () => {
     return stateApp.currentFeature.geometry.type === "LineString"
@@ -411,40 +298,32 @@ const ShapeActionsPopup = (props) => {
           selectedFeature={stateApp.currentFeature}
         />
       )}
-      <div className={classes.mapOverlay}>
-        <div class={classes.mapOverlayInner}>
-          <div className={classes.content}>
-            <span class={classes.label}>
-              {isLine() ? "Calc. Dist" : "Calc. Area"}
-            </span>{" "}
-            {calculateLandArea()}
-            <span
-              className={`${classes.actions} ${isLine() ? classes.gray : ""}`}
+      <Fragment>
+        <span class={classes.label}>
+          {isLine() ? "Calc. Dist" : "Calc. Area"}
+        </span>{" "}
+        {calculateLandArea()}
+        <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
+          <Tooltip title="Grid">
+            <IconButton
+              size="small"
+              onClick={actionShowWellsAndOwners}
+              aria-label="Grid"
             >
-              <Tooltip title="Grid">
-                <IconButton
-                  size="small"
-                  onClick={actionShowWellsAndOwners}
-                  aria-label="Grid"
-                >
-                  <GridOnIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Filter">
-                <IconButton
-                  size="small"
-                  onClick={actionFilter}
-                  aria-label="Filter"
-                >
-                  <FilterAltIcon
-                    className={
-                      stateApp.shapeActionsFilterSelected ? "selected" : ""
-                    }
-                  />
-                </IconButton>
-              </Tooltip>
+              <GridOnIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Filter">
+            <IconButton size="small" onClick={actionFilter} aria-label="Filter">
+              <FilterAltIcon
+                className={
+                  stateApp.shapeActionsFilterSelected ? "selected" : ""
+                }
+              />
+            </IconButton>
+          </Tooltip>
 
-              {/**
+          {/**
                 * Commenting APO and Parcel per design implementation
               <Tooltip title="AOI">
                 <IconButton size="small" onClick={actionAOI} aria-label="AOI" >
@@ -458,46 +337,33 @@ const ShapeActionsPopup = (props) => {
               </Tooltip>
                 */}
 
-              <Tooltip title="Track">
-                <IconButton
-                  size="small"
-                  /*onClick={saveAndOpenParcelDetail}*/ aria-label="Track"
-                >
-                  <GpxFixedIcon />
-                </IconButton>
-              </Tooltip>
-              <span className={classes.divider}></span>
-              <Tooltip title="Edit Active Shape">
-                <IconButton size="small" aria-label="Edit Active Shape">
-                  <EditIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Delete Active Shape">
-                <IconButton size="small" aria-label="Delete Active Shape">
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
-            </span>
-            <span className={classes.clearAction}>
-              <Tooltip title="Close">
-                <IconButton
-                  size="small"
-                  onClick={actionClose}
-                  aria-label="Close"
-                  className={classes.clearAction}
-                >
-                  <CloseIcon className="close" fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </span>
+          <Tooltip title="Track">
+            <IconButton
+              size="small"
+              /*onClick={saveAndOpenParcelDetail}*/ aria-label="Track"
+            >
+              <GpxFixedIcon />
+            </IconButton>
+          </Tooltip>
+          <span className={classes.divider}></span>
+          <Tooltip title="Edit Active Shape">
+            <IconButton size="small" aria-label="Edit Active Shape">
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete Active Shape">
+            <IconButton size="small" aria-label="Delete Active Shape">
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </span>
+        {children}
+        {error && (
+          <div className={classes.footer}>
+            <Typography color="error" align="center"></Typography>
           </div>
-          {error && (
-            <div className={classes.footer}>
-              <Typography color="error" align="center"></Typography>
-            </div>
-          )}
-        </div>
-      </div>
+        )}
+      </Fragment>
     </Fragment>
   );
 };
