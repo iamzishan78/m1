@@ -25,8 +25,8 @@ import ContactsHeadCells from '../Shared/constants/contacts-header-schema.js'
 import WellsHeadCells from '../Shared/constants/well-header-schema.js'
 import wellsColumnHeaders from '../Shared/constants/well-interests-header-grid-schema.js'
 import parcelsColumnHeaders from '../Shared/constants/parcel-header-grid.js'
-
-
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -83,8 +83,8 @@ const useStyles = makeStyles((theme) => {
           : mapGridCardActivated === "exp"
             ? "91vh"
             : "60vh",
-      left: ({ mapGridCardActivated }) =>
-        mapGridCardActivated === "exp" ? "2vw" : "2vw",
+      left: ({ mapGridCardActivated,expandGrid }) =>
+        mapGridCardActivated === "exp"  ? "2vw" : expandGrid ? "2vw":"-189vw",
       top: ({ mapGridCardActivated }) =>
         mapGridCardActivated === "exp" ? "5vh" : "12vh",
       zIndex: "1300",
@@ -156,8 +156,27 @@ const useStyles = makeStyles((theme) => {
         display: ({ viewportWells }) => (viewportWells ? "block" : "none"),
       },
     },
+    pulloutBox: {
+      height: "100px",
+      color: "white",
+      width: "20px",
+      background: "#011133",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      "& svg": {
+        transform: "scaleX(0.5)",
+      },
+      left: ({ expandGrid }) => expandGrid ? '59vw' : '0vw',
+      top: '35vh',
+      position:'fixed',
+      zIndex:'9999'
+    },
   };
 });
+
+
 
 const TabLabels = ({ labels, value, setValue }) => {
   const classes = useStyles();
@@ -377,6 +396,7 @@ function MapGridCard(props) {
   const [viewportTapValue, ViewportTapValue] = useState(0);
   const [trackedTapValue, TrackedTapValue] = useState(0);
   const [gridTapValue, GridTapValue] = useState(0);
+  const [expandGrid, setExpandGrid] = useState(true);
 
   // selectors 
   const {
@@ -390,7 +410,11 @@ function MapGridCard(props) {
 
   // queries 
   const dispatch = useDispatch();
-
+  useEffect(() => {
+    if(stateApp.expandedCard){
+      setExpandGrid(false)
+    }
+  }, [stateApp.expandedCard]);
 
   // handlers 
   const setSearchTapValue = (state) => {
@@ -419,6 +443,7 @@ function MapGridCard(props) {
     mapGridCardActivated,
     mapGridCardActiveTap,
     viewportWells: stateApp.viewportWells,
+    expandGrid  
   });
 
   const handleMainTapChange = (event, newValue) => {
@@ -751,7 +776,7 @@ function MapGridCard(props) {
                   />
                 </div>
               </TabPanel>
-
+             
             </div>
           )}
       </Card>
@@ -785,6 +810,13 @@ function MapGridCard(props) {
 
         )}
       {mapGridCardActivated === "exp" && blackOut()}
+      {mapGridCardActivated &&
+          <div 
+           className={classes.pulloutBox}  
+           onClick={() => setExpandGrid(!expandGrid)}>
+           {expandGrid ? <ArrowBackIosIcon />:<ArrowForwardIosIcon />}
+          </div>
+       }
     </div>
   );
 }
