@@ -1,11 +1,17 @@
-import React, { useContext, useEffect, useState, useLayoutEffect, useRef } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  Fragment,
+  useRef,
+} from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import loadCSS from "fg-loadcss";
 // STATE MANAGEMENT
 import { MapControlsContext } from "../../MapControlsContext";
 import { AppContext } from "../../../../AppContext";
 // STYLES - Material UI Required Components
-import { useStyles, StyledMenu, StyledMenuItem } from "../muiThemes";
+import { AppStyles, StyledMenu, StyledMenuItem } from "../muiThemes";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import ListItemText from "@material-ui/core/ListItemText";
 // STYLES - Font Awesome Icons Required for Menu Items
@@ -26,6 +32,8 @@ import {
 } from "./drawShapesHelpers";
 import mapboxgl, { Marker } from "mapbox-gl";
 import { makeStyles, Icon } from "@material-ui/core";
+import IconButton from "@material-ui/core/IconButton";
+import Tooltip from "@material-ui/core/Tooltip";
 import polylabel from "polylabel";
 import { useHistory } from "react-router-dom";
 
@@ -36,6 +44,7 @@ import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
 //import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 //import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 //import { mdiShapePolygonPlus } from '@mdi/js';
+import CloseIcon from "@material-ui/icons/Close";
 import { default as DrawPoly } from "../../../Shared/svgIcons/polygon";
 import { default as Rect } from "../../../Shared/svgIcons/rectangle";
 import ShowChartIcon from "@material-ui/icons/ShowChart";
@@ -48,23 +57,113 @@ import { NavigationContext } from "../../../Navigation/NavigationContext";
 // const DEBUG_BLUE = "background: blue; color: white; border: 1px solid black";
 // const DEBUG_RED = "background: red; color: white; border: 1px solid black";
 
+// const localStyles = makeStyles((theme) => ({
+//   label: {
+//     width: "150px",
+//     height: "15px",
+//     display: "flex",
+//     alignItems: "center",
+//     justifyContent: "center",
+//     color: "white",
+//     fontSize: "1rem",
+//   },
+// }));
 
-const localStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => ({
+  mapOverlay: {
+    position: "absolute",
+    minWidth: "320px",
+    bottom: "20px",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    background: "rgba(1, 17, 51, 1.0)",
+    color: "#fff",
+    borderRadius: "25px",
+  },
+  mapOverlayInner: {
+    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+    borderRadius: "3px",
+    padding: "10px 20px",
+  },
+  popUp: {
+    minWidth: "320px",
+    padding: "10px 20px",
+    borderRadius: "15px",
+    backgroundColor: "#ffffff",
+  },
+  content: {
+    flexDirection: "row",
+    display: "flex",
+    placeContent: "center space-between",
+    alignItems: "center",
+  },
   label: {
-    width: "150px",
-    height: "15px",
+    margin: "0 10px",
+    fontWeight: "bold",
+  },
+  actions: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-    color: "white",
-    fontSize: "1rem",
+    marginLeft: "20px",
+    "& button": {
+      marginLeft: "5px",
+      marginRight: "5px",
+    },
+    "& svg": {
+      color: "#fff",
+      "&:hover": {
+        color: "rgb(102 146 202)",
+      },
+      "&.selected": {
+        color: "rgb(102 146 202)",
+      },
+    },
+  },
+  whiteText: {
+    color: "#fff",
+    "&:hover": {
+      color: "rgb(102 146 202)",
+    },
+  },
+  gray: {
+    color: "#777",
+    "&:hover": {
+      color: "#777",
+    },
+    "& svg": {
+      color: "#777",
+      "&:hover": {
+        color: "#777",
+      },
+      "&.selected": {
+        color: "#777",
+      },
+    },
+    "& svg.close": {
+      color: "#fff",
+      "&:hover": {
+        color: "rgb(102 146 202)",
+      },
+    },
+  },
+  clearAction: {
+    color: "rgb(102 146 202)",
+  },
+  footer: {
+    margin: "5px 0",
+  },
+  divider: {
+    borderRight: "1px solid",
+    backgroundColor: "white",
+    height: "20px",
+    opacity: 0.8,
+    margin: "5px",
   },
 }));
 
-export default function DrawShapes(props) {
-  const classes = useStyles();
+export default function DrawShapes() {
   let history = useHistory();
-  const localClasses = localStyles();
+  const classes = useStyles();
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
@@ -77,17 +176,6 @@ export default function DrawShapes(props) {
   );
 
   const eventsConfiguredRef = useRef(false);
-
-  const DEBUGGER = (source, value) => {
-  };
-
-  const createShapeMarker = (feature) => {
-    var el = document.createElement("div");
-    el.setAttribute("id", feature.id);
-    el.innerHTML = "Feature_" + feature.id.slice(-4);
-    el.className = localClasses.label;
-    return el;
-  };
 
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
 
@@ -154,13 +242,32 @@ export default function DrawShapes(props) {
     const { currentFeature } = stateApp;
     if (currentFeature !== undefined) {
       toggleSpatialDataCard(true);
-      stateApp.showDrawShapesPopup = false;
     } else {
       toggleSpatialDataCard(false);
-      stateApp.showDrawShapesPopup = true;
     }
   }, [stateApp.currentFeature]);
-  
+
+  // useEffect(() => {
+  //   if (stateApp && stateApp.editDraw === false) {
+  //     clearMapAndCloseShapeActionsPopup();
+  //   }
+  // }, [stateApp.editDraw]);
+
+  const clearMapAndCloseShapeActionsPopup = () => {
+    stateApp.draw.delete(stateApp.currentFeature?.id);
+    setStateApp((state) => ({
+      ...state,
+      editDraw: false,
+      currentFeature: undefined,
+      showShapeActionsPopup: false,
+      showDrawShapesPopup: false,
+    }));
+  };
+
+  const actionClose = () => {
+    clearMapAndCloseShapeActionsPopup();
+  };
+
   const handleClose = () => {
     setStateMapControls({ ...stateMapControls, anchorEl: null });
   };
@@ -210,7 +317,6 @@ export default function DrawShapes(props) {
     const { currentFeature } = stateApp;
     stateApp.draw.delete(currentFeature.id);
 
-
     //////cleaning the selected title opinion and redirecting to title opinion page//
 
     if (dataType === "title") {
@@ -251,10 +357,29 @@ export default function DrawShapes(props) {
   };
 
   return (
-    <React.Fragment>
-      {stateApp.showDrawShapesPopup && (
+    <Fragment>
+      {stateApp.showDrawShapesPopup && !stateApp.currentFeature && (
         <ClickAwayListener onClickAway={handleClose}>
-          <DrawShapePopup handleClose={handleClose}/>
+          <div className={classes.mapOverlay}>
+            <div class={classes.mapOverlayInner}>
+              <div className={classes.content}>
+                <DrawShapePopup handleClose={handleClose} classes={classes}>
+                  <span className={classes.clearAction}>
+                    <Tooltip title="Close">
+                      <IconButton
+                        size="small"
+                        onClick={actionClose}
+                        aria-label="Close"
+                        className={classes.clearAction}
+                      >
+                        <CloseIcon className="close" fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </span>
+                </DrawShapePopup>
+              </div>
+            </div>
+          </div>
         </ClickAwayListener>
       )}
       {stateApp.showShapeActionsPopup &&
@@ -263,11 +388,31 @@ export default function DrawShapes(props) {
       !stateApp.currentFeature.id.includes("drag_circle") &&
       !stateApp.currentFeature.id.includes("draw_rectangle") &&
       !stateApp.currentFeature.id.includes("edit_polygon") ? (
-        <ShapeActionsPopup
-          selectedFeature={stateApp.currentFeature}
-          saveSpatialData={handleSaveSpatialDataToShape}
-        />
+        <div className={classes.mapOverlay}>
+          <div class={classes.mapOverlayInner}>
+            <div className={classes.content}>
+              <ShapeActionsPopup
+                selectedFeature={stateApp.currentFeature}
+                saveSpatialData={handleSaveSpatialDataToShape}
+                classes={classes}
+              >
+                <span className={classes.clearAction}>
+                  <Tooltip title="Close">
+                    <IconButton
+                      size="small"
+                      onClick={actionClose}
+                      aria-label="Close"
+                      className={classes.clearAction}
+                    >
+                      <CloseIcon className="close" fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </span>
+              </ShapeActionsPopup>
+            </div>
+          </div>
+        </div>
       ) : null}
-    </React.Fragment>
+    </Fragment>
   );
 }
