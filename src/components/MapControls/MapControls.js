@@ -127,6 +127,16 @@ export default function MapControls(props) {
       });
     }
 
+    if (action === "draw") {
+      if (!stateApp.editDraw) {
+        setStateApp((state) => ({
+          ...state,
+          showDrawShapesPopup: true,
+          showShapeActionsPopup: true,
+        }));
+      }
+    }
+
     setStateApp((stateApp) => ({
       ...stateApp,
       toggle3d: action === "threed" ? !stateApp.toggle3d : stateApp.toggle3d,
