@@ -1078,7 +1078,7 @@ function Map() {
       let udLayers = [];
       let clusterLayers = [];
 
-      stateApp.layers?.forEach((layer) => {
+      stateApp.layers.forEach((layer) => {
         const interaction =
           layer.layerSettings.interaction.interactionAble &&
           layer.layerSettings.interaction.interactionDetail.click;
@@ -3375,6 +3375,7 @@ function Map() {
           .features;
 
         if (window.event.ctrlKey || window.event.metaKey) {
+
           if (featureState && featureState.click) {
             // Unselect feature
             map.setFeatureState(
@@ -4169,7 +4170,7 @@ function Map() {
   const handleToggleInteraction = (layerIdentifier, value) => {
     let layer;
     let index;
-    stateApp.layers?.forEach((l, i) => {
+    stateApp.layers.forEach((l, i) => {
       if (l.identifier == layerIdentifier) {
         layer = l;
         index = i;

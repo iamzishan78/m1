@@ -1,8 +1,5 @@
 node_modules
 build
 .DS_Store
-
-*.log
-
-# lock files
 yarn.lock
+*.log
