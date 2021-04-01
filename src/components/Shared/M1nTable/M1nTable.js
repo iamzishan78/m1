@@ -1775,7 +1775,7 @@ function M1nTable(props) {
           );
         }
 
-        if (props.targetLabel && props.targetLabel == "owner")
+        if (props.targetLabel && props.targetLabel === "owner")
           buildingColumns.push(SearchsHeadCells[6]);
 
         if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
@@ -1784,7 +1784,7 @@ function M1nTable(props) {
           buildingColumns.push(SearchsHeadCells[3]);
         if (
           props.targetLabel &&
-          (props.targetLabel == "well" || props.targetLabel == "owner")
+          (props.targetLabel === "well" || props.targetLabel === "owner")
         )
           //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);

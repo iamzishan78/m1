@@ -237,7 +237,7 @@ const ShapeActionsPopup = (props) => {
     dispatch(
       setMapGridCardState({
         mapGridCardActivated: true,
-        mapGridCardActiveTap: 3,
+        mapGridCardActiveTap: 0,
       })
     );
   };
