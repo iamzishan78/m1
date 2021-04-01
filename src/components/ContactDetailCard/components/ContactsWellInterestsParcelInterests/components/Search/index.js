@@ -30,12 +30,12 @@ function Search({ contactId }) {
   const [getWellsBySearchType, { data }] = useLazyQuery(OWNER_WELLS_BY_SEARCHTYPE, { fetchPolicy: "cache-and-network", });
   const [addMultiWellInterestToContact] = useMutation(ADD_MULTI_WELLINTEREST_TO_CONTACT);
   const fetchSelectedWells = (searchType, searchIds) => {
+    setWells([])
     getWellsBySearchType({
       variables: {
         searchType, searchIds
       },
     });
-    console.log(searchType, searchIds)
   }
 
   useEffect(() => {
@@ -50,26 +50,29 @@ function Search({ contactId }) {
   }, [data?.wellsBySearchType])
 
   const addWellInterestToContact = () => {
-    const wellIds = []
+    const selectedWells = []
     rowsSelected.forEach((row) => {
-      debugger
-      wellIds.push(wells[row.dataIndex].id || wells[row.dataIndex].globalWell)
+      selectedWells.push(wells[row.dataIndex])
     })
     addMultiWellInterestToContact({
-      variables: { wellIds, contactId, userId: stateApp.user.mongoId, },
+      variables: { wells: selectedWells, contactId, userId: stateApp.user.mongoId, },
       refetchQueries: [
         "getContactWells",
       ],
       awaitRefetchQueries: true
     }).then(
-      res => {
-        dispatch(showSuccessMessage("Contacts Merged Successfully"));
-        // setLoading(false);
+      ({ data: { addMultiWellInterestToContact } }) => {
+        if (addMultiWellInterestToContact?.success) {
+          rowsSelected = []
+          setWells([...wells])
+          dispatch(showSuccessMessage(addMultiWellInterestToContact.message));
+        } else {
+          dispatch(showErrorMessage(addMultiWellInterestToContact.message));
+        }
       },
       err => {
         console.log(err)
-        // setLoading(false);
-        dispatch(showErrorMessage("Failed to merge"));
+        dispatch(showErrorMessage("Failed to attach to contact"));
       }
     );
   }
@@ -87,11 +90,11 @@ function Search({ contactId }) {
         <AccordionDetails>
 
           <Grid container direction="row" spacing={2} >
-            <Grid item md={6}>
+            <Grid item md={4}>
               <SearchSection fetchSelectedWells={fetchSelectedWells} />
             </Grid>
 
-            <Grid item md={6}>
+            <Grid item md={8}>
               <Grid container direction="column" spacing={1} >
                 <Grid item >
                   <Typography className={classes.heading}>2. Select the well interests to associate to the contact from the list below</Typography>
@@ -99,7 +102,7 @@ function Search({ contactId }) {
                 <Grid item md={12}>
 
                   <MUIDataTable
-                    title={'Tax Role Interest'}
+                    title={'Tax Roll Interests'}
                     data={wells}
                     columns={AssociateContactWellHeadCells}
                     options={{
@@ -107,9 +110,12 @@ function Search({ contactId }) {
                       customToolbarSelect: () => <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addWellInterestToContact} > Add to contact</Button>,
                       onRowsSelect: (currentRowsSelected, selectedRows) => {
                         rowsSelected = selectedRows
-                        console.log(selectedRows)
+                        console.log(JSON.stringify(rowsSelected))
                       },
+
+                      rowsSelected: rowsSelected
                     }}
+
                   />
                 </Grid>
               </Grid>

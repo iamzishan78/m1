@@ -10,6 +10,8 @@ const AssociateContactWellHeadCells = [
       download: false,
       print: false,
       viewColumns: true,
+      rowsPerPage: 5,
+      rowsPerPageOptions: [5, 25, 100]
     },
   },
   { name: "wellName", label: "Well" },
@@ -27,7 +29,17 @@ const AssociateContactWellHeadCells = [
   { name: "type", label: "Type" },
   { name: "interest", label: "Interest" },
   { name: "value", label: "Tax Value" },
-  { name: "nra", label: "NRA" },
+  {
+    name: "nra", label: "NRA", options: {
+      customBodyRender: (value) => {
+        let nra = value;
+        if (nra && nra.toString().split('.').length > 0 && nra.toString().split('.')[1].length > 6) {
+          return nra.toFixed(6)
+        }
+        return nra;
+      }
+    }
+  },
   { name: "year", label: "Year", options: { display: false } },
   { name: "globalLod", label: "Global LOD", options: { display: false } },
 ];

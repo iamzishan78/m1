@@ -1,15 +1,12 @@
-import React, { useContext } from "react";
+import React from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { AppContext } from "AppContext";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import PersonIcon from "@material-ui/icons/Person";
 import WellIcon from "components/Shared/svgIcons/well";
-import OperatorIcon from "components/Shared/svgIcons/operator";
-import LeaseIcon from "components/Shared/svgIcons/lease";
+import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox';
 import Checkbox from "@material-ui/core/Checkbox";
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
@@ -24,20 +21,39 @@ import useStyles from "../style";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
 import { callOwnerSearch, callWellSearch } from "./searchApi";
 
+const ownerCogIndexName = "globalowner-index";
+
+const maxMinScore = (options) => {
+  let max = 0;
+  let min = 1000000;
+  for (let i = 0; i < options.length; i++) {
+    if (options[i].Score > max) max = options[i].Score;
+    if (options[i].Score < min) min = options[i].Score;
+  }
+
+  return [max, min];
+};
+
+const calcScoreOpacity = (maxMin, score) => {
+  if (maxMin[0] === maxMin[1]) return 0;
+  if (score === maxMin[1]) return 1;
+  return 1 - (score - maxMin[1]) / (maxMin[0] - maxMin[1]);
+};
 
 function Search({ fetchSelectedWells }) {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const [stateApp, setStateApp] = useContext(AppContext);
   const [inputValue, setInputValue] = React.useState("");
   const [searchOption, setSearchOption] = React.useState("wells");
   const [searchResultData, setSearchResultData] = React.useState([]);
   const [searchLoading, setSearchLoading] = React.useState(false);
   const [selectedIds, setSelectedIds] = React.useState([]);
+  const [maxMinWellsScore, setMaxMinWellsScore] = React.useState([0, 0]);
+  const [maxMinOwnersScore, setMaxMinOwnersScore] = React.useState([0, 0]);
   const [searchTop, setSearchTop] = React.useState(5);
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
+  const intermediateCheckedIcon = <IndeterminateCheckBoxIcon fontSize="small" />;
 
   React.useEffect(() => {
     if (inputValue === "") {
@@ -74,7 +90,7 @@ function Search({ fetchSelectedWells }) {
               ...newOptions,
             ];
 
-            //setMaxMinWellsScore(maxMinScore(results.value));
+            setMaxMinWellsScore(maxMinScore(results.value));
           }
           setSearchResultData([...newOptions]);
           setSearchLoading(false);
@@ -99,6 +115,8 @@ function Search({ fetchSelectedWells }) {
                 };
               }),
             ];
+
+            setMaxMinOwnersScore(maxMinScore(results.value));
           }
           setSearchResultData([...newOptions]);
           setSearchLoading(false);
@@ -106,19 +124,34 @@ function Search({ fetchSelectedWells }) {
     })();
   }, [inputValue, searchTop, callWellSearch, callOwnerSearch, searchOption]);
 
-  const selectWellId = (id, selection) => {
+  const selectWellId = (id, selection, all = false) => {
     const _searchResultData = searchResultData.map((data) => {
-      if (data.Id === id) {
+      if (data.Id === id || all) {
         data.selected = selection
       }
       return data
     })
     setSearchResultData(_searchResultData)
     if (selection) {
-      selectedIds.push(id);
-      setSelectedIds(selectedIds)
+      if (all)
+        setSelectedIds(searchResultData.map(s => s.Id))
+      else {
+        selectedIds.push(id);
+        setSelectedIds(selectedIds)
+      }
     } else {
-      setSelectedIds([...selectedIds.filter(e => e !== id)])
+      if (all)
+        setSelectedIds([])
+      else
+        setSelectedIds([...selectedIds.filter(e => e !== id || all)])
+    }
+  }
+
+  const handleSearchOption = (value) => {
+    if (value !== searchOption) {
+      setSearchResultData([])
+      setSearchTop(5);
+      setSearchOption(value)
     }
   }
 
@@ -153,7 +186,7 @@ function Search({ fetchSelectedWells }) {
             variant={searchOption === "wells" ? "contained" : "outlined"}
             size="small"
             color={searchOption === "wells" ? "secondary" : "primary"}
-            onClick={() => setSearchOption("wells")}
+            onClick={() => handleSearchOption("wells")}
           >
             Wells
          </Button>
@@ -162,7 +195,7 @@ function Search({ fetchSelectedWells }) {
             variant={searchOption === "owners" ? "contained" : "outlined"}
             size="small"
             color={searchOption === "owners" ? "secondary" : "primary"}
-            onClick={() => setSearchOption("owners")}
+            onClick={() => handleSearchOption("owners")}
           >
             Tax owners
             </Button>
@@ -186,9 +219,21 @@ function Search({ fetchSelectedWells }) {
             <>
               {
                 searchResultData.length > 0 && <Grid container item xs={12} className={classes.groupsHeaders}>
-                  <Grid item item xs={6}>
+                  <Grid item item xs={1}>
+                    <Checkbox
+                      icon={selectedIds.length > 0 && selectedIds.length < searchResultData.length ? intermediateCheckedIcon : icon}
+                      checkedIcon={checkedIcon}
+                      style={{ marginRight: 8 }}
+                      color="primary"
+                      onChange={(e) => {
+                        selectWellId(null, e.target.checked, true);
+                      }}
+                    />
+                  </Grid>
+                  <Grid item item xs={5}>
                     <h3 className={classes.groupsHeadersText}>
-                      {searchOption === "wells" ? "Well Interests" : searchOption === "owners" ? "Tax Owners" : searchOption}
+                      {searchOption === "wells" ? "Well Interests " : searchOption === "owners" ? "Tax Owners " : searchOption}
+                      {selectedIds.length > 0 && `(${selectedIds.length} Selected)`}
                     </h3>
                   </Grid>
                   <Grid item xs={6} style={{ textAlign: "right" }}>
@@ -219,7 +264,7 @@ function Search({ fetchSelectedWells }) {
             </>
         }
 
-        <Grid item xs={12}>
+        <Grid item xs={12} style={{ maxHeight: "550px", overflow: "scroll" }}>
           {
             searchResultData.map((option) => {
               return (
@@ -241,17 +286,8 @@ function Search({ fetchSelectedWells }) {
                       {option.Source === "globalowner-index" && (
                         <PersonIcon className={classes.icon} />
                       )}
-                      {option.Source === "operator-index" && (
-                        <OperatorIcon className={classes.icon} color={"#757575"} />
-                      )}
                       {option.Source === "wellheader-index-en-ms" && (
                         <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
-                      )}
-                      {option.Source === "lease-index" && (
-                        <LeaseIcon className={classes.icon} color={"#757575"} />
-                      )}
-                      {option.Source === "mapboxSearch" && (
-                        <LocationOnIcon className={classes.icon} />
                       )}
                     </Grid>
                     <Grid item xs>
@@ -278,6 +314,7 @@ function Search({ fetchSelectedWells }) {
                         style={{
                           zIndex: "1301",
                           backgroundImage: "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
+                          opacity: calcScoreOpacity(option.Source === ownerCogIndexName ? maxMinOwnersScore : maxMinWellsScore, option.Score).toString(),
                         }}
                       />
                     </Grid>

@@ -50,11 +50,14 @@ const useStyles = makeStyles((theme) => ({
       width: "100%",
     },
   },
-  /*inputAdornment: {
-    padding: "0 8px",
-    cursor: "context-menu",
-    height: "100%",
-  },*/
+  score: {
+    position: "absolute",
+    top: "-8px",
+    width: "17px",
+    height: "16px",
+    borderRadius: "50%",
+    marginLeft: "10px",
+  },
   headerButtons: {
     margin: "0 4px",
     minWidth: "max-content",
