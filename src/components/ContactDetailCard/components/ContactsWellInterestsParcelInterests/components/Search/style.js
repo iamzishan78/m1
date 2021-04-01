@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
   groupsHeadersText: {
     margin: "0",
-    marginTop: "3px",
+    marginTop: "8px",
     padding: "0",
     fontFamily: "Poppins",
     color: "#0f2046",
