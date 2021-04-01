@@ -110,7 +110,6 @@ function Search({ contactId }) {
                       customToolbarSelect: () => <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addWellInterestToContact} > Add to contact</Button>,
                       onRowsSelect: (currentRowsSelected, selectedRows) => {
                         rowsSelected = selectedRows
-                        console.log(JSON.stringify(rowsSelected))
                       },
 
                       rowsSelected: rowsSelected
