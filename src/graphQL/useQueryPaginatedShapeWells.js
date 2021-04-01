@@ -36,13 +36,13 @@ export const SHAPEWELLS = gql`
           spudDate
           completionDate
           firstProductionDate
-        }
+        },
         cursor
-      }
+      },
       pageInfo {
-        hasNextPage
+        hasNextPage,
         endCursor
-      }
+      },
     }
   }
 `;
