@@ -204,20 +204,18 @@ const TabPanels = ({ panels, value }) => {
 
 function MapGridCard(props) {
   // contexts
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp, ] = useContext(AppContext);
 
   // function state
   const [searchTapValue, SearchTapValue] = useState(0);
   const [viewportTapValue, ViewportTapValue] = useState(0);
   const [trackedTapValue, TrackedTapValue] = useState(0);
-  const [gridTapValue, GridTapValue] = useState(0);
 
   // selectors
   const {
     mapGridCardActivated,
     mapGridCardActiveTap,
     searchResultData,
-    viewportData,
     trackedDataCount,
     selectedOwner,
   } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
@@ -227,23 +225,14 @@ function MapGridCard(props) {
 
   // handlers
   const setSearchTapValue = (state) => {
-    if (searchTapValue != state) {
+    if (searchTapValue !== state) {
       SearchTapValue(state);
     }
   };
-  const setViewportTapValue = (state) => {
-    if (viewportTapValue != state) {
-      ViewportTapValue(state);
-    }
-  };
+
   const setTrackedTapValue = (state) => {
-    if (trackedTapValue != state) {
+    if (trackedTapValue !== state) {
       TrackedTapValue(state);
-    }
-  };
-  const setGridTapValue = (state) => {
-    if (gridTapValue != state) {
-      GridTapValue(state);
     }
   };
 
