@@ -140,6 +140,15 @@ const ShapeActionsPopup = (props) => {
     }
   }, [customLayerInsertedData]);
 
+  /**
+   * Disabling filter on Cross Button / Unmounting
+   */
+  useEffect(()=>{
+    return () => {
+      clearFilter();
+    };
+  }, []);
+
   const formatNumber = (number) => {
     return number.toLocaleString("en-US", { maximumFractionDigits: 2 });
   };
@@ -233,10 +242,8 @@ const ShapeActionsPopup = (props) => {
     );
   };
 
-  const actionFilter = () => {
-    if (isLine()) return;
-    if (stateApp.shapeActionsFilterSelected) {
-      stateApp.draw.changeMode("simple_select");
+  const clearFilter = () => {
+    stateApp.draw.changeMode("simple_select");
       setStateNav((stateNav) => ({
         ...stateNav,
         drawingMode: null,
@@ -248,6 +255,12 @@ const ShapeActionsPopup = (props) => {
         ...state,
         shapeActionsFilterSelected: false,
       }));
+  }
+
+  const actionFilter = () => {
+    if (isLine()) return;
+    if (stateApp.shapeActionsFilterSelected) {
+      clearFilter();
     } else {
       let feature = props.selectedFeature;
       let polygonString = getSelectedFeaturePolygonString();
