@@ -2638,20 +2638,6 @@ function SubTable(props) {
     },
   };
 
-<<<<<<< HEAD
-  if (props.parent === "gridWells") {
-    options.rowsPerPageOptions =
-      props.shapeWellsPageProps.shapeWellsCount > 25
-        ? [10, 25, 50, 100]
-        : props.shapeWellsPageProps.shapeWellsCount > 10
-          ? [10, 25]
-          : [];
-    options.count = props.shapeWellsPageProps.shapeWellsCount;
-    options.serverSide = true;
-  }
-
-=======
->>>>>>> d86df949fe516e4d0f5aed300101a4dc6649828d
   if (props.header === "Well Interests") {
     options.rowsPerPageOptions =
       props.wellInterestsPageProps.wellInterestsCount > 25
