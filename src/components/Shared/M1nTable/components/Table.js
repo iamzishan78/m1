@@ -1752,11 +1752,10 @@ function SubTable(props) {
                       </div>
                     );
                   }
-                  console.log(tableMeta.rowData)
                   return (
                     <div
                       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
-                      className={props.parent === "assocTaxRollInterests" && !tableMeta.rowData[14] ? [classes.blue] : []}
+                      className={props.parent === "assocTaxRollInterests" && !tableMeta.rowData[14] && !tableMeta.rowData[19] ? [classes.blue] : []}
                     >
 
                       {props.targetLabel === "contact" &&

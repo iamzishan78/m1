@@ -684,38 +684,20 @@ function AddWellInterestDialog(props) {
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  {/* <TextField
-                    className={formRoyaltyAcres !== (formInterestAmount * formLeaseAcres) ? classes.royaltyAcres : ''}
-                    // type="number"
-                    variant="outlined"
-                    margin="dense"
-                    // error={isNaN(formRoyaltyAcres)}
-                    value={formRoyaltyAcres === 0 || formRoyaltyAcres ? formRoyaltyAcres : ''}
-                    onChange={event => setFormRoyaltyAcres(parseFloat(event.target.value))}
-                    //label={formRoyaltyAcres ? "" : "Net Royalty Acres"}
-                    label="Net Royalty Acres"
-                    // InputLabelProps={{ shrink: true }}
-                    fullWidth
-                    defaultValue=""
-                    InputProps={{
-                      inputComponent: NumberFormatCustom,
-                    }}
-                  /> */}
-
-
-                  <FormControl fullWidth margin="dense" variant="outlined">
-                    <InputLabel htmlFor="standard-adornment-password">Net Royalty Acres</InputLabel>
+                  <FormControl fullWidth margin="dense" variant="outlined" >
+                    <InputLabel htmlFor="royality-acres">Net Royalty Acres</InputLabel>
                     <OutlinedInput
-                      id="standard-adornment-password"
+                      id="royality-acres"
+                      inputComponent={NumberFormatCustom}
                       className={formRoyaltyAcres !== (formInterestAmount * formLeaseAcres) ? classes.royaltyAcres : ''}
                       value={formRoyaltyAcres === 0 || formRoyaltyAcres ? formRoyaltyAcres : ''}
                       onChange={event => setFormRoyaltyAcres(parseFloat(event.target.value))}
                       labelWidth={140}
                       endAdornment={
-                        <InputAdornment position="end">
+                        <InputAdornment position="end" style={{ position: 'absolute', right: "-3px" }}>
                           {
-                            formRoyaltyAcres !== (formInterestAmount * formLeaseAcres) && <IconButton
-                              aria-label="toggle password visibility"
+                            formRoyaltyAcres !== '' && formRoyaltyAcres !== (formInterestAmount * formLeaseAcres) && <IconButton
+                              aria-label="toggle royality-acres"
                               onClick={() => setFormRoyaltyAcres(formInterestAmount * formLeaseAcres)}
                             >
                               <AutorenewIcon />
