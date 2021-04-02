@@ -514,7 +514,7 @@ function Search() {
 
     if (!mapGridCardActivated) {
       if (searchInputValue === "") {
-        setOptions(value ? [value] : []);
+        setOptions([]);
         setValue(null);
         setStateApp((state) => ({ ...state, wellListFromSearch: [] }));
         return undefined;
@@ -1384,6 +1384,7 @@ function Search() {
                             setStateApp((state) => ({
                               ...state,
                               wellListFromSearch: [],
+                              toggleZoomOut:true
                             }));
                           }}
                         >
