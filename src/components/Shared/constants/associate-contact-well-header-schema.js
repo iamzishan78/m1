@@ -1,3 +1,4 @@
+import vf_currency from "../valueformatters/vf_currency";
 
 const AssociateContactWellHeadCells = [
   {
@@ -6,9 +7,10 @@ const AssociateContactWellHeadCells = [
       display: false,
       filter: true,
       searchable: true,
-      sort: false,
+      sort: true,
       download: false,
       print: false,
+      empty: true,
       viewColumns: true,
       rowsPerPage: 5,
       rowsPerPageOptions: [5, 25, 100]
@@ -28,7 +30,16 @@ const AssociateContactWellHeadCells = [
   },
   { name: "type", label: "Type" },
   { name: "interest", label: "Interest" },
-  { name: "value", label: "Tax Value" },
+  {
+    name: "value", label: "Tax Value", options: {
+      customBodyRender: (value) => {
+        if (value) {
+          return vf_currency(value)
+        }
+        return value;
+      }
+    }
+  },
   {
     name: "nra", label: "NRA", options: {
       customBodyRender: (value) => {

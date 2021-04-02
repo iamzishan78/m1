@@ -863,8 +863,8 @@ function SubTable(props) {
             <Divider />
           </div>
         ) : (
-            <div></div>
-          )}
+          <div></div>
+        )}
         <MenuItem
           className={classes.userMenuItem}
           onClick={(e) => handleExpandClick(null, null, null, "deleteUser")}
@@ -1418,8 +1418,8 @@ function SubTable(props) {
                         {!value || value === "false" ? (
                           <Convert_contact style={{ margin: "4px" }} />
                         ) : (
-                            <Contact_card style={{ margin: "4px" }} />
-                          )}
+                          <Contact_card style={{ margin: "4px" }} />
+                        )}
                       </IconButton>
                     </Tooltip>
                   );
@@ -1580,8 +1580,8 @@ function SubTable(props) {
                               <p className="two">...</p>
                             </React.Fragment>
                           ) : (
-                              <p className="three">No Tags</p>
-                            )}
+                            <p className="three">No Tags</p>
+                          )}
                         </Badge>
                       </Tooltip>
                     </div>
@@ -1752,7 +1752,7 @@ function SubTable(props) {
                       </div>
                     );
                   }
-
+                  console.log(tableMeta.rowData)
                   return (
                     <div
                       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
@@ -2643,8 +2643,8 @@ function SubTable(props) {
       props.shapeWellsPageProps.shapeWellsCount > 25
         ? [10, 25, 50, 100]
         : props.shapeWellsPageProps.shapeWellsCount > 10
-        ? [10, 25]
-        : [];
+          ? [10, 25]
+          : [];
     options.count = props.shapeWellsPageProps.shapeWellsCount;
     options.serverSide = true;
   }

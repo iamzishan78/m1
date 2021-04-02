@@ -13,7 +13,6 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import parse from "autosuggest-highlight/parse";
-import { useDispatch } from "react-redux";
 import { deepEqualObjects } from "components/Shared/functions";
 import useStyles from "../style";
 
@@ -22,6 +21,7 @@ import joinAddress from "components/Shared/valueformatters/join-address.js";
 import { callOwnerSearch, callWellSearch } from "./searchApi";
 
 const ownerCogIndexName = "globalowner-index";
+const defaultSize = 7;
 
 const maxMinScore = (options) => {
   let max = 0;
@@ -49,7 +49,7 @@ function Search({ fetchSelectedWells }) {
   const [selectedIds, setSelectedIds] = React.useState([]);
   const [maxMinWellsScore, setMaxMinWellsScore] = React.useState([0, 0]);
   const [maxMinOwnersScore, setMaxMinOwnersScore] = React.useState([0, 0]);
-  const [searchTop, setSearchTop] = React.useState(5);
+  const [searchTop, setSearchTop] = React.useState(defaultSize);
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -150,7 +150,7 @@ function Search({ fetchSelectedWells }) {
   const handleSearchOption = (value) => {
     if (value !== searchOption) {
       setSearchResultData([])
-      setSearchTop(5);
+      setSearchTop(defaultSize);
       setSearchOption(value)
     }
   }
@@ -237,7 +237,7 @@ function Search({ fetchSelectedWells }) {
                     </h3>
                   </Grid>
                   <Grid item xs={6} style={{ textAlign: "right" }}>
-                    {searchTop === 5 ? (
+                    {searchTop === defaultSize ? (
                       <Button size="small" className={classes.groupsButton}
                         onClick={() => {
                           setSearchLoading(true);
@@ -252,7 +252,7 @@ function Search({ fetchSelectedWells }) {
                         className={classes.groupsButton}
                         onClick={() => {
                           setSearchLoading(true);
-                          setSearchTop(5);
+                          setSearchTop(defaultSize);
                         }}
                       >
                         See Less
@@ -264,7 +264,7 @@ function Search({ fetchSelectedWells }) {
             </>
         }
 
-        <Grid item xs={12} style={{ maxHeight: "550px", overflow: "scroll" }}>
+        <Grid item xs={12} style={{ maxHeight: "550px", overflowX: "hidden", overflowY: "visible" }}>
           {
             searchResultData.map((option) => {
               return (

@@ -5,7 +5,8 @@ import MUIDataTable from "mui-datatables";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Accordion, AccordionSummary, AccordionDetails, Button } from "@material-ui/core";
+import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import { Accordion, AccordionSummary, AccordionDetails, Button, Tooltip, IconButton } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import { deepEqualObjects } from "components/Shared/functions";
 
@@ -16,10 +17,6 @@ import useStyles from "./style";
 import SearchSection from "./SearchSection";
 import AssociateContactWellHeadCells from "components/Shared/constants/associate-contact-well-header-schema";
 import { showErrorMessage, showSuccessMessage } from "actions";
-
-
-
-
 
 function Search({ contactId }) {
   const classes = useStyles();
@@ -108,6 +105,23 @@ function Search({ contactId }) {
                     options={{
                       ...AssociateContactWellHeadCells[0].options,
                       customToolbarSelect: () => <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addWellInterestToContact} > Add to contact</Button>,
+                      customToolbar: () => <span className={classes.addIcon}>
+                        {
+                          wells.length > 0 && <Tooltip title='Clear'>
+                            <IconButton
+                              size="medium"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                rowsSelected = []
+                                setWells([])
+                              }}
+                            >
+                              <RemoveCircleOutlineIcon />
+                            </IconButton>
+                          </Tooltip>
+                        }
+
+                      </span>,
                       onRowsSelect: (currentRowsSelected, selectedRows) => {
                         rowsSelected = selectedRows
                       },
