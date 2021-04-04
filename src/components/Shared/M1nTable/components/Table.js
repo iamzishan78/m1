@@ -199,6 +199,11 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "#F2F2F2",
         zIndex: "auto",
         padding: (props) => (props.dense ? "10px" : null),
+        "& button":{
+          "& .MuiButton-label":{
+              textAlign:'left'
+          }
+        }
       },
       "& .MuiTableCell-paddingCheckbox": {
         padding: (props) => (props.dense ? "0 !important" : "16px"),
