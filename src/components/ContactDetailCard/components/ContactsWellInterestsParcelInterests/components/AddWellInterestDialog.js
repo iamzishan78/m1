@@ -9,11 +9,12 @@ import InputLabel from "@material-ui/core/InputLabel";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
+import AutorenewIcon from '@material-ui/icons/Autorenew';
 import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
 import { AppContext } from "../../../../../AppContext";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { CircularProgress, Dialog, Typography } from "@material-ui/core";
+import { CircularProgress, Dialog, OutlinedInput, InputAdornment, Typography } from "@material-ui/core";
 import RightDialog from "../../RightDialog";
 import { useDispatch, useSelector } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "../../../../../actions";
@@ -45,9 +46,9 @@ function NumberFormatCustom(props) {
           },
         });
       }}
-      // thousandSeparator
-      // isNumericString
-      // prefix="$"
+    // thousandSeparator
+    // isNumericString
+    // prefix="$"
     />
   );
 }
@@ -100,12 +101,17 @@ const useStyles = makeStyles((theme) => ({
   dialog: {
     zIndex: "9999999999 !important",
   },
+  royaltyAcres: {
+    '& .MuiInputBase-input': {
+      color: 'red'
+    }
+  }
 }));
 
 function AddWellInterestDialog(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
-  
+
   const [stateApp, setStateApp] = useContext(AppContext);
   const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -171,20 +177,20 @@ function AddWellInterestDialog(props) {
           50 +
           "&search=" +
           encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
-  
+
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
         headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
-  
+
         const options = {
           method: "GET",
           headers: headers,
         };
-  
+
         console.log(
           "request made to wellheader-index-en-ms search at: " + new Date().toString()
         );
-  
+
         fetch(endpoint, options)
           .then((response) => response.json())
           .then((response) => {
@@ -212,7 +218,7 @@ function AddWellInterestDialog(props) {
   }, dataInterestTypes);
 
   useEffect(() => {
-    if(!dataTenantWell?.tenantWell) return;
+    if (!dataTenantWell?.tenantWell) return;
 
     const leaseToSet = dataTenantWell?.tenantWell?.lease || "";
     const leaseAcresToSet = dataTenantWell?.tenantWell?.leaseAcres;
@@ -274,7 +280,7 @@ function AddWellInterestDialog(props) {
   }
 
   const handleRecalcNRA = (leaseAcres, interest) => {
-    if(initializing || leaseAcres == null || interest == null) return;
+    if (initializing || leaseAcres == null || interest == null) return;
 
     setFormRoyaltyAcres(leaseAcres * interest);
   }
@@ -289,8 +295,8 @@ function AddWellInterestDialog(props) {
             id: stateApp.activeWellInterest._id,
             globalWellId: selectedWell.Id,
             // ...(selectedWell?.LeaseId !== formLeaseId) && {leaseId: formLeaseId},
-            ...(selectedWell?.Lease !== formLeaseName) && {lease: formLeaseName},
-            ...(selectedWell?.LeaseAcreage !== formLeaseAcres) && {leaseAcres: formLeaseAcres},
+            ...(selectedWell?.Lease !== formLeaseName) && { lease: formLeaseName },
+            ...(selectedWell?.LeaseAcreage !== formLeaseAcres) && { leaseAcres: formLeaseAcres },
             interestOwner: formOwnerName,
             interestOwnerType: formInterestOwnerType,
             type: formInterestType,
@@ -312,8 +318,8 @@ function AddWellInterestDialog(props) {
             userId: stateApp.user.mongoId,
             contactId: props.contactId,
             // ...(selectedWell?.LeaseId !== formLeaseId) && {leaseId: formLeaseId},
-            ...(selectedWell?.Lease !== formLeaseName) && {lease: formLeaseName},
-            ...(selectedWell?.LeaseAcreage !== formLeaseAcres) && {leaseAcres: formLeaseAcres},
+            ...(selectedWell?.Lease !== formLeaseName) && { lease: formLeaseName },
+            ...(selectedWell?.LeaseAcreage !== formLeaseAcres) && { leaseAcres: formLeaseAcres },
             interestOwner: formOwnerName,
             interestOwnerType: formInterestOwnerType,
             type: formInterestType,
@@ -331,7 +337,7 @@ function AddWellInterestDialog(props) {
   }
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  
+
   const openConfirmationDialog = () => {
     setDeleteDialogOpen(true);
   };
@@ -371,7 +377,7 @@ function AddWellInterestDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected well interest?
           </DeleteConfirmationDialogContent>
@@ -387,13 +393,13 @@ function AddWellInterestDialog(props) {
             <h4
               style={{
                 margin: "0 0 15px 0",
-                float: "left",
+                cssFloat: "left",
                 fontSize: "1.1rem",
               }}
             >
               {stateApp.activeWellInterest ? "Update Well Interest" : "Add Well Interest"}
             </h4>
-            <div style={{ float: "right" }}>
+            <div style={{ cssFloat: "right" }}>
               {(stateApp.activeWellInterest && (
                 <>
                   <IconButton
@@ -445,7 +451,7 @@ function AddWellInterestDialog(props) {
                 filterOptions={(x) => x}
                 renderOption={(option) => {
                   const parts = parse(option.Primary, Array());
-        
+
                   return (
                     <Grid container spacing={0}>
                       <Grid container item xs={11} alignItems="center">
@@ -458,7 +464,7 @@ function AddWellInterestDialog(props) {
                               {part.text}
                             </span>
                           ))}
-        
+
                           {option && option.Secondary && (
                             <Typography variant="body2" color="textSecondary">
                               {option.Secondary}
@@ -502,7 +508,7 @@ function AddWellInterestDialog(props) {
                             results["@odata.context"].indexOf("('") + 2,
                             results["@odata.context"].indexOf("')")
                           );
-              
+
                           let newOptions = [
                             ...results.value.map((result) => {
                               result.Score = result["@search.score"];
@@ -564,7 +570,7 @@ function AddWellInterestDialog(props) {
               variant="outlined"
               margin="dense"
               value={formLeaseName}
-              onChange={event => setFormLeaseName(event.target.value) }
+              onChange={event => setFormLeaseName(event.target.value)}
               label={"Lease Name"}
               fullWidth
               //disabled
@@ -608,7 +614,7 @@ function AddWellInterestDialog(props) {
               variant="outlined"
               margin="dense"
               value={formOwnerName}
-              onChange={event => setFormOwnerName(event.target.value) }
+              onChange={event => setFormOwnerName(event.target.value)}
               label="Interest Owner Name"
               fullWidth
               defaultValue=""
@@ -666,9 +672,9 @@ function AddWellInterestDialog(props) {
                       const interestAmountToSet = parseFloat(event.target.value);
                       setFormInterestAmount(interestAmountToSet);
                       handleRecalcNRA(formLeaseAcres, interestAmountToSet);
-                     }}
+                    }}
                     //label={formInterestAmount ? "" : "Interest Amount"}
-                    label = "Interest Amount"
+                    label="Interest Amount"
                     // InputLabelProps={{ shrink: true }}
                     fullWidth
                     defaultValue=""
@@ -678,23 +684,32 @@ function AddWellInterestDialog(props) {
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField
-                    // type="number"
-                    variant="outlined"
-                    margin="dense"
-                    // error={isNaN(formRoyaltyAcres)}
-                    value={formRoyaltyAcres === 0 || formRoyaltyAcres ? formRoyaltyAcres : ''}
-                    onChange={event => setFormRoyaltyAcres(parseFloat(event.target.value)) }
-                    //label={formRoyaltyAcres ? "" : "Net Royalty Acres"}
-                    label = "Net Royalty Acres"
-                    // InputLabelProps={{ shrink: true }}
-                    fullWidth
-                    defaultValue=""
-                    InputProps={{
-                      inputComponent: NumberFormatCustom,
-                    }}
-                  />
+                  <FormControl fullWidth margin="dense" variant="outlined" >
+                    <InputLabel htmlFor="royality-acres">Net Royalty Acres</InputLabel>
+                    <OutlinedInput
+                      id="royality-acres"
+                      inputComponent={NumberFormatCustom}
+                      className={formRoyaltyAcres !== (formInterestAmount * formLeaseAcres) ? classes.royaltyAcres : ''}
+                      value={formRoyaltyAcres === 0 || formRoyaltyAcres ? formRoyaltyAcres : ''}
+                      onChange={event => setFormRoyaltyAcres(parseFloat(event.target.value))}
+                      labelWidth={140}
+                      endAdornment={
+                        <InputAdornment position="end" style={{ position: 'absolute', right: "-3px" }}>
+                          {
+                            formRoyaltyAcres !== '' && formRoyaltyAcres !== (formInterestAmount * formLeaseAcres) && <IconButton
+                              aria-label="toggle royality-acres"
+                              onClick={() => setFormRoyaltyAcres(formInterestAmount * formLeaseAcres)}
+                            >
+                              <AutorenewIcon />
+                            </IconButton>
+                          }
+                        </InputAdornment>
+                      }
+                    />
+                  </FormControl>
                 </Grid>
+
+
               </Grid>
 
               <TextField
@@ -708,7 +723,7 @@ function AddWellInterestDialog(props) {
                   inputComponent: CurrencyFormatCustom,
                 }}
                 value={formTaxValue === 0 || formTaxValue ? formTaxValue : ''}
-                onChange={event => setFormTaxValue(parseFloat(event.target.value)) }
+                onChange={event => setFormTaxValue(parseFloat(event.target.value))}
                 defaultValue=""
               />
             </FormControl>
