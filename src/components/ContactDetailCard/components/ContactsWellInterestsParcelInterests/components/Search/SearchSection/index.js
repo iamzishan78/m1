@@ -165,7 +165,7 @@ function Search({ fetchSelectedWells }) {
         <TextField
           variant="outlined"
           fullWidth
-          placeholder="Search ..."
+          placeholder="Search by well name or interest owner name"
           InputProps={{
             startAdornment: (
               <InputAdornment className={classes.inputAdornment} position="start">
