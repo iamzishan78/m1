@@ -9,7 +9,7 @@ import FilterAltIcon from "../../../Shared/svgIcons/FilterAltIcon";
 import Typography from "@material-ui/core/Typography";
 import { area, convertArea, length } from "@turf/turf";
 import { AppContext } from "../../../../AppContext";
-import { NavigationContext } from "../../../Navigation/NavigationContext";
+import { NavigationContext, DRAWING_MODES } from "../../../Navigation/NavigationContext";
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
 import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
 import { ABSTRACTGEOCONTAINSQUERY } from "../../../../graphQL/useQueryAbstractGeoContains";
@@ -143,7 +143,7 @@ const ShapeActionsPopup = (props) => {
   /**
    * Disabling filter on Cross Button / Unmounting
    */
-  useEffect(()=>{
+  useEffect(() => {
     return () => {
       clearFilter();
     };
@@ -244,18 +244,18 @@ const ShapeActionsPopup = (props) => {
 
   const clearFilter = () => {
     stateApp.draw.changeMode("simple_select");
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        drawingMode: null,
-        filterFeatureId: null,
-        filterDrawing: [],
-      }));
+    setStateNav((stateNav) => ({
+      ...stateNav,
+      drawingMode: null,
+      filterFeatureId: null,
+      filterDrawing: [],
+    }));
 
-      setStateApp((state) => ({
-        ...state,
-        shapeActionsFilterSelected: false,
-      }));
-  }
+    setStateApp((state) => ({
+      ...state,
+      shapeActionsFilterSelected: false,
+    }));
+  };
 
   const actionFilter = () => {
     if (isLine()) return;
@@ -283,6 +283,17 @@ const ShapeActionsPopup = (props) => {
       }));
     }
   };
+
+  const actionEdit = () => {
+    const {selectedFeature}=props;
+    stateApp.draw.changeMode("direct_select", {
+      featureId: selectedFeature.id,
+    });
+    setStateNav(stateNav => ({
+      ...stateNav,
+      drawingMode: DRAWING_MODES.DRAW_CIRCLE
+    }))
+  }
 
   // const actionAOI = () => {
   //   if (isLine()) return;
@@ -360,7 +371,7 @@ const ShapeActionsPopup = (props) => {
           </Tooltip>
           <span className={classes.divider}></span>
           <Tooltip title="Edit Active Shape">
-            <IconButton size="small" aria-label="Edit Active Shape">
+            <IconButton size="small" aria-label="Edit Active Shape" onClick={actionEdit}>
               <EditIcon />
             </IconButton>
           </Tooltip>

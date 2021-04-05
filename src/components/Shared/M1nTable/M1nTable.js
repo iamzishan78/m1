@@ -6,11 +6,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
 
-
-
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
-
 
 // QUERIES 
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -1653,12 +1650,12 @@ function M1nTable(props) {
             result.detailCard = result.Id;
 
             // setting flyto coordinates for location 
-          } else if (props.targetLabel && props.targetLabel == "location") {
+          } else if (props.targetLabel && props.targetLabel === "location") {
             result.coordinates = {};
             if (result.bbox) result.coordinates.bbox = result.bbox;
             if (result.center) result.coordinates.center = result.center;
 
-          } else if (props.targetLabel && props.targetLabel == "operator") {
+          } else if (props.targetLabel && props.targetLabel === "operator") {
               result.coordinates = {
                 objToPopulateSearchLayer: {
                   objectType: props.targetLabel,
@@ -1666,7 +1663,7 @@ function M1nTable(props) {
                   objectName: result.Operator,
                 },
               };
-            } else if (props.targetLabel && props.targetLabel == "lease") {
+            } else if (props.targetLabel && props.targetLabel === "lease") {
               result.coordinates = {
                 objToPopulateSearchLayer: {
                   objectType: props.targetLabel,
@@ -1675,8 +1672,7 @@ function M1nTable(props) {
                 },
               };              
           // setting flyto coordinates for owners 
-          } else if (props.targetLabel && props.targetLabel == "owner") {
-            
+          } else if (props.targetLabel && props.targetLabel === "owner") {
             result.coordinates = {
               objToPopulateSearchLayer: {
                 objectType: "owner",
@@ -1727,7 +1723,6 @@ function M1nTable(props) {
                   dataTagSamples.tagSamples[i].tags,
                   dataTagSamples.tagSamples[i].total,
                 ];
-
                 break;
               }
             }
