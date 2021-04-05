@@ -250,6 +250,12 @@ function Search() {
   }, [stateApp.user]);
 
   useEffect(() => {
+    if (value !== searchInputValue) {
+      setValue(searchInputValue)
+    }
+  }, []);
+
+  useEffect(() => {
     if (searchHistoryData && searchHistoryData.getSearchHistory) {
       let list = [...searchHistoryData.getSearchHistory].sort(
         (a, b) => b.ts - a.ts
@@ -514,7 +520,7 @@ function Search() {
 
     if (!mapGridCardActivated) {
       if (searchInputValue === "") {
-        setOptions([]);
+        setOptions(value ? [value] : []);
         setValue(null);
         setStateApp((state) => ({ ...state, wellListFromSearch: [] }));
         return undefined;
@@ -1080,7 +1086,7 @@ function Search() {
     <div className={classes.root}>
       <Autocomplete
         id="cognitive-search-autocomplete"
-        getOptionLabel={(option, value) => option.Primary}
+        getOptionLabel={(option, value) => option.Primary || searchInputValue}
         forcePopupIcon
         filterOptions={(x) => x}
         options={optionsWithHeader}
@@ -1384,7 +1390,6 @@ function Search() {
                             setStateApp((state) => ({
                               ...state,
                               wellListFromSearch: [],
-                              toggleZoomOut:true
                             }));
                           }}
                         >
