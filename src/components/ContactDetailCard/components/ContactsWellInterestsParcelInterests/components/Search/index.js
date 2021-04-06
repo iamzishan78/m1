@@ -5,6 +5,7 @@ import MUIDataTable from "mui-datatables";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import { Accordion, AccordionSummary, AccordionDetails, Button, Tooltip, IconButton } from "@material-ui/core";
 import { useDispatch } from "react-redux";
@@ -82,7 +83,7 @@ function Search({ contactId }) {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography className={classes.heading}>Well Interest Search</Typography>
+          <Typography className={classes.heading}>Interest Search</Typography>
         </AccordionSummary>
         <AccordionDetails>
 
@@ -94,7 +95,7 @@ function Search({ contactId }) {
             <Grid item md={8}>
               <Grid container direction="column" spacing={1} >
                 <Grid item >
-                  <Typography className={classes.heading}>2. Select the well interests to associate to the contact from the list below</Typography>
+                  <Typography className={classes.heading}>2. Select the interests to associate to the contact from the list below</Typography>
                 </Grid>
                 <Grid item md={12}>
 
@@ -104,7 +105,7 @@ function Search({ contactId }) {
                     columns={AssociateContactWellHeadCells}
                     options={{
                       ...AssociateContactWellHeadCells[0].options,
-                      customToolbarSelect: () => <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addWellInterestToContact} > Add to contact</Button>,
+                      customToolbarSelect: () => <Button color="secondary" startIcon={<AddCircleOutlineRoundedIcon />} className={classes.multiSelectionTopBarButtons} onClick={addWellInterestToContact} > Add to contact</Button>,
                       customToolbar: () => <span className={classes.addIcon}>
                         {
                           wells.length > 0 && <Tooltip title='Clear'>
