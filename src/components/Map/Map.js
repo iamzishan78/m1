@@ -4488,7 +4488,6 @@ function Map() {
       const { map } = stateApp;
 
       map.on("draw.selectionchange", ({ features }) => {
-        debugger;
         const [feature] = features;
         if (feature && feature.id.includes("edit_polygon")) {
           setStateApp({
@@ -4509,14 +4508,6 @@ function Map() {
       });
     }
   }, [stateApp.editingUserDefinedLayers]);
-
-  useEffect(()=>{
-    const { map } = stateApp;
-    map && map.on("draw.create", (data) => {
-      debugger;
-      // console.log(features);
-    });
-  }, [stateApp.map])
 
   useEffect(() => {
     /////// USE EFFECT  to handle the map zoom /  for selected well elements
