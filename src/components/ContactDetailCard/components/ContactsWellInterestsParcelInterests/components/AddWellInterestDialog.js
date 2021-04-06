@@ -127,6 +127,7 @@ function AddWellInterestDialog(props) {
   const [formTaxValue, setFormTaxValue] = useState(null);
   const [interestOwnerTypes, setInterestOwnerTypes] = useState([]);
   const [interestTypes, setInterestTypes] = useState([]);
+  const [valid, setValid] = useState({});
 
   const [getInterestOwnerTypes, { data: dataInterestOwnerTypes }] = useLazyQuery(INTERESTOWNERTYPESQUERY, {
     fetchPolicy: "cache-and-network",
@@ -276,13 +277,24 @@ function AddWellInterestDialog(props) {
       wellInterestDialog: false,
       activeWellInterest: null,
     }));
-    setInitializing(false)
+    setInitializing(false);
+    setValid({});
   }
 
   const handleRecalcNRA = (leaseAcres, interest) => {
     if (initializing || leaseAcres == null || interest == null) return;
 
     setFormRoyaltyAcres(leaseAcres * interest);
+  }
+
+  const handleValidate = () => {
+    const tempValid = {
+      ...valid,
+      'selectedWell.Id': !selectedWell?.Id
+    }
+    setValid(tempValid);
+
+    return !Object.values(tempValid).reduce((acc, cur) => acc + cur)
   }
 
   const handleSave = () => {
@@ -440,10 +452,14 @@ function AddWellInterestDialog(props) {
                 options={foundWells || []}
                 onChange={(e, well) => {
                   setSelectedWell(well);
-                  getTenantWell({
+                  well && getTenantWell({
                     variables: {
                       globalWellId: well.Id,
                     },
+                  });
+                  well && setValid({
+                    ...valid,
+                    'selectedWell.Id': false
                   })
                 }}
                 value={selectedWell}
@@ -498,6 +514,11 @@ function AddWellInterestDialog(props) {
                   <TextField
                     margin="dense"
                     {...params}
+                    required
+                    error={valid['selectedWell.Id']}
+                    helperText={
+                      valid['selectedWell.Id'] ? "Select a well to get started" : ""
+                    }
                     variant="outlined"
                     label="Search for a well by name or API"
                     InputLabelProps={{ shrink: true }}
@@ -750,9 +771,11 @@ function AddWellInterestDialog(props) {
               color="secondary"
               size="medium"
               disableElevation
-              onClick={handleSave}
+              onClick={() => {
+                handleValidate() && handleSave()
+              }}
               className={classes.footerButton}
-              disabled={loading}
+              disabled={loading || !valid}
             >
               {loading ? (
                 <CircularProgress size={14} />
