@@ -192,6 +192,7 @@ export default function Transact() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { pipeToShow, pipeToShowTab } = useSelector(({ Flow }) => Flow);
+  console.log("PIPETOSHOW: ", pipeToShow)
   const [stateApp, setStateApp] = useContext(AppContext);
   const [filteredBoardTransactData, setFilteredBoardTransactData] = useState({
     lanes: [],

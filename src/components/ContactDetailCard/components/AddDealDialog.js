@@ -209,6 +209,7 @@ function AddDealDialog(props) {
 	const { selectedPipe, pipelines, pipeToShow } = useSelector(
 		({ Flow }) => Flow
 	);
+	const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const [title, setTitle] = useState(""); // title change from contact.name to dealName
 	const [label, setLabel] = useState("");
@@ -621,10 +622,11 @@ function AddDealDialog(props) {
 					//// updating the contact
 					allPromises.push(
 						new Promise((resolve, reject) => {
+							console.log("UPDATING CONTACT: ", contactId)
 							upsertDealDescriptor({
 								variables: {
 									dealId: cardId,
-									relatedObject: contactId,
+									relatedObject: [contactId], // HERE
 									relatedObjectType: "Contact",
 									userId: stateApp.user.mongoId,
 								},
@@ -634,6 +636,7 @@ function AddDealDialog(props) {
 								const {
 									data: { upsertDealDescriptor },
 								} = result;
+								console.log("RESULT: ", upsertDealDescriptor)
 								if (upsertDealDescriptor?.success === false) success = false;
 								resolve();
 							});
@@ -654,7 +657,7 @@ function AddDealDialog(props) {
 							upsertDealDescriptor({
 								variables: {
 									dealId: cardId,
-									relatedObject: ownerId,
+									relatedObject: [ownerId],
 									relatedObjectType: "User",
 									userId: stateApp.user.mongoId,
 								},
@@ -849,6 +852,28 @@ function AddDealDialog(props) {
 		return comparison;
 	});
 
+	const addSelectedContactToDeal = (contact) => {
+		console.log("Adding contact", contact);
+		// HERE
+		upsertDealDescriptor({
+			variables: {
+				dealId: cardId,
+				relatedObject: [contact._id],
+				relatedObjectType: "Contact",
+				userId: stateApp.user.mongoId,
+			},
+			refetchQueries: ["getPipeline", "getContactDeals"],
+			awaitRefetchQueries: true,
+		}).then((result) => {
+			const {
+				data: { upsertDealDescriptor },
+			} = result;
+			console.log("UPSERT RESPONSE: ", upsertDealDescriptor)
+			// if (upsertDealDescriptor?.success === false) success = false;
+			// resolve();
+		});
+	}
+
 	const getView = () => {
 		if (stateApp.transactBarView === "Documents") {
 			return (
@@ -861,7 +886,9 @@ function AddDealDialog(props) {
 		}
 		if(stateApp.transactBarView === "Contacts") {
 			return (
-				<Contacts />
+				<Contacts 
+					addSelectedContact={addSelectedContactToDeal}
+				/>
 			)
 		}
 	};

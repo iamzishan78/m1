@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Contacts() {
+export default function Contacts(props) {
   const classes = useStyles();
   const [search, setSearch] = useState("");
   const [contacts, setContacts] = useState(["Kumail Pirzada", "Jacob Avery"]);
@@ -151,19 +151,29 @@ export default function Contacts() {
         <Grid container>
           <Grid item xs={12}>
             {addContact ? (
-              <AutocompEntityNamesVirtualizeList
-                mongoEntitiesArray={mongoEntitiesArray}
-                setMongoEntitiesArray={setMongoEntitiesArray}
-                nameAutValue={nameAutValue}
-                setNameAutValue={setNameAutValue}
-                nameAutInputValue={nameAutInputValue}
-                setNameAutInputValue={setNameAutInputValue}
-                variant="outlined"
-                label="Contact Name"
-                hasNextPage={hasNextPage}
-                isNextPageLoading={isNextPageLoading}
-                loadNextPage={loadNextPage}
-              />
+              <>
+                <AutocompEntityNamesVirtualizeList
+                  mongoEntitiesArray={mongoEntitiesArray}
+                  setMongoEntitiesArray={setMongoEntitiesArray}
+                  nameAutValue={nameAutValue}
+                  setNameAutValue={setNameAutValue}
+                  nameAutInputValue={nameAutInputValue}
+                  setNameAutInputValue={setNameAutInputValue}
+                  variant="outlined"
+                  label="Contact Name"
+                  hasNextPage={hasNextPage}
+                  isNextPageLoading={isNextPageLoading}
+                  loadNextPage={loadNextPage}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  onClick={() => props.addSelectedContact(nameAutValue)}
+                >
+                  <AddIcon />
+                </Button>
+              </>
             ) : (
               <Button
                 variant="contained"
