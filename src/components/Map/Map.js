@@ -138,7 +138,7 @@ function Map() {
   // styles 
   let classes = useStyles({
     drawingCircle:
-      stateApp.draw && stateApp.draw.getMode() == "drag_circle" ? true : false,
+      stateApp.draw && stateApp.draw.getMode() === "drag_circle" ? true : false,
   });
 
   const dispatch = useDispatch();
@@ -4488,6 +4488,7 @@ function Map() {
       const { map } = stateApp;
 
       map.on("draw.selectionchange", ({ features }) => {
+        debugger;
         const [feature] = features;
         if (feature && feature.id.includes("edit_polygon")) {
           setStateApp({
@@ -4508,6 +4509,14 @@ function Map() {
       });
     }
   }, [stateApp.editingUserDefinedLayers]);
+
+  useEffect(()=>{
+    const { map } = stateApp;
+    map && map.on("draw.create", (data) => {
+      debugger;
+      // console.log(features);
+    });
+  }, [stateApp.map])
 
   useEffect(() => {
     /////// USE EFFECT  to handle the map zoom /  for selected well elements

@@ -482,12 +482,70 @@ function MapGridCard(props) {
                   panels={[
                     <M1nTable
                       dense
-                      parent="trackWells"
-                      header={
-                        <TabLabels
-                          labels={[
-                            `Wells (${
-                              stateApp.trackedwells
+                      parent="search"
+                      privateColumns={leasesColumnHeaders}
+                      targetLabel={getTargetFromSearchTaps()}
+                      header={<SearchTabPanels />}
+                    />,
+                  //   <M1nTable
+                  //     dense
+                  //     parent="search"
+                  //     privateColumns={[parcelColumnHeaders]}
+                  //     targetLabel={getTargetFromSearchTaps()}
+                  //     header={<SearchTabPanels />}
+                  //     // showTags
+                  //     // showComments
+                  //     // showTracks
+                  //   />,
+                  //   <M1nTable
+                  //     dense
+                  //     parent="search"
+                  //     privateColumns={[]}
+                  //     targetLabel={getTargetFromSearchTaps()}
+                  //     header={<SearchTabPanels />}
+                  //   />,
+
+
+                      <M1nTable
+                        dense
+                        parent="search"
+                        privateColumns={ContactsHeadCells}
+                        targetLabel={getTargetFromSearchTaps()}
+                        header={<SearchTabPanels />}
+                      />,
+
+                      <M1nTable
+                        dense
+                        parent="search"
+                        privateColumns={locationsColumnHeaders}
+                        targetLabel={getTargetFromSearchTaps()}
+                        header={<SearchTabPanels />}
+                      />,
+                    ]}
+                  />
+                </div>
+              </TabPanel>
+
+              {/* //// tracked panel //// */}
+              <TabPanel
+                value={mapGridCardActiveTap}
+                index={1}
+                className={classes.tapsPanelsPadding}
+                // 
+                style ={{position:"absolute",width:"96vw"}}
+                // 
+              >
+                <div style={{ position: "relative" }}>
+                  <TabPanels
+                    value={trackedTapValue}
+                    panels={[
+                      <M1nTable
+                        dense
+                        parent="trackWells"
+                        header={
+                          <TabLabels
+                            labels={[
+                              `Wells (${stateApp.trackedwells
                                 ? stateApp.trackedwells.length
                                 : 0
                             })`,

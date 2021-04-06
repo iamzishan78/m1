@@ -199,6 +199,11 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "#F2F2F2",
         zIndex: "auto",
         padding: (props) => (props.dense ? "10px" : null),
+        "& button":{
+          "& .MuiButton-label":{
+              textAlign:'left'
+          }
+        }
       },
       "& .MuiTableCell-paddingCheckbox": {
         padding: (props) => (props.dense ? "0 !important" : "16px"),
@@ -863,8 +868,8 @@ function SubTable(props) {
             <Divider />
           </div>
         ) : (
-            <div></div>
-          )}
+          <div></div>
+        )}
         <MenuItem
           className={classes.userMenuItem}
           onClick={(e) => handleExpandClick(null, null, null, "deleteUser")}
@@ -1418,8 +1423,8 @@ function SubTable(props) {
                         {!value || value === "false" ? (
                           <Convert_contact style={{ margin: "4px" }} />
                         ) : (
-                            <Contact_card style={{ margin: "4px" }} />
-                          )}
+                          <Contact_card style={{ margin: "4px" }} />
+                        )}
                       </IconButton>
                     </Tooltip>
                   );
@@ -1580,8 +1585,8 @@ function SubTable(props) {
                               <p className="two">...</p>
                             </React.Fragment>
                           ) : (
-                              <p className="three">No Tags</p>
-                            )}
+                            <p className="three">No Tags</p>
+                          )}
                         </Badge>
                       </Tooltip>
                     </div>
@@ -1752,11 +1757,10 @@ function SubTable(props) {
                       </div>
                     );
                   }
-
                   return (
                     <div
                       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
-                      className={props.parent === "assocTaxRollInterests" && !tableMeta.rowData[14] ? [classes.blue] : []}
+                      className={props.parent === "assocTaxRollInterests" && (!tableMeta.rowData[14] || tableMeta.rowData[19]) ? [classes.blue] : []}
                     >
 
                       {props.targetLabel === "contact" &&
