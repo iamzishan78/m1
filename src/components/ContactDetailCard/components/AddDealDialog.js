@@ -52,6 +52,9 @@ import {
 	VIEWFILEQUERY,
 	VIEWFILESQUERY,
 } from "../../../graphQL/useQueryViewFile";
+import {
+	GETDEAL,
+} from "../../../graphQL/useQueryDeal";
 import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
 import Contacts from "components/FlowDrawer/Contacts";
 
@@ -377,7 +380,6 @@ function AddDealDialog(props) {
 
 	useEffect(() => {
 
-		console.log("ALL CONTACTS: ", allContacts);
 		if (allContacts?.paginatedContacts) {
 			setMongoEntitiesArray(
 				allContacts?.paginatedContacts?.edges?.map((el) => el.node)
@@ -388,7 +390,6 @@ function AddDealDialog(props) {
 	}, [allContacts]);
 
 	useEffect(() => {
-		console.log("AUTOCOMPLETE INPUT CHANGE: ", nameAutInputValue);
 		if (props.isTransactPage) {
 
 			//will also run during initial mount
@@ -407,7 +408,6 @@ function AddDealDialog(props) {
 	};
 
 	useEffect(() => {
-		console.log("CDATA", cData);
 		if (cData?.contact) {
 			setNameAutValue(
 				cData?.contact
@@ -418,7 +418,6 @@ function AddDealDialog(props) {
 	}, [cData]);
 
 	useEffect(() => {
-		console.log("CONTACT", nameAutValue);
 		if (nameAutValue?.name) {
 			setContact(nameAutValue);
 		}
@@ -465,7 +464,6 @@ function AddDealDialog(props) {
 	}, [props.contactId]);
 
 	useEffect(() => {
-		console.log("ACTIVE DEAL: ", stateApp.activeDeal);
 		const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
 		const laneId = stateApp.activeDeal?.laneId;
 
@@ -622,7 +620,6 @@ function AddDealDialog(props) {
 					//// updating the contact
 					allPromises.push(
 						new Promise((resolve, reject) => {
-							console.log("UPDATING CONTACT: ", contactId)
 							upsertDealDescriptor({
 								variables: {
 									dealId: cardId,
@@ -636,7 +633,6 @@ function AddDealDialog(props) {
 								const {
 									data: { upsertDealDescriptor },
 								} = result;
-								console.log("RESULT: ", upsertDealDescriptor)
 								if (upsertDealDescriptor?.success === false) success = false;
 								resolve();
 							});
@@ -852,8 +848,16 @@ function AddDealDialog(props) {
 		return comparison;
 	});
 
+
+
+	const [
+		getDeal,
+		{ data: getDealResult, loading: getDealLoading },
+	] = useLazyQuery(GETDEAL, {
+		fetchPolicy: "no-cache",
+	});
+
 	const addSelectedContactToDeal = (contact) => {
-		console.log("Adding contact", contact);
 		// HERE
 		upsertDealDescriptor({
 			variables: {
@@ -868,11 +872,34 @@ function AddDealDialog(props) {
 			const {
 				data: { upsertDealDescriptor },
 			} = result;
-			console.log("UPSERT RESPONSE: ", upsertDealDescriptor)
+		
 			// if (upsertDealDescriptor?.success === false) success = false;
 			// resolve();
-		});
-	}
+
+			getDeal({
+				variables: { id: stateApp.activeDeal.cardId },
+			});
+		})
+}
+
+
+	useEffect(() => {
+		if(getDealResult?.deal?.deal?.contacts){
+
+
+			setStateApp((stateApp) => ({
+				...stateApp,
+				activeDeal: {
+					...stateApp.activeDeal,
+					contacts: [...getDealResult.deal.deal.contacts],
+				},
+			}));
+		}
+			
+			
+		// 	let metadata = { ...stateApp.activeDeal, contacts: [ upsertDealDescriptor.descriptor[0], ...stateApp.activeDeal.contacts ] };
+
+	}, [getDealResult])
 
 	const getView = () => {
 		if (stateApp.transactBarView === "Documents") {
@@ -888,6 +915,7 @@ function AddDealDialog(props) {
 			return (
 				<Contacts 
 					addSelectedContact={addSelectedContactToDeal}
+					loading= {getDealLoading}
 				/>
 			)
 		}
@@ -901,7 +929,6 @@ function AddDealDialog(props) {
 			onCompleted: ({ getFileDescriptors }) => {
 				let allActive = true;
 
-				console.log("File descriptors: ", getFileDescriptors);
 				if (getFileDescriptors)
 					for (let i = 0; i < getFileDescriptors.length; i++) {
 						if (getFileDescriptors[i].fileState !== "active") {
@@ -940,6 +967,8 @@ function AddDealDialog(props) {
 	] = useLazyQuery(VIEWFILESQUERY, {
 		fetchPolicy: "no-cache",
 	});
+
+
 	useEffect(() => {
 		getRecentFiles({
 			variables: {
@@ -1260,25 +1289,26 @@ function AddDealDialog(props) {
                   />
                 </div>
               ) : (
-                <div className={classes.inputField}>
-                  <Grid container>
-                    <Grid item xs={12}>
-                      <AutocompEntityNamesVirtualizeList
-                        mongoEntitiesArray={mongoEntitiesArray}
-                        setMongoEntitiesArray={setMongoEntitiesArray}
-                        nameAutValue={nameAutValue}
-                        setNameAutValue={setNameAutValue}
-                        nameAutInputValue={nameAutInputValue}
-                        setNameAutInputValue={setNameAutInputValue}
-                        variant="outlined"
-                        label="Contact Name"
-                        hasNextPage={hasNextPage}
-                        isNextPageLoading={isNextPageLoading}
-                        loadNextPage={loadNextPage}
-                      />
-                    </Grid>
-                  </Grid>
-                </div>
+                // <div className={classes.inputField}>
+                //   <Grid container>
+                //     <Grid item xs={12}>
+                //       <AutocompEntityNamesVirtualizeList
+                //         mongoEntitiesArray={mongoEntitiesArray}
+                //         setMongoEntitiesArray={setMongoEntitiesArray}
+                //         nameAutValue={nameAutValue}
+                //         setNameAutValue={setNameAutValue}
+                //         nameAutInputValue={nameAutInputValue}
+                //         setNameAutInputValue={setNameAutInputValue}
+                //         variant="outlined"
+                //         label="Contact Name"
+                //         hasNextPage={hasNextPage}
+                //         isNextPageLoading={isNextPageLoading}
+                //         loadNextPage={loadNextPage}
+                //       />
+                //     </Grid>
+                //   </Grid>
+                // </div>
+								<></>
               )}
 
 							<TextField
@@ -1318,7 +1348,6 @@ function AddDealDialog(props) {
 									fullWidth
 									onChange={(e) => {
 
-										console.log("DATE", e.target.value);
 										setCloseDate(e.target.value);
 									}}
 								/>
@@ -1374,7 +1403,6 @@ function AddDealDialog(props) {
 									native
 									value={stageId}
 									onChange={(e) => {
-										console.log("Stage: ", e.target.value);
 										// setStageId(e.target.value);
 										settingNewStageAndFindNextAvailablePosition(
 											e.target.value,

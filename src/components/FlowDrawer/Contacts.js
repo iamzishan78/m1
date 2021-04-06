@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import {
   Grid,
   InputAdornment,
@@ -16,6 +16,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
+import { AppContext } from "../../AppContext";
 import { useLazyQuery } from "@apollo/client";
 
 const useStyles = makeStyles((theme) => ({
@@ -32,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Contacts(props) {
   const classes = useStyles();
   const [search, setSearch] = useState("");
-  const [contacts, setContacts] = useState(["Kumail Pirzada", "Jacob Avery"]);
+  const [contacts, setContacts] = useState();
   const [filteredContacts, setFilteredContacts] = useState(contacts);
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [hasNextPage, setHasNextPage] = useState(true);
@@ -40,7 +41,8 @@ export default function Contacts(props) {
   const [nameAutValue, setNameAutValue] = useState("");
   const [nameAutInputValue, setNameAutInputValue] = useState("");
   const [addContact, setAddContact] = useState(false);
-
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [mutationLoading, setMutationLoading] = useState(false)
   const [
     getPaginatedContacts,
     { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts },
@@ -50,7 +52,6 @@ export default function Contacts(props) {
   });
 
   useEffect(() => {
-    console.log("AUTOCOMPLETE INPUT CHANGE: ", nameAutInputValue);
     //will also run during initial mount
     setIsNextPageLoading(true);
     getPaginatedContacts({
@@ -61,7 +62,6 @@ export default function Contacts(props) {
   }, [nameAutInputValue]);
 
   useEffect(() => {
-    console.log("ALL CONTACTS: ", allContacts);
     if (allContacts?.paginatedContacts) {
       setMongoEntitiesArray(
         allContacts?.paginatedContacts?.edges?.map((el) => el.node)
@@ -81,11 +81,36 @@ export default function Contacts(props) {
       c.toLowerCase().includes(search.toLowerCase())
     );
     setFilteredContacts(filtered);
+    
   }, [search, contacts]);
+  const GettingContacts = () => {
+    let contactnames = stateApp.activeDeal?.contacts?.map((value) => {
+      if (value.relatedObject?.entity?.name !== undefined)
+      {
+       return value.relatedObject?.entity?.name
+      }
+      else if (value?.name && value?.name !== undefined) {
+        return value.name;
+      }
+      else {
+        return 'Empty'
+      }
+   })
+   setContacts(contactnames)
+  }
+  useEffect(() => {
+   GettingContacts()
+  
+  }, [ search, props]);
+
+
+  useEffect(() => {
+    if(!props.loading){ setMutationLoading(false) }
+  }, [props.loading])
 
   return (
     <div>
-      <h1>GSC Project 1</h1>
+      <h1>{stateApp.activeDeal.name}</h1>
       <TextField
         fullWidth
         placeholder="Search contacts..."
@@ -164,18 +189,25 @@ export default function Contacts(props) {
                   hasNextPage={hasNextPage}
                   isNextPageLoading={isNextPageLoading}
                   loadNextPage={loadNextPage}
+                  disabled ={props.loading}
                 />
                 <Button
                   variant="contained"
                   color="primary"
                   className={classes.button}
-                  onClick={() => props.addSelectedContact(nameAutValue)}
+                  onClick={() => {
+                    props.addSelectedContact(nameAutValue) 
+                     GettingContacts() 
+                     setMutationLoading(true)
+                     setAddContact(false)
+                     }}
                 >
                   <AddIcon />
                 </Button>
               </>
             ) : (
               <Button
+                disabled={mutationLoading}
                 variant="contained"
                 color="primary"
                 startIcon={<AddIcon />}

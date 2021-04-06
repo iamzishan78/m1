@@ -64,7 +64,7 @@ export default function Drawer() {
           horizontal: "right",
         }}
         color="primary"
-        badgeContent={5}
+        badgeContent={stateApp?.activeDeal?.contacts?.length}
       >
         <IdentityIcon {...props} />
       </Badge>

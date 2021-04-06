@@ -205,6 +205,8 @@ export default function Transact() {
   const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
   const [updateDeal] = useMutation(UPDATEDEAL);
 
+
+
   const filterBoardCards = (lanes, filter) => {
     return lanes.map((lane) => {
       let cards = [...lane.cards];
