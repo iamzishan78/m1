@@ -857,6 +857,12 @@ function AddDealDialog(props) {
 		fetchPolicy: "no-cache",
 	});
 
+	const refetchDeal = () => {
+		getDeal({
+			variables: { id: stateApp.activeDeal.cardId },
+		});
+	}
+
 	const addSelectedContactToDeal = (contact) => {
 		// HERE
 		upsertDealDescriptor({
@@ -876,9 +882,7 @@ function AddDealDialog(props) {
 			// if (upsertDealDescriptor?.success === false) success = false;
 			// resolve();
 
-			getDeal({
-				variables: { id: stateApp.activeDeal.cardId },
-			});
+			refetchDeal();
 		})
 }
 
@@ -886,12 +890,12 @@ function AddDealDialog(props) {
 	useEffect(() => {
 		if(getDealResult?.deal?.deal?.contacts){
 
-
 			setStateApp((stateApp) => ({
 				...stateApp,
 				activeDeal: {
 					...stateApp.activeDeal,
-					contacts: [...getDealResult.deal.deal.contacts],
+					// contacts: [...getDealResult.deal.deal.contacts],
+					contacts: [...getDealResult.deal.deal.contacts.map(c => ({ _id: c.descriptorId, name: c.name }))],
 				},
 			}));
 		}
@@ -916,6 +920,7 @@ function AddDealDialog(props) {
 				<Contacts 
 					addSelectedContact={addSelectedContactToDeal}
 					loading= {getDealLoading}
+					getDeal={refetchDeal}
 				/>
 			)
 		}

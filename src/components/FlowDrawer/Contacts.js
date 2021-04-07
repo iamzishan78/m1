@@ -17,7 +17,13 @@ import AddIcon from "@material-ui/icons/Add";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { AppContext } from "../../AppContext";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery,useMutation } from "@apollo/client";
+import DeleteIcon from '@material-ui/icons/Delete';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import IconButton from '@material-ui/core/IconButton';
+import { GETPIPELINES } from "../../graphQL/useQueryPipelines";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { REMOVEDEALDESCRIPTOR } from "../../graphQL/useMutationRemoveDealDescriptor";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,7 +56,8 @@ export default function Contacts(props) {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
-
+  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
+  const [removeDealDescriptor, { loading: DealLoading, error: DealError }] = useMutation(REMOVEDEALDESCRIPTOR);
   useEffect(() => {
     //will also run during initial mount
     setIsNextPageLoading(true);
@@ -107,7 +114,26 @@ export default function Contacts(props) {
   useEffect(() => {
     if(!props.loading){ setMutationLoading(false) }
   }, [props.loading])
+ const DeleteContact = async (dealid) => {
+  let result =  await removeDealDescriptor({
+    variables: { id: dealid },
+    refetchQueries: ["getPipeline", "getContactDeals"],
+			awaitRefetchQueries: true,
+    
+  });
+  let response = await result.data.removeDealDescriptor.success
+  if(response)
+  {
+    // GettingContacts()
+    props.getDeal()
+    
+  }
+  else {
+    setMutationLoading(false)
 
+
+  }
+ }
   return (
     <div>
       <h1>{stateApp.activeDeal.name}</h1>
@@ -155,6 +181,20 @@ export default function Contacts(props) {
                       color: "primary",
                     }}
                   />
+                  {mutationLoading === stateApp.activeDeal?.contacts[i]?._id  ? (
+                     <ListItemSecondaryAction >
+                     <IconButton edge="end" aria-label="delete">
+                     <CircularProgress></CircularProgress>
+                     </IconButton>
+                   </ListItemSecondaryAction>
+                  ) : ( <ListItemSecondaryAction onClick={() => { 
+                    DeleteContact(stateApp.activeDeal?.contacts[i]?._id); 
+                    setMutationLoading(stateApp.activeDeal?.contacts[i]?._id)}}>
+                    <IconButton edge="end" aria-label="delete">
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>)}
+                  
                 </ListItem>
                 <Divider />
               </>
