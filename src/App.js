@@ -309,8 +309,8 @@ function App() {
             </MuiThemeProvider>
           </ApolloProvider>
         ) : (
-            <CircularProgress></CircularProgress>
-          )}
+          <CircularProgress></CircularProgress>
+        )}
       </AppProvider>
     </ReduxProvider>
   );
