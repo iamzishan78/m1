@@ -1045,7 +1045,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					position: "absolute",
 					display: "flex",
 					flexDirection: "row",
-					width: "500px",
+					width: "50px",
 					maxWidth: "500px",
 					top: "130px",
 					left: stateMapControls.panelExpanded
