@@ -147,7 +147,16 @@ const ShapeActionsPopup = (props) => {
     return () => {
       clearFilter();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    // USE EFFECT for applying filter to new shape 
+    if (stateApp.shapeActionsFilterSelected) {
+      applyFilter();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateApp.currentFeature]);
 
   const formatNumber = (number) => {
     return number.toLocaleString("en-US", { maximumFractionDigits: 2 });
@@ -207,7 +216,6 @@ const ShapeActionsPopup = (props) => {
         stateApp.toggleLayersActivity("Area of Interest", true);
       setStateApp((state) => ({
         ...state,
-        //currentFeature: undefined,
         editDraw: false,
       }));
     }
@@ -243,7 +251,7 @@ const ShapeActionsPopup = (props) => {
   };
 
   const clearFilter = () => {
-    stateApp.draw.changeMode("simple_select");
+    // stateApp.draw.changeMode("simple_select");
     setStateNav((stateNav) => ({
       ...stateNav,
       drawingMode: null,
@@ -257,35 +265,39 @@ const ShapeActionsPopup = (props) => {
     }));
   };
 
+  const applyFilter = () => {
+    let feature = props.selectedFeature;
+    let polygonString = getSelectedFeaturePolygonString();
+
+    getAbstractGeoContains({
+      variables: {
+        polygon: polygonString,
+      },
+    });
+
+    setStateNav((stateNav) => ({
+      ...stateNav,
+      drawingMode: null,
+      filterDrawing: ["within", feature],
+    }));
+
+    setStateApp((state) => ({
+      ...state,
+      shapeActionsFilterSelected: true,
+    }));
+  }
+
   const actionFilter = () => {
     if (isLine()) return;
     if (stateApp.shapeActionsFilterSelected) {
       clearFilter();
     } else {
-      let feature = props.selectedFeature;
-      let polygonString = getSelectedFeaturePolygonString();
-
-      getAbstractGeoContains({
-        variables: {
-          polygon: polygonString,
-        },
-      });
-
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        drawingMode: null,
-        filterDrawing: ["within", feature],
-      }));
-
-      setStateApp((state) => ({
-        ...state,
-        shapeActionsFilterSelected: true,
-      }));
+      applyFilter();
     }
   };
 
   const actionEdit = () => {
-    const {selectedFeature}=props;
+    const { selectedFeature } = props;
     stateApp.draw.changeMode("direct_select", {
       featureId: selectedFeature.id,
     });

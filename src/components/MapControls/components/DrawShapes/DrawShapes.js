@@ -170,7 +170,6 @@ export default function DrawShapes() {
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
   const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(
     UPSERTCUSTOMLAYER
   );
@@ -200,6 +199,26 @@ export default function DrawShapes() {
   useEffect(() => {
     if (!eventsConfiguredRef.current) {
       const { map } = stateApp;
+
+      map.on("draw.update", ({ features, action }) => {
+        if (action === 'move') {
+          const [feature] = features;
+          const { draw } = stateApp;
+          if (feature) {
+            addCustomShapeProperties(feature, draw);
+          }
+          setStateApp((stateApp) => {
+            return {
+              ...stateApp,
+              popupOpen: false,
+              currentFeature: feature,
+              featureOrMapShape: feature,
+              editDraw: true,
+            };
+          });
+        }
+      });
+
       map.on("draw.create", ({ features }) => {
         const [feature] = features;
         const { draw } = stateApp;
@@ -225,33 +244,19 @@ export default function DrawShapes() {
         } else {
           setStateApp((state) => ({
             ...state,
-            currentFeature: undefined,
+            // currentFeature: undefined, // for allowing toolbar and filters if we off click shape
             editDraw: false,
           }));
         }
       });
+
       eventsConfiguredRef.current = true;
     }
-  }, [stateApp.map, showSpatialDataCard]);
+  }, [stateApp.map, stateApp.currentFeature]);
 
   useEffect(() => {
-    setStateApp((state) => ({ ...state, editDraw: showSpatialDataCard }));
-  }, [showSpatialDataCard]);
-
-  useEffect(() => {
-    const { currentFeature } = stateApp;
-    if (currentFeature !== undefined) {
-      toggleSpatialDataCard(true);
-    } else {
-      toggleSpatialDataCard(false);
-    }
-  }, [stateApp.currentFeature]);
-
-  // useEffect(() => {
-  //   if (stateApp && stateApp.editDraw === false) {
-  //     clearMapAndCloseShapeActionsPopup();
-  //   }
-  // }, [stateApp.editDraw]);
+    setStateApp((state) => ({ ...state, editDraw: !!stateApp.currentFeature }));
+  }, [setStateApp, stateApp.currentFeature]);
 
   const clearMapAndCloseShapeActionsPopup = () => {
     stateApp.draw.delete(stateApp.currentFeature?.id);
@@ -272,28 +277,28 @@ export default function DrawShapes() {
     setStateMapControls({ ...stateMapControls, anchorEl: null });
   };
 
-  const handleDeleteSpatialDataAndShape = () => {
-    const { currentFeature } = stateApp;
-    if (currentFeature) {
-      const elem = document.getElementById(currentFeature.id);
-      setStateApp((state) => ({
-        ...state,
-        editDraw: false,
-        currentFeature: undefined,
-      }));
-      stateApp.draw.delete(currentFeature.id);
-      if (
-        currentFeature.id.includes("draw_polygon") ||
-        currentFeature.id.includes("drag_circle") ||
-        currentFeature.id.includes("draw_rectangle")
-      ) {
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterDrawing: [],
-        }));
-      }
-    }
-  };
+  // const handleDeleteSpatialDataAndShape = () => {
+  //   const { currentFeature } = stateApp;
+  //   if (currentFeature) {
+  //     const elem = document.getElementById(currentFeature.id);
+  //     setStateApp((state) => ({
+  //       ...state,
+  //       editDraw: false,
+  //       currentFeature: undefined,
+  //     }));
+  //     stateApp.draw.delete(currentFeature.id);
+  //     if (
+  //       currentFeature.id.includes("draw_polygon") ||
+  //       currentFeature.id.includes("drag_circle") ||
+  //       currentFeature.id.includes("draw_rectangle")
+  //     ) {
+  //       setStateNav((stateNav) => ({
+  //         ...stateNav,
+  //         filterDrawing: [],
+  //       }));
+  //     }
+  //   }
+  // };
 
   const handleSaveSpatialDataToShape = (spatialData, dataType) => {
     // save data onto geoJSON properties fields
@@ -312,8 +317,8 @@ export default function DrawShapes() {
       }
     });
     stateApp.currentFeature.properties.id = stateApp.currentFeature.id;
+    stateApp.editDraw = false;
 
-    toggleSpatialDataCard(false);
     const { currentFeature } = stateApp;
     stateApp.draw.delete(currentFeature.id);
 
@@ -383,11 +388,11 @@ export default function DrawShapes() {
         </ClickAwayListener>
       )}
       {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
-      stateApp.currentFeature !== undefined &&
-      !stateApp.currentFeature.id.includes("draw_polygon") &&
-      !stateApp.currentFeature.id.includes("drag_circle") &&
-      !stateApp.currentFeature.id.includes("draw_rectangle") &&
-      !stateApp.currentFeature.id.includes("edit_polygon") ? (
+        stateApp.currentFeature !== undefined &&
+        !stateApp.currentFeature.id.includes("draw_polygon") &&
+        !stateApp.currentFeature.id.includes("drag_circle") &&
+        !stateApp.currentFeature.id.includes("draw_rectangle") &&
+        !stateApp.currentFeature.id.includes("edit_polygon") ? (
         <div className={classes.mapOverlay}>
           <div class={classes.mapOverlayInner}>
             <div className={classes.content}>
