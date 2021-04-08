@@ -201,7 +201,7 @@ export default function DrawShapes() {
       const { map } = stateApp;
 
       map.on("draw.update", ({ features, action }) => {
-        if (action === 'move') {
+        if (action === 'move' || action === 'change_coordinates') {
           const [feature] = features;
           const { draw } = stateApp;
           if (feature) {

@@ -12,6 +12,7 @@ export const addCustomShapeProperties = (feature, Draw) => {
       case "shapeCenter":
         data = calculateShapeCenter(feature.geometry.coordinates);
         break;
+      default:
     }
     Draw.setFeatureProperty(feature.id, attribute, data);
   });

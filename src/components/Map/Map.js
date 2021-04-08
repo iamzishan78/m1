@@ -3811,6 +3811,7 @@ function Map() {
   useEffect(() => {
 
     function drawCreateListener(e) {
+      debugger;
       if (stateNav.drawingMode !== null) {
         let feature = e.features[0];
 
@@ -3848,7 +3849,6 @@ function Map() {
     }
 
     function drawUpdateListener(e) {
-      debugger
       if (
         e.features[0].id.includes("draw_polygon") ||
         e.features[0].id.includes("drag_circle") ||
@@ -3883,21 +3883,16 @@ function Map() {
       }
     }
 
-    if (map) {
-      map.on("draw.create", drawCreateListener);
-      map.on("draw.update", drawUpdateListener);
-    }
-
     if (stateNav.drawingMode) {
       // delete previous filter feature
       stateApp.draw.delete(drawingFilterFeatureId);
 
       setDrawingFilterFeatureId(stateNav.filterFeatureId);
       stateApp.draw.changeMode(stateNav.drawingMode);
-      // if (map) {
-      //   map.on("draw.create", drawCreateListener);
-      //   map.on("draw.update", drawUpdateListener);
-      // }
+      if (map) {
+        map.on("draw.create", drawCreateListener);
+        map.on("draw.update", drawUpdateListener);
+      }
     }
   }, [stateNav.filterFeatureId]);
 
