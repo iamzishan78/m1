@@ -116,7 +116,7 @@ export default function Contacts(props) {
   }, [props.loading])
  const DeleteContact = async (dealid) => {
   let result =  await removeDealDescriptor({
-    variables: { id: dealid },
+    variables: { id: dealid, relatedObjectType: "Contact"},
     refetchQueries: ["getPipeline", "getContactDeals"],
 			awaitRefetchQueries: true,
     
