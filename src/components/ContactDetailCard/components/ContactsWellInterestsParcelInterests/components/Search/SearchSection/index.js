@@ -16,6 +16,7 @@ import parse from "autosuggest-highlight/parse";
 import { deepEqualObjects } from "components/Shared/functions";
 import useStyles from "../style";
 
+
 // import value formatters 
 import joinAddress from "components/Shared/valueformatters/join-address.js";
 import { callOwnerSearch, callWellSearch } from "./searchApi";
@@ -200,14 +201,16 @@ function Search({ fetchSelectedWells }) {
             Tax owners
             </Button>
           <Button
-            className={[classes.headerButtons, classes.floatRight]}
-            variant="contained"
-            size="small"
-            color="secondary"
+            className={[classes.multiSelectionTopBarButtons, classes.floatRight] }
+            //variant="contained"
+            startIcon={<SearchIcon />}
+            size="medium"
+            fontWeight = "bold"
+            color="#082768"
             disabled={selectedIds.length === 0}
             onClick={() => fetchSelectedWells(searchOption, selectedIds)}
           >
-            Continue to Interest Section
+            View Interests
          </Button>
         </Grid>
       </Grid>

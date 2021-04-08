@@ -113,13 +113,17 @@ function ContactsWellInterestsParcelInterests(props) {
     }
   };
 
-  const header = <TabLabels
-    labels={[
-      `Tax Roll Interests`,
-    ]}
-    value={assocTapValue}
-    setValue={setAssocTapValue}
-  />
+  //temporarily commented out until we have other tabs to show such as parcels, leases, etc.
+  // const header = <TabLabels
+  //   labels={[
+  //     `Tax Roll Interests`,
+  //   ]}
+  //   value={assocTapValue}
+  //   setValue={setAssocTapValue}
+  // />
+
+  const header = "Well Interests";
+
 
   const classes = useStyles({});
 
