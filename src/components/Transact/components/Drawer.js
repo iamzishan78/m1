@@ -7,6 +7,7 @@ import ShareIcon from "@material-ui/icons/Share";
 import FolderIcon from "@material-ui/icons/Folder";
 import IdentityIcon from "@material-ui/icons/PermIdentity";
 import Tooltip from "@material-ui/core/Tooltip";
+import Badge from '@material-ui/core/Badge';
 import { AppContext } from "../../../AppContext";
 import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 
@@ -55,7 +56,19 @@ export default function Drawer() {
     // "Lane Progress": (props) => <CheckmarkIcon {...props} />,
     // History: (props) => <ShareIcon {...props} />,
     // Groups: (props) => <FolderIcon {...props} />,
-    // Contacts: (props) => <IdentityIcon {...props} />,
+    Contacts: (props) => (
+      <Badge
+        // overlap="circle"
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        color="primary"
+        badgeContent={stateApp?.activeDeal?.contacts?.length}
+      >
+        <IdentityIcon {...props} />
+      </Badge>
+    ),
   };
 
   return (
