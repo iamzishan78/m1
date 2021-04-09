@@ -247,18 +247,6 @@ export default function CheckboxList(props) {
     },
   }))(ListItem);
 
-  const StyledListItem2 = withStyles((theme) => ({
-    root: {
-      fontFamily: "Poppins",
-      "&:hover": {
-        background: "#a3b2cf",
-      },
-      backgroundColor: "#4B618F",
-      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-        color: theme.palette.common.white,
-      },
-    },
-  }))(ListItem);
 
   const handleClose = () => {
     setStateMapControls((stateMapControls) => ({

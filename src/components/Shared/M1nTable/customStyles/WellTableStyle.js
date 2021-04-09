@@ -19,7 +19,8 @@ const WellTableStyles = makeStyles((theme) => ({
         paddingRight: (props) => (props.dense ? "12px" : null),
         "& td": {
           "& div": {
-            padding: 0
+            paddingBottom: 0,
+            paddingTop: 0
           }
         },
         "& td:nth-child(3)": {

@@ -100,6 +100,12 @@ export default function BulkUpload(props) {
       actual_key: "industryType",
     },
     {
+      label: "Contact Owner",
+      mapped_key: "",
+      required: false,
+      actual_key: "contactOwner",
+    },
+    {
       label: "Job Title",
       mapped_key: "",
       required: false,

@@ -64,6 +64,7 @@ import { TRACKSBYOBJECTTYPE } from "../../graphQL/useQueryTracksByObjectType";
 import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
 import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
+import { RECENT_SUBMITTED_PERMITS_QUERY } from "../../graphQL/useQueryRecentSubmittedPermits";
 import { RIGSQUERY } from "../../graphQL/useQueryRigs";
 import { ABSTRACTGEOQUERY } from "../../graphQL/useQueryAbstractGeo";
 import { ABSTRACTWELLGEOQUERY } from "../../graphQL/useQueryAbstractWellGeo";
@@ -243,17 +244,14 @@ function Map() {
     }
   };
   const [rigs, RigData] = useState([]);
-  const setRigData = (state) => {
-    if (rigs != state) {
-      RigData(state);
-    }
-  };
+  const setRigData = (state) => {if (rigs != state) {RigData(state);}};
+
   const [permits, PermitData] = useState([]);
-  const setPermitData = (state) => {
-    if (permits != state) {
-      PermitData(state);
-    }
-  };
+  const setPermitData = (state) => {if (permits != state) {PermitData(state);}};
+
+  const [recent_submitted_permits, RecentSubmittedPermitData] = useState([]);
+  const setRecentSubmittedPermitData = (state) => {if (recent_submitted_permits != state) {RecentSubmittedPermitData(state);}};
+  
   const [layersData, setLayersData] = useState([]);
 
   const [drawingFilterFeatureId, DrawingFilterFeatureId] = useState(null);
@@ -323,6 +321,7 @@ function Map() {
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {fetchPolicy: "network-only",});
   const [getWellsForLayer,{ data: dataWellsForOwnerWellTrackLayer }] = useLazyQuery(WELLSQUERY);
   const [getPermits, { data: permitData }] = useLazyQuery(PERMITSQUERY);
+  const [getRecentSubmittedPermits, { data: permitRecentSubmittedData }] = useLazyQuery(RECENT_SUBMITTED_PERMITS_QUERY);
   const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
   const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
   const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(ABSTRACTWELLGEOQUERY);
@@ -952,11 +951,21 @@ function Map() {
   };
 
   useEffect(() => {
+    console.log('PERMIT DATA ====', permitData)
     if (permitData && permitData.permits && permitData.permits.length > 0) {
       const nextOffset = permits.length + permitData.permits.length;
       setPermitData([...permits, ...permitData.permits]);
     }
   }, [permitData]);
+
+  useEffect(() => {
+    console.log('RECENT PERMIT DATA ====', permitRecentSubmittedData)
+    if (permitRecentSubmittedData && permitRecentSubmittedData.recent_submitted_permits && permitRecentSubmittedData.recent_submitted_permits.length > 0) {
+      const nextOffset = recent_submitted_permits.length + permitRecentSubmittedData.recent_submitted_permits.length;
+      setRecentSubmittedPermitData([...recent_submitted_permits, ...permitRecentSubmittedData.recent_submitted_permits]);
+    }
+  }, [permitRecentSubmittedData]);
+
 
   useEffect(() => {
     if (rigData && rigData.rigs && rigData.rigs.length > 0) {
@@ -1191,6 +1200,7 @@ function Map() {
             layerId === "Tracked Owners" ||
             layerId === "Tags Filter" ||
             layerId === "Search" ||
+            layerId === "recent_submitted_permits" ||
             layerId === "permits":
             wellPointClick(feature);
             break;
@@ -1265,6 +1275,9 @@ function Map() {
               case "Recent Permits":
                 data = permits;
                 break;
+              case "Recent Submitted Permits":
+                  data = recent_submitted_permits;
+                break; 
               case "Search":
                 data = stateApp.wellListFromSearch;
                 break;
@@ -1295,6 +1308,7 @@ function Map() {
     stateApp.wellListFromSearch,
     stateApp.customLayers,
     permits,
+    recent_submitted_permits,
     rigs,
     map,
     clustersOff,
@@ -2067,6 +2081,7 @@ function Map() {
               "Tracked Owners",
               "Tags Filter",
               "permits",
+              "recent_submitted_permits",
               "rigs",
             ].indexOf(filterLayer) > -1
           ) {
@@ -2237,6 +2252,7 @@ function Map() {
           "Tracked Owners",
           "Tags Filter",
           "permits",
+          "recent_submitted_permits",
           "rigs",
           "interest",
           "parcel",
@@ -2285,6 +2301,7 @@ function Map() {
           "Tracked Owners",
           "Tags Filter",
           "permits",
+          "recent_submitted_permits",
           "rigs",
           "parcel",
         ];
@@ -2320,6 +2337,7 @@ function Map() {
           "Tracked Owners",
           "Tags Filter",
           "permits",
+          "recent_submitted_permits",
           "rigs",
           "interest",
         ];
@@ -2410,6 +2428,7 @@ function Map() {
           "Tracked Owners",
           "Tags Filter",
           "permits",
+          "recent_submitted_permits",
           "rigs",
           "interest",
           "parcel",
@@ -2533,6 +2552,7 @@ function Map() {
           "interest",
           "parcel",
           "permits",
+          "recent_submitted_permits",
           "rigs",
         ];
         filterLayers.forEach((filterLayer) => {
@@ -2543,6 +2563,7 @@ function Map() {
                 "Tracked Owners",
                 "Tags Filter",
                 "permits",
+                "recent_submitted_permits",
                 "rigs",
               ].indexOf(filterLayer) > -1
             ) {
@@ -2619,6 +2640,7 @@ function Map() {
                     "Tracked Owners",
                     "Tags Filter",
                     "permits",
+                    "recent_submitted_permits",
                     "rigs",
                   ].indexOf(filterLayer) > -1
                 ) {
@@ -2760,6 +2782,7 @@ function Map() {
           "Tracked Owners",
           "Tags Filter",
           "permits",
+          "recent_submitted_permits",
           "rigs",
         ];
         filterLayers.forEach((filterLayer) => {
@@ -3122,7 +3145,7 @@ function Map() {
     const signal = abortController.signal;
 
     getPermits({});
-
+    getRecentSubmittedPermits({});
     getRigs({});
 
     fetch(req, { signal: signal })
@@ -3329,6 +3352,9 @@ function Map() {
   // };
 
   const onAbstactLayerClick = function (feature, action) {
+    console.log("featur--",feature)
+    console.log("action",action)
+
     if (!feature) {
       setStateApp((state) => ({
         ...state,
@@ -3372,6 +3398,7 @@ function Map() {
           .features;
 
         if (window.event.ctrlKey || window.event.metaKey) {
+
           if (featureState && featureState.click) {
             // Unselect feature
             map.setFeatureState(
@@ -3381,7 +3408,8 @@ function Map() {
             onAbstactLayerClick(currentFeature, "remove");
           } else {
             let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
-            if (!isExisting) {
+            
+            if (!isExisting ) {
               map.setFeatureState(
                 { source: "abstract_geo_source", id: e.features[0].id },
                 { click: true }
@@ -3425,10 +3453,9 @@ function Map() {
             { hover: false }
           );
         }
-        hoveredAbstractId = null;
       });
     }
-  }, [map, stateApp.customLayers]);
+  }, [map,stateApp.customLayers]);
 
   useEffect(() => {
 
@@ -4237,7 +4264,21 @@ function Map() {
       expandedCard: false,
       activateWellDetailsFromTable: false,
     }));
+    getCustomLayers()
   };
+
+  const deleteParcel = () => {
+    updateCustomLayer({
+      variables: {
+        customLayerId: stateApp.selectedParcel.id,
+        customLayer: {
+          IsDeleted: true,
+        },
+      },
+      refetchQueries: ["getCustomLayers"],
+      awaitRefetchQueries: true,
+    });
+   }
 
   const handleCloseSpatialDataCard = (complete = true) => {
     setStateApp((state) => ({
@@ -4438,6 +4479,7 @@ function Map() {
     }
   };
 
+
   useEffect(() => {
     // use effect to add usersnap to the application 
 
@@ -4624,8 +4666,6 @@ function Map() {
     }
   }, [stateApp.selectedParcel])
 
- 
-
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
@@ -4695,6 +4735,7 @@ function Map() {
                   cardHeightExpanded="90vh"
                   targetSourceId={stateApp.selectedParcel.id}
                   targetLabel="parcel"
+                  deleteParcel={deleteParcel}
                 ></ExpandableCardProvider>
               </div>
           )
@@ -4760,6 +4801,7 @@ function Map() {
                     cardHeightExpanded="90vh"
                     targetSourceId={stateApp.selectedParcel.id}
                     targetLabel="parcel"
+                    deleteParcel={deleteParcel}
                   ></ExpandableCardProvider>
                 )}
                 </PortalD>
