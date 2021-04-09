@@ -169,7 +169,7 @@ export default function SidePanel() {
 		}
 	}, [panelType, stateApp.baseMapLayers, stateApp.checkedBaseLayers]);
 
-	//   for BaseMap Panel
+	//   for Layer Panel
 	useEffect(() => {
 		if (panelType === "layer" || panelType === null) {
 			setPanelItems(stateApp.layers);
