@@ -55,9 +55,9 @@ function SupportCenterModal(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const { open, onClose, openContactForm } = props;
 
-  const toggleUserSnap = () => {
-    setStateApp({ ...stateApp, userSnap: !stateApp.userSnap });
-  };
+  // const toggleUserSnap = () => {
+  //   setStateApp({ ...stateApp, userSnap: !stateApp.userSnap });
+  // };
 
   return (
     <Dialog aria-labelledby="simple-dialog-title" open={open} onClose={onClose}>
@@ -65,7 +65,7 @@ function SupportCenterModal(props) {
         <M1neralLogoStyled />
       </DialogTitle>
       <List>
-        <ListItem autoFocus button>
+        {/* <ListItem autoFocus button>
           <ListItemAvatar>
             <ScreenShareIcon color="secondary" fontSize="large" />
           </ListItemAvatar>
@@ -80,7 +80,7 @@ function SupportCenterModal(props) {
             name="checkedB"
             inputProps={{ "aria-label": "primary checkbox" }}
           />
-        </ListItem>
+        </ListItem> */}
 
         <ListItem autoFocus button onClick={openContactForm}>
           <ListItemAvatar>
