@@ -25,6 +25,8 @@ import ChatIcon from "@material-ui/icons/Chat";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import M1nTable from "../M1nTable";
 import WellIcon from "../../svgIcons/well";
+import Contact from "../../svgIcons/contact";
+import ArrowRight from "../../svgIcons/arrow-right";
 import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
 import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationDialogContent";
@@ -190,6 +192,10 @@ const useStyles = makeStyles((theme) => ({
   table: {
     "& .MuiTableBody-root": {
       height: '50px',
+    },
+    "& .MuiToolbar-root": {
+      backgroundColor: "#F2F2F2",
+      borderBottom: '1px solid rgba(224, 224, 224, 1)'
     },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
@@ -2711,6 +2717,16 @@ function SubTable(props) {
     </Box>
   };
 
+  const getHeaders = () => {
+    return  props.header === 'Contacts' ? (
+      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left'}}>
+        <Contact />
+        <label style={{ marginLeft: '10px'}}>{props.header}</label>
+        <ArrowRight/>
+        <label style={{ color: '#18AADD' }}>All Contacts</label>
+      </div>
+      ) : props.header
+  }
   return (
     <div style={{
       width: "100%",
@@ -2724,7 +2740,7 @@ function SubTable(props) {
 
         <MUIDataTable
           className={tableStyle}
-          title={props.header}
+          title={getHeaders()}
           data={rows ? rows : []}
           columns={columns ? columns : []}
           components={{
