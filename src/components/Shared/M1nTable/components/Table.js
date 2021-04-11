@@ -76,7 +76,7 @@ import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContact
 import Chip from '@material-ui/core/Chip';
 import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
-
+import ButtonDropDown from "./ButtonGroup"
 // import value formatters 
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
@@ -199,8 +199,11 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#F2F2F2",
       borderBottom: '1px solid rgba(224, 224, 224, 1)'
     },
-    "& .MuiToolbar-root .MuiIconButton-root": {
+    "& .MuiToolbar-regular > div:nth-child(2) .MuiIconButton-root": {
       backgroundColor: "#D4E8F1",
+    },
+    "& .MuiToolbar-regular > div:nth-child(2)": {
+      flex: '0 1 auto',
     },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
@@ -2204,9 +2207,62 @@ function SubTable(props) {
           );
         },
     customToolbar: () => {
+      const options = [
+        { 
+          text:'Add Contact',
+          isShow: false,
+          action: (e) => {
+            e.stopPropagation();
+            if (props.addAble.type && props.addAble.type === "contact")
+              handleExpandClick(null, null, null, "addContact");
+
+            if (
+              props.addAble.type &&
+              props.addAble.type === "ownerToParcel"
+            )
+              handleExpandClick(null, null, null, "addOwnerToParcel");
+
+            if (props.addAble.type && props.addAble.type === "deals")
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                dealDialog: true,
+                activeDeal: { cardId: null, laneId: null },
+              }));
+
+            if (props.addAble.type && props.addAble.type === "wellInterest") {
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                wellInterestDialog: true,
+                //activeDeal: { cardId: null, laneId: null },
+              }));
+            }
+
+            if (
+              props.addAble.type &&
+              props.addAble.type === "parcelInterestsToEntity"
+            )
+              // handleExpandClick(null, null, null, "addOwnerToParcel");
+              handleExpandClick(
+                null,
+                null,
+                null,
+                "addParcelInterestsToEntity"
+              );
+            if (
+              props.addAble.type &&
+              props.addAble.type === "inviteUser"
+            )
+              handleExpandClick(null, null, null, "inviteUser");
+          }
+        },
+        {  text: 'Import Contacts', isShow: true, action: () => routeChange("/bulkupload") }
+      ];
       return (
         <>
-          {props.uploadIcon && (
+        <div style={{ displat: 'inline', float: 'left', marginTop: '5px', marginRight: '2px'}}>
+          <ButtonDropDown options={options} />
+        </div>
+          {/* {props.uploadIcon && (
             //////Upload Icon/////////////////////////
             <span className={classes.addIcon}>
               <Tooltip
@@ -2288,7 +2344,7 @@ function SubTable(props) {
                 </IconButton>
               </Tooltip>
             </span>
-          )}
+          )} */}
         </>
       );
     },
