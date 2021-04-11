@@ -8,8 +8,8 @@ import React, {
 import { useMutation, useLazyQuery } from "@apollo/client";
 import loadCSS from "fg-loadcss";
 // STATE MANAGEMENT
-import { MapControlsContext } from "../../MapControlsContext";
-import { AppContext } from "../../../../AppContext";
+import { MapControlsContext } from "components/MapControls/MapControlsContext";
+import { AppContext } from "AppContext";
 // STYLES - Material UI Required Components
 import { AppStyles, StyledMenu, StyledMenuItem } from "../muiThemes";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -117,6 +117,11 @@ const useStyles = makeStyles((theme) => ({
       "&.selected": {
         color: "rgb(102 146 202)",
       },
+    },
+  },
+  disableAction: {
+    "& svg": {
+      color: "#717171",
     },
   },
   whiteText: {

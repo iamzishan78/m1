@@ -1,8 +1,8 @@
-import React, { useEffect, useContext, Fragment } from "react";
+import React, { useEffect, useMemo, useContext, Fragment } from "react";
 import { useMutation } from "@apollo/client";
 import IconButton from "@material-ui/core/IconButton";
 import { area, convertArea, length } from "@turf/turf";
-import { AppContext } from "../../../../AppContext";
+import { AppContext } from 'AppContext';
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
 import Tooltip from "@material-ui/core/Tooltip";
 import { default as MouseClicked } from "../../../Shared/svgIcons/MouseClicked";
@@ -11,29 +11,6 @@ import { default as Rect } from "../../../Shared/svgIcons/rectangle";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 
 import { gql } from "@apollo/client";
-
-export const availableShapes = [
-  {
-    title: "Multiple Select",
-    mode: "multiple_select",
-    icon: <MouseClicked />,
-  },
-  {
-    title: "Polygon",
-    mode: "draw_polygon",
-    icon: <DrawPoly />,
-  },
-  {
-    title: "Circle",
-    mode: "drag_circle",
-    icon: <RadioButtonUncheckedIcon fontSize="small" />,
-  },
-  {
-    title: "Rectangle",
-    mode: "draw_rectangle",
-    icon: <Rect />,
-  },
-];
 
 const DrawShapesPopup = (props) => {
   const { classes, children } = props;
@@ -88,6 +65,30 @@ const DrawShapesPopup = (props) => {
     },
   });
 
+  const availableShapes = useMemo(() => [
+    {
+      title: "Multiple Select",
+      mode: "multiple_select",
+      icon: <MouseClicked />,
+      disable: stateApp.mapVars.zoom <= 13
+    },
+    {
+      title: "Polygon",
+      mode: "draw_polygon",
+      icon: <DrawPoly />,
+    },
+    {
+      title: "Circle",
+      mode: "drag_circle",
+      icon: <RadioButtonUncheckedIcon fontSize="small" />,
+    },
+    {
+      title: "Rectangle",
+      mode: "draw_rectangle",
+      icon: <Rect />,
+    },
+  ], [stateApp.mapVars.zoom]);
+
   useEffect(() => {
     if (!customLayerInsertedData) {
       return;
@@ -140,19 +141,30 @@ const DrawShapesPopup = (props) => {
     }
   };
 
+  const onActionClick = (shape) => {
+    if (shape.title === 'Multiple Select') {
+      setStateApp(state => ({
+        ...state,
+        multiSelectLandGrids: !state.multiSelectLandGrids
+      }))
+    } else {
+      stateApp.draw.changeMode(shape.mode);
+      setStateApp((state) => ({ ...state, editDraw: true }));
+      props.handleClose();
+    }
+  }
+
   return (
     <Fragment>
       <span class={classes.label}>Tooltip</span> {calculateLandArea()}
       <span className={classes.actions}>
         {availableShapes.map((shape, index) => (
           <Fragment key={index}>
-            <Tooltip title={shape.title}>
+            <Tooltip title={shape.title} className={shape.disable ? classes.disableAction : ''}>
               <IconButton
                 size="small"
                 onClick={() => {
-                  stateApp.draw.changeMode(shape.mode);
-                  setStateApp((state) => ({ ...state, editDraw: true }));
-                  props.handleClose();
+                  onActionClick(shape)
                 }}
                 aria-label={shape.title}
               >

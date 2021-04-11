@@ -199,9 +199,9 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "#F2F2F2",
         zIndex: "auto",
         padding: (props) => (props.dense ? "10px" : null),
-        "& button":{
-          "& .MuiButton-label":{
-              textAlign:'left'
+        "& button": {
+          "& .MuiButton-label": {
+            textAlign: 'left'
           }
         }
       },
@@ -2647,8 +2647,8 @@ function SubTable(props) {
       props.shapeWellsPageProps.shapeWellsCount > 25
         ? [10, 25, 50, 100]
         : props.shapeWellsPageProps.shapeWellsCount > 10
-        ? [10, 25]
-        : [];
+          ? [10, 25]
+          : [];
     options.count = props.shapeWellsPageProps.shapeWellsCount;
     options.serverSide = true;
   }

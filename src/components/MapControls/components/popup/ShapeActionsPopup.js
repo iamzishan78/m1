@@ -147,7 +147,6 @@ const ShapeActionsPopup = (props) => {
     return () => {
       clearFilter();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -155,7 +154,6 @@ const ShapeActionsPopup = (props) => {
     if (stateApp.shapeActionsFilterSelected) {
       applyFilter();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.currentFeature]);
 
   const formatNumber = (number) => {

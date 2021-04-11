@@ -175,7 +175,7 @@ function Map() {
   };
   const [zoom, Zoom] = useState(stateApp.mapVars.zoom);
   const setZoom = (state) => {
-    if (zoom != state) {
+    if (zoom !== state) {
       Zoom(state);
     }
   };
@@ -334,8 +334,6 @@ function Map() {
   // mutations 
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
   const [removeCustomLayer] = useMutation(REMOVECUSTOMLAYER);
-
-
 
   /////end/////////temporary
 
@@ -3359,9 +3357,9 @@ function Map() {
   };
 
   useEffect(() => {
-    // HERE FOOL
+    // UseEffect for Land Grids Selection
     if (map) {
-      map.on("click", "abstract_geo_fill_layer", function (e) {
+      const LandClickListener = (e) => {
         if (!e.features.length) {
           return;
         }
@@ -3372,8 +3370,8 @@ function Map() {
         });
         const featuresList = map.getSource("abstract_geo_source")._data
           .features;
-
-        if (window.event.ctrlKey || window.event.metaKey) {
+        if (window.event.ctrlKey || window.event.metaKey || stateApp.multiSelectLandGrids) {
+          // this is making trouble
           if (featureState && featureState.click) {
             // Unselect feature
             map.setFeatureState(
@@ -3393,7 +3391,7 @@ function Map() {
             }
           }
         } else {
-          // Clear all selected features
+          // Clear all selected features when click off the shapes
           for (let i = 0; i < featuresList.length; i++) {
             const id = featuresList[i].properties.Id;
             map.setFeatureState(
@@ -3403,7 +3401,9 @@ function Map() {
           }
           onAbstactLayerClick(null, "remove");
         }
-      });
+      }
+
+      map.on("click", "abstract_geo_fill_layer", LandClickListener);
 
       map.on("mousemove", "abstract_geo_fill_layer", function (e) {
         if (e.features.length > 0) {
@@ -3421,7 +3421,7 @@ function Map() {
         }
       });
 
-      map.on("mouseleave", "abstract_geo_fill_layer", function (e) {
+      map.on("mouselecustomLayersave", "abstract_geo_fill_layer", function (e) {
         if (hoveredAbstractId) {
           map.setFeatureState(
             { source: "abstract_geo_source", id: hoveredAbstractId },
@@ -3429,8 +3429,12 @@ function Map() {
           );
         }
       });
+      return () => {
+        // Unsubscribing the provious event for updated states
+        map.off("click", "abstract_geo_fill_layer", LandClickListener);
+      }
     }
-  }, [map, stateApp.customLayers]);
+  }, [map, stateApp.customLayers, stateApp.multiSelectLandGrids]);
 
   useEffect(() => {
 
@@ -3565,7 +3569,8 @@ function Map() {
 
             setStateApp((state) => ({
               ...state,
-              selectedPolygonString: polygonString
+              selectedPolygonString: polygonString,
+              mapVars: { ...state.mapVars, zoom: map.getZoom() }
             }));
           }
 
@@ -3811,7 +3816,6 @@ function Map() {
   useEffect(() => {
 
     function drawCreateListener(e) {
-      debugger;
       if (stateNav.drawingMode !== null) {
         let feature = e.features[0];
 
