@@ -74,6 +74,8 @@ import CheckIcon from "@material-ui/icons/Check";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
 import Chip from '@material-ui/core/Chip';
+import FilterIcon from "../../svgIcons/filter";
+import ViewColumnIcon from "../../svgIcons/view_column";
 
 // import value formatters 
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
@@ -196,6 +198,9 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiToolbar-root": {
       backgroundColor: "#F2F2F2",
       borderBottom: '1px solid rgba(224, 224, 224, 1)'
+    },
+    "& .MuiToolbar-root .MuiIconButton-root": {
+      backgroundColor: "#D4E8F1",
     },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
@@ -2745,6 +2750,10 @@ function SubTable(props) {
           columns={columns ? columns : []}
           components={{
             TableFilterList: props.header == 'Tax Roll Ownership' ? TableFilterList : null,
+            icons: {
+              FilterIcon,
+              ViewColumnIcon,
+            }
           }}
           options={{
             ...options,
