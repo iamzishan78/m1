@@ -99,23 +99,23 @@ const useStyles = makeStyles((theme) => ({
 		gridTemplateColumns: "1fr 1fr 1fr",
 		backgroundColor: "#263451",
 		"& :nth-child(1)": {
-			float: "left",
+			"float": "left",
 			display: "grid",
 		},
 		"& :nth-child(2)": {
-			float: "left",
+			"float": "left",
 			display: "grid",
 		},
 		"& :nth-child(3)": {
 			display: "grid",
 		},
 		"& :nth-child(4)": {
-			float: "left",
+			"float": "left",
 			display: "grid",
 		},
 		"& :nth-child(5)": {
 			display: "grid",
-			float: "left",
+			"float": "left",
 		},
 	},
 }));
@@ -747,7 +747,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 						<List
 							style={{
 								maxHeight: "775px",
-								overflowY: type === "marketplace" ? "scroll" : "hidden",
+								overflowY: type === "marketplace" ? "scroll" : "scroll",
 							}}
 							className={classes.list}
 						>
@@ -1051,11 +1051,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					left: stateMapControls.panelExpanded
 						? "30px"
 						: type === "marketplace"
-						? "-567px"
-						: "-405px",
+							? "-567px"
+							: "-405px",
 					transition: "left 0.5s ease-in-out",
 					listStyleType: "none",
-					zIndex:"9999"
+					zIndex: "9999"
 				}}
 			>
 				<StyledMenu
@@ -1064,7 +1064,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					keepMounted
 					open={Boolean(stateMapControls.selectedControl)}
 
-					//onClose={handleClose}
+				//onClose={handleClose}
 				>
 					<StyledMenuHeaderItem
 						disableRipple
