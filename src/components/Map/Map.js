@@ -4493,7 +4493,6 @@ function Map() {
       const { map } = stateApp;
 
       map.on("draw.selectionchange", ({ features }) => {
-        debugger;
         const [feature] = features;
         if (feature && feature.id.includes("edit_polygon")) {
           setStateApp({
