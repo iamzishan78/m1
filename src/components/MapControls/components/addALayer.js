@@ -20,7 +20,6 @@ import { deepEqual, deepEqualObjects } from "../../Shared/functions";
 import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
 import { DropzoneAreaBase } from "material-ui-dropzone";
-import geojsonMerge from '@mapbox/geojson-merge';
 import shp from "shpjs";
 import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -248,9 +247,6 @@ export default function AddLayer(props) {
         fetch(inputFile).then((response) => {
           response.arrayBuffer().then((buffer) => {
             shp(buffer).then((geojson) => {
-              if (Array.isArray(geojson)) {
-                geojson = geojsonMerge.merge(geojson)
-              }
               resolve(geojson);
             });
           });
@@ -266,14 +262,13 @@ export default function AddLayer(props) {
       universalCircularLoaderAct: true,
     }));
     let fileContent = await handleFileAsync(fileObj);
-    debugger;
     setStateApp((stateApp) => ({
       ...stateApp,
       universalCircularLoaderAct: false,
     }));
     setStateMapControls({
       ...stateMapControls,
-      selectedControl: "add",
+      selectedControl: Array.isArray(fileContent) ? "addGroup" : "add",
       fileUploadedContent: fileContent,
     });
   }
