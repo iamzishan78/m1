@@ -2454,7 +2454,7 @@ function SubTable(props) {
         }
         if (tableState.filterList[tagsIndex]?.length !== 0) {
           filters.push({
-            field: "tag.tag",
+            field: "tags.tag",
             value: tableState.filterList[tagsIndex],
           });
         }
@@ -2465,16 +2465,16 @@ function SubTable(props) {
               first: tableState.rowsPerPage,
               after: null,
             },
-            sort: tableState.activeColumn
+            sort: tableState.sortOrder
               ? {
                 field:
-                  tableState.columns[tableState.activeColumn]?.name ===
+                tableState.sortOrder?.name ===
                     "fullContactAddress"
                     ? "address1"
-                    : tableState.columns[tableState.activeColumn]?.name,
+                    : tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.dbName ||
+                    tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
                 order:
-                  tableState.columns[tableState.activeColumn]
-                    ?.sortDirection === "asc"
+                  tableState.sortOrder?.direction === "asc"
                     ? 1
                     : -1,
               }

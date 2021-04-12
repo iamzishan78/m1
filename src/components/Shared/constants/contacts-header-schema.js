@@ -499,7 +499,8 @@ const ContactsHeadCells = [
     name: "tags",
     label: "Tags ",
     options: {
-      sort: false,
+      dbName: "tags.tag",
+      sort: true,
       download: false,
       print: false,
       filterOptions: {
