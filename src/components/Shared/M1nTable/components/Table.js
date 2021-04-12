@@ -2259,7 +2259,7 @@ function SubTable(props) {
       ];
       return (
         <>
-        <div style={{ displat: 'inline', float: 'left', marginTop: '5px', marginRight: '2px'}}>
+        <div style={{ displat: 'inline', float: 'left', marginTop: '5px', marginRight: '15px'}}>
           <ButtonDropDown options={options} />
         </div>
           {/* {props.uploadIcon && (
