@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
@@ -7,6 +7,8 @@ import WellIcon from "../../Shared/svgIcons/well";
 import ContactsWellInterestsParcelInterests from "./ContactsWellInterestsParcelInterests/ContactsWellInterestsParcelInterests";
 import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
+import { AppContext } from "../../../AppContext";
+import AddWellInterestDialog from "./ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -47,6 +49,7 @@ export default function WellsCard(props) {
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS, {
     fetchPolicy: "cache-and-network",
   });
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   useEffect(() => {
     if (props.contactData && props.contactData._id) {
@@ -78,11 +81,28 @@ export default function WellsCard(props) {
       );
      }}
     >
+     <AddWellInterestDialog
+            open={stateApp.wellInterestDialog ? true : false}
+            width="450px"
+            onClose={() =>
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                wellInterestDialog: false,
+              }))
+            }
+            contactId={props.contactData._id}
+      />
       <div>
         <h4 style={{ marginTop: "0", float: "left" }}>Wells ({ count })</h4>
         <IconButton
           size="small"
           className={classes.addIcon}
+          onClick={() =>
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              wellInterestDialog: true,
+            }))
+          }
         >
           <AddIcon htmlColor="rgb(28 173 225 / 81%)" />
         </IconButton>
