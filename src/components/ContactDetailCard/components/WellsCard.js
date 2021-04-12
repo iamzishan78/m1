@@ -12,6 +12,7 @@ import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: "23px 23px 0 23px",
+    cursor:"pointer",
   },
 
   cardContent: { width: "100%", display: "flex" },
@@ -67,21 +68,21 @@ export default function WellsCard(props) {
   }, [dataContactWells]);
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} onClick={() => {
+      props.handleOpenExpandableCard(
+        <ContactsWellInterestsParcelInterests
+          activeTap={0}
+          contactData={props.contactData}
+        />,
+        "Associated Interests"
+      );
+     }}
+    >
       <div>
         <h4 style={{ marginTop: "0", float: "left" }}>Wells ({ count })</h4>
         <IconButton
           size="small"
           className={classes.addIcon}
-          onClick={() => {
-            props.handleOpenExpandableCard(
-              <ContactsWellInterestsParcelInterests
-                activeTap={0}
-                contactData={props.contactData}
-              />,
-              "Associated Interests"
-            );
-          }}
         >
           <AddIcon htmlColor="rgb(28 173 225 / 81%)" />
         </IconButton>
