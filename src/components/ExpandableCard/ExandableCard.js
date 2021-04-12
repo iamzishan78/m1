@@ -24,8 +24,6 @@ import LinkWithIcon from "../Shared/LinkWithIcon";
 import BugsIcon from "../Shared/svgIcons/bug.js";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
-
-import { gql } from "@apollo/client";
 import ContactSearch from "./components/ContactSearch";
 
 function ExpandableCard(props) {
