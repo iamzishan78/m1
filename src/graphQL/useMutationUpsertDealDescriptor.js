@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 export const UPSERTDEALDESCRIPTOR = gql`
   mutation upsertDealDescriptor(
     $dealId: ID
-    $relatedObject: ID
+    $relatedObject: [ID]
     $relatedObjectType: String
     $userId: ID
   ) {

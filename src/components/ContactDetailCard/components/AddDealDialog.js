@@ -52,7 +52,11 @@ import {
 	VIEWFILEQUERY,
 	VIEWFILESQUERY,
 } from "../../../graphQL/useQueryViewFile";
+import {
+	GETDEAL,
+} from "../../../graphQL/useQueryDeal";
 import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
+import Contacts from "components/FlowDrawer/Contacts";
 
 function NumberFormatCustom(props) {
 	const { inputRef, onChange, ...other } = props;
@@ -208,6 +212,7 @@ function AddDealDialog(props) {
 	const { selectedPipe, pipelines, pipeToShow } = useSelector(
 		({ Flow }) => Flow
 	);
+	const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const [title, setTitle] = useState(""); // title change from contact.name to dealName
 	const [label, setLabel] = useState("");
@@ -375,7 +380,6 @@ function AddDealDialog(props) {
 
 	useEffect(() => {
 
-		console.log("ALL CONTACTS: ", allContacts);
 		if (allContacts?.paginatedContacts) {
 			setMongoEntitiesArray(
 				allContacts?.paginatedContacts?.edges?.map((el) => el.node)
@@ -386,7 +390,6 @@ function AddDealDialog(props) {
 	}, [allContacts]);
 
 	useEffect(() => {
-		console.log("AUTOCOMPLETE INPUT CHANGE: ", nameAutInputValue);
 		if (props.isTransactPage) {
 
 			//will also run during initial mount
@@ -405,7 +408,6 @@ function AddDealDialog(props) {
 	};
 
 	useEffect(() => {
-		console.log("CDATA", cData);
 		if (cData?.contact) {
 			setNameAutValue(
 				cData?.contact
@@ -416,7 +418,6 @@ function AddDealDialog(props) {
 	}, [cData]);
 
 	useEffect(() => {
-		console.log("CONTACT", nameAutValue);
 		if (nameAutValue?.name) {
 			setContact(nameAutValue);
 		}
@@ -463,7 +464,6 @@ function AddDealDialog(props) {
 	}, [props.contactId]);
 
 	useEffect(() => {
-		console.log("ACTIVE DEAL: ", stateApp.activeDeal);
 		const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
 		const laneId = stateApp.activeDeal?.laneId;
 
@@ -623,7 +623,7 @@ function AddDealDialog(props) {
 							upsertDealDescriptor({
 								variables: {
 									dealId: cardId,
-									relatedObject: contactId,
+									relatedObject: [contactId], // HERE
 									relatedObjectType: "Contact",
 									userId: stateApp.user.mongoId,
 								},
@@ -653,7 +653,7 @@ function AddDealDialog(props) {
 							upsertDealDescriptor({
 								variables: {
 									dealId: cardId,
-									relatedObject: ownerId,
+									relatedObject: [ownerId],
 									relatedObjectType: "User",
 									userId: stateApp.user.mongoId,
 								},
@@ -848,6 +848,63 @@ function AddDealDialog(props) {
 		return comparison;
 	});
 
+
+
+	const [
+		getDeal,
+		{ data: getDealResult, loading: getDealLoading },
+	] = useLazyQuery(GETDEAL, {
+		fetchPolicy: "no-cache",
+	});
+
+	const refetchDeal = () => {
+		getDeal({
+			variables: { id: stateApp.activeDeal.cardId },
+		});
+	}
+
+	const addSelectedContactToDeal = (contact) => {
+		// HERE
+		upsertDealDescriptor({
+			variables: {
+				dealId: cardId,
+				relatedObject: [contact._id],
+				relatedObjectType: "Contact",
+				userId: stateApp.user.mongoId,
+			},
+			refetchQueries: ["getPipeline", "getContactDeals"],
+			awaitRefetchQueries: true,
+		}).then((result) => {
+			const {
+				data: { upsertDealDescriptor },
+			} = result;
+		
+			// if (upsertDealDescriptor?.success === false) success = false;
+			// resolve();
+
+			refetchDeal();
+		})
+}
+
+
+	useEffect(() => {
+		if(getDealResult?.deal?.deal?.contacts){
+
+			setStateApp((stateApp) => ({
+				...stateApp,
+				activeDeal: {
+					...stateApp.activeDeal,
+					// contacts: [...getDealResult.deal.deal.contacts],
+					contacts: [...getDealResult.deal.deal.contacts.map(c => ({ _id: c.descriptorId, name: c.name }))],
+				},
+			}));
+		}
+			
+			
+		// 	let metadata = { ...stateApp.activeDeal, contacts: [ upsertDealDescriptor.descriptor[0], ...stateApp.activeDeal.contacts ] };
+
+	}, [getDealResult])
+
 	const getView = () => {
 		if (stateApp.transactBarView === "Documents") {
 			return (
@@ -857,6 +914,15 @@ function AddDealDialog(props) {
 					isTransactPage={true}
 				/>
 			);
+		}
+		if(stateApp.transactBarView === "Contacts") {
+			return (
+				<Contacts 
+					addSelectedContact={addSelectedContactToDeal}
+					loading= {getDealLoading}
+					getDeal={refetchDeal}
+				/>
+			)
 		}
 	};
 	const [fileRequestCounter, setFileRequestCounter] = useState(1);
@@ -868,7 +934,6 @@ function AddDealDialog(props) {
 			onCompleted: ({ getFileDescriptors }) => {
 				let allActive = true;
 
-				console.log("File descriptors: ", getFileDescriptors);
 				if (getFileDescriptors)
 					for (let i = 0; i < getFileDescriptors.length; i++) {
 						if (getFileDescriptors[i].fileState !== "active") {
@@ -907,6 +972,8 @@ function AddDealDialog(props) {
 	] = useLazyQuery(VIEWFILESQUERY, {
 		fetchPolicy: "no-cache",
 	});
+
+
 	useEffect(() => {
 		getRecentFiles({
 			variables: {
@@ -1227,25 +1294,26 @@ function AddDealDialog(props) {
                   />
                 </div>
               ) : (
-                <div className={classes.inputField}>
-                  <Grid container>
-                    <Grid item xs={12}>
-                      <AutocompEntityNamesVirtualizeList
-                        mongoEntitiesArray={mongoEntitiesArray}
-                        setMongoEntitiesArray={setMongoEntitiesArray}
-                        nameAutValue={nameAutValue}
-                        setNameAutValue={setNameAutValue}
-                        nameAutInputValue={nameAutInputValue}
-                        setNameAutInputValue={setNameAutInputValue}
-                        variant="outlined"
-                        label="Contact Name"
-                        hasNextPage={hasNextPage}
-                        isNextPageLoading={isNextPageLoading}
-                        loadNextPage={loadNextPage}
-                      />
-                    </Grid>
-                  </Grid>
-                </div>
+                // <div className={classes.inputField}>
+                //   <Grid container>
+                //     <Grid item xs={12}>
+                //       <AutocompEntityNamesVirtualizeList
+                //         mongoEntitiesArray={mongoEntitiesArray}
+                //         setMongoEntitiesArray={setMongoEntitiesArray}
+                //         nameAutValue={nameAutValue}
+                //         setNameAutValue={setNameAutValue}
+                //         nameAutInputValue={nameAutInputValue}
+                //         setNameAutInputValue={setNameAutInputValue}
+                //         variant="outlined"
+                //         label="Contact Name"
+                //         hasNextPage={hasNextPage}
+                //         isNextPageLoading={isNextPageLoading}
+                //         loadNextPage={loadNextPage}
+                //       />
+                //     </Grid>
+                //   </Grid>
+                // </div>
+								<></>
               )}
 
 							<TextField
@@ -1285,7 +1353,6 @@ function AddDealDialog(props) {
 									fullWidth
 									onChange={(e) => {
 
-										console.log("DATE", e.target.value);
 										setCloseDate(e.target.value);
 									}}
 								/>
@@ -1341,7 +1408,6 @@ function AddDealDialog(props) {
 									native
 									value={stageId}
 									onChange={(e) => {
-										console.log("Stage: ", e.target.value);
 										// setStageId(e.target.value);
 										settingNewStageAndFindNextAvailablePosition(
 											e.target.value,
