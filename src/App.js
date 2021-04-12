@@ -108,27 +108,27 @@ const SetApolloClient = (props) => {
     }
   }, [stateApp]);
 
-  useEffect(() => {
-    if (stateApp.userSnap === true) {
-      var script = document.createElement("script");
-      script.type = "text/javascript";
-      script.src =
-        "//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js";
-      script.async = true;
-      script.setAttribute("id", "feedback-script");
-      var x = document.getElementsByTagName("script")[0];
-      x.parentNode.insertBefore(script, x);
-      document.body.appendChild(script);
-      return () => {
-        document.body.removeChild(script);
-      };
-    } else if (stateApp.userSnap === false) {
-      const feedbackScript = document.querySelector("#feedback-script");
-      feedbackScript && feedbackScript.remove();
-      const element = document.getElementsByName("us-entrypoint-button");
-      element && element[0] && element[0].remove();
-    }
-  }, [stateApp.userSnap]);
+  // useEffect(() => {
+  //   if (stateApp.userSnap === true) {
+  //     var script = document.createElement("script");
+  //     script.type = "text/javascript";
+  //     script.src =
+  //       "//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js";
+  //     script.async = true;
+  //     script.setAttribute("id", "feedback-script");
+  //     var x = document.getElementsByTagName("script")[0];
+  //     x.parentNode.insertBefore(script, x);
+  //     document.body.appendChild(script);
+  //     return () => {
+  //       document.body.removeChild(script);
+  //     };
+  //   } else if (stateApp.userSnap === false) {
+  //     const feedbackScript = document.querySelector("#feedback-script");
+  //     feedbackScript && feedbackScript.remove();
+  //     const element = document.getElementsByName("us-entrypoint-button");
+  //     element && element[0] && element[0].remove();
+  //   }
+  // }, [stateApp.userSnap]);
   /*  useEffect( () => {
       if(stateApp.user && stateApp.apolloClientEndpoint){
         props.setApolloClient(stateApp.user.authToken,stateApp.apolloClientEndpoint)
