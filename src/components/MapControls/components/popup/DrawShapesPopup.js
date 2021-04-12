@@ -1,20 +1,26 @@
-import React, { useEffect, useMemo, useContext, Fragment } from "react";
-import { useMutation } from "@apollo/client";
+import React, { useState, useEffect, useMemo, useContext, Fragment } from "react";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import IconButton from "@material-ui/core/IconButton";
+import Tooltip from "@material-ui/core/Tooltip";
+import LayerIcon from "@material-ui/icons/Layers";
+import polylabel from "polylabel";
+import hat from 'hat';
 import { area, convertArea, length } from "@turf/turf";
 import { AppContext } from 'AppContext';
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
-import Tooltip from "@material-ui/core/Tooltip";
 import { default as MouseClicked } from "../../../Shared/svgIcons/MouseClicked";
 import { default as DrawPoly } from "../../../Shared/svgIcons/polygon";
 import { default as Rect } from "../../../Shared/svgIcons/rectangle";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
+import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
 
 import { gql } from "@apollo/client";
 
 const DrawShapesPopup = (props) => {
   const { classes, children } = props;
+  const [user, setUser] = useState({ _id: "" });
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [
     upsertCustomLayer,
     { data: customLayerInsertedData, loading: isSavingParcel },
@@ -27,7 +33,6 @@ const DrawShapesPopup = (props) => {
         },
       }
     ) {
-      console.log(`newCustomLayer: ${JSON.stringify(customLayer)}`);
       cache.modify({
         fields: {
           allCustomLayers(existingCustomLayers = [], { readField }) {
@@ -115,34 +120,51 @@ const DrawShapesPopup = (props) => {
         popupOpen: true,
         expandedCard: true,
       }));
-      props.onClickExpand();
-      setStateApp((state) => ({
-        ...state,
-        selectedAbstracts: [],
-      }));
     }
   }, [customLayerInsertedData]);
+
+  useEffect(() => {
+    if (stateApp && stateApp.user && stateApp.user.email) {
+      getUserByEmail({
+        variables: {
+          userEmail: stateApp.user.email,
+        },
+      });
+    }
+  }, [stateApp.user.email]);
+
+  useEffect(() => {
+    if (dataUser && dataUser.userByEmail) {
+      setUser(dataUser.userByEmail);
+    }
+  }, [dataUser]);
 
   const formatNumber = (number) => {
     return number.toLocaleString("en-US", { maximumFractionDigits: 2 });
   };
-  const calculateLandArea = () => {
+  const calculateLandArea = (feature = {}) => {
     const { selectedFeature } = props;
-    if (selectedFeature) {
-      if (selectedFeature.geometry.type === "Polygon") {
-        const areaInSqMeters = area(selectedFeature);
+    if (!feature) feature = selectedFeature;
+    if (feature) {
+      if (feature.geometry.type === "Polygon") {
+        const areaInSqMeters = area(feature);
         const areaInAcres = convertArea(areaInSqMeters, "meters", "acres");
         return `${formatNumber(Math.round(areaInAcres * 100) / 100)} acres`;
       }
-      if (selectedFeature.geometry.type === "LineString") {
-        const distanceInMiles = length(selectedFeature, { units: "miles" });
+      if (feature.geometry.type === "LineString") {
+        const distanceInMiles = length(feature, { units: "miles" });
         return `${formatNumber(Math.round(distanceInMiles * 100) / 100)} miles`;
       }
     }
   };
 
+  const calculateShapeCenter = shapeCoordinates => polylabel(shapeCoordinates);
+
   const onActionClick = (shape) => {
     if (shape.title === 'Multiple Select') {
+      if (stateApp.multiSelectLandGrids) {
+        handleCloseAbstractSelection();
+      }
       setStateApp(state => ({
         ...state,
         multiSelectLandGrids: !state.multiSelectLandGrids
@@ -154,10 +176,117 @@ const DrawShapesPopup = (props) => {
     }
   }
 
+  const saveAndOpenParcelDetail = () => {
+    if (!user._id) {
+      return;
+    }
+    const abstractShape = stateApp.selectedAbstracts[0];
+
+
+    const properties = abstractShape?.properties;
+    let township = properties?.Township;
+    let range = properties?.Range;
+    let section = properties?.ShortName;
+
+    let parcelName, originalProperties;
+    if (abstractShape.properties.State === "TX") {
+      parcelName = abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
+    } else if (township && range && section) {
+      parcelName = `T${township} R${range} — Section ${section}`;
+    } else {
+      parcelName = "PLSS Default Name";
+    }
+    originalProperties = [abstractShape.properties];
+
+    const featureId = hat();
+    const newShapeFeature = {
+      id: featureId,
+      type: "Feature",
+      geometry: abstractShape.geometry,
+      properties: {
+        "originalProperties": originalProperties,
+        "sdType": "parcel",
+        "shapeLabel": parcelName,
+        "projectName": "",
+        "sdNotes": "",
+        "sdGrossAcres": "",
+        "shapeArea": calculateLandArea(abstractShape),
+        "shapeCenter": calculateShapeCenter(abstractShape.geometry.coordinates),
+        "shapeLabelLayer": "",
+        "id": featureId
+      }
+    }
+    const customLayerData = {
+      shape: JSON.stringify(newShapeFeature),
+      layer: 'parcel',
+      name: parcelName,
+      user: user._id,
+      state: abstractShape.properties.State
+    };
+
+    upsertCustomLayer({
+      variables: { customLayer: customLayerData }
+    });
+
+    let layers = [...stateApp.customLayers];
+    layers.push(customLayerData);
+
+    setStateApp((state) => ({
+      ...state,
+      selectedParcel: {
+        "originalProperties": abstractShape.properties.State === "TX" ? JSON.stringify(abstractShape.properties) : [],
+        "sdType": "parcel",
+        "shapeLabel": parcelName,
+        "projectName": "",
+        "sdNotes": "",
+        "sdGrossAcres": "",
+        "shapeArea": calculateLandArea(abstractShape),
+        // needs to be a string to be consistent with queried data
+        "shapeCenter": JSON.stringify(calculateShapeCenter(abstractShape.geometry.coordinates)),
+        "shapeLabelLayer": "",
+        "id": featureId
+      },
+      customLayers: layers,
+      expandedCard: true
+    }));
+  }
+
+  const handleCloseAbstractSelection = () => {
+    const { map } = stateApp;
+    let popUps = document.getElementsByClassName("mapboxgl-popup");
+    if (popUps[0]) popUps[0].remove();
+
+    for (let i = 0; i < stateApp.selectedAbstracts.length; i++) {
+      const id = stateApp.selectedAbstracts[i].properties.Id;
+      map.setFeatureState(
+        { source: 'abstract_geo_source', id },
+        { click: false }
+      );
+    }
+
+    setStateApp((state) => ({
+      ...state,
+      selectedAbstracts: []
+    }));
+  }
+
+  const parcelLabel = stateApp.selectedAbstracts.length > 1 ? "tracts" : "tract";
+
   return (
     <Fragment>
-      <span class={classes.label}>Tooltip</span> {calculateLandArea()}
+      <span class={classes.label}>{
+        stateApp.selectedAbstracts.length > 0 ? `${`${stateApp.selectedAbstracts.length} ${parcelLabel}`} selected` : 'Tooltip'
+      }</span>
       <span className={classes.actions}>
+        {
+          stateApp.selectedAbstracts.length > 0 && (
+            <Tooltip title="Create Parcel">
+              <IconButton size="small" aria-label="Parcel" onClick={saveAndOpenParcelDetail}>
+                <LayerIcon color="secondary" />
+              </IconButton>
+            </Tooltip>
+          )
+        }
         {availableShapes.map((shape, index) => (
           <Fragment key={index}>
             <Tooltip title={shape.title} className={shape.disable ? classes.disableAction : ''}>

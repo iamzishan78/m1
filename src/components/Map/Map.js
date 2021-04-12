@@ -1,5 +1,3 @@
-
-
 // react imports 
 import React, {
   useContext,
@@ -33,7 +31,6 @@ import MapGridCardProvider from "../MapGridCard/MapGridProvider";
 import MarkerIcon from "./sprites/marker-icon.png";
 import DefaultFiltersTest from "./filtersDefaultTest";
 import FilterControl from "./components/FilterControl";
-import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
 import { deepEqual, deepEqualObjects } from "../Shared/functions";
 import gjv from "geojson-validation";
@@ -76,9 +73,6 @@ import { ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoConta
 // mutations 
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
-
-
-
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -154,7 +148,7 @@ function Map() {
     stateApp.user.defaultFilters ? stateApp.user.defaultFilters : []
   );
   const setFiltersDefault = (state) => {
-    if (filtersDefault != state) {
+    if (filtersDefault !== state) {
       FiltersDefault(state);
     }
   };
@@ -182,7 +176,7 @@ function Map() {
 
   const [transform, Transform] = useState("transform: inherit");
   const setTransform = (state) => {
-    if (transform != state) {
+    if (transform !== state) {
       Transform(state);
     }
   };
@@ -196,61 +190,61 @@ function Map() {
 
   const [mapStyles, MapStyles] = useState([]);
   const setMapStyles = (state) => {
-    if (mapStyles != state) {
+    if (mapStyles !== state) {
       MapStyles(state);
     }
   };
   const [wellsTileset, WellsTileset] = useState();
   const setWellsTileset = (state) => {
-    if (wellsTileset != state) {
+    if (wellsTileset !== state) {
       WellsTileset(state);
     }
   };
   const [defaultsCheckOnOff, DefaultsCheckOnOff] = useState(true);
   const setDefaultsCheckOnOff = (state) => {
-    if (defaultsCheckOnOff != state) {
+    if (defaultsCheckOnOff !== state) {
       DefaultsCheckOnOff(state);
     }
   };
   const [m1neralCheckOnOff, M1neralCheckOnOff] = useState(true);
   const setM1neralCheckOnOff = (state) => {
-    if (m1neralCheckOnOff != state) {
+    if (m1neralCheckOnOff !== state) {
       M1neralCheckOnOff(state);
     }
   };
   const [map, Map] = useState(null);
   const setMap = (state) => {
-    if (map != state) {
+    if (map !== state) {
       Map(state);
     }
   };
   const [mapClick, MapClick] = useState(null);
   const setMapClick = (state) => {
-    if (mapClick != state) {
+    if (mapClick !== state) {
       MapClick(state);
     }
   };
   const [draw, Draw] = useState(null);
   const setDraw = (state) => {
-    if (draw != state) {
+    if (draw !== state) {
       Draw(state);
     }
   };
   const [drawStatus, DrawStatus] = useState(false);
   const setDrawStatus = (state) => {
-    if (drawStatus != state) {
+    if (drawStatus !== state) {
       DrawStatus(state);
     }
   };
   const [rigs, RigData] = useState([]);
   const setRigData = (state) => {
-    if (rigs != state) {
+    if (rigs !== state) {
       RigData(state);
     }
   };
   const [permits, PermitData] = useState([]);
   const setPermitData = (state) => {
-    if (permits != state) {
+    if (permits !== state) {
       PermitData(state);
     }
   };
@@ -258,14 +252,14 @@ function Map() {
 
   const [drawingFilterFeatureId, DrawingFilterFeatureId] = useState(null);
   const setDrawingFilterFeatureId = (state) => {
-    if (drawingFilterFeatureId != state) {
+    if (drawingFilterFeatureId !== state) {
       DrawingFilterFeatureId(state);
     }
   };
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, AnchorElPoPOver] = useState(null);
   const setAnchorElPoPOver = (state) => {
-    if (anchorElPoPOver != state) {
+    if (anchorElPoPOver !== state) {
       AnchorElPoPOver(state);
     }
   };
@@ -275,7 +269,7 @@ function Map() {
   const setHoverUdIds = (id) => {
     const ids = hoverUdIds.slice(0);
     if (ids.indexOf(id) > -1) {
-      const tmpIds = ids.filter((item) => item != id);
+      const tmpIds = ids.filter((item) => item !== id);
       HoverUdIds(tmpIds);
     } else {
       ids.push(id);
@@ -292,14 +286,10 @@ function Map() {
 
   const [filterAbstract, setFilterAbstract] = useState(false);
 
-
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
-
 
   const [rows, Rows] = React.useState([]);
   const [loading, Loading] = useState(true);
-
-
 
   const setRows = (state) => {
     if (rows != state) {
@@ -311,7 +301,6 @@ function Map() {
       Loading(state);
     }
   };
-
 
   // queries 
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
@@ -329,7 +318,6 @@ function Map() {
   const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
   const [getPLSSSecondDivisionGeo, { data: plssSecondDivisionData }] = useLazyQuery(PLSSSECONDDIVISIONGEO);
   const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(ALLLAYERSETTINGSBYUSER);
-
 
   // mutations 
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
@@ -3079,7 +3067,6 @@ function Map() {
         }
 
         if (currentFeature) {
-          let popUps = document.getElementsByClassName("mapboxgl-popup");
           setStateApp((state) => ({
             ...state,
             popupOpen: false,
@@ -4233,9 +4220,9 @@ function Map() {
     setShowExpandableCard(true);
   };
 
-  const handleAnchorElPopOver = () => {
-    setAnchorElPoPOver(container.current);
-  };
+  // const handleAnchorElPopOver = () => {
+  //   setAnchorElPoPOver(container.current);
+  // };
 
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
@@ -4245,7 +4232,7 @@ function Map() {
       expandedCard: false,
       activateWellDetailsFromTable: false,
     }));
-    getCustomLayers()
+    getCustomLayers();
   };
 
   const deleteParcel = () => {
@@ -4720,17 +4707,6 @@ function Map() {
           </div>
         )
       }
-
-      <div id="modalHolder" ref={modalContainer} />
-      <Portal container={modalContainer.current}>
-        {stateApp.selectedAbstracts.length > 0 && (
-          <AbstractSelectionPopup
-            abstracts={stateApp.selectedAbstracts}
-            map={map}
-            onClickExpand={handleAnchorElPopOver}
-          />
-        )}
-      </Portal>
       <Portal container={container.current}>
         {stateApp.popupOpen === true ? (
           <div>
