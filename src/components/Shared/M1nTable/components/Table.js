@@ -198,6 +198,12 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiPaper-root > .MuiToolbar-gutters": {
       paddingLeft: '11px !important'
     },
+    "& .MuiButton-text": {
+      padding: "5px 12px"
+    },
+    "& .Mui-disabled": {
+      backgroundColor: "transparent",
+    },
     "& .MuiToolbar-root": {
       backgroundColor: "#F2F2F2",
       borderBottom: '1px solid rgba(224, 224, 224, 1)'
@@ -340,9 +346,15 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   multiSelectionTopBarButtons: {
-    margin: "6px 12px",
+    margin: "0px 5px",
     fontWeight: "600",
-    color: "#082768",
+    backgroundColor: "rgba(1, 17, 51, 1)",
+    color: "#fff",
+    border: '1px solid #B3B3B3',
+    "&:hover":{
+      backgroundColor: "#263451",
+      color: "#fff",
+    }
   },
   monetizationIcon: {
     margin: "10px",
@@ -2080,13 +2092,21 @@ function SubTable(props) {
                   display: "flex",
                 }}
               >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    height: "35px",
+                    display: "flex",
+                  }}
+                >
                 {props.header !== "Active Users" && (
                   <>
-                    {m1nSelectedRowsIndexes?.length > 1 && (
+                    {/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
                       <Button
                         color="secondary"
                         startIcon={<MergeTypeIcon />}
                         className={classes.multiSelectionTopBarButtons}
+                        disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length <= 1}
                         onClick={() => {
                           handleExpandClick(
                             null,
@@ -2098,7 +2118,7 @@ function SubTable(props) {
                       >
                         Merge
                       </Button>
-                    )}
+                    {/* )} */}
 
                     {/* temporary comment out until melissa is back */}
                     {/* <Button
@@ -2129,7 +2149,7 @@ function SubTable(props) {
                         );
                       }}
                     >
-                      Send Mailers
+                      Mailers
                       </Button>
 
                     <Divider orientation="vertical" flexItem />
@@ -2149,6 +2169,7 @@ function SubTable(props) {
                     <DeleteIcon />
                   </IconButton>
                 </Tooltip>
+                </div>
               </div>
             );
           }
@@ -2260,10 +2281,38 @@ function SubTable(props) {
         },
         {  text: 'Import Contacts', isShow: true, action: () => routeChange("/bulkupload") }
       ];
+      const getSelectedRows = () => {
+        const selectedRows = [];
+        for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+          selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+        }
+        return selectedRows;
+      };
+
       return (
         <>
-        <div style={{ displat: 'inline', float: 'left', marginTop: '5px', marginRight: '15px'}}>
+        <div style={{ displat: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
           <ButtonDropDown options={options} />
+          {props.header !== "Active Users" && (
+            <>
+              <Button
+                color="secondary"
+                startIcon={<MergeTypeIcon />}
+                className={classes.multiSelectionTopBarButtons}
+                disabled
+              >
+                Merge
+              </Button>
+              <Button
+                color="secondary"
+                startIcon={<EmailRoundedIcon />}
+                className={classes.multiSelectionTopBarButtons}
+                disabled
+              >
+                Mailers
+              </Button>
+            </>
+          )}
         </div>
           {/* {props.uploadIcon && (
             //////Upload Icon/////////////////////////
