@@ -195,6 +195,9 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiTableBody-root": {
       height: '50px',
     },
+    "& .MuiPaper-root > .MuiToolbar-gutters": {
+      paddingLeft: '11px !important'
+    },
     "& .MuiToolbar-root": {
       backgroundColor: "#F2F2F2",
       borderBottom: '1px solid rgba(224, 224, 224, 1)'
@@ -2782,9 +2785,9 @@ function SubTable(props) {
     return  props.header === 'Contacts' ? (
       <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left'}}>
         <Contact />
-        <label style={{ marginLeft: '10px'}}>{props.header}</label>
+        <label style={{ marginLeft: '10px', fontSize: '16px'}}>{props.header}</label>
         <ArrowRight/>
-        <label style={{ color: '#18AADD' }}>All Contacts</label>
+        <label style={{ color: '#18AADD', fontSize: '16px' }}>All Contacts</label>
       </div>
       ) : props.header
   }
