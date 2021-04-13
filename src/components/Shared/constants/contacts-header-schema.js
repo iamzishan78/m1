@@ -109,7 +109,7 @@ const ContactsHeadCells = [
     label: "Full Name",
     // editable: true,
     options: {
-      sort: false,
+      sort: true,
       filter: false,
     },
   },
@@ -170,7 +170,7 @@ const ContactsHeadCells = [
       // display: true,
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
     },
   },
   {
@@ -178,7 +178,8 @@ const ContactsHeadCells = [
     label: "Primary Address",
     // editable: true,
     options: {
-      sort: false,
+      dbName: "address1",
+      sort: true,
       filter: false,
     },
   },
@@ -186,10 +187,11 @@ const ContactsHeadCells = [
     name: "contactOwner",
     label: "Contact Owner",
     options: {
+      dbName: "contactOwners.name",
       // display: true,
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
     },
   },
   {
@@ -211,7 +213,7 @@ const ContactsHeadCells = [
       // display: true,
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
     },
   },
   {
@@ -221,7 +223,7 @@ const ContactsHeadCells = [
       // display: true,
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
     },
   },
 
@@ -232,7 +234,7 @@ const ContactsHeadCells = [
       // display: true,
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
     },
   },
   {
@@ -242,7 +244,7 @@ const ContactsHeadCells = [
       // display: true,
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
     },
   },
   {
@@ -512,9 +514,10 @@ const ContactsHeadCells = [
     name: "commentsCounter",
     label: " ",
     options: {
+      dbName: "comments.comment",
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
       download: false,
       print: false,
       viewColumns: false,
