@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import { AppContext } from 'AppContext';
@@ -68,7 +68,9 @@ const SimpleModal = () => {
     }
   };
   
-
+ useEffect(() => {
+   setPageNumber(1)
+ }, [numPages])
  
   return (
     <div >
