@@ -1384,6 +1384,13 @@ function M1nTable(props) {
             }
           ),
         ];
+        let filterContactOwner = [
+          ...dataContactsFilterOptions.contactsFilterOptions.contactOwner.map(
+            (contactOwner) => {
+              return contactOwner._id;
+            }
+          ),
+        ];
 
         setColumns(
           columnsBase.map((column) => {
@@ -1424,6 +1431,18 @@ function M1nTable(props) {
                   },
                 };
 
+              case "contactOwner":
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: filterContactOwner,
+                    },
+                  },
+                };
+  
               default:
                 return column;
             }
