@@ -189,7 +189,10 @@ const ContactsHeadCells = [
     options: {
       dbName: "contactOwners.name",
       // display: true,
-      filter: false,
+      filter: true,
+      filterOptions: {
+        names: [],
+      },
       searchable: false,
       sort: true,
     },
