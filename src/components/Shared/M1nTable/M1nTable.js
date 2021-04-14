@@ -1272,22 +1272,19 @@ function M1nTable(props) {
               ) 
     ) {
 
-
-      setColumns(
-        columnsBase.map((column) => {
-          switch (column.name) {
-            default:
-              return column;
-          }
-        })
-      );
-    } else {
-      setLoading(false);
-    }
-
-
-
-
+      if (columns.length === 0) {
+        setColumns(
+          columnsBase.map((column) => {
+            switch (column.name) {
+              default:
+                return column;
+            }
+          })
+        );
+      }
+    // } else {
+    //   setLoading(false);
+    // }
 
       if (
         constDataContacts?.paginatedContacts?.edges &&
@@ -1323,6 +1320,7 @@ function M1nTable(props) {
         setRows([]);
       }
     
+    }
   }, [
     constDataContacts,
   ]);
@@ -3020,10 +3018,8 @@ function M1nTable(props) {
         contactsPageProps={{
           getPaginatedContacts,
           getContactsFilterOptions,
-          contactsCount: dataContactsFilterOptions?.contactsFilterOptions
-            ?.totalCount[0]
-            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
-              ?.totalCount
+          contactsCount: dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
+            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount
             : 0,
           setLoading,
         }}

@@ -61,6 +61,7 @@ import Contact_card from "../../svgIcons/contact_card";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
 import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
 import debounce from "lodash/debounce";
+import isEmpty from "lodash/isEmpty";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "../../../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
@@ -2465,10 +2466,11 @@ function SubTable(props) {
               first: tableState.rowsPerPage,
               after: null,
             },
-            sort: tableState.sortOrder
-              ? {
+            ...(!isEmpty(tableState.sortOrder)) && {
+              sort:
+              {
                 field:
-                tableState.sortOrder?.name ===
+                  tableState.sortOrder?.name ===
                     "fullContactAddress"
                     ? "address1"
                     : tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.dbName ||
@@ -2478,7 +2480,7 @@ function SubTable(props) {
                     ? 1
                     : -1,
               }
-              : [],
+            },
 
             filters: filters,
             search: tableState.searchText,
