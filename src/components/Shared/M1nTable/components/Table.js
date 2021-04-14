@@ -2568,7 +2568,8 @@ function SubTable(props) {
         }
       }
 
-      if (props.header === "Well Interests") {
+      if (props.header === "Well Interests"
+      && props.parent === "owner_WellInterests") {
 
         const pageVariables = {
           variables: {
@@ -2653,7 +2654,8 @@ function SubTable(props) {
     },
   };
 
-  if (props.header === "Well Interests") {
+  if (props.header === "Well Interests"
+    && props.parent === "owner_WellInterests") {
     options.rowsPerPageOptions =
       props.wellInterestsPageProps.wellInterestsCount > 25
         ? [10, 25, 50, 100]
