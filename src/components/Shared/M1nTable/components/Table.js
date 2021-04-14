@@ -2437,6 +2437,9 @@ function SubTable(props) {
         const lastUpdateByIndex = tableState.columns.findIndex(
           (i) => i.name === "lastUpdateBy.name"
         );
+        const contactOwnerIndex = tableState.columns.findIndex(
+          (i) => i.name === "contactOwner"
+        );
         const tagsIndex = tableState.columns.findIndex(
           (i) => i.name === "tags"
         );
@@ -2451,6 +2454,12 @@ function SubTable(props) {
           filters.push({
             field: "lastUpdateBy.name",
             value: tableState.filterList[lastUpdateByIndex],
+          });
+        }
+        if (tableState.filterList[contactOwnerIndex]?.length !== 0) {
+          filters.push({
+            field: "contactOwners.name",
+            value: tableState.filterList[contactOwnerIndex],
           });
         }
         if (tableState.filterList[tagsIndex]?.length !== 0) {
