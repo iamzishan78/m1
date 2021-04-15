@@ -11,6 +11,11 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Checkbox from "@material-ui/core/Checkbox";
 import DragIndicator from "@material-ui/icons/DragIndicator";
 import Button from "@material-ui/core/Button";
@@ -45,6 +50,7 @@ import BusinessIcon from "@material-ui/icons/Business";
 import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
 import MarketPlaceData from "./marketplace.json";
 import GavelIcon from "@material-ui/icons/Gavel";
+import Layer from "./Layer";
 
 const theme = createMuiTheme({
 	overrides: {
@@ -193,7 +199,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			(type === "layer" || type === "heatMaps" || type === "marketplace") &&
 			items
 		) {
+
+			// debugger
 			setLayerMap(items);
+
 		} else if (type === "base" && items) {
 			setLayerMap(
 				items.filter((item) => item.name !== "Water" && item.name !== "Land")
@@ -747,6 +756,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 						<List
 							style={{
 								maxHeight: "775px",
+								minWidth: "458px",
 								overflowY: type === "marketplace" ? "scroll" : "scroll",
 							}}
 							className={classes.list}
@@ -838,17 +848,17 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 									);
 								})}
 
-							{layerMap.map((layer, index) => {
-								const labelId = `checkbox-list-label-${index}`;
+							{/* {layerMap.map((layer, index) => {
 
+								const labelId = `checkbox-list-label-${index}`;
 								//// remove the (layer.identifier!="Tracked Owners") condition from the if statement to show the tracked owers layer
 								if (
 									type === "heatMaps" ||
 									type === "base" ||
 									(type === "layer" &&
-										layer.layerSettings &&
-										layer.layerSettings.showable &&
-										layer.identifier != "Tracked Owners")
+										(layer.layerSettings &&
+											layer.layerSettings.showable &&
+											layer.identifier != "Tracked Owners") || layer.groupId)
 								) {
 									return (
 										<Draggable
@@ -857,60 +867,197 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 											index={type === "layer" ? layer.position : index}
 										>
 											{(provided, snapshot) => (
-												<Box
-													borderColor={getLayerColor(layer)}
-													{...defaultProps}
-												>
-													<StyledListItem
-														ContainerComponent="li"
-														ref={provided.innerRef}
-														{...provided.draggableProps}
-													>
-														<ListItemIcon {...provided.dragHandleProps}>
-															<DragIndicator />
-														</ListItemIcon>
-														<ListItemText
-															id={labelId}
-															primary={getLayerName(layer)}
-															//primary="Hello"
-															className={
-																checkIfNoLayerData(layer)
-																	? classes.disabledLayerTitle
-																	: ""
-															}
-														/>
-														{type === "layer" &&
-															layer.layerSettings.colorable &&
-															getLayerControls(layer, labelId, index)}
-														<FormControlLabel
-															control={
-																<Switch
-																	disabled={
-																		checkIfNoLayerData(layer)
-																			? classes.disabledLayerTitle
-																			: ""
-																	}
-																	checked={getLayerChecked({
-																		layer,
-																		index,
-																	})}
-																	onChange={() =>
-																		handleToggle({ layer, index })
-																	}
-																/>
-															}
-														/>
-													</StyledListItem>
-												</Box>
+
+												<div ref={provided.innerRef}>
+													{
+
+
+
+
+
+
+
+
+
+
+
+
+														layer.groupId ?
+															<Accordion {...provided.draggableProps}>
+																<AccordionSummary
+																	expandIcon={<ExpandMoreIcon />}
+																	aria-controls="panel1a-content"
+																	id="panel1a-header"
+
+																>
+																	<div  {...provided.dragHandleProps}>
+																		<DragIndicator />
+																	</div>
+																	<Typography className={classes.heading}>{layer.groupName}</Typography>
+																</AccordionSummary>
+
+																<Droppable droppableId={layer.groupId}>
+																	{(provided, snapshot) => (
+																		<AccordionDetails ref={provided.innerRef}>
+																			<List
+																				style={{
+																					// maxHeight: "775px",
+																					overflowY: type === "marketplace" ? "scroll" : "scroll",
+																				}}
+																				className={classes.list}
+																			>
+																				{layer.groups.map((groupLayer, groupIndex) => {
+																					const labelId = `checkbox-list-label-g-${groupLayer.position}`;
+
+																					return (
+																						<Draggable
+																							key={labelId}
+																							draggableId={labelId}
+																							index={type === "layer" ? groupLayer.position : index + groupIndex}
+																						>
+																							{(provided, snapshot) => (
+
+																								<Box
+																									borderColor={getLayerColor(groupLayer)}
+																									ref={provided.innerRef}
+																									{...defaultProps}
+																								>
+																									<StyledListItem
+																										ContainerComponent="li"
+
+																										{...provided.draggableProps}
+																									>
+																										<ListItemIcon {...provided.dragHandleProps}>
+																											<DragIndicator />
+																										</ListItemIcon>
+																										<ListItemText
+																											id={labelId}
+																											primary={getLayerName(groupLayer)}
+																											//primary="Hello"
+																											className={
+																												checkIfNoLayerData(groupLayer)
+																													? classes.disabledLayerTitle
+																													: ""
+																											}
+																										/>
+																										{type === "layer" &&
+																											groupLayer.layerSettings.colorable &&
+																											getLayerControls(groupLayer, labelId, groupIndex)}
+																										<FormControlLabel
+																											control={
+																												<Switch
+																													disabled={
+																														checkIfNoLayerData(groupLayer)
+																															? classes.disabledLayerTitle
+																															: ""
+																													}
+																													checked={getLayerChecked({
+																														groupLayer,
+																														groupIndex,
+																													})}
+																													onChange={() =>
+																														handleToggle({ groupLayer, groupIndex })
+																													}
+																												/>
+																											}
+																										/>
+																									</StyledListItem>
+																								</Box>
+																							)}
+																						</Draggable>
+																					);
+
+																				})}
+																				{provided.placeholder}
+																			</List>
+																		</AccordionDetails>
+																	)}
+																</Droppable>
+
+															</Accordion>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+															: <Box
+																borderColor={getLayerColor(layer)}
+																{...defaultProps}
+															>
+																<StyledListItem
+																	ContainerComponent="li"
+																	ref={provided.innerRef}
+																	{...provided.draggableProps}
+																>
+																	<ListItemIcon {...provided.dragHandleProps}>
+																		<DragIndicator />
+																	</ListItemIcon>
+																	<ListItemText
+																		id={labelId}
+																		primary={getLayerName(layer)}
+																		//primary="Hello"
+																		className={
+																			checkIfNoLayerData(layer)
+																				? classes.disabledLayerTitle
+																				: ""
+																		}
+																	/>
+																	{type === "layer" &&
+																		layer.layerSettings.colorable &&
+																		getLayerControls(layer, labelId, index)}
+																	<FormControlLabel
+																		control={
+																			<Switch
+																				disabled={
+																					checkIfNoLayerData(layer)
+																						? classes.disabledLayerTitle
+																						: ""
+																				}
+																				checked={getLayerChecked({
+																					layer,
+																					index,
+																				})}
+																				onChange={() =>
+																					handleToggle({ layer, index })
+																				}
+																			/>
+																		}
+																	/>
+																</StyledListItem>
+															</Box>
+													}
+
+												</div>
 											)}
 										</Draggable>
 									);
 								}
-							})}
+							})} */}
+
+							<Layer layerMap={layerMap} type={type} handleToggle={handleToggle} />
+							{provided.placeholder}
 						</List>
 					</RootRef>
 				)}
 			</Droppable>
+
 		</DragDropContext>
 	);
 

@@ -15,6 +15,7 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import shp from "shpjs";
+import { v4 as uuid } from "uuid";
 import { ADDFILE } from "../../../graphQL/useMutationAddFile";
 import { ADDLAYER } from "../../../graphQL/useMutationAddLayer";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -31,6 +32,17 @@ const random_rgb = () => {
 const Alert = (props) => {
   return <MuiAlert elevation={5} variant="filled" {...props} />;
 };
+
+function makeid(length) {
+  var result = [];
+  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result.push(characters.charAt(Math.floor(Math.random() *
+      charactersLength)));
+  }
+  return result.join('');
+}
 
 const useStyles = makeStyles((theme) => ({
   loadButton: {
@@ -63,17 +75,19 @@ export default function AddUserGroupData(props) {
 
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  const [addFile, { data: fileData }] = useMutation(ADDFILE);
+  const [addFile] = useMutation(ADDFILE);
 
   const [addLayer, { data: newLayer }] = useMutation(ADDLAYER);
+
+  const groupId = uuid()
 
   useEffect(() => {
     if (stateMapControls.fileUploadedContent) {
 
       stateMapControls.fileUploadedContent.forEach((layer) => {
-        layerNames.push(layer.fileName)
+        layerNames.push(layer.fileName.replace('_', "") + makeid(3))
       })
-      setLayerNames(layerNames)
+      setLayerNames([...layerNames])
 
       setInputFiles(stateMapControls.fileUploadedContent);
     }
@@ -123,170 +137,6 @@ export default function AddUserGroupData(props) {
     }
   }
 
-  // useEffect(() => {
-  //   if (fileData && fileData.addFile) {
-  //     if (fileData.addFile.success) {
-  //       debugger;
-  //       // Upload file to MS Blob Stroage
-
-  //       let fileContent = inputFiles;
-
-  //       const url = fileData.addFile.file.uri;
-  //       const interal_key = fileData.addFile.file.internalKey;
-  //       const file_id = fileData.addFile.file.id;
-
-  //       if (file_id) {
-  //         const content = JSON.stringify(fileContent);
-
-  //         fetch(url, {
-  //           headers: {
-  //             "Content-Type": "text/plain; charset=UTF-8",
-  //             "X-Ms-Blob-Type": "BlockBlob",
-  //             "X-Ms-Meta-Internalkey": interal_key,
-  //             "X-Ms-Version": "2015-02-21",
-  //           },
-  //           method: "PUT",
-  //           body: content,
-  //         })
-  //           .then((response) => response.text())
-  //           .then((response) => {
-  //             const idColor = random_rgb();
-  //             let type = turf.getType(fileContent);
-  //             let paintProps = {};
-
-  //             if (type == "Point" || type == "MultiPoint") type = "circle";
-  //             else if (
-  //               fileContent.features &&
-  //               fileContent.features.length > 0
-  //             ) {
-  //               let count = 0;
-
-  //               if (
-  //                 fileContent.features[0] &&
-  //                 (turf.getType(fileContent.features[0]) == "Point" ||
-  //                   turf.getType(fileContent.features[0]) == "MultiPoint")
-  //               ) {
-  //                 fileContent.features.map((feature) => {
-  //                   if (
-  //                     turf.getType(feature) == "Point" ||
-  //                     turf.getType(feature) == "MultiPoint"
-  //                   )
-  //                     count++;
-  //                 });
-
-  //                 if (count == fileContent.features.length) type = "circle";
-  //               } else if (
-  //                 fileContent.features[0] &&
-  //                 (turf.getType(fileContent.features[0]) == "LineString" ||
-  //                   turf.getType(fileContent.features[0]) == "Feature" ||
-  //                   turf.getType(fileContent.features[0]) == "MultiLineString")
-  //               ) {
-  //                 fileContent.features.map((feature) => {
-  //                   if (
-  //                     turf.getType(feature) == "LineString" ||
-  //                     turf.getType(feature) == "MultiLineString" ||
-  //                     turf.getType(feature) == "Feature"
-  //                   )
-  //                     count++;
-  //                 });
-
-  //                 ////  only lines feature
-  //                 if (count == fileContent.features.length) type = "line";
-  //               } else type = "fill";
-  //             } else type = "fill";
-
-  //             if (type == "circle") {
-  //               paintProps = {
-  //                 "circle-radius": 5,
-  //                 "circle-color": idColor,
-  //                 "circle-stroke-width": 2,
-  //                 "circle-stroke-color": "#fff",
-  //               };
-  //             } else if (type == "line") {
-  //               paintProps = {
-  //                 "line-color": idColor,
-  //                 "line-opacity": 1,
-  //                 "line-width": 1,
-  //               };
-  //             } else {
-  //               paintProps = {
-  //                 "fill-color": idColor,
-  //                 "fill-opacity": 0.4,
-  //                 "fill-outline-color": "#1C1C1C",
-  //               };
-  //             }
-
-  //             let layerPaintProps = [
-  //               {
-  //                 id: layerName,
-  //                 sourceProps:
-  //                   layerName.trim().toLowerCase().replace(" ", "_") +
-  //                   "_source",
-  //                 paintType: type,
-  //                 paintProps: paintProps,
-  //               },
-  //             ];
-
-  //             const layerSettings = {
-  //               interaction: {
-  //                 interactionAble: false,
-  //                 interactionDetail: {
-  //                   hover: false,
-  //                   click: false,
-  //                 },
-  //               },
-  //               colorable: true,
-  //               showable: true,
-  //               visiable: true,
-  //             };
-
-  //             addLayer({
-  //               variables: {
-  //                 layer: {
-  //                   layerName,
-  //                   identifier: layerName,
-  //                   layerType: "file layer",
-  //                   layerCategory: "UD layer",
-  //                   public: true,
-  //                   createBy: stateApp.user.mongoId,
-  //                   file: file_id,
-  //                   defaultSettings: { layerSettings, layerPaintProps },
-  //                 },
-  //               },
-  //               refetchQueries: ["getAllLayerSettingsByUser"],
-  //               awaitRefetchQueries: true,
-  //             });
-  //           })
-  //           .catch((error) => {
-  //             console.log(error);
-  //             setStateApp((stateApp) => ({
-  //               ...stateApp,
-  //               universalCircularLoaderAct: false,
-  //             }));
-  //             dispatch(showErrorMessage("Geojson is invalid"));
-  //             handleClose();
-
-  //             //// remove mongo file
-  //           });
-  //       }
-  //     } else if (fileData.addFile.message) {
-  //       setStateApp((stateApp) => ({
-  //         ...stateApp,
-  //         universalCircularLoaderAct: false,
-  //       }));
-  //       setUploadFailed(fileData.addFile.message);
-  //     }
-  //   } else {
-  //     setStateApp((stateApp) => ({
-  //       ...stateApp,
-  //       universalCircularLoaderAct: false,
-  //     }));
-  //     if (fileData) {
-  //       setUploadFailed("Failed Upload File, Please Try Again");
-  //     }
-  //   }
-  // }, [fileData]);
-
   useEffect(() => {
     if (newLayer) {
       setNotReturn(true);
@@ -319,8 +169,8 @@ export default function AddUserGroupData(props) {
     }
   }, [stateApp.layers]);
 
-  const uploadFile = (layerName, fileData, fileContent, isLast) => {
-
+  const uploadFile = (data, fileData, fileContent, isLast) => {
+    const { layerName, groupName, groupId } = data
     const url = fileData.addFile.file.uri;
     const interal_key = fileData.addFile.file.internalKey;
     const file_id = fileData.addFile.file.id;
@@ -434,6 +284,8 @@ export default function AddUserGroupData(props) {
             variables: {
               layer: {
                 layerName,
+                groupName,
+                groupId,
                 identifier: layerName,
                 layerType: "file layer",
                 layerCategory: "UD layer",
@@ -473,24 +325,19 @@ export default function AddUserGroupData(props) {
       const userId = stateApp.user.mongoId;
       stateMapControls.fileUploadedContent.forEach(async (layer, index) => {
         const isLast = stateMapControls.fileUploadedContent.length - 1 === index
-        if (index === 0) {
-          const fileName = layerNames[index].trim().toLowerCase().replace(" ", "_") + ".geojson";
-          debugger;
-          const file = await addFile({
-            variables: {
-              fileName,
-              userId,
-            },
-          });
-          if (file?.data?.addFile?.success) {
-            uploadFile(layerNames[index], file.data, layer, isLast)
-          }
-          debugger;
+        const fileName = layerNames[index].trim().toLowerCase().replace(" ", "_") + ".geojson";
+        const file = await addFile({
+          variables: {
+            fileName,
+            userId,
+          },
+        });
+        if (file?.data?.addFile?.success) {
+          const data = { layerName: layerNames[index], groupName, groupId }
+          uploadFile(data, file.data, layer, isLast)
         }
-
-
-
       })
+      handleClose()
 
     }
   };
@@ -525,7 +372,6 @@ export default function AddUserGroupData(props) {
     setUploadFailed("");
   };
 
-  console.log(stateMapControls.fileUploadedContent)
 
   if (notReturn) return null;
   return (
