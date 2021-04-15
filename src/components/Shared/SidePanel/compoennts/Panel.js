@@ -11,22 +11,11 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Checkbox from "@material-ui/core/Checkbox";
-import DragIndicator from "@material-ui/icons/DragIndicator";
 import Button from "@material-ui/core/Button";
 import { MapControlsContext } from "../../../MapControls/MapControlsContext";
 import { AppContext } from "../../../../AppContext";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
-import ClickIcon from "../../svgIcons/cursor-click.js";
-import UserDefined from "../../svgIcons/user-defined.js";
-import ColorControl from "../../svgIcons/color-control.js";
 import LayersIcon from "@material-ui/icons/Layers";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -37,7 +26,6 @@ import MapLightIcon from "../../svgIcons/MapLightIcon";
 import MapBasicIcon from "../../svgIcons/MapBasicIcon";
 import Collapse from "@material-ui/core/Collapse";
 import Select from "@material-ui/core/Select";
-import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 import { UPDATELAYERSETTINGS } from "../../../../graphQL/useMutationUpdateLayerSettings";
 import { useMutation } from "@apollo/client";
 import Box from "@material-ui/core/Box";
@@ -51,83 +39,16 @@ import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
 import MarketPlaceData from "./marketplace.json";
 import GavelIcon from "@material-ui/icons/Gavel";
 import Layer from "./Layer";
+import { getLayerColor } from "./common";
+import {
+	useStyles, theme, StyledMenu, StyledMenuItem, StyledListItem2, StyledListItemSecondaryAction, StyledMenuHeaderItem,
+	MarketPlaceListItem, MarketPlaceLower, MarketPlaceLowerItems, MarketPlaceMenu, MarketPlaceUpper,
+	MarketplaceDropdown, Dropdown,
+} from './style'
 
-const theme = createMuiTheme({
-	overrides: {
-		MuiSvgIcon: {
-			root: {
-				width: 90,
-				height: 60,
-			},
-		},
-		MuiListItemText: {
-			root: {
-				textAlign: "center",
-			},
-		},
-	},
-});
-
-const useStyles = makeStyles((theme) => ({
-	pulloutBox: {
-		height: "100px",
-		color: "white",
-		width: "20px",
-		background: "#011133",
-		cursor: "pointer",
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
-		"& svg": {
-			transform: "scaleX(0.5)",
-		},
-	},
-	subHeaderItem: {
-		backgroundColor: "#011133 !important",
-		minWidth: "400px",
-	},
-	list: {
-		padding: 0,
-	},
-	nested: {
-		paddingLeft: theme.spacing(6),
-		paddingRight: theme.spacing(6),
-	},
-	disabledLayerTitle: {
-		"& span": { color: "rgb(127, 149, 199) !important" },
-	},
-	boxtext: {
-		textAlign: "center",
-		margin: "auto",
-	},
-	imageBox: {
-		display: "grid",
-		gridTemplateColumns: "1fr 1fr 1fr",
-		backgroundColor: "#263451",
-		"& :nth-child(1)": {
-			"float": "left",
-			display: "grid",
-		},
-		"& :nth-child(2)": {
-			"float": "left",
-			display: "grid",
-		},
-		"& :nth-child(3)": {
-			display: "grid",
-		},
-		"& :nth-child(4)": {
-			"float": "left",
-			display: "grid",
-		},
-		"& :nth-child(5)": {
-			display: "grid",
-			"float": "left",
-		},
-	},
-}));
 
 function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
-	const { basinLayerColor, GLOUnitsColor, GLOLeasesColor } = useSelector(
+	const colors = useSelector(
 		({ MainMap }) => MainMap
 	);
 	const [stateMapControls, setStateMapControls] = useContext(
@@ -148,9 +69,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	const [layerMap, setLayerMap] = useState([]);
 	const [open, setOpen] = useState(true);
 	const [mapStyles, setMapStyles] = useState([]);
-	const [currentLayers, setCurrentLayers] = useState(items);
-
-	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
 	useEffect(() => {
 		if (type === "base") {
@@ -228,400 +146,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		}));
 	};
 
-	const handleToggleInteraction = (layer, index) => () => {
-		const currentLayers = [...items];
-		const updatedLayer = {
-			...layer,
-			layerSettings: {
-				...layer.layerSettings,
-				interaction: {
-					...layer.layerSettings.interaction,
-					interactionDetail: {
-						hover: !layer.layerSettings.interaction.interactionDetail.hover,
-						click: !layer.layerSettings.interaction.interactionDetail.click,
-					},
-				},
-			},
-		};
-
-		//// saving to stateApp
-		currentLayers[index] = updatedLayer;
-		setStateApp((stateApp) => ({ ...stateApp, layers: [...currentLayers] }));
-
-		//// saving to mongo
-		updateLayerSettings({
-			variables: {
-				settings: {
-					_id: updatedLayer._id,
-					layerSettings: updatedLayer.layerSettings,
-				},
-			},
-		});
-	};
-
-	const StyledMenu = withStyles({
-	})((props) => (
-		<Paper
-			elevation={0}
-			variant="elevation"
-			{...props}
-		/>
-	));
-
 	const defaultProps = {
 		borderLeft: 4,
-	};
-
-	const MarketplaceDropdown = withStyles((theme) => ({
-		icon: {
-			color: "white",
-			fill: "white",
-		},
-		root: {
-			fontFamily: "Poppins",
-			display: "flex",
-			fontWeight: "light",
-			justifyContent: "space-between",
-			color: "white",
-			minWidth: "8rem",
-			// "&:hover": {
-			// 	background: "#4B618F",
-			// },
-			// backgroundColor: "#263451",
-			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-				color: theme.palette.common.white,
-			},
-			"& .MuiButton-textPrimary": {
-				color: theme.palette.common.white,
-				background: "#17acdd",
-				padding: "3px 10px",
-			},
-		},
-	}))(Select);
-
-	const Dropdown = withStyles((theme) => ({
-		root: {
-			fontFamily: "Poppins",
-			display: "flex",
-			fontWeight: "light",
-			justifyContent: "space-between",
-			color: "#404040",
-			//minWidth: "13.5rem",
-			background: "white",
-			flex: "1",
-			"&:hover": {
-				background: "white",
-			},
-			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-				color: theme.palette.common.white,
-			},
-			"& .MuiButton-textPrimary": {
-				color: theme.palette.common.white,
-				background: "white",
-				padding: "3px 15px",
-				paddingLeft: "5rem",
-			},
-		},
-	}))(Select);
-
-	const MarketPlaceMenu = withStyles((theme) => ({
-		root: {
-			fontFamily: "Poppins",
-			display: "flex",
-			justifyContent: "space-between",
-			"&:hover": {
-				background: "#263451",
-			},
-			backgroundColor: "#263451",
-			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-				color: theme.palette.common.white,
-			},
-			"& .MuiButton-textPrimary": {
-				color: theme.palette.common.white,
-				background: "#17acdd",
-				padding: "10px 10px",
-				paddingTop: "10px",
-				paddingBottom: "10px",
-			},
-		},
-	}))(MenuItem);
-
-	const StyledMenuHeaderItem = withStyles((theme) => ({
-		root: {
-			fontFamily: "Poppins",
-			display: "flex",
-			justifyContent: "space-between",
-			"&:hover": {
-				background: "#4B618F",
-			},
-			backgroundColor: "#263451",
-			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-				color: theme.palette.common.white,
-			},
-			"& .MuiButton-textPrimary": {
-				color: theme.palette.common.white,
-				background: "#17acdd",
-				padding: "3px 10px",
-			},
-		},
-	}))(MenuItem);
-
-	const StyledMenuItem = withStyles((theme) => ({
-		root: {
-			fontFamily: "Poppins",
-			display: "block",
-			color: "white",
-			"&:hover": {
-				background: "#4B618F",
-			},
-
-			backgroundColor: "#263451",
-			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-				color: theme.palette.common.white,
-				// },
-			},
-		},
-	}))(MenuItem);
-
-	const StyledListItemSecondaryAction = withStyles((theme) => ({
-		root: {
-			"& .MuiButton-textPrimary": {
-				color: theme.palette.common.white,
-				background: "#17acdd",
-				padding: "3px 10px",
-			},
-		},
-	}))(ListItemSecondaryAction);
-
-	const MarketPlaceListItem = withStyles((theme) => ({
-		root: {
-			fontFamily: "Poppins",
-			// "&:hover": {
-			// 	background: "#cccccc",
-			// },
-			display: "flex",
-
-			alignItems: "center",
-			marginBottom: "0.4rem",
-			color: "black",
-			border: "1px solid grey",
-			backgroundColor: "white",
-			display: "flex",
-			flexDirection: "column",
-			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-				color: theme.palette.common.white,
-			},
-			"& .MuiListItemText-primary svg": {
-				marginLeft: "5px",
-				verticalAlign: "middle",
-			},
-		},
-	}))(ListItem);
-
-	const MarketPlaceHeader = withStyles((theme) => ({
-		root: {
-			fontFamily: "Poppins",
-			"&:hover": {
-				background: "#4B618F",
-			},
-			display: "flex",
-			justifyContent: "space-between",
-			backgroundColor: "#263451",
-			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-				color: theme.palette.common.white,
-			},
-			"& .MuiListItemText-primary svg": {
-				marginLeft: "5px",
-				verticalAlign: "middle",
-			},
-		},
-	}))(ListItem);
-
-	const MarketPlaceUpper = withStyles((theme) => ({
-		root: {
-			fontFamily: "Poppins",
-			// "&:hover": {
-			// 	background: "#cccccc",
-			// },
-			color: "black",
-
-			display: "flex",
-			flexDirection: "row",
-			justifyContent: "space-between",
-			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-				color: theme.palette.common.white,
-			},
-			"& .MuiListItemText-primary svg": {
-				marginLeft: "5px",
-				verticalAlign: "middle",
-			},
-		},
-	}))(ListItem);
-
-	const MarketPlaceLower = withStyles((theme) => ({
-		root: {
-			fontFamily: "Poppins",
-			// "&:hover": {
-			// 	background: "#cccccc",
-			// },
-			color: "black",
-			backgroundColor: "white",
-			display: "flex",
-			flexDirection: "row",
-			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-				color: theme.palette.common.white,
-			},
-			"& .MuiListItemText-primary svg": {
-				marginLeft: "5px",
-				verticalAlign: "middle",
-			},
-		},
-	}))(ListItem);
-
-	const MarketPlaceLowerItems = withStyles((theme) => ({
-		root: {
-			fontFamily: "Poppins",
-			// "&:hover": {
-			// 	background: "#cccccc",
-			// },
-			color: "black",
-			whiteSpace: "nowrap",
-			marginRight: "2rem",
-			backgroundColor: "white",
-			padding: "0",
-			display: "flex",
-			flexDirection: "column",
-			alignItems: "flex-start",
-			// textAlign: "center",
-			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-				color: theme.palette.common.white,
-			},
-			"& .MuiListItemText-primary svg": {
-				//marginLeft: "5px",
-				verticalAlign: "middle",
-			},
-		},
-	}))(ListItem);
-
-	const StyledListItem = withStyles((theme) => ({
-		root: {
-			fontFamily: "Poppins",
-			"&:hover": {
-				background: "#4B618F",
-			},
-			backgroundColor: "#263451",
-			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-				color: theme.palette.common.white,
-			},
-			"& .MuiListItemText-primary svg": {
-				marginLeft: "5px",
-				verticalAlign: "middle",
-			},
-		},
-	}))(ListItem);
-
-	const StyledListItem2 = withStyles((theme) => ({
-		root: {
-			fontFamily: "Poppins",
-			"&:hover": {
-				background: "#a3b2cf",
-			},
-			backgroundColor: "#4B618F",
-			"& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-				color: theme.palette.common.white,
-			},
-		},
-	}))(ListItem);
-
-	const ifLayerHaveData = (layer) => {
-		//// temporary disabling the Title Layer
-		if (layer.identifier === "Title") return false;
-		////
-
-		if (
-			(layer.identifier === "User Tags" &&
-				!(
-					stateApp.wellListFromTagsFilter &&
-					stateApp.wellListFromTagsFilter.length > 0
-				)) ||
-			(layer.identifier === "Search" &&
-				!(
-					stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0
-				)) ||
-			(layer.identifier === "Tracked Wells" &&
-				!(stateApp.trackedwells && stateApp.trackedwells.length > 0)) ||
-			(layer.identifier === "Tracked Owners" &&
-				!(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
-		)
-			return false;
-		return true;
-	};
-
-	const handleColorPicker = (layer) => {
-		setStateMapControls((stateMapControls) => ({
-			...stateMapControls,
-			selectedLayer: layer,
-		}));
-	};
-
-	const getLayerName = (layer) => {
-		if (type === "marketplace") {
-			return layer.layerName;
-		}
-		if (type !== "layer") return layer.name;
-
-		if (layer.layerCategory == "M1 Layer") {
-			return layer.layerName;
-		} else {
-			return (
-				<>
-					<span>{layer.layerName}</span>
-					<UserDefined />
-				</>
-			);
-		}
-	};
-
-	const getLayerColor = (layer) => {
-		// layerName: "Rig Activity"
-		if (type !== "layer" && type !== "marketplace") return {};
-
-		if (layer) {
-			if (layer.type === "Listing") return "#2D3451";
-			if (layer.type === "Auction") return "#FF0000";
-			if (layer.type === "Sponsor") return "#00B050";
-		}
-
-		if (layer) {
-			if (layer.identifier == "Rig Activity") return "#263451";
-
-			if (
-				layer.layerPaintProps &&
-				layer.layerPaintProps[0] &&
-				layer.layerPaintProps[0].paintProps
-			) {
-				if (layer.layerPaintProps[0].paintProps["circle-color"])
-					return layer.layerPaintProps[0].paintProps["circle-color"];
-				if (layer.layerPaintProps[0].paintProps["fill-color"])
-					return layer.layerPaintProps[0].paintProps["fill-color"];
-				if (layer.layerPaintProps[0].paintProps["line-color"])
-					return layer.layerPaintProps[0].paintProps["line-color"];
-				if (layer.layerPaintProps[0].paintProps["icon-color"])
-					return layer.layerPaintProps[0].paintProps["icon-color"];
-			}
-
-			if (
-				layer.layerPaintProps &&
-				layer.layerPaintProps.ids &&
-				layer.layerPaintProps.ids[0]
-			) {
-				if (layer.layerPaintProps.ids[0] == "basinLayer")
-					return basinLayerColor;
-				if (layer.layerPaintProps.ids[0] == "GLOUnits") return GLOUnitsColor;
-				if (layer.layerPaintProps.ids[0] == "GLOLeases") return GLOLeasesColor;
-			}
-		}
-		return "#263451";
 	};
 
 	const getBasemapImageBox = () => {
@@ -665,89 +191,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		);
 	};
 
-
-	const getLayerControls = (layer, labelId, index) => {
-		const control1 = layer.layerSettings.colorable && (
-			<div
-				style={{
-					paddingRight: !layer.layerSettings.interaction.interactionAble
-						? "40"
-						: "",
-				}}
-			>
-				<ListItemIcon onClick={() => handleColorPicker(layer)}>
-					<Tooltip title="Layer Styling">
-						<ColorControl />
-					</Tooltip>
-				</ListItemIcon>
-			</div>
-		);
-
-		const control2 = layer.layerSettings.interaction.interactionAble && (
-			<div
-				style={{
-					paddingRight: 20,
-					height: "42px",
-					width: "42px",
-				}}
-			>
-				<Checkbox
-					icon={
-						<CancelOutlinedIcon
-							htmlColor={
-								!ifLayerHaveData(layer) ? "rgb(127, 149, 199)" : "#12abe0"
-							}
-						/>
-					}
-					checkedIcon={
-						<ClickIcon
-							color={!ifLayerHaveData(layer) ? "rgb(127, 149, 199)" : "#12abe0"}
-						/>
-					}
-					edge="start"
-					checked={layer.layerSettings.interaction.interactionDetail.click}
-					tabIndex={-1}
-					disableRipple
-					inputProps={{
-						"aria-labelledby": labelId,
-					}}
-					onChange={handleToggleInteraction(layer, index)}
-				/>
-			</div>
-		);
-
-		return (
-			<>
-				{control1}
-				{control2}
-			</>
-		);
-	};
-
-	const getLayerChecked = ({ layer, index }) => {
-		if (type === "layer" && layer) {
-			return layer.layerSettings.visiable !== false;
-		} else if (
-			type === "base" &&
-			typeof index === "number" &&
-			stateApp.checkedBaseLayers
-		) {
-			return stateApp.checkedBaseLayers.indexOf(index) !== -1;
-		} else if (
-			type === "heatMaps" &&
-			typeof index === "number" &&
-			stateApp.checkedHeats
-		) {
-			return stateApp.checkedHeats.indexOf(index) !== -1;
-		} else {
-			return false;
-		}
-	};
-
-	const checkIfNoLayerData = (layer) => {
-		return type === "layer" && !ifLayerHaveData(layer);
-	};
-
 	const displayList = (
 		<DragDropContext onDragEnd={onDragEnd}>
 			<Droppable droppableId="droppableM1">
@@ -764,7 +207,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 							{type === "marketplace" &&
 								MarketPlaceData.map((layer, index) => {
 									return view === "All" ? (
-										<Box borderColor={getLayerColor(layer)} {...defaultProps}>
+										<Box borderColor={getLayerColor(layer, type, colors)} {...defaultProps}>
 											<MarketPlaceListItem>
 												<MarketPlaceUpper>
 													<BusinessIcon />
@@ -805,7 +248,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 										</Box>
 									) : (
 										layer.type === view && (
-											<Box borderColor={getLayerColor(layer)} {...defaultProps}>
+											<Box borderColor={getLayerColor(layer, type, colors)} {...defaultProps}>
 												<MarketPlaceListItem>
 													<MarketPlaceUpper>
 														<BusinessIcon />
@@ -847,209 +290,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 										)
 									);
 								})}
-
-							{/* {layerMap.map((layer, index) => {
-
-								const labelId = `checkbox-list-label-${index}`;
-								//// remove the (layer.identifier!="Tracked Owners") condition from the if statement to show the tracked owers layer
-								if (
-									type === "heatMaps" ||
-									type === "base" ||
-									(type === "layer" &&
-										(layer.layerSettings &&
-											layer.layerSettings.showable &&
-											layer.identifier != "Tracked Owners") || layer.groupId)
-								) {
-									return (
-										<Draggable
-											key={labelId}
-											draggableId={labelId}
-											index={type === "layer" ? layer.position : index}
-										>
-											{(provided, snapshot) => (
-
-												<div ref={provided.innerRef}>
-													{
-
-
-
-
-
-
-
-
-
-
-
-
-														layer.groupId ?
-															<Accordion {...provided.draggableProps}>
-																<AccordionSummary
-																	expandIcon={<ExpandMoreIcon />}
-																	aria-controls="panel1a-content"
-																	id="panel1a-header"
-
-																>
-																	<div  {...provided.dragHandleProps}>
-																		<DragIndicator />
-																	</div>
-																	<Typography className={classes.heading}>{layer.groupName}</Typography>
-																</AccordionSummary>
-
-																<Droppable droppableId={layer.groupId}>
-																	{(provided, snapshot) => (
-																		<AccordionDetails ref={provided.innerRef}>
-																			<List
-																				style={{
-																					// maxHeight: "775px",
-																					overflowY: type === "marketplace" ? "scroll" : "scroll",
-																				}}
-																				className={classes.list}
-																			>
-																				{layer.groups.map((groupLayer, groupIndex) => {
-																					const labelId = `checkbox-list-label-g-${groupLayer.position}`;
-
-																					return (
-																						<Draggable
-																							key={labelId}
-																							draggableId={labelId}
-																							index={type === "layer" ? groupLayer.position : index + groupIndex}
-																						>
-																							{(provided, snapshot) => (
-
-																								<Box
-																									borderColor={getLayerColor(groupLayer)}
-																									ref={provided.innerRef}
-																									{...defaultProps}
-																								>
-																									<StyledListItem
-																										ContainerComponent="li"
-
-																										{...provided.draggableProps}
-																									>
-																										<ListItemIcon {...provided.dragHandleProps}>
-																											<DragIndicator />
-																										</ListItemIcon>
-																										<ListItemText
-																											id={labelId}
-																											primary={getLayerName(groupLayer)}
-																											//primary="Hello"
-																											className={
-																												checkIfNoLayerData(groupLayer)
-																													? classes.disabledLayerTitle
-																													: ""
-																											}
-																										/>
-																										{type === "layer" &&
-																											groupLayer.layerSettings.colorable &&
-																											getLayerControls(groupLayer, labelId, groupIndex)}
-																										<FormControlLabel
-																											control={
-																												<Switch
-																													disabled={
-																														checkIfNoLayerData(groupLayer)
-																															? classes.disabledLayerTitle
-																															: ""
-																													}
-																													checked={getLayerChecked({
-																														groupLayer,
-																														groupIndex,
-																													})}
-																													onChange={() =>
-																														handleToggle({ groupLayer, groupIndex })
-																													}
-																												/>
-																											}
-																										/>
-																									</StyledListItem>
-																								</Box>
-																							)}
-																						</Draggable>
-																					);
-
-																				})}
-																				{provided.placeholder}
-																			</List>
-																		</AccordionDetails>
-																	)}
-																</Droppable>
-
-															</Accordion>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-															: <Box
-																borderColor={getLayerColor(layer)}
-																{...defaultProps}
-															>
-																<StyledListItem
-																	ContainerComponent="li"
-																	ref={provided.innerRef}
-																	{...provided.draggableProps}
-																>
-																	<ListItemIcon {...provided.dragHandleProps}>
-																		<DragIndicator />
-																	</ListItemIcon>
-																	<ListItemText
-																		id={labelId}
-																		primary={getLayerName(layer)}
-																		//primary="Hello"
-																		className={
-																			checkIfNoLayerData(layer)
-																				? classes.disabledLayerTitle
-																				: ""
-																		}
-																	/>
-																	{type === "layer" &&
-																		layer.layerSettings.colorable &&
-																		getLayerControls(layer, labelId, index)}
-																	<FormControlLabel
-																		control={
-																			<Switch
-																				disabled={
-																					checkIfNoLayerData(layer)
-																						? classes.disabledLayerTitle
-																						: ""
-																				}
-																				checked={getLayerChecked({
-																					layer,
-																					index,
-																				})}
-																				onChange={() =>
-																					handleToggle({ layer, index })
-																				}
-																			/>
-																		}
-																	/>
-																</StyledListItem>
-															</Box>
-													}
-
-												</div>
-											)}
-										</Draggable>
-									);
-								}
-							})} */}
 
 							<Layer layerMap={layerMap} type={type} handleToggle={handleToggle} />
 							{provided.placeholder}
@@ -1199,7 +439,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 						? "30px"
 						: type === "marketplace"
 							? "-567px"
-							: "-405px",
+							: "0px",
 					transition: "left 0.5s ease-in-out",
 					listStyleType: "none",
 					zIndex: "9999"
@@ -1208,6 +448,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 				<StyledMenu
 					id="checklist-menu"
 					// anchorEl={stateMapControls.anchorEl}
+					style={!stateMapControls.panelExpanded && type === 'layer' ? { display: 'none' } : {}}
 					keepMounted
 					open={Boolean(stateMapControls.selectedControl)}
 

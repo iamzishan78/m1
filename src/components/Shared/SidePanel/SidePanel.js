@@ -198,7 +198,6 @@ export default function SidePanel() {
 			setHeaderFilters(null);
 
 			setDragFunction(() => (result) => {
-				debugger;
 				if (!result.destination) { return; }
 				const isSourceGroup = result.source.droppableId !== 'droppableM1'
 				const isDestinationGroup = result.destination.droppableId !== 'droppableM1'
@@ -233,11 +232,11 @@ export default function SidePanel() {
 						...stateApp,
 						layers: [...newOrder.reorderedLayers],
 					});
-					// updateManyUserLayerSettings({
-					// 	variables: {
-					// 		manySettings: layersToUpdate,
-					// 	},
-					// });
+					updateManyUserLayerSettings({
+						variables: {
+							manySettings: layersToUpdate,
+						},
+					});
 				}
 
 				else if (result.source.index !== result.destination.index) {
@@ -261,11 +260,11 @@ export default function SidePanel() {
 
 					setStateApp({ ...stateApp, layers: [...reorderedLayers] });
 
-					// updateManyUserLayerSettings({
-					// 	variables: {
-					// 		manySettings: layersToUpdate,
-					// 	},
-					// });
+					updateManyUserLayerSettings({
+						variables: {
+							manySettings: layersToUpdate,
+						},
+					});
 				} else if (result.destination.droppableId !== result.source.droppableId) {
 					const layerIndex = stateApp.layers.findIndex((layer) => layer.position === result.source.index);
 					if (result.destination.droppableId !== 'droppableM1') {
@@ -276,6 +275,14 @@ export default function SidePanel() {
 						stateApp.layers[layerIndex] = { ...stateApp.layers[layerIndex], groupId: null, groupName: null }
 					}
 					setStateApp({ ...stateApp, layers: [...stateApp.layers] });
+					updateLayerSettings({
+						variables: {
+							settings: {
+								_id: stateApp.layers[layerIndex]._id,
+								layerSettings: stateApp.layers[layerIndex].layerSettings,
+							},
+						},
+					});
 				}
 			});
 
@@ -296,15 +303,15 @@ export default function SidePanel() {
 					layers: [...currentLayers],
 				}));
 
-				//// saving to mongo
-				// updateLayerSettings({
-				// 	variables: {
-				// 		settings: {
-				// 			_id: updatedLayer._id,
-				// 			layerSettings: updatedLayer.layerSettings,
-				// 		},
-				// 	},
-				// });
+				// saving to mongo
+				updateLayerSettings({
+					variables: {
+						settings: {
+							_id: updatedLayer._id,
+							layerSettings: updatedLayer.layerSettings,
+						},
+					},
+				});
 			});
 		}
 	}, [panelType, stateApp.layers]);

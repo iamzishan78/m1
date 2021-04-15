@@ -17,6 +17,7 @@ import { useMutation } from "@apollo/client";
 import Box from "@material-ui/core/Box";
 import { useSelector } from "react-redux";
 import { deepEqualObjects } from "../../../functions";
+import { getLayerColor } from "../common.js";
 
 const useStyles = makeStyles((theme) => ({
     pulloutBox: {
@@ -77,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateApp, setStateApp }) {
-    const { basinLayerColor, GLOUnitsColor, GLOLeasesColor } = useSelector(
+    const colors = useSelector(
         ({ MainMap }) => MainMap
     );
     const [stateMapControls, setStateMapControls] = useContext(
@@ -191,48 +192,6 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
         }
     };
 
-    const getLayerColor = (layer) => {
-        // layerName: "Rig Activity"
-        if (type !== "layer" && type !== "marketplace") return {};
-
-        if (layer) {
-            if (layer.type === "Listing") return "#2D3451";
-            if (layer.type === "Auction") return "#FF0000";
-            if (layer.type === "Sponsor") return "#00B050";
-        }
-
-        if (layer) {
-            if (layer.identifier == "Rig Activity") return "#263451";
-
-            if (
-                layer.layerPaintProps &&
-                layer.layerPaintProps[0] &&
-                layer.layerPaintProps[0].paintProps
-            ) {
-                if (layer.layerPaintProps[0].paintProps["circle-color"])
-                    return layer.layerPaintProps[0].paintProps["circle-color"];
-                if (layer.layerPaintProps[0].paintProps["fill-color"])
-                    return layer.layerPaintProps[0].paintProps["fill-color"];
-                if (layer.layerPaintProps[0].paintProps["line-color"])
-                    return layer.layerPaintProps[0].paintProps["line-color"];
-                if (layer.layerPaintProps[0].paintProps["icon-color"])
-                    return layer.layerPaintProps[0].paintProps["icon-color"];
-            }
-
-            if (
-                layer.layerPaintProps &&
-                layer.layerPaintProps.ids &&
-                layer.layerPaintProps.ids[0]
-            ) {
-                if (layer.layerPaintProps.ids[0] == "basinLayer")
-                    return basinLayerColor;
-                if (layer.layerPaintProps.ids[0] == "GLOUnits") return GLOUnitsColor;
-                if (layer.layerPaintProps.ids[0] == "GLOLeases") return GLOLeasesColor;
-            }
-        }
-        return "#263451";
-    };
-
     const getLayerControls = (layer, labelId, index) => {
         const control1 = layer.layerSettings.colorable && (
             <div
@@ -318,7 +277,7 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
 
     return (
         <Box
-            borderColor={getLayerColor(layer)}
+            borderColor={getLayerColor(layer, type, colors)}
             {...defaultProps}
             ref={provided.innerRef}
             {...provided.draggableProps}
