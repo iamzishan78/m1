@@ -31,3 +31,9 @@
 .page-controls::hover {
   opacity: 1;
 }
+.react-pdf__Page {
+
+  display: grid  !important;
+  justify-content: center !important;
+  width: 100% !important;
+}

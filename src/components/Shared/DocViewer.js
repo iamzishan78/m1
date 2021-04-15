@@ -14,64 +14,58 @@ import GetAppIcon from "@material-ui/icons/GetApp";
 import './ViewDocStyle.css'
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-function rand() {
-  return Math.round(Math.random() * 20) - 10;
-}
 
-function getModalStyle() {
-  const top = 50 + rand();
-  const left = 50 + rand();
 
-  return {
-    top: `${56}%`,
-    left: `${40}%`,
-    transform: `translate(-${53}%, -${56}%)`,
- 
-  
-  };
-}
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: 'absolute',
     backgroundColor: theme.palette.background.paper,
     height: "950px",
+    
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
     overflow: 'scroll',
-    border: "0px"
+    border: "0px",
+    inset:'unset',
+    backgroundColor:"white !important"
   },
 }));
 
 const SimpleModal = () => {
   const classes = useStyles();
-  const [modalStyle] = React.useState(getModalStyle);
   const [numPages, setNumPages] = useState(null);
   let [pageNumber, setPageNumber] = useState(1);
   const [stateApp, setStateApp] = React.useContext(AppContext);
+ const [pdfState, setpdfState] = useState([])
 
-
+ const preview = file => {
+  return setpdfState({ show: true, file: file });
+};
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
   }
-  const NextPdf = () => {
-      if(pageNumber < numPages)
-      {
-        setPageNumber(++pageNumber)
-      }
-  };
-
-  const PrePdf = () => {
-    if(pageNumber > 1)
-    {
-      setPageNumber(--pageNumber)
-    }
-  };
+ 
   
  useEffect(() => {
    setPageNumber(1)
+   PageView(numPages)
  }, [numPages])
  
+ const PageView = (num) =>{
+
+  let Page = [];
+  for (let i = 1; i <= num; i++) {
+          console.log(i,numPages, "value of I");
+
+    Page.push(i)
+
+ 
+   
+ }
+ setpdfState(Page)
+ }
+
   return (
     <div >
       <Modal
@@ -79,11 +73,18 @@ const SimpleModal = () => {
         aria-labelledby="simple-modal-title Facebook"
         aria-describedby="simple-modal-description"
         
-        style={{zIndex:'9999', border:"0px"}}
+        style={{zIndex:'9999', border:"0px", inset:'unset'}}
+        disableAutoFocus={true}
+        hideBackdrop={true}
+        isablePortal={true}
+        disableEnforceFocus={true}
+        keepMounted={true}
+        disableBackdropClick={true}
+        // className="CustomeModal"
       >
         
-       <div style={modalStyle} className={classes.paper}>
-       <Grid item xs={12} style={{ minHeight: "35px" }}>
+       <div style={{top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(1%, -101%)`, width:'1390px'}} className={classes.paper}>
+       <Grid item xs={12} style={{ minHeight: "35px",width:'100%' }}>
 							<h4
 								style={{
 									margin: "0 0 15px 0",
@@ -134,12 +135,17 @@ const SimpleModal = () => {
 						</Grid>
        <div >
       <Document
+        style={{display:'grid',justifyContent:'center',width:'100%'}}
         file={stateApp?.viewDoc?.uri}
         onLoadSuccess={onDocumentLoadSuccess}
-        loading={<div style={{width:'500px', display:"flex", justifyContent:'center'}}><CircularProgress /></div>}
+        loading={<div style={{width:'100%', display:"flex", justifyContent:'center'}}><CircularProgress /></div>}
       >
-        <Page pageNumber={pageNumber} />
-    <div className="page-controls" ><button type="button"  className='page-controls-button' onClick={PrePdf}>‹</button><span>{pageNumber} of {numPages}</span><button className="page-controls-button" type="button" onClick={NextPdf} >›</button></div>
+    
+        {pdfState?.map((value,key) => {
+          return (
+            <Page key={key} pageNumber={value}  style={{display:'grid',justifyContent:'center',width:'100%'}}/>
+          )
+        })}
        
       </Document>
     </div>
