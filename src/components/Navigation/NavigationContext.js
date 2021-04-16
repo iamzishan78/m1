@@ -69,6 +69,8 @@ const NavigationContextProvider = (props) => {
     filterTrackedWells: false,
     filterTrackedOwners: false,
     searchInputValue: null,
+    lastSearchedTab:null,
+    lastSearchedValue:null,
     statusName: [],
     typeName: [],
     playName: [],
