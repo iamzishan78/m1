@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SimpleModal = () => {
+const SimpleModal = ({DocStyle = {top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(1%, -101%)`, width:'1390px'}}) => {
   const classes = useStyles();
   const [numPages, setNumPages] = useState(null);
   let [pageNumber, setPageNumber] = useState(1);
@@ -83,7 +83,7 @@ const SimpleModal = () => {
         // className="CustomeModal"
       >
         
-       <div style={{top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(1%, -101%)`, width:'1390px'}} className={classes.paper}>
+       <div style={DocStyle} className={classes.paper}>
        <Grid item xs={12} style={{ minHeight: "35px",width:'100%' }}>
 							<h4
 								style={{

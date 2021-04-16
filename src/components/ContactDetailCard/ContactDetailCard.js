@@ -43,7 +43,8 @@ import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
-
+import DocViewer from '../Shared/DocViewer'
+import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 const useStyles = makeStyles((theme) => ({
   Contacts: {
     color: "#011133",
@@ -271,7 +272,7 @@ export default function ContactDetailCard(props) {
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
-
+	
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(
     null
   );
@@ -749,7 +750,9 @@ export default function ContactDetailCard(props) {
               </Grid>
 
               <Grid item xs={12} className={classes.Comments}>
+                <DocViewer DocStyle={{top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(2.5%, -104.2%)`, width:'1320px',height:'816px'}}></DocViewer>
                 <Documents
+                 
                   handleOpenExpandableCard={handleOpenExpandableCard}
                   id={contactData._id}
                   user_id={stateApp.user.email}

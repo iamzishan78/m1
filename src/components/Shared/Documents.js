@@ -21,7 +21,7 @@ import { AppContext } from "../../AppContext";
 import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
 import { GETRECENTCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { DELETEDESCRIPTORFILE } from "../../graphQL/useMutationDeleteDescriptorFile";
-import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
+import { VIEWFILEQUERY, VIEWFILESQUERY } from "../../graphQL/useQueryViewFile";
 import { useDispatch } from "react-redux";
 import UploadZone from "./UploadZone";
 import CardMedia from "@material-ui/core/CardMedia";
@@ -153,7 +153,7 @@ export default function Documents(props) {
   const [documentSearch, setDocumentSearch] = useState("");
   const [filteredDocuments, setFilteredDocuments] = useState([]);
 
-  const [stateApp] = React.useContext(AppContext);
+  const [stateApp,setStateApp] = React.useContext(AppContext);
   const userId = stateApp.user.mongoId;
 
   const [relatedObjectType, limit] = useMemo(() => {
@@ -222,7 +222,10 @@ export default function Documents(props) {
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
-
+  
+  // const [viewFile, { data: viewFileData }] = useLazyQuery(VIEWFILEQUERY, {
+  //   fetchPolicy: "no-cache",
+  // });
   useEffect(() => {
     getRecentFiles({
       variables: {
@@ -233,12 +236,30 @@ export default function Documents(props) {
     });
   }, [props.id]);
 
+  const [
+		viewFiles,
+		{ data: viewFileResultt, loading: viewFileLoading },
+	] = useLazyQuery(VIEWFILESQUERY, {
+		fetchPolicy: "no-cache",
+	});
+	useEffect(() => {
+		let ID = [];
+		for (let i = 0; i < files?.getFileDescriptors.length; i++) {
+      // console.log(files?.getFileDescriptors[i].fileId, 'Kumail Test')
+			ID.push(files?.getFileDescriptors[i].fileId);
+		}
+
+		viewFiles({
+			variables: { fileIds: ID },
+		});
+	}, [files]);
+
   useEffect(() => {
-    console.log("VIEW FILE RESULT", viewFileResult);
-    if (viewFileResult?.viewFile?.uri) {
+    console.log("VIEW FILE RESULT", viewFileResult?.viewFile);
+    if (viewFileResult?.viewFile?.viewFile?.uri) {
       let a = document.createElement("a");
-      a.href = viewFileResult.viewFile.uri;
-      a.download = viewFileResult.viewFile.name;
+      a.href = viewFileResult?.viewFile.viewFile.uri;
+      a.download = viewFileResult?.viewFile.viewFile.name;
 
       // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
       // a.target = "_blank";
@@ -246,7 +267,7 @@ export default function Documents(props) {
       // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
       a.click();
     }
-  }, [viewFileResult]);
+  }, [viewFileResult?.viewFile]);
 
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
@@ -272,6 +293,7 @@ export default function Documents(props) {
     viewFile({ variables: { fileId: id } });
   };
 
+
   const HandleShowFile = async (id) => {
     console.log(id, "ShowFIle");
     console.log(GETRECENTCONTACTFILES, "Recentdata");
@@ -292,8 +314,9 @@ export default function Documents(props) {
             <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
               Recent Documents
             </h4>
-            <h4
+            <h4 
               className={classes.viewAll}
+              
               // onClick={(e) => {
               //   e.preventDefault();
               //   props.viewAll("comments");
@@ -320,7 +343,7 @@ export default function Documents(props) {
           </Grid>
         )}
       </CardActions>
-      <CardContent style={{ padding: "0 23px" }}>
+      <CardContent  >
         {props.isTransactPage && (
           <UploadZone
             relatedObjectId={props.id}
@@ -329,7 +352,8 @@ export default function Documents(props) {
           />
         )}
         {props.isTransactPage && (
-          <div style={{ marginBottom: "20px" }}>
+          <div style={{ marginBottom: "20px" }} 
+          >
             <TextField
               fullWidth
               value={documentSearch}
@@ -349,9 +373,12 @@ export default function Documents(props) {
         )}
         <div className={classes.fileUploadSection}>
           {/* Show two recent docs */}
-          {filteredDocuments?.map((file) => {
+          {filteredDocuments?.map((file,key) => {
+            console.log(file, "File Data")
             return (
-              <div key={file.fileId}>
+              <div key={file.fileId} 
+         
+          >
                 <div className={classes.fileUploadTopSection}>
                   <div className={classes.flexIcon}>
                     {props.isTransactPage && (
@@ -366,8 +393,40 @@ export default function Documents(props) {
                         <GetAppIcon fontSize="large" />
                       </div>
                     )}
-                    <div>
-                      <h4 className={classes.uploadTitle}>
+                    <div style={{cursor:'pointer'}}
+                     onClick={() => {
+                      // if(fileExtension === 'pdf')
+                      // {
+                        // console.log(viewFileResult?.viewFile.viewFile.uri, 'StateApp')
+                        
+                        console.log(viewFileResultt, 'StateApp')
+                        console.log(file.fileId, 'StateApp')
+
+                       viewFileResultt?.viewFiles.map((value) => {
+                         if(value.id === file.fileId)
+                         {
+                           console.log("teste")
+                        setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:file.fileName, downloadFn:handleViewFile, downloadData: file.fileId}})
+
+                         }
+                       })
+                      // }
+                      // setStateApp({ ...stateApp, viewDoc: {uri:"fabceo"}})
+                      // if (viewFileResult?.viewFile?.viewFile?.uri) {
+                        // let a = document.createElement("a");
+                        // a.href = viewFileResult?.viewFile.viewFile.uri;
+                        // a.download = viewFileResult?.viewFile.viewFile.name;
+                  
+                        // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
+                        // a.target = "_blank";
+                        // setStateApp({ ...stateApp, viewDoc: {uri:viewFileResult?.viewFile.viewFile.uri, name:file.fileName, downloadFn:handleViewFile, downloadData: file.fileId}})
+                  
+                        // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
+                       
+                      // }
+          
+                    }}>
+                      <h4 className={classes.uploadTitle} >
                         {file?.fileName?.length > 22
                           ? file?.fileName?.slice(0, 20) + "..."
                           : file?.fileName}
