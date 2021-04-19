@@ -43,7 +43,7 @@ const FileTree = ({ layerMap }) => {
         setItems(update(items, updateFn));
     };
 
-    const handleDragEnd = () => {
+    const handleDragBegin = () => {
         itemsRef.current = items;
     }
 
@@ -51,7 +51,7 @@ const FileTree = ({ layerMap }) => {
         setItems(itemsRef.current)
     }
 
-    const handleDragBegin = (oldItem, newItem) => {
+    const handleDragEnd = (oldItem, newItem) => {
         if (oldItem.depth === 0 && newItem.depth === 1 && newItem.type === 'group') {
             return revert()
         }
