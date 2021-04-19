@@ -25,6 +25,8 @@ import ChatIcon from "@material-ui/icons/Chat";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import M1nTable from "../M1nTable";
 import WellIcon from "../../svgIcons/well";
+import Contact from "../../svgIcons/contact";
+import ArrowRight from "../../svgIcons/arrow-right";
 import AddCircleOutlineRoundedIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import AddContactDialogContent from "./SubComponents/AddContactDialogContent";
 import DeleteConfirmationDialogContent from "./SubComponents/DeleteConfirmationDialogContent";
@@ -73,7 +75,9 @@ import CheckIcon from "@material-ui/icons/Check";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
 import Chip from '@material-ui/core/Chip';
-
+import FilterIcon from "../../svgIcons/filter";
+import ViewColumnIcon from "../../svgIcons/view_column";
+import ButtonDropDown from "./ButtonGroup"
 // import value formatters 
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
@@ -191,6 +195,25 @@ const useStyles = makeStyles((theme) => ({
   table: {
     "& .MuiTableBody-root": {
       height: '50px',
+    },
+    "& .MuiPaper-root > .MuiToolbar-gutters": {
+      paddingLeft: '11px !important'
+    },
+    "& .MuiButton-text": {
+      padding: "5px 12px"
+    },
+    "& .Mui-disabled": {
+      backgroundColor: "transparent",
+    },
+    "& .MuiToolbar-root": {
+      backgroundColor: "#F2F2F2",
+      borderBottom: '1px solid rgba(224, 224, 224, 1)'
+    },
+    "& .MuiToolbar-regular > div:nth-child(2) .MuiIconButton-root": {
+      backgroundColor: "#D4E8F1",
+    },
+    "& .MuiToolbar-regular > div:nth-child(2)": {
+      flex: '0 1 auto',
     },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
@@ -324,9 +347,15 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   multiSelectionTopBarButtons: {
-    margin: "6px 12px",
+    margin: "0px 5px",
     fontWeight: "600",
-    color: "#082768",
+    backgroundColor: "rgba(1, 17, 51, 1)",
+    color: "#fff",
+    border: '1px solid #B3B3B3',
+    "&:hover":{
+      backgroundColor: "#263451",
+      color: "#fff",
+    }
   },
   monetizationIcon: {
     margin: "10px",
@@ -2064,13 +2093,21 @@ function SubTable(props) {
                   display: "flex",
                 }}
               >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    height: "35px",
+                    display: "flex",
+                  }}
+                >
                 {props.header !== "Active Users" && (
                   <>
-                    {m1nSelectedRowsIndexes?.length > 1 && (
+                    {/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
                       <Button
                         color="secondary"
                         startIcon={<MergeTypeIcon />}
                         className={classes.multiSelectionTopBarButtons}
+                        disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length <= 1}
                         onClick={() => {
                           handleExpandClick(
                             null,
@@ -2082,7 +2119,7 @@ function SubTable(props) {
                       >
                         Merge
                       </Button>
-                    )}
+                    {/* )} */}
 
                     {/* temporary comment out until melissa is back */}
                     {/* <Button
@@ -2113,7 +2150,7 @@ function SubTable(props) {
                         );
                       }}
                     >
-                      Send Mailers
+                      Mailers
                       </Button>
 
                     <Divider orientation="vertical" flexItem />
@@ -2133,6 +2170,7 @@ function SubTable(props) {
                     <DeleteIcon />
                   </IconButton>
                 </Tooltip>
+                </div>
               </div>
             );
           }
@@ -2194,9 +2232,90 @@ function SubTable(props) {
           );
         },
     customToolbar: () => {
+      const options = [
+        { 
+          text:'Add Contact',
+          isShow: false,
+          action: (e) => {
+            e.stopPropagation();
+            if (props.addAble.type && props.addAble.type === "contact")
+              handleExpandClick(null, null, null, "addContact");
+
+            if (
+              props.addAble.type &&
+              props.addAble.type === "ownerToParcel"
+            )
+              handleExpandClick(null, null, null, "addOwnerToParcel");
+
+            if (props.addAble.type && props.addAble.type === "deals")
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                dealDialog: true,
+                activeDeal: { cardId: null, laneId: null },
+              }));
+
+            if (props.addAble.type && props.addAble.type === "wellInterest") {
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                wellInterestDialog: true,
+                //activeDeal: { cardId: null, laneId: null },
+              }));
+            }
+
+            if (
+              props.addAble.type &&
+              props.addAble.type === "parcelInterestsToEntity"
+            )
+              // handleExpandClick(null, null, null, "addOwnerToParcel");
+              handleExpandClick(
+                null,
+                null,
+                null,
+                "addParcelInterestsToEntity"
+              );
+            if (
+              props.addAble.type &&
+              props.addAble.type === "inviteUser"
+            )
+              handleExpandClick(null, null, null, "inviteUser");
+          }
+        },
+        {  text: 'Import Contacts', isShow: true, action: () => routeChange("/bulkupload") }
+      ];
+      const getSelectedRows = () => {
+        const selectedRows = [];
+        for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+          selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+        }
+        return selectedRows;
+      };
+
       return (
         <>
-          {props.uploadIcon && (
+        <div style={{ displat: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
+          <ButtonDropDown options={options} />
+          {props.header !== "Active Users" && (
+            <>
+              <Button
+                color="secondary"
+                startIcon={<MergeTypeIcon />}
+                className={classes.multiSelectionTopBarButtons}
+                disabled
+              >
+                Merge
+              </Button>
+              <Button
+                color="secondary"
+                startIcon={<EmailRoundedIcon />}
+                className={classes.multiSelectionTopBarButtons}
+                disabled
+              >
+                Mailers
+              </Button>
+            </>
+          )}
+        </div>
+          {/* {props.uploadIcon && (
             //////Upload Icon/////////////////////////
             <span className={classes.addIcon}>
               <Tooltip
@@ -2278,7 +2397,7 @@ function SubTable(props) {
                 </IconButton>
               </Tooltip>
             </span>
-          )}
+          )} */}
         </>
       );
     },
@@ -2724,6 +2843,16 @@ function SubTable(props) {
     </Box>
   };
 
+  const getHeaders = () => {
+    return  props.header === 'Contacts' ? (
+      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left'}}>
+        <Contact />
+        <label style={{ marginLeft: '10px', fontSize: '16px'}}>{props.header}</label>
+        <ArrowRight/>
+        <label style={{ color: '#18AADD', fontSize: '16px' }}>All Contacts</label>
+      </div>
+      ) : props.header
+  }
   return (
     <div style={{
       width: "100%",
@@ -2737,11 +2866,15 @@ function SubTable(props) {
 
         <MUIDataTable
           className={tableStyle}
-          title={props.header}
+          title={getHeaders()}
           data={rows ? rows : []}
           columns={columns ? columns : []}
           components={{
             TableFilterList: props.header == 'Tax Roll Ownership' ? TableFilterList : null,
+            icons: {
+              FilterIcon,
+              ViewColumnIcon,
+            }
           }}
           options={{
             ...options,
