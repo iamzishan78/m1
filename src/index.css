@@ -45,3 +45,7 @@ body {
 .MuiTooltip-popper {
   z-index: 9999999999 !important;
 }
+
+#popper-1 {
+  z-index: 9999999999 !important;
+}

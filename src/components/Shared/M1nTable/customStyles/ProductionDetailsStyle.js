@@ -5,6 +5,9 @@ const ProductionTableStyle = makeStyles((theme) => ({
       "& .MuiTableCell-body": {
         padding: (props) => (props.dense ? "0 !important" : "0px 16px !important")
       },
+      "& .MuiToolbar-root": {
+        backgroundColor: "#F2F2F2",
+      },
       "& .MuiTableCell-head": {
         "& span": {
           justifyContent: 'center'
