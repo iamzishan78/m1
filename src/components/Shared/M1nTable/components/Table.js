@@ -2557,12 +2557,14 @@ function SubTable(props) {
             tableState.page = 0;
             setPageInd(tableState.page);
             props.contactsPageProps.getPaginatedContacts(pageVariables);
+            props.contactsPageProps.getContactsFilterOptions(pageVariables);
             break;
           case "resetFilters":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
             setPageInd(tableState.page);
             props.contactsPageProps.getPaginatedContacts(pageVariables);
+            props.contactsPageProps.getContactsFilterOptions();
             break;
           default:
         }
@@ -2672,7 +2674,7 @@ function SubTable(props) {
         ? [10, 25, 50]
         : props.contactsPageProps.contactsCount > 10
           ? [10, 25]
-          : [];
+          : [10];
     options.count = props.contactsPageProps.contactsCount;
     options.serverSide = true;
     //options.print = true;
