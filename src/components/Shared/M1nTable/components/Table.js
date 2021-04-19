@@ -2294,7 +2294,10 @@ function SubTable(props) {
         <>
         <div style={{ displat: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
           <ButtonDropDown options={options} />
-          {props.header !== "Active Users" && (
+
+          
+          {
+          props.addAble.type === "contact" && (
             <>
               <Button
                 color="secondary"
@@ -2313,7 +2316,8 @@ function SubTable(props) {
                 Mailers
               </Button>
             </>
-          )}
+          )
+          }
         </div>
           {/* {props.uploadIcon && (
             //////Upload Icon/////////////////////////
