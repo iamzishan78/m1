@@ -63,6 +63,7 @@ import Contact_card from "../../svgIcons/contact_card";
 import ParcelScreenIcon from "../../svgIcons/parcelScreen";
 import ParcelsDetailCard from "../../../ParcelsDetailCard/ParcelsDetailCard";
 import debounce from "lodash/debounce";
+import isEmpty from "lodash/isEmpty";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "../../../../graphQL/useQueryWell";
 import { useLazyQuery } from "@apollo/client";
@@ -2555,6 +2556,9 @@ function SubTable(props) {
         const lastUpdateByIndex = tableState.columns.findIndex(
           (i) => i.name === "lastUpdateBy.name"
         );
+        const contactOwnerIndex = tableState.columns.findIndex(
+          (i) => i.name === "contactOwner"
+        );
         const tagsIndex = tableState.columns.findIndex(
           (i) => i.name === "tags"
         );
@@ -2571,6 +2575,12 @@ function SubTable(props) {
             value: tableState.filterList[lastUpdateByIndex],
           });
         }
+        if (tableState.filterList[contactOwnerIndex]?.length !== 0) {
+          filters.push({
+            field: "contactOwners.name",
+            value: tableState.filterList[contactOwnerIndex],
+          });
+        }
         if (tableState.filterList[tagsIndex]?.length !== 0) {
           filters.push({
             field: "tags.tag",
@@ -2584,10 +2594,11 @@ function SubTable(props) {
               first: tableState.rowsPerPage,
               after: null,
             },
-            sort: tableState.sortOrder
-              ? {
+            ...(!isEmpty(tableState.sortOrder)) && {
+              sort:
+              {
                 field:
-                tableState.sortOrder?.name ===
+                  tableState.sortOrder?.name ===
                     "fullContactAddress"
                     ? "address1"
                     : tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.dbName ||
@@ -2597,7 +2608,7 @@ function SubTable(props) {
                     ? 1
                     : -1,
               }
-              : [],
+            },
 
             filters: filters,
             search: tableState.searchText,
@@ -2676,7 +2687,8 @@ function SubTable(props) {
         }
       }
 
-      if (props.header === "Well Interests") {
+      if (props.header === "Well Interests"
+      && props.parent === "owner_WellInterests") {
 
         const pageVariables = {
           variables: {
@@ -2761,7 +2773,8 @@ function SubTable(props) {
     },
   };
 
-  if (props.header === "Well Interests") {
+  if (props.header === "Well Interests"
+    && props.parent === "owner_WellInterests") {
     options.rowsPerPageOptions =
       props.wellInterestsPageProps.wellInterestsCount > 25
         ? [10, 25, 50, 100]
