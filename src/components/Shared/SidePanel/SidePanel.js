@@ -173,7 +173,6 @@ export default function SidePanel() {
 	//   for Layer Panel
 	useEffect(() => {
 		if (panelType === "layer" || panelType === null) {
-
 			const groupHandled = []
 			const layerAndGroups = []
 			stateApp.layers && stateApp.layers.forEach((item) => {
@@ -181,14 +180,16 @@ export default function SidePanel() {
 					groupHandled.push(item.groupId)
 					const groups = stateApp.layers.filter((i) => i.groupId === item.groupId)
 					layerAndGroups.push({
-						groupId: item.groupId,
-						groupName: item.groupName,
-						position: item.position,
-						groups
+						depth: 0,
+						type: 'group',
+						collapsed: true,
+						name: item.groupName
+						, id: item.groupId
 					})
+					groups.forEach((item) => { layerAndGroups.push({ ...item, collapsed: true, name: item.layerName, depth: 1, type: 'layer', id: item._id }) })
 				}
 				if (!item.groupId) {
-					layerAndGroups.push(item)
+					layerAndGroups.push({ ...item, name: item.layerName, depth: 0, type: 'layer', id: item._id })
 				}
 			})
 

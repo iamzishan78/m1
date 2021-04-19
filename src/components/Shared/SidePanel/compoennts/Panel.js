@@ -45,6 +45,7 @@ import {
 	MarketPlaceListItem, MarketPlaceLower, MarketPlaceLowerItems, MarketPlaceMenu, MarketPlaceUpper,
 	MarketplaceDropdown, Dropdown,
 } from './style'
+import SortableLayer from "./SortableLayer";
 
 
 function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
@@ -199,7 +200,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 						<List
 							style={{
 								maxHeight: "775px",
-								minWidth: "458px",
+								minWidth: "500px",
 								overflowY: type === "marketplace" ? "scroll" : "scroll",
 							}}
 							className={classes.list}
@@ -292,7 +293,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 								})}
 
 							<Layer layerMap={layerMap} type={type} handleToggle={handleToggle} />
-							{provided.placeholder}
+							{/* {provided.placeholder} */}
 						</List>
 					</RootRef>
 				)}
@@ -300,7 +301,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 
 		</DragDropContext>
 	);
-
 	return (
 		// <ClickAwayListener onClickAway={handleClose}>
 		<div>
@@ -519,13 +519,15 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					{/* base Stuff */}
 					{type === "base" && getBasemapImageBox()}
 
-					{type === "base" ? (
-						<Collapse in={open} timeout="auto" unmountOnExit>
-							{displayList}
-						</Collapse>
-					) : (
-						displayList
-					)}
+					{
+						type === "layer" ? <SortableLayer layerMap={layerMap} /> : type === "base" ? (
+							<Collapse in={open} timeout="auto" unmountOnExit>
+								{displayList}
+							</Collapse>
+						) : (
+							displayList
+						)
+					}
 
 					{/* </Collapse> */}
 				</StyledMenu>
