@@ -397,9 +397,13 @@ export default function ContactDetailCard(props) {
   }, [tData, tLoading]);
 
   return contactData ? (
-    <div className={classes.mainGridContainer}>
+    <div className={classes.mainGridContainer} >
       {/*/////////// left column //////////// */}
-      <Grid container className={classes.leftColumn}>
+      {stateApp.viewDoc ? (
+                       <div className={classes.leftColumn}> <DocViewer DocStyle={{backgroundColor:'white !important',width:'1390px'}} divCondition={true}></DocViewer></div>
+
+      ) : (
+        <Grid container className={classes.leftColumn} >
         {/*/////////// section 1 //////////// */}
 
         <Grid
@@ -667,8 +671,10 @@ export default function ContactDetailCard(props) {
             />
           </div>
         </Grid>
+        
       </Grid>
-
+      )}
+      {console.log(stateApp.viewDoc, "StateApp Doc")}
       {/*/////////// rigth column //////////// */}
       <div className={classes.rightColumnGrid}>
         <IconButton
@@ -750,7 +756,7 @@ export default function ContactDetailCard(props) {
               </Grid>
 
               <Grid item xs={12} className={classes.Comments}>
-                <DocViewer DocStyle={{top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(2.5%, -104.2%)`, width:'1320px',height:'816px'}}></DocViewer>
+                {/* <DocViewer DocStyle={{top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(2.5%, -104.2%)`, width:'1320px',height:'816px'}}></DocViewer> */}
                 <Documents
                  
                   handleOpenExpandableCard={handleOpenExpandableCard}

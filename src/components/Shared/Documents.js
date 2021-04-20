@@ -393,7 +393,7 @@ export default function Documents(props) {
                         <GetAppIcon fontSize="large" />
                       </div>
                     )}
-                    <div style={{cursor:'pointer'}}
+                    <div  className='DocumentTitle'
                      onClick={() => {
                       // if(fileExtension === 'pdf')
                       // {
@@ -426,7 +426,7 @@ export default function Documents(props) {
                       // }
           
                     }}>
-                      <h4 className={classes.uploadTitle} >
+                      <h4 className={classes.uploadTitle } >
                         {file?.fileName?.length > 22
                           ? file?.fileName?.slice(0, 20) + "..."
                           : file?.fileName}

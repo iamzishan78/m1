@@ -548,6 +548,7 @@ function AddDealDialog(props) {
 			dealDialog: false,
 			activeDeal: { cardId: null, laneId: null },
 			transactBarView: "",
+			viewDoc:null
 		}));
 	};
 
