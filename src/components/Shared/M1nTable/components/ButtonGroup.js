@@ -37,37 +37,22 @@ const ButtonDropDown = ({ options }) => {
     };
 
     return (
-        
+
         <>
-            {
-            
-            (options[selectedIndex].type === "contact" 
-            || options[selectedIndex].type === "wellInterest")
 
-            && (
-
-            <>
-            
             <ButtonGroup variant="contained" color="primary" ref={anchorRef} aria-label="split button">
                 <Button onClick={handleClick}>{options[selectedIndex].text}</Button>
-                
-                {
-                    options[selectedIndex].type === "contact" 
-                && (
-
-                    <Button
-                        color="primary"
-                        size="small"
-                        aria-controls={open ? 'split-button-menu' : undefined}
-                        aria-expanded={open ? 'true' : undefined}
-                        aria-label="select merge strategy"
-                        aria-haspopup="menu"
-                        onClick={handleToggle}
-                    >
-                        <ArrowDropDownIcon />
-                    </Button>
-                )
-                }
+                <Button
+                    color="primary"
+                    size="small"
+                    aria-controls={open ? 'split-button-menu' : undefined}
+                    aria-expanded={open ? 'true' : undefined}
+                    aria-label="select merge strategy"
+                    aria-haspopup="menu"
+                    onClick={handleToggle}
+                >
+                    <ArrowDropDownIcon />
+                </Button>
 
             </ButtonGroup>
 
@@ -84,7 +69,7 @@ const ButtonDropDown = ({ options }) => {
                             <ClickAwayListener onClickAway={handleClose}>
                                 <MenuList id="split-button-menu">
                                     {options.map((option, index) => {
-                                        if(option.isShow) {
+                                        if (option.isShow) {
                                             return (
                                                 <MenuItem
                                                     key={option.text}
@@ -102,9 +87,6 @@ const ButtonDropDown = ({ options }) => {
                     </Grow>
                 )}
             </Popper>
-</>
-)
-}
         </>
     )
 }

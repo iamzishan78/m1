@@ -2249,54 +2249,55 @@ function SubTable(props) {
         buttonLabel = '+ ADD INTEREST'
       }
 
+      const addAction = (e) => {
+        e.stopPropagation();
+        if (props.addAble.type && props.addAble.type === "contact")
+          handleExpandClick(null, null, null, "addContact");
+
+        if (
+          props.addAble.type &&
+          props.addAble.type === "ownerToParcel"
+        )
+          handleExpandClick(null, null, null, "addOwnerToParcel");
+
+        if (props.addAble.type && props.addAble.type === "deals")
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            dealDialog: true,
+            activeDeal: { cardId: null, laneId: null },
+          }));
+
+        if (props.addAble.type && props.addAble.type === "wellInterest") {
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            wellInterestDialog: true,
+            //activeDeal: { cardId: null, laneId: null },
+          }));
+        }
+
+        if (
+          props.addAble.type &&
+          props.addAble.type === "parcelInterestsToEntity"
+        )
+          // handleExpandClick(null, null, null, "addOwnerToParcel");
+          handleExpandClick(
+            null,
+            null,
+            null,
+            "addParcelInterestsToEntity"
+          );
+        if (
+          props.addAble.type &&
+          props.addAble.type === "inviteUser"
+        )
+          handleExpandClick(null, null, null, "inviteUser");
+      }
+
       const options = [
         { 
           text: buttonLabel,
-          type: props.addAble.type,
           isShow: false,
-          action: (e) => {
-            e.stopPropagation();
-            if (props.addAble.type && props.addAble.type === "contact")
-              handleExpandClick(null, null, null, "addContact");
-
-            if (
-              props.addAble.type &&
-              props.addAble.type === "ownerToParcel"
-            )
-              handleExpandClick(null, null, null, "addOwnerToParcel");
-
-            if (props.addAble.type && props.addAble.type === "deals")
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                dealDialog: true,
-                activeDeal: { cardId: null, laneId: null },
-              }));
-
-            if (props.addAble.type && props.addAble.type === "wellInterest") {
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                wellInterestDialog: true,
-                //activeDeal: { cardId: null, laneId: null },
-              }));
-            }
-
-            if (
-              props.addAble.type &&
-              props.addAble.type === "parcelInterestsToEntity"
-            )
-              // handleExpandClick(null, null, null, "addOwnerToParcel");
-              handleExpandClick(
-                null,
-                null,
-                null,
-                "addParcelInterestsToEntity"
-              );
-            if (
-              props.addAble.type &&
-              props.addAble.type === "inviteUser"
-            )
-              handleExpandClick(null, null, null, "inviteUser");
-          }
+          action: addAction
         },
         {  text: 'Import Contacts', isShow: true, action: () => routeChange("/bulkupload") }
       ];
@@ -2311,8 +2312,17 @@ function SubTable(props) {
 
       return (
         <>
-        <div style={{ displat: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
-          <ButtonDropDown options={options} />
+        <div style={{ display: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
+          {props.addAble.type === "wellInterest" && (
+            <Button
+              color="secondary"
+              className={classes.multiSelectionTopBarButtons}
+              onClick={addAction}
+            >
+              {buttonLabel}
+            </Button>
+          )}
+          {props.addAble.type === "contact" && (<ButtonDropDown options={options} />)}
 
           
           {

@@ -69,7 +69,6 @@ const ContactSearch = () => {
       <TextField
         value={stateApp.contactSearchQuery}
         onChange={(e) => {
-            debugger
             setStateApp((stateApp) => ({
                 ...stateApp,
                 contactSearchQuery: e.target.value,
