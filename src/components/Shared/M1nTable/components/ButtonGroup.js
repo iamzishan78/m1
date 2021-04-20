@@ -42,7 +42,9 @@ const ButtonDropDown = ({ options }) => {
             {
             
             (options[selectedIndex].type === "contact" 
-            || options[selectedIndex].type === "wellInterest")
+            || options[selectedIndex].type === "wellInterest"
+            || options[selectedIndex].type === "deals"
+            )
 
             && (
 

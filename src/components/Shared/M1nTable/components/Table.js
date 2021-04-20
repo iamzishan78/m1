@@ -2235,12 +2235,19 @@ function SubTable(props) {
     customToolbar: () => {
 
       var buttonLabel = "+ ADD"; 
+      console.log('props addable type', props.addAble.type)
+      console.log('props', props)
       if (props.addAble.type === "contact"){
         buttonLabel = '+ ADD CONTACT'
       }
       if (props.addAble.type === "wellInterest"){
         buttonLabel = '+ ADD INTEREST'
       }
+      if (props.addAble.type === "deals"){
+        buttonLabel = '+ ADD DEAL'
+      }
+
+
 
       const options = [
         { 
