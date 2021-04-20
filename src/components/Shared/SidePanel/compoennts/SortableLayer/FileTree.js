@@ -16,6 +16,7 @@ const FileTree = ({ layerMap }) => {
     const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
     const [items, setItems] = React.useState(layerMap);
     const itemsRef = React.useRef([]);
+    const currentItem = React.useRef();
 
     useEffect(() => {
         if (items.length === 0) {
@@ -24,6 +25,14 @@ const FileTree = ({ layerMap }) => {
     }, layerMap)
 
     const handleChange = (newItems) => {
+        const index = newItems.findIndex((item) => item.id === currentItem.current.id);
+        if (newItems[index].depth === 1) {
+            debugger;
+            const parent = findParent(newItems, index)
+            if (parent.type !== 'group') {
+                newItems[index].depth = 0
+            }
+        }
         setItems(newItems);
     };
     const handleToggleCollapse = (id) => {
@@ -43,8 +52,9 @@ const FileTree = ({ layerMap }) => {
         setItems(update(items, updateFn));
     };
 
-    const handleDragBegin = () => {
+    const handleDragBegin = (item) => {
         itemsRef.current = items;
+        currentItem.current = item
     }
 
     const revert = () => {
@@ -52,6 +62,7 @@ const FileTree = ({ layerMap }) => {
     }
 
     const handleDragEnd = (oldItem, newItem) => {
+        // debugger;
         if (oldItem.depth === 0 && newItem.depth === 1 && newItem.type === 'group') {
             return revert()
         }
@@ -91,8 +102,8 @@ const FileTree = ({ layerMap }) => {
         })
 
 
-        setStateApp({ ...stateApp, layers: [...layersWithoutGroup] });
-        updateManyUserLayerSettings({ variables: { manySettings: layersToUpdate } });
+        // setStateApp({ ...stateApp, layers: [...layersWithoutGroup] });
+        // updateManyUserLayerSettings({ variables: { manySettings: layersToUpdate } });
     }
 
     const updateLayer = (layer) => {

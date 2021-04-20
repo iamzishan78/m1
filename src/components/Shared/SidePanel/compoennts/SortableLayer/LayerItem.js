@@ -65,7 +65,7 @@ const LayerItem = React.memo((props) => {
         },
         begin(f) {
             itemRef.current = data;
-            onDragBegin();
+            onDragBegin(data);
         },
         end(f) {
             onDragEnd(itemRef.current, data)
