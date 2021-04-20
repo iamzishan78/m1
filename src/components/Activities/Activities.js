@@ -180,7 +180,7 @@ const Activities = () => {
             ownerId: act.ownerId,
             type: act.type,
             name: act.name,
-            isContact: act.contactId,
+            // isContact: act.contactId,
           };
         })
       );
