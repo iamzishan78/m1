@@ -5,6 +5,9 @@ import React, {
   useRef,
   Fragment,
 } from "react";
+import {
+  TextField,
+} from "@material-ui/core";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -916,6 +919,10 @@ function SubTable(props) {
     setPageInd(e.tableState.page);
     e.getPaginatedContacts(e.pageVariables);
     e.getContactsFilterOptions(e.pageVariables);
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      isContactSearching: false,
+    }));
   };
 
   const delayedSearchRequest = React.useMemo(
@@ -2604,6 +2611,9 @@ function SubTable(props) {
             userId: stateApp.user.mongoId,
           },
         };
+        if(stateApp.isContactSearching){
+          action = 'search'
+        }
         switch (action) {
           case "changeRowsPerPage":
             props.contactsPageProps.setLoading(true);
@@ -2865,8 +2875,11 @@ function SubTable(props) {
           }}
           options={{
             ...options,
+            searchText: stateApp.contactSearchQuery,
+            search: false
+            // searchOpen: true,
             //download: false,
-            search: props.parent != "search",  // removing the double search on the grid search bar 
+            // search: props.parent != "search",  
             //print: false,
           }}
         />
