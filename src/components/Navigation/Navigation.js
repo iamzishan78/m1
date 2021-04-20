@@ -192,6 +192,7 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerOpen: {
     // background: "rgba(255, 255, 255, 1.0)",
+    zIndex:"99999 !important",
     background: "rgba(250, 250, 250, 1.0)",
     width: drawerWidth,
     height: "100%",

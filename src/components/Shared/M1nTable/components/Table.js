@@ -2238,10 +2238,21 @@ function SubTable(props) {
             />
           );
         },
+
     customToolbar: () => {
+
+      var buttonLabel = "+ ADD"; 
+      if (props.addAble.type === "contact"){
+        buttonLabel = '+ ADD CONTACT'
+      }
+      if (props.addAble.type === "wellInterest"){
+        buttonLabel = '+ ADD INTEREST'
+      }
+
       const options = [
         { 
-          text:'Add Contact',
+          text: buttonLabel,
+          type: props.addAble.type,
           isShow: false,
           action: (e) => {
             e.stopPropagation();
@@ -2289,6 +2300,7 @@ function SubTable(props) {
         },
         {  text: 'Import Contacts', isShow: true, action: () => routeChange("/bulkupload") }
       ];
+
       const getSelectedRows = () => {
         const selectedRows = [];
         for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
@@ -2301,7 +2313,10 @@ function SubTable(props) {
         <>
         <div style={{ displat: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
           <ButtonDropDown options={options} />
-          {props.header !== "Active Users" && (
+
+          
+          {
+          props.addAble.type === "contact" && (
             <>
               <Button
                 color="secondary"
@@ -2320,7 +2335,8 @@ function SubTable(props) {
                 Mailers
               </Button>
             </>
-          )}
+          )
+          }
         </div>
           {/* {props.uploadIcon && (
             //////Upload Icon/////////////////////////
@@ -2686,12 +2702,14 @@ function SubTable(props) {
             tableState.page = 0;
             setPageInd(tableState.page);
             props.contactsPageProps.getPaginatedContacts(pageVariables);
+            props.contactsPageProps.getContactsFilterOptions(pageVariables);
             break;
           case "resetFilters":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
             setPageInd(tableState.page);
             props.contactsPageProps.getPaginatedContacts(pageVariables);
+            props.contactsPageProps.getContactsFilterOptions();
             break;
           default:
         }
@@ -2801,7 +2819,7 @@ function SubTable(props) {
         ? [10, 25, 50]
         : props.contactsPageProps.contactsCount > 10
           ? [10, 25]
-          : [];
+          : [10];
     options.count = props.contactsPageProps.contactsCount;
     options.serverSide = true;
     //options.print = true;

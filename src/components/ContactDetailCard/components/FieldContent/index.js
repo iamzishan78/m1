@@ -15,6 +15,8 @@ import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent
 import MergeHistory from 'components/ContactDetailCard/components/FieldContent/MergeHistory'
 import { textFieldLabels, getHrefValue, LinkTypes, FieldTypes } from 'components/ContactDetailCard/components/FieldContent/helper'
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style'
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import {timeZoneOptions} from  './timeZoneList';
 
 export default function FieldContent({
   children,
@@ -262,6 +264,58 @@ export default function FieldContent({
               <MenuItem value='Active'> Active </MenuItem>
               <MenuItem value='Inactive'> Inactive </MenuItem>
             </Select>:
+            fieldName === 'timeZone' ?
+            <Autocomplete
+            id={"fieldContentInput" + fieldName}
+            key={"fieldContentInput" + fieldName}
+            options={timeZoneOptions}
+            getOptionLabel={(option) => option.title || editContent[fieldName]}
+            style={{ width: 300 }}
+            onChange={(e,data) => {
+              e.persist();
+              setEditContent((editContent) => ({
+                ...editContent,
+                [fieldName]: data?.title || ""
+              }));
+            }}
+            value={
+              editContent[fieldName] === null ? "" : editContent[fieldName]
+            }
+            autoComplete
+            onKeyDown={(event) => {
+              event.stopPropagation();
+              if (event.key === "Escape") {
+                if (fieldsCount <= 1) {
+                  setEdit(null);
+                  setEditContent((editContent) => ({
+                    ...editContent,
+                    [fieldName]: content[fieldName],
+                  }));
+                }
+              }
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleUpdating();
+              }
+            }}
+            onBlur={() => {
+              if (fieldsCount <= 1) {
+                setEdit(null);
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  [fieldName]: content[fieldName],
+                }));
+              }
+            }}
+            style={{width:'100%'}}
+            renderInput={(params) => 
+              <TextField 
+              {...params}  
+              label={fieldsCount > 1 ? textFieldLabels(fieldName) : null} 
+              className={classes.editTextField}
+              />
+            }
+            /> :
             <TextField
             key={"fieldContentInput" + fieldName}
             id={"fieldContentInput" + fieldName}
