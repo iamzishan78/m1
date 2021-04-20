@@ -126,15 +126,7 @@ export default function ActivitiesList({
         return <DefaultIcon className={classes.itemIcon} color="secondary" />;
     }
   };
-
-  const deleteActivity = async (act) => {
-    await deleteActivityMutation({
-      variables: {
-        id: act._id,
-      },
-    });
-  };
-
+  
   let sortedActivityLog =
     activityLog && activityLog.length > 0
       ? Object.values(activityLog)
@@ -168,13 +160,6 @@ export default function ActivitiesList({
                     {moment(activity.dateTime).format("MMMM D, YYYY hh:mm a")}
                   </Typography>
                 </div>
-                <Typography
-                  variant="body2"
-                  className={classes.deleteLine}
-                  onClick={() => deleteActivity(activity)}
-                >
-                  Delete
-                </Typography>
               </div>
             </TimelineContent>
           </TimelineItem>
