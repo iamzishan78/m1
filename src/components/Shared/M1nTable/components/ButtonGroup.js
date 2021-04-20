@@ -40,13 +40,21 @@ const ButtonDropDown = ({ options }) => {
         
         <>
             {
-            options[selectedIndex].type === "contact" && (
+            
+            (options[selectedIndex].type === "contact" 
+            || options[selectedIndex].type === "wellInterest")
+
+            && (
 
             <>
             
             <ButtonGroup variant="contained" color="primary" ref={anchorRef} aria-label="split button">
                 <Button onClick={handleClick}>{options[selectedIndex].text}</Button>
                 
+                {
+                    options[selectedIndex].type === "contact" 
+                && (
+
                     <Button
                         color="primary"
                         size="small"
@@ -58,6 +66,8 @@ const ButtonDropDown = ({ options }) => {
                     >
                         <ArrowDropDownIcon />
                     </Button>
+                )
+                }
 
             </ButtonGroup>
 
