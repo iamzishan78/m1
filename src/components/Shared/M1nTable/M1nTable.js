@@ -54,6 +54,7 @@ import { setMapGridCardState, showWarningMessage } from "../../../actions";
 
 // Header Schemas 
 import ContactsHeadCells from '../constants/contacts-header-schema.js'
+import DocumentsHeadCells from '../constants/documents-header-schema'
 import WellsHeadCells from '../constants/well-header-schema.js'
 import TrackedOwnersHeadCells from '../constants/track-owners-header-schema.js'
 import CustomWellsHeadCells from '../constants/custom-wells-header-schema.js'
@@ -1231,7 +1232,23 @@ function M1nTable(props) {
         setUploadIcon(false);
         setStartPaginationAt(25);
         setColumnsBase(ContactsHeadCells);
-      }
+
+      } else if (    
+        props.parent  
+        && (props.parent === "Documents")  // for parent of contact screen 
+    ) {
+      setLoading(true);
+      setTargetLabel("documents");
+      setHeader("Documents");
+      setOrderByTracks(false);
+      setAddAble({ parent: false, type: "document" });
+      getPaginatedContacts({variables: { search: stateGrid.gridSearchTarget }});
+      getContactsFilterOptions();
+      updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
+      setUploadIcon(true);
+      setStartPaginationAt(25);
+      setColumnsBase(DocumentsHeadCells);}
+    
 
   }, [props.parent,
       stateGrid.gridSearchTarget]);
@@ -1269,6 +1286,7 @@ function M1nTable(props) {
                  (props.parent === "Contacts")  // for parent of contact screen 
               || (props.parent ==='search' && props.targetLabel === "contacts") // for parent of search grid 
               || (props.parent === "detail-well-card-contact-ties") // for parent of detail well card 
+              ||  (props.parent === "Documents")
               ) 
     ) {
 

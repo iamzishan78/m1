@@ -11,6 +11,7 @@ import NavigationProvider from "./components/Navigation/NavigationProvider";
 import MapProvider from "./components/Map/MapProvider";
 import TrackProvider from "./components/Track/TrackProvider";
 import TransactProvider from "./components/Transact/TransactProvider";
+import DocumentProvider from './components/Document/DocumentProvider'
 import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider";
 import ContactsProvider from "./components/Contacts/ContactsProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
@@ -260,6 +261,11 @@ function App() {
                         exact
                         path="/flow"
                         component={TransactProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/documents"
+                        component={DocumentProvider}
                       />
                       <PrivateRoute
                         exact
