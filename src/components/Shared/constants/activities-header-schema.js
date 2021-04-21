@@ -27,10 +27,10 @@ const ActivitiesHeadCells = [
       name: "end",
       label: "End Date",
     },
-    {
-      name: "contactName",
-      label: "Contact Name",
-    },
+    // {
+    //   name: "contactName",
+    //   label: "Contact Name",
+    // },
     {
       name: "ownerName",
       label: "Activity Owner",
@@ -47,18 +47,18 @@ const ActivitiesHeadCells = [
       name: "notes",
       label: "Notes",
     },
-    {
-      name: "isContact",
-      label: " ",
-      options: {
-        filter: false,
-        searchable: false,
-        sort: false,
-        download: false,
-        print: false,
-        viewColumns: false,
-      },
-    },
+    // {
+    //   name: "isContact",
+    //   label: " ",
+    //   options: {
+    //     filter: false,
+    //     searchable: false,
+    //     sort: false,
+    //     download: false,
+    //     print: false,
+    //     viewColumns: false,
+    //   },
+    // },
   ];
 
   export default ActivitiesHeadCells;

@@ -5,6 +5,9 @@ const ParcelOwnershipStyles = makeStyles((theme) => ({
       "& .MuiTableCell-body": {
         padding: (props) => (props.dense ? "0 !important" : "0px 16px !important")
       },
+      "& .MuiToolbar-root": {
+        backgroundColor: "#F2F2F2",
+      },
       "& .MuiTableHead-root": {
         "& th": {
           backgroundColor: "#F2F2F2",

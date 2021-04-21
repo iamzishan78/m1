@@ -26,7 +26,6 @@ import WellsHeadCells from '../Shared/constants/well-header-schema.js'
 import wellsColumnHeaders from '../Shared/constants/well-interests-header-grid-schema.js'
 import parcelsColumnHeaders from '../Shared/constants/parcel-header-grid.js'
 
-
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -83,8 +82,8 @@ const useStyles = makeStyles((theme) => {
           : mapGridCardActivated === "exp"
             ? "91vh"
             : "60vh",
-      left: ({ mapGridCardActivated }) =>
-        mapGridCardActivated === "exp" ? "2vw" : "2vw",
+      left: ({ mapGridCardActivated,expandGrid }) =>
+        mapGridCardActivated === "exp"  ? "2vw" : "2vw",
       top: ({ mapGridCardActivated }) =>
         mapGridCardActivated === "exp" ? "5vh" : "12vh",
       zIndex: "1300",
@@ -158,6 +157,7 @@ const useStyles = makeStyles((theme) => {
     },
   };
 });
+
 
 const TabLabels = ({ labels, value, setValue }) => {
   const classes = useStyles();
@@ -391,7 +391,6 @@ function MapGridCard(props) {
   // queries 
   const dispatch = useDispatch();
 
-
   // handlers 
   const setSearchTapValue = (state) => {
     if (searchTapValue != state) {
@@ -418,7 +417,7 @@ function MapGridCard(props) {
   const classes = useStyles({
     mapGridCardActivated,
     mapGridCardActiveTap,
-    viewportWells: stateApp.viewportWells,
+    viewportWells: stateApp.viewportWells  
   });
 
   const handleMainTapChange = (event, newValue) => {
@@ -751,7 +750,7 @@ function MapGridCard(props) {
                   />
                 </div>
               </TabPanel>
-
+             
             </div>
           )}
       </Card>
