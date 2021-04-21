@@ -583,6 +583,7 @@ function AddDealDialog(props) {
 			addDealDialog: false,  // not sure why different flags were used here 
 			activeDeal: { cardId: null, laneId: null },
 			transactBarView: "",
+			viewDoc:null
 		}));
 		setValid({});
 	};

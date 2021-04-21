@@ -255,6 +255,10 @@ function ExpandableCard(props) {
         expandedCard: false,
       }));
     }
+    setStateApp((state) => ({
+      ...state,
+      viewDoc:null
+    }));
     props.handleCloseExpandableCard();
     //if EC is inside map popup you need to close it
   };
@@ -512,6 +516,7 @@ function ExpandableCard(props) {
                 <IconButton
                   size={stateExpandableCard.expanded ? "medium" : "small"}
                   onClick={handleClose}
+                  
                   aria-label="close"
                   className={classes.icons}
                 >

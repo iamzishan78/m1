@@ -367,7 +367,7 @@ export default function Documents(props) {
                 ?.toLowerCase();
               if (key <= 1) {
                 return (
-                  <Grid item xs={4} key={key}>
+                  <Grid item xs={4} key={key} className="" >
                     <LightTooltip
                       title={
                         <div className={classes.IconSection}>
@@ -429,7 +429,12 @@ export default function Documents(props) {
                             className={classes.forImage}
                           ></img>
                         ) : (
-                          <div className={classes.forImageContainer}>
+                          <div className={classes.forImageContainer}  onClick={() => {
+                            if(fileExtension === 'pdf')
+                            {
+                              setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name, downloadFn:handleViewFile, downloadData: files?.getFileDescriptors[key].fileId}})
+                            }
+                          }}>
                             {/* {fileExtension} */}
                             {getFileIcon(fileExtension)}
                           </div>
@@ -445,7 +450,7 @@ export default function Documents(props) {
                 );
               }
             })}
-            <Grid item xs={4}>
+            <Grid item xs={4} >
               <div className={classes.Uploadcomp}>
                 <UploadZone
                   style={{ width: "150px", height: "150px" }}
