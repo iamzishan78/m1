@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TransactProvider(props) {
+export default function DocumentProvider(props) {
   let classes = useStyles();
   return (
     <DocumentContextProvider>

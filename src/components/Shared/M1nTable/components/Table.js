@@ -78,6 +78,7 @@ import Chip from '@material-ui/core/Chip';
 import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import ButtonDropDown from "./ButtonGroup"
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 // import value formatters 
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
@@ -2076,7 +2077,8 @@ function SubTable(props) {
           if (
             props.header === "Owner's Contacts" ||
             props.header === "Contacts" ||
-            props.header === "Active Users"
+            props.header === "Active Users" ||
+            props.header === 'Documents'
           ) {
             const getSelectedRows = () => {
               const selectedRows = [];
@@ -2100,7 +2102,7 @@ function SubTable(props) {
                     display: "flex",
                   }}
                 >
-                {props.header !== "Active Users" && (
+                {(props.header !== "Active Users" &&  props.header !== 'Documents') && (
                   <>
                     {/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
                       <Button
@@ -2293,8 +2295,8 @@ function SubTable(props) {
       return (
         <>
         <div style={{ displat: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
-          <ButtonDropDown options={options} />
-          {props.header !== "Active Users" && (
+         {props.header !== 'Documents' &&  <ButtonDropDown options={options} />}
+          {props.header !== "Active Users" && props.header !== 'Documents' && (
             <>
               <Button
                 color="secondary"
@@ -2844,12 +2846,12 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    return  props.header === 'Contacts' ? (
+    return  props.header === 'Contacts' || props.header === 'Documents' ? (
       <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left'}}>
-        <Contact />
+       {props.header === 'Documents' ? ( <DescriptionOutlinedIcon />) : ( <Contact />)}
         <label style={{ marginLeft: '10px', fontSize: '16px'}}>{props.header}</label>
         <ArrowRight/>
-        <label style={{ color: '#18AADD', fontSize: '16px' }}>All Contacts</label>
+        <label style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</label>
       </div>
       ) : props.header
   }

@@ -73,6 +73,21 @@ import ContactWellHeadCells from '../constants/contactperwell-header-schema.js'
 
 // import value formatters 
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
+import { gql, useQuery } from '@apollo/client';
+
+const GET_Documents = gql`
+  query getFileDescriptors  {
+     getFileDescriptors{
+      fileName
+      fileState
+      fileUrl
+      fileId
+      userName
+      dateTime
+      descriptorId
+    }
+}
+`;
 
 const useStyles = makeStyles((theme) => ({
   container: { 
@@ -89,8 +104,8 @@ function M1nTable(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateGrid, setStateGrid] = useContext(MapGridContext);
-
-
+  const { loading: DocumentLoading, error, data: DocumentsData } = useQuery(GET_Documents);
+ console.log(DocumentsData, 'DocumentsData')
   // function states 
   const [addDealOpen, setAddDealOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState();
@@ -1233,7 +1248,8 @@ function M1nTable(props) {
         setStartPaginationAt(25);
         setColumnsBase(ContactsHeadCells);
 
-      } else if (    
+      } 
+      else if (    
         props.parent  
         && (props.parent === "Documents")  // for parent of contact screen 
     ) {
@@ -2517,6 +2533,20 @@ function M1nTable(props) {
     }
 
   }, [dataDeals]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Documents" &&
+      DocumentsData?.getFileDescriptors 
+    ) {
+      setTargetLabel("deal");
+      setRows([...DocumentsData.getFileDescriptors]);
+      setColumns([...DocumentsHeadCells]);
+      setLoading(false);
+    }
+
+  }, [DocumentsData]);
 
   // deals delete
   useEffect(() => {

@@ -9,7 +9,8 @@ import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import { useDispatch } from "react-redux";
 import { toggleMapGridCardAtived } from "../../../actions";
-
+import PostAddOutlinedIcon from '@material-ui/icons/PostAddOutlined';
+import { useLocation } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({
   root: {
     "& .MuiButtonGroup-root": { width: "100%" },
@@ -44,18 +45,33 @@ export default function SearchBarWithToggleButton() {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
-
+  let location = useLocation();
   return (
-    <div className={classes.root}>
+    <div className={classes.root} >
       <ButtonGroup
         variant="text"
         color="primary"
         aria-label="text primary button group"
       >
         <Search />
-        <Tooltip title="Search Grid">
-          <Button
+          {location.pathname === "/documents" ? (
+        <Tooltip title="Add Document">
+
+            <Button
             className={classes.gridOnIcon}
+            
+            
+          >
+            <PostAddOutlinedIcon />
+          </Button>
+        </Tooltip>
+
+          ) : (
+        <Tooltip title="Search Grid">
+
+            <Button
+            className={classes.gridOnIcon}
+          
             onClick={() => {
               dispatch(toggleMapGridCardAtived());
             }}
@@ -63,6 +79,8 @@ export default function SearchBarWithToggleButton() {
             <GridOnIcon />
           </Button>
         </Tooltip>
+
+          )}
       </ButtonGroup>
     </div>
   );
