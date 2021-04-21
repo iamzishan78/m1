@@ -15,6 +15,7 @@ import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: "23px 23px 0 23px",
+    cursor:"pointer",
   },
 
   cardContent: { width: "100%", display: "flex" },
@@ -123,15 +124,16 @@ export default function Deals({ contact, ...props }) {
   };
 
   return (
-    <div className={classes.root}>
-      <div>
-        <h4 style={{ marginTop: "0", float: "left" }}>
-          Deals ({allDeals.length})
-        </h4>
-        <IconButton
-          size="small"
-          className={classes.addIcon}
-          onClick={() => {
+    // <div className={classes.root}>
+    //   <div>
+    //     <h4 style={{ marginTop: "0", float: "left" }}>
+    //       Deals ({allDeals.length})
+    //     </h4>
+    //     <IconButton
+    //       size="small"
+    //       className={classes.addIcon}
+    //       onClick={() => {
+    <div className={classes.root} onClick={() => {
             props.handleOpenExpandableCard(
               <DealsDetailCard
                 activeDeals={activeDeals}
@@ -142,6 +144,12 @@ export default function Deals({ contact, ...props }) {
               "Deals"
             );
           }}
+        >
+         <div>
+        <h4 style={{ marginTop: "0", float: "left" }}>Deals ({ allDeals.length })</h4>
+        <IconButton
+          size="small"
+          className={classes.addIcon}
         >
           <AddIcon htmlColor="rgb(28 173 225 / 81%)" />
         </IconButton>
