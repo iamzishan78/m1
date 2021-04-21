@@ -12,6 +12,8 @@ import { CircularProgress } from "@material-ui/core";
 import { pdfjs } from 'react-pdf';
 import GetAppIcon from "@material-ui/icons/GetApp";
 import './ViewDocStyle.css'
+import ZoomInIcon from '@material-ui/icons/ZoomIn';
+import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 
@@ -20,7 +22,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 const useStyles = makeStyles((theme) => ({
   paper: {
     backgroundColor: theme.palette.background.paper,
-    height: "49.5vw !important",
+    height: "98vh !important",
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
     overflow: 'scroll',
@@ -32,13 +34,22 @@ const useStyles = makeStyles((theme) => ({
   paperTwo: {
     backgroundColor: theme.palette.background.paper,
     height: "950px",
-
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
     overflow: 'scroll',
     border: "0px",
     inset: 'unset',
     backgroundColor: "white !important"
+  },
+  ZoomIcons: {
+    zIndex: '1',
+    display: "flex",
+    flexDirection: "column",
+    position: "sticky   !important",
+    top: "85% !important",
+    bottom: "0 !important",
+    left: "0",
+    width: "3.875rem",
   },
 }));
 
@@ -48,6 +59,7 @@ const SimpleModal = ({ DocStyle = { top: '56% ', left: '40% ',  transform: `tran
   let [pageNumber, setPageNumber] = useState(1);
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [pdfState, setpdfState] = useState([])
+  let [zoom, setzoom] = useState(2.0)
  
   const preview = file => {
     return setpdfState({ show: true, file: file });
@@ -76,7 +88,7 @@ const SimpleModal = ({ DocStyle = { top: '56% ', left: '40% ',  transform: `tran
     setpdfState(Page)
   }
 
-
+console.log(zoom, 'value of zoom')
   return (
     <div >
       {divCondition === false ? (
@@ -96,7 +108,14 @@ const SimpleModal = ({ DocStyle = { top: '56% ', left: '40% ',  transform: `tran
         >
 
           <div style={DocStyle} className={classes.paper}>
-            <Grid item xs={12} style={{ minHeight: "35px", width: '100%' }}>
+          <div className={classes.ZoomIcons} >   <IconButton onClick={()=>{setzoom(zoom+0.25)}}>
+                        <ZoomInIcon fontSize={"large"}/>
+                </IconButton>
+                <IconButton onClick={()=>{setzoom(zoom-0.25)}}>
+                         <ZoomOutIcon fontSize={"large"}/>
+                </IconButton>
+            </div>
+            <Grid item xs={12} style={{ minHeight: "35px", width: '100%',display:'block',marginTop:'-123px' }}>
               <h4
                 style={{
                   margin: "0 0 15px 0",
@@ -109,8 +128,8 @@ const SimpleModal = ({ DocStyle = { top: '56% ', left: '40% ',  transform: `tran
 
               <div style={{ "float": "right" }}>
 
-                <>
-
+                <>  
+                
                   <IconButton
 
                     size="small"
@@ -144,17 +163,20 @@ const SimpleModal = ({ DocStyle = { top: '56% ', left: '40% ',  transform: `tran
                 </IconButton>
               </div>
             </Grid>
-            <div >
+           
+            <div  >
               <Document
-                style={{ display: 'grid', justifyContent: 'center', width: '100%' }}
+                style={{ display: 'grid', justifyContent: 'center' }}
                 file={stateApp?.viewDoc?.uri}
+                scale={3.0}
                 onLoadSuccess={onDocumentLoadSuccess}
                 loading={<div style={{ width: '100%', display: "flex", justifyContent: 'center' }}><CircularProgress /></div>}
               >
+                
 
                 {pdfState?.map((value, key) => {
                   return (
-                    <Page key={key} pageNumber={value} style={{ display: 'grid', justifyContent: 'center', width: '100%' }} />
+                    <Page key={key} pageNumber={value} scale={zoom} style={{ display: 'grid', justifyContent: 'center',margin:'auto'}} />
                   )
                 })}
 
@@ -164,6 +186,7 @@ const SimpleModal = ({ DocStyle = { top: '56% ', left: '40% ',  transform: `tran
         </Modal>
       ) : (
         <div style={DocStyle} className={classes.paperTwo}>
+
           <Grid item xs={12} style={{ minHeight: "35px", width: '100%' }}>
             <h4
               style={{
@@ -212,6 +235,9 @@ const SimpleModal = ({ DocStyle = { top: '56% ', left: '40% ',  transform: `tran
               </IconButton>
             </div>
           </Grid>
+        
+         
+        
           <div >
             <Document
               style={{ display: 'grid', justifyContent: 'center', width: '100%' }}
@@ -225,8 +251,9 @@ const SimpleModal = ({ DocStyle = { top: '56% ', left: '40% ',  transform: `tran
                   <Page key={key} pageNumber={value} style={{ display: 'grid', justifyContent: 'center', width: '100%' }} />
                 )
               })}
-
+             
             </Document>
+           
           </div>
         </div>
       )}
