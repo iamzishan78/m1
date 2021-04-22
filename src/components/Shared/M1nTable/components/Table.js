@@ -2241,13 +2241,12 @@ function SubTable(props) {
 
     customToolbar: () => {
 
+      console.log('PROPS',props)
       var buttonLabel = "+ ADD"; 
-      if (props.addAble.type === "contact"){
-        buttonLabel = '+ ADD CONTACT'
-      }
-      if (props.addAble.type === "wellInterest"){
-        buttonLabel = '+ ADD INTEREST'
-      }
+      if (props.addAble.type === "contact"){buttonLabel = '+ ADD CONTACT'}
+      if (props.addAble.type === "wellInterest"){buttonLabel = '+ ADD INTEREST'}
+      if (props.addAble.type === "deals"){buttonLabel = '+ ADD DEAL'}
+      if (props.addAble && props.parent === "UserManagement"){buttonLabel = "+ ADD USER"}
 
       const addAction = (e) => {
         e.stopPropagation();
@@ -2313,7 +2312,11 @@ function SubTable(props) {
       return (
         <>
         <div style={{ display: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
-          {props.addAble.type === "wellInterest" && (
+          {props.addAble.type === "wellInterest" 
+          || props.addAble.type === "deals"
+          || (props.addAble && props.parent === "UserManagement")
+          
+          && (
             <Button
               color="secondary"
               className={classes.multiSelectionTopBarButtons}
@@ -2348,89 +2351,6 @@ function SubTable(props) {
           )
           }
         </div>
-          {/* {props.uploadIcon && (
-            //////Upload Icon/////////////////////////
-            <span className={classes.addIcon}>
-              <Tooltip
-                title={`Import ${props.targetLabel.charAt(0).toUpperCase() +
-                  props.targetLabel.slice(1)
-                  }s`}
-              >
-                <IconButton
-                  size="medium"
-                  onClick={(e) => {
-                    routeChange("/bulkupload");
-                  }}
-                >
-                  <BackupIcon />
-                </IconButton>
-              </Tooltip>
-            </span>
-          )}
-          {props.addAble && (
-            //////Add Icon/////////////////////////
-            <span className={classes.addIcon}>
-              <Tooltip
-                title={`Add${props.parent === "assocTaxRollInterests"
-                  ? " Well Interest"
-                  : props.targetLabel
-                    ? " " +
-                    props.targetLabel.charAt(0).toUpperCase() +
-                    props.targetLabel.slice(1)
-                    : ""
-                  }`}
-              >
-                <IconButton
-                  size="medium"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (props.addAble.type && props.addAble.type === "contact")
-                      handleExpandClick(null, null, null, "addContact");
-
-                    if (
-                      props.addAble.type &&
-                      props.addAble.type === "ownerToParcel"
-                    )
-                      handleExpandClick(null, null, null, "addOwnerToParcel");
-
-                    if (props.addAble.type && props.addAble.type === "deals")
-                      setStateApp((stateApp) => ({
-                        ...stateApp,
-                        dealDialog: true,
-                        activeDeal: { cardId: null, laneId: null },
-                      }));
-
-                    if (props.addAble.type && props.addAble.type === "wellInterest") {
-                      setStateApp((stateApp) => ({
-                        ...stateApp,
-                        wellInterestDialog: true,
-                        //activeDeal: { cardId: null, laneId: null },
-                      }));
-                    }
-
-                    if (
-                      props.addAble.type &&
-                      props.addAble.type === "parcelInterestsToEntity"
-                    )
-                      // handleExpandClick(null, null, null, "addOwnerToParcel");
-                      handleExpandClick(
-                        null,
-                        null,
-                        null,
-                        "addParcelInterestsToEntity"
-                      );
-                    if (
-                      props.addAble.type &&
-                      props.addAble.type === "inviteUser"
-                    )
-                      handleExpandClick(null, null, null, "inviteUser");
-                  }}
-                >
-                  <AddCircleOutlineRoundedIcon />
-                </IconButton>
-              </Tooltip>
-            </span>
-          )} */}
         </>
       );
     },
