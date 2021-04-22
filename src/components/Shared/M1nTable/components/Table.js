@@ -17,6 +17,7 @@ import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import MUIDataTable, { TableFilterList } from "mui-datatables";
+import { DndProvider } from 'react-dnd';
 import { Box, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
 import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -91,7 +92,8 @@ import { OPERATORSLATSLONS } from "../../../../graphQL/useQueryOperatorLatsLonsA
 import { LEASELATSLONS } from "../../../../graphQL/useQueryLeaseLatsLonsArray";
 import { CONTACTWELLS } from "../../../../graphQL/useQueryContactWells";
 
-
+// suppress debug console logs
+DndProvider.whyDidYouRender = false
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
 
@@ -2035,7 +2037,7 @@ function SubTable(props) {
         ]);
     },
     //// triggers when a row/s is selected ////
-    onRowsSelect: (currentRowsSelected, rowsSelected) => {
+    onRowSelectionChange: (currentRowsSelected, rowsSelected) => {
       if (rowsSelected && rowsSelected.length > 0) {
         let indexArray = rowsSelected
           .map((d) => d.dataIndex)
@@ -2231,10 +2233,28 @@ function SubTable(props) {
             />
           );
         },
+
     customToolbar: () => {
+
+      var buttonLabel = "+ ADD"; 
+      console.log('props addable type', props.addAble.type)
+      console.log('props', props)
+      if (props.addAble.type === "contact"){
+        buttonLabel = '+ ADD CONTACT'
+      }
+      if (props.addAble.type === "wellInterest"){
+        buttonLabel = '+ ADD INTEREST'
+      }
+      if (props.addAble.type === "deals"){
+        buttonLabel = '+ ADD DEAL'
+      }
+
+
+
       const options = [
         { 
-          text:'Add Contact',
+          text: buttonLabel,
+          type: props.addAble.type,
           isShow: false,
           action: (e) => {
             e.stopPropagation();
@@ -2282,6 +2302,7 @@ function SubTable(props) {
         },
         {  text: 'Import Contacts', isShow: true, action: () => routeChange("/bulkupload") }
       ];
+
       const getSelectedRows = () => {
         const selectedRows = [];
         for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
@@ -2294,7 +2315,10 @@ function SubTable(props) {
         <>
         <div style={{ displat: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
           <ButtonDropDown options={options} />
-          {props.header !== "Active Users" && (
+
+          
+          {
+          props.addAble.type === "contact" && (
             <>
               <Button
                 color="secondary"
@@ -2313,7 +2337,8 @@ function SubTable(props) {
                 Mailers
               </Button>
             </>
-          )}
+          )
+          }
         </div>
           {/* {props.uploadIcon && (
             //////Upload Icon/////////////////////////
@@ -2676,12 +2701,14 @@ function SubTable(props) {
             tableState.page = 0;
             setPageInd(tableState.page);
             props.contactsPageProps.getPaginatedContacts(pageVariables);
+            props.contactsPageProps.getContactsFilterOptions(pageVariables);
             break;
           case "resetFilters":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
             setPageInd(tableState.page);
             props.contactsPageProps.getPaginatedContacts(pageVariables);
+            props.contactsPageProps.getContactsFilterOptions();
             break;
           default:
         }
@@ -2791,7 +2818,7 @@ function SubTable(props) {
         ? [10, 25, 50]
         : props.contactsPageProps.contactsCount > 10
           ? [10, 25]
-          : [];
+          : [10];
     options.count = props.contactsPageProps.contactsCount;
     options.serverSide = true;
     //options.print = true;

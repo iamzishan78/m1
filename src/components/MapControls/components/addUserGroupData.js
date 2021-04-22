@@ -66,7 +66,6 @@ export default function AddUserGroupData(props) {
     stateMapControls.fileUploadedContent
   );
   const [layerNames, setLayerNames] = useState([]);
-  const [layerName, setLayerName] = useState('');
   const [groupName, setGroupName] = useState("");
   const [error, setErrorr] = useState(false);
   const [notReturn, setNotReturn] = useState(false);
@@ -77,7 +76,7 @@ export default function AddUserGroupData(props) {
 
   const [addFile] = useMutation(ADDFILE);
 
-  const [addLayer, { data: newLayer }] = useMutation(ADDLAYER);
+  const [addLayer] = useMutation(ADDLAYER);
 
   const groupId = uuid()
 
@@ -93,12 +92,27 @@ export default function AddUserGroupData(props) {
     }
   }, [stateMapControls.fileUploadedContent]);
 
-  const handleClose = () => {
+  const handleCancel = () => {
     setIsOpen(false);
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       selectedControl: null,
       fileUploadedContent: null,
+    }));
+    setNotReturn(false);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      universalCircularLoaderAct: false,
+    }));
+    setStateMapControls((stateMapControls) => ({
+      ...stateMapControls,
+      selectedControl: null,
+      fileUploadedContent: null,
+      addLayer: false,
     }));
     setNotReturn(false);
   };
@@ -136,38 +150,6 @@ export default function AddUserGroupData(props) {
       });
     }
   }
-
-  useEffect(() => {
-    if (newLayer) {
-      setNotReturn(true);
-      //// dont remove the universal loader or close till stateApp.layers[layerIndex].fileContent
-    }
-  }, [newLayer]);
-
-  useEffect(() => {
-    if (stateApp.layers) {
-      const layerIndex = stateApp.layers.findIndex(
-        (layer) => layer.layerName == layerName
-      );
-      if (
-        layerIndex !== -1 &&
-        layerName &&
-        layerName !== "" &&
-        stateApp.layers[layerIndex] &&
-        stateApp.layers[layerIndex].fileContent
-      ) {
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          universalCircularLoaderAct: false,
-        }));
-        setStateMapControls((stateMapControls) => ({
-          ...stateMapControls,
-          addLayer: false,
-        }));
-        handleClose();
-      }
-    }
-  }, [stateApp.layers]);
 
   const uploadFile = (data, fileData, fileContent, isLast) => {
     const { layerName, groupName, groupId } = data
@@ -298,6 +280,10 @@ export default function AddUserGroupData(props) {
             refetchQueries: isLast ? ["getAllLayerSettingsByUser"] : [],
             awaitRefetchQueries: true,
           });
+
+          if (isLast) {
+            handleClose();
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -337,21 +323,23 @@ export default function AddUserGroupData(props) {
           uploadFile(data, file.data, layer, isLast)
         }
       })
-      handleClose()
-
     }
   };
 
   const handleLayerNameChanges = (value, index) => {
-    layerNames[index] = value
-    setLayerNames([...layerNames])
+
+    if (value && layerNames.includes(value)) {
+      dispatch(showErrorMessage("Layer with this name already exist"));
+    } else {
+      layerNames[index] = value
+      setLayerNames([...layerNames])
+    }
+
   };
 
   const handleGroupNameChanges = (e) => {
-    if (e.target.value) {
-      setErrorr(false);
-      setGroupName(e.target.value);
-    }
+    setErrorr(false);
+    setGroupName(e.target.value);
   };
 
   const handleURLinput = async () => {
@@ -372,8 +360,8 @@ export default function AddUserGroupData(props) {
     setUploadFailed("");
   };
 
-
   if (notReturn) return null;
+
   return (
     <Dialog open={isOpen} onClose={handleClose}>
       <DialogTitle>Create a new Group</DialogTitle>
@@ -460,11 +448,11 @@ export default function AddUserGroupData(props) {
         </Snackbar>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={handleClose} color="primary">
+        <Button autoFocus onClick={handleCancel} color="primary">
           Cancel
         </Button>
         <Button
-          disabled={!groupName || !inputFiles}
+          disabled={!groupName || layerNames.includes("") || !inputFiles}
           autoFocus
           onClick={handleApplyChanges}
           color="primary"

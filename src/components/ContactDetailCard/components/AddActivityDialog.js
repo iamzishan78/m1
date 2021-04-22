@@ -2,14 +2,20 @@ import React, { useState, useEffect, useContext } from "react";
 import clsx from "clsx";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import moment from "moment";
+import { useDispatch } from "react-redux";
+import {
+	showErrorMessage,
+	showSuccessMessage,
+} from "../../../actions";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import {Dialog,CircularProgress} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
+import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
 import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
@@ -26,6 +32,9 @@ import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { OPENDEALS } from "../../../graphQL/useQueryOpenDeals";
+import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { DELETEACTIVITY } from "../../../graphQL/useMutationActivity";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -117,6 +126,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "flex-end",
     alignItems: "center",
   },
+  dialog: {
+		zIndex: "99999 !important",
+	},
 }));
 
 const initialErrors = {
@@ -146,6 +158,7 @@ function AddActivityDialog(props) {
   const classes = useStyles();
   const { selectedActivity, onClose, contactData } = props;
   const [stateApp] = useContext(AppContext);
+	const dispatch = useDispatch();
 
   const [addNew, setAddNew] = useState(true);
   const [activityType, setActivityType] = useState("call");
@@ -162,10 +175,28 @@ function AddActivityDialog(props) {
   const [errors, setErrors] = useState({ ...initialErrors });
   const [users, setUsers] = useState([]);
 
+
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
     fetchPolicy: "cache-and-network",
   });
 
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteActivityMutation, { loading: deleteLoading }] = useMutation(
+    DELETEACTIVITY,
+    {
+      refetchQueries: ["getContact", "getAllActivities"],
+      awaitRefetchQueries: true,
+    }
+  );
+
+	const openConfirmationDialog = () => {
+		setDeleteDialogOpen(true);
+	};
+	const handleCloseDialog = () => {
+		setDeleteDialogOpen(false);
+  };
+  
   useEffect(() => {
     getAllUsers();
   }, []);
@@ -400,21 +431,77 @@ function AddActivityDialog(props) {
     onModalClose();
   };
 
+  const deleteFunc = async () => {
+		try {
+			setIsDeleting(true);
+			await deleteActivityMutation({
+        variables: {
+          id: selectedActivity._id,
+        },
+      }).then((result) => {
+				const {
+					data: { deleteActivity },
+				} = result;
+				if (deleteActivity?.success === true) {
+					dispatch(showSuccessMessage("The Activity was successfully deleted."));
+					onModalClose();
+				} else dispatch(showErrorMessage("An error occurred."));
+			});;
+			setIsDeleting(false);
+		} catch {
+			setIsDeleting(false);
+		}
+	};
+
   return (
     <div style={{ padding: "30px" }}>
       {/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
         Recent Activities
       </h4> */}
+      {deleteDialogOpen && (
+				<Dialog
+					className={classes.dialog}
+					open={deleteDialogOpen ? true : false}
+					onClose={handleCloseDialog}
+					fullWidth={false}
+					maxWidth="sm"
+				>
+					<DeleteConfirmationDialogContent
+						header={`Delete Activity`}
+						onClose={handleCloseDialog}
+						deleteFunc={deleteFunc}
+						m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => { }}
+					>
+						Do you want to delete the selected Activity?
+					</DeleteConfirmationDialogContent>
+				</Dialog>
+			)}
+
       <Grid item xs={12} style={{ minHeight: "35px" }}>
         <h4 style={{ margin: "0 0 30px 0", float: "left", fontSize: "1.1rem" }}>
           Recent Activities
         </h4>
-
+        {!addNew &&        
+          <IconButton
+            size="small"
+            style={{ float: "right", top: "-5px", right: "37px" }}
+            disabled={addLoading || updateLoading} 
+            onClick={openConfirmationDialog}
+          >  
+          {isDeleting ? <CircularProgress size={20} color="secondary" />: 
+                        <DeleteIcon
+                          className={classes.closeIcon}
+                          fontSize="small"
+                        />
+          }
+          </IconButton>
+        }  
         <IconButton
           onClick={onModalClose}
           size="small"
-          style={{ float: "right", top: "-5px", right: "-5px" }}
-        >
+          style={{ float: "right", top: "-5px", right: `${addNew ? -5 : -26}px` }}
+        >  
           <CloseIcon className={classes.closeIcon} fontSize="small" />
         </IconButton>
       </Grid>

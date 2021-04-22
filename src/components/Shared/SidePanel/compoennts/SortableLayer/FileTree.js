@@ -27,7 +27,6 @@ const FileTree = ({ layerMap }) => {
     const handleChange = (newItems) => {
         const index = newItems.findIndex((item) => item.id === currentItem.current.id);
         if (newItems[index].depth === 1) {
-            debugger;
             const parent = findParent(newItems, index)
             if (parent.type !== 'group') {
                 newItems[index].depth = 0

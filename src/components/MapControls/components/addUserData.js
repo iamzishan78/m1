@@ -118,7 +118,6 @@ export default function AddUserData(props) {
   useEffect(() => {
     if (fileData && fileData.addFile) {
       if (fileData.addFile.success) {
-        debugger;
         // Upload file to MS Blob Stroage
 
         let fileContent = inputFiles;

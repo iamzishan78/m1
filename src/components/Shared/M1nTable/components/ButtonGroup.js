@@ -36,22 +36,45 @@ const ButtonDropDown = ({ options }) => {
         setOpen(false);
     };
 
+    
     return (
+        
         <>
+            {
+            
+            (options[selectedIndex].type === "contact" 
+            || options[selectedIndex].type === "wellInterest"
+            || options[selectedIndex].type === "deals"
+            )
+
+            && (
+
+            <>
+            
             <ButtonGroup variant="contained" color="primary" ref={anchorRef} aria-label="split button">
                 <Button onClick={handleClick}>{options[selectedIndex].text}</Button>
-                <Button
-                    color="primary"
-                    size="small"
-                    aria-controls={open ? 'split-button-menu' : undefined}
-                    aria-expanded={open ? 'true' : undefined}
-                    aria-label="select merge strategy"
-                    aria-haspopup="menu"
-                    onClick={handleToggle}
-                >
-                    <ArrowDropDownIcon />
-                </Button>
+                
+                {
+                    options[selectedIndex].type === "contact" 
+                && (
+
+                    <Button
+                        color="primary"
+                        size="small"
+                        aria-controls={open ? 'split-button-menu' : undefined}
+                        aria-expanded={open ? 'true' : undefined}
+                        aria-label="select merge strategy"
+                        aria-haspopup="menu"
+                        onClick={handleToggle}
+                    >
+                        <ArrowDropDownIcon />
+                    </Button>
+                )
+                }
+
             </ButtonGroup>
+
+
             <Popper id="popper-1" open={open} anchorEl={anchorRef.current} role={undefined} transition>
                 {({ TransitionProps, placement }) => (
                     <Grow
@@ -82,6 +105,9 @@ const ButtonDropDown = ({ options }) => {
                     </Grow>
                 )}
             </Popper>
+</>
+)
+}
         </>
     )
 }

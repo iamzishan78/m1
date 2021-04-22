@@ -3037,9 +3037,10 @@ function M1nTable(props) {
         contactsPageProps={{
           getPaginatedContacts,
           getContactsFilterOptions,
-          contactsCount: dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
-            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount
-            : 0,
+          contactsCount: 
+          dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount
+            || dataContacts?.paginatedContacts?.edges?.length
+            || 0,
           setLoading,
         }}
         wellInterestsPageProps={{

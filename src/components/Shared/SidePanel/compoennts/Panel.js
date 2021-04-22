@@ -119,7 +119,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			items
 		) {
 
-			// debugger
 			setLayerMap(items);
 
 		} else if (type === "base" && items) {
@@ -442,7 +441,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 							: "0px",
 					transition: "left 0.5s ease-in-out",
 					listStyleType: "none",
-					zIndex: "9999"
+					zIndex: "99999"
 				}}
 			>
 				<StyledMenu

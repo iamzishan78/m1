@@ -16,7 +16,6 @@ const reorder = (list, startIndex, endIndex) => {
 };
 
 const reorderLayers = (list, startPosition, endPosition) => {
-	debugger;
 	const reorderedLayers = Array.from(list);
 	let startIndex = reorderedLayers.findIndex(
 		(layer) => layer.position == startPosition
