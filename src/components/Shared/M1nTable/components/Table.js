@@ -2315,6 +2315,7 @@ function SubTable(props) {
         <div style={{ display: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
           {props.addAble.type === "wellInterest" 
           || props.addAble.type === "deals"
+          || props.addAble.type === "ownerToParcel"
           || (props.addAble && props.parent === "UserManagement")
           
           && (
