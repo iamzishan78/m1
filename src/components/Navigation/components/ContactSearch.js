@@ -67,13 +67,14 @@ const ContactSearch = () => {
   return (
     <div className={classes.search}>
       <TextField
-        value={stateApp.contactSearchQuery}
         onChange={(e) => {
+          setTimeout(() =>{
             setStateApp((stateApp) => ({
-                ...stateApp,
-                contactSearchQuery: e.target.value,
-                isContactSearching: true
-              }));
+              ...stateApp,
+              contactSearchQuery: e.target.value,
+              isContactSearching: true
+            }));
+          }, 500)
         }}
         style={{
           margin: 0,

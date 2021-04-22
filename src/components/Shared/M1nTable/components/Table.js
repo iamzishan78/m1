@@ -202,6 +202,14 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiPaper-root > .MuiToolbar-gutters": {
       paddingLeft: '11px !important'
     },
+    "& .MuiPaper-elevation1": {
+      flexDirection: "row !important" ,
+      height: '65px !important',
+      width: '100% !important',
+      display: 'flex !important',
+      flex: 'auto',
+      alignItems: 'center !important'
+    },
     "& .MuiButton-text": {
       padding: "5px 12px"
     },
@@ -920,10 +928,6 @@ function SubTable(props) {
     setPageInd(e.tableState.page);
     e.getPaginatedContacts(e.pageVariables);
     e.getContactsFilterOptions(e.pageVariables);
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      isContactSearching: false,
-    }));
   };
 
   const delayedSearchRequest = React.useMemo(
@@ -2650,6 +2654,10 @@ function SubTable(props) {
         };
         if(stateApp.isContactSearching){
           action = 'search'
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            isContactSearching: false,
+          }));
         }
         switch (action) {
           case "changeRowsPerPage":
@@ -2917,7 +2925,7 @@ function SubTable(props) {
           options={{
             ...options,
             searchText: stateApp.contactSearchQuery,
-            search: false
+            search: props.header === 'Contacts' ? false : props.parent != "search"
             // searchOpen: true,
             //download: false,
             // search: props.parent != "search",  
