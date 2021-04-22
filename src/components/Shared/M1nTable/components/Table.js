@@ -2247,26 +2247,14 @@ function SubTable(props) {
 
     customToolbar: () => {
 
-      console.log('PROPS',props)
-      var buttonLabel = "+ ADD"; 
       console.log('props addable type', props.addAble.type)
-      console.log('props', props.header)
-      console.log('props', props)
-      if (props.addAble.type === "contact"){
-        buttonLabel = '+ ADD CONTACT'
-      }
-      if (props.addAble.type === "wellInterest"){
-        buttonLabel = '+ ADD INTEREST'
-      }
-      if (props.addAble.type === "deals"){
-        buttonLabel = '+ ADD DEAL'
-      }
-      if (props.addAble && props.parent === "UserManagement"){
-        buttonLabel = "+ ADD USER"
-      }
-      if (props.addAble.type === "ownerToParcel"){
-        buttonLabel = "+ ADD PARCEL"
-      }
+      var buttonLabel = "+ ADD"; 
+      if (props.addAble.type === "contact"){buttonLabel = '+ ADD CONTACT'}
+      if (props.addAble.type === "wellInterest"){buttonLabel = '+ ADD INTEREST'}
+      if (props.addAble.type === "deals"){buttonLabel = '+ ADD DEAL'}
+      if (props.addAble && props.parent === "UserManagement"){buttonLabel = "+ ADD USER"}
+      if (props.addAble.type === "ownerToParcel"){buttonLabel = '+ ADD PARCEL'}
+
 
       const addAction = (e) => {
         e.stopPropagation();
@@ -2310,6 +2298,7 @@ function SubTable(props) {
         )
           handleExpandClick(null, null, null, "inviteUser");
       }
+
 
       const options = [
         { 
