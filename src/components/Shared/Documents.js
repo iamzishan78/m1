@@ -243,15 +243,17 @@ export default function Documents(props) {
 		fetchPolicy: "no-cache",
 	});
 	useEffect(() => {
-		let ID = [];
-		for (let i = 0; i < files?.getFileDescriptors.length; i++) {
-      // console.log(files?.getFileDescriptors[i].fileId, 'Kumail Test')
-			ID.push(files?.getFileDescriptors[i].fileId);
-		}
+    if(files && files?.getFileDescriptors?.length > 0){
+      let ID = [];
+      for (let i = 0; i < files?.getFileDescriptors.length; i++) {
+        // console.log(files?.getFileDescriptors[i].fileId, 'Kumail Test')
+        ID.push(files?.getFileDescriptors[i].fileId);
+      }
 
-		viewFiles({
-			variables: { fileIds: ID },
-		});
+      viewFiles({
+        variables: { fileIds: ID },
+      });
+    }
 	}, [files]);
 
   useEffect(() => {
@@ -419,17 +421,11 @@ export default function Documents(props) {
                       // {
                         // console.log(viewFileResult?.viewFile.viewFile.uri, 'StateApp')
                         
-                        console.log(viewFileResultt, 'StateApp')
-                        console.log(file.fileId, 'StateApp')
+                       if(viewFileResultt && viewFileResultt.viewFiles){
 
-                       viewFileResultt?.viewFiles.map((value) => {
-                         if(value.id === file.fileId && ExtenstionGetter(file.fileName) === 'pdf')
-                         {
-                           console.log("teste")
-                        setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:file.fileName, downloadFn:handleViewFile, downloadData: file.fileId}})
-
-                         }
-                       })
+                          const idx = viewFileResultt?.viewFiles?.findIndex(value => value.id === file.fileId && ExtenstionGetter(file.fileName) === 'pdf')
+                          if(idx > -1) setStateApp({ ...stateApp, viewDoc: {uri:viewFileResultt.viewFiles[idx].uri, name:file.fileName, downloadFn:handleViewFile, downloadData: file.fileId}})
+                       }
                       // }
                       // setStateApp({ ...stateApp, viewDoc: {uri:"fabceo"}})
                       // if (viewFileResult?.viewFile?.viewFile?.uri) {
