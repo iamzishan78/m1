@@ -20,6 +20,7 @@ import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import MUIDataTable, { TableFilterList } from "mui-datatables";
+import { DndProvider } from 'react-dnd';
 import { Box, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
 import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -94,7 +95,8 @@ import { OPERATORSLATSLONS } from "../../../../graphQL/useQueryOperatorLatsLonsA
 import { LEASELATSLONS } from "../../../../graphQL/useQueryLeaseLatsLonsArray";
 import { CONTACTWELLS } from "../../../../graphQL/useQueryContactWells";
 
-
+// suppress debug console logs
+DndProvider.whyDidYouRender = false
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
 
@@ -201,6 +203,14 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
       paddingLeft: '11px !important'
+    },
+    "& .MuiPaper-elevation1": {
+      flexDirection: "row !important" ,
+      height: '65px !important',
+      width: '100% !important',
+      display: 'flex !important',
+      flex: 'auto',
+      alignItems: 'center !important'
     },
     "& .MuiButton-text": {
       padding: "5px 12px"
@@ -920,10 +930,6 @@ function SubTable(props) {
     setPageInd(e.tableState.page);
     e.getPaginatedContacts(e.pageVariables);
     e.getContactsFilterOptions(e.pageVariables);
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      isContactSearching: false,
-    }));
   };
 
   const delayedSearchRequest = React.useMemo(
@@ -2042,7 +2048,7 @@ function SubTable(props) {
         ]);
     },
     //// triggers when a row/s is selected ////
-    onRowsSelect: (currentRowsSelected, rowsSelected) => {
+    onRowSelectionChange: (currentRowsSelected, rowsSelected) => {
       if (rowsSelected && rowsSelected.length > 0) {
         let indexArray = rowsSelected
           .map((d) => d.dataIndex)
@@ -2241,7 +2247,7 @@ function SubTable(props) {
 
     customToolbar: () => {
 
-      console.log('PROPS',props)
+      console.log('props addable type', props.addAble.type)
       var buttonLabel = "+ ADD"; 
       if (props.addAble.type === "contact"){buttonLabel = '+ ADD CONTACT'}
       if (props.addAble.type === "wellInterest"){buttonLabel = '+ ADD INTEREST'}
@@ -2572,6 +2578,10 @@ function SubTable(props) {
         };
         if(stateApp.isContactSearching){
           action = 'search'
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            isContactSearching: false,
+          }));
         }
         switch (action) {
           case "changeRowsPerPage":
@@ -2839,7 +2849,7 @@ function SubTable(props) {
           options={{
             ...options,
             searchText: stateApp.contactSearchQuery,
-            search: false
+            search: props.header === 'Contacts' ? false : props.parent != "search"
             // searchOpen: true,
             //download: false,
             // search: props.parent != "search",  

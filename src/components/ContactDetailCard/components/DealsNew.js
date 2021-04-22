@@ -9,12 +9,13 @@ import DealMoneyIcon from "../../Shared/svgIcons/DealMoneyIcon";
 import { AppContext } from "../../../AppContext";
 import DealsDetailCard from "../../DealsDetailCard/DealsDetailCard";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
-
+import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 
 
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: "23px 23px 0 23px",
+    cursor:"pointer",
   },
 
   cardContent: { width: "100%", display: "flex" },
@@ -54,6 +55,7 @@ export default function Deals({ contact, ...props }) {
   });
 
   const stringData = JSON.stringify(data);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   useEffect(() => {
     if (contact) {
@@ -123,15 +125,16 @@ export default function Deals({ contact, ...props }) {
   };
 
   return (
-    <div className={classes.root}>
-      <div>
-        <h4 style={{ marginTop: "0", float: "left" }}>
-          Deals ({allDeals.length})
-        </h4>
-        <IconButton
-          size="small"
-          className={classes.addIcon}
-          onClick={() => {
+    // <div className={classes.root}>
+    //   <div>
+    //     <h4 style={{ marginTop: "0", float: "left" }}>
+    //       Deals ({allDeals.length})
+    //     </h4>
+    //     <IconButton
+    //       size="small"
+    //       className={classes.addIcon}
+    //       onClick={() => {
+    <div className={classes.root} onClick={() => {
             props.handleOpenExpandableCard(
               <DealsDetailCard
                 activeDeals={activeDeals}
@@ -142,6 +145,30 @@ export default function Deals({ contact, ...props }) {
               "Deals"
             );
           }}
+        >
+
+        <AddDealDialog
+            open={stateApp.addDealDialog ? true : false}
+            width="450px"
+            onClose={() =>
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                addDealDialog: false,
+              }))
+            }
+            contactId={contact._id}
+      />
+         <div>
+        <h4 style={{ marginTop: "0", float: "left" }}>Deals ({ allDeals.length })</h4>
+        <IconButton
+          size="small"
+          className={classes.addIcon}
+          onClick={() =>
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              addDealDialog: true,
+            }))
+          }
         >
           <AddIcon htmlColor="rgb(28 173 225 / 81%)" />
         </IconButton>

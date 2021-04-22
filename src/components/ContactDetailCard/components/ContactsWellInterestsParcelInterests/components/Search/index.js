@@ -123,7 +123,7 @@ function Search({ contactId }) {
                         }
 
                       </span>,
-                      onRowsSelect: (currentRowsSelected, selectedRows) => {
+                      onRowSelectionChange: (currentRowsSelected, selectedRows) => {
                         rowsSelected = selectedRows
                       },
 
