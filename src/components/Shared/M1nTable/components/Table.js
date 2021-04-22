@@ -2250,6 +2250,7 @@ function SubTable(props) {
       console.log('PROPS',props)
       var buttonLabel = "+ ADD"; 
       console.log('props addable type', props.addAble.type)
+      console.log('props', props.header)
       console.log('props', props)
       if (props.addAble.type === "contact"){
         buttonLabel = '+ ADD CONTACT'
@@ -2263,12 +2264,14 @@ function SubTable(props) {
       if (props.addAble && props.parent === "UserManagement"){
         buttonLabel = "+ ADD USER"
       }
+      if (props.addAble.type === "ownerToParcel"){
+        buttonLabel = "+ ADD PARCEL"
+      }
 
       const addAction = (e) => {
         e.stopPropagation();
         if (props.addAble.type && props.addAble.type === "contact")
           handleExpandClick(null, null, null, "addContact");
-
         if (
           props.addAble.type &&
           props.addAble.type === "ownerToParcel"
@@ -2328,9 +2331,10 @@ function SubTable(props) {
       return (
         <>
         <div style={{ display: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
-          {props.addAble.type === "wellInterest" 
+          {(props.addAble.type === "wellInterest" 
           || props.addAble.type === "deals"
-          || (props.addAble && props.parent === "UserManagement")
+          || props.addAble.type === "ownerToParcel"
+          || (props.addAble && props.parent === "UserManagement"))
           
           && (
             <Button
