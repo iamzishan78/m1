@@ -15,10 +15,10 @@ const TransactDealsHeadCells = [
       name: "name",
       label: "Deal Name",
     },
-    {
-      name: "contactName",
-      label: "Contact Name",
-    },
+    // {
+    //   name: "contactName",
+    //   label: "Contact Name",
+    // },
     {
       name: "offerPrice",
       label: "Offer Price",
@@ -47,18 +47,18 @@ const TransactDealsHeadCells = [
       name: "notes",
       label: "Notes",
     },
-    {
-      name: "isContact",
-      label: " ",
-      options: {
-        filter: false,
-        searchable: false,
-        sort: false,
-        download: false,
-        print: false,
-        viewColumns: false,
-      },
-    },
+    // {
+    //   name: "isContact",
+    //   label: " ",
+    //   options: {
+    //     filter: false,
+    //     searchable: false,
+    //     sort: false,
+    //     download: false,
+    //     print: false,
+    //     viewColumns: false,
+    //   },
+    // },
   ];
 
   
