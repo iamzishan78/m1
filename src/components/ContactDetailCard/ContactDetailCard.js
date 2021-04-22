@@ -408,7 +408,7 @@ export default function ContactDetailCard(props) {
       {/*/////////// left column //////////// */}
       
       {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === 'pdf' ? (
-                       <div className={classes.leftColumn}> <DocViewer DocStyle={{backgroundColor:'white !important',width:'1390px'}} divCondition={true}></DocViewer></div>
+                       <div className={classes.leftColumn}> <DocViewer DocStyle={{backgroundColor:'white !important',minWidth:'70vw'}} divCondition={true}></DocViewer></div>
 
       ) : (
         <Grid container className={classes.leftColumn} >

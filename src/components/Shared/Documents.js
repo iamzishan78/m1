@@ -413,7 +413,7 @@ export default function Documents(props) {
                         <GetAppIcon fontSize="large" />
                       </div>
                     )}
-                    <div  className='DocumentTitle'
+                    <div className={ExtenstionGetter(file.fileName) === 'pdf' ? "DocumentTitle" : ""}
                      onClick={() => {
                       // if(fileExtension === 'pdf')
                       // {
