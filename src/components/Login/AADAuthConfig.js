@@ -12,7 +12,7 @@ export const tenantsCredentials = (tenantName) => {
 };
 
 export const b2cPolicies = {
-  signIn: "B2C_1A_SignIn",
+  signIn: "B2C_1A_SignIn_DEV",
   forgotPassword: "B2C_1A_PasswordReset",
 }
 
