@@ -396,10 +396,18 @@ export default function ContactDetailCard(props) {
     }
   }, [tData, tLoading]);
 
+  const ExtenstionGetter = (name) => {
+    let fileExtension = name
+  ?.slice(name.lastIndexOf(".") + 1)
+  ?.toLowerCase();
+
+  return fileExtension
+  }
   return contactData ? (
     <div className={classes.mainGridContainer} >
       {/*/////////// left column //////////// */}
-      {stateApp.viewDoc ? (
+      
+      {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === 'pdf' ? (
                        <div className={classes.leftColumn}> <DocViewer DocStyle={{backgroundColor:'white !important',width:'1390px'}} divCondition={true}></DocViewer></div>
 
       ) : (

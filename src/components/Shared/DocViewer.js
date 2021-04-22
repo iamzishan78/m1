@@ -97,7 +97,7 @@ console.log(zoom, 'value of zoom')
           aria-labelledby="simple-modal-title Facebook"
           aria-describedby="simple-modal-description"
 
-          style={{ zIndex: '9999', border: "0px", inset: 'unset' }}
+          style={{ zIndex: '99999', border: "0px", inset: 'unset' }}
           disableAutoFocus={true}
           hideBackdrop={true}
           isablePortal={true}
@@ -248,7 +248,7 @@ console.log(zoom, 'value of zoom')
 
               {pdfState?.map((value, key) => {
                 return (
-                  <Page key={key} pageNumber={value} style={{ display: 'grid', justifyContent: 'center', width: '100%' }} />
+                  <Page key={key} pageNumber={value} scale={1.5} style={{ display: 'grid', justifyContent: 'center', width: '100%' }} />
                 )
               })}
              

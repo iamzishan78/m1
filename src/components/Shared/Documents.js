@@ -292,7 +292,19 @@ export default function Documents(props) {
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
   };
+  useEffect(() => {
+    if (viewFileResult?.viewFile?.uri) {
+      let a = document.createElement("a");
+      a.href = viewFileResult.viewFile.uri;
+      a.download = viewFileResult.viewFile.name;
 
+      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
+      // a.target = "_blank";
+
+      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
+      a.click();
+    }
+  }, [viewFileResult]);
 
   const HandleShowFile = async (id) => {
     console.log(id, "ShowFIle");
@@ -305,9 +317,15 @@ export default function Documents(props) {
     );
     setFilteredDocuments(filtered);
   }, [documentSearch, files?.getFileDescriptors]);
+  const ExtenstionGetter = (name) => {
+    let fileExtension = name
+  ?.slice(name.lastIndexOf(".") + 1)
+  ?.toLowerCase();
 
+  return fileExtension
+  }
   return (
-    <div className={classes.root} variant="outlined">
+    <div className={classes.root} variant="outlined" >
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
         {!props.isTransactPage && (
           <Grid item xs={12} style={{ minHeight: "35px" }}>
@@ -388,7 +406,9 @@ export default function Documents(props) {
                             ? classes.disabledDownload
                             : ""
                         }`}
-                        onClick={() => handleViewFile(file.fileId)}
+                        onClick={() => {
+                          handleViewFile(file.fileId)
+                        } }
                       >
                         <GetAppIcon fontSize="large" />
                       </div>
@@ -403,7 +423,7 @@ export default function Documents(props) {
                         console.log(file.fileId, 'StateApp')
 
                        viewFileResultt?.viewFiles.map((value) => {
-                         if(value.id === file.fileId)
+                         if(value.id === file.fileId && ExtenstionGetter(file.fileName) === 'pdf')
                          {
                            console.log("teste")
                         setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:file.fileName, downloadFn:handleViewFile, downloadData: file.fileId}})
