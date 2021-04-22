@@ -2299,6 +2299,7 @@ function SubTable(props) {
           handleExpandClick(null, null, null, "inviteUser");
       }
 
+
       const options = [
         { 
           text: buttonLabel,
