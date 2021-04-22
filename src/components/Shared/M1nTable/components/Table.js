@@ -20,6 +20,7 @@ import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import MUIDataTable, { TableFilterList } from "mui-datatables";
+import { DndProvider } from 'react-dnd';
 import { Box, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
 import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -94,7 +95,8 @@ import { OPERATORSLATSLONS } from "../../../../graphQL/useQueryOperatorLatsLonsA
 import { LEASELATSLONS } from "../../../../graphQL/useQueryLeaseLatsLonsArray";
 import { CONTACTWELLS } from "../../../../graphQL/useQueryContactWells";
 
-
+// suppress debug console logs
+DndProvider.whyDidYouRender = false
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
 
@@ -2046,7 +2048,7 @@ function SubTable(props) {
         ]);
     },
     //// triggers when a row/s is selected ////
-    onRowsSelect: (currentRowsSelected, rowsSelected) => {
+    onRowSelectionChange: (currentRowsSelected, rowsSelected) => {
       if (rowsSelected && rowsSelected.length > 0) {
         let indexArray = rowsSelected
           .map((d) => d.dataIndex)
@@ -2247,10 +2249,20 @@ function SubTable(props) {
 
       console.log('PROPS',props)
       var buttonLabel = "+ ADD"; 
-      if (props.addAble.type === "contact"){buttonLabel = '+ ADD CONTACT'}
-      if (props.addAble.type === "wellInterest"){buttonLabel = '+ ADD INTEREST'}
-      if (props.addAble.type === "deals"){buttonLabel = '+ ADD DEAL'}
-      if (props.addAble && props.parent === "UserManagement"){buttonLabel = "+ ADD USER"}
+      console.log('props addable type', props.addAble.type)
+      console.log('props', props)
+      if (props.addAble.type === "contact"){
+        buttonLabel = '+ ADD CONTACT'
+      }
+      if (props.addAble.type === "wellInterest"){
+        buttonLabel = '+ ADD INTEREST'
+      }
+      if (props.addAble.type === "deals"){
+        buttonLabel = '+ ADD DEAL'
+      }
+      if (props.addAble && props.parent === "UserManagement"){
+        buttonLabel = "+ ADD USER"
+      }
 
       const addAction = (e) => {
         e.stopPropagation();

@@ -16,7 +16,7 @@ import M1nTable from "../Shared/M1nTable/M1nTable";
 import Drawer from "./components/Drawer";
 import moment from "moment";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
-
+import DocViewer from '../Shared/DocViewer'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -571,6 +571,7 @@ export default function Transact() {
           }))
         }
       />
+      <DocViewer></DocViewer>
       <TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} />
       {pipeToShow ? (
         <div className={classes.boardAndTable}>
