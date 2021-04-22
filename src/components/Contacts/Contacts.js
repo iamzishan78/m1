@@ -10,6 +10,9 @@ const useStyles = makeStyles((theme) => ({
         ["flex-direction"]: "column",
         height: "calc(100vh - 65px)",
         ["align-items"]: "stretch",
+        "&>.MuiPaper-root": { 
+          display: "contents",
+        },
         "&>:nth-child(3)": { 
           height: "inherit !important",
         },
