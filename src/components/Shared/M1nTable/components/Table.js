@@ -2850,7 +2850,14 @@ function SubTable(props) {
           options={{
             ...options,
             searchText: stateApp.contactSearchQuery,
-            search: props.header === 'Contacts' ? false : props.parent != "search"
+            search: 
+                    (
+                       props.header === 'Contacts'
+                    || props.header === 'Deals'
+                    || props.header === 'Activities'
+                    || props.header === 'Monthly Production'
+                    ) 
+                    ? false : props.parent != "search"
             // searchOpen: true,
             //download: false,
             // search: props.parent != "search",  
