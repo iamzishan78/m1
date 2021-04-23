@@ -684,7 +684,7 @@ export default function ContactDetailCard(props) {
       )}
       {console.log(stateApp.viewDoc, "StateApp Doc")}
       {/*/////////// rigth column //////////// */}
-      <div className={classes.rightColumnGrid}>
+      <div className={classes.rightColumnGrid} >
         <IconButton
           size="small"
           className={classes.shrinkRightColumn}
@@ -763,7 +763,7 @@ export default function ContactDetailCard(props) {
                 <Divider />
               </Grid>
 
-              <Grid item xs={12} className={classes.Comments}>
+              <Grid item xs={12} className={classes.Comments} >
                 {/* <DocViewer DocStyle={{top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(2.5%, -104.2%)`, width:'1320px',height:'816px'}}></DocViewer> */}
                 <Documents
                  

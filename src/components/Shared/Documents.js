@@ -415,12 +415,6 @@ export default function Documents(props) {
                     )}
                     <div  className='DocumentTitle'
                      onClick={() => {
-                      // if(fileExtension === 'pdf')
-                      // {
-                        // console.log(viewFileResult?.viewFile.viewFile.uri, 'StateApp')
-                        
-                        console.log(viewFileResultt, 'StateApp')
-                        console.log(file.fileId, 'StateApp')
 
                        viewFileResultt?.viewFiles.map((value) => {
                          if(value.id === file.fileId && ExtenstionGetter(file.fileName) === 'pdf')
@@ -429,22 +423,7 @@ export default function Documents(props) {
                         setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:file.fileName, downloadFn:handleViewFile, downloadData: file.fileId}})
 
                          }
-                       })
-                      // }
-                      // setStateApp({ ...stateApp, viewDoc: {uri:"fabceo"}})
-                      // if (viewFileResult?.viewFile?.viewFile?.uri) {
-                        // let a = document.createElement("a");
-                        // a.href = viewFileResult?.viewFile.viewFile.uri;
-                        // a.download = viewFileResult?.viewFile.viewFile.name;
-                  
-                        // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
-                        // a.target = "_blank";
-                        // setStateApp({ ...stateApp, viewDoc: {uri:viewFileResult?.viewFile.viewFile.uri, name:file.fileName, downloadFn:handleViewFile, downloadData: file.fileId}})
-                  
-                        // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
-                       
-                      // }
-          
+                       })      
                     }}>
                       <h4 className={classes.uploadTitle } >
                         {file?.fileName?.length > 22

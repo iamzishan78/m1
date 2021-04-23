@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     border: "0px",
     inset: 'unset',
     backgroundColor: "white !important",
-    width: 'calc(100vw - 540px) !important'
+    width: 'calc(100vw - 540px) '
   },
   paperTwo: {
     backgroundColor: theme.palette.background.paper,
