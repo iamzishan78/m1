@@ -1,16 +1,22 @@
-import React, { useState, useEffect, useMemo, useContext, Fragment } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useContext,
+  Fragment,
+} from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
-import LayerIcon from "@material-ui/icons/Layers";
-import polylabel from "polylabel";
-import hat from 'hat';
+import hat from "hat";
 import { area, convertArea, length } from "@turf/turf";
-import { AppContext } from 'AppContext';
+import union from "@turf/union";
+import { AppContext } from "AppContext";
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
 import { default as MouseClicked } from "../../../Shared/svgIcons/MouseClicked";
 import { default as DrawPoly } from "../../../Shared/svgIcons/polygon";
 import { default as Rect } from "../../../Shared/svgIcons/rectangle";
+import { default as CheckCircle } from "../../../Shared/svgIcons/check-circle";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
 
@@ -70,29 +76,35 @@ const DrawShapesPopup = (props) => {
     },
   });
 
-  const availableShapes = useMemo(() => [
-    {
-      title: "Multiple Select",
-      mode: "multiple_select",
-      icon: <MouseClicked />,
-      disable: stateApp.mapVars.zoom <= 13
-    },
-    {
-      title: "Polygon",
-      mode: "draw_polygon",
-      icon: <DrawPoly />,
-    },
-    {
-      title: "Circle",
-      mode: "drag_circle",
-      icon: <RadioButtonUncheckedIcon fontSize="small" />,
-    },
-    {
-      title: "Rectangle",
-      mode: "draw_rectangle",
-      icon: <Rect />,
-    },
-  ], [stateApp.mapVars.zoom]);
+  const availableShapes = useMemo(
+    () => [
+      {
+        title: "Multiple Select",
+        mode: "multiple_select",
+        icon: <MouseClicked />,
+        disable: stateApp.mapVars.zoom <= 13,
+      },
+      {
+        title: "Polygon",
+        mode: "draw_polygon",
+        icon: <DrawPoly />,
+        disable: stateApp.multiSelectLandGrids,
+      },
+      {
+        title: "Circle",
+        mode: "drag_circle",
+        icon: <RadioButtonUncheckedIcon fontSize="small" />,
+        disable: stateApp.multiSelectLandGrids,
+      },
+      {
+        title: "Rectangle",
+        mode: "draw_rectangle",
+        icon: <Rect />,
+        disable: stateApp.multiSelectLandGrids,
+      },
+    ],
+    [stateApp.mapVars.zoom, stateApp.multiSelectLandGrids]
+  );
 
   useEffect(() => {
     if (!customLayerInsertedData) {
@@ -158,98 +170,24 @@ const DrawShapesPopup = (props) => {
     }
   };
 
-  const calculateShapeCenter = shapeCoordinates => polylabel(shapeCoordinates);
-
   const onActionClick = (shape) => {
-    if (shape.title === 'Multiple Select') {
+    if (shape.disable) return;
+    if (shape.title === "Multiple Select") {
       if (stateApp.multiSelectLandGrids) {
+        // removing all selected land grids
         handleCloseAbstractSelection();
       }
-      setStateApp(state => ({
+      // enabling/disabling multi select land grid
+      setStateApp((state) => ({
         ...state,
-        multiSelectLandGrids: !state.multiSelectLandGrids
-      }))
+        multiSelectLandGrids: !state.multiSelectLandGrids,
+      }));
     } else {
       stateApp.draw.changeMode(shape.mode);
       setStateApp((state) => ({ ...state, editDraw: true }));
       props.handleClose();
     }
-  }
-
-  const saveAndOpenParcelDetail = () => {
-    if (!user._id) {
-      return;
-    }
-    const abstractShape = stateApp.selectedAbstracts[0];
-
-
-    const properties = abstractShape?.properties;
-    let township = properties?.Township;
-    let range = properties?.Range;
-    let section = properties?.ShortName;
-
-    let parcelName, originalProperties;
-    if (abstractShape.properties.State === "TX") {
-      parcelName = abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
-    } else if (township && range && section) {
-      parcelName = `T${township} R${range} — Section ${section}`;
-    } else {
-      parcelName = "PLSS Default Name";
-    }
-    originalProperties = [abstractShape.properties];
-
-    const featureId = hat();
-    const newShapeFeature = {
-      id: featureId,
-      type: "Feature",
-      geometry: abstractShape.geometry,
-      properties: {
-        "originalProperties": originalProperties,
-        "sdType": "parcel",
-        "shapeLabel": parcelName,
-        "projectName": "",
-        "sdNotes": "",
-        "sdGrossAcres": "",
-        "shapeArea": calculateLandArea(abstractShape),
-        "shapeCenter": calculateShapeCenter(abstractShape.geometry.coordinates),
-        "shapeLabelLayer": "",
-        "id": featureId
-      }
-    }
-    const customLayerData = {
-      shape: JSON.stringify(newShapeFeature),
-      layer: 'parcel',
-      name: parcelName,
-      user: user._id,
-      state: abstractShape.properties.State
-    };
-
-    upsertCustomLayer({
-      variables: { customLayer: customLayerData }
-    });
-
-    let layers = [...stateApp.customLayers];
-    layers.push(customLayerData);
-
-    setStateApp((state) => ({
-      ...state,
-      selectedParcel: {
-        "originalProperties": abstractShape.properties.State === "TX" ? JSON.stringify(abstractShape.properties) : [],
-        "sdType": "parcel",
-        "shapeLabel": parcelName,
-        "projectName": "",
-        "sdNotes": "",
-        "sdGrossAcres": "",
-        "shapeArea": calculateLandArea(abstractShape),
-        // needs to be a string to be consistent with queried data
-        "shapeCenter": JSON.stringify(calculateShapeCenter(abstractShape.geometry.coordinates)),
-        "shapeLabelLayer": "",
-        "id": featureId
-      },
-      customLayers: layers,
-      expandedCard: true
-    }));
-  }
+  };
 
   const handleCloseAbstractSelection = () => {
     const { map } = stateApp;
@@ -259,41 +197,64 @@ const DrawShapesPopup = (props) => {
     for (let i = 0; i < stateApp.selectedAbstracts.length; i++) {
       const id = stateApp.selectedAbstracts[i].properties.Id;
       map.setFeatureState(
-        { source: 'abstract_geo_source', id },
+        { source: "abstract_geo_source", id },
         { click: false }
       );
     }
 
     setStateApp((state) => ({
       ...state,
-      selectedAbstracts: []
+      selectedAbstracts: [],
     }));
-  }
+  };
 
-  const parcelLabel = stateApp.selectedAbstracts.length > 1 ? "tracts" : "tract";
+  const createMultiSelectedFeature = () => {
+    let newFeature,
+      featureId = hat();
+    stateApp.selectedAbstracts.forEach((abstractFeature, index) => {
+      if (index <= stateApp.selectedAbstracts.length - 1 && !newFeature) {
+        newFeature = union(
+          abstractFeature,
+          stateApp.selectedAbstracts[index + 1]
+        );
+      } else if (index < stateApp.selectedAbstracts.length - 1 && newFeature) {
+        newFeature = union(newFeature, stateApp.selectedAbstracts[index + 1]);
+      }
+    });
+    newFeature.id = featureId;
+    newFeature.properties.id = featureId;
+    setStateApp((state) => ({
+      ...state,
+      currentFeature: newFeature,
+    }));
+
+    // not working :(
+    // stateApp.draw.changeMode("direct_select", {
+    //   featureId: newFeature.id,
+    // });
+  };
+
+  const parcelLabel =
+    stateApp.selectedAbstracts.length > 1 ? "tracts" : "tract";
 
   return (
     <Fragment>
-      <span class={classes.label}>{
-        stateApp.selectedAbstracts.length > 0 ? `${`${stateApp.selectedAbstracts.length} ${parcelLabel}`} selected` : 'Tooltip'
-      }</span>
+      <span class={classes.label}>
+        {stateApp.selectedAbstracts.length > 0
+          ? `${`${stateApp.selectedAbstracts.length} ${parcelLabel}`} selected`
+          : "Tooltip"}
+      </span>
       <span className={classes.actions}>
-        {
-          stateApp.selectedAbstracts.length > 0 && (
-            <Tooltip title="Create Parcel">
-              <IconButton size="small" aria-label="Parcel" onClick={saveAndOpenParcelDetail}>
-                <LayerIcon color="secondary" />
-              </IconButton>
-            </Tooltip>
-          )
-        }
         {availableShapes.map((shape, index) => (
           <Fragment key={index}>
-            <Tooltip title={shape.title} className={shape.disable ? classes.disableAction : ''}>
+            <Tooltip
+              title={shape.title}
+              className={shape.disable ? classes.disableAction : ""}
+            >
               <IconButton
                 size="small"
                 onClick={() => {
-                  onActionClick(shape)
+                  onActionClick(shape);
                 }}
                 aria-label={shape.title}
               >
@@ -302,6 +263,19 @@ const DrawShapesPopup = (props) => {
             </Tooltip>
           </Fragment>
         ))}
+      </span>
+      <span className={classes.multiSelectCheck}>
+        {stateApp.multiSelectLandGrids && (
+          <Tooltip title="Set Boundary">
+            <IconButton
+              size="small"
+              aria-label="Set Boundary"
+              onClick={createMultiSelectedFeature}
+            >
+              <CheckCircle />
+            </IconButton>
+          </Tooltip>
+        )}
       </span>
       {children}
     </Fragment>

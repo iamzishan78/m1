@@ -23,6 +23,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import SpatialDataCard from "../spatialDataCard";
 import ShapeActionsPopup from "../popup/ShapeActionsPopup";
 import DrawShapePopup from "../popup/DrawShapesPopup";
+import ShapeAOIPopup from "../popup/ShapeAOIPopup";
 // HELPERS
 import { area, convertArea } from "@turf/turf";
 import { spatialDataAttributes } from "./constants";
@@ -32,6 +33,7 @@ import {
 } from "./drawShapesHelpers";
 import mapboxgl, { Marker } from "mapbox-gl";
 import { makeStyles, Icon } from "@material-ui/core";
+import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import polylabel from "polylabel";
@@ -164,11 +166,23 @@ const useStyles = makeStyles((theme) => ({
     opacity: 0.8,
     margin: "5px",
   },
+  multiSelectCheck: {
+    display: "flex",
+    alignItems: "center",
+    "& button": {
+      marginLeft: "5px",
+      marginRight: "5px",
+    },
+    "& svg": {
+      color: "green",
+    },
+  },
 }));
 
 export default function DrawShapes() {
   let history = useHistory();
   const classes = useStyles();
+  const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
   const [stateMapControls, setStateMapControls] = useContext(
     MapControlsContext
   );
@@ -206,7 +220,7 @@ export default function DrawShapes() {
       const { map } = stateApp;
 
       map.on("draw.update", ({ features, action }) => {
-        if (action === 'move' || action === 'change_coordinates') {
+        if (action === "move" || action === "change_coordinates") {
           const [feature] = features;
           const { draw } = stateApp;
           if (feature) {
@@ -263,6 +277,17 @@ export default function DrawShapes() {
     setStateApp((state) => ({ ...state, editDraw: !!stateApp.currentFeature }));
   }, [setStateApp, stateApp.currentFeature]);
 
+  useEffect(() => {
+    if (!stateApp.multiSelectLandGrids) {
+      setStateApp((state) => ({
+        ...state,
+        showShapeActionsPopup: false,
+        editDraw: false,
+        currentFeature: undefined,
+      }));
+    }
+  }, [stateApp.multiSelectLandGrids]);
+
   const clearMapAndCloseShapeActionsPopup = () => {
     stateApp.draw.delete(stateApp.currentFeature?.id);
     setStateApp((state) => ({
@@ -305,67 +330,6 @@ export default function DrawShapes() {
   //   }
   // };
 
-  const handleSaveSpatialDataToShape = (spatialData, dataType) => {
-    // save data onto geoJSON properties fields
-
-    spatialDataAttributes.forEach((attribute) => {
-      stateApp.draw.setFeatureProperty(
-        stateApp.currentFeature.id,
-        attribute,
-        spatialData[attribute]
-      );
-      if (
-        spatialData[attribute] != null ||
-        typeof spatialData[attribute] !== "undefined"
-      ) {
-        stateApp.currentFeature.properties[attribute] = spatialData[attribute];
-      }
-    });
-    stateApp.currentFeature.properties.id = stateApp.currentFeature.id;
-    stateApp.editDraw = false;
-
-    const { currentFeature } = stateApp;
-    stateApp.draw.delete(currentFeature.id);
-
-    //////cleaning the selected title opinion and redirecting to title opinion page//
-
-    if (dataType === "title") {
-      setStateApp((stateApp) => {
-        return {
-          ...stateApp,
-          selectedTitleOpinionId: null,
-        };
-      });
-
-      history.push("/titleopinion");
-    } else {
-      if (user._id !== "") {
-        const customLayerData = {
-          shape: JSON.stringify(stateApp.currentFeature),
-          layer: dataType,
-          name: spatialData.shapeLabel,
-          user: user._id,
-        };
-
-        upsertCustomLayer({
-          variables: { customLayer: customLayerData },
-          refetchQueries: ["getCustomLayers"],
-          awaitRefetchQueries: true,
-        });
-
-        if ((dataType = "parcel"))
-          stateApp.toggleLayersActivity("Parcels", true);
-        if ((dataType = "interest"))
-          stateApp.toggleLayersActivity("Area of Interest", true);
-        setStateApp((state) => ({
-          ...state,
-          currentFeature: undefined,
-          editDraw: false,
-        }));
-      }
-    }
-  };
-
   return (
     <Fragment>
       {stateApp.showDrawShapesPopup && !stateApp.currentFeature && (
@@ -393,35 +357,44 @@ export default function DrawShapes() {
         </ClickAwayListener>
       )}
       {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
-        stateApp.currentFeature !== undefined &&
-        !stateApp.currentFeature.id.includes("draw_polygon") &&
-        !stateApp.currentFeature.id.includes("drag_circle") &&
-        !stateApp.currentFeature.id.includes("draw_rectangle") &&
-        !stateApp.currentFeature.id.includes("edit_polygon") ? (
-        <div className={classes.mapOverlay}>
-          <div class={classes.mapOverlayInner}>
-            <div className={classes.content}>
-              <ShapeActionsPopup
-                selectedFeature={stateApp.currentFeature}
-                saveSpatialData={handleSaveSpatialDataToShape}
-                classes={classes}
-              >
-                <span className={classes.clearAction}>
-                  <Tooltip title="Close">
-                    <IconButton
-                      size="small"
-                      onClick={actionClose}
-                      aria-label="Close"
-                      className={classes.clearAction}
-                    >
-                      <CloseIcon className="close" fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </span>
-              </ShapeActionsPopup>
+      stateApp.currentFeature !== undefined &&
+      !stateApp.currentFeature.id.includes("draw_polygon") &&
+      !stateApp.currentFeature.id.includes("drag_circle") &&
+      !stateApp.currentFeature.id.includes("draw_rectangle") &&
+      !stateApp.currentFeature.id.includes("edit_polygon") ? (
+        <Fragment>
+          {showSpatialDataCard && ( // for edit/create AOI
+            <ShapeAOIPopup
+              upsertCustomLayer={upsertCustomLayer}
+              user={user}
+              toggleSpatialDataCard={toggleSpatialDataCard}
+            />
+          )}
+          <div className={classes.mapOverlay}>
+            <div class={classes.mapOverlayInner}>
+              <div className={classes.content}>
+                <ShapeActionsPopup
+                  selectedFeature={stateApp.currentFeature}
+                  toggleSpatialDataCard={toggleSpatialDataCard}
+                  classes={classes}
+                >
+                  <span className={classes.clearAction}>
+                    <Tooltip title="Close">
+                      <IconButton
+                        size="small"
+                        onClick={actionClose}
+                        aria-label="Close"
+                        className={classes.clearAction}
+                      >
+                        <CloseIcon className="close" fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </span>
+                </ShapeActionsPopup>
+              </div>
             </div>
           </div>
-        </div>
+        </Fragment>
       ) : null}
     </Fragment>
   );

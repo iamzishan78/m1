@@ -1,15 +1,21 @@
 import React, { useEffect, useContext, useState, Fragment } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
+import hat from "hat";
+import polylabel from "polylabel";
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import GpxFixedIcon from "@material-ui/icons/GpsFixed";
+import LayerIcon from "@material-ui/icons/Layers";
 import FilterAltIcon from "../../../Shared/svgIcons/FilterAltIcon";
 import Typography from "@material-ui/core/Typography";
 import { area, convertArea, length } from "@turf/turf";
 import { AppContext } from "../../../../AppContext";
-import { NavigationContext, DRAWING_MODES } from "../../../Navigation/NavigationContext";
+import {
+  NavigationContext,
+  DRAWING_MODES,
+} from "../../../Navigation/NavigationContext";
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
 import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
 import { ABSTRACTGEOCONTAINSQUERY } from "../../../../graphQL/useQueryAbstractGeoContains";
@@ -23,10 +29,9 @@ import { gql } from "@apollo/client";
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
-  const { classes, children } = props;
+  const { classes, children, toggleSpatialDataCard } = props;
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
   const [
     upsertCustomLayer,
     { data: customLayerInsertedData, loading: isSavingParcel },
@@ -125,11 +130,6 @@ const ShapeActionsPopup = (props) => {
         popupOpen: true,
         expandedCard: true,
       }));
-      props.onClickExpand();
-      setStateApp((state) => ({
-        ...state,
-        selectedAbstracts: [],
-      }));
     }
     if (
       customLayerInsertedData.upsertCustomLayer &&
@@ -150,7 +150,7 @@ const ShapeActionsPopup = (props) => {
   }, []);
 
   useEffect(() => {
-    // USE EFFECT for applying filter to new shape 
+    // USE EFFECT for applying filter to new shape
     if (stateApp.shapeActionsFilterSelected) {
       applyFilter();
     }
@@ -283,7 +283,7 @@ const ShapeActionsPopup = (props) => {
       ...state,
       shapeActionsFilterSelected: true,
     }));
-  }
+  };
 
   const actionFilter = () => {
     if (isLine()) return;
@@ -299,11 +299,11 @@ const ShapeActionsPopup = (props) => {
     stateApp.draw.changeMode("direct_select", {
       featureId: selectedFeature.id,
     });
-    setStateNav(stateNav => ({
+    setStateNav((stateNav) => ({
       ...stateNav,
-      drawingMode: DRAWING_MODES.DRAW_CIRCLE
-    }))
-  }
+      drawingMode: DRAWING_MODES.DRAW_CIRCLE,
+    }));
+  };
 
   // const actionAOI = () => {
   //   if (isLine()) return;
@@ -321,6 +321,94 @@ const ShapeActionsPopup = (props) => {
     return stateApp.currentFeature.geometry.type === "LineString"
       ? true
       : false;
+  };
+
+  const { showSpatialDataCard } = props;
+
+  const calculateShapeCenter = (shapeCoordinates) =>
+    polylabel(shapeCoordinates);
+
+  const saveAndOpenParcelDetail = () => {
+    if (!user._id) {
+      return;
+    }
+
+    const abstractShape = stateApp.selectedAbstracts[0];
+
+    const properties = abstractShape?.properties;
+    let township = properties?.Township;
+    let range = properties?.Range;
+    let section = properties?.ShortName;
+
+    let parcelName, originalProperties;
+    if (abstractShape.properties.State === "TX") {
+      parcelName =
+        abstractShape.properties.Survey +
+        " " +
+        abstractShape.properties.AbstractName;
+    } else if (township && range && section) {
+      parcelName = `T${township} R${range} — Section ${section}`;
+    } else {
+      parcelName = "PLSS Default Name";
+    }
+    originalProperties = [abstractShape.properties];
+
+    const featureId = hat();
+    const newShapeFeature = {
+      id: featureId,
+      type: "Feature",
+      geometry: abstractShape.geometry,
+      properties: {
+        originalProperties: originalProperties,
+        sdType: "parcel",
+        shapeLabel: parcelName,
+        projectName: "",
+        sdNotes: "",
+        sdGrossAcres: "",
+        shapeArea: calculateLandArea(abstractShape),
+        shapeCenter: calculateShapeCenter(abstractShape.geometry.coordinates),
+        shapeLabelLayer: "",
+        id: featureId,
+      },
+    };
+    const customLayerData = {
+      shape: JSON.stringify(newShapeFeature),
+      layer: "parcel",
+      name: parcelName,
+      user: user._id,
+      state: abstractShape.properties.State,
+    };
+
+    upsertCustomLayer({
+      variables: { customLayer: customLayerData },
+    });
+
+    let layers = [...stateApp.customLayers];
+    layers.push(customLayerData);
+
+    setStateApp((state) => ({
+      ...state,
+      selectedParcel: {
+        originalProperties:
+          abstractShape.properties.State === "TX"
+            ? JSON.stringify(abstractShape.properties)
+            : [],
+        sdType: "parcel",
+        shapeLabel: parcelName,
+        projectName: "",
+        sdNotes: "",
+        sdGrossAcres: "",
+        shapeArea: calculateLandArea(abstractShape),
+        // needs to be a string to be consistent with queried data
+        shapeCenter: JSON.stringify(
+          calculateShapeCenter(abstractShape.geometry.coordinates)
+        ),
+        shapeLabelLayer: "",
+        id: featureId,
+      },
+      customLayers: layers,
+      expandedCard: true,
+    }));
   };
 
   return (
@@ -357,31 +445,49 @@ const ShapeActionsPopup = (props) => {
             </IconButton>
           </Tooltip>
 
-          {/**
-                * Commenting APO and Parcel per design implementation
-              <Tooltip title="AOI">
-                <IconButton size="small" onClick={actionAOI} aria-label="AOI" >
-                  <span className={`${classes.whiteText} ${isLine() ? classes.gray : ""}`}>AOI</span>
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Parcel">
-                <IconButton size="small" onClick={actionParcel} aria-label="Parcel" >
-                  <LayerIcon />
-                </IconButton>
-              </Tooltip>
-                */}
+          {stateApp.selectedAbstracts.length > 0 && (
+            <Tooltip title="Create Parcel">
+              <IconButton
+                size="small"
+                aria-label="Parcel"
+                onClick={saveAndOpenParcelDetail}
+              >
+                <LayerIcon color="secondary" />
+              </IconButton>
+            </Tooltip>
+          )}
 
-          <Tooltip title="Track">
-            <IconButton
-              size="small"
-              /*onClick={saveAndOpenParcelDetail}*/ aria-label="Track"
-            >
+          {/* * Commenting APO and Parcel per design implementation */}
+          {/* <Tooltip title="AOI">
+            <IconButton size="small" onClick={actionAOI} aria-label="AOI">
+              <span
+                className={`${classes.whiteText} ${
+                  isLine() ? classes.gray : ""
+                }`}
+              >
+                AOI
+              </span>
+            </IconButton>
+          </Tooltip> */}
+          {/* <Tooltip title="Parcel">
+            <IconButton size="small" onClick={actionParcel} aria-label="Parcel">
+              <LayerIcon />
+            </IconButton>
+          </Tooltip> */}
+
+          {/* <Tooltip title="Track">
+            <IconButton size="small" onClick={actionAOI} aria-label="Track">
               <GpxFixedIcon />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
+
           <span className={classes.divider}></span>
           <Tooltip title="Edit Active Shape">
-            <IconButton size="small" aria-label="Edit Active Shape" onClick={actionEdit}>
+            <IconButton
+              size="small"
+              aria-label="Edit Active Shape"
+              onClick={actionEdit}
+            >
               <EditIcon />
             </IconButton>
           </Tooltip>
