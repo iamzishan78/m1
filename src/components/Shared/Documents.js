@@ -12,6 +12,13 @@ import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFilePdf,
+  faFilePowerpoint,
+  faFileWord,
+  faFileExcel,
+} from "@fortawesome/free-solid-svg-icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
 import { useDropzone } from "react-dropzone";
@@ -35,7 +42,13 @@ const useStyles = makeStyles((theme) => ({
       content: "none",
     },
   },
-
+  forImage: {
+    width: "80px",
+    height: "80px",
+    backgroundColor: "transparent !important",
+    border: "1px solid #999",
+    borderRadius: "12px",
+  },
   viewAll: {
     textDecoration: "underline",
     margin: "0 0 8px 0",
@@ -271,6 +284,47 @@ export default function Documents(props) {
     }
   }, [viewFileResult?.viewFile]);
 
+  const getFileIcon = (fileExtension) => {
+    switch (fileExtension) {
+      case "pdf":
+        return (
+          <FontAwesomeIcon
+            icon={faFilePdf}
+            style={{ fontSize: "2rem", color: "#F15642" }}
+          />
+        );
+      case "csv":
+      case "xlsx":
+      case "xlsb":
+      case "xlsm":
+      case "xltx":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
+      case ".doc":
+      case ".docx":
+        return (
+          <FontAwesomeIcon
+            icon={faFileWord}
+            style={{ fontSize: "2rem", color: "#2A5599" }}
+          />
+        );
+      case ".ppt":
+      case ".pptx":
+        return (
+          <FontAwesomeIcon
+            icon={faFilePowerpoint}
+            style={{ fontSize: "5.5rem", color: "#D04424" }}
+          />
+        );
+      default:
+        return <span>{fileExtension}</span>;
+    }
+  };
+
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
@@ -314,11 +368,23 @@ export default function Documents(props) {
   };
 
   useEffect(() => {
-    let filtered = files?.getFileDescriptors?.filter((doc) =>
-      doc.fileName.toLowerCase().includes(documentSearch.toLowerCase())
+    let filtered = viewFileResultt?.viewFiles?.filter((doc) =>
+      doc.name.toLowerCase().includes(documentSearch.toLowerCase())
     );
-    setFilteredDocuments(filtered);
-  }, [documentSearch, files?.getFileDescriptors]);
+
+    let filteredMerged = filtered?.map((doc) => {
+      let fileDescriptor = files?.getFileDescriptors?.find((file) => file.fileId === doc.id);
+
+      return {
+        ...doc,
+        descriptorId: fileDescriptor?.descriptorId,
+        state: fileDescriptor?.fileState,
+        dateTime: fileDescriptor?.dateTime
+      }
+    });
+
+    setFilteredDocuments(filteredMerged);
+  }, [documentSearch, viewFileResultt?.viewFiles]);
   const ExtenstionGetter = (name) => {
     let fileExtension = name
   ?.slice(name.lastIndexOf(".") + 1)
@@ -395,8 +461,11 @@ export default function Documents(props) {
           {/* Show two recent docs */}
           {filteredDocuments?.map((file,key) => {
             console.log(file, "File Data")
+            let fileExtension = file?.name
+                ?.slice(file.name.lastIndexOf(".") + 1)
+                ?.toLowerCase();
             return (
-              <div key={file.fileId} 
+              <div key={file.id} 
          
           >
                 <div className={classes.fileUploadTopSection}>
@@ -404,28 +473,49 @@ export default function Documents(props) {
                     {props.isTransactPage && (
                       <div
                         className={`${classes.greySquare} ${
-                          file.fileState !== "active"
+                          file.state !== "active"
                             ? classes.disabledDownload
                             : ""
                         }`}
-                        onClick={() => {
-                          handleViewFile(file.fileId)
-                        } }
+                        // onClick={() => {
+                        //   handleViewFile(file.id)
+                        // } }
                       >
-                        <GetAppIcon fontSize="large" />
+                        {/* <GetAppIcon fontSize="large" /> */}
+                        {new RegExp(
+                          ["jpg", "jpeg", "png", "bmp"].join("|")
+                        ).test(fileExtension) ? (
+                          <img
+                            src={file.uri}
+                            alt={file.name}
+                            className={classes.forImage}
+                          ></img>
+                        ) : (
+                          <div className={classes.forImageContainer}  onClick={() => {
+                            if(file.state !== "active") return;
+
+                            if(fileExtension === 'pdf')
+                            {
+                              setStateApp({ ...stateApp, viewDoc: {uri:file.uri, name:file.name, downloadFn:handleViewFile, downloadData: files?.getFileDescriptors[key].fileId}})
+                            }
+                          }}>
+                            {/* {fileExtension} */}
+                            {getFileIcon(fileExtension)}
+                          </div>
+                        )}
                       </div>
                     )}
                     <div className={ExtenstionGetter(file.fileName) === 'pdf' ? "DocumentTitle" : ""}
-                     onClick={() => {
-                      // if(fileExtension === 'pdf')
-                      // {
-                        // console.log(viewFileResult?.viewFile.viewFile.uri, 'StateApp')
+                    //  onClick={() => {
+                    //   // if(fileExtension === 'pdf')
+                    //   // {
+                    //     // console.log(viewFileResult?.viewFile.viewFile.uri, 'StateApp')
                         
-                       if(viewFileResultt && viewFileResultt.viewFiles){
+                    //    if(viewFileResultt && viewFileResultt.viewFiles){
 
-                          const idx = viewFileResultt?.viewFiles?.findIndex(value => value.id === file.fileId && ExtenstionGetter(file.fileName) === 'pdf')
-                          if(idx > -1) setStateApp({ ...stateApp, viewDoc: {uri:viewFileResultt.viewFiles[idx].uri, name:file.fileName, downloadFn:handleViewFile, downloadData: file.fileId}})
-                       }
+                    //       const idx = viewFileResultt?.viewFiles?.findIndex(value => value.id === file.fileId && ExtenstionGetter(file.fileName) === 'pdf')
+                    //       if(idx > -1) setStateApp({ ...stateApp, viewDoc: {uri:viewFileResultt.viewFiles[idx].uri, name:file.fileName, downloadFn:handleViewFile, downloadData: file.fileId}})
+                    //    }
                       // }
                       // setStateApp({ ...stateApp, viewDoc: {uri:"fabceo"}})
                       // if (viewFileResult?.viewFile?.viewFile?.uri) {
@@ -441,11 +531,12 @@ export default function Documents(props) {
                        
                       // }
           
-                    }}>
+                    // }}
+                    >
                       <h4 className={classes.uploadTitle } >
-                        {file?.fileName?.length > 22
-                          ? file?.fileName?.slice(0, 20) + "..."
-                          : file?.fileName}
+                        {file?.name?.length > 22
+                          ? file?.name?.slice(0, 20) + "..."
+                          : file?.name}
                       </h4>
                       {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
                       <h5 className={classes.uploadSubtext}>
@@ -465,15 +556,15 @@ export default function Documents(props) {
                       <DeleteIcon />
                     </IconButton>
 
-                    {!props.isTransactPage && (
+                    {/* {!props.isTransactPage && ( */}
                       <IconButton
-                        disabled={file.fileState !== "active"}
+                        disabled={file.state !== "active"}
                         size="small"
-                        onClick={() => handleViewFile(file.fileId)}
+                        onClick={() => handleViewFile(file.id)}
                       >
                         <GetAppIcon />
                       </IconButton>
-                    )}
+                    {/* )} */}
                   </div>
                 </div>
               </div>
