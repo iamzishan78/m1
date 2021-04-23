@@ -43,7 +43,8 @@ import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
-
+import DocViewer from '../Shared/DocViewer'
+import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 const useStyles = makeStyles((theme) => ({
   Contacts: {
     color: "#011133",
@@ -271,7 +272,7 @@ export default function ContactDetailCard(props) {
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
-
+	
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(
     null
   );
@@ -395,10 +396,22 @@ export default function ContactDetailCard(props) {
     }
   }, [tData, tLoading]);
 
+  const ExtenstionGetter = (name) => {
+    let fileExtension = name
+  ?.slice(name.lastIndexOf(".") + 1)
+  ?.toLowerCase();
+
+  return fileExtension
+  }
   return contactData ? (
-    <div className={classes.mainGridContainer}>
+    <div className={classes.mainGridContainer} >
       {/*/////////// left column //////////// */}
-      <Grid container className={classes.leftColumn}>
+      
+      {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === 'pdf' ? (
+                       <div className={classes.leftColumn}> <DocViewer DocStyle={{backgroundColor:'white !important',width:'70vw'}} divCondition={true}></DocViewer></div>
+
+      ) : (
+        <Grid container className={classes.leftColumn} >
         {/*/////////// section 1 //////////// */}
 
         <Grid
@@ -666,10 +679,12 @@ export default function ContactDetailCard(props) {
             />
           </div>
         </Grid>
+        
       </Grid>
-
+      )}
+      {console.log(stateApp.viewDoc, "StateApp Doc")}
       {/*/////////// rigth column //////////// */}
-      <div className={classes.rightColumnGrid}>
+      <div className={classes.rightColumnGrid} >
         <IconButton
           size="small"
           className={classes.shrinkRightColumn}
@@ -748,8 +763,10 @@ export default function ContactDetailCard(props) {
                 <Divider />
               </Grid>
 
-              <Grid item xs={12} className={classes.Comments}>
+              <Grid item xs={12} className={classes.Comments} >
+                {/* <DocViewer DocStyle={{top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(2.5%, -104.2%)`, width:'1320px',height:'816px'}}></DocViewer> */}
                 <Documents
+                 
                   handleOpenExpandableCard={handleOpenExpandableCard}
                   id={contactData._id}
                   user_id={stateApp.user.email}

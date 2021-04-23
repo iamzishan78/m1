@@ -99,7 +99,7 @@ function ExpandableCard(props) {
       position: position,
       left: cardLeft,
       top: cardTop,
-      zIndex: 9999,
+      // zIndex: 9999,
       webkitTransform: "translateZ(0)",
       transition: "width 0.1s, height 0.1s, left 0.1s, top 0.1s",
       width: width,
@@ -255,6 +255,10 @@ function ExpandableCard(props) {
         expandedCard: false,
       }));
     }
+    setStateApp((state) => ({
+      ...state,
+      viewDoc:null
+    }));
     props.handleCloseExpandableCard();
     //if EC is inside map popup you need to close it
   };
@@ -512,6 +516,7 @@ function ExpandableCard(props) {
                 <IconButton
                   size={stateExpandableCard.expanded ? "medium" : "small"}
                   onClick={handleClose}
+                  
                   aria-label="close"
                   className={classes.icons}
                 >

@@ -24,8 +24,8 @@ import { GETCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { AppContext } from "../../AppContext";
 import moment from "moment";
 import { useLazyQuery } from "@apollo/client";
-import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
-
+import { VIEWFILEQUERY, VIEWFILESQUERY } from "../../graphQL/useQueryViewFile";
+import DocViewer from '../Shared/DocViewer'
 const useStyles = makeStyles((theme) => ({
 	viewAllCard: {
 		backgroundColor: "#ffffff",
@@ -118,7 +118,7 @@ export default function ViewDocuments(props) {
 	const [documentSearch, setDocumentSearch] = useState("");
 	const [allDocuments, setAllDocuments] = useState([]);
 	const [filteredDocuments, setFilteredDocuments] = useState([]);
-	const [stateApp] = React.useContext(AppContext);
+	const [stateApp,setStateApp] = React.useContext(AppContext);
 	const userId = stateApp.user.mongoId;
 
 	const [getAllFiles, { data: files }] = useLazyQuery(GETCONTACTFILES, {
@@ -142,7 +142,23 @@ export default function ViewDocuments(props) {
 		}
 
 	}, [viewFileResult]);
+	const [
+		viewFiles,
+		{ data: viewFileResultt, loading: viewFileLoading },
+	] = useLazyQuery(VIEWFILESQUERY, {
+		fetchPolicy: "no-cache",
+	});
+	useEffect(() => {
+		let ID = [];
+		for (let i = 0; i < files?.getFileDescriptors.length; i++) {
+      // console.log(files?.getFileDescriptors[i].fileId, 'Kumail Test')
+			ID.push(files?.getFileDescriptors[i].fileId);
+		}
 
+		viewFiles({
+			variables: { fileIds: ID },
+		});
+	}, [files]);
 	const handleViewFile = async (id) => {
 		viewFile({ variables: { fileId: id } });
 	};
@@ -174,9 +190,17 @@ export default function ViewDocuments(props) {
 
 		console.log("DOCS:", documentSearch, allDocuments);
 	}, [documentSearch, allDocuments]);
+	const ExtenstionGetter = (name) => {
+    let fileExtension = name
+  ?.slice(name.lastIndexOf(".") + 1)
+  ?.toLowerCase();
 
+  return fileExtension
+  }
 	return (
 		<div className={classes.viewAllCard}>
+      <DocViewer  divCondition={false} DocStyle={ {top: '56% ', left: '40% ',width:'98vw ' ,  transform: `translate(1%, -101%)`} } ></DocViewer>
+
 			<div className={classes.header}>
 				<div className={classes.headerLeft}>
 					<TextField
@@ -212,7 +236,22 @@ export default function ViewDocuments(props) {
 								>
 									<GetAppIcon fontSize="large" />
 								</div>
-								<div className={classes.fileText}>
+								<div className={classes.fileText.concat(' DocumentTitle')} style={{cursor:'pointer'}} 
+								onClick={() => {
+
+										
+										console.log(viewFileResultt, 'StateApp')
+										console.log(doc.fileId, 'StateApp')
+
+									 viewFileResultt?.viewFiles.map((value) => {
+										 if(value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf')
+										 {
+											 console.log("teste")
+										setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:doc.fileName, downloadFn:handleViewFile, downloadData: doc.fileId}})
+
+										 }
+									 })      
+								}}>
 									<h4 className={classes.uploadTitle}>{doc.fileName}</h4>
 									{/* <h5 className={classes.uploadSubtext}>{doc.userName}</h5> */}
 									<h5 className={classes.uploadSubtext}>

@@ -5,6 +5,9 @@ import React, {
   useRef,
   Fragment,
 } from "react";
+import {
+  TextField,
+} from "@material-ui/core";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -17,6 +20,7 @@ import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import MUIDataTable, { TableFilterList } from "mui-datatables";
+import { DndProvider } from 'react-dnd';
 import { Box, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
 import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -91,7 +95,8 @@ import { OPERATORSLATSLONS } from "../../../../graphQL/useQueryOperatorLatsLonsA
 import { LEASELATSLONS } from "../../../../graphQL/useQueryLeaseLatsLonsArray";
 import { CONTACTWELLS } from "../../../../graphQL/useQueryContactWells";
 
-
+// suppress debug console logs
+DndProvider.whyDidYouRender = false
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
 
@@ -198,6 +203,14 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
       paddingLeft: '11px !important'
+    },
+    "& .MuiPaper-elevation1": {
+      flexDirection: "row !important" ,
+      height: '65px !important',
+      width: '100% !important',
+      display: 'flex !important',
+      flex: 'auto',
+      alignItems: 'center !important'
     },
     "& .MuiButton-text": {
       padding: "5px 12px"
@@ -2035,7 +2048,7 @@ function SubTable(props) {
         ]);
     },
     //// triggers when a row/s is selected ////
-    onRowsSelect: (currentRowsSelected, rowsSelected) => {
+    onRowSelectionChange: (currentRowsSelected, rowsSelected) => {
       if (rowsSelected && rowsSelected.length > 0) {
         let indexArray = rowsSelected
           .map((d) => d.dataIndex)
@@ -2234,62 +2247,64 @@ function SubTable(props) {
 
     customToolbar: () => {
 
+      console.log('props addable type', props.addAble.type)
       var buttonLabel = "+ ADD"; 
-      if (props.addAble.type === "contact"){
-        buttonLabel = '+ ADD CONTACT'
+      if (props.addAble.type === "contact"){buttonLabel = '+ ADD CONTACT'}
+      if (props.addAble.type === "wellInterest"){buttonLabel = '+ ADD INTEREST'}
+      if (props.addAble.type === "deals"){buttonLabel = '+ ADD DEAL'}
+      if (props.addAble && props.parent === "UserManagement"){buttonLabel = "+ ADD USER"}
+      if (props.addAble.type === "ownerToParcel"){buttonLabel = '+ ADD PARCEL'}
+
+
+      const addAction = (e) => {
+        e.stopPropagation();
+        if (props.addAble.type && props.addAble.type === "contact")
+          handleExpandClick(null, null, null, "addContact");
+        if (
+          props.addAble.type &&
+          props.addAble.type === "ownerToParcel"
+        )
+          handleExpandClick(null, null, null, "addOwnerToParcel");
+
+        if (props.addAble.type && props.addAble.type === "deals")
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            dealDialog: true,
+            activeDeal: { cardId: null, laneId: null },
+          }));
+
+        if (props.addAble.type && props.addAble.type === "wellInterest") {
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            wellInterestDialog: true,
+            //activeDeal: { cardId: null, laneId: null },
+          }));
+        }
+
+        if (
+          props.addAble.type &&
+          props.addAble.type === "parcelInterestsToEntity"
+        )
+          // handleExpandClick(null, null, null, "addOwnerToParcel");
+          handleExpandClick(
+            null,
+            null,
+            null,
+            "addParcelInterestsToEntity"
+          );
+        if (
+          props.addAble.type &&
+          props.addAble.type === "inviteUser"
+        )
+          handleExpandClick(null, null, null, "inviteUser");
       }
-      if (props.addAble.type === "wellInterest"){
-        buttonLabel = '+ ADD INTEREST'
-      }
+
 
       const options = [
         { 
           text: buttonLabel,
-          type: props.addAble.type,
           isShow: false,
-          action: (e) => {
-            e.stopPropagation();
-            if (props.addAble.type && props.addAble.type === "contact")
-              handleExpandClick(null, null, null, "addContact");
-
-            if (
-              props.addAble.type &&
-              props.addAble.type === "ownerToParcel"
-            )
-              handleExpandClick(null, null, null, "addOwnerToParcel");
-
-            if (props.addAble.type && props.addAble.type === "deals")
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                dealDialog: true,
-                activeDeal: { cardId: null, laneId: null },
-              }));
-
-            if (props.addAble.type && props.addAble.type === "wellInterest") {
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                wellInterestDialog: true,
-                //activeDeal: { cardId: null, laneId: null },
-              }));
-            }
-
-            if (
-              props.addAble.type &&
-              props.addAble.type === "parcelInterestsToEntity"
-            )
-              // handleExpandClick(null, null, null, "addOwnerToParcel");
-              handleExpandClick(
-                null,
-                null,
-                null,
-                "addParcelInterestsToEntity"
-              );
-            if (
-              props.addAble.type &&
-              props.addAble.type === "inviteUser"
-            )
-              handleExpandClick(null, null, null, "inviteUser");
-          }
+          action: addAction
         },
         {  text: 'Import Contacts', isShow: true, action: () => routeChange("/bulkupload") }
       ];
@@ -2304,8 +2319,22 @@ function SubTable(props) {
 
       return (
         <>
-        <div style={{ displat: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
-          <ButtonDropDown options={options} />
+        <div style={{ display: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
+          {(props.addAble.type === "wellInterest" 
+          || props.addAble.type === "deals"
+          || props.addAble.type === "ownerToParcel"
+          || (props.addAble && props.parent === "UserManagement"))
+          
+          && (
+            <Button
+              color="secondary"
+              className={classes.multiSelectionTopBarButtons}
+              onClick={addAction}
+            >
+              {buttonLabel}
+            </Button>
+          )}
+          {props.addAble.type === "contact" && (<ButtonDropDown options={options} />)}
 
           
           {
@@ -2331,89 +2360,6 @@ function SubTable(props) {
           )
           }
         </div>
-          {/* {props.uploadIcon && (
-            //////Upload Icon/////////////////////////
-            <span className={classes.addIcon}>
-              <Tooltip
-                title={`Import ${props.targetLabel.charAt(0).toUpperCase() +
-                  props.targetLabel.slice(1)
-                  }s`}
-              >
-                <IconButton
-                  size="medium"
-                  onClick={(e) => {
-                    routeChange("/bulkupload");
-                  }}
-                >
-                  <BackupIcon />
-                </IconButton>
-              </Tooltip>
-            </span>
-          )}
-          {props.addAble && (
-            //////Add Icon/////////////////////////
-            <span className={classes.addIcon}>
-              <Tooltip
-                title={`Add${props.parent === "assocTaxRollInterests"
-                  ? " Well Interest"
-                  : props.targetLabel
-                    ? " " +
-                    props.targetLabel.charAt(0).toUpperCase() +
-                    props.targetLabel.slice(1)
-                    : ""
-                  }`}
-              >
-                <IconButton
-                  size="medium"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (props.addAble.type && props.addAble.type === "contact")
-                      handleExpandClick(null, null, null, "addContact");
-
-                    if (
-                      props.addAble.type &&
-                      props.addAble.type === "ownerToParcel"
-                    )
-                      handleExpandClick(null, null, null, "addOwnerToParcel");
-
-                    if (props.addAble.type && props.addAble.type === "deals")
-                      setStateApp((stateApp) => ({
-                        ...stateApp,
-                        dealDialog: true,
-                        activeDeal: { cardId: null, laneId: null },
-                      }));
-
-                    if (props.addAble.type && props.addAble.type === "wellInterest") {
-                      setStateApp((stateApp) => ({
-                        ...stateApp,
-                        wellInterestDialog: true,
-                        //activeDeal: { cardId: null, laneId: null },
-                      }));
-                    }
-
-                    if (
-                      props.addAble.type &&
-                      props.addAble.type === "parcelInterestsToEntity"
-                    )
-                      // handleExpandClick(null, null, null, "addOwnerToParcel");
-                      handleExpandClick(
-                        null,
-                        null,
-                        null,
-                        "addParcelInterestsToEntity"
-                      );
-                    if (
-                      props.addAble.type &&
-                      props.addAble.type === "inviteUser"
-                    )
-                      handleExpandClick(null, null, null, "inviteUser");
-                  }}
-                >
-                  <AddCircleOutlineRoundedIcon />
-                </IconButton>
-              </Tooltip>
-            </span>
-          )} */}
         </>
       );
     },
@@ -2631,6 +2577,13 @@ function SubTable(props) {
             userId: stateApp.user.mongoId,
           },
         };
+        if(stateApp.isContactSearching){
+          action = 'search'
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            isContactSearching: false,
+          }));
+        }
         switch (action) {
           case "changeRowsPerPage":
             props.contactsPageProps.setLoading(true);
@@ -2896,8 +2849,18 @@ function SubTable(props) {
           }}
           options={{
             ...options,
+            searchText: stateApp.contactSearchQuery,
+            search: 
+                    (
+                       props.header === 'Contacts'
+                    || props.header === 'Deals'
+                    || props.header === 'Activities'
+                    || props.header === 'Monthly Production'
+                    ) 
+                    ? false : props.parent != "search"
+            // searchOpen: true,
             //download: false,
-            search: props.parent != "search",  // removing the double search on the grid search bar 
+            // search: props.parent != "search",  
             //print: false,
           }}
         />
