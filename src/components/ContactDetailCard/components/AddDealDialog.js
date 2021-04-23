@@ -245,6 +245,8 @@ function AddDealDialog(props) {
 		props.transactData ? { ...props.transactData } : null
 	);
 
+	const [valid, setValid] = useState({});
+
 	const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
 	const [
@@ -260,7 +262,7 @@ function AddDealDialog(props) {
 		fetchPolicy: "cache-and-network",
 	});
 
-	const [addDeal] = useMutation(ADDDEAL);
+	const [addDeal, { data: dealData }] = useMutation(ADDDEAL);
 	const [updateDeal, { loading: updateDealLoading }] = useMutation(UPDATEDEAL);
 	const [upsertDealDescriptor] = useMutation(UPSERTDEALDESCRIPTOR);
 	const [updateStageDealDescriptor] = useMutation(UPDATESTAGEDEALDESCRIPTOR);
@@ -284,6 +286,28 @@ function AddDealDialog(props) {
 	useEffect(() => {
 		getPipelines();
 	}, []);
+
+	useEffect(() => {
+		if (stateApp.transactBarView !== "") {
+			console.log("stateApp.transactBarView", stateApp.transactBarView);
+			handleValidate();
+
+			if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
+				addUpdateDeal(null, false);
+			}
+		}
+	}, [stateApp.transactBarView]);
+
+	useEffect(() => {
+		if (dealData) {
+			console.log("dealData", dealData);
+
+			setStateApp((stateApp) => ({
+				...stateApp,
+				activeDeal: dealData?.addDeal?.deal,
+			}));
+		}
+	}, [dealData]);
 
 	useEffect(() => {
 		if (pipelinesData) {
@@ -526,6 +550,16 @@ function AddDealDialog(props) {
 		}
 	}, [stateApp.activeDeal, props.contact, stateApp.dealDialog, stateApp.user]);
 
+	const handleValidate = () => {
+		const tempValid = {
+		  ...valid,
+		  'title': !title
+		}
+		setValid(tempValid);
+	
+		return !Object.values(tempValid).reduce((acc, cur) => acc + cur)
+	  }
+
 	const handleClose = () => {
 		setTitle("");
 		setLabel("");
@@ -545,10 +579,13 @@ function AddDealDialog(props) {
 		if (props.isTransactPage) setContact({});
 		setStateApp((stateApp) => ({
 			...stateApp,
-			dealDialog: false,
+			dealDialog: false,		// some genius level coding here.
+			addDealDialog: false,  // not sure why different flags were used here 
 			activeDeal: { cardId: null, laneId: null },
 			transactBarView: "",
+			viewDoc:null
 		}));
+		setValid({});
 	};
 
 	const handleCloseContactDialog = () => {
@@ -582,7 +619,7 @@ function AddDealDialog(props) {
 			});
 	};
 
-	const addUpdateDeal = async (newContact = null) => {
+	const addUpdateDeal = async (newContact = null, closeAfterUpdate = true) => {
 		let tempContact = newContact ? newContact?.addContact?.contact : contact;
 		let contactId = tempContact?._id;
 
@@ -791,7 +828,7 @@ function AddDealDialog(props) {
 				});
 			}
 
-			handleClose();
+			if (closeAfterUpdate) handleClose();
 		}
 	};
 
@@ -912,6 +949,7 @@ function AddDealDialog(props) {
 					id={stateApp.activeDeal?.cardId}
 					user_id={stateApp.user.email}
 					isTransactPage={true}
+
 				/>
 			);
 		}
@@ -1044,6 +1082,7 @@ function AddDealDialog(props) {
 									width: "100%",
 									backgroundColor: "#fff",
 									minHeight: "100%",
+								
 								}}
 							>
 								{/* //// ViewAll card top bar //// */}
@@ -1074,14 +1113,16 @@ function AddDealDialog(props) {
 				</Dialog>
 			)}
 
-			{props.isTransactPage && stateApp.transactBarView !== "" && (
+			{ props.isTransactPage && stateApp.transactBarView !== "" && 
+				(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? 
 				<RightDialog
 					open={props.open}
 					width={props.width}
 					onClose={() =>
-						setStateApp((stateApp) => ({ ...stateApp, transactBarView: "" }))
+						setStateApp((stateApp) => ({ ...stateApp, transactBarView: "", viewDoc:null }))
 					}
           isTransactPage={props.isTransactPage}
+				
 				>
 					<div style={{ padding: "30px" }}>
 						<Grid item xs={12} style={{ minHeight: "35px" }}>
@@ -1090,9 +1131,11 @@ function AddDealDialog(props) {
 									margin: "0 0 15px 0",
 									float: "left",
 									fontSize: "1.1rem",
+									
 								}}
 							>
 								{stateApp.transactBarView}
+								
 							</h4>
 
 							<div style={{ float: "right" }}>
@@ -1102,6 +1145,7 @@ function AddDealDialog(props) {
 										setStateApp((stateApp) => ({
 											...stateApp,
 											transactBarView: "",
+											viewDoc: null
 										}))
 									}
 									size="small"
@@ -1114,11 +1158,8 @@ function AddDealDialog(props) {
 						{getView()}
 					</div>
 				</RightDialog>
-			)}
-
-			{(!props.isTransactPage ||
-				(props.isTransactPage && stateApp.transactBarView === "")) && (
-				<RightDialog
+			
+			: <RightDialog
 					open={props.open}
 					handleClickDialogClose={() => {
 						if (!updateDealLoading && !addContactLoading) {
@@ -1269,10 +1310,19 @@ function AddDealDialog(props) {
 								value={title}
 								label="Deal Name"
 								variant="outlined"
+								required
+								error={valid['title']}
+								helperText={
+								valid['title'] ? "Enter a deal name to get started" : ""
+								}
 								fullWidth
 								//   required
 								onChange={(e) => {
 									setTitle(e.target.value);
+									setValid({
+										...valid,
+										'title': false
+									})
 								}}
 								className={classes.inputField}
 							/>
@@ -1483,6 +1533,7 @@ function AddDealDialog(props) {
 									filesData={viewFileResult}
 									id={stateApp.activeDeal?.cardId}
 									loading={viewFileLoading}
+									disabled={!stateApp.activeDeal?.cardId}
 									handleOpenExpandableCard={handleOpenExpandableCard}
 								></AddDialogeUploadZone>
 							</div>
@@ -1511,10 +1562,12 @@ function AddDealDialog(props) {
 									color="secondary"
 									size="medium"
 									disableElevation
-									onClick={handleUpdate}
+									onClick={() => {
+										handleValidate() && handleUpdate()
+									}}
 									className={classes.footerButton}
 									disabled={
-										updateDealLoading || addContactLoading || isNaN(label)
+										updateDealLoading || addContactLoading || isNaN(label) || !valid
 									}
 								>
 									{updateDealLoading || addContactLoading ? (
@@ -1529,7 +1582,7 @@ function AddDealDialog(props) {
 						</div>
 					</div>
 				</RightDialog>
-			)}
+			}
 		</>
 	);
 }

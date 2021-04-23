@@ -110,6 +110,7 @@ import {
 import { GETALLACTIVITIESFORSEARCH } from "../../graphQL/useQueryGetAllActivities";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import ActivitySearch from "./components/ActivitySearch";
+import ContactSearch from "./components/ContactSearch";
 
 const theme = createMuiTheme({
   overrides: {
@@ -191,6 +192,7 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerOpen: {
     // background: "rgba(255, 255, 255, 1.0)",
+    zIndex:"99999 !important",
     background: "rgba(250, 250, 250, 1.0)",
     width: drawerWidth,
     height: "100%",
@@ -1194,6 +1196,9 @@ export default function Navigation(props) {
               <>
                 <ActivitySearch />
               </>
+            )}
+            {location.pathname === "/contacts" && (
+                <ContactSearch />
             )}
 
             {/*SEARCH UI FOR DEALS */}

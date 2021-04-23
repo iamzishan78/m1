@@ -109,7 +109,7 @@ const ContactsHeadCells = [
     label: "Full Name",
     // editable: true,
     options: {
-      sort: false,
+      sort: true,
       filter: false,
     },
   },
@@ -170,7 +170,7 @@ const ContactsHeadCells = [
       // display: true,
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
     },
   },
   {
@@ -178,20 +178,12 @@ const ContactsHeadCells = [
     label: "Primary Address",
     // editable: true,
     options: {
-      sort: false,
+      dbName: "address1",
+      sort: true,
       filter: false,
     },
   },
-  {
-    name: "contactOwner",
-    label: "Contact Owner",
-    options: {
-      // display: true,
-      filter: false,
-      searchable: false,
-      sort: false,
-    },
-  },
+
   {
     name: "melissaRowsCount",
     options: {
@@ -211,7 +203,7 @@ const ContactsHeadCells = [
       // display: true,
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
     },
   },
   {
@@ -221,7 +213,7 @@ const ContactsHeadCells = [
       // display: true,
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
     },
   },
 
@@ -232,7 +224,7 @@ const ContactsHeadCells = [
       // display: true,
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
     },
   },
   {
@@ -242,7 +234,21 @@ const ContactsHeadCells = [
       // display: true,
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
+    },
+  },
+  {
+    name: "contactOwner",
+    label: "Contact Owner",
+    options: {
+      dbName: "contactOwners.name",
+      // display: true,
+      filter: true,
+      filterOptions: {
+        names: [],
+      },
+      searchable: false,
+      sort: true,
     },
   },
   {
@@ -499,7 +505,8 @@ const ContactsHeadCells = [
     name: "tags",
     label: "Tags ",
     options: {
-      sort: false,
+      dbName: "tags.tag",
+      sort: true,
       download: false,
       print: false,
       filterOptions: {
@@ -511,9 +518,10 @@ const ContactsHeadCells = [
     name: "commentsCounter",
     label: " ",
     options: {
+      dbName: "comments.comment",
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
       download: false,
       print: false,
       viewColumns: false,

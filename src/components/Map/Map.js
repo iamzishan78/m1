@@ -138,8 +138,8 @@ function Map() {
   });
 
   const dispatch = useDispatch();
-  const mapGridCardActivated = useSelector(
-    ({ MapGridCard }) => MapGridCard.mapGridCardActivated
+  const { mapGridCardActivated, searchInputValue } = useSelector(
+    ({ MapGridCard }) => MapGridCard
   );
   const removeLayerFromMap = useSelector(
     ({ MainMap }) => MainMap.removeLayerFromMap
@@ -3063,7 +3063,7 @@ function Map() {
         });
       }
     }
-  }, [stateApp.wellSelectedCoordinates]);
+  }, [loading, stateApp.wellSelectedCoordinates]);
 
   useEffect(() => {
     (async () => {
@@ -3102,9 +3102,8 @@ function Map() {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
-            stateApp.mapboxglAccessToken
-          }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
+            }`;
 
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
@@ -3146,7 +3145,7 @@ function Map() {
         }
       }
     })();
-  }, [stateApp.wellSelectedCoordinates]);
+  }, [loading, stateApp.wellSelectedCoordinates]);
 
   useEffect(() => {
     const req = new Request(
@@ -3177,7 +3176,7 @@ function Map() {
 
     setStateApp((state) => ({
       ...state,
-      popupOpen: false,
+      popupOpen: stateApp.wellSelectedCoordinates.length > 0 && searchInputValue ? true : false,
       expandedCard: false,
       selectedUserDefinedLayer: undefined,
     }));
@@ -3783,6 +3782,7 @@ function Map() {
 
           setDraw(Draw);
           setMap(newMap);
+          setLoading(false)
         });
       };
 
@@ -3845,7 +3845,8 @@ function Map() {
 
   // Use effect for removing shape filter
   useEffect(() => {
-    if (stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
+
+    if (!loading && stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
       if (draw) draw.delete(drawingFilterFeatureId);
       setStateNav((stateNav) => ({
         ...stateNav,

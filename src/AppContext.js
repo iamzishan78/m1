@@ -116,6 +116,9 @@ const AppProvider = (props) => {
     prevBasinVisible: false,
     transactBarView: "",
     multiSelectLandGrids: false,
+    contactSearchQuery: "",
+    isContactSearching: false,
+    viewDoc: null,
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;

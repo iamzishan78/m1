@@ -57,6 +57,9 @@ const useStyles = makeStyles((theme) => ({
       top: "55px",
     },
   },
+  move: {
+    zIndex: 10000,
+  }
 }));
 
 export default function AddParcelOwnerDialogContent({
@@ -279,6 +282,7 @@ export default function AddParcelOwnerDialogContent({
   const modalClass = Modals();
 
   return (
+    <div className={classes.move}>
     <React.Fragment>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
         {selectedRow ? "Update" : "Add"} an Owner
@@ -472,5 +476,6 @@ export default function AddParcelOwnerDialogContent({
         </Button>
       </DialogActions>
     </React.Fragment>
+    </div>
   );
 }

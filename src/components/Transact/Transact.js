@@ -16,7 +16,7 @@ import M1nTable from "../Shared/M1nTable/M1nTable";
 import Drawer from "./components/Drawer";
 import moment from "moment";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
-
+import DocViewer from '../Shared/DocViewer'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -555,10 +555,12 @@ export default function Transact() {
   };
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} > 
       {stateApp.dealDialog 
         && <Drawer />
         }
+      <DocViewer></DocViewer>
+
       <AddDealDialog
         open={stateApp.dealDialog ? true : false}
         width="450px"
