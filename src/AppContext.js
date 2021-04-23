@@ -113,7 +113,8 @@ const AppProvider = (props) => {
     activityDisplayType: "calendar",
     prevAOIVisible: false,
     prevParcelVisible: false,
-    prevBasinVisible: false,    
+    prevBasinVisible: false, 
+    DocumentDrawer:false,   
     transactBarView: "",
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {

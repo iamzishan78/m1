@@ -185,8 +185,8 @@ function App() {
   };
 
   const updateApolloClient = (endpoint, token) => {
-    //uncomment to run against local
-    // endpoint = "http://localhost:7071/api/m1graph"
+    // uncomment to run against local
+    endpoint = "http://localhost:7071/api/m1graph"
 
 
     if (!apolloClient) {

@@ -49,12 +49,15 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Box from "@material-ui/core/Box";
 import { CircularProgress } from "@material-ui/core";
 import ClearIcon from "@material-ui/icons/Clear";
-
-
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-
 
 const leaseIndexName = 'lease-index-v2';
 const operatorIndexName = 'operator-index';
@@ -1079,7 +1082,31 @@ function Search() {
   console.log("orig optionsWithHeader", optionsWithHeader)
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} style={{display:'flex',justifyContent:'center',alignContent:'center'}}>
+      
+      {location.pathname === '/documents' ? ( 
+      <Accordion style={{width:'40px',backgroundColor:'transparent',display:'flex',flexDirection:'column',padding:'0px'}}>
+        <AccordionSummary
+          // expandIcon={<SearchIcon style={{color:'white',backgroundColor:'transparent'}}></SearchIcon>}
+        
+           style={{ maxHeight:'43px',backgroundColor:'transparent',marginTop:'0px !important'}}
+        >
+          <SearchIcon style={{color:'white',backgroundColor:'transparent',padding:'0px'}}></SearchIcon>
+        </AccordionSummary>
+        <AccordionDetails style={{width:'300px',backgroundColor:'white',display:'flex',flexDirection:'column',padding:'0px',border:'2px solid #d1cfcf',    marginTop: '-11px'}}>
+         
+          <Typography style={{padding:'9px',color:'rgb(24, 170, 221)',cursor:'pointer'}} variant='subtitle2'>
+              All Documents
+          </Typography>
+          
+          <Typography style={{padding:'6px',paddingLeft:'9px',backgroundColor:'#f2f2f2',width:'100%',borderTop:'1px solid #d1cfcf'}} variant='caption'>
+              Agreements
+          </Typography>
+          <Typography style={{padding:'9px',cursor:'pointer'}} variant='subtitle2'>
+             ShapFiles
+          </Typography>
+        </AccordionDetails>
+      </Accordion>): (<></>)}
       <Autocomplete
         id="cognitive-search-autocomplete"
         getOptionLabel={(option, value) => option.Primary}
@@ -1096,6 +1123,7 @@ function Search() {
           if (option.Source === "loader") return "loader";
           return "header";
         }}
+       
         // leftIconButton={<SearchIcon />}
         renderGroup={(option) => {
           if (option.group === "loader")
@@ -1108,8 +1136,8 @@ function Search() {
               />
             );
 
-          return option.group === "header" ? (
-            <div>
+          return (option.group === "header" && location.pathname) !=='/documents' ? (
+            <div >
             <Grid
               key={option.group}
               container
@@ -1241,7 +1269,7 @@ function Search() {
             </div>
           ) : (
             (searchOption === "all" ||
-              searchOption === option.group.toLowerCase()) && (
+              searchOption === option.group.toLowerCase()) && location.pathname !== '/documents' && (
               <Grid key={option.group} container item>
                 <Grid container item xs={12} className={classes.groupsHeaders}>
                   <Grid item item xs={6}>
@@ -1348,13 +1376,19 @@ function Search() {
 
           <div>
            {location.pathname === '/documents' ? (
-              <TextField
+              <div style={{display:'flex',justifyContent:"center",alignItems:'center',backgroundColor:'transparent'}}>
+              {/* <IconButton>
+              <SearchIcon style={{color:'white'}}></SearchIcon>
+              </IconButton> */}
+            
+                <TextField
               {...params}
               variant="outlined"
              fullWidth
-             placeholder="Search for documents by Name"
+             placeholder={"Search for documents by name"}
              className={classes.textF}
-             ></TextField>
+             >
+             </TextField></div>
            ) : (
              <TextField
              {...params}

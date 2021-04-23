@@ -60,6 +60,11 @@ export default function SearchBarWithToggleButton() {
             <Button
             className={classes.gridOnIcon}
             
+            onClick={()=>{
+              console.log(stateApp, 'Add Document')
+              setStateApp({...stateApp, DocumentDrawer:true})
+            }}
+            
             
           >
             <PostAddOutlinedIcon />
