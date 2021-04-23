@@ -949,6 +949,7 @@ function AddDealDialog(props) {
 					id={stateApp.activeDeal?.cardId}
 					user_id={stateApp.user.email}
 					isTransactPage={true}
+
 				/>
 			);
 		}
@@ -1081,6 +1082,7 @@ function AddDealDialog(props) {
 									width: "100%",
 									backgroundColor: "#fff",
 									minHeight: "100%",
+								
 								}}
 							>
 								{/* //// ViewAll card top bar //// */}
@@ -1117,9 +1119,10 @@ function AddDealDialog(props) {
 					open={props.open}
 					width={props.width}
 					onClose={() =>
-						setStateApp((stateApp) => ({ ...stateApp, transactBarView: "" }))
+						setStateApp((stateApp) => ({ ...stateApp, transactBarView: "", viewDoc:null }))
 					}
           isTransactPage={props.isTransactPage}
+				
 				>
 					<div style={{ padding: "30px" }}>
 						<Grid item xs={12} style={{ minHeight: "35px" }}>
@@ -1128,9 +1131,11 @@ function AddDealDialog(props) {
 									margin: "0 0 15px 0",
 									float: "left",
 									fontSize: "1.1rem",
+									
 								}}
 							>
 								{stateApp.transactBarView}
+								
 							</h4>
 
 							<div style={{ float: "right" }}>
@@ -1140,6 +1145,7 @@ function AddDealDialog(props) {
 										setStateApp((stateApp) => ({
 											...stateApp,
 											transactBarView: "",
+											viewDoc: null
 										}))
 									}
 									size="small"
