@@ -2849,7 +2849,7 @@ function SubTable(props) {
           }}
           options={{
             ...options,
-            searchText: stateApp.contactSearchQuery,
+            searchText: props.header === 'Contacts' ? stateApp.contactSearchQuery : null,
             search: 
                     (
                        props.header === 'Contacts'
