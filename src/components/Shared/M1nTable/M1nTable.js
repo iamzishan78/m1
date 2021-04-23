@@ -194,16 +194,13 @@ function M1nTable(props) {
       constDataTracks &&
       constDataTracks.tracksByObjectType
     ) {
-      if (constDataTracks.tracksByObjectType.length !== 0) {
-        const tracksIdArray = constDataTracks.tracksByObjectType.map(
-          (track) => track.trackOn
-        );
+      const tracksIdArray = constDataTracks.tracksByObjectType.map(
+        (track) => track.trackOn
+      );
 
-        setDataTracks(tracksIdArray);
-        // setRows(tracksIdArray);
-        // setLoading(false);
-
-      } 
+      setDataTracks(tracksIdArray);
+      // setRows(tracksIdArray);
+      // setLoading(false);
     }
   }, [constDataTracks]);
 
