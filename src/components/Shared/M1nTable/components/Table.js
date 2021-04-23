@@ -2255,6 +2255,8 @@ function SubTable(props) {
       if (props.addAble && props.parent === "UserManagement"){buttonLabel = "+ ADD USER"}
       if (props.addAble.type === "ownerToParcel"){buttonLabel = '+ ADD PARCEL'}
 
+      console.log('button label', buttonLabel)
+
       const addAction = (e) => {
         e.stopPropagation();
         if (props.addAble.type && props.addAble.type === "contact")
