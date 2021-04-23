@@ -183,20 +183,7 @@ const ContactsHeadCells = [
       filter: false,
     },
   },
-  {
-    name: "contactOwner",
-    label: "Contact Owner",
-    options: {
-      dbName: "contactOwners.name",
-      // display: true,
-      filter: true,
-      filterOptions: {
-        names: [],
-      },
-      searchable: false,
-      sort: true,
-    },
-  },
+
   {
     name: "melissaRowsCount",
     options: {
@@ -246,6 +233,20 @@ const ContactsHeadCells = [
     options: {
       // display: true,
       filter: false,
+      searchable: false,
+      sort: true,
+    },
+  },
+  {
+    name: "contactOwner",
+    label: "Contact Owner",
+    options: {
+      dbName: "contactOwners.name",
+      // display: true,
+      filter: true,
+      filterOptions: {
+        names: [],
+      },
       searchable: false,
       sort: true,
     },
