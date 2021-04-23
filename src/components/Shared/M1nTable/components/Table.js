@@ -2253,7 +2253,7 @@ function SubTable(props) {
       if (props.addAble.type === "wellInterest"){buttonLabel = '+ ADD INTEREST'}
       if (props.addAble.type === "deals"){buttonLabel = '+ ADD DEAL'}
       if (props.addAble && props.parent === "UserManagement"){buttonLabel = "+ ADD USER"}
-      if (props.addAble.type === "ownerToParcel"){buttonLabel = '+ ADD PARCEL'}
+      if (props.addAble.type === "ownerToParcel"){buttonLabel = '+ ADD INTEREST OWNER'}
 
 
       const addAction = (e) => {
@@ -2849,7 +2849,7 @@ function SubTable(props) {
           }}
           options={{
             ...options,
-            searchText: stateApp.contactSearchQuery,
+            searchText: props.header === 'Contacts' ? stateApp.contactSearchQuery : null,
             search: 
                     (
                        props.header === 'Contacts'
