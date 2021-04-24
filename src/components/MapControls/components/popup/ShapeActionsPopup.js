@@ -333,7 +333,7 @@ const ShapeActionsPopup = (props) => {
       return;
     }
 
-    const abstractShape = stateApp.selectedAbstracts[0];
+    const abstractShape = stateApp.currentFeature;
 
     const properties = abstractShape?.properties;
     let township = properties?.Township;
@@ -445,7 +445,7 @@ const ShapeActionsPopup = (props) => {
             </IconButton>
           </Tooltip>
 
-          {stateApp.selectedAbstracts.length > 0 && (
+          {stateApp.isAbstractedLayersPolygon && (
             <Tooltip title="Create Parcel">
               <IconButton
                 size="small"

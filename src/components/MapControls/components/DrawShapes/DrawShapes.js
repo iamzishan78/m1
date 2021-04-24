@@ -277,26 +277,29 @@ export default function DrawShapes() {
     setStateApp((state) => ({ ...state, editDraw: !!stateApp.currentFeature }));
   }, [setStateApp, stateApp.currentFeature]);
 
-  useEffect(() => {
-    if (!stateApp.multiSelectLandGrids) {
-      setStateApp((state) => ({
-        ...state,
-        showShapeActionsPopup: false,
-        editDraw: false,
-        currentFeature: undefined,
-      }));
-    }
-  }, [stateApp.multiSelectLandGrids]);
-
   const clearMapAndCloseShapeActionsPopup = () => {
-    stateApp.draw.delete(stateApp.currentFeature?.id);
+    const { draw, map, currentFeature } = stateApp;
+    draw.delete(currentFeature?.id);
     setStateApp((state) => ({
       ...state,
       editDraw: false,
       currentFeature: undefined,
       showShapeActionsPopup: false,
       showDrawShapesPopup: false,
+      isAbstractedLayersPolygon: false,
+      multiSelectLandGrids: false,
+      selectedAbstracts: [],
     }));
+
+    // unselecting the grids
+    const featuresList = map.getSource("abstract_geo_source")._data.features;
+    for (let i = 0; i < featuresList.length; i++) {
+      const id = featuresList[i].properties.Id;
+      map.setFeatureState(
+        { source: "abstract_geo_source", id: id },
+        { click: false }
+      );
+    }
   };
 
   const actionClose = () => {
@@ -357,11 +360,11 @@ export default function DrawShapes() {
         </ClickAwayListener>
       )}
       {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
-      stateApp.currentFeature !== undefined &&
-      !stateApp.currentFeature.id.includes("draw_polygon") &&
-      !stateApp.currentFeature.id.includes("drag_circle") &&
-      !stateApp.currentFeature.id.includes("draw_rectangle") &&
-      !stateApp.currentFeature.id.includes("edit_polygon") ? (
+        stateApp.currentFeature !== undefined &&
+        !stateApp.currentFeature.id.includes("draw_polygon") &&
+        !stateApp.currentFeature.id.includes("drag_circle") &&
+        !stateApp.currentFeature.id.includes("draw_rectangle") &&
+        !stateApp.currentFeature.id.includes("edit_polygon") ? (
         <Fragment>
           {showSpatialDataCard && ( // for edit/create AOI
             <ShapeAOIPopup

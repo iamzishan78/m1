@@ -3,9 +3,7 @@ import React, { useState, createContext } from "react";
 const MapContext = createContext([{}, () => { }]);
 
 const MapContextProvider = (props) => {
-  const [stateMap, setStateMap] = useState({
-    multiSelectLandGrids: false
-  });
+  const [stateMap, setStateMap] = useState({});
 
   return (
     <MapContext.Provider value={[stateMap, setStateMap]}>

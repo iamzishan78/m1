@@ -19,6 +19,9 @@ import { default as Rect } from "../../../Shared/svgIcons/rectangle";
 import { default as CheckCircle } from "../../../Shared/svgIcons/check-circle";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
+import {
+  addCustomShapeProperties,
+} from "../DrawShapes/drawShapesHelpers";
 
 import { gql } from "@apollo/client";
 
@@ -82,7 +85,7 @@ const DrawShapesPopup = (props) => {
         title: "Multiple Select",
         mode: "multiple_select",
         icon: <MouseClicked />,
-        disable: stateApp.mapVars.zoom <= 13,
+        disable: stateApp.mapVars.zoom <= 12,
       },
       {
         title: "Polygon",
@@ -209,7 +212,7 @@ const DrawShapesPopup = (props) => {
   };
 
   const createMultiSelectedFeature = () => {
-    let newFeature,
+    let { draw } = stateApp, newFeature,
       featureId = hat();
     stateApp.selectedAbstracts.forEach((abstractFeature, index) => {
       if (index <= stateApp.selectedAbstracts.length - 1 && !newFeature) {
@@ -223,19 +226,23 @@ const DrawShapesPopup = (props) => {
     });
     newFeature.id = featureId;
     newFeature.properties.id = featureId;
+
+    // adding new polygon into map instance
+    draw.add(newFeature);
+
     setStateApp((state) => ({
       ...state,
       currentFeature: newFeature,
+      multiSelectLandGrids: false,
+      isAbstractedLayersPolygon: true
     }));
-
-    // not working :(
-    // stateApp.draw.changeMode("direct_select", {
-    //   featureId: newFeature.id,
-    // });
+    addCustomShapeProperties(newFeature, draw);
+    stateApp.draw.changeMode("direct_select", {
+      featureId: newFeature.id,
+    });
   };
 
-  const parcelLabel =
-    stateApp.selectedAbstracts.length > 1 ? "tracts" : "tract";
+  const parcelLabel = stateApp.selectedAbstracts.length > 1 ? "tracts" : "tract";
 
   return (
     <Fragment>

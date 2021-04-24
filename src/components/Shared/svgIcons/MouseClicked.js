@@ -32,8 +32,8 @@ export default class DrawClickedMouse extends Component {
   };
 
   static defaultProps = {
-    height: "26px",
-    width: "25px",
+    height: "18px",
+    width: "18px",
     predefinedClassName: "data-ex-icons-mouse-clicked",
     viewBox: "0 0 22 18",
   };
@@ -42,9 +42,9 @@ export default class DrawClickedMouse extends Component {
     return (
       <Base {...this.props}>
         <svg
-          width="20"
-          height="17"
-          viewBox="0 0 35.999989 36.000289"
+          width="24"
+          height="24"
+          viewBox="0 0 35.999989 37.000289"
           id="svg8381"
         >
           <g id="pixel_51-layer-1" transform="translate(-351.51351,-301.99097)">

@@ -2156,14 +2156,14 @@ function Map() {
                     };
                     let flag = 0;
                     for (let k = 0; k < shapeList.length; k++) {
-                      if (shapeList[k].type === "MultiPolygon") {
+                      if (shapeList[k].type === "MultiPolygon" || shapeList[k].geometry.type === "MultiPolygon") {
                         let flagM = 0;
                         for (
                           let j = 0;
-                          j < shapeList[k].coordinates.length;
+                          j < shapeList[k].geometry.coordinates.length;
                           j++
                         ) {
-                          let filterCoordinates = shapeList[k].coordinates[j];
+                          let filterCoordinates = shapeList[k].geometry.coordinates[j];
                           if (
                             filterCoordinates[0] &&
                             filterCoordinates[0].length > 2
@@ -2178,7 +2178,7 @@ function Map() {
                             flagM++;
                           }
                         }
-                        if (flagM == shapeList[k].coordinates.length) {
+                        if (flagM === shapeList[k].geometry.coordinates.length) {
                           flag++;
                         }
                       } else {
@@ -2194,13 +2194,13 @@ function Map() {
                   return true;
                 } else {
                   for (let i = 0; i < shapeList.length; i++) {
-                    if (shapeList[i] && shapeList[i].type === "MultiPolygon") {
+                    if (shapeList[i] && (shapeList[i].type === "MultiPolygon" || shapeList[i].geometry.type === "MultiPolygon")) {
                       for (
                         let j = 0;
-                        j < shapeList[i].coordinates.length;
+                        j < shapeList[i].geometry.coordinates.length;
                         j++
                       ) {
-                        let filterCoordinates = shapeList[i].coordinates[j];
+                        let filterCoordinates = shapeList[i].geometry.coordinates[j];
                         if (
                           filterCoordinates[0] &&
                           filterCoordinates[0].length > 2
@@ -2504,7 +2504,7 @@ function Map() {
         };
         const mergeIntoMultiPolygon = (d) => {
           const data = d.map((f) => {
-            if (f.type == "Feature") return f;
+            if (f.type === "Feature") return f;
             return turf.feature(f);
           });
           return turf.combine(turf.featureCollection(data));
@@ -3621,7 +3621,6 @@ function Map() {
             setStateApp((state) => ({
               ...state,
               selectedPolygonString: polygonString,
-              mapVars: { ...state.mapVars, zoom: map.getZoom() },
             }));
           }
 
@@ -3649,6 +3648,11 @@ function Map() {
               },
             });
           }
+          // setting zoom level on every zoom
+          setStateApp((state) => ({
+            ...state,
+            mapVars: { ...state.mapVars, zoom: map.getZoom() },
+          }));
         };
 
         newMap.on("zoomend", function (e) {

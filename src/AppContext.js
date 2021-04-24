@@ -116,6 +116,7 @@ const AppProvider = (props) => {
     prevBasinVisible: false,
     transactBarView: "",
     multiSelectLandGrids: false,
+    isAbstractedLayersPolygon: false,
     contactSearchQuery: "",
     isContactSearching: false,
     viewDoc: null,

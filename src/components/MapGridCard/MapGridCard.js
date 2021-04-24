@@ -377,8 +377,8 @@ function MapGridCard(props) {
               <Tab
                 className="cancelDraggableEffect"
                 label={`Viewport${stateApp.viewportWells
-                    ? " (" + stateApp.viewportWells?.length + ")"
-                    : ""
+                  ? " (" + stateApp.viewportWells?.length + ")"
+                  : ""
                   }`}
                 {...a11yProps(1)}
               />
