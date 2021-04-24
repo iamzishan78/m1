@@ -176,6 +176,7 @@ function Search() {
     mapGridCardActivated,
     mapGridCardActiveTap,
     searchInputValue,
+    lastSearch,
     objToPopulateSearchLayer,
   } = useSelector(({ MapGridCard }) => MapGridCard);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -250,8 +251,17 @@ function Search() {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (value !== searchInputValue) {
+    if (!value && searchInputValue && value !== searchInputValue) {
+      console.log("lss",lastSearch)
       setValue(searchInputValue)
+      
+      if (lastSearch?.Source === ownerCogIndexName && lastSearch?.Id) {
+        getOwnerWells({
+          variables: {
+            ownerId: lastSearch.Id,
+          },
+        });
+      }
     }
   }, []);
 
@@ -934,6 +944,7 @@ function Search() {
             : newValue.Secondary
             ? newValue.Secondary
             : "",
+          lastSearch: newValue  
         })
       );
 
