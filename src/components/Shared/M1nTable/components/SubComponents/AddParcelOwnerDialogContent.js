@@ -267,7 +267,8 @@ export default function AddParcelOwnerDialogContent({
           },
           refetchQueries: [
             "getCustomLayer",
-            "getparcelOwners",
+            // causing timing issue since getCustomLayer also calls this query
+            // "getparcelOwners",
             "getContactParcelInterests",
           ],
           awaitRefetchQueries: true,
