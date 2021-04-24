@@ -1659,6 +1659,7 @@ export default function Navigation(props) {
               setStateApp((stateApp) => ({
                 ...stateApp,
                 selectedContact: null,
+                contactSearchQuery : null,
               }));
               handleListItemClick(event, 0, "/contacts");
             }}
