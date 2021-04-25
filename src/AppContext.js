@@ -120,6 +120,8 @@ const AppProvider = (props) => {
     contactSearchQuery: "",
     isContactSearching: false,
     viewDoc: null,
+    showDrawShapesPopup: false,
+    showShapeActionsPopup: false,
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;

@@ -23,7 +23,7 @@ const MapControlsContextProvider = (props) => {
     map: null,
     Draw: null,
     mapStyleList: [],
-    expandedPanel: false,
+    expandedPanel: false
   });
   return (
     <MapControlsContext.Provider

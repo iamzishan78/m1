@@ -2073,7 +2073,7 @@ function Map() {
             map.setLayoutProperty(cluster_counts_layer, "visibility", "none");
           }
         } else {
-          if (layer.visibility == "visible") {
+          if (layer.visibility === "visible") {
             if (map.getLayer(cluster_layer)) {
               map.setLayoutProperty(cluster_layer, "visibility", "visible");
             }
@@ -3372,9 +3372,6 @@ function Map() {
   // };
 
   const onAbstactLayerClick = function (feature, action) {
-    console.log("featur--", feature);
-    console.log("action", action);
-
     if (!feature) {
       setStateApp((state) => ({
         ...state,
@@ -3390,6 +3387,7 @@ function Map() {
       setStateApp((state) => ({
         ...state,
         selectedAbstracts: [...state.selectedAbstracts, feature],
+        showDrawShapesPopup: true
       }));
     }
     if (action === "remove") {

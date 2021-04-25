@@ -280,15 +280,15 @@ export default function DrawShapes() {
   const clearMapAndCloseShapeActionsPopup = () => {
     const { draw, map, currentFeature } = stateApp;
     draw.delete(currentFeature?.id);
-    setStateApp((state) => ({
+    setStateApp(state => ({
       ...state,
       editDraw: false,
       currentFeature: undefined,
-      showShapeActionsPopup: false,
-      showDrawShapesPopup: false,
       isAbstractedLayersPolygon: false,
       multiSelectLandGrids: false,
       selectedAbstracts: [],
+      showShapeActionsPopup: false,
+      showDrawShapesPopup: false,
     }));
 
     // unselecting the grids

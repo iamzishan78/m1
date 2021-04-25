@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { MapControlsContext } from "./MapControlsContext";
 import { AppContext } from "../../AppContext";
 import SpeedDial from "@material-ui/lab/SpeedDial";
@@ -132,7 +132,7 @@ export default function MapControls(props) {
         setStateApp((state) => ({
           ...state,
           showDrawShapesPopup: !state.showDrawShapesPopup,
-          showShapeActionsPopup: true,
+          showShapeActionsPopup: false,
         }));
       }
     }
@@ -215,6 +215,8 @@ export default function MapControls(props) {
       case "layer":
       case "marketplace":
       case "heatMaps":
+        if (selectedControl === 'layer' && stateApp.selectedAbstracts.length > 0)
+          return <DrawShapes />;
         return <SidePanel />;
       case "add":
         return <AddUserData />;
