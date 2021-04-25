@@ -21,6 +21,7 @@ import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyL
 import { useMutation } from "@apollo/client";
 import { DropzoneAreaBase } from "material-ui-dropzone";
 import shp from "shpjs";
+import geojsonMerge from '@mapbox/geojson-merge';
 import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -247,7 +248,7 @@ export default function AddLayer(props) {
         fetch(inputFile).then((response) => {
           response.arrayBuffer().then((buffer) => {
             shp(buffer).then((geojson) => {
-              resolve(geojson);
+              resolve(Array.isArray(geojson) ? geojsonMerge.merge(geojson) : geojson);
             });
           });
         });
@@ -262,13 +263,26 @@ export default function AddLayer(props) {
       universalCircularLoaderAct: true,
     }));
     let fileContent = await handleFileAsync(fileObj);
+    const featureTypes = []
+    fileContent.features.forEach((feature) => {
+      if (!feature.properties) {
+        feature.properties = {}
+      }
+      feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type }
+      if (!featureTypes.includes(feature.geometry.type)) {
+        featureTypes.push(feature.geometry.type)
+      }
+    })
+    fileContent.featureTypes = featureTypes
     setStateApp((stateApp) => ({
       ...stateApp,
       universalCircularLoaderAct: false,
     }));
+
+
     setStateMapControls({
       ...stateMapControls,
-      selectedControl: Array.isArray(fileContent) ? "addGroup" : "add",
+      selectedControl: featureTypes.length > 0 ? "addGroup" : "add",
       fileUploadedContent: fileContent,
     });
   }

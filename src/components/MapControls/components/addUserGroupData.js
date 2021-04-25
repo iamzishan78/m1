@@ -83,8 +83,8 @@ export default function AddUserGroupData(props) {
   useEffect(() => {
     if (stateMapControls.fileUploadedContent) {
 
-      stateMapControls.fileUploadedContent.forEach((layer) => {
-        layerNames.push(layer.fileName.replace('_', "") + makeid(3))
+      stateMapControls.fileUploadedContent.featureTypes.forEach((featureType) => {
+        layerNames.push(featureType + makeid(3))
       })
       setLayerNames([...layerNames])
 
@@ -151,8 +151,7 @@ export default function AddUserGroupData(props) {
     }
   }
 
-  const uploadFile = (data, fileData, fileContent, isLast) => {
-    const { layerName, groupName, groupId } = data
+  const uploadFile = (fileData, fileContent, sourceProps) => {
     const url = fileData.addFile.file.uri;
     const interal_key = fileData.addFile.file.internalKey;
     const file_id = fileData.addFile.file.id;
@@ -171,119 +170,82 @@ export default function AddUserGroupData(props) {
         body: content,
       })
         .then((response) => response.text())
-        .then((response) => {
-          const idColor = random_rgb();
-          let type = turf.getType(fileContent);
-          let paintProps = {};
+        .then(() => {
+          fileContent.featureTypes.forEach((type, index) => {
+            const idColor = random_rgb();
+            const layerName = layerNames[index]
+            let paintProps = {};
+            if (type == "Point" || type == "MultiPoint") type = "circle";
+            else if (type == "LineString" || type == "Feature" || type == "MultiLineString") type = "line";
+            else type = "fill";
 
-          if (type == "Point" || type == "MultiPoint") type = "circle";
-          else if (
-            fileContent.features &&
-            fileContent.features.length > 0
-          ) {
-            let count = 0;
+            if (type == "circle") {
+              paintProps = {
+                "circle-radius": 5,
+                "circle-color": idColor,
+                "circle-stroke-width": 2,
+                "circle-stroke-color": "#fff",
+              };
+            } else if (type == "line") {
+              paintProps = {
+                "line-color": idColor,
+                "line-opacity": 1,
+                "line-width": 1,
+              };
+            } else {
+              paintProps = {
+                "fill-color": idColor,
+                "fill-opacity": 0.4,
+                "fill-outline-color": "#1C1C1C",
+              };
+            }
 
-            if (
-              fileContent.features[0] &&
-              (turf.getType(fileContent.features[0]) == "Point" ||
-                turf.getType(fileContent.features[0]) == "MultiPoint")
-            ) {
-              fileContent.features.map((feature) => {
-                if (
-                  turf.getType(feature) == "Point" ||
-                  turf.getType(feature) == "MultiPoint"
-                )
-                  count++;
-              });
-
-              if (count == fileContent.features.length) type = "circle";
-            } else if (
-              fileContent.features[0] &&
-              (turf.getType(fileContent.features[0]) == "LineString" ||
-                turf.getType(fileContent.features[0]) == "Feature" ||
-                turf.getType(fileContent.features[0]) == "MultiLineString")
-            ) {
-              fileContent.features.map((feature) => {
-                if (
-                  turf.getType(feature) == "LineString" ||
-                  turf.getType(feature) == "MultiLineString" ||
-                  turf.getType(feature) == "Feature"
-                )
-                  count++;
-              });
-
-              ////  only lines feature
-              if (count == fileContent.features.length) type = "line";
-            } else type = "fill";
-          } else type = "fill";
-
-          if (type == "circle") {
-            paintProps = {
-              "circle-radius": 5,
-              "circle-color": idColor,
-              "circle-stroke-width": 2,
-              "circle-stroke-color": "#fff",
-            };
-          } else if (type == "line") {
-            paintProps = {
-              "line-color": idColor,
-              "line-opacity": 1,
-              "line-width": 1,
-            };
-          } else {
-            paintProps = {
-              "fill-color": idColor,
-              "fill-opacity": 0.4,
-              "fill-outline-color": "#1C1C1C",
-            };
-          }
-
-          let layerPaintProps = [
-            {
-              id: layerName,
-              sourceProps:
-                layerName.trim().toLowerCase().replace(" ", "_") +
-                "_source",
-              paintType: type,
-              paintProps: paintProps,
-            },
-          ];
-
-          const layerSettings = {
-            interaction: {
-              interactionAble: false,
-              interactionDetail: {
-                hover: false,
-                click: false,
+            let layerPaintProps = [
+              {
+                id: layerName,
+                sourceProps: sourceProps + "_source",
+                paintType: type,
+                paintProps: paintProps,
               },
-            },
-            colorable: true,
-            showable: true,
-            visiable: true,
-          };
+            ];
 
-          addLayer({
-            variables: {
-              layer: {
-                layerName,
-                groupName,
-                groupId,
-                identifier: layerName,
-                layerType: "file layer",
-                layerCategory: "UD layer",
-                public: true,
-                createBy: stateApp.user.mongoId,
-                file: file_id,
-                defaultSettings: { layerSettings, layerPaintProps },
+            const layerSettings = {
+              interaction: {
+                interactionAble: false,
+                interactionDetail: {
+                  hover: false,
+                  click: false,
+                },
               },
-            },
-            refetchQueries: isLast ? ["getAllLayerSettingsByUser"] : [],
-            awaitRefetchQueries: true,
-          });
+              colorable: true,
+              showable: true,
+              visiable: true,
+            };
 
-          if (isLast) {
-            handleClose();
-          }
+            addLayer({
+              variables: {
+                layer: {
+                  layerName,
+                  groupName,
+                  groupId,
+                  layerGeometry: fileContent.featureTypes[index],
+                  identifier: layerName + uuid(),
+                  layerType: "file layer",
+                  layerCategory: "UD layer",
+                  public: true,
+                  createBy: stateApp.user.mongoId,
+                  file: file_id,
+                  defaultSettings: { layerSettings, layerPaintProps },
+                },
+              },
+              refetchQueries: index === fileContent.featureTypes.length - 1 ? ["getAllLayerSettingsByUser"] : [],
+              awaitRefetchQueries: true,
+            });
+
+            if (index === fileContent.featureTypes.length - 1) {
+              handleClose();
+            }
+          })
         })
         .catch((error) => {
           console.log(error);
@@ -309,20 +271,16 @@ export default function AddUserGroupData(props) {
       }));
 
       const userId = stateApp.user.mongoId;
-      stateMapControls.fileUploadedContent.forEach(async (layer, index) => {
-        const isLast = stateMapControls.fileUploadedContent.length - 1 === index
-        const fileName = layerNames[index].trim().toLowerCase().replace(" ", "_") + ".geojson";
-        const file = await addFile({
-          variables: {
-            fileName,
-            userId,
-          },
-        });
-        if (file?.data?.addFile?.success) {
-          const data = { layerName: layerNames[index], groupName, groupId }
-          uploadFile(data, file.data, layer, isLast)
-        }
-      })
+      const fileName = groupName.trim().toLowerCase().replace(" ", "_") + ".geojson";
+      const file = await addFile({
+        variables: {
+          fileName,
+          userId,
+        },
+      });
+      if (file?.data?.addFile?.success) {
+        uploadFile(file.data, stateMapControls.fileUploadedContent, groupName + uuid())
+      }
     }
   };
 
@@ -379,14 +337,14 @@ export default function AddUserGroupData(props) {
         />
 
         {
-          stateMapControls.fileUploadedContent.map((layer, i) =>
+          stateMapControls.fileUploadedContent.featureTypes.map((layer, i) =>
             <TextField
               focused
               required
               margin="dense"
               id="layerName"
               value={layerNames[i]}
-              label={`Layer ${i + 1} ( ${layer.features[0].geometry.type} )`}
+              label={`Layer ${i + 1} ( ${layer} )`}
               fullWidth
               error={error}
               onChange={(e) => handleLayerNameChanges(e.target.value, i)}

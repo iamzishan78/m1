@@ -454,20 +454,21 @@ function Map() {
 
   const handleFileAsync = async (uri, internalKey, layerIndex) => {
     if (uri && internalKey && layerIndex != -1) {
-      let response = await fetch(uri, {
-        headers: {
-          "Content-Type": "text/plain; charset=UTF-8",
-          "X-Ms-Blob-Type": "BlockBlob",
-          "X-Ms-Meta-Internalkey": internalKey,
-          "X-Ms-Version": "2015-02-21",
-        },
-        method: "GET",
-      });
-      response = await response.json();
+      // let response = await fetch(uri, {
+      //   headers: {
+      //     "Content-Type": "text/plain; charset=UTF-8",
+      //     "X-Ms-Blob-Type": "BlockBlob",
+      //     "X-Ms-Meta-Internalkey": internalKey,
+      //     "X-Ms-Version": "2015-02-21",
+      //   },
+      //   method: "GET",
+      // });
+      // response = await response.json();
 
       let layers = layersData.slice(0);
       let currentLayer = { ...layers[layerIndex] };
-      currentLayer.fileContent = response;
+      // currentLayer.fileContent = response;
+      currentLayer.fileUrl = uri;
       layers[layerIndex] = currentLayer;
       setLayersData(layers);
 
@@ -475,7 +476,15 @@ function Map() {
 
       if (layerIndex < layersData.length - 1)
         for (let i = layerIndex + 1; i < layers.length; i++) {
-          if (layers[i].layerType == "file layer") {
+          const fileFound = layers.find((l) => l.file === layers[i].file && l.fileUrl)
+          if (fileFound) {
+            let currentLayer = { ...layers[i] };
+            // currentLayer.fileContent = fileFound.fileContent
+            currentLayer.fileUrl = fileFound.fileUrl
+            layers[i] = currentLayer;
+            setLayersData(layers);
+          }
+          else if (layers[i].layerType == "file layer") {
             setFileRequestCounter(1);
             viewFile({
               variables: {
@@ -606,11 +615,15 @@ function Map() {
       let geoJson = null;
 
       if (config.layerType == "file layer") {
-
-        geoJson = {
-          ...layerData,
-          features: layerData?.features?.filter((feature) => !!feature?.geometry) || []
+        if (layerData?.features) {
+          geoJson = {
+            ...layerData,
+            features: layerData?.features?.filter((feature) => !!feature?.geometry) || []
+          }
+        } else {
+          geoJson = layerData
         }
+
 
         // geoJson = layerData;
 
@@ -781,6 +794,7 @@ function Map() {
         };
 
         if (prop.paintProps) layerConfig.paint = prop.paintProps;
+        if (config.layerGeometry && data.featureTypes) layerConfig.filter = ['==', 'layerGeometry', config.layerGeometry]
 
         if (prop.minZoom) {
           layerConfig.minzoom = prop.minZoom;
@@ -1290,8 +1304,8 @@ function Map() {
               beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
             }
           }
-        } else if (layer.layerType == "file layer" && layersData[i].fileContent) {
-          let data = layersData[i].fileContent;
+        } else if (layer.layerType == "file layer" && layersData[i].fileUrl) {
+          let data = layersData[i].fileUrl;
           if (data) {
             beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
           }
