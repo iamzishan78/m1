@@ -709,7 +709,7 @@ function Map() {
           map.addSource(sourceId, {
             type: "geojson",
             data: geoJson,
-            promoteId: "id",
+            // promoteId: "id",
           });
         }
       }
@@ -758,7 +758,7 @@ function Map() {
         map.addSource(`${sourceId}_filter`, {
           type: "geojson",
           data: geoJson,
-          promoteId: "id",
+          // promoteId: "id",
         });
       }
 
@@ -3695,7 +3695,7 @@ function Map() {
               type: "FeatureCollection",
               features: [],
             },
-            promoteId: "Id",
+            // promoteId: "Id",
           });
 
           newMap.addSource("plssseconddivision_label_geo_source", {
@@ -3704,7 +3704,7 @@ function Map() {
               type: "FeatureCollection",
               features: [],
             },
-            promoteId: "Id",
+            // promoteId: "Id",
           });
 
           newMap.addLayer({
