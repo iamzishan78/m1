@@ -157,7 +157,7 @@ function M1nTable(props) {
   const [updateContact] = useMutation(UPDATECONTACT);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
-  const [getParcelOwners, { data: dataParcelOwners }] = useLazyQuery(PARCELOWNERSQUERY);
+  const [getParcelOwners, { data: dataParcelOwners }] = useLazyQuery(PARCELOWNERSQUERY, {fetchPolicy: "cache-and-network"});
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
   const [getMelissaRowsCount, { data: dataMelissaRowsCount }] = useLazyQuery(MELISSARECORDSCOUNTBYIDS,{fetchPolicy: "cache-and-network",});
   const [getContactParcelInterests,{ data: dataContactParcelInterests },] = useLazyQuery(CONTACTPARCELINTERESTS, {fetchPolicy: "cache-and-network",});
@@ -194,16 +194,13 @@ function M1nTable(props) {
       constDataTracks &&
       constDataTracks.tracksByObjectType
     ) {
-      if (constDataTracks.tracksByObjectType.length !== 0) {
-        const tracksIdArray = constDataTracks.tracksByObjectType.map(
-          (track) => track.trackOn
-        );
+      const tracksIdArray = constDataTracks.tracksByObjectType.map(
+        (track) => track.trackOn
+      );
 
-        setDataTracks(tracksIdArray);
-        // setRows(tracksIdArray);
-        // setLoading(false);
-
-      } 
+      setDataTracks(tracksIdArray);
+      // setRows(tracksIdArray);
+      // setLoading(false);
     }
   }, [constDataTracks]);
 
