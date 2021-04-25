@@ -272,7 +272,7 @@ const DrawShapesPopup = (props) => {
         ))}
       </span>
       <span className={classes.multiSelectCheck}>
-        {stateApp.multiSelectLandGrids && (
+        {(stateApp.multiSelectLandGrids || stateApp.selectedAbstracts.length > 0) && (
           <Tooltip title="Set Boundary">
             <IconButton
               size="small"
