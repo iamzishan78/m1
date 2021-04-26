@@ -29,7 +29,7 @@ import { gql } from "@apollo/client";
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
-  const { classes, children, toggleSpatialDataCard } = props;
+  const { classes, children, toggleSpatialDataCard, showSpatialDataCard } = props;
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [
@@ -305,11 +305,11 @@ const ShapeActionsPopup = (props) => {
     }));
   };
 
-  // const actionAOI = () => {
-  //   if (isLine()) return;
-  //   props.selectedFeature.properties.sdType = "interest";
-  //   toggleSpatialDataCard(true);
-  // };
+  const actionAOI = () => {
+    if (isLine()) return;
+    props.selectedFeature.properties.sdType = "interest";
+    toggleSpatialDataCard(!showSpatialDataCard);
+  };
 
   // const actionParcel = () => {
   //   if (isLine()) return;
@@ -322,8 +322,6 @@ const ShapeActionsPopup = (props) => {
       ? true
       : false;
   };
-
-  const { showSpatialDataCard } = props;
 
   const calculateShapeCenter = (shapeCoordinates) =>
     polylabel(shapeCoordinates);
@@ -413,13 +411,13 @@ const ShapeActionsPopup = (props) => {
 
   return (
     <Fragment>
-      {showSpatialDataCard && (
+      {/* {showSpatialDataCard && (
         <SpatialDataCard
           closeSpatialDataCard={() => toggleSpatialDataCard(false)}
           saveSpatialData={handleSaveSpatialDataToShape}
           selectedFeature={stateApp.currentFeature}
         />
-      )}
+      )} */}
       <Fragment>
         <span class={classes.label}>
           {isLine() ? "Calc. Dist" : "Calc. Area"}
@@ -475,11 +473,11 @@ const ShapeActionsPopup = (props) => {
             </IconButton>
           </Tooltip> */}
 
-          {/* <Tooltip title="Track">
+          <Tooltip title="Track">
             <IconButton size="small" onClick={actionAOI} aria-label="Track">
               <GpxFixedIcon />
             </IconButton>
-          </Tooltip> */}
+          </Tooltip>
 
           <span className={classes.divider}></span>
           <Tooltip title="Edit Active Shape">

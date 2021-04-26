@@ -4,7 +4,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
 import { AppContext } from "../../../AppContext";
 
-export default () => {
+const FilterAOI = () => {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [aoiData, setAOIData] = useState([]);
@@ -89,3 +89,5 @@ export default () => {
 
   return null;
 };
+
+export default FilterAOI;

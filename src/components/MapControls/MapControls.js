@@ -127,14 +127,12 @@ export default function MapControls(props) {
       });
     }
 
-    if (action === "draw") {
-      if (!stateApp.editDraw) {
-        setStateApp((state) => ({
-          ...state,
-          showDrawShapesPopup: !state.showDrawShapesPopup,
-          showShapeActionsPopup: false,
-        }));
-      }
+    if (action === "draw" && !stateApp.editDraw) {
+      setStateApp((state) => ({
+        ...state,
+        showDrawShapesPopup: !state.showDrawShapesPopup,
+        showShapeActionsPopup: false,
+      }));
     }
 
     setStateApp((stateApp) => ({

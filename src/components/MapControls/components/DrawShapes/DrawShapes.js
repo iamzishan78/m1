@@ -53,12 +53,6 @@ import ShowChartIcon from "@material-ui/icons/ShowChart";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import { NavigationContext } from "../../../Navigation/NavigationContext";
 
-// import { availableShapes } from "./constants";
-const DEBUG_GREEN = "background: green; color: white; border: 1px solid black";
-const DEBUG_YELLOW = "background: yellow; color: red; border: 1px solid black";
-const DEBUG_BLUE = "background: blue; color: white; border: 1px solid black";
-const DEBUG_RED = "background: red; color: white; border: 1px solid black";
-
 // const localStyles = makeStyles((theme) => ({
 //   label: {
 //     width: "150px",
@@ -366,7 +360,7 @@ export default function DrawShapes() {
         !stateApp.currentFeature.id.includes("draw_rectangle") &&
         !stateApp.currentFeature.id.includes("edit_polygon") ? (
         <Fragment>
-          {showSpatialDataCard && ( // for edit/create AOI
+          {(showSpatialDataCard || stateApp.selectedUserDefinedLayer) && ( // for edit/create AOI
             <ShapeAOIPopup
               upsertCustomLayer={upsertCustomLayer}
               user={user}
@@ -377,9 +371,10 @@ export default function DrawShapes() {
             <div class={classes.mapOverlayInner}>
               <div className={classes.content}>
                 <ShapeActionsPopup
+                  classes={classes}
                   selectedFeature={stateApp.currentFeature}
                   toggleSpatialDataCard={toggleSpatialDataCard}
-                  classes={classes}
+                  showSpatialDataCard={showSpatialDataCard}
                 >
                   <span className={classes.clearAction}>
                     <Tooltip title="Close">

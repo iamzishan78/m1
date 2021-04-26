@@ -142,7 +142,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	const [layerMap, setLayerMap] = useState([]);
 	const [open, setOpen] = useState(true);
 	const [mapStyles, setMapStyles] = useState([]);
-	const [currentLayers, setCurrentLayers] = useState(items);
 
 	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
@@ -176,15 +175,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			};
 		}
 	}, [type]);
-
-	console.log("props", {
-		type,
-		title,
-		headerButton,
-		handleToggle,
-		onDragEnd,
-		items,
-	});
 
 	useEffect(() => {
 
@@ -1051,11 +1041,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					left: stateMapControls.panelExpanded
 						? "30px"
 						: type === "marketplace"
-						? "-567px"
-						: "-405px",
+							? "-567px"
+							: "-405px",
 					transition: "left 0.5s ease-in-out",
 					listStyleType: "none",
-					zIndex:"99999"
+					zIndex: "99999"
 				}}
 			>
 				<StyledMenu
@@ -1064,7 +1054,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					keepMounted
 					open={Boolean(stateMapControls.selectedControl)}
 
-					//onClose={handleClose}
+				//onClose={handleClose}
 				>
 					<StyledMenuHeaderItem
 						disableRipple

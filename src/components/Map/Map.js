@@ -1063,6 +1063,7 @@ function Map() {
       }
     };
 
+    // AOI/Parcel Click Handler
     const udLayerClickHandler = (feature) => {
       setStateApp((state) => ({
         ...state,
@@ -1080,6 +1081,7 @@ function Map() {
       if (feature.source === "interests_source") {
         setStateApp((state) => ({
           ...state,
+          showShapeActionsPopup: true,
           selectedUserDefinedLayer: feature,
           selectedParcel: null,
         }));
@@ -1255,7 +1257,7 @@ function Map() {
     if (stateApp.layers && stateApp.layers.length > 0 && map) {
       for (let i = 0; i < stateApp.layers.length; i++) {
         const layer = stateApp.layers[i];
-        if (layer.layerType == "vector layer") {
+        if (layer.layerType === "vector layer") {
           const props = layer.layerPaintProps;
           const visible =
             layer.layerSettings &&
@@ -1274,7 +1276,7 @@ function Map() {
               }
               beforeLayer = id;
 
-              if (id == "basinLayer" || id == "GLOUnits" || id == "GLOLeases")
+              if (id === "basinLayer" || id === "GLOUnits" || id === "GLOLeases")
                 dispatch(
                   setMainMapState({
                     [`${id}Color`]: map.getPaintProperty(id, "fill-color"),
@@ -1290,7 +1292,7 @@ function Map() {
               }
             }
           });
-        } else if (layer.layerType == "data layer") {
+        } else if (layer.layerType === "data layer") {
           let data = null;
           if (layer.layerPaintProps && layer.layerPaintProps.length > 0) {
             switch (layer.identifier) {
@@ -1322,7 +1324,7 @@ function Map() {
               beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
             }
           }
-        } else if (layer.layerType == "file layer" && layer.fileContent) {
+        } else if (layer.layerType === "file layer" && layer.fileContent) {
           let data = layer.fileContent;
           if (data) {
             beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
@@ -1495,7 +1497,7 @@ function Map() {
       let defaultOverride = true;
 
       if (
-        defaultOverride == true &&
+        defaultOverride === true &&
         stateNav.defaultOn &&
         !stateNav.filterWellStatus &&
         !stateNav.filterWellType &&
@@ -2478,7 +2480,7 @@ function Map() {
       }));
 
       //// turn on clusters if no shape filter && it was off
-      if (Object.keys(filterCustomArray).length == 0 && clustersOff)
+      if (Object.keys(filterCustomArray).length === 0 && clustersOff)
         dispatch(
           setMainMapState({
             clustersOff: false,
@@ -2732,7 +2734,7 @@ function Map() {
                 if (map.getLayer(filterLayer.replace("Labels", "s"))) {
                   map.setFilter(filterLayer.replace("Labels", "s"), null);
                 }
-                if (layer.type == "circle" && layer.id != "wellpoints") {
+                if (layer.type === "circle" && layer.id != "wellpoints") {
                   if (layer.source.includes("_filter")) {
                     const clusterSource = layer.source.replace("_filter", "");
                     setLayerSource(layer.id, clusterSource);
@@ -2743,7 +2745,7 @@ function Map() {
           }
         });
         if (filterCustomArray["basin"]) {
-          if (filterCustomArray["basin"].length == 1) {
+          if (filterCustomArray["basin"].length === 1) {
             map.setFilter("basinLayer", filterCustomArray["basin"][0]);
             map.setFilter("basinLabels", filterCustomArray["basin"][0]);
           } else {
@@ -2817,7 +2819,7 @@ function Map() {
           const layer = map.getLayer(filterLayer);
           if (layer) {
             map.setFilter(filterLayer, null);
-            if (layer.type == "circle") {
+            if (layer.type === "circle") {
               if (layer.source.includes("_filter")) {
                 const clusterSource = layer.source.replace("_filter", "");
                 setLayerSource(layer.id, clusterSource);
@@ -3087,7 +3089,7 @@ function Map() {
 
         let currentFeature = features.find(
           (element) =>
-            element.properties.id.toLowerCase() == stateApp.selectedWellId
+            element.properties.id.toLowerCase() === stateApp.selectedWellId
         );
 
         if (!currentFeature) {
@@ -3097,7 +3099,7 @@ function Map() {
           });
           currentFeature = features.find(
             (element) =>
-              element.properties.id.toLowerCase() == stateApp.selectedWellId
+              element.properties.id.toLowerCase() === stateApp.selectedWellId
           );
         }
 
@@ -3120,7 +3122,7 @@ function Map() {
               features = response.features;
               currentFeature = features.find(
                 (element) =>
-                  element.properties.id.toLowerCase() == stateApp.selectedWellId
+                  element.properties.id.toLowerCase() === stateApp.selectedWellId
               );
             })
             .catch((error) => {
@@ -3951,7 +3953,7 @@ function Map() {
   }, [stateNav.filterFeatureId]);
 
   useEffect(() => {
-    if (draw && stateNav.filterDrawing && stateNav.filterDrawing.length == 2) {
+    if (draw && stateNav.filterDrawing && stateNav.filterDrawing.length === 2) {
       const feature = stateNav.filterDrawing[1];
       setDrawingFilterFeatureId(feature.id);
       draw.delete(feature.id);
@@ -4193,7 +4195,7 @@ function Map() {
 
     if (map && stateApp.toggle3d) {
       if (stateApp.toggle3d === true) {
-        if (map.getPitch() == 0 && map.getBearing() == 0) {
+        if (map.getPitch() === 0 && map.getBearing() === 0) {
           map.setPitch(70);
           map.setBearing(20);
         } else {
@@ -4220,7 +4222,7 @@ function Map() {
     let layer;
     let index;
     stateApp.layers?.forEach((l, i) => {
-      if (l.identifier == layerIdentifier) {
+      if (l.identifier === layerIdentifier) {
         layer = l;
         index = i;
       }
@@ -4311,7 +4313,7 @@ function Map() {
       popupOpen: false,
       selectedUserDefinedLayer: undefined,
     }));
-    if (complete == true) {
+    if (complete === true) {
       setStateApp((state) => ({
         ...state,
         selectedUserDefinedLayer: undefined,
@@ -4809,7 +4811,7 @@ function Map() {
               </PortalD>
             )}
 
-            {stateApp.selectedUserDefinedLayer && (
+            {/* {stateApp.selectedUserDefinedLayer && (
               <PortalD id="popupContainer">
                 <SpatialDataCardEdit
                   selectedFeature={stateApp.selectedUserDefinedLayer}
@@ -4819,7 +4821,7 @@ function Map() {
                   cardClass={"cardPopup"}
                 />
               </PortalD>
-            )}
+            )} */}
             {stateApp.filterFeature && (
               <PortalD id="filterPopupContainer">
                 <FilterControl filterFeature={stateApp.filterFeature} />
