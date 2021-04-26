@@ -1084,7 +1084,7 @@ function Search() {
   return (
     <div className={classes.root} style={{display:'flex',justifyContent:'center',alignContent:'center'}}>
       
-      {location.pathname === '/documents' ? ( 
+      {location.pathname === '/documents' && ( 
       <Accordion style={{width:'40px',backgroundColor:'transparent',display:'flex',flexDirection:'column',padding:'0px'}}>
         <AccordionSummary
           // expandIcon={<SearchIcon style={{color:'white',backgroundColor:'transparent'}}></SearchIcon>}
@@ -1106,7 +1106,7 @@ function Search() {
              ShapFiles
           </Typography>
         </AccordionDetails>
-      </Accordion>): (<></>)}
+      </Accordion>)}
       <Autocomplete
         id="cognitive-search-autocomplete"
         getOptionLabel={(option, value) => option.Primary}
@@ -1136,7 +1136,7 @@ function Search() {
               />
             );
 
-          return (option.group === "header" && location.pathname) !=='/documents' ? (
+          return (option.group === "header" && location.pathname !=='/documents')  ? (
             <div >
             <Grid
               key={option.group}

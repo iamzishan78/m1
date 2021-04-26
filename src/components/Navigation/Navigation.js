@@ -980,6 +980,7 @@ export default function Navigation(props) {
       setMatchFind(false);
     }
   }, [location.pathname]);
+ 
 
  useEffect(() => {
     if (location.pathname === "/documents") {

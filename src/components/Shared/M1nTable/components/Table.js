@@ -17,7 +17,7 @@ import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import MUIDataTable, { TableFilterList } from "mui-datatables";
-import { Box, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
+import { Box, ButtonGroup, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
 import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
@@ -79,6 +79,7 @@ import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import ButtonDropDown from "./ButtonGroup"
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import PostAddIcon from '@material-ui/icons/PostAdd';
 // import value formatters 
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
@@ -2284,6 +2285,7 @@ function SubTable(props) {
         },
         {  text: 'Import Contacts', isShow: true, action: () => routeChange("/bulkupload") }
       ];
+     
       const getSelectedRows = () => {
         const selectedRows = [];
         for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
@@ -2296,6 +2298,21 @@ function SubTable(props) {
         <>
         <div style={{ displat: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
          {props.header !== 'Documents' &&  <ButtonDropDown options={options} />}
+         {props.header === 'Documents' &&     <ButtonGroup variant="contained" style={{height:'40px'}} color="primary" aria-label="split button"><Button
+                    color="primary"
+                    size="small"
+                    // aria-controls={open ? 'split-button-menu' : undefined}
+                    // aria-expanded={open ? 'true' : undefined}
+                    aria-label="select merge strategy"
+                    aria-haspopup="menu"
+                    onClick={()=>{
+                      setStateApp({...stateApp, DocumentDrawer:true})
+                    }}
+                >
+                  <PostAddIcon></PostAddIcon>
+                   
+           Add Document
+                </Button></ButtonGroup>}
           {props.header !== "Active Users" && props.header !== 'Documents' && (
             <>
               <Button
