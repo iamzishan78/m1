@@ -2405,7 +2405,6 @@ function SubTable(props) {
           ...stateApp,
           selectedContact: rows[dataIndex]._id,
         }));
-        debugger
         routeChange(`/contact/details/${rows[dataIndex]._id}`)
         // setSubComponent(
         //   <ContactDetailCard
