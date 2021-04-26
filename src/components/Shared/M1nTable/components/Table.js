@@ -1868,13 +1868,12 @@ function SubTable(props) {
                                 ...stateApp,
                                 selectedContact: tableMeta.rowData[0],
                               }));
-
-                              setSubComponent(
-                                <ContactDetailCard
-                                  selectRowOpenContact={selectRowOpenContact}
-                                  handleCloseExpandableCard={handleCloseExpandableCard}
-                                />
-                              );
+                              // setSubComponent(
+                              //   <ContactDetailCard
+                              //     selectRowOpenContact={selectRowOpenContact}
+                              //     handleCloseExpandableCard={handleCloseExpandableCard}
+                              //   />
+                              // );
                               setTitle("Contact Details");
                               setSubTitle(" ");
                               handleOpenExpandableCard();
@@ -2406,13 +2405,14 @@ function SubTable(props) {
           ...stateApp,
           selectedContact: rows[dataIndex]._id,
         }));
-
-        setSubComponent(
-          <ContactDetailCard
-            selectRowOpenContact={selectRowOpenContact}
-            handleCloseExpandableCard={handleCloseExpandableCard}
-          />
-        );
+        debugger
+        routeChange(`/contact/details/${rows[dataIndex]._id}`)
+        // setSubComponent(
+        //   <ContactDetailCard
+        //     selectRowOpenContact={selectRowOpenContact}
+        //     handleCloseExpandableCard={handleCloseExpandableCard}
+        //   />
+        // );
         setTitle("Contact Details");
         setSubTitle(" ");
         handleOpenExpandableCard();
