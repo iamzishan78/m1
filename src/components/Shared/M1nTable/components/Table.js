@@ -2510,6 +2510,21 @@ function SubTable(props) {
 
 
     onTableChange: (action, tableState) => {
+      // reset selected rows 
+      if ([
+          'changeRowsPerPage',
+          'changePage',
+          'sort',
+          'search',
+          'onSearchClose',
+          'filterChange',
+          'resetFilters'
+        ]
+      .includes(action)) {
+        setM1nSelectedRowsIndexes([]);
+        setM1nSelectedRowsIds([]);
+      }
+        
       if (props.header === "Contacts") {
         let filters = [];
         const leadSourceIndex = tableState.columns.findIndex(
