@@ -1510,7 +1510,7 @@ function AddDealDialog(props) {
 								multiline
 								rows={8}
 								value={description}
-								label="Notes"
+								label="Description"
 								fullWidth
 								multiline
 								//   required
