@@ -451,6 +451,7 @@ function SubTable(props) {
   const [year, setYear] = React.useState(2020);
   const [total, Total] = useState(false);
   const [rows, Rows] = useState([]);
+  const [handleSearch, setHandleSearch] = useState(() => () => {});
 
   // deep state 
   const setFirstMount = (newState) => { setStateIfDeepEqual(FirstMount, newState); };
@@ -561,7 +562,13 @@ function SubTable(props) {
     }
   };
 
+  const registerSearchHandler = (handleSearch) => {
+    setHandleSearch(() => handleSearch);
+  };
 
+  useEffect(() => {
+    handleSearch(stateApp.contactSearchQuery);
+  }, [stateApp.contactSearchQuery])
 
 
   //// opening the well detail card after fetch the extra well data needed
@@ -2510,6 +2517,21 @@ function SubTable(props) {
 
 
     onTableChange: (action, tableState) => {
+      // reset selected rows 
+      if ([
+          'changeRowsPerPage',
+          'changePage',
+          'sort',
+          'search',
+          'onSearchClose',
+          'filterChange',
+          'resetFilters'
+        ]
+      .includes(action)) {
+        setM1nSelectedRowsIndexes([]);
+        setM1nSelectedRowsIds([]);
+      }
+        
       if (props.header === "Contacts") {
         let filters = [];
         const leadSourceIndex = tableState.columns.findIndex(
@@ -2849,7 +2871,7 @@ function SubTable(props) {
           }}
           options={{
             ...options,
-            searchText: props.header === 'Contacts' ? stateApp.contactSearchQuery : null,
+            // searchText: props.header === 'Contacts' ? stateApp.contactSearchQuery : null,
             search: 
                     (
                        props.header === 'Contacts'
@@ -2857,11 +2879,14 @@ function SubTable(props) {
                     || props.header === 'Activities'
                     || props.header === 'Monthly Production'
                     ) 
-                    ? false : props.parent != "search"
+                    ? false : props.parent != "search",
             // searchOpen: true,
             //download: false,
             // search: props.parent != "search",  
             //print: false,
+            customSearchRender: (searchText, handleSearch, hideSearch, options) => {
+              registerSearchHandler(handleSearch);
+            }
           }}
         />
         {
