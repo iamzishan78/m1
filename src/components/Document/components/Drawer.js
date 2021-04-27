@@ -26,6 +26,10 @@ import {
   faFileWord,
   faFileExcel,
 } from "@fortawesome/free-solid-svg-icons";
+import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
+import DeleteDocumentConfirmation from 'components/Shared/DeleteDocumentConfirmation';
 const useStyles = makeStyles({
   list: {
     width: 250,
@@ -131,17 +135,96 @@ const useStyles = makeStyles({
 	},
 });
 
-export default function TemporaryDrawer() {
+export default function DocumentDrawer() {
   const classes = useStyles();
   const [state, setState] = React.useState({
     right: false,
   });
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [recentFiles, setRecentFiles] = useState([]);
-  const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
+  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 
+  const [fileIdToDelete, setFileIdToDelete] = useState(null);
+  const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
+  const [viewFile, { data: viewFileResult ,loading: viewFileLoading}] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "no-cache",
+  });
+  const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
+
+
+  const handleViewFile = async (id) => {
+    viewFile({ variables: { fileId: id } })
+    if(viewFileLoading){
+      console.log(viewFileResult,'ViewFIle Result')
+    }
+    
+  };
+  const handleDeleteCancel = () => {
+    setFileIdToDelete(null);
+    setOpenDeleteConfirmDialog(false);
+  };
+
+  const handleDeleteAccept = () => {
+    // Delete Document Logic goes here
+    if (fileIdToDelete) {
+      deleteFile({
+        variables: {
+          id: fileIdToDelete,
+        },
+        refetchQueries: ["getRecentContactFiles", "getContactFiles"],
+        awaitRefetchQueries: true,
+      });
+      setFileIdToDelete(null);
+      setOpenDeleteConfirmDialog(false);
+    }
+  };
+
+  useEffect(() => {
+    if (viewFileResult?.viewFile?.uri) {
+      let a = document.createElement("a");
+      a.href = viewFileResult.viewFile.uri;
+      a.download = viewFileResult.viewFile.name;
+
+      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
+      // a.target = "_blank";
+
+      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
+      a.click();
+    }
+  }, [viewFileResult]);
+
+
+  const [
+		viewFiles,
+		{ data: viewFileSResult, loading: viewFileSLoading },
+	] = useLazyQuery(VIEWFILESQUERY, {
+		fetchPolicy: "no-cache",
+	});
+  
+	useEffect(() => {
+		let ID = [];
+		if(stateApp.selectedDocument?.fileId)
+    {
+      ID.push(stateApp.selectedDocument?.fileId);
+      
+
+      viewFiles({
+        variables: { fileIds: ID },
+      });
+
+    }
+		
+	}, [stateApp.selectedDocument]);
+  
   const handleDateChange = (date) => {
     setSelectedDate(date);
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedDocument:{
+        ...stateApp.selectedDocument,
+        dateTime:date
+      },
+    }));
   };
   const LightTooltip = withStyles((theme) => ({
     tooltip: {
@@ -199,6 +282,234 @@ export default function TemporaryDrawer() {
     }
   };
 
+  const DocumentDetail = (anchor) => (
+    <div
+    style={{ width:'500px',marginLeft:'15px'}}
+      className={clsx(classes.list, {
+        [classes.fullList]: anchor === 'top' || anchor === 'bottom',
+      })}
+      role="presentation"
+      onClick={toggleDrawer(anchor, false)}
+      onKeyDown={toggleDrawer(anchor, false)}
+    >
+     
+      <List>
+      <ListItem style={{display:'flex',justifyContent:'between',width:'100%',alignItems:'center'}}>
+      <ListItemText  >
+        <h3>Documents Detail</h3>
+      </ListItemText>
+        <ListItemIcon style={{cursor:'pointer'}} >
+        <IconButton
+                            size="small"
+                            onClick={() => {
+                              setOpenDeleteConfirmDialog(true);
+                              setFileIdToDelete(
+                                stateApp.selectedDocument.descriptorId
+                              );
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={()=>{ setStateApp({...stateApp, DocumentDrawer:false,selectedDocument:{}})}}>
+          <CloseIcon></CloseIcon></IconButton></ListItemIcon>
+      </ListItem>
+      <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
+            <h4>Document Number</h4>
+            <TextField
+              className={classes.maxWidth}
+              multiline
+            
+            />
+          </ListItem>
+          <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
+            <h4>Document Name</h4>
+            <TextField
+              className={classes.maxWidth}
+              multiline
+              value={stateApp.selectedDocument.fileName}
+            
+            />
+          </ListItem>
+          <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
+            <h4>Document Type</h4>
+            <Autocomplete
+              className={classes.maxWidth}
+              options={['pdf','doc','txt']}
+              // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+              // value={users.find((user) => user?.value === newContact.contactOwner) || null}
+              // getOptionLabel={(option) => option.text}
+              // getOptionSelected={(option) => option.value === newContact.contactOwner}
+              renderInput={(params) => (
+                <TextField size="small" {...params} className={classes.maxWidth} multiline  />
+              )}
+            />
+          </ListItem>
+         
+          <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
+          <h4>Document Type</h4>
+          <KeyboardDatePicker
+          className={classes.maxWidth}
+          disableToolbar
+          variant="inline"
+          format="MM/dd/yyyy"
+          margin="normal"
+          id="date-picker-inline"
+          // label={<h4 style={{paddingBottom:'30px'}}>Document Date</h4>}
+          value={stateApp.selectedDocument.dateTime}
+
+          onChange={handleDateChange}
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
+        />
+        </ListItem>
+        <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
+            <h4>Party Name 1</h4>
+            <Autocomplete
+              className={classes.maxWidth}
+              options={['John Doe','Mickel Jackson','Phil Heath']}
+              // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+              // value={users.find((user) => user?.value === newContact.contactOwner) || null}
+              // getOptionLabel={(option) => option.text}
+              // getOptionSelected={(option) => option.value === newContact.contactOwner}
+              renderInput={(params) => (
+                <TextField size="small" {...params} className={classes.maxWidth} multiline  />
+              )}
+            />
+          </ListItem>
+          <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
+            <h4>Party Name 2</h4>
+            <Autocomplete
+              className={classes.maxWidth}
+              options={['John Doe','Mickel Jackson','Phil Heath']}
+              // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+              // value={users.find((user) => user?.value === newContact.contactOwner) || null}
+              // getOptionLabel={(option) => option.text}
+              // getOptionSelected={(option) => option.value === newContact.contactOwner}
+              renderInput={(params) => (
+                <TextField size="small" {...params} className={classes.maxWidth} multiline  />
+              )}
+            />
+          </ListItem>
+          {/* <ListItem>
+          <h4>Click or drag and drop file to upload</h4>
+          </ListItem> */}
+<ListItem>
+          <div style={{display:'flex',justifyContent:'start'}}>
+          {console.log(recentFiles, "Files data in Adddialog")}
+            {viewFileSResult?.viewFiles?.map((value, key) => {
+              let fileExtension = value?.name
+                ?.slice(value.name.lastIndexOf(".") + 1)
+                ?.toLowerCase();
+              if (key <= 1) {
+                return (
+                  <div  key={key} >
+                    <LightTooltip
+                      title={
+                        <div className={classes.IconSection}>
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              setOpenDeleteConfirmDialog(true);
+                              setFileIdToDelete(
+                                stateApp.selectedDocument.descriptorId
+                              );
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+
+                          <IconButton
+                            disabled={
+                             false
+                            }
+                            size="small"
+                            onClick={() =>
+                              handleViewFile(
+                                value.id
+                              )
+                            }
+                          >
+                            <GetAppIcon />
+                          </IconButton>
+                        </div>
+                      }
+                      interactive
+                    >
+                      <div>
+                      
+                        {new RegExp(
+                          ["jpg", "jpeg", "png", "bmp"].join("|")
+                        ).test(fileExtension) ? (
+                          <img
+                            src={value.uri}
+                            alt={value.name}
+                            className={classes.forImage}
+                          ></img>
+                        ) : (
+                          <div className={classes.forImageContainer}>
+                            {/* {fileExtension} */}
+                            {getFileIcon(fileExtension)}
+                          </div>
+                        )}
+                        <div className={classes.imageSubText}>
+                          {value?.name?.length > 12
+                            ? value.name.slice(0, 8) + "..."
+                            : value.name}
+                        </div>
+                      </div>
+                    </LightTooltip>
+                   
+                  </div>
+                );
+              }
+            })}
+           {/* <div style={{width:'150px',marginLeft:'20px'}}>
+           <UploadZone
+                  style={{width:'150px',height:'150px'}}
+               
+                />
+           </div> */}
+          </div>
+          </ListItem>
+      </List>
+  
+      <div className={classes.dialogFooter}>
+								<Button
+									variant="contained"
+									color="default"
+									size="medium"
+									disableElevation
+								
+									// disabled={updateDealLoading || addContactLoading}
+									className={classes.footerButton}
+									style={{
+										margin: "0px 15px 0px 0px",
+									}}
+								>
+									Cancel
+								</Button>
+
+								<Button
+									variant="contained"
+									color="secondary"
+									size="medium"
+									disableElevation
+									// onClick={handleUpdate}
+									className={classes.footerButton}
+								>
+                  Save
+								</Button>
+							</div>
+      
+  
+  
+      <Divider />
+   
+    </div>
+  );
   const list = (anchor) => (
     <div
     style={{ width:'500px',marginLeft:'15px'}}
@@ -215,7 +526,7 @@ export default function TemporaryDrawer() {
       <ListItemText  >
         <h3>Add New Documents</h3>
       </ListItemText>
-        <ListItemIcon style={{cursor:'pointer'}} onClick={()=>{ setStateApp({...stateApp, DocumentDrawer:false})}}><CloseIcon></CloseIcon></ListItemIcon>
+        <ListItemIcon style={{cursor:'pointer'}} onClick={()=>{ setStateApp({...stateApp, DocumentDrawer:false,selectedDocument:{}})}}><CloseIcon></CloseIcon></ListItemIcon>
       </ListItem>
       <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
             <h4>Document Number</h4>
@@ -247,6 +558,7 @@ export default function TemporaryDrawer() {
               )}
             />
           </ListItem>
+         
           <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
           <h4>Document Type</h4>
           <KeyboardDatePicker
@@ -310,12 +622,12 @@ export default function TemporaryDrawer() {
                         <div className={classes.IconSection}>
                           <IconButton
                             size="small"
-                            // onClick={() => {
-                            //   setOpenDeleteConfirmDialog(true);
-                            //   setFileIdToDelete(
-                            //     files?.getFileDescriptors[key].descriptorId
-                            //   );
-                            // }}
+                            onClick={() => {
+                              setOpenDeleteConfirmDialog(true);
+                              setFileIdToDelete(
+                                value.id
+                              );
+                            }}
                           >
                             <DeleteIcon />
                           </IconButton>
@@ -408,16 +720,28 @@ export default function TemporaryDrawer() {
    
     </div>
   );
-
+  let obj = new Object();
   return (
     <div>
-      
-          <Drawer anchor={'right'} open={stateApp.DocumentDrawer}  
+        
+          <Drawer anchor={'right'} open={stateApp.DocumentDrawer|| Object.entries(stateApp.selectedDocument).length > 0}  
           // onClose={()=>{
           //   setStateApp({...stateApp, DocumentDrawer:false})
           // }}
           >
-            {list("right")}
+            {
+console.log( stateApp.selectedDocument, 'selecdow')
+
+            }
+            <DeleteDocumentConfirmation
+            open={openDeleteConfirmDialog}
+            handleClose={handleDeleteCancel}
+            handleAccept={() => {
+              handleDeleteAccept();
+            }}
+          />
+            {/* {list("right")} */}
+            {stateApp.selectedDocument?.descriptorId ? (<>{DocumentDetail('right')}</>) : (<>{list("right")}</>)}
           </Drawer>
        
  

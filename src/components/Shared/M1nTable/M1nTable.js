@@ -2540,7 +2540,7 @@ function M1nTable(props) {
       props.parent === "Documents" &&
       DocumentsData?.getFileDescriptors 
     ) {
-      setTargetLabel("deal");
+      setTargetLabel("documents");
       setRows([...DocumentsData.getFileDescriptors]);
       setColumns([...DocumentsHeadCells]);
       setLoading(false);

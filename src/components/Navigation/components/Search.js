@@ -1085,7 +1085,7 @@ function Search() {
     <div className={classes.root} style={{display:'flex',justifyContent:'center',alignContent:'center'}}>
       
       {location.pathname === '/documents' && ( 
-      <Accordion style={{width:'40px',backgroundColor:'transparent',display:'flex',flexDirection:'column',padding:'0px'}}>
+      <Accordion style={{width:'40px',backgroundColor:'transparent',display:'flex',flexDirection:'column',padding:'0px',}}>
         <AccordionSummary
           // expandIcon={<SearchIcon style={{color:'white',backgroundColor:'transparent'}}></SearchIcon>}
         
@@ -1095,7 +1095,7 @@ function Search() {
         </AccordionSummary>
         <AccordionDetails style={{width:'300px',backgroundColor:'white',display:'flex',flexDirection:'column',padding:'0px',border:'2px solid #d1cfcf',    marginTop: '-11px'}}>
          
-          <Typography style={{padding:'9px',color:'rgb(24, 170, 221)',cursor:'pointer'}} variant='subtitle2'>
+          <Typography style={{padding:'9px',color:'rgb(24, 170, 221)', cursor:'pointer'}} variant='subtitle2'>
               All Documents
           </Typography>
           

@@ -114,7 +114,8 @@ const AppProvider = (props) => {
     prevAOIVisible: false,
     prevParcelVisible: false,
     prevBasinVisible: false, 
-    DocumentDrawer:false,   
+    DocumentDrawer:false,  
+    selectedDocument:{},
     transactBarView: "",
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {

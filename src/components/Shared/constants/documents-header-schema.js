@@ -46,6 +46,11 @@ const DocumentsHeadCells = [
     name: "RECORDING INFO",
     label: "RECORDING INFO",
   },
+  {
+    name: " ",
+    label: " ",
+  },
+  
   
 
  

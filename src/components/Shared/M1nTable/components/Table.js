@@ -17,7 +17,7 @@ import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import MUIDataTable, { TableFilterList } from "mui-datatables";
-import { Box, ButtonGroup, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
+import { Accordion, AccordionDetails, AccordionSummary, Box, ButtonGroup, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
 import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
@@ -92,7 +92,12 @@ import { OWNERSLATSLONS } from "../../../../graphQL/useQueryOwnerLatsLonsArray";
 import { OPERATORSLATSLONS } from "../../../../graphQL/useQueryOperatorLatsLonsArray";
 import { LEASELATSLONS } from "../../../../graphQL/useQueryLeaseLatsLonsArray";
 import { CONTACTWELLS } from "../../../../graphQL/useQueryContactWells";
+import { Typography } from "@material-ui/core";
 
+//icons
+import SearchIcon from '@material-ui/icons/Search';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
@@ -382,7 +387,16 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       textDecoration: "underline",
     },
-    fontWeight: "bold"
+    fontWeight: "bold",
+   
+  },
+  filenamediv:{
+    color:'black',
+    cursor:'pointer',
+    "&:hover": {
+      color: "#18aadd",
+      textDecoration:'underline'
+    }
   }
 }));
 
@@ -472,7 +486,34 @@ function SubTable(props) {
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
 
+  
+  const [viewFile, { data: viewFileResult ,loading: viewFileLoading}] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "no-cache",
+  });
+  const handleViewFile = async (id) => {
+    viewFile({ variables: { fileId: id } })
+    if(viewFileLoading){
+      console.log(viewFileResult,'ViewFIle Result')
+    }
+    
+  };
+  useEffect(() => {
+      console.log(viewFileLoading,'Loading FileResult')
+  }, [viewFileLoading])
 
+  useEffect(() => {
+    if (viewFileResult?.viewFile?.uri) {
+      let a = document.createElement("a");
+      a.href = viewFileResult.viewFile.uri;
+      a.download = viewFileResult.viewFile.name;
+
+      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
+      // a.target = "_blank";
+
+      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
+      a.click();
+    }
+  }, [viewFileResult]);
   // handlers 
   const handleWellFlyTo = (value) => {
 
@@ -1226,6 +1267,7 @@ function SubTable(props) {
                           : tableMeta.rowData[0];
 
                   return (
+                    //add download and search icons here
                     <Tooltip
                       title={
                         !value || value === 0 ? "Add Comments" : "Comments"
@@ -1258,6 +1300,7 @@ function SubTable(props) {
                           }}
                           aria-label="show comments"
                           onMouseOver={() => {
+                            console.log("hover Effect Table")
                             if (
                               m1nSelectedRowsIndexes.indexOf(
                                 tableMeta.rowIndex
@@ -1627,6 +1670,80 @@ function SubTable(props) {
               };
             }
             break;
+            case " ":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
+                  let targetSourceId =
+                    props.parent === "OwnersPerWell"
+                      ? tableMeta.rowData[2]
+                      : props.parent === "owner_WellInterests"
+                        ? tableMeta.rowData[1]
+                        : props.parent === "ownersPerParcel"
+                          ? tableMeta.rowData[1]
+                          : tableMeta.rowData[0];
+
+                  return (
+                    <div style={{ marginRight: "10px",display:'flex',justifyContent:'center',alignItems:'center' }}>
+                     <IconButton
+                onClick={()=>{
+                       console.log("modell open")
+                     }}
+                    >
+                       <SearchIcon/>
+                     </IconButton>
+                     <IconButton    onClick={()=>{
+                       console.log("modell download")
+                    handleViewFile(rows[tableMeta.rowIndex].fileId)
+                       
+                     }}>
+                       <GetAppIcon/>
+                     </IconButton>
+
+                    </div>
+                  );
+                },
+              };
+            }
+            break;
+            case "fileName":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  let id =
+                    (trueTargetLabel ? trueTargetLabel : props.targetLabel) +
+                    tableMeta.columnIndex;
+                  // console.log(value,'Value FILENAME')
+                  
+                  // console.log(updateValue,'upDatevalue FILENAME')
+
+
+                  let targetSourceId =
+                    props.parent === "OwnersPerWell"
+                      ? tableMeta.rowData[2]
+                      : props.parent === "owner_WellInterests"
+                        ? tableMeta.rowData[1]
+                        : props.parent === "ownersPerParcel"
+                          ? tableMeta.rowData[1]
+                          : tableMeta.rowData[0];
+                  return (
+                   <div onClick={()=>{
+                    //  console.log(,'value Div click')
+                    handleViewFile(rows[tableMeta.rowIndex].fileId)
+                     console.log(rows[tableMeta.rowIndex].fileId,'tablemeta FILENAME')
+                     }}>
+
+                      <h4  className={classes.filenamediv}>{value}</h4>
+                   </div>
+                  );
+                },
+              };
+            }
+
+            break;
           case "fullContactAddress":
             {
               column.options = {
@@ -1814,6 +1931,7 @@ function SubTable(props) {
                       {props.targetLabel !== "contact" &&
                         (
                           <CellContentEdition
+                            
                             id={tableMeta.rowData[0]}
                             content={{ [column.name]: valueFormatter(value) }}
                             targetLabel={props.targetLabel}
@@ -1831,7 +1949,7 @@ function SubTable(props) {
                           />
                         )}
                       {props.targetLabel === "contact" &&
-                        column.name !== "name" && (
+                        column.name !== "name"  &&  (
                           <CellContentEdition
                             id={tableMeta.rowData[0]}
                             content={{ [column.name]: valueFormatter(value) }}
@@ -1870,6 +1988,20 @@ function SubTable(props) {
                             }}
                           >{value}</p>
                         )}
+                        
+                        {/* {props.targetLabel === "documents" &&
+                        column.name === "fileName" && (
+                          <p className={classes.clickableCell}
+                            onClick={() => {
+                              setStateApp((stateApp) => ({
+                                ...stateApp,
+                                selectedContact: tableMeta.rowData[0],
+                              }));
+                              console.log(tableMeta.rowData[0], 'Meta File Name')
+                             
+                            }}
+                          ></p>
+                        )} */}
 
 
                       {/* temporarily removing the purchased data icon as we do not have functionality to actually purchase contact data currently - KC 3/17/21 */}
@@ -2421,6 +2553,7 @@ function SubTable(props) {
       );
     },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
+      console.log("props target label", props.targetLabel)
       setSelectedRow(rows[dataIndex]);
 
       if (props.targetLabel === "deal") {
@@ -2473,6 +2606,20 @@ function SubTable(props) {
         setTitle("Contact Details");
         setSubTitle(" ");
         handleOpenExpandableCard();
+      }
+      if (props.targetLabel === "documents") {
+        console.log('Working Inside Table')
+        // console.log(rowData, " OnRowClick" )
+        // console.log(dataIndex,'DataIndex')
+        console.log(rows[dataIndex],'RowIndex')
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedDocument: rows[dataIndex],
+        }));
+
+
+       
+
       }
     },
     onChangePage: (pageState) => {
@@ -2863,20 +3010,66 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    return  props.header === 'Contacts' || props.header === 'Documents' ? (
-      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left'}}>
+    // return  props.header === 'Contacts' || props.header === 'Documents' ? (
+    //   <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left'}}>
+    //    {props.header === 'Documents' ? ( <DescriptionOutlinedIcon />) : ( <Contact />)}
+    //     <label style={{ marginLeft: '10px', fontSize: '16px'}}>{props.header}</label>
+    //     <ArrowRight/>
+    //     <label style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</label>
+    //   </div>
+    //   ) : props.header
+      if(props.header ==='Contacs')
+      {
+       return  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left'}}>
        {props.header === 'Documents' ? ( <DescriptionOutlinedIcon />) : ( <Contact />)}
         <label style={{ marginLeft: '10px', fontSize: '16px'}}>{props.header}</label>
         <ArrowRight/>
         <label style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</label>
-      </div>
-      ) : props.header
+      </div> 
+      }
+      else if(props.header==='Documents')
+      {
+       return <div style={{display: 'flex',  justifyContent: 'left'}}>
+        {props.header === 'Documents' ? ( 
+      //   <Accordion style={{width:'40px',backgroundColor:'transparent',display:'flex',flexDirection:'column',padding:'0px',}}>
+      //   <AccordionSummary
+      //     // expandIcon={<SearchIcon style={{color:'white',backgroundColor:'transparent'}}></SearchIcon>}
+        
+      //      style={{ maxHeight:'43px',backgroundColor:'transparent',marginTop:'0px !important'}}
+      //   >
+      //     <DescriptionOutlinedIcon style={{backgroundColor:'transparent',padding:'0px'}}></DescriptionOutlinedIcon>
+      //   </AccordionSummary>
+      //   <AccordionDetails style={{width:'300px',backgroundColor:'white',display:'flex',flexDirection:'column',padding:'0px',border:'2px solid #d1cfcf',    marginTop: '-11px'}}>
+         
+      //     <Typography style={{padding:'9px',color:'rgb(24, 170, 221)', cursor:'pointer'}} variant='subtitle2'>
+      //         All Documents
+      //     </Typography>
+          
+      //     <Typography style={{padding:'6px',paddingLeft:'9px',backgroundColor:'#f2f2f2',width:'100%',borderTop:'1px solid #d1cfcf'}} variant='caption'>
+      //         Agreements
+      //     </Typography>
+      //     <Typography style={{padding:'9px',cursor:'pointer'}} variant='subtitle2'>
+      //        ShapFiles
+      //     </Typography>
+      //   </AccordionDetails>
+      // </Accordion>
+      <DescriptionOutlinedIcon ></DescriptionOutlinedIcon>
+      ) : ( <Contact />)}
+         <label style={{ marginLeft: '10px', fontSize: '16px'}}>{props.header}</label>
+         <ArrowRight/>
+         <label style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</label>
+       </div>
+      }
+      else {
+        return props.header
+      }
   }
   return (
     <div style={{
       width: "100%",
       height: "100%",
-      position: "relative"
+      position: "relative",
+      border:'3px solid red'
     }}>
       <div
         className={`${classes.table} ${rows && !props.loading ? "" : classes.loadingTable
