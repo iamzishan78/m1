@@ -2270,8 +2270,9 @@ function SubTable(props) {
         if (
           props.addAble.type &&
           props.addAble.type === "ownerToParcel"
-        )
+        ){
           handleExpandClick(null, null, null, "addOwnerToParcel");
+        }
 
         if (props.addAble.type && props.addAble.type === "deals")
           setStateApp((stateApp) => ({
@@ -2922,11 +2923,22 @@ function SubTable(props) {
             />
           </RightDialog>)
         }
-
+        {openDialog && openDialog === 'addOwnerToParcel' && (
+          <AddParcelOwnerDialogContent
+              onClose={() => {
+                setSelectedRow(null);
+                handleCloseDialog();
+              }}
+              customLayerId={props.addAble.customLayerId}
+              selectedRow={selectedRow}
+              setSelectedRow={setSelectedRow}
+          />  
+        )}
         {openDialog
           && openDialog !== "addDeals"
           && openDialog !== "sendMailers"
           && openDialog !== "buyContactsInfo"
+          && openDialog !== "addOwnerToParcel"
           && (<Dialog
             className={classes.dialog}
             open={openDialog ? true : false}
@@ -3040,7 +3052,7 @@ function SubTable(props) {
               />
             )}
 
-            {openDialog === "addOwnerToParcel" && (
+            {/* {openDialog === "addOwnerToParcel" && (
               <AddParcelOwnerDialogContent
                 onClose={() => {
                   setSelectedRow(null);
@@ -3050,7 +3062,7 @@ function SubTable(props) {
                 selectedRow={selectedRow}
                 setSelectedRow={setSelectedRow}
               />
-            )}
+            )} */}
             {openDialog === "addParcelInterestsToEntity" && (
               <AddParcelToEntityDialogContent
                 onClose={handleCloseDialog}

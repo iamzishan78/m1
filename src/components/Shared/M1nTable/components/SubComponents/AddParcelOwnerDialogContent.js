@@ -5,7 +5,8 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
 import { Grid } from "@material-ui/core";
 import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";
@@ -23,6 +24,7 @@ import { ALLENTITYNAMESFORPARCEL } from "../../../../../graphQL/useQueryAllEntit
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginatedContacts";
 import { setStateIfDeepEqual } from "../../../functions";
+import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 
 const entities = [
   "Corporation",
@@ -285,197 +287,206 @@ export default function AddParcelOwnerDialogContent({
   return (
     <div className={classes.move}>
     <React.Fragment>
-      <DialogTitle className={modalClass.title} id="customized-dialog-title">
-        {selectedRow ? "Update" : "Add"} an Owner
-        <HighlightOffIcon
-          fontSize="large"
-          className={modalClass.titleClose}
-          onClick={props.onClose}
-        />
-      </DialogTitle>
-      <DialogContent dividers className={classes.dialogContent}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <h3>Name</h3>
-
-            <AutocompEntityNamesVirtualizeList
-              mongoEntitiesArray={mongoEntitiesArray}
-              setMongoEntitiesArray={setMongoEntitiesArray}
-              nameAutValue={nameAutValue}
-              setNameAutValue={setNameAutValue}
-              nameAutInputValue={nameAutInputValue}
-              setNameAutInputValue={setNameAutInputValue}
-              hasNextPage={hasNextPage}
-              isNextPageLoading={isNextPageLoading}
-              loadNextPage={loadNextPage}
-              addNew={true}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <h3>Entity</h3>
-            <Autocomplete
-              options={entities}
-              getOptionLabel={(option) => option}
-              value={newOwner.entity}
-              onChange={(e, newInputValue) => {
-                setNewOwner({
-                  ...newOwner,
-                  entity: newInputValue ? newInputValue : "",
-                });
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  size="small"
-                  className={classes.maxWidth}
-                  multiline
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <h3>Type</h3>
-
-            <Autocomplete
-              options={types}
-              getOptionLabel={(option) => option}
-              value={newOwner.type}
-              onChange={(e, newInputValue) => {
-                setNewOwner({
-                  ...newOwner,
-                  type: newInputValue ? newInputValue : "",
-                });
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  size="small"
-                  className={classes.maxWidth}
-                  multiline
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <RadioGroup
-              row
-              value={parcelOwnersRadioBValue}
-              onChange={(event) => {
-                setParcelOwnersRadioBValue(event.target.value);
-              }}
-            >
-              <FormControlLabel
-                value="true"
-                control={<Radio />}
-                label="All Depths"
-              />
-              <FormControlLabel
-                value="false"
-                control={<Radio />}
-                label="Footages/Formations"
-              />
-            </RadioGroup>
-          </Grid>
-
-          {parcelOwnersRadioBValue === "false" && (
+      <RightDialog
+          open={true}
+          handleClickDialogClose={()=>{}}
+          width={"450px"}
+      >
+        <DialogTitle id="customized-dialog-title">
+          {selectedRow ? "Update" : "Add"} Parcel Ownership
+          <IconButton
+            style={{ float: 'right'}}
+            onClick={props.onClose}
+            className={modalClass.titleClose}
+            size="small"
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers className={classes.dialogContent}>
+          <Grid container spacing={2}>
             <Grid item xs={12}>
-              <h3>Depth From</h3>
+              <h3>Name</h3>
+
+              <AutocompEntityNamesVirtualizeList
+                mongoEntitiesArray={mongoEntitiesArray}
+                setMongoEntitiesArray={setMongoEntitiesArray}
+                nameAutValue={nameAutValue}
+                setNameAutValue={setNameAutValue}
+                nameAutInputValue={nameAutInputValue}
+                setNameAutInputValue={setNameAutInputValue}
+                hasNextPage={hasNextPage}
+                isNextPageLoading={isNextPageLoading}
+                loadNextPage={loadNextPage}
+                addNew={true}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>Entity</h3>
+              <Autocomplete
+                options={entities}
+                getOptionLabel={(option) => option}
+                value={newOwner.entity}
+                onChange={(e, newInputValue) => {
+                  setNewOwner({
+                    ...newOwner,
+                    entity: newInputValue ? newInputValue : "",
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    size="small"
+                    className={classes.maxWidth}
+                    multiline
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <h3>Type</h3>
+
+              <Autocomplete
+                options={types}
+                getOptionLabel={(option) => option}
+                value={newOwner.type}
+                onChange={(e, newInputValue) => {
+                  setNewOwner({
+                    ...newOwner,
+                    type: newInputValue ? newInputValue : "",
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    size="small"
+                    className={classes.maxWidth}
+                    multiline
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <RadioGroup
+                row
+                value={parcelOwnersRadioBValue}
+                onChange={(event) => {
+                  setParcelOwnersRadioBValue(event.target.value);
+                }}
+              >
+                <FormControlLabel
+                  value="true"
+                  control={<Radio />}
+                  label="All Depths"
+                />
+                <FormControlLabel
+                  value="false"
+                  control={<Radio />}
+                  label="Footages/Formations"
+                />
+              </RadioGroup>
+            </Grid>
+
+            {parcelOwnersRadioBValue === "false" && (
+              <Grid item xs={12}>
+                <h3>Depth From</h3>
+                <TextField
+                  size="small"
+                  className={classes.maxWidth}
+                  multiline
+                  value={newOwner.depthFrom}
+                  onChange={(e) => {
+                    setNewOwner({
+                      ...newOwner,
+                      depthFrom: e.target.value,
+                    });
+                  }}
+                />
+              </Grid>
+            )}
+            {parcelOwnersRadioBValue === "false" && (
+              <Grid item xs={12}>
+                <h3>Depth To</h3>
+                <TextField
+                  size="small"
+                  className={classes.maxWidth}
+                  multiline
+                  value={newOwner.depthTo}
+                  onChange={(e) => {
+                    setNewOwner({
+                      ...newOwner,
+                      depthTo: e.target.value,
+                    });
+                  }}
+                />
+              </Grid>
+            )}
+
+            <Grid item xs={4}>
+              <h3>Interest</h3>
               <TextField
                 size="small"
                 className={classes.maxWidth}
                 multiline
-                value={newOwner.depthFrom}
+                value={newOwner.interest}
                 onChange={(e) => {
                   setNewOwner({
                     ...newOwner,
-                    depthFrom: e.target.value,
+                    interest: e.target.value,
                   });
                 }}
               />
             </Grid>
-          )}
-          {parcelOwnersRadioBValue === "false" && (
-            <Grid item xs={12}>
-              <h3>Depth To</h3>
+            <Grid item xs={4}>
+              <h3>NMA</h3>
               <TextField
                 size="small"
                 className={classes.maxWidth}
                 multiline
-                value={newOwner.depthTo}
+                value={newOwner.nma}
                 onChange={(e) => {
                   setNewOwner({
                     ...newOwner,
-                    depthTo: e.target.value,
+                    nma: e.target.value,
                   });
                 }}
               />
             </Grid>
-          )}
-
-          <Grid item xs={4}>
-            <h3>Interest</h3>
-            <TextField
-              size="small"
-              className={classes.maxWidth}
-              multiline
-              value={newOwner.interest}
-              onChange={(e) => {
-                setNewOwner({
-                  ...newOwner,
-                  interest: e.target.value,
-                });
-              }}
-            />
+            <Grid item xs={4}>
+              <h3>NRA</h3>
+              <TextField
+                size="small"
+                className={classes.maxWidth}
+                multiline
+                value={newOwner.nra}
+                onChange={(e) => {
+                  setNewOwner({
+                    ...newOwner,
+                    nra: e.target.value,
+                  });
+                }}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <h3>NMA</h3>
-            <TextField
-              size="small"
-              className={classes.maxWidth}
-              multiline
-              value={newOwner.nma}
-              onChange={(e) => {
-                setNewOwner({
-                  ...newOwner,
-                  nma: e.target.value,
-                });
-              }}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <h3>NRA</h3>
-            <TextField
-              size="small"
-              className={classes.maxWidth}
-              multiline
-              value={newOwner.nra}
-              onChange={(e) => {
-                setNewOwner({
-                  ...newOwner,
-                  nra: e.target.value,
-                });
-              }}
-            />
-          </Grid>
-        </Grid>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClickDialogClose} color="primary">
-          Cancel
-        </Button>
-        <Button
-          disabled={
-            !nameAutValue || !nameAutValue.name || nameAutValue.name === ""
-              ? true
-              : false
-          }
-          onClick={handleClickAdd}
-          color="secondary"
-        >
-          {selectedRow ? "Update" : "Add"}
-        </Button>
-      </DialogActions>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClickDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button
+            disabled={
+              !nameAutValue || !nameAutValue.name || nameAutValue.name === ""
+                ? true
+                : false
+            }
+            onClick={handleClickAdd}
+            color="secondary"
+          >
+            {selectedRow ? "Update" : "Add"}
+          </Button>
+        </DialogActions>
+      </RightDialog>
     </React.Fragment>
     </div>
   );
