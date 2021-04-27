@@ -567,9 +567,16 @@ function SubTable(props) {
   };
 
   useEffect(() => {
-    handleSearch(stateApp.contactSearchQuery);
+    if (props.header === 'Contacts') {
+      handleSearch(stateApp.contactSearchQuery);
+    }
   }, [stateApp.contactSearchQuery])
 
+  useEffect(() => {
+    // reset selected rows 
+    setM1nSelectedRowsIndexes([]);
+    setM1nSelectedRowsIds([]);
+  }, [rows])
 
   //// opening the well detail card after fetch the extra well data needed
   useEffect(() => {
@@ -2880,13 +2887,20 @@ function SubTable(props) {
                     || props.header === 'Monthly Production'
                     ) 
                     ? false : props.parent != "search",
-            // searchOpen: true,
+            // have to use props.parent here for initial value
+            searchOpen: props.parent === "Contacts" ? true : null,
             //download: false,
             // search: props.parent != "search",  
             //print: false,
-            customSearchRender: (searchText, handleSearch, hideSearch, options) => {
-              registerSearchHandler(handleSearch);
-            }
+            customSearchRender: (
+              props.header === 'Contacts' ?
+              (searchText, handleSearch, hideSearch, options) => {
+                registerSearchHandler(handleSearch);
+
+                return getHeaders()
+              } :
+              null
+            )
           }}
         />
         {
