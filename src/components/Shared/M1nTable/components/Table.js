@@ -2929,6 +2929,8 @@ function SubTable(props) {
                 setSelectedRow(null);
                 handleCloseDialog();
               }}
+              handleExpandClick={handleExpandClick}
+              setM1nSelectedRowsIds={setM1nSelectedRowsIds}
               customLayerId={props.addAble.customLayerId}
               selectedRow={selectedRow}
               setSelectedRow={setSelectedRow}

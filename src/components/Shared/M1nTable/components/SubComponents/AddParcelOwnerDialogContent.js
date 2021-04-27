@@ -7,6 +7,7 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
+import DeleteIcon from "@material-ui/icons/Delete";
 import { Grid } from "@material-ui/core";
 import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";
@@ -283,7 +284,6 @@ export default function AddParcelOwnerDialogContent({
 
   const classes = useStyles();
   const modalClass = Modals();
-
   return (
     <div className={classes.move}>
     <React.Fragment>
@@ -302,6 +302,16 @@ export default function AddParcelOwnerDialogContent({
           >
             <CloseIcon fontSize="small" />
           </IconButton>
+          {selectedRow &&(
+            <IconButton
+              style={{ float: 'right'}}
+              onClick={() => {props.setM1nSelectedRowsIds([selectedRow._id]); props.handleExpandClick(null, null, null, "deleteParcelOwnership")}}
+              className={modalClass.titleClose}
+              size="small"
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          )}
         </DialogTitle>
         <DialogContent dividers className={classes.dialogContent}>
           <Grid container spacing={2}>
