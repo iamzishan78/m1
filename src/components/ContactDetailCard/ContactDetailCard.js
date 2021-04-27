@@ -425,7 +425,7 @@ export default function ContactDetailCard(props) {
     <>
       <div className={classes.header}>
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left', paddingLeft: '10px'}}>
-          <label style={{ marginLeft: '10px', fontSize: '16px'}}>Contacts</label>
+          <label style={{ marginLeft: '10px', fontSize: '16px', cursor: 'pointer'}} onClick={()=> history.push('/contacts')} >Contacts</label>
           <ArrowRight/>
           <label style={{ color: '#18AADD', fontSize: '16px' }}>{contactData.name}</label>
         </div>
