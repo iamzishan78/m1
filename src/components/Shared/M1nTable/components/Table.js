@@ -3069,7 +3069,7 @@ function SubTable(props) {
       width: "100%",
       height: "100%",
       position: "relative",
-      border:'3px solid red'
+     
     }}>
       <div
         className={`${classes.table} ${rows && !props.loading ? "" : classes.loadingTable
