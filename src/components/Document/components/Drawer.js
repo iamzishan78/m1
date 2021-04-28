@@ -12,7 +12,7 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import { AppContext } from 'AppContext';
 import CloseIcon from '@material-ui/icons/Close';
-import { Grid, IconButton, TextField, withStyles } from '@material-ui/core';
+import { CircularProgress, Dialog, DialogTitle, Grid, IconButton, TextField, withStyles } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { KeyboardDatePicker } from '@material-ui/pickers';
 import UploadZone from '../../Shared/UploadZone'
@@ -146,6 +146,7 @@ export default function DocumentDrawer() {
 
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
   const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
+  let [loader,setLoader] = useState(false)
   const [viewFile, { data: viewFileResult ,loading: viewFileLoading}] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
@@ -164,20 +165,28 @@ export default function DocumentDrawer() {
     setOpenDeleteConfirmDialog(false);
   };
 
-  const handleDeleteAccept = () => {
+  const handleDeleteAccept =  () => {
     // Delete Document Logic goes here
     if (fileIdToDelete) {
-      deleteFile({
+      setLoader(true)
+
+     deleteFile({
         variables: {
           id: fileIdToDelete,
         },
-        refetchQueries: ["getRecentContactFiles", "getContactFiles"],
+        refetchQueries: ['getFileDescriptors'],
         awaitRefetchQueries: true,
-      });
-      setFileIdToDelete(null);
+      }).then(()=>{
+        setStateApp({...stateApp, DocumentDrawer:false,selectedDocument:{}})
+        setFileIdToDelete(null);
       setOpenDeleteConfirmDialog(false);
+
+        setLoader(false)
+      });
+      
     }
   };
+  console.log(stateApp.DocumentLoader,'Document Loader')
 
   useEffect(() => {
     if (viewFileResult?.viewFile?.uri) {
@@ -426,10 +435,13 @@ export default function DocumentDrawer() {
                              false
                             }
                             size="small"
-                            onClick={() =>
-                              handleViewFile(
-                                value.id
-                              )
+                            onClick={(e) =>
+                              {
+                                e.preventDefault();
+                                handleViewFile(
+                                  value.id
+                                )
+                              }
                             }
                           >
                             <GetAppIcon />
@@ -488,6 +500,7 @@ export default function DocumentDrawer() {
 									style={{
 										margin: "0px 15px 0px 0px",
 									}}
+                  onClick={()=>{ setStateApp({...stateApp, DocumentDrawer:false,selectedDocument:{}})}}
 								>
 									Cancel
 								</Button>
@@ -526,7 +539,9 @@ export default function DocumentDrawer() {
       <ListItemText  >
         <h3>Add New Documents</h3>
       </ListItemText>
-        <ListItemIcon style={{cursor:'pointer'}} onClick={()=>{ setStateApp({...stateApp, DocumentDrawer:false,selectedDocument:{}})}}><CloseIcon></CloseIcon></ListItemIcon>
+        <ListItemIcon style={{cursor:'pointer'}} onClick={()=>{
+          console.log(stateApp.refetchDocument, 'Refetch documents')
+          setStateApp({...stateApp, DocumentDrawer:false,selectedDocument:{}})}}><CloseIcon></CloseIcon></ListItemIcon>
       </ListItem>
       <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
             <h4>Document Number</h4>
@@ -698,6 +713,7 @@ export default function DocumentDrawer() {
 									style={{
 										margin: "0px 15px 0px 0px",
 									}}
+                  onClick={()=>{ setStateApp({...stateApp, DocumentDrawer:false,selectedDocument:{}})}}
 								>
 									Cancel
 								</Button>
@@ -740,6 +756,10 @@ console.log( stateApp.selectedDocument, 'selecdow')
               handleDeleteAccept();
             }}
           />
+          <Dialog open={loader}  style={{zIndex: 99999999999}}>
+          <DialogTitle id="alert-dialog-title"><CircularProgress /></DialogTitle>
+          
+          </Dialog>
             {/* {list("right")} */}
             {stateApp.selectedDocument?.descriptorId ? (<>{DocumentDetail('right')}</>) : (<>{list("right")}</>)}
           </Drawer>

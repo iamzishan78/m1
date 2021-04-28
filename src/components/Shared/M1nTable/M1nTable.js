@@ -104,8 +104,10 @@ function M1nTable(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateGrid, setStateGrid] = useContext(MapGridContext);
-  const { loading: DocumentLoading, error, data: DocumentsData } = useQuery(GET_Documents);
+  const { loading: DocumentLoading, error, data: DocumentsData, refetch: reFetchDocuments } = useQuery(GET_Documents);
  console.log(DocumentsData, 'DocumentsData')
+ console.log(reFetchDocuments(), 'reFetchDocuments')
+ 
   // function states 
   const [addDealOpen, setAddDealOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState();
