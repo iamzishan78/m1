@@ -3168,7 +3168,7 @@ function Map() {
 
     setStateApp((state) => ({
       ...state,
-      popupOpen: stateApp.wellSelectedCoordinates.length > 0 && searchInputValue ? true : false,
+      popupOpen: stateApp.wellSelectedCoordinates?.length > 0 && searchInputValue ? true : false ,
       expandedCard: false,
       selectedUserDefinedLayer: undefined,
     }));

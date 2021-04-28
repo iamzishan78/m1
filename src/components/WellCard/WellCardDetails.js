@@ -439,6 +439,7 @@ export default function WellCardDetails(props) {
               <SimulationContainer showSummary={showSummary}/>,
               <FormationContainer showSummary={showSummary}/>,
             ]}
+            openTabIdex={stateApp.wellDetailCardTabIndex}
           />
         </Grid>
       </Grid>
