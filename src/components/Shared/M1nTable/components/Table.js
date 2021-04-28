@@ -383,6 +383,18 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     top: "19px"
   },
+  tapsLabelsButtons: {
+    boxShadow: "none",
+    backgroundColor: "#fff",
+    color: "#757575",
+    "&:hover": { boxShadow: "none !important" },
+  },
+  tapsLabelsButtonsSelected: {
+    boxShadow: "none",
+    color: "#fff",
+    backgroundColor: theme.palette.secondary.main,
+    "&:hover": { color: "#757575", boxShadow: "none !important" },
+  },
   clickableCell: {
     cursor: "pointer",
     padding: "10px 30px 10px 10px",
@@ -451,6 +463,7 @@ function SubTable(props) {
   const [year, setYear] = React.useState(2020);
   const [total, Total] = useState(false);
   const [rows, Rows] = useState([]);
+  const [parcelOwnerTab, setParcelOwnerTab] = useState("Parcel Ownership");
   const [handleSearch, setHandleSearch] = useState(() => () => {});
 
   // deep state 
@@ -2845,7 +2858,30 @@ function SubTable(props) {
         <ArrowRight/>
         <label style={{ color: '#18AADD', fontSize: '16px' }}>All Contacts</label>
       </div>
-      ) : props.header
+      ) : props.header === 'Parcel Ownership' ? (
+        <>
+          <Button
+            className={parcelOwnerTab === "Parcel Ownership"? classes.tapsLabelsButtonsSelected: classes.tapsLabelsButtons}
+            variant="contained"
+            size="small"
+            onClick={() => {
+              setParcelOwnerTab('Parcel Ownership')
+            }}
+          >
+            Parcel Ownership
+        </Button>
+        <Button
+            className={parcelOwnerTab === "Suggested Ownership"? classes.tapsLabelsButtonsSelected: classes.tapsLabelsButtons}
+            variant="contained"
+            size="small"
+            onClick={() => {
+              setParcelOwnerTab('Suggested Ownership')
+            }}
+          >
+            Suggested Ownership
+        </Button>
+        </>
+      ) :props.header
   }
   return (
     <div style={{
