@@ -1,11 +1,14 @@
 import { useLazyQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+
 import { AppContext } from "../../../AppContext";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { setStateIfDeepEqual } from "../../Shared/functions";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 
 const ContactSearch = () => {
+  let history = useHistory();
   const [
     getPaginatedContacts,
     { data: allContacts, fetchMore: fetchMorePaginatedContacts },
@@ -27,6 +30,7 @@ const ContactSearch = () => {
 
   useEffect(() => {
     if (nameAutValue && nameAutValue?._id) {
+      history.push(`/contact/details/${nameAutValue._id}`)
       setStateApp((stateApp) => ({
         ...stateApp,
         selectedContact: nameAutValue._id,

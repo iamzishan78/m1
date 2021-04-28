@@ -1,4 +1,6 @@
 import React, { useContext, useEffect } from "react";
+import { useHistory } from "react-router-dom";
+
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -12,6 +14,7 @@ import { showSuccessMessage, showErrorMessage } from "../../../actions";
 
 export default function ConfirmationDialog(props) {
   const dispatch = useDispatch();
+  let history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [updateContact] = useMutation(UPDATECONTACT);
 
@@ -49,7 +52,7 @@ export default function ConfirmationDialog(props) {
             )
           );
           // props.handleDialogClose(false);
-          props.handleCloseExpandableCard();
+          history.push('/contacts')
         } else {
           dispatch(showErrorMessage("Error occurred"));
         }
