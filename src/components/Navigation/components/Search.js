@@ -252,9 +252,7 @@ function Search() {
 
   useEffect(() => {
     if (!value && searchInputValue && value !== searchInputValue) {
-      console.log("lss",lastSearch)
       setValue(searchInputValue)
-      
       if (lastSearch?.Source === ownerCogIndexName && lastSearch?.Id) {
         getOwnerWells({
           variables: {
@@ -262,6 +260,26 @@ function Search() {
           },
         });
       }
+      else if (lastSearch?.Source === operatorIndexName && lastSearch?.Operator) {
+        getOperatorWells({
+          variables: {
+            operatorName: lastSearch.Operator,
+          },
+        });
+      }
+      else if (lastSearch?.Source === contactIndexName  && lastSearch?._id) {
+          getContactsWells({
+            variables: {
+              contactId: lastSearch._id,
+            },
+          });
+      }
+      // else if(lastSearch?.Source === "mapboxSearch" && lastSearch.center) {
+      //   debugger
+      //   stateApp.toggleLayersActivity("Search", true);
+
+      // }
+
     }
   }, []);
 
