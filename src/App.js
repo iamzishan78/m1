@@ -21,9 +21,11 @@ import StudioProvider from "./components/Studio/StudioProvider";
 import BulkUpload from "./components/BulkUpload/BulkUpload";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
+
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 import { CircularProgress } from "@material-ui/core";
+
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
 import { ApolloProvider, ApolloClient, InMemoryCache, useApolloClient } from "@apollo/client";
 import { relayStylePagination } from "./graphQL/apolloPaginationSchemes.js";
