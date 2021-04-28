@@ -274,13 +274,7 @@ function Search() {
             },
           });
       }
-      // else if(lastSearch?.Source === "mapboxSearch" && lastSearch.center) {
-      //   debugger
-      //   stateApp.toggleLayersActivity("Search", true);
-
-      // }
-
-    }
+  }
   }, []);
 
   useEffect(() => {
