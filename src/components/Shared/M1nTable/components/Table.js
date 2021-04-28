@@ -452,6 +452,7 @@ function SubTable(props) {
   const [total, Total] = useState(false);
   const [rows, Rows] = useState([]);
   const [handleSearch, setHandleSearch] = useState(() => () => {});
+  // const [handleSearchClose, setHandleSearchClose] = useState(() => () => {});
 
   // deep state 
   const setFirstMount = (newState) => { setStateIfDeepEqual(FirstMount, newState); };
@@ -484,6 +485,8 @@ function SubTable(props) {
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
 
+  // selectors
+  // const { searchloading } = useSelector(({ MapGridCard }) => MapGridCard);
 
   // handlers 
   const handleWellFlyTo = (value) => {
@@ -566,10 +569,28 @@ function SubTable(props) {
     setHandleSearch(() => handleSearch);
   };
 
+  // const registerSearchCloseHandler = (handleSearchClose) => {
+  //   setHandleSearchClose(() => handleSearchClose);
+  // };
+
   useEffect(() => {
-    handleSearch(stateApp.contactSearchQuery);
+    if (props.header === 'Contacts') {
+      handleSearch(stateApp.contactSearchQuery);
+    }
   }, [stateApp.contactSearchQuery])
 
+  // useEffect(() => {
+  //   if (props.parent === "search") {
+  //     handleSearchClose(stateApp.contactSearchQuery);
+  //   }
+  // }, [searchloading])
+
+  // not a good workaround - need to use the table actions callback
+  // useEffect(() => {
+  //   // reset selected rows 
+  //   setM1nSelectedRowsIndexes([]);
+  //   setM1nSelectedRowsIds([]);
+  // }, [rows])
 
   //// opening the well detail card after fetch the extra well data needed
   useEffect(() => {
@@ -2879,12 +2900,18 @@ function SubTable(props) {
                     || props.header === 'Monthly Production'
                     ) 
                     ? false : props.parent != "search",
-            // searchOpen: true,
+            // have to use props.parent here for initial value
+            searchOpen: props.parent === "Contacts" ? true : null,
             //download: false,
             // search: props.parent != "search",  
             //print: false,
-            customSearchRender: (searchText, handleSearch, hideSearch, options) => {
-              registerSearchHandler(handleSearch);
+            ...(props.header === 'Contacts') && {
+              customSearchRender: 
+                (searchText, handleSearch, hideSearch, options) => {
+                  registerSearchHandler(handleSearch);
+
+                  return getHeaders()
+                }
             }
           }}
         />
