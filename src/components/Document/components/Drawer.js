@@ -30,6 +30,7 @@ import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
 import DeleteDocumentConfirmation from 'components/Shared/DeleteDocumentConfirmation';
+import { UPDATEFILE } from 'graphQL/useMutationUpdateFile';
 const useStyles = makeStyles({
   list: {
     width: 250,
@@ -147,12 +148,35 @@ export default function DocumentDrawer() {
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
   const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
   let [loader,setLoader] = useState(false)
+  let [inputValue,setInputValue] = useState()
   const [viewFile, { data: viewFileResult ,loading: viewFileLoading}] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
+  const [updateFile,{loading:updateFileloading}] = useMutation(UPDATEFILE);
 
-
+  const UpDatefileFN =() => {
+    if(stateApp.selectedDocument.fileId)
+    {
+      setLoader(true)
+      updateFile({
+        variables: {
+          descriptorId: stateApp.selectedDocument.descriptorId,
+          fileName: stateApp.selectedDocument.fileName,
+            dateTime: String(stateApp.selectedDocument.dateTime),
+          documentNumber: stateApp.selectedDocument.documentNumber,
+          documentType: stateApp.selectedDocument.documentType,
+          partyName1:    stateApp.selectedDocument.partyName1,
+          partyName2: stateApp.selectedDocument.partyName2,
+          relatedObjectId: stateApp.selectedDocument.relatedObjectId,
+         fileId: stateApp.selectedDocument.fileId
+        },
+      }).then(()=>{
+        setLoader(false);
+      })
+    }
+    
+  }
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } })
     if(viewFileLoading){
@@ -168,8 +192,8 @@ export default function DocumentDrawer() {
   const handleDeleteAccept =  () => {
     // Delete Document Logic goes here
     if (fileIdToDelete) {
-      setLoader(true)
-
+      
+      setLoader(true);
      deleteFile({
         variables: {
           id: fileIdToDelete,
@@ -227,13 +251,15 @@ export default function DocumentDrawer() {
   
   const handleDateChange = (date) => {
     setSelectedDate(date);
+    console.log(date, 'Date Change')
     setStateApp((stateApp) => ({
       ...stateApp,
       selectedDocument:{
         ...stateApp.selectedDocument,
-        dateTime:date
+        dateTime:String(date['_d'])
       },
     }));
+    console.log(stateApp.selectedDocument, 'Selected Document')
   };
   const LightTooltip = withStyles((theme) => ({
     tooltip: {
@@ -243,6 +269,7 @@ export default function DocumentDrawer() {
       fontSize: 11,
     },
   }))(Tooltip);
+  console.log(stateApp.user.mongoId,'user Id')
   const toggleDrawer = (anchor, open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -315,6 +342,8 @@ export default function DocumentDrawer() {
                               setFileIdToDelete(
                                 stateApp.selectedDocument.descriptorId
                               );
+                              console.log(stateApp.selectedDocument,' StateApp')
+                              
                             }}
                           >
                             <DeleteIcon />
@@ -329,7 +358,14 @@ export default function DocumentDrawer() {
             <TextField
               className={classes.maxWidth}
               multiline
-            
+              value={stateApp.selectedDocument?.documentNumber ? (stateApp.selectedDocument?.documentNumber): ('No Number')}
+             onChange={(e)=>{
+                setStateApp({...stateApp,
+                selectedDocument:{
+                  ...stateApp.selectedDocument,
+                  documentNumber:e.target.value
+                }})
+            }}
             />
           </ListItem>
           <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
@@ -338,6 +374,13 @@ export default function DocumentDrawer() {
               className={classes.maxWidth}
               multiline
               value={stateApp.selectedDocument.fileName}
+              onChange={(e)=>{
+                setStateApp({...stateApp,
+                selectedDocument:{
+                  ...stateApp.selectedDocument,
+                  fileName:e.target.value
+                }})}
+              }
             
             />
           </ListItem>
@@ -346,7 +389,16 @@ export default function DocumentDrawer() {
             <Autocomplete
               className={classes.maxWidth}
               options={['pdf','doc','txt']}
-              // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+              value={stateApp.selectedDocument.documentType}
+              onChange={(e, value) => { console.log(value,'DocumentType')
+              e.preventDefault()
+              setStateApp({...stateApp,
+              selectedDocument:{
+                ...stateApp.selectedDocument,
+                documentType:value
+
+              }})
+             }}
               // value={users.find((user) => user?.value === newContact.contactOwner) || null}
               // getOptionLabel={(option) => option.text}
               // getOptionSelected={(option) => option.value === newContact.contactOwner}
@@ -357,17 +409,16 @@ export default function DocumentDrawer() {
           </ListItem>
          
           <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-          <h4>Document Type</h4>
+          <h4>Document Date</h4>
           <KeyboardDatePicker
           className={classes.maxWidth}
+         
           disableToolbar
           variant="inline"
           format="MM/dd/yyyy"
           margin="normal"
           id="date-picker-inline"
-          // label={<h4 style={{paddingBottom:'30px'}}>Document Date</h4>}
           value={stateApp.selectedDocument.dateTime}
-
           onChange={handleDateChange}
           KeyboardButtonProps={{
             'aria-label': 'change date',
@@ -379,7 +430,17 @@ export default function DocumentDrawer() {
             <Autocomplete
               className={classes.maxWidth}
               options={['John Doe','Mickel Jackson','Phil Heath']}
-              // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+              value={stateApp.selectedDocument.partyName1}
+
+              onChange={(e, value) => {
+                e.preventDefault()
+                setStateApp({
+                ...stateApp,
+                selectedDocument:{
+                  ...stateApp.selectedDocument,
+                     partyName1:value
+                }
+              }) }}
               // value={users.find((user) => user?.value === newContact.contactOwner) || null}
               // getOptionLabel={(option) => option.text}
               // getOptionSelected={(option) => option.value === newContact.contactOwner}
@@ -393,7 +454,15 @@ export default function DocumentDrawer() {
             <Autocomplete
               className={classes.maxWidth}
               options={['John Doe','Mickel Jackson','Phil Heath']}
-              // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+              value={stateApp.selectedDocument.partyName2}
+
+              onChange={(e, value) => { setStateApp({
+                ...stateApp,
+                selectedDocument:{
+                  ...stateApp.selectedDocument,
+                  partyName2:value
+                }
+              }) }}
               // value={users.find((user) => user?.value === newContact.contactOwner) || null}
               // getOptionLabel={(option) => option.text}
               // getOptionSelected={(option) => option.value === newContact.contactOwner}
@@ -510,7 +579,10 @@ export default function DocumentDrawer() {
 									color="secondary"
 									size="medium"
 									disableElevation
-									// onClick={handleUpdate}
+									onClick={()=>{
+                    setLoader(true);
+                    UpDatefileFN()
+                  }}
 									className={classes.footerButton}
 								>
                   Save

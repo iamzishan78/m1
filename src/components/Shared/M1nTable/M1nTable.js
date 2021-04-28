@@ -85,6 +85,11 @@ const GET_Documents = gql`
       userName
       dateTime
       descriptorId
+      relatedObjectId
+      documentNumber
+      documentType
+      partyName1
+      partyName2
     }
 }
 `;

@@ -90,6 +90,11 @@ export default function UploadZone(props) {
 
       if (inputFile && fileName) {
         setInputFile(inputFile);
+         console.log(props.userId,'add show')
+         console.log(props.relatedObjectId,'add show')
+
+         console.log(props.relatedObjectType,'add show')
+         console.log(fileName,'add show')
 
         addFile({
           variables: {
