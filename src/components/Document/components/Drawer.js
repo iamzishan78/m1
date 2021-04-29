@@ -426,7 +426,7 @@ export default function DocumentDrawer() {
         />
         </ListItem>
         <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Party Name 1</h4>
+            <h4>Party 1 Name</h4>
             <Autocomplete
               className={classes.maxWidth}
               options={['John Doe','Mickel Jackson','Phil Heath']}
@@ -450,7 +450,7 @@ export default function DocumentDrawer() {
             />
           </ListItem>
           <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Party Name 2</h4>
+            <h4>Party 2 Name</h4>
             <Autocomplete
               className={classes.maxWidth}
               options={['John Doe','Mickel Jackson','Phil Heath']}
@@ -664,7 +664,7 @@ export default function DocumentDrawer() {
         />
         </ListItem>
         <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Party Name 1</h4>
+            <h4>Party 1 Name</h4>
             <Autocomplete
               className={classes.maxWidth}
               options={['John Doe','Mickel Jackson','Phil Heath']}
@@ -678,7 +678,7 @@ export default function DocumentDrawer() {
             />
           </ListItem>
           <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Party Name 2</h4>
+            <h4>Party 2 Name</h4>
             <Autocomplete
               className={classes.maxWidth}
               options={['John Doe','Mickel Jackson','Phil Heath']}
