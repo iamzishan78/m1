@@ -212,16 +212,18 @@ const DrawShapesPopup = (props) => {
   };
 
   const createMultiSelectedFeature = () => {
-    let { draw } = stateApp, newFeature,
+    let { draw, selectedAbstracts } = stateApp, newFeature,
       featureId = hat();
-    stateApp.selectedAbstracts.forEach((abstractFeature, index) => {
-      if (index <= stateApp.selectedAbstracts.length - 1 && !newFeature) {
+    selectedAbstracts.forEach((abstractFeature, index) => {
+      if (index < selectedAbstracts.length - 1 && !newFeature) {
         newFeature = union(
           abstractFeature,
-          stateApp.selectedAbstracts[index + 1]
+          selectedAbstracts[index + 1]
         );
-      } else if (index < stateApp.selectedAbstracts.length - 1 && newFeature) {
-        newFeature = union(newFeature, stateApp.selectedAbstracts[index + 1]);
+      } else if (index < selectedAbstracts.length - 1 && newFeature) {
+        newFeature = union(newFeature, selectedAbstracts[index + 1]);
+      } else if (selectedAbstracts.length === 1) {
+        newFeature = selectedAbstracts[index];
       }
     });
     newFeature.id = featureId;
