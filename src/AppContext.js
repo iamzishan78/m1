@@ -20,6 +20,7 @@ const AppProvider = (props) => {
     user: null, /// potenitally login context or maybe a specific user context?? 
     signUpUserType: null,/// potenitally login context or maybe a specific user context?? 
     wellDetailCardOpen: null, // move to map data card context 
+    wellDetailCardTabIndex: null,
     parcelDetailCardOpen: false, // move to map data card context 
     trackedwells: null, // move to a grid context or query context 
     trackedOwnerWells: null, // move to a grid context or query context 

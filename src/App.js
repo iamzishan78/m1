@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { AppProvider, AppContext } from "./AppContext";
 import { Switch, Route } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
 //components
 import Login from "./components/Login/Login";
 import LoginB2C from "./components/Login/LoginB2C";
@@ -13,18 +14,21 @@ import TrackProvider from "./components/Track/TrackProvider";
 import TransactProvider from "./components/Transact/TransactProvider";
 import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider";
 import ContactsProvider from "./components/Contacts/ContactsProvider";
+import ContactDetailsProvider from "./components/ContactDetailCard/ContactDetailsProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
 import DashboardProvider from "./components/Dashboard/DashboardProvider";
 import StudioProvider from "./components/Studio/StudioProvider";
 import BulkUpload from "./components/BulkUpload/BulkUpload";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
+
 // pick a date util library
 import MomentUtils from "@date-io/moment";
+import { CircularProgress } from "@material-ui/core";
+
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
 import { ApolloProvider, ApolloClient, InMemoryCache, useApolloClient } from "@apollo/client";
 import { relayStylePagination } from "./graphQL/apolloPaginationSchemes.js";
-import { CircularProgress, Typography } from "@material-ui/core";
 // import ProfileProvider from "./components/Profile/ProfileProvider";
 // import ProfileDetailsProvider from "./components/Profile/ProfileDetailsProvider";
 // import { UserManagementContextProvider } from "./components/UserManagement/UserManagementContext";
@@ -185,7 +189,7 @@ function App() {
 
   const updateApolloClient = (endpoint, token) => {
     //uncomment to run against local
-    // endpoint = "http://localhost:7071/api/m1graph"
+    //endpoint = "http://localhost:7071/api/m1graph"
 
 
     if (!apolloClient) {
@@ -230,6 +234,7 @@ function App() {
   return (
     <ReduxProvider store={store}>
       <Notifications />
+      <ToastContainer position={toast.POSITION.BOTTOM_LEFT} />
       <AppProvider>
         <SetApolloClient
           setApolloClient={updateApolloClient}
@@ -285,6 +290,11 @@ function App() {
                         exact
                         path="/contacts"
                         component={ContactsProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/contact/details/:contactId"
+                        component={ContactDetailsProvider}
                       />
                       <PrivateRoute
                         exact
