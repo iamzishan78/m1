@@ -54,7 +54,9 @@ export default function SearchBarWithToggleButton() {
         aria-label="text primary button group"
       >
         <Search />
+        
           {location.pathname === "/documents" ? (
+
         <Tooltip title="Add Document">
 
             <Button
@@ -72,6 +74,8 @@ export default function SearchBarWithToggleButton() {
         </Tooltip>
 
           ) : (
+
+
         <Tooltip title="Search Grid">
 
             <Button
