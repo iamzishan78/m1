@@ -154,25 +154,6 @@ const DrawShapesPopup = (props) => {
     }
   }, [dataUser]);
 
-  const formatNumber = (number) => {
-    return number.toLocaleString("en-US", { maximumFractionDigits: 2 });
-  };
-  const calculateLandArea = (feature = {}) => {
-    const { selectedFeature } = props;
-    if (!feature) feature = selectedFeature;
-    if (feature) {
-      if (feature.geometry.type === "Polygon") {
-        const areaInSqMeters = area(feature);
-        const areaInAcres = convertArea(areaInSqMeters, "meters", "acres");
-        return `${formatNumber(Math.round(areaInAcres * 100) / 100)} acres`;
-      }
-      if (feature.geometry.type === "LineString") {
-        const distanceInMiles = length(feature, { units: "miles" });
-        return `${formatNumber(Math.round(distanceInMiles * 100) / 100)} miles`;
-      }
-    }
-  };
-
   const onActionClick = (shape) => {
     if (shape.disable) return;
     if (shape.title === "Multiple Select") {
