@@ -332,7 +332,7 @@ export default function DocumentDrawer() {
       <List>
       <ListItem style={{display:'flex',justifyContent:'between',width:'100%',alignItems:'center'}}>
       <ListItemText  >
-        <h3>Documents Detail</h3>
+        <h3>Document Detail</h3>
       </ListItemText>
         <ListItemIcon style={{cursor:'pointer'}} >
         <IconButton
@@ -609,7 +609,7 @@ export default function DocumentDrawer() {
       <List>
       <ListItem style={{display:'flex',justifyContent:'between',width:'100%',alignItems:'center'}}>
       <ListItemText  >
-        <h3>Add New Documents</h3>
+        <h3>Add New Document</h3>
       </ListItemText>
         <ListItemIcon style={{cursor:'pointer'}} onClick={()=>{
           console.log(stateApp.refetchDocument, 'Refetch documents')
