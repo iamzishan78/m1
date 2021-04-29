@@ -25,6 +25,7 @@ import HugeRequest from "./components/HugeRequest";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
+import AbstractSelectionPopup from './components/popup/AbstractSelectionPopup';
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 import MapGridCardProvider from "../MapGridCard/MapGridProvider";
@@ -4755,13 +4756,13 @@ function Map() {
 
       <div id="modalHolder" ref={modalContainer} />
       <Portal container={modalContainer.current}>
-        {stateApp.selectedAbstracts.length > 0 && (
+        {/* {stateApp.selectedAbstracts.length > 0 && (
           <AbstractSelectionPopup
             abstracts={stateApp.selectedAbstracts}
             map={map}
             onClickExpand={handleAnchorElPopOver}
           />
-        )}
+        )} */}
 
         {stateApp.selectedParcel !== null && stateApp.expandedCard && (
           <div className={classes.draggable}>
