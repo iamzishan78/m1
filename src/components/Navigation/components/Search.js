@@ -1099,14 +1099,16 @@ function Search() {
               All Documents
           </Typography>
           
-          <Typography style={{padding:'6px',paddingLeft:'9px',backgroundColor:'#f2f2f2',width:'100%',borderTop:'1px solid #d1cfcf'}} variant='caption'>
+          <Typography style={{padding:'6px',paddingLeft:'9px',backgroundColor:'#f2f2f2',width:'100%',borderTop:'1px solid #d1cfcf'}} variant='subtitle2'>
               Agreements
           </Typography>
           <Typography style={{padding:'9px',cursor:'pointer'}} variant='subtitle2'>
-             ShapFiles
+             Shapefiles
           </Typography>
         </AccordionDetails>
-      </Accordion>)}
+      </Accordion>
+      )
+      }
       <Autocomplete
         id="cognitive-search-autocomplete"
         getOptionLabel={(option, value) => option.Primary}
