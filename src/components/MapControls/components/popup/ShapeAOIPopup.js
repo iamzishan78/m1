@@ -19,26 +19,36 @@ const useStyles = makeStyles((theme) => ({
     background: "rgba(1, 17, 51, 1.0)",
     color: "#fff",
     minWidth: "220px",
-    width: '420px !important'
+    width: '420px !important',
+    opacity: "0.9",
+    borderColor: "rgba(1, 17, 51, 1.0)",
   },
   TextField: {
     display: "flex",
-    borderColor: "#fff",
-    background: "rgba(1, 17, 70, 1)",
-    color: "#fff"
+    //borderColor: "#fff",
+    background: "rgba(1, 17, 51, 1.0)",
+    color: "#fff",
+        
   },
+
+
   TextFieldInput: {
     color: "#fff",
-    fontWeight: "bold"
+    //fontWeight: "bold"
+  
   },
   TextFieldLabel: {
     color: "#fff",
-    fontWeight: "bold"
+    //fontWeight: "bold"
+  
   },
   enterLabel: {
-    height: '5px',
-    margin: '0px 10px 15px 0',
-    textAlign: 'right'
+    height: '3px',
+    margin: '0px 15px 15px 0',
+    textAlign: 'right',
+    color: "fff",
+    fontSize: "11px"
+
   }
 }));
 
@@ -206,7 +216,7 @@ export default function DrawShapes(props) {
           }
         }}
       />
-      <p className={classes.enterLabel}>Press Enter to save</p>
+      <p className={classes.enterLabel}>Return to save</p>
     </form>
   );
 }
