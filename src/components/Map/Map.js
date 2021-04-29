@@ -697,7 +697,7 @@ function Map() {
         if (mapSourceData && !deepEqualObjects(geoJson, mapSourceData))
           map.getSource(sourceId).setData(geoJson);
       } else {
-        if (paintType == "circle" || paintType == "symbol") {
+        if (paintType === "circle" || paintType === "symbol") {
           map.addSource(sourceId, {
             type: "geojson",
             data: geoJson,
@@ -714,7 +714,7 @@ function Map() {
         }
       }
 
-      if (sourceId == "parcels_source" || sourceId === "interests_source") {
+      if (sourceId === "parcels_source" || sourceId === "interests_source") {
         let pointSource = geoJson.features.map((feature) => {
           var output = feature;
 
@@ -1143,18 +1143,18 @@ function Map() {
               }
               if (map.getLayer(layerId)) {
                 if (
-                  layer.identifier == "Parcels" ||
-                  layer.identifier == "Area of Interest" ||
-                  layer.identifier == "Tracked Wells" ||
-                  layer.identifier == "Tracked Owners" ||
-                  layer.identifier == "User Tags" ||
-                  layer.identifier == "Search"
+                  layer.identifier === "Parcels" ||
+                  layer.identifier === "Area of Interest" ||
+                  layer.identifier === "Tracked Wells" ||
+                  layer.identifier === "Tracked Owners" ||
+                  layer.identifier === "User Tags" ||
+                  layer.identifier === "Search"
                 )
                   layers.push(layerId);
 
                 if (
-                  layer.identifier == "Parcels" ||
-                  layer.identifier == "Area of Interest"
+                  layer.identifier === "Parcels" ||
+                  layer.identifier === "Area of Interest"
                 ) {
                   udLayers.push(layerId);
                 }
@@ -3707,6 +3707,15 @@ function Map() {
             // promoteId: "Id",
           });
 
+          // FOR aoi_labels
+          newMap.addSource('aoi_label_source', {
+            'type': 'geojson',
+            'data': {
+              'type': 'FeatureCollection',
+              'features': []
+            }
+          });
+
           newMap.addLayer({
             id: "abstract_geo_fill_layer",
             type: "fill",
@@ -4811,7 +4820,7 @@ function Map() {
               </PortalD>
             )}
 
-            {/* {stateApp.selectedUserDefinedLayer && (
+            {stateApp.selectedUserDefinedLayer && (
               <PortalD id="popupContainer">
                 <SpatialDataCardEdit
                   selectedFeature={stateApp.selectedUserDefinedLayer}
@@ -4821,7 +4830,7 @@ function Map() {
                   cardClass={"cardPopup"}
                 />
               </PortalD>
-            )} */}
+            )}
             {stateApp.filterFeature && (
               <PortalD id="filterPopupContainer">
                 <FilterControl filterFeature={stateApp.filterFeature} />

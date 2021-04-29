@@ -5,7 +5,7 @@ import polylabel from "polylabel";
 export const addCustomShapeProperties = (feature, Draw) => {
   try {
     spatialDataAttributes.forEach(attribute => {
-      let data = "";
+      let data = feature.properties[attribute] || "";
       switch (attribute) {
         case "shapeArea":
           data = calculateLandArea(feature);

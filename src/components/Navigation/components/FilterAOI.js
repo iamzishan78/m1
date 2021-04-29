@@ -41,7 +41,7 @@ const FilterAOI = () => {
 
     const currentLayers = [...stateApp.layers];
     const index = currentLayers.findIndex(
-      (l) => l.identifier == "Area of Interest"
+      (l) => l.identifier === "Area of Interest"
     );
 
     if (value && value.length) {
