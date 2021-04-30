@@ -23,7 +23,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../actions";
 import SidePanel from "../Shared/SidePanel/SidePanel";
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     // backgroundColor:'rgba(1, 17, 51, 0.97)',
@@ -124,7 +123,11 @@ export default function MapControls(props) {
       setStateMapControls({
         ...stateMapControls,
         selectedControl: action,
-        panelExpanded: (action === stateMapControls.selectedControl) && stateMapControls.panelExpanded ? false : true,
+        panelExpanded:
+          action === stateMapControls.selectedControl &&
+            stateMapControls.panelExpanded
+            ? false
+            : true,
         anchorEl: anchorEl,
       });
     }
@@ -215,7 +218,11 @@ export default function MapControls(props) {
       case "layer":
       case "marketplace":
       case "heatMaps":
-        if (selectedControl === 'layer' && stateApp.selectedAbstracts.length > 0)
+        if (
+          selectedControl === "layer" &&
+          (stateApp.selectedAbstracts.length > 0 ||
+            stateApp.selectedUserDefinedLayer)
+        )
           return <DrawShapes />;
         return <SidePanel />;
       case "add":

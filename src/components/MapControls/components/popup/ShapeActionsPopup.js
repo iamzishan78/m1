@@ -14,18 +14,15 @@ import LayerIcon from "@material-ui/icons/Layers";
 import FilterAltIcon from "../../../Shared/svgIcons/FilterAltIcon";
 import Typography from "@material-ui/core/Typography";
 import { area, convertArea, length } from "@turf/turf";
-import { AppContext } from "../../../../AppContext";
-import {
-  NavigationContext,
-  DRAWING_MODES,
-} from "../../../Navigation/NavigationContext";
-import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
-import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
-import { ABSTRACTGEOCONTAINSQUERY } from "../../../../graphQL/useQueryAbstractGeoContains";
+import { AppContext } from "AppContext";
+import { NavigationContext, DRAWING_MODES } from "components/Navigation/NavigationContext";
+import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
+import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
+import { ABSTRACTGEOCONTAINSQUERY } from "graphQL/useQueryAbstractGeoContains";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch } from "react-redux";
-import { setMapGridCardState } from "../../../../actions";
+import { setMapGridCardState } from "actions";
 
 import { gql } from "@apollo/client";
 
@@ -182,15 +179,13 @@ const ShapeActionsPopup = (props) => {
     if (stateApp.shapeActionsFilterSelected) {
       applyFilter();
     }
-    if (stateApp.currentFeature.properties.shapeLabel) {
-      if (stateApp.map.getLayer('aoi_label_layer')) {
-        const { map, currentFeature } = stateApp;
-        // Changing the AOI source
-        map.getSource('aoi_label_source').setData({
-          'type': 'FeatureCollection',
-          'features': [currentFeature]
-        });
-      }
+    if (stateApp.currentFeature.properties.shapeLabel && stateApp.map.getLayer('aoi_label_layer')) {
+      const { map, currentFeature } = stateApp;
+      // Changing the AOI source
+      map.getSource('aoi_label_source').setData({
+        'type': 'FeatureCollection',
+        'features': [currentFeature]
+      });
     }
   }, [stateApp.currentFeature]);
 
@@ -306,7 +301,7 @@ const ShapeActionsPopup = (props) => {
   };
 
   const isLine = () => {
-    return stateApp.currentFeature.geometry.type === "LineString"
+    return stateApp.currentFeature.geometry?.type === "LineString"
       ? true
       : false;
   };

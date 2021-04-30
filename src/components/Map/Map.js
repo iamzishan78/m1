@@ -4842,7 +4842,7 @@ function Map() {
               </PortalD>
             )}
 
-            {stateApp.selectedUserDefinedLayer && (
+            {/* {stateApp.selectedUserDefinedLayer && (
               <PortalD id="popupContainer">
                 <SpatialDataCardEdit
                   selectedFeature={stateApp.selectedUserDefinedLayer}
@@ -4852,7 +4852,7 @@ function Map() {
                   cardClass={"cardPopup"}
                 />
               </PortalD>
-            )}
+            )} */}
             {stateApp.filterFeature && (
               <PortalD id="filterPopupContainer">
                 <FilterControl filterFeature={stateApp.filterFeature} />

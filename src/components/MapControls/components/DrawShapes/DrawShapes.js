@@ -6,7 +6,7 @@ import React, {
   useRef,
 } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { get } from 'lodash';
+import { get } from "lodash";
 // STATE MANAGEMENT
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import { AppContext } from "AppContext";
@@ -180,7 +180,7 @@ const useStyles = makeStyles((theme) => ({
     width: "40%",
     justifyContent: "space-evenly",
     backgroundColor: "light gray",
-    color: "dark gray"
+    color: "dark gray",
   },
   modalContainer: {
     background: "white",
@@ -215,14 +215,33 @@ export default function DrawShapes() {
   const [user, setUser] = useState({ _id: "" });
 
   useEffect(() => {
-    const customLayer = get(customLayerInsertedData, 'upsertCustomLayer.customLayer');
+    const customLayer = get(
+      customLayerInsertedData,
+      "upsertCustomLayer.customLayer"
+    );
     if (customLayer) {
-      setStateApp(state => ({
+      setStateApp((state) => ({
         ...state,
-        selectedAoi: customLayer
-      }))
+        selectedAoi: customLayer,
+      }));
     }
   }, [customLayerInsertedData]);
+
+  useEffect(() => {
+    const { selectedUserDefinedLayer } = stateApp;
+    if (selectedUserDefinedLayer) {
+      const currentFeature = {
+        ...selectedUserDefinedLayer,
+        id: selectedUserDefinedLayer.properties.id,
+        geometry: selectedUserDefinedLayer.geometry,
+      };
+      setStateApp((state) => ({
+        ...state,
+        currentFeature,
+        selectedAoi: { ...currentFeature, _id: currentFeature.id },
+      }));
+    }
+  }, [stateApp.selectedUserDefinedLayer]);
 
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.email) {
@@ -305,7 +324,7 @@ export default function DrawShapes() {
   const clearMapAndCloseShapeActionsPopup = () => {
     const { draw, map, currentFeature } = stateApp;
     draw.delete(currentFeature?.id);
-    setStateApp(state => ({
+    setStateApp((state) => ({
       ...state,
       editDraw: false,
       currentFeature: undefined,
@@ -331,12 +350,12 @@ export default function DrawShapes() {
     clearMapAndCloseShapeActionsPopup();
 
     // Removing layer of AOI Label
-    if (stateApp.map.getLayer('aoi_label_layer')) {
-      stateApp.map.removeLayer('aoi_label_layer');
-      setStateApp(state => ({
+    if (stateApp.map.getLayer("aoi_label_layer")) {
+      stateApp.map.removeLayer("aoi_label_layer");
+      setStateApp((state) => ({
         ...state,
-        selectedAoi: null
-      }))
+        selectedAoi: null,
+      }));
     }
   };
 
@@ -377,7 +396,7 @@ export default function DrawShapes() {
         !stateApp.currentFeature.id.includes("draw_rectangle") &&
         !stateApp.currentFeature.id.includes("edit_polygon") ? (
         <Fragment>
-          {(showSpatialDataCard) && ( // for edit/create AOI
+          {showSpatialDataCard && ( // for edit/create AOI
             <ShapeAOIPopup
               upsertCustomLayer={upsertCustomLayer}
               user={user}

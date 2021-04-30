@@ -1,11 +1,10 @@
 import React, { useContext, useState } from "react";
 
 import { useMutation } from "@apollo/client";
-import { makeStyles, fade } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 
 import { AppContext } from "AppContext";
-import { NavigationContext } from "../../../Navigation/NavigationContext";
 import { addCustomShapeProperties } from "../../components/DrawShapes/drawShapesHelpers";
 import { spatialDataAttributes } from "../DrawShapes/constants";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
@@ -28,19 +27,19 @@ const useStyles = makeStyles((theme) => ({
     //borderColor: "#fff",
     background: "rgba(1, 17, 51, 1.0)",
     color: "#fff",
-        
+
   },
 
 
   TextFieldInput: {
     color: "#fff",
     //fontWeight: "bold"
-  
+
   },
   TextFieldLabel: {
     color: "#fff",
     //fontWeight: "bold"
-  
+
   },
   enterLabel: {
     height: '3px',
@@ -63,13 +62,14 @@ export default function DrawShapes(props) {
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
   const updateSourceAndAoiLayer = (currentFeature) => {
+    const { map, draw } = stateApp;
     stateApp.map.getSource('aoi_label_source').setData({
       'type': 'FeatureCollection',
       'features': [currentFeature]
     });
 
     // Add a symbol layer
-    stateApp.map.addLayer({
+    map.addLayer({
       'id': 'aoi_label_layer',
       'type': 'symbol',
       'source': 'aoi_label_source',
@@ -89,7 +89,10 @@ export default function DrawShapes(props) {
       ...state,
       currentFeature
     }));
-    stateApp.draw.setFeatureProperty(currentFeature.id, 'shapeLabel', currentFeature.properties.shapeLabel);
+    const drewShapeOnMap = draw.get(currentFeature.id);
+    if (drewShapeOnMap) {
+      draw.setFeatureProperty(currentFeature.id, 'shapeLabel', currentFeature.properties.shapeLabel);
+    }
   }
 
   const handleSaveSpatialDataToShape = (dataName, dataType = "interest") => {
