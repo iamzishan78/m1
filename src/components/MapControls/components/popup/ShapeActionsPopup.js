@@ -466,8 +466,8 @@ const ShapeActionsPopup = (props) => {
             </Tooltip>
           )}
 
-          <Tooltip title="Track">
-            <IconButton size="small" onClick={actionAOI} aria-label="Track">
+          <Tooltip title="Area of Interest">
+            <IconButton size="small" onClick={actionAOI} aria-label="Area of Interest">
               <GpxFixedIcon />
             </IconButton>
           </Tooltip>
