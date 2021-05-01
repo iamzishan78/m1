@@ -202,11 +202,12 @@ function WellCard() {
   }, [dataWellSummary]);
 
 
-  const handleOpenDetails = () => {
+  const handleOpenDetails = (isOwner) => {
     setStateApp((state) => ({
       ...state,
       expandedCard: true,
       wellDetailCardOpen: true,
+      wellDetailCardTabIndex:isOwner ? 1 : 0,
       popupOpen: false,
     }));
   };
@@ -302,7 +303,7 @@ function WellCard() {
 
               <Button
                 className={classes.button}
-                onClick = {() => {handleOpenDetails()}}
+                onClick = {() => {handleOpenDetails(true)}}
                               >
               <div className={classes.iconContainer}>
                 <OwnershipIcon

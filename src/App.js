@@ -14,15 +14,18 @@ import TrackProvider from "./components/Track/TrackProvider";
 import TransactProvider from "./components/Transact/TransactProvider";
 import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider";
 import ContactsProvider from "./components/Contacts/ContactsProvider";
+import ContactDetailsProvider from "./components/ContactDetailCard/ContactDetailsProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
 import DashboardProvider from "./components/Dashboard/DashboardProvider";
 import StudioProvider from "./components/Studio/StudioProvider";
 import BulkUpload from "./components/BulkUpload/BulkUpload";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
+
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 import { CircularProgress } from "@material-ui/core";
+
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
 import { ApolloProvider, ApolloClient, InMemoryCache, useApolloClient } from "@apollo/client";
 import { relayStylePagination } from "./graphQL/apolloPaginationSchemes.js";
@@ -287,6 +290,11 @@ function App() {
                         exact
                         path="/contacts"
                         component={ContactsProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/contact/details/:contactId"
+                        component={ContactDetailsProvider}
                       />
                       <PrivateRoute
                         exact
