@@ -4764,7 +4764,7 @@ function Map() {
           />
         )} */}
 
-        {stateApp.selectedParcel !== null && stateApp.expandedCard && (
+        {/* {stateApp.selectedParcel !== null && stateApp.expandedCard && (
           <div className={classes.draggable}>
             <ExpandableCardProvider
               expanded={true}
@@ -4784,7 +4784,7 @@ function Map() {
               deleteParcel={deleteParcel}
             ></ExpandableCardProvider>
           </div>
-        )}
+        )} */}
       </Portal>
       <Portal container={container.current}>
         {stateApp.popupOpen === true ? (
