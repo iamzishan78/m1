@@ -912,6 +912,7 @@ function SubTable(props) {
   };
 
   const openMenu = (event, rowIndex, user) => {
+    event.stopPropagation();
     setSelectedUser(user);
     setSelectedUserIndex(rowIndex);
     setM1nSelectedRowsIds([user._id]);
@@ -1957,7 +1958,8 @@ function SubTable(props) {
     setColInd(null);
     setRowInd(null);
     setExpandedObject(null);
-    setStateApp({ ...stateApp, isEditSelectedProfileName: null });
+    // setStateApp({ ...stateApp, isEditSelectedProfileName: null });
+    setStateApp((stateApp) => ({ ...stateApp, isEditSelectedProfileName: null }));
   };
 
   const handleOpenExpandableCard = () => {
@@ -2444,6 +2446,19 @@ function SubTable(props) {
         setTitle("Contact Details");
         setSubTitle(" ");
         handleOpenExpandableCard();
+      }
+
+      if (props.targetLabel === "usermanagement") {
+        if (rows[dataIndex]?.id) {
+          let card = { ...rows[dataIndex] };
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            userDialog: true,
+            activeUser: card,
+          }));
+
+          handleExpandClick(null, null, null, "inviteUser");
+        }
       }
     },
     onChangePage: (pageState) => {
@@ -3218,6 +3233,7 @@ function SubTable(props) {
                 rows={rows}
                 setRows={setExpandedObject}
                 onClose={handleCloseDialog}
+                setSelectedRow={setSelectedRow}
               />
             )}
             {openDialog === "reinviteUser" && (
