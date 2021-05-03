@@ -1037,17 +1037,19 @@ export default function Navigation(props) {
           My Account
         </Typography>
       </MenuItem>
-      <MenuItem
-        className={classes.userMenuItem}
-        onClick={(e) => openUserManagement(e)}
-      >
-        <Typography
-          style={{ textDecoration: "none", color: "#1daee1" }}
-          variant="inherit"
+      { stateApp?.user?.roles?.includes("Owner") && (
+        <MenuItem
+          className={classes.userMenuItem}
+          onClick={(e) => openUserManagement(e)}
         >
-          User Management
-        </Typography>
-      </MenuItem>
+          <Typography
+            style={{ textDecoration: "none", color: "#1daee1" }}
+            variant="inherit"
+          >
+            User Management
+          </Typography>
+        </MenuItem>
+      )}
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         <Typography variant="inherit">Logout</Typography>
       </MenuItem>
