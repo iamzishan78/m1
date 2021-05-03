@@ -54,6 +54,7 @@ const UserManagementHeadCells = [
       name: "lastLogin",
       label: "Last Login",
       options: {
+        display: false,
         filter: false,
         searchable: false,
         sort: false,

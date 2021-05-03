@@ -376,6 +376,8 @@ const Login = (props) => {
     if (authUser.b2cName) { authUser.b2cName = authUser.b2cName.val }
     authUser.b2bName = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'name'})
     if (authUser.b2bName) { authUser.b2bName = authUser.b2bName.val }
+    authUser.roles = graphQLProfileResponse.user_claims.filter(({typ}) => { return typ === 'roles'})
+    if (authUser.roles) { authUser.roles = authUser.roles.map(role => role.val) }
 
     const mongoUser = await getMongoDBUser(
       {
@@ -401,6 +403,7 @@ const Login = (props) => {
         mongoId: mongoUser._id,
         email: mongoUser.email,
         name: mongoUser.name,
+        roles: authUser.roles,
         authToken: authGraphQLResponse.authenticationToken,
         authTokenExpires: new Date(
           authGraphQLToken.expiresOn.setDate(
