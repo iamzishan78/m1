@@ -1038,7 +1038,7 @@ export default function Navigation(props) {
           My Account
         </Typography>
       </MenuItem>
-      { stateApp?.user?.roles?.includes("Owner") && (
+      { ( stateApp?.user?.roles?.includes("Owner") || stateApp?.user?.roles?.includes("Admin") ) && (
         <MenuItem
           className={classes.userMenuItem}
           onClick={(e) => openUserManagement(e)}
