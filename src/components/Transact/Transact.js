@@ -10,6 +10,7 @@ import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
 import "./index.css";
 import TransactAppBar from "./components/TransactAppBar";
 import TransactTable from "./components/TransactTable";
+import SidePanel from './components/SidePanel'
 import { useDispatch, useSelector } from "react-redux";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import M1nTable from "../Shared/M1nTable/M1nTable";
@@ -117,6 +118,10 @@ const useStyles = makeStyles((theme) => ({
     height: "25px",
     fontSize: "0.7rem",
     textAlign: "center",
+  },
+  content: {
+    flexGrow: 1,
+    marginLeft: "268px"
   },
 }));
 
@@ -402,7 +407,7 @@ export default function Transact() {
       if (
         unfilteredTargetLane?.metadata?.dealsStatus &&
         unfilteredTargetLane.metadata.dealsStatus.toLowerCase() !==
-          cardDetails?.metadata?.status?.toLowerCase()
+        cardDetails?.metadata?.status?.toLowerCase()
       )
         updatedDeal = {
           ...updatedDeal,
@@ -518,16 +523,16 @@ export default function Transact() {
     lane &&
       lane.cards.forEach(
         (card) =>
-          (priceSum +=
-            card && card.metadata && card.metadata.offerPrice
-              ? card.metadata.offerPrice
-              : 0)
+        (priceSum +=
+          card && card.metadata && card.metadata.offerPrice
+            ? card.metadata.offerPrice
+            : 0)
       );
 
     const formattedTotal = vf_currency(priceSum);
 
 
-            
+
     let forecast = null;
     let forecastFormatted = "";
     if (priceSum > 0 && metadata.dealProbability > 0) {
@@ -555,10 +560,10 @@ export default function Transact() {
   };
 
   return (
-    <div className={classes.root} > 
-      {stateApp.dealDialog 
+    <div className={classes.root} >
+      {stateApp.dealDialog
         && <Drawer />
-        }
+      }
       <DocViewer></DocViewer>
 
       <AddDealDialog
@@ -573,44 +578,50 @@ export default function Transact() {
           }))
         }
       />
-      <TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} />
-      {pipeToShow ? (
-        <div className={classes.boardAndTable}>
-          {stateApp.dealDisplayType === "board" && (
-            <Board
-              className={classes.list}
-              style={{ backgroundColor: "#fff" }}
-              // data={filteredBoardTransactData || transactData}
-              data={filteredBoardTransactData}
-              draggable={true}
-              laneDraggable={false}
-              cardDraggable={true}
-              collapsibleLanes={false}
-              editable={false}
-              canAddLanes={false}
-              editLaneTitle={false}
-              hideCardDeleteIcon={true}
-              handleDragEnd={handleCardDragEnd}
-              onDataChange={handleDataChange}
-              onCardClick={handleCardClick}
-              onCardMoveAcrossLanes={onCardMoveAcrossLanes}
-              laneStyle={{
-                backgroundColor: "#fff",
-                color: "#011133",
-                fontWeight: "bold",
-                textAlign: "left",
-              }}
-              cardStyle={{
-                boxShadow:
-                  "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
-                backgroundColor: "#F2F2F2",
-                textAlign: "center",
-                marginBottom: "10px",
-              }}
-              components={{
-                LaneHeader: (laneProps) => getLaneHeader(laneProps),
-                Card: (cardProps) => getCard(cardProps),
-              }}
+      {/**
+       * Here goes the Side Panel for Flowlines
+       */}
+      <SidePanel />
+
+      <main className={classes.content}>
+        <TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} />
+        {pipeToShow ? (
+          <div className={classes.boardAndTable}>
+            {stateApp.dealDisplayType === "board" && (
+              <Board
+                className={classes.list}
+                style={{ backgroundColor: "#fff" }}
+                // data={filteredBoardTransactData || transactData}
+                data={filteredBoardTransactData}
+                draggable={true}
+                laneDraggable={false}
+                cardDraggable={true}
+                collapsibleLanes={false}
+                editable={false}
+                canAddLanes={false}
+                editLaneTitle={false}
+                hideCardDeleteIcon={true}
+                handleDragEnd={handleCardDragEnd}
+                onDataChange={handleDataChange}
+                onCardClick={handleCardClick}
+                onCardMoveAcrossLanes={onCardMoveAcrossLanes}
+                laneStyle={{
+                  backgroundColor: "#fff",
+                  color: "#011133",
+                  fontWeight: "bold",
+                  textAlign: "left",
+                }}
+                cardStyle={{
+                  boxShadow:
+                    "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+                  backgroundColor: "#F2F2F2",
+                  textAlign: "center",
+                  marginBottom: "10px",
+                }}
+                components={{
+                  LaneHeader: (laneProps) => getLaneHeader(laneProps),
+                  Card: (cardProps) => getCard(cardProps),
+                }}
 
               //onCardAdd = {handleCardAdd}
               //onCardDelete = {handleCardDelete}
@@ -628,24 +639,25 @@ export default function Transact() {
               // onLaneClick
               // onLaneScroll
               //onCardMoveAcrossLanes
-            />
-          )}
-          {stateApp.dealDisplayType === "table" && (
-            <M1nTable
-              dense
-              filteredTabTransactData={filteredTabTransactData}
-              parent="TransactDeals"
-            />
-          )}
-        </div>
-      ) : pipeToShow === false ? (
-        <h1 style={{ marginTop: 80 }}>
-          No flowlines currently exist - please setup a new flowline and
-          corresponding stages.
-        </h1>
-      ) : (
-        <CircularProgress size={80} disableShrink color="secondary" />
-      )}
+              />
+            )}
+            {stateApp.dealDisplayType === "table" && (
+              <M1nTable
+                dense
+                filteredTabTransactData={filteredTabTransactData}
+                parent="TransactDeals"
+              />
+            )}
+          </div>
+        ) : pipeToShow === false ? (
+          <h1 style={{ marginTop: 80 }}>
+            No flowlines currently exist - please setup a new flowline and
+            corresponding stages.
+          </h1>
+        ) : (
+          <CircularProgress size={80} disableShrink color="secondary" />
+        )}
+      </main>
     </div>
   );
 }

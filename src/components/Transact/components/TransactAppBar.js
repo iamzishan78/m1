@@ -158,7 +158,7 @@ const sumDeals = (lanes, status) => {
       if (card.metadata.status === status && !card.metadata.IsDeleted) {
         if (card.label && !isNaN(card.label))
           sumAmount += card.label
-          // parseFloat(card.label.split("$").join("").split(",").join(""));
+        // parseFloat(card.label.split("$").join("").split(",").join(""));
         sumCount++;
       }
     });
@@ -196,7 +196,6 @@ const TransactAppBar = ({
         <div className={classes.top} style={{ marginTop: 15 }}>
           <Pipelines />
 
-
           <div className={classes.right}>
             <div className={classes.activeDeals}>
               <OfflineBolt />
@@ -225,31 +224,27 @@ const TransactAppBar = ({
           </div>
 
           <div className={classes.left}>
-
             <ButtonGroup style={{ minHeight: 36 }}>
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "all" && classes.activeBtn
-                }`}
+                className={`${classes.filterToggleBtn} ${dealFilter === "all" && classes.activeBtn
+                  }`}
                 onClick={() => setDealFilter("all")}
               >
                 ALL
               </Button>
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "open" && classes.activeBtn
-                }`}
+                className={`${classes.filterToggleBtn} ${dealFilter === "open" && classes.activeBtn
+                  }`}
                 onClick={() => setDealFilter("open")}
               >
                 OPEN
               </Button>
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "won" && classes.activeBtn
-                }`}
+                className={`${classes.filterToggleBtn} ${dealFilter === "won" && classes.activeBtn
+                  }`}
                 onClick={() => setDealFilter("won")}
               >
                 Won
@@ -257,9 +252,8 @@ const TransactAppBar = ({
 
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "lost" && classes.activeBtn
-                }`}
+                className={`${classes.filterToggleBtn} ${dealFilter === "lost" && classes.activeBtn
+                  }`}
                 onClick={() => setDealFilter("lost")}
               >
                 Lost

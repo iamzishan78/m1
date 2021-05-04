@@ -552,13 +552,13 @@ function AddDealDialog(props) {
 
 	const handleValidate = () => {
 		const tempValid = {
-		  ...valid,
-		  'title': !title
+			...valid,
+			'title': !title
 		}
 		setValid(tempValid);
-	
+
 		return !Object.values(tempValid).reduce((acc, cur) => acc + cur)
-	  }
+	}
 
 	const handleClose = () => {
 		setTitle("");
@@ -583,7 +583,7 @@ function AddDealDialog(props) {
 			addDealDialog: false,  // not sure why different flags were used here 
 			activeDeal: { cardId: null, laneId: null },
 			transactBarView: "",
-			viewDoc:null
+			viewDoc: null
 		}));
 		setValid({});
 	};
@@ -650,7 +650,7 @@ function AddDealDialog(props) {
 					contactId &&
 					((stateApp.activeDeal?.contacts?.length > 0 &&
 						stateApp.activeDeal?.contacts[0]?.relatedObject?._id !==
-            contactId) ||
+						contactId) ||
 						!stateApp.activeDeal.contacts ||
 						stateApp.activeDeal.contacts.length <= 0)
 				) {
@@ -915,17 +915,17 @@ function AddDealDialog(props) {
 			const {
 				data: { upsertDealDescriptor },
 			} = result;
-		
+
 			// if (upsertDealDescriptor?.success === false) success = false;
 			// resolve();
 
 			refetchDeal();
 		})
-}
+	}
 
 
 	useEffect(() => {
-		if(getDealResult?.deal?.deal?.contacts){
+		if (getDealResult?.deal?.deal?.contacts) {
 
 			setStateApp((stateApp) => ({
 				...stateApp,
@@ -936,8 +936,8 @@ function AddDealDialog(props) {
 				},
 			}));
 		}
-			
-			
+
+
 		// 	let metadata = { ...stateApp.activeDeal, contacts: [ upsertDealDescriptor.descriptor[0], ...stateApp.activeDeal.contacts ] };
 
 	}, [getDealResult])
@@ -953,11 +953,11 @@ function AddDealDialog(props) {
 				/>
 			);
 		}
-		if(stateApp.transactBarView === "Contacts") {
+		if (stateApp.transactBarView === "Contacts") {
 			return (
-				<Contacts 
+				<Contacts
 					addSelectedContact={addSelectedContactToDeal}
-					loading= {getDealLoading}
+					loading={getDealLoading}
 					getDeal={refetchDeal}
 				/>
 			)
@@ -1082,7 +1082,7 @@ function AddDealDialog(props) {
 									width: "100%",
 									backgroundColor: "#fff",
 									minHeight: "100%",
-								
+
 								}}
 							>
 								{/* //// ViewAll card top bar //// */}
@@ -1106,23 +1106,23 @@ function AddDealDialog(props) {
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
+						setM1nSelectedRowsIndexes={() => { }}
 					>
 						Do you want to delete the selected deal?
 					</DeleteConfirmationDialogContent>
 				</Dialog>
 			)}
 
-			{ props.isTransactPage && stateApp.transactBarView !== "" && 
-				(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? 
+			{ props.isTransactPage && stateApp.transactBarView !== "" &&
+				(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ?
 				<RightDialog
 					open={props.open}
 					width={props.width}
 					onClose={() =>
-						setStateApp((stateApp) => ({ ...stateApp, transactBarView: "", viewDoc:null }))
+						setStateApp((stateApp) => ({ ...stateApp, transactBarView: "", viewDoc: null }))
 					}
-          isTransactPage={props.isTransactPage}
-				
+					isTransactPage={props.isTransactPage}
+
 				>
 					<div style={{ padding: "30px" }}>
 						<Grid item xs={12} style={{ minHeight: "35px" }}>
@@ -1131,11 +1131,11 @@ function AddDealDialog(props) {
 									margin: "0 0 15px 0",
 									float: "left",
 									fontSize: "1.1rem",
-									
+
 								}}
 							>
 								{stateApp.transactBarView}
-								
+
 							</h4>
 
 							<div style={{ float: "right" }}>
@@ -1158,8 +1158,8 @@ function AddDealDialog(props) {
 						{getView()}
 					</div>
 				</RightDialog>
-			
-			: <RightDialog
+
+				: <RightDialog
 					open={props.open}
 					handleClickDialogClose={() => {
 						if (!updateDealLoading && !addContactLoading) {
@@ -1172,7 +1172,7 @@ function AddDealDialog(props) {
 						}
 					}}
 					width={props.width}
-          isTransactPage={props.isTransactPage}
+					isTransactPage={props.isTransactPage}
 				>
 					<div style={{ padding: "30px" }}>
 						{/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
@@ -1182,14 +1182,14 @@ function AddDealDialog(props) {
 							<h4
 								style={{
 									margin: "0 0 15px 0",
-                "float": "left",
+									"float": "left",
 									fontSize: "1.1rem",
 								}}
 							>
 								Deal Information
 							</h4>
 
-            <div style={{ "float": "right" }}>
+							<div style={{ "float": "right" }}>
 								{(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
 									stateApp.activeDeal?.laneId && (
 										<>
@@ -1220,11 +1220,11 @@ function AddDealDialog(props) {
 													<CircularProgress size={20} color="secondary" />
 												) : (
 
-                          <DeleteIcon
-                            className={classes.closeIcon}
-                            fontSize="small"
-                          />
-                        )}
+													<DeleteIcon
+														className={classes.closeIcon}
+														fontSize="small"
+													/>
+												)}
 											</IconButton>
 										</>
 									)}
@@ -1313,7 +1313,7 @@ function AddDealDialog(props) {
 								required
 								error={valid['title']}
 								helperText={
-								valid['title'] ? "Enter a deal name to get started" : ""
+									valid['title'] ? "Enter a deal name to get started" : ""
 								}
 								fullWidth
 								//   required
@@ -1332,39 +1332,39 @@ function AddDealDialog(props) {
 									contact.constructor === Object) ||
 								contact === null
 							) && !props.isTransactPage ? (
-                <div className={classes.inputFieldDateRoot}>
-                  <TextField
-                    variant="outlined"
-                    margin="dense"
-                    value={contact?.name}
-                    label="Contact Name"
-                    fullWidth
-                    disabled
-                    className={classes.inputField}
-                  />
-                </div>
-              ) : (
-                // <div className={classes.inputField}>
-                //   <Grid container>
-                //     <Grid item xs={12}>
-                //       <AutocompEntityNamesVirtualizeList
-                //         mongoEntitiesArray={mongoEntitiesArray}
-                //         setMongoEntitiesArray={setMongoEntitiesArray}
-                //         nameAutValue={nameAutValue}
-                //         setNameAutValue={setNameAutValue}
-                //         nameAutInputValue={nameAutInputValue}
-                //         setNameAutInputValue={setNameAutInputValue}
-                //         variant="outlined"
-                //         label="Contact Name"
-                //         hasNextPage={hasNextPage}
-                //         isNextPageLoading={isNextPageLoading}
-                //         loadNextPage={loadNextPage}
-                //       />
-                //     </Grid>
-                //   </Grid>
-                // </div>
+								<div className={classes.inputFieldDateRoot}>
+									<TextField
+										variant="outlined"
+										margin="dense"
+										value={contact?.name}
+										label="Contact Name"
+										fullWidth
+										disabled
+										className={classes.inputField}
+									/>
+								</div>
+							) : (
+								// <div className={classes.inputField}>
+								//   <Grid container>
+								//     <Grid item xs={12}>
+								//       <AutocompEntityNamesVirtualizeList
+								//         mongoEntitiesArray={mongoEntitiesArray}
+								//         setMongoEntitiesArray={setMongoEntitiesArray}
+								//         nameAutValue={nameAutValue}
+								//         setNameAutValue={setNameAutValue}
+								//         nameAutInputValue={nameAutInputValue}
+								//         setNameAutInputValue={setNameAutInputValue}
+								//         variant="outlined"
+								//         label="Contact Name"
+								//         hasNextPage={hasNextPage}
+								//         isNextPageLoading={isNextPageLoading}
+								//         loadNextPage={loadNextPage}
+								//       />
+								//     </Grid>
+								//   </Grid>
+								// </div>
 								<></>
-              )}
+							)}
 
 							<TextField
 								margin="dense"
@@ -1574,9 +1574,9 @@ function AddDealDialog(props) {
 										<CircularProgress size={14} />
 									) : (
 
-                    "Save"
+										"Save"
 
-                  )}
+									)}
 								</Button>
 							</div>
 						</div>

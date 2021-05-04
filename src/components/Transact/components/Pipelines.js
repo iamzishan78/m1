@@ -247,17 +247,17 @@ export default function Pipelines(props) {
                   pipelineName: pipelineData.pipeline.name,
                   ownerName:
                     card?.metadata?.owners &&
-                    card.metadata.owners[0]?.relatedObject?.name
+                      card.metadata.owners[0]?.relatedObject?.name
                       ? card.metadata.owners[0].relatedObject.name
                       : null,
                   contactName:
                     card?.metadata?.contacts &&
-                    card.metadata.contacts[0]?.relatedObject?.entity?.name
+                      card.metadata.contacts[0]?.relatedObject?.entity?.name
                       ? card.metadata.contacts[0].relatedObject.entity.name
                       : null,
                   isContact:
                     card?.metadata?.contacts &&
-                    card.metadata.contacts[0]?.relatedObject?._id
+                      card.metadata.contacts[0]?.relatedObject?._id
                       ? card.metadata.contacts[0].relatedObject._id
                       : null,
                   ...card.metadata,
@@ -629,29 +629,6 @@ export default function Pipelines(props) {
 
   return (
     <React.Fragment>
-      {deleteDialogOpen && (
-        <Dialog
-          className={classes.dialog}
-          open={deleteDialogOpen ? true : false}
-          onClose={handleCloseDeleteDialog}
-          fullWidth={false}
-          maxWidth="sm"
-        >
-          <DeleteConfirmationDialogContent
-            header={
-              deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`
-            }
-            onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => {}}
-            m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
-          >
-            {deleteDialogOpen === "pipe"
-              ? "Are you sure you want to delete the Flowline?"
-              : "Are you sure you want to delete the stage?"}
-          </DeleteConfirmationDialogContent>
-        </Dialog>
-      )}
       <ButtonGroup>
         <Autocomplete
           size="small"
@@ -679,7 +656,6 @@ export default function Pipelines(props) {
                   Add New
                 </Button>
               );
-
             return (
               <React.Fragment key={option.key}>
                 {option.children}
@@ -701,19 +677,19 @@ export default function Pipelines(props) {
             );
           }}
         />
-          <IconButton
-            disabled={!selectedPipe}
-            size="small"
-            onClick={() => {
-              dispatch(
-                setFlowState({
-                  openPipeDialog: true,
-                })
-              );
-            }}
-          >
-            <SettingsIcon />
-          </IconButton>
+        <IconButton
+          disabled={!selectedPipe}
+          size="small"
+          onClick={() => {
+            dispatch(
+              setFlowState({
+                openPipeDialog: true,
+              })
+            );
+          }}
+        >
+          <SettingsIcon />
+        </IconButton>
       </ButtonGroup>
 
       {/* //// pipelines dialog //// */}
@@ -969,6 +945,29 @@ export default function Pipelines(props) {
               {openPipeDialog === "newPipe" ? "Save" : "Update"}
             </Button>
           </DialogActions>
+        </Dialog>
+      )}
+      {deleteDialogOpen && (
+        <Dialog
+          className={classes.dialog}
+          open={deleteDialogOpen ? true : false}
+          onClose={handleCloseDeleteDialog}
+          fullWidth={false}
+          maxWidth="sm"
+        >
+          <DeleteConfirmationDialogContent
+            header={
+              deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`
+            }
+            onClose={handleCloseDeleteDialog}
+            deleteFunc={deleteFunc ? deleteFunc : () => { }}
+            m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => { }}
+          >
+            {deleteDialogOpen === "pipe"
+              ? "Are you sure you want to delete the Flowline?"
+              : "Are you sure you want to delete the stage?"}
+          </DeleteConfirmationDialogContent>
         </Dialog>
       )}
     </React.Fragment>
