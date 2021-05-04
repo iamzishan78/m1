@@ -390,6 +390,7 @@ const ShapeActionsPopup = (props) => {
       customLayers: layers,
       expandedCard: true,
     }));
+    popupCloseAction();
   };
 
   const deleteAOI = () => {
