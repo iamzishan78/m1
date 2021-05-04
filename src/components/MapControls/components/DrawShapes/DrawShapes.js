@@ -215,6 +215,12 @@ export default function DrawShapes() {
   const [user, setUser] = useState({ _id: "" });
 
   useEffect(() => {
+    if (stateApp.showShapeActionsPopup === true && stateApp.selectedParcel == null) {
+      toggleSpatialDataCard(true)
+    }
+  }, [stateApp.selectedUserDefinedLayer]);
+
+  useEffect(() => {
     const customLayer = get(
       customLayerInsertedData,
       "upsertCustomLayer.customLayer"
