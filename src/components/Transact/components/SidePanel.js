@@ -19,7 +19,8 @@ const useStyles = makeStyles((theme) => ({
   },
   drawer: {
     width: 270,
-    top: "auto"
+    top: "auto",
+    backgroundColor: "#040e24",
   },
   toolbar: {
     display: "flex",
@@ -27,6 +28,16 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing.unit,
     justifyContent: "flex-end",
     padding: "0 8px",
+  },
+  listItem: {
+    color: "#fff",
+    backgroundColor: "#0c2150",
+    margin: "5px 10px 0px 6px",
+    borderRadius: "5px",
+    width: "95% !important"
+  },
+  listItemIcon: {
+    color: "#fff"
   }
 }));
 
@@ -44,8 +55,8 @@ const SidePanel = ({ dealFilter, setDealFilter }) => {
         <div className={classes.toolbar} />
         <List>
           {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
+            <ListItem button key={text} className={classes.listItem}>
+              <ListItemIcon className={classes.listItemIcon}>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
               <ListItemText primary={text} />
@@ -55,8 +66,8 @@ const SidePanel = ({ dealFilter, setDealFilter }) => {
         <Divider />
         <List>
           {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
+            <ListItem button key={text} className={classes.listItem}>
+              <ListItemIcon className={classes.listItemIcon}>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
               <ListItemText primary={text} />
