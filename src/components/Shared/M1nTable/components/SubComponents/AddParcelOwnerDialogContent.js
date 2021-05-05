@@ -60,6 +60,14 @@ const useStyles = makeStyles((theme) => ({
       top: "55px",
     },
   },
+  primary: {
+      color: 'black',
+      backgroundColor: '#E0E0E0'
+  },
+  secondary: {
+      color: 'white',
+      backgroundColor: '#26ACD8'
+  },
   move: {
     zIndex: 10000,
   }
@@ -313,7 +321,7 @@ export default function AddParcelOwnerDialogContent({
             </IconButton>
           )}
         </DialogTitle>
-        <DialogContent dividers className={classes.dialogContent}>
+        <DialogContent className={classes.dialogContent}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <h3>Name</h3>
@@ -481,10 +489,11 @@ export default function AddParcelOwnerDialogContent({
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClickDialogClose} color="primary">
+          <Button className={classes.primary} onClick={handleClickDialogClose} color="primary">
             Cancel
           </Button>
           <Button
+            className={classes.secondary}
             disabled={
               !nameAutValue || !nameAutValue.name || nameAutValue.name === ""
                 ? true
