@@ -66,7 +66,12 @@ const useStyles = makeStyles((theme) => ({
   },
   secondary: {
       color: 'white',
-      backgroundColor: '#26ACD8'
+      backgroundColor: '#26ACD8',
+  },
+  dialogAction: {
+    "& .Mui-disabled": {
+      backgroundColor: 'transparent',
+    }
   },
   move: {
     zIndex: 10000,
@@ -488,7 +493,7 @@ export default function AddParcelOwnerDialogContent({
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions>
+        <DialogActions className={classes.dialogAction}>
           <Button className={classes.primary} onClick={handleClickDialogClose} color="primary">
             Cancel
           </Button>
