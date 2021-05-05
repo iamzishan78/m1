@@ -494,7 +494,7 @@ export default function AddParcelOwnerDialogContent({
           </Grid>
         </DialogContent>
         <DialogActions className={classes.dialogAction}>
-          <Button className={classes.primary} onClick={handleClickDialogClose} color="primary">
+          <Button className={classes.primary} onClick={handleClickDialogClose} color="primary"  style={{ marginBottom:"40px" }}>
             Cancel
           </Button>
           <Button
@@ -506,6 +506,7 @@ export default function AddParcelOwnerDialogContent({
             }
             onClick={handleClickAdd}
             color="secondary"
+            style={{ marginBottom:"40px", marginRight:"20px" }}
           >
             {selectedRow ? "Update" : "Add"}
           </Button>
