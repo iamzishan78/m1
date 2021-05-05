@@ -300,7 +300,7 @@ export default function AddParcelOwnerDialogContent({
           handleClickDialogClose={()=>{}}
           width={"450px"}
       >
-        <DialogTitle id="customized-dialog-title">
+        <DialogTitle id="customized-dialog-title"  style={{fontWeight: 'bold'}}>
           {selectedRow ? "Update" : "Add"} Parcel Ownership
           <IconButton
             style={{ float: 'right'}}
@@ -312,7 +312,7 @@ export default function AddParcelOwnerDialogContent({
           </IconButton>
           {selectedRow &&(
             <IconButton
-              style={{ float: 'right'}}
+              style={{ float: 'right', marginRight: "5px"}}
               onClick={() => {props.setM1nSelectedRowsIds([selectedRow._id]); props.handleExpandClick(null, null, null, "deleteParcelOwnership")}}
               className={modalClass.titleClose}
               size="small"
