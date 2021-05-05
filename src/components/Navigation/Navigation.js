@@ -111,6 +111,7 @@ import { GETALLACTIVITIESFORSEARCH } from "../../graphQL/useQueryGetAllActivitie
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import ActivitySearch from "./components/ActivitySearch";
 import ContactSearch from "./components/ContactSearch";
+import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
 
 const theme = createMuiTheme({
   overrides: {
@@ -1037,17 +1038,19 @@ export default function Navigation(props) {
           My Account
         </Typography>
       </MenuItem>
-      <MenuItem
-        className={classes.userMenuItem}
-        onClick={(e) => openUserManagement(e)}
-      >
-        <Typography
-          style={{ textDecoration: "none", color: "#1daee1" }}
-          variant="inherit"
+      { ( stateApp?.user?.roles?.includes("Owner") || stateApp?.user?.roles?.includes("Admin") ) && (
+        <MenuItem
+          className={classes.userMenuItem}
+          onClick={(e) => openUserManagement(e)}
         >
-          User Management
-        </Typography>
-      </MenuItem>
+          <Typography
+            style={{ textDecoration: "none", color: "#1daee1" }}
+            variant="inherit"
+          >
+            User Management
+          </Typography>
+        </MenuItem>
+      )}
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         <Typography variant="inherit">Logout</Typography>
       </MenuItem>
@@ -1199,6 +1202,9 @@ export default function Navigation(props) {
             )}
             {location.pathname === "/contacts" && (
                 <ContactSearch />
+            )}
+            {location.pathname.includes("/contact/details") && (
+                <ContactDetailsSearch />
             )}
 
             {/*SEARCH UI FOR DEALS */}

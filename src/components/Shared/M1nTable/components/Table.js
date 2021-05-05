@@ -925,6 +925,7 @@ function SubTable(props) {
   };
 
   const openMenu = (event, rowIndex, user) => {
+    event.stopPropagation();
     setSelectedUser(user);
     setSelectedUserIndex(rowIndex);
     setM1nSelectedRowsIds([user._id]);
@@ -1909,13 +1910,12 @@ function SubTable(props) {
                                 ...stateApp,
                                 selectedContact: tableMeta.rowData[0],
                               }));
-
-                              setSubComponent(
-                                <ContactDetailCard
-                                  selectRowOpenContact={selectRowOpenContact}
-                                  handleCloseExpandableCard={handleCloseExpandableCard}
-                                />
-                              );
+                              // setSubComponent(
+                              //   <ContactDetailCard
+                              //     selectRowOpenContact={selectRowOpenContact}
+                              //     handleCloseExpandableCard={handleCloseExpandableCard}
+                              //   />
+                              // );
                               setTitle("Contact Details");
                               setSubTitle(" ");
                               handleOpenExpandableCard();
@@ -1970,7 +1970,8 @@ function SubTable(props) {
     setColInd(null);
     setRowInd(null);
     setExpandedObject(null);
-    setStateApp({ ...stateApp, isEditSelectedProfileName: null });
+    // setStateApp({ ...stateApp, isEditSelectedProfileName: null });
+    setStateApp((stateApp) => ({ ...stateApp, isEditSelectedProfileName: null }));
   };
 
   const handleOpenExpandableCard = () => {
@@ -2448,16 +2449,29 @@ function SubTable(props) {
           ...stateApp,
           selectedContact: rows[dataIndex]._id,
         }));
-
-        setSubComponent(
-          <ContactDetailCard
-            selectRowOpenContact={selectRowOpenContact}
-            handleCloseExpandableCard={handleCloseExpandableCard}
-          />
-        );
+        routeChange(`/contact/details/${rows[dataIndex]._id}`)
+        // setSubComponent(
+        //   <ContactDetailCard
+        //     selectRowOpenContact={selectRowOpenContact}
+        //     handleCloseExpandableCard={handleCloseExpandableCard}
+        //   />
+        // );
         setTitle("Contact Details");
         setSubTitle(" ");
         handleOpenExpandableCard();
+      }
+
+      if (props.targetLabel === "usermanagement") {
+        if (rows[dataIndex]?.id) {
+          let card = { ...rows[dataIndex] };
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            userDialog: true,
+            activeUser: card,
+          }));
+
+          handleExpandClick(null, null, null, "inviteUser");
+        }
       }
     },
     onChangePage: (pageState) => {
@@ -3268,6 +3282,7 @@ function SubTable(props) {
                 rows={rows}
                 setRows={setExpandedObject}
                 onClose={handleCloseDialog}
+                setSelectedRow={setSelectedRow}
               />
             )}
             {openDialog === "reinviteUser" && (
