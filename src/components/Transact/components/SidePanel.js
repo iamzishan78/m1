@@ -1,21 +1,27 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { CSSTransition } from 'react-transition-group';
+import { useSelector, useDispatch } from "react-redux";
 import { get } from "lodash";
-import Drawer from "@material-ui/core/Drawer";
-import Typography from "@material-ui/core/Typography";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Tooltip from "@material-ui/core/Tooltip";
-import IconButton from "@material-ui/core/IconButton";
+import {
+  Drawer,
+  Typography,
+  Grid,
+  List,
+  ListItem,
+  ListItemText,
+  Tooltip,
+  IconButton,
+  InputBase,
+} from "@material-ui/core";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import CreateNewFolderIcon from "@material-ui/icons/CreateNewFolder";
-import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 import DeleteIcon from "@material-ui/icons/Delete";
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
-import InputBase from '@material-ui/core/InputBase';
+import MenuIcon from "@material-ui/icons/Menu";
+import SearchIcon from "@material-ui/icons/Search";
+import AddIcon from "@material-ui/icons/Add";
 import { makeStyles, fade } from "@material-ui/core/styles";
+import { setFlowState } from "actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +45,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "flex-end",
     padding: "0 8px",
     color: "#fff",
-    borderBottom: "1px solid rgba(84, 83, 83, 0.85)"
+    borderBottom: "1px solid rgba(84, 83, 83, 0.85)",
+    maxHeight: "8%",
   },
   toolbarHeader: {
     display: "flow-root",
@@ -48,17 +55,20 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "left",
     marginTop: 5,
+    transition: theme.transitions.create('width'),
   },
   action: {
-    paddingRight: 5,
-    paddingLeft: 0,
+    width: "28px",
     color: "rgba(121, 121, 121, 0.85)",
     "&:hover": {
-      color: "#fff"
-    }
+      color: "#fff",
+    },
   },
   flowlinesList: {
-    margin: "5px 5px 10px 5px"
+    margin: "5px 5px 10px 5px",
+    overflowY: "auto",
+    maxHeight: "75%",
+    scrollbarWidth: "thin",
   },
   listItem: {
     color: "#fff",
@@ -67,54 +77,81 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "5px",
     width: "95% !important",
     "&:hover": {
-      backgroundColor: "#506187"
+      backgroundColor: "#506187",
     },
-    "&:active": {
-      backgroundColor: "#0f1f43"
-    }
   },
   listItemIcon: {
     color: "#fff",
-    float: "right"
+    float: "right",
   },
   search: {
+    position: 'relative',
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: "transparent",
+    marginLeft: 0,
+    marginTop: 5,
     width: '100%',
-    float: "right",
-    height: "40px"
+    [theme.breakpoints.up('sm')]: {
+      // marginLeft: theme.spacing(1),
+      width: 'auto',
+    },
   },
   searchIcon: {
-    float: "right",
-    margin: 10,
-    color: "rgba(121, 121, 121, 0.85)",
-    '&:hover': {
-      color: "#fff",
-    },
+    // padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   inputRoot: {
     color: 'inherit',
   },
   inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    paddingLeft: `calc(1em + ${theme.spacing(2)}px)`,
     transition: theme.transitions.create('width'),
     width: '100%',
+
     [theme.breakpoints.up('sm')]: {
       width: '0ch',
       '&:focus': {
-        width: '20ch',
+        width: '25ch',
+        height: "2ch",
       },
     },
-  }
+  },
+  footer: {
+    position: "absolute",
+    display: "flex",
+    bottom: "80px",
+    width: "100%",
+  },
+  footerAction: {
+    width: "90%",
+    border: "2px solid rgba(121, 121, 121, 0.85)",
+    borderRadius: "5px",
+    color: "rgba(121, 121, 121, 0.85)",
+    margin: "auto",
+    "&:hover": {
+      backgroundColor: "#fff",
+      color: "#040e24",
+      transition: "all 0.3s linear",
+    },
+  },
 }));
 
 const SidePanel = ({ }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const { openPipeDialog, selectedPipe, pipelines, pipeToShow } = useSelector(
     ({ Flow }) => Flow
   );
+  const [isSearchActive, setSearchState] = useState(false);
+  const [filteredPipelines, setPipelines] = useState(pipelines);
+
+  useEffect(() => {
+    setPipelines(pipelines);
+  }, [pipelines]);
 
   const flowlineActions = React.useMemo(
     () => [
@@ -123,12 +160,12 @@ const SidePanel = ({ }) => {
         icon: <AddBoxIcon fontSize="small" />,
       },
       {
-        title: "Add New Project",
+        title: "Project Group",
         icon: <CreateNewFolderIcon fontSize="small" />,
       },
       {
-        title: "",
-        icon: <CloudDownloadIcon fontSize="small" />,
+        title: "Duplicate",
+        icon: <FileCopyIcon fontSize="small" />,
       },
       {
         title: "Delete Flowline(s)",
@@ -137,6 +174,22 @@ const SidePanel = ({ }) => {
     ],
     []
   );
+
+  const onFlowlineSelect = (newPipeline) => {
+    if (selectedPipe._id !== newPipeline._id) {
+      dispatch(
+        setFlowState({
+          selectedPipe: newPipeline,
+          pipeToShow: null,
+        })
+      );
+    }
+  };
+
+  const filterSearch = (value) => {
+    const newPipelines = pipelines.filter(pipeline => pipeline.name?.toLowerCase()?.includes(value.toLowerCase()));
+    setPipelines(newPipelines);
+  }
 
   return (
     <>
@@ -160,34 +213,58 @@ const SidePanel = ({ }) => {
             </Typography>
           </div>
           <div className={classes.toolbarActions}>
-            {flowlineActions.map((action, index) => (
-              <Tooltip title={action.title} className={classes.action}>
-                <IconButton>{action.icon}</IconButton>
-              </Tooltip>
-            ))}
-            <div className={classes.search}>
-              <div className={classes.searchIcon}>
-                <SearchIcon />
-              </div>
-              {/* <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-            /> */}
-            </div>
+            <Grid container direction="row" justify="space-between" alignItems="center">
+              <Grid item>
+                {!isSearchActive && flowlineActions.map((action, index) => (
+                  <Tooltip title={action.title} className={classes.action}>
+                    <IconButton>{action.icon}</IconButton>
+                  </Tooltip>
+                ))}
+              </Grid>
+              <Grid item>
+                <Tooltip title="Search">
+                  <div className={classes.search}>
+                    <div className={classes.searchIcon}>
+                      <SearchIcon />
+                    </div>
+                    <InputBase
+                      placeholder="Search…"
+                      classes={{
+                        root: classes.inputRoot,
+                        input: classes.inputInput,
+                      }}
+                      inputProps={{ 'aria-label': 'search' }}
+                      onFocus={() => setSearchState(true)}
+                      onBlur={() => setTimeout(() => { setSearchState(false) }, 200)}
+                      onChange={evt => filterSearch(evt.target.value)}
+                    />
+                  </div>
+                </Tooltip>
+              </Grid>
+            </Grid>
           </div>
         </div>
         <List className={classes.flowlinesList}>
-          {pipelines.map((pipeline, index) => (
-            <ListItem button key={index} className={classes.listItem}>
-              <ListItemText primary={get(pipeline, 'name', pipeline)} />
-              <MenuIcon />
+          {filteredPipelines.map((pipeline, index) => (
+            <ListItem
+              button
+              key={index}
+              className={classes.listItem}
+              style={{
+                backgroundColor: `${selectedPipe._id === pipeline._id ? "#506187" : ""
+                  }`,
+              }}
+            >
+              <ListItemText primary={get(pipeline, "name", pipeline)} />
+              <MenuIcon onClick={() => onFlowlineSelect(pipeline)} />
             </ListItem>
           ))}
         </List>
+        <div className={classes.footer}>
+          <IconButton className={classes.footerAction}>
+            <AddIcon />
+          </IconButton>
+        </div>
       </Drawer>
     </>
   );
