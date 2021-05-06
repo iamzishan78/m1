@@ -36,8 +36,9 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   }
 
   const onAssign = () => {
-    let contactIds = rows.map((row) => row.id);
-    Loader.createToast('contact-creation', 'Contact Creation in Progress')
+    let contactIds = rows.map((row) => row._id);
+    const errorMsg = 'Failed to assign to contact owner'
+    Loader.createToast('contact-creation', 'Contact owner assignment in progress')
     assignOwnerToContact({
       variables: { contactIds, contactOwner, userId: stateApp.user.mongoId },
       refetchQueries: ["getPaginatedContacts"],
@@ -52,10 +53,10 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             Loader.errorToast('contact-creation', message)
           }
         } else {
-          Loader.errorToast('contact-creation', "Failed to convert to contact")
+          Loader.errorToast('contact-creation', errorMsg)
         }
       },
-      err => { console.log(err); Loader.errorToast('contact-creation', "Failed to convert to contact") }
+      err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) }
     );
 
     setM1nSelectedRowsIndexes([])
