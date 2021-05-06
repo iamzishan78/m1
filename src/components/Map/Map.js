@@ -3407,6 +3407,9 @@ function Map() {
         });
         const featuresList = map.getSource("abstract_geo_source")._data
           .features;
+
+        const geoSourceFeature = featuresList.find((feature) => feature.properties.Id === currentFeature.id)
+        if (geoSourceFeature) currentFeature.geometry = geoSourceFeature.geometry
         if (
           window.event.ctrlKey ||
           window.event.metaKey ||

@@ -422,6 +422,10 @@ const ShapeActionsPopup = (props) => {
     setDeleteModal(!isDeleteModal);
   };
 
+  const checkForEdit = () => {
+    return !!stateApp.draw.get(stateApp.currentFeature.id);
+  }
+
   return (
     <Fragment>
       {/* {showSpatialDataCard && (
@@ -477,15 +481,19 @@ const ShapeActionsPopup = (props) => {
           </Tooltip>
 
           <span className={classes.divider}></span>
-          <Tooltip title="Edit Active Shape">
-            <IconButton
-              size="small"
-              aria-label="Edit Active Shape"
-              onClick={actionEdit}
-            >
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
+          {checkForEdit() &&
+            <Tooltip title="Edit Active Shape">
+              <IconButton
+                size="small"
+                aria-label="Edit Active Shape"
+                onClick={actionEdit}
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          }
+
+
           <Tooltip
             title="Delete Active Shape"
             className={
