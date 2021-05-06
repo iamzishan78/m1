@@ -91,6 +91,7 @@ const ShapeActionsPopup = (props) => {
           },
         },
       });
+      updateSelectedParcel(customLayer)
     },
   });
 
@@ -120,6 +121,25 @@ const ShapeActionsPopup = (props) => {
     }
   );
 
+  const updateSelectedParcel = (customLayer) => {
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+    }));
+    const feature = JSON.parse(customLayer.shape);
+    feature.id = customLayer._id;
+    feature.properties.id = customLayer._id;
+    setStateApp((state) => ({
+      ...state,
+      selectedParcel: feature.properties,
+    }));
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: true,
+      expandedCard: true,
+    }));
+  }
+
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.email) {
       getUserByEmail({
@@ -138,24 +158,7 @@ const ShapeActionsPopup = (props) => {
 
   useEffect(() => {
     if (get(customLayerInsertedData, "upsertCustomLayer.customLayer")) {
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-      }));
-
-      const customLayer = customLayerInsertedData.upsertCustomLayer.customLayer;
-      const feature = JSON.parse(customLayer.shape);
-      feature.id = customLayer._id;
-      feature.properties.id = customLayer._id;
-      setStateApp((state) => ({
-        ...state,
-        selectedParcel: feature.properties,
-      }));
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: true,
-        expandedCard: true,
-      }));
+      updateSelectedParcel(customLayerInsertedData.upsertCustomLayer.customLayer)
     }
     if (
       get(customLayerInsertedData, "upsertCustomLayer.customLayer") &&
