@@ -91,18 +91,17 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 5,
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      // marginLeft: theme.spacing(1),
       width: 'auto',
     },
   },
   searchIcon: {
-    // padding: theme.spacing(0, 2),
     height: '100%',
     position: 'absolute',
     pointerEvents: 'none',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    color: "rgba(121, 121, 121, 0.85)"
   },
   inputRoot: {
     color: 'inherit',
