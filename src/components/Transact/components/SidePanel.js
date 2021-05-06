@@ -227,7 +227,7 @@ const SidePanel = ({ }) => {
                       <SearchIcon />
                     </div>
                     <InputBase
-                      placeholder="Search…"
+                      placeholder="Search by flowline name"
                       classes={{
                         root: classes.inputRoot,
                         input: classes.inputInput,
