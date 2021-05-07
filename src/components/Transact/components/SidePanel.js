@@ -68,7 +68,16 @@ const useStyles = makeStyles((theme) => ({
     margin: "5px 5px 10px 5px",
     overflowY: "auto",
     maxHeight: "75%",
-    scrollbarWidth: "thin",
+    '&::-webkit-scrollbar': {
+      width: '0.4em'
+    },
+    '&::-webkit-scrollbar-track': {
+      '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: "#506187",
+      borderRadius: 5
+    }
   },
   listItem: {
     color: "#fff",
@@ -78,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
     width: "95% !important",
     "&:hover": {
       backgroundColor: "#506187",
-    },
+    }
   },
   listItemIcon: {
     color: "#fff",
@@ -250,7 +259,7 @@ const SidePanel = ({ }) => {
               key={index}
               className={classes.listItem}
               style={{
-                backgroundColor: `${selectedPipe._id === pipeline._id ? "#506187" : ""
+                backgroundColor: `${selectedPipe?._id === pipeline._id ? "#506187" : ""
                   }`,
               }}
             >
