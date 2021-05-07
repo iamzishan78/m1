@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { CSSTransition } from 'react-transition-group';
 import { useSelector, useDispatch } from "react-redux";
 import { get } from "lodash";
 import {
@@ -20,7 +19,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
-import { makeStyles, fade } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { setFlowState } from "actions";
 
 const useStyles = makeStyles((theme) => ({
@@ -200,81 +199,79 @@ const SidePanel = ({ }) => {
   }
 
   return (
-    <>
-      <Drawer
-        variant="permanent"
-        className={classes.drawer}
-        classes={{ paper: classes.drawer }}
-        open={true}
-      >
-        <div className={classes.toolbar}>
-          <div className={classes.toolbarHeader}>
-            <Typography varient="h4" component="h4" style={{ float: "left" }}>
-              Flowlines
+    <Drawer
+      variant="permanent"
+      className={classes.drawer}
+      classes={{ paper: classes.drawer }}
+      open={true}
+    >
+      <div className={classes.toolbar}>
+        <div className={classes.toolbarHeader}>
+          <Typography varient="h4" component="h4" style={{ float: "left" }}>
+            Flowlines
             </Typography>
-            <Typography
-              variant="caption"
-              display="block"
-              style={{ float: "right", color: "rgba(121, 121, 121, 0.85)" }}
-            >
-              {get(pipelines, "length", 0)} Flowlines
+          <Typography
+            variant="caption"
+            display="block"
+            style={{ float: "right", color: "rgba(121, 121, 121, 0.85)" }}
+          >
+            {get(pipelines, "length", 0)} Flowlines
             </Typography>
-          </div>
-          <div className={classes.toolbarActions}>
-            <Grid container direction="row" justify="space-between" alignItems="center">
-              <Grid item>
-                {!isSearchActive && flowlineActions.map((action, index) => (
-                  <Tooltip title={action.title} className={classes.action}>
-                    <IconButton>{action.icon}</IconButton>
-                  </Tooltip>
-                ))}
-              </Grid>
-              <Grid item>
-                <Tooltip title="Search">
-                  <div className={classes.search}>
-                    <div className={classes.searchIcon}>
-                      <SearchIcon />
-                    </div>
-                    <InputBase
-                      placeholder="Search by flowline name"
-                      classes={{
-                        root: classes.inputRoot,
-                        input: classes.inputInput,
-                      }}
-                      inputProps={{ 'aria-label': 'search' }}
-                      onFocus={() => setSearchState(true)}
-                      onBlur={() => setTimeout(() => { setSearchState(false) }, 200)}
-                      onChange={evt => filterSearch(evt.target.value)}
-                    />
-                  </div>
+        </div>
+        <div className={classes.toolbarActions}>
+          <Grid container direction="row" justify="space-between" alignItems="center">
+            <Grid item>
+              {!isSearchActive && flowlineActions.map((action, index) => (
+                <Tooltip title={action.title} className={classes.action}>
+                  <IconButton>{action.icon}</IconButton>
                 </Tooltip>
-              </Grid>
+              ))}
             </Grid>
-          </div>
+            <Grid item>
+              <Tooltip title="Search">
+                <div className={classes.search}>
+                  <div className={classes.searchIcon}>
+                    <SearchIcon />
+                  </div>
+                  <InputBase
+                    placeholder="Search by flowline name"
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput,
+                    }}
+                    inputProps={{ 'aria-label': 'search' }}
+                    onFocus={() => setSearchState(true)}
+                    onBlur={() => setTimeout(() => { setSearchState(false) }, 200)}
+                    onChange={evt => filterSearch(evt.target.value)}
+                  />
+                </div>
+              </Tooltip>
+            </Grid>
+          </Grid>
         </div>
-        <List className={classes.flowlinesList}>
-          {filteredPipelines.map((pipeline, index) => (
-            <ListItem
-              button
-              key={index}
-              className={classes.listItem}
-              style={{
-                backgroundColor: `${selectedPipe?._id === pipeline._id ? "#506187" : ""
-                  }`,
-              }}
-            >
-              <ListItemText primary={get(pipeline, "name", pipeline)} />
-              <MenuIcon onClick={() => onFlowlineSelect(pipeline)} />
-            </ListItem>
-          ))}
-        </List>
-        <div className={classes.footer}>
-          <IconButton className={classes.footerAction}>
-            <AddIcon />
-          </IconButton>
-        </div>
-      </Drawer>
-    </>
+      </div>
+      <List className={classes.flowlinesList}>
+        {filteredPipelines.map((pipeline, index) => (
+          <ListItem
+            button
+            key={index}
+            className={classes.listItem}
+            style={{
+              backgroundColor: `${selectedPipe?._id === pipeline._id ? "#506187" : ""
+                }`,
+            }}
+          >
+            <ListItemText primary={get(pipeline, "name", pipeline)} />
+            <MenuIcon onClick={() => onFlowlineSelect(pipeline)} />
+          </ListItem>
+        ))}
+      </List>
+      <div className={classes.footer}>
+        <IconButton className={classes.footerAction}>
+          <AddIcon />
+        </IconButton>
+      </div>
+    </Drawer>
   );
 };
 
