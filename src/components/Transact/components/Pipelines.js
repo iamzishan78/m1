@@ -5,8 +5,8 @@ import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import SettingsIcon from '@material-ui/icons/Settings';
-import IconButton from '@material-ui/core/IconButton';
+import SettingsIcon from "@material-ui/icons/Settings";
+import IconButton from "@material-ui/core/IconButton";
 import Dialog from "@material-ui/core/Dialog";
 import {
   setFlowState,
@@ -160,7 +160,6 @@ export default function Pipelines(props) {
   const [updatePipeline] = useMutation(UPDATEPIPELINE);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
-  const [updateStage] = useMutation(UPDATESTAGE);
 
   const [
     getPipeline,
@@ -247,17 +246,17 @@ export default function Pipelines(props) {
                   pipelineName: pipelineData.pipeline.name,
                   ownerName:
                     card?.metadata?.owners &&
-                      card.metadata.owners[0]?.relatedObject?.name
+                    card.metadata.owners[0]?.relatedObject?.name
                       ? card.metadata.owners[0].relatedObject.name
                       : null,
                   contactName:
                     card?.metadata?.contacts &&
-                      card.metadata.contacts[0]?.relatedObject?.entity?.name
+                    card.metadata.contacts[0]?.relatedObject?.entity?.name
                       ? card.metadata.contacts[0].relatedObject.entity.name
                       : null,
                   isContact:
                     card?.metadata?.contacts &&
-                      card.metadata.contacts[0]?.relatedObject?._id
+                    card.metadata.contacts[0]?.relatedObject?._id
                       ? card.metadata.contacts[0].relatedObject._id
                       : null,
                   ...card.metadata,
@@ -588,8 +587,7 @@ export default function Pipelines(props) {
                 showErrorMessage("An error occurred during the update.")
               );
           })
-          .catch((reason) => {
-          });
+          .catch((reason) => {});
       }
 
       handleClose();
@@ -603,8 +601,6 @@ export default function Pipelines(props) {
   const openDeleteDialog = (open = true) => {
     setDeleteDialogOpen(open);
   };
-
-
 
   //// checking if the something to update in the pipe or the stages
   const checkingIfEdited = () => {
@@ -960,9 +956,9 @@ export default function Pipelines(props) {
               deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`
             }
             onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => { }}
+            deleteFunc={deleteFunc ? deleteFunc : () => {}}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
             {deleteDialogOpen === "pipe"
               ? "Are you sure you want to delete the Flowline?"

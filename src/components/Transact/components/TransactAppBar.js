@@ -194,7 +194,7 @@ const TransactAppBar = ({
         variant="outlined"
       >
         <div className={classes.top} style={{ marginTop: 15 }}>
-          <Pipelines />
+          {/* <Pipelines /> */}
 
           <div className={classes.right}>
             <div className={classes.activeDeals}>
