@@ -176,7 +176,7 @@ export default function SidePanel() {
 			const layerAndGroups = []
 			stateApp.layers && stateApp.layers.forEach((item) => {
 				if (item.groupId && !groupHandled.includes(item.groupId)) {
-					groupHandled.push(item.groupId)
+					groupHandled.push(item.groupId);
 					const groups = stateApp.layers.filter((i) => i.groupId === item.groupId)
 					layerAndGroups.push({
 						depth: 0,
@@ -185,7 +185,16 @@ export default function SidePanel() {
 						name: item.groupName
 						, id: item.groupId
 					})
-					groups.forEach((item) => { layerAndGroups.push({ ...item, collapsed: true, name: item.layerName, depth: 1, type: 'layer', id: item._id }) })
+					groups.forEach((item) => {
+						layerAndGroups.push({
+							...item,
+							collapsed: true,
+							name: item.layerName,
+							depth: 1,
+							type: 'layer',
+							id: item._id
+						})
+					})
 				}
 				if (!item.groupId) {
 					layerAndGroups.push({ ...item, name: item.layerName, depth: 0, type: 'layer', id: item._id })

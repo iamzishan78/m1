@@ -94,7 +94,6 @@ const LayerItem = React.memo((props) => {
           <Grid
             container
             className={classes.root}
-            container
             direction="row"
             justify="space-between"
             alignItems="center"

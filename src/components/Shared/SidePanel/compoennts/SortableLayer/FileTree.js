@@ -36,6 +36,7 @@ const FileTree = ({ layerMap }) => {
     }
     setItems(newItems);
   };
+
   const handleToggleCollapse = (id) => {
     const index = items.findIndex((item) => item.id === id);
     const item = items[index];
@@ -76,7 +77,7 @@ const FileTree = ({ layerMap }) => {
     const layersToUpdate = [];
     let groupIndex;
 
-    if (oldItem.depth === 0 && newItem.depth === 1) {
+    if (oldItem.depth === 0 && newItem.depth === 1) { // if layer into group
       groupIndex = items.findIndex((item) => item.id === newItem.id);
       const parent = findParent(items, groupIndex);
       if (parent.type === "group") {
