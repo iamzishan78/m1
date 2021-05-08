@@ -10,7 +10,6 @@ import Pipelines from "./Pipelines";
 import { useSelector } from "react-redux";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: "50px",
@@ -77,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
   },
   left: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
   },
   closedDeals: {
     marginLeft: 8,
@@ -116,7 +115,6 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: 4,
     },
     marginLeft: 8,
-
   },
   import: {
     marginLeft: 8,
@@ -148,7 +146,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 const sumDeals = (lanes, status) => {
   let sumAmount = 0;
   let sumCount = 0;
@@ -156,8 +153,7 @@ const sumDeals = (lanes, status) => {
   lanes.forEach((deal) => {
     deal.cards.forEach((card) => {
       if (card.metadata.status === status && !card.metadata.IsDeleted) {
-        if (card.label && !isNaN(card.label))
-          sumAmount += card.label
+        if (card.label && !isNaN(card.label)) sumAmount += card.label;
         // parseFloat(card.label.split("$").join("").split(",").join(""));
         sumCount++;
       }
@@ -166,10 +162,7 @@ const sumDeals = (lanes, status) => {
   return { count: sumCount, amount: vf_currency(sumAmount) };
 };
 
-const TransactAppBar = ({
-  dealFilter,
-  setDealFilter,
-}) => {
+const TransactAppBar = ({ dealFilter, setDealFilter }) => {
   const classes = useStyles();
   const { pipeToShow } = useSelector(({ Flow }) => Flow);
   const [openDeals, setOpenDeals] = useState({ count: 0, amount: "$0" });
@@ -184,7 +177,6 @@ const TransactAppBar = ({
     }
   }, [pipeToShow]);
 
-
   return (
     <>
       <AppBar
@@ -194,7 +186,7 @@ const TransactAppBar = ({
         variant="outlined"
       >
         <div className={classes.top} style={{ marginTop: 15 }}>
-          {/* <Pipelines /> */}
+          <Pipelines />
 
           <div className={classes.right}>
             <div className={classes.activeDeals}>
@@ -227,24 +219,27 @@ const TransactAppBar = ({
             <ButtonGroup style={{ minHeight: 36 }}>
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${dealFilter === "all" && classes.activeBtn
-                  }`}
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "all" && classes.activeBtn
+                }`}
                 onClick={() => setDealFilter("all")}
               >
                 ALL
               </Button>
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${dealFilter === "open" && classes.activeBtn
-                  }`}
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "open" && classes.activeBtn
+                }`}
                 onClick={() => setDealFilter("open")}
               >
                 OPEN
               </Button>
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${dealFilter === "won" && classes.activeBtn
-                  }`}
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "won" && classes.activeBtn
+                }`}
                 onClick={() => setDealFilter("won")}
               >
                 Won
@@ -252,8 +247,9 @@ const TransactAppBar = ({
 
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${dealFilter === "lost" && classes.activeBtn
-                  }`}
+                className={`${classes.filterToggleBtn} ${
+                  dealFilter === "lost" && classes.activeBtn
+                }`}
                 onClick={() => setDealFilter("lost")}
               >
                 Lost
@@ -261,8 +257,10 @@ const TransactAppBar = ({
             </ButtonGroup>
           </div>
         </div>
-        <div className={classes.top} style={{ marginBottom: 4, marginTop: 2 }}>
-        </div>
+        <div
+          className={classes.top}
+          style={{ marginBottom: 4, marginTop: 2 }}
+        ></div>
       </AppBar>
     </>
   );
