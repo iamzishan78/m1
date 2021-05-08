@@ -120,7 +120,9 @@ export default function UploadZone(props) {
           console.log(`${variant}: ${message}`);
         }}
         filesLimit={1}
-        dropzoneProps={{ disabled: props.loading || addFileLoading }}
+        dropzoneProps={{ 
+          disabled: props.loading || addFileLoading || props.disabled
+        }}
         dropzoneText={"+"}
         acceptedFiles={[
           "image/*",

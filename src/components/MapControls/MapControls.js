@@ -11,6 +11,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import { makeStyles } from "@material-ui/core/styles";
 import ColorPickerDialog from "./components/ColorPickerDialog";
 import AddUserData from "./components/addUserData";
+import AddUserGroupData from "./components/addUserGroupData";
 import AddALayer from "./components/addALayer";
 import DrawShapes from "./components/DrawShapes/DrawShapes";
 import GpsFixedIcon from "@material-ui/icons/GpsFixed";
@@ -21,6 +22,7 @@ import AspectRatioOutlinedIcon from "@material-ui/icons/AspectRatioOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../actions";
 import SidePanel from "../Shared/SidePanel/SidePanel";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -208,6 +210,8 @@ export default function MapControls(props) {
         return <SidePanel />;
       case "add":
         return <AddUserData />;
+      case "addGroup":
+        return <AddUserGroupData />;
       case "draw":
         return <DrawShapes />;
       default:

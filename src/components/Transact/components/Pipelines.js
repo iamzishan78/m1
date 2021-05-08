@@ -880,7 +880,7 @@ export default function Pipelines(props) {
                                           <Autocomplete
                                             fullWidth
                                             style={{ minWidth: 200 }}
-                                            value={stage.dealsStatus.capitalize()}
+                                            value={stage?.dealsStatus?.capitalize()}
                                             onChange={(event, newValue) => {
                                               handleCellTextChange(
                                                 newValue?.toLowerCase(),

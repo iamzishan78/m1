@@ -143,8 +143,8 @@ function Map() {
   });
 
   const dispatch = useDispatch();
-  const mapGridCardActivated = useSelector(
-    ({ MapGridCard }) => MapGridCard.mapGridCardActivated
+  const { mapGridCardActivated, searchInputValue } = useSelector(
+    ({ MapGridCard }) => MapGridCard
   );
   const removeLayerFromMap = useSelector(
     ({ MainMap }) => MainMap.removeLayerFromMap
@@ -244,14 +244,14 @@ function Map() {
     }
   };
   const [rigs, RigData] = useState([]);
-  const setRigData = (state) => {if (rigs != state) {RigData(state);}};
+  const setRigData = (state) => { if (rigs != state) { RigData(state); } };
 
   const [permits, PermitData] = useState([]);
-  const setPermitData = (state) => {if (permits != state) {PermitData(state);}};
+  const setPermitData = (state) => { if (permits != state) { PermitData(state); } };
 
   const [recent_submitted_permits, RecentSubmittedPermitData] = useState([]);
-  const setRecentSubmittedPermitData = (state) => {if (recent_submitted_permits != state) {RecentSubmittedPermitData(state);}};
-  
+  const setRecentSubmittedPermitData = (state) => { if (recent_submitted_permits != state) { RecentSubmittedPermitData(state); } };
+
   const [layersData, setLayersData] = useState([]);
 
   const [drawingFilterFeatureId, DrawingFilterFeatureId] = useState(null);
@@ -318,8 +318,8 @@ function Map() {
   const [tracksByObjectTypeOwner, { data: dataTracksOwner }] = useLazyQuery(TRACKSBYOBJECTTYPE);
   const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(OWNERSWELLSQUERY);
   const [getCustomLayers, { data: customLayerData }] = useLazyQuery(CUSTOMLAYERSQUERY);
-  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {fetchPolicy: "network-only",});
-  const [getWellsForLayer,{ data: dataWellsForOwnerWellTrackLayer }] = useLazyQuery(WELLSQUERY);
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, { fetchPolicy: "network-only", });
+  const [getWellsForLayer, { data: dataWellsForOwnerWellTrackLayer }] = useLazyQuery(WELLSQUERY);
   const [getPermits, { data: permitData }] = useLazyQuery(PERMITSQUERY);
   const [getRecentSubmittedPermits, { data: permitRecentSubmittedData }] = useLazyQuery(RECENT_SUBMITTED_PERMITS_QUERY);
   const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
@@ -454,20 +454,21 @@ function Map() {
 
   const handleFileAsync = async (uri, internalKey, layerIndex) => {
     if (uri && internalKey && layerIndex != -1) {
-      let response = await fetch(uri, {
-        headers: {
-          "Content-Type": "text/plain; charset=UTF-8",
-          "X-Ms-Blob-Type": "BlockBlob",
-          "X-Ms-Meta-Internalkey": internalKey,
-          "X-Ms-Version": "2015-02-21",
-        },
-        method: "GET",
-      });
-      response = await response.json();
+      // let response = await fetch(uri, {
+      //   headers: {
+      //     "Content-Type": "text/plain; charset=UTF-8",
+      //     "X-Ms-Blob-Type": "BlockBlob",
+      //     "X-Ms-Meta-Internalkey": internalKey,
+      //     "X-Ms-Version": "2015-02-21",
+      //   },
+      //   method: "GET",
+      // });
+      // response = await response.json();
 
       let layers = layersData.slice(0);
       let currentLayer = { ...layers[layerIndex] };
-      currentLayer.fileContent = response;
+      // currentLayer.fileContent = response;
+      currentLayer.fileUrl = uri;
       layers[layerIndex] = currentLayer;
       setLayersData(layers);
 
@@ -475,7 +476,15 @@ function Map() {
 
       if (layerIndex < layersData.length - 1)
         for (let i = layerIndex + 1; i < layers.length; i++) {
-          if (layers[i].layerType == "file layer") {
+          const fileFound = layers.find((l) => l.file === layers[i].file && l.fileUrl)
+          if (fileFound) {
+            let currentLayer = { ...layers[i] };
+            // currentLayer.fileContent = fileFound.fileContent
+            currentLayer.fileUrl = fileFound.fileUrl
+            layers[i] = currentLayer;
+            setLayersData(layers);
+          }
+          else if (layers[i].layerType == "file layer") {
             setFileRequestCounter(1);
             viewFile({
               variables: {
@@ -606,11 +615,15 @@ function Map() {
       let geoJson = null;
 
       if (config.layerType == "file layer") {
-
-        geoJson = {
-          ...layerData,
-          features: layerData?.features?.filter((feature) => !!feature?.geometry) || []
+        if (layerData?.features) {
+          geoJson = {
+            ...layerData,
+            features: layerData?.features?.filter((feature) => !!feature?.geometry) || []
+          }
+        } else {
+          geoJson = layerData
         }
+
 
         // geoJson = layerData;
 
@@ -681,31 +694,31 @@ function Map() {
           map.addSource(sourceId, {
             type: "geojson",
             data: geoJson,
-            promoteId: "id",
+            // promoteId: "id",
           });
         }
       }
 
-        
-      if(sourceId=="parcels_source" || sourceId=="interests_source" ){
-        
+
+      if (sourceId == "parcels_source" || sourceId == "interests_source") {
+
         let pointSource = geoJson.features.map(feature => {
 
           var output = feature
 
-          if(feature.geometry.type == "Point"){
-            output = feature 
+          if (feature.geometry.type == "Point") {
+            output = feature
           } else {
-            output =  {...turf.centroid(feature), properties: feature.properties}
+            output = { ...turf.centroid(feature), properties: feature.properties }
           }
 
           return output
         })
-        
 
-        pointSource = {type: "FeatureCollection", features: [...pointSource]}
-        
-        if(map.getSource(`${sourceId}_point`)){
+
+        pointSource = { type: "FeatureCollection", features: [...pointSource] }
+
+        if (map.getSource(`${sourceId}_point`)) {
           let pointSourceData = map.getSource(`${sourceId}_point`)._data;
           if (pointSourceData && !deepEqualObjects(pointSource, pointSourceData))
             map.getSource(`${sourceId}_point`).setData(pointSource);
@@ -717,7 +730,7 @@ function Map() {
         }
       }
 
-      
+
 
       if (map.getSource(`${sourceId}_filter`)) {
         let mapSourceFilterData = map.getSource(`${sourceId}_filter`)._data;
@@ -730,7 +743,7 @@ function Map() {
         map.addSource(`${sourceId}_filter`, {
           type: "geojson",
           data: geoJson,
-          promoteId: "id",
+          // promoteId: "id",
         });
       }
 
@@ -765,7 +778,7 @@ function Map() {
             map.setPaintProperty(layerId, key, prop.paintProps[key]);
           });
         }
-        
+
       } else {
         //// joining all properties before to set the new layer ////
         let layout = { visibility: visible ? "visible" : "none" };
@@ -781,6 +794,7 @@ function Map() {
         };
 
         if (prop.paintProps) layerConfig.paint = prop.paintProps;
+        if (config.layerGeometry && data.featureTypes) layerConfig.filter = ['==', 'layerGeometry', config.layerGeometry]
 
         if (prop.minZoom) {
           layerConfig.minzoom = prop.minZoom;
@@ -793,7 +807,7 @@ function Map() {
           labelLayout = {
             ...labelLayout,
             ...prop.labelProps.symbolProps,
-            };
+          };
           // map.addLayer({
           //   id: `${prop.id}_label`,
           //   type: prop.labelProps.paintType,
@@ -803,43 +817,43 @@ function Map() {
           // });
 
           // override label properties for parcel and interest
-          if(layerId === 'parcel'){
-            labelLayout = { 
+          if (layerId === 'parcel') {
+            labelLayout = {
               ...labelLayout,
               "text-size": [
                 "interpolate",
-                  ["linear"],
-                  ["zoom"],
-                  12,
-                  12,
-                  15,
-                  28
-                ]
+                ["linear"],
+                ["zoom"],
+                12,
+                12,
+                15,
+                28
+              ]
             }
-          } else if (layerId === 'interest'){
-            labelLayout = { 
+          } else if (layerId === 'interest') {
+            labelLayout = {
               ...labelLayout,
               "text-size": [
                 "interpolate",
-                  ["linear"],
-                  ["zoom"],
-                  9,
-                  16,
-                  11,
-                  32,
-                  15,
-                  54
-                ]
+                ["linear"],
+                ["zoom"],
+                9,
+                16,
+                11,
+                32,
+                15,
+                54
+              ]
             }
           }
 
           // add point
           map.addLayer({
-              id: `${layerId}_point`,
-              type: 'symbol',
-              source: `${sourceId}_point`,
-              minzoom: prop.labelProps.minZoom,
-              layout: labelLayout,
+            id: `${layerId}_point`,
+            type: 'symbol',
+            source: `${sourceId}_point`,
+            minzoom: prop.labelProps.minZoom,
+            layout: labelLayout,
           });
           map.moveLayer(`${layerId}_point`);
         }
@@ -1010,22 +1024,22 @@ function Map() {
         // tmp fix because it appears that the data coming back 
         // from contacts api is slightly different than other apis
         // need to setup in a standard format         
-        if(!properties.id){properties.id = properties.wellId}
+        if (!properties.id) { properties.id = properties.wellId }
 
-        if (properties.id){
-        setStateApp((state) => ({
-          ...state,
-          popupOpen: false,
-          selectedUserDefinedLayer: null,
-          selectedParcel: null,
-        }));
-        setStateApp((state) => ({
-          ...state,
-          selectedWellId: properties.id.toLowerCase(),
-          wellSelectedCoordinates: [properties.longitude, properties.latitude],
-        }));
+        if (properties.id) {
+          setStateApp((state) => ({
+            ...state,
+            popupOpen: false,
+            selectedUserDefinedLayer: null,
+            selectedParcel: null,
+          }));
+          setStateApp((state) => ({
+            ...state,
+            selectedWellId: properties.id.toLowerCase(),
+            wellSelectedCoordinates: [properties.longitude, properties.latitude],
+          }));
 
-      }
+        }
       }
 
     };
@@ -1220,7 +1234,6 @@ function Map() {
 
   useEffect(() => {
     let beforeLayer = null;
-
     if (stateApp.layers && stateApp.layers.length > 0 && map) {
       for (let i = 0; i < stateApp.layers.length; i++) {
         const layer = stateApp.layers[i];
@@ -1276,8 +1289,8 @@ function Map() {
                 data = permits;
                 break;
               case "Recent Submitted Permits":
-                  data = recent_submitted_permits;
-                break; 
+                data = recent_submitted_permits;
+                break;
               case "Search":
                 data = stateApp.wellListFromSearch;
                 break;
@@ -1291,8 +1304,8 @@ function Map() {
               beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
             }
           }
-        } else if (layer.layerType == "file layer" && layer.fileContent) {
-          let data = layer.fileContent;
+        } else if (layer.layerType == "file layer" && layersData[i].fileUrl) {
+          let data = layersData[i].fileUrl;
           if (data) {
             beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
           }
@@ -2521,17 +2534,17 @@ function Map() {
         }
 
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
-        
+
         map.setFilter("wellsHeatmapLast12", [
           ">",
           ["get", "lastTwelveMonthBOE"],
           0,
         ]);
-        
+
         map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
-        
+
         map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
-        
+
         map.setFilter("wellsHeatmapRecentlyDrilled", [
           ">",
           ["get", "daysSinceDrilled"],
@@ -2741,7 +2754,7 @@ function Map() {
         map.setFilter("parcel_point", null);
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
         map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
-        map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);        
+        map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
         map.setFilter("wellsHeatmapRecentlyDrilled", [
           ">",
           ["get", "daysSinceDrilled"],
@@ -2753,8 +2766,8 @@ function Map() {
           0,
         ]);
 
-        map.setFilter("wellsHeatmapCumGas", [">", ["get", "cumulativeGas"], 0]);        
-        map.setFilter("wellsHeatmapCumOil", [">", ["get", "cumulativeOil"], 0]);        
+        map.setFilter("wellsHeatmapCumGas", [">", ["get", "cumulativeGas"], 0]);
+        map.setFilter("wellsHeatmapCumOil", [">", ["get", "cumulativeOil"], 0]);
 
         map.setFilter("wellsHeatmapLast12", [
           ">",
@@ -3036,7 +3049,7 @@ function Map() {
         });
       }
     }
-  }, [stateApp.wellSelectedCoordinates]);
+  }, [loading, stateApp.wellSelectedCoordinates]);
 
   useEffect(() => {
     (async () => {
@@ -3077,9 +3090,8 @@ function Map() {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
-            stateApp.mapboxglAccessToken
-          }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
+            }`;
 
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
@@ -3120,11 +3132,11 @@ function Map() {
           createPopUp(currentFeature.properties);
           map.resize();
 
-      
+
         }
       }
     })();
-  }, [stateApp.wellSelectedCoordinates]);
+  }, [loading, stateApp.wellSelectedCoordinates]);
 
   useEffect(() => {
 
@@ -3156,7 +3168,7 @@ function Map() {
 
     setStateApp((state) => ({
       ...state,
-      popupOpen: false,
+      popupOpen: stateApp.wellSelectedCoordinates?.length > 0 && searchInputValue ? true : false ,
       expandedCard: false,
       selectedUserDefinedLayer: undefined,
     }));
@@ -3352,8 +3364,8 @@ function Map() {
   // };
 
   const onAbstactLayerClick = function (feature, action) {
-    console.log("featur--",feature)
-    console.log("action",action)
+    console.log("featur--", feature)
+    console.log("action", action)
 
     if (!feature) {
       setStateApp((state) => ({
@@ -3408,8 +3420,8 @@ function Map() {
             onAbstactLayerClick(currentFeature, "remove");
           } else {
             let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
-            
-            if (!isExisting ) {
+
+            if (!isExisting) {
               map.setFeatureState(
                 { source: "abstract_geo_source", id: e.features[0].id },
                 { click: true }
@@ -3455,7 +3467,7 @@ function Map() {
         }
       });
     }
-  }, [map,stateApp.customLayers]);
+  }, [map, stateApp.customLayers]);
 
   useEffect(() => {
 
@@ -3660,7 +3672,7 @@ function Map() {
               type: "FeatureCollection",
               features: [],
             },
-            promoteId: "Id",
+            // promoteId: "Id",
           });
 
           newMap.addSource("plssseconddivision_label_geo_source", {
@@ -3669,7 +3681,7 @@ function Map() {
               type: "FeatureCollection",
               features: [],
             },
-            promoteId: "Id",
+            // promoteId: "Id",
           });
 
           newMap.addLayer({
@@ -3751,6 +3763,7 @@ function Map() {
 
           setDraw(Draw);
           setMap(newMap);
+          setLoading(false)
         });
       };
 
@@ -3816,7 +3829,7 @@ function Map() {
   // Use effect for removing shape filter
   useEffect(() => {
 
-    if (stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
+    if (!loading && stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
       if (draw) draw.delete(drawingFilterFeatureId);
       setStateNav((stateNav) => ({
         ...stateNav,
@@ -3953,8 +3966,8 @@ function Map() {
         }));
 
 
-  //Loading state is not being handled and causes undefined mapList Array
-  //Added '?' to mapList, temp fix to avoid undefined errors.
+        //Loading state is not being handled and causes undefined mapList Array
+        //Added '?' to mapList, temp fix to avoid undefined errors.
         var mapList = document.getElementById("map");
         if (mapList?.childNodes?.length > 1) {
           mapList.removeChild(mapList.childNodes[1]);
@@ -4278,7 +4291,7 @@ function Map() {
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
     });
-   }
+  }
 
   const handleCloseSpatialDataCard = (complete = true) => {
     setStateApp((state) => ({
@@ -4573,7 +4586,7 @@ function Map() {
 
     if ((stateApp.parcelDetailCardOpen && stateApp.parcelDetailCardOpen === true)) {
       // set and remove map marker
-      
+
       let coordinates = stateApp.selectedParcel.shapeCenter
       if (typeof stateApp.selectedParcel.shapeCenter === "string") {
         coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter);
@@ -4614,10 +4627,10 @@ function Map() {
 
 
   useEffect(() => {
-    if(parcelBoundaryId && map){
+    if (parcelBoundaryId && map) {
       let mapSourceData = map.getSource('parcels_source')._data;
       const idx = mapSourceData.features.findIndex(feature => feature.id === parcelBoundaryId)
-      if(idx > -1){
+      if (idx > -1) {
         const geoJson = {
           type: 'Feature',
           properties: {},
@@ -4627,17 +4640,17 @@ function Map() {
           }
         }
 
-        if(map.getSource('parcelBoundarySource')){
+        if (map.getSource('parcelBoundarySource')) {
           map.getSource('parcelBoundarySource').setData(geoJson);
-          if(map.getLayer('parcelBoundary')){
+          if (map.getLayer('parcelBoundary')) {
             map.removeLayer('parcelBoundary')
           }
         } else {
           map.addSource('parcelBoundarySource', {
             type: "geojson",
             data: geoJson
-          });     
-        } 
+          });
+        }
 
         map.addLayer({
           id: 'parcelBoundary',
@@ -4657,9 +4670,9 @@ function Map() {
   }, [parcelBoundaryId])
 
   useEffect(() => {
-    if(map && stateApp.selectedParcel){
+    if (map && stateApp.selectedParcel) {
       setParcelBoundaryId(stateApp.selectedParcel.id);
-    } else if(map) {
+    } else if (map) {
       if (map.getLayer('parcelBoundary')) map.removeLayer('parcelBoundary');
       if (map.getSource('parcelBoundarySource')) map.removeSource('parcelBoundarySource');
       setParcelBoundaryId(null);
@@ -4692,54 +4705,54 @@ function Map() {
       {mapGridCardActivated && (
         <MapGridCardProvider mapGridCardActivated={mapGridCardActivated} />
       )}
-       
+
       {stateApp.selectedWell !== null && showExpandableCard &&
         stateApp.expandedCard && (
-              <div className={classes.draggable}>
-                <ExpandableCardProvider
-                  expanded
-                  handleCloseExpandableCard={handleCloseExpandableCard}
-                  component={<WellCardProvider />}
-                  title={stateApp.selectedWell.wellName}
-                  subTitle={stateApp.selectedWell.api}
-                  parent="map"
-                  cardTop={20}
-                  cardLeft={20}
-                  position="relative"
-                  zIndex={99}
-                  cardWidthExpanded="50vw"
-                  cardHeightExpanded="90vh"
-                  targetSourceId={stateApp.selectedWell.id}
-                  targetLabel="well"
-                />
-              </div>
-          )
-        }
+          <div className={classes.draggable}>
+            <ExpandableCardProvider
+              expanded
+              handleCloseExpandableCard={handleCloseExpandableCard}
+              component={<WellCardProvider />}
+              title={stateApp.selectedWell.wellName}
+              subTitle={stateApp.selectedWell.api}
+              parent="map"
+              cardTop={20}
+              cardLeft={20}
+              position="relative"
+              zIndex={99}
+              cardWidthExpanded="50vw"
+              cardHeightExpanded="90vh"
+              targetSourceId={stateApp.selectedWell.id}
+              targetLabel="well"
+            />
+          </div>
+        )
+      }
 
-        {stateApp.selectedParcel !== null &&
-          stateApp.expandedCard && (
+      {stateApp.selectedParcel !== null &&
+        stateApp.expandedCard && (
 
-              <div className={classes.draggable}>
-                <ExpandableCardProvider
-                  expanded={true}
-                  handleCloseExpandableCard={handleCloseExpandableCard}
-                  component={<ParcelCardProvider></ParcelCardProvider>}
-                  title={stateApp.selectedParcel.shapeLabel}
-                  subTitle=""
-                  parent="map"
-                  position="relative"
-                  cardTop={20}
-                  cardLeft={20}
-                  zIndex={99}
-                  cardWidthExpanded="50vw"
-                  cardHeightExpanded="90vh"
-                  targetSourceId={stateApp.selectedParcel.id}
-                  targetLabel="parcel"
-                  deleteParcel={deleteParcel}
-                ></ExpandableCardProvider>
-              </div>
-          )
-        }
+          <div className={classes.draggable}>
+            <ExpandableCardProvider
+              expanded={true}
+              handleCloseExpandableCard={handleCloseExpandableCard}
+              component={<ParcelCardProvider></ParcelCardProvider>}
+              title={stateApp.selectedParcel.shapeLabel}
+              subTitle=""
+              parent="map"
+              position="relative"
+              cardTop={20}
+              cardLeft={20}
+              zIndex={99}
+              cardWidthExpanded="50vw"
+              cardHeightExpanded="90vh"
+              targetSourceId={stateApp.selectedParcel.id}
+              targetLabel="parcel"
+              deleteParcel={deleteParcel}
+            ></ExpandableCardProvider>
+          </div>
+        )
+      }
 
       <div id="modalHolder" ref={modalContainer} />
       <Portal container={modalContainer.current}>
@@ -4804,7 +4817,7 @@ function Map() {
                     deleteParcel={deleteParcel}
                   ></ExpandableCardProvider>
                 )}
-                </PortalD>
+              </PortalD>
             )}
 
             {stateApp.selectedUserDefinedLayer && (

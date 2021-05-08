@@ -111,7 +111,7 @@ function M1nTable(props) {
   const [stateGrid, setStateGrid] = useContext(MapGridContext);
   const { loading: DocumentLoading, error, data: DocumentsData, refetch: reFetchDocuments } = useQuery(GET_Documents);
  console.log(DocumentsData, 'DocumentsData')
- console.log(reFetchDocuments(), 'reFetchDocuments')
+//  console.log(reFetchDocuments(), 'reFetchDocuments')
  
   // function states 
   const [addDealOpen, setAddDealOpen] = useState(false);
@@ -170,7 +170,7 @@ function M1nTable(props) {
   const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, {fetchPolicy: "cache-and-network",});
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
-  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {fetchPolicy: "cache-and-network",});
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, { onError: () => { setLoading(false) }, fetchPolicy: "cache-and-network" });
   const [removeUser] = useMutation(REMOVEUSER);
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY,{fetchPolicy: "no-cache",});
   const [getContactsFilterOptions,{ data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, {fetchPolicy: "cache-and-network",});
@@ -180,7 +180,7 @@ function M1nTable(props) {
   const [updateContact] = useMutation(UPDATECONTACT);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
-  const [getParcelOwners, { data: dataParcelOwners }] = useLazyQuery(PARCELOWNERSQUERY);
+  const [getParcelOwners, { data: dataParcelOwners }] = useLazyQuery(PARCELOWNERSQUERY, {fetchPolicy: "cache-and-network"});
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
   const [getMelissaRowsCount, { data: dataMelissaRowsCount }] = useLazyQuery(MELISSARECORDSCOUNTBYIDS,{fetchPolicy: "cache-and-network",});
   const [getContactParcelInterests,{ data: dataContactParcelInterests },] = useLazyQuery(CONTACTPARCELINTERESTS, {fetchPolicy: "cache-and-network",});
@@ -217,16 +217,13 @@ function M1nTable(props) {
       constDataTracks &&
       constDataTracks.tracksByObjectType
     ) {
-      if (constDataTracks.tracksByObjectType.length !== 0) {
-        const tracksIdArray = constDataTracks.tracksByObjectType.map(
-          (track) => track.trackOn
-        );
+      const tracksIdArray = constDataTracks.tracksByObjectType.map(
+        (track) => track.trackOn
+      );
 
-        setDataTracks(tracksIdArray);
-        // setRows(tracksIdArray);
-        // setLoading(false);
-
-      } 
+      setDataTracks(tracksIdArray);
+      // setRows(tracksIdArray);
+      // setLoading(false);
     }
   }, [constDataTracks]);
 
@@ -3092,9 +3089,10 @@ function M1nTable(props) {
         contactsPageProps={{
           getPaginatedContacts,
           getContactsFilterOptions,
-          contactsCount: dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]
-            ? dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount
-            : 0,
+          contactsCount: 
+          dataContactsFilterOptions?.contactsFilterOptions?.totalCount[0]?.totalCount
+            || dataContacts?.paginatedContacts?.edges?.length
+            || 0,
           setLoading,
         }}
         wellInterestsPageProps={{

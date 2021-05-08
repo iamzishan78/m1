@@ -25,6 +25,7 @@ export const ADDDEAL = gql`
     ) {
       success
       message
+      deal
       error
     }
   }

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Grid, Container, Box, CircularProgress, Tab, Tabs, IconButton, FormControl, RadioGroup, FormControlLabel, Radio } from "@material-ui/core";
@@ -10,12 +9,12 @@ import RemoveSharpIcon from "@material-ui/icons/RemoveSharp";
 import Typography from "@material-ui/core/Typography";
 import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeList";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
-import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import { AppContext } from "AppContext";
 import { setStateIfDeepEqual } from "../../../functions";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from "graphQL/useMutationConvertMultitpleOwnerToContact";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
+import Loader from "components/Loaders";
 
 const styles = () => ({
   topHeading: { fontWeight: "bold" },
@@ -45,7 +44,6 @@ const TAB = Object.freeze({
 export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes }) {
   const [stateApp] = React.useContext(AppContext);
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   const [primaryOwner, setPrimaryOwner] = useState(rows[0]);
   const [tab, setTab] = useState(TAB.NEW);
@@ -111,7 +109,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       existingContactId = nameAutValue._id
       action = ACTION.COMBINE
     }
-    setLoading(true);
+    Loader.createToast('contact-creation', 'Contact Creation in Progress')
     convertMultitpleOwnerToContact({
       variables: { ownerIds, existingContactId, contactOwner, action, userId: stateApp.user.mongoId },
       refetchQueries: ["checkIfOwnersAreContacts"],
@@ -121,19 +119,20 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
         if (res.data && res.data.convertMultitpleOwnerToContact) {
           const { success, message } = res.data.convertMultitpleOwnerToContact
           if (success) {
-            dispatch(showSuccessMessage(message));
-            setM1nSelectedRowsIndexes([])
-            onClose();
-            setLoading(false);
+            Loader.successToast('contact-creation', message)
           } else {
-            dispatch(showErrorMessage(message))
+            Loader.errorToast('contact-creation', message)
           }
         } else {
-          dispatch(showErrorMessage("Failed to convert to contact"));
+          Loader.errorToast('contact-creation', "Failed to convert to contact")
         }
       },
-      err => { console.log(err); setLoading(false); dispatch(showErrorMessage("Failed to convert to contact")); }
+      err => { console.log(err); Loader.errorToast('contact-creation', "Failed to convert to contact") }
     );
+
+    setM1nSelectedRowsIndexes([])
+    onClose();
+    setLoading(false);
   };
 
   return (
@@ -212,18 +211,18 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                         <DoneSharpIcon fontSize="small" style={{ background: "#00af48", color: "white", borderRadius: 3 }} />
                       </IconButton>
                     ) : (
-                        <IconButton onClick={() => setPrimaryOwner(row)}>
-                          <RemoveSharpIcon fontSize="small" style={{ background: "#f70000", color: "white", borderRadius: 3 }} />
-                        </IconButton>
-                      )}
+                      <IconButton onClick={() => setPrimaryOwner(row)}>
+                        <RemoveSharpIcon fontSize="small" style={{ background: "#f70000", color: "white", borderRadius: 3 }} />
+                      </IconButton>
+                    )}
                   </Grid>
                 }
 
                 <Grid item md={tab === TAB.NEW && ACTION.COMBINE ? 10 : 11}>
                   <Typography style={{ backgroundColor: "#edfbff" }}>
-                    <Grid container justify='center' alignItems='center'>
-                      <Grid item md={4}>{row.name || row.OwnerName}</Grid>
-                      <Grid item md={8}>{row.StreetAddress} {row.City}, {row.State} {row.Zip}</Grid>
+                    <Grid container alignItems='center' style={{ paddingLeft: 10 }}>
+                      <Grid item >{row.name || row.OwnerName}</Grid>
+                      <Grid item >{row.StreetAddress} {row.City}, {row.State} {row.Zip}</Grid>
                     </Grid>
                   </Typography>
                 </Grid>

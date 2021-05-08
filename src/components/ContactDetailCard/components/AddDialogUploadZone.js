@@ -327,7 +327,7 @@ export default function Documents(props) {
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
         {props.isTransactPage && (
           <Grid item xs={12} style={{ minHeight: "35px" }}>
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Related Documents</h4>
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>
             <h4
               className={classes.viewAll}
               // onClick={(e) => {
@@ -367,7 +367,7 @@ export default function Documents(props) {
                 ?.toLowerCase();
               if (key <= 1) {
                 return (
-                  <Grid item xs={4} key={key}>
+                  <Grid item xs={4} key={key} className="" >
                     <LightTooltip
                       title={
                         <div className={classes.IconSection}>
@@ -429,7 +429,12 @@ export default function Documents(props) {
                             className={classes.forImage}
                           ></img>
                         ) : (
-                          <div className={classes.forImageContainer}>
+                          <div className={classes.forImageContainer}  onClick={() => {
+                            if(fileExtension === 'pdf')
+                            {
+                              setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name, downloadFn:handleViewFile, downloadData: files?.getFileDescriptors[key].fileId}})
+                            }
+                          }}>
                             {/* {fileExtension} */}
                             {getFileIcon(fileExtension)}
                           </div>
@@ -445,7 +450,7 @@ export default function Documents(props) {
                 );
               }
             })}
-            <Grid item xs={4}>
+            <Grid item xs={4} >
               <div className={classes.Uploadcomp}>
                 <UploadZone
                   style={{ width: "150px", height: "150px" }}
@@ -453,6 +458,7 @@ export default function Documents(props) {
                   userId={userId}
                   relatedObjectType={relatedObjectType} //Contact or Deal
                   loading={props.loading}
+                  disabled={props.disabled}
                   // addFile={addFile}
                   // addFileData={addFileData}
                   // getRecentFiles={() => {

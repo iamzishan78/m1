@@ -20,6 +20,7 @@ const AppProvider = (props) => {
     user: null, /// potenitally login context or maybe a specific user context?? 
     signUpUserType: null,/// potenitally login context or maybe a specific user context?? 
     wellDetailCardOpen: null, // move to map data card context 
+    wellDetailCardTabIndex:null,
     parcelDetailCardOpen: false, // move to map data card context 
     trackedwells: null, // move to a grid context or query context 
     trackedOwnerWells: null, // move to a grid context or query context 
@@ -27,7 +28,7 @@ const AppProvider = (props) => {
     selectedWellId: null, // move to a selected object context (maybe flyto)
     selectedAbstracts: [], // move to a selected object context (maybe flyto)
     selectedParcel: null, // move to a selected object context (maybe flyto)
-
+    
     customLayers: [],
     editDraw: false,
     editLayer: true,
@@ -117,6 +118,9 @@ const AppProvider = (props) => {
     DocumentDrawer:false,  
     selectedDocument:{},
     transactBarView: "",
+    contactSearchQuery: "",
+    isContactSearching: false,
+    viewDoc:null,
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;

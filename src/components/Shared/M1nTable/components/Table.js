@@ -5,6 +5,9 @@ import React, {
   useRef,
   Fragment,
 } from "react";
+import {
+  TextField,
+} from "@material-ui/core";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -17,7 +20,8 @@ import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import MUIDataTable, { TableFilterList } from "mui-datatables";
-import { Accordion, AccordionDetails, AccordionSummary, Box, ButtonGroup, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
+import { DndProvider } from 'react-dnd';
+import { Box, ButtonGroup, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
 import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
@@ -99,6 +103,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 
+// suppress debug console logs
+DndProvider.whyDidYouRender = false
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
 
@@ -205,6 +211,14 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
       paddingLeft: '11px !important'
+    },
+    "& .MuiPaper-elevation1": {
+      flexDirection: "row !important" ,
+      height: '65px !important',
+      width: '100% !important',
+      display: 'flex !important',
+      flex: 'auto',
+      alignItems: 'center !important'
     },
     "& .MuiButton-text": {
       padding: "5px 12px"
@@ -454,6 +468,8 @@ function SubTable(props) {
   const [year, setYear] = React.useState(2020);
   const [total, Total] = useState(false);
   const [rows, Rows] = useState([]);
+  const [handleSearch, setHandleSearch] = useState(() => () => {});
+  // const [handleSearchClose, setHandleSearchClose] = useState(() => () => {});
 
   // deep state 
   const setFirstMount = (newState) => { setStateIfDeepEqual(FirstMount, newState); };
@@ -506,6 +522,8 @@ function SubTable(props) {
       let a = document.createElement("a");
       a.href = viewFileResult.viewFile.uri;
       a.download = viewFileResult.viewFile.name;
+  // selectors
+  // const { searchloading } = useSelector(({ MapGridCard }) => MapGridCard);
 
       // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
       // a.target = "_blank";
@@ -591,8 +609,32 @@ function SubTable(props) {
     }
   };
 
+  const registerSearchHandler = (handleSearch) => {
+    setHandleSearch(() => handleSearch);
+  };
 
+  // const registerSearchCloseHandler = (handleSearchClose) => {
+  //   setHandleSearchClose(() => handleSearchClose);
+  // };
 
+  useEffect(() => {
+    if (props.header === 'Contacts') {
+      handleSearch(stateApp.contactSearchQuery);
+    }
+  }, [stateApp.contactSearchQuery])
+
+  // useEffect(() => {
+  //   if (props.parent === "search") {
+  //     handleSearchClose(stateApp.contactSearchQuery);
+  //   }
+  // }, [searchloading])
+
+  // not a good workaround - need to use the table actions callback
+  // useEffect(() => {
+  //   // reset selected rows 
+  //   setM1nSelectedRowsIndexes([]);
+  //   setM1nSelectedRowsIds([]);
+  // }, [rows])
 
   //// opening the well detail card after fetch the extra well data needed
   useEffect(() => {
@@ -914,6 +956,7 @@ function SubTable(props) {
   };
 
   const openMenu = (event, rowIndex, user) => {
+    event.stopPropagation();
     setSelectedUser(user);
     setSelectedUserIndex(rowIndex);
     setM1nSelectedRowsIds([user._id]);
@@ -1975,13 +2018,12 @@ function SubTable(props) {
                                 ...stateApp,
                                 selectedContact: tableMeta.rowData[0],
                               }));
-
-                              setSubComponent(
-                                <ContactDetailCard
-                                  selectRowOpenContact={selectRowOpenContact}
-                                  handleCloseExpandableCard={handleCloseExpandableCard}
-                                />
-                              );
+                              // setSubComponent(
+                              //   <ContactDetailCard
+                              //     selectRowOpenContact={selectRowOpenContact}
+                              //     handleCloseExpandableCard={handleCloseExpandableCard}
+                              //   />
+                              // );
                               setTitle("Contact Details");
                               setSubTitle(" ");
                               handleOpenExpandableCard();
@@ -2050,7 +2092,8 @@ function SubTable(props) {
     setColInd(null);
     setRowInd(null);
     setExpandedObject(null);
-    setStateApp({ ...stateApp, isEditSelectedProfileName: null });
+    // setStateApp({ ...stateApp, isEditSelectedProfileName: null });
+    setStateApp((stateApp) => ({ ...stateApp, isEditSelectedProfileName: null }));
   };
 
   const handleOpenExpandableCard = () => {
@@ -2169,7 +2212,7 @@ function SubTable(props) {
         ]);
     },
     //// triggers when a row/s is selected ////
-    onRowsSelect: (currentRowsSelected, rowsSelected) => {
+    onRowSelectionChange: (currentRowsSelected, rowsSelected) => {
       if (rowsSelected && rowsSelected.length > 0) {
         let indexArray = rowsSelected
           .map((d) => d.dataIndex)
@@ -2366,58 +2409,70 @@ function SubTable(props) {
             />
           );
         },
+
     customToolbar: () => {
+
+      console.log('props addable type', props.addAble.type)
+      var buttonLabel = "+ ADD"; 
+      if (props.addAble.type === "contact"){buttonLabel = '+ ADD CONTACT'}
+      if (props.addAble.type === "wellInterest"){buttonLabel = '+ ADD INTEREST'}
+      if (props.addAble.type === "deals"){buttonLabel = '+ ADD DEAL'}
+      if (props.addAble && props.parent === "UserManagement"){buttonLabel = "+ ADD USER"}
+      if (props.addAble.type === "ownerToParcel"){buttonLabel = '+ ADD INTEREST OWNER'}
+
+
+      const addAction = (e) => {
+        e.stopPropagation();
+        if (props.addAble.type && props.addAble.type === "contact")
+          handleExpandClick(null, null, null, "addContact");
+        if (
+          props.addAble.type &&
+          props.addAble.type === "ownerToParcel"
+        )
+          handleExpandClick(null, null, null, "addOwnerToParcel");
+
+        if (props.addAble.type && props.addAble.type === "deals")
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            dealDialog: true,
+            activeDeal: { cardId: null, laneId: null },
+          }));
+
+        if (props.addAble.type && props.addAble.type === "wellInterest") {
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            wellInterestDialog: true,
+            //activeDeal: { cardId: null, laneId: null },
+          }));
+        }
+
+        if (
+          props.addAble.type &&
+          props.addAble.type === "parcelInterestsToEntity"
+        )
+          // handleExpandClick(null, null, null, "addOwnerToParcel");
+          handleExpandClick(
+            null,
+            null,
+            null,
+            "addParcelInterestsToEntity"
+          );
+        if (
+          props.addAble.type &&
+          props.addAble.type === "inviteUser"
+        )
+          handleExpandClick(null, null, null, "inviteUser");
+      }
+
+
       const options = [
         { 
-          text:'Add Contact',
+          text: buttonLabel,
           isShow: false,
-          action: (e) => {
-            e.stopPropagation();
-            if (props.addAble.type && props.addAble.type === "contact")
-              handleExpandClick(null, null, null, "addContact");
-
-            if (
-              props.addAble.type &&
-              props.addAble.type === "ownerToParcel"
-            )
-              handleExpandClick(null, null, null, "addOwnerToParcel");
-
-            if (props.addAble.type && props.addAble.type === "deals")
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                dealDialog: true,
-                activeDeal: { cardId: null, laneId: null },
-              }));
-
-            if (props.addAble.type && props.addAble.type === "wellInterest") {
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                wellInterestDialog: true,
-                //activeDeal: { cardId: null, laneId: null },
-              }));
-            }
-
-            if (
-              props.addAble.type &&
-              props.addAble.type === "parcelInterestsToEntity"
-            )
-              // handleExpandClick(null, null, null, "addOwnerToParcel");
-              handleExpandClick(
-                null,
-                null,
-                null,
-                "addParcelInterestsToEntity"
-              );
-            if (
-              props.addAble.type &&
-              props.addAble.type === "inviteUser"
-            )
-              handleExpandClick(null, null, null, "inviteUser");
-          }
+          action: addAction
         },
         {  text: 'Import Contacts', isShow: true, action: () => routeChange("/bulkupload") }
       ];
-     
       const getSelectedRows = () => {
         const selectedRows = [];
         for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
@@ -2428,8 +2483,7 @@ function SubTable(props) {
 
       return (
         <>
-        <div style={{ displat: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
-         {props.header !== 'Documents' &&  <ButtonDropDown options={options} />}
+         {/*
          {props.header === 'Documents' &&     <ButtonGroup variant="contained" style={{height:'40px'}} color="primary" aria-label="split button"><Button
                     color="primary"
                     size="small"
@@ -2445,7 +2499,45 @@ function SubTable(props) {
                    
            Add Document
                 </Button></ButtonGroup>}
-          {props.header !== "Active Users" && props.header !== 'Documents' && (
+          {props.header !== "Active Users" && props.header !== 'Documents' && ( */}
+
+
+
+        <div style={{ display: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
+          {(props.addAble.type === "wellInterest" 
+          || props.addAble.type === "deals"
+          || props.addAble.type === "ownerToParcel"
+          || (props.addAble && props.parent === "UserManagement"))
+          
+          && (
+            <Button
+              color="secondary"
+              className={classes.multiSelectionTopBarButtons}
+              onClick={addAction}
+            >
+              {buttonLabel}
+            </Button>
+          )}
+          {props.addAble.type === "contact" && (<ButtonDropDown options={options} />)}
+          {props.header === 'Documents' &&     
+            <ButtonGroup variant="contained" style={{height:'40px'}} color="primary" aria-label="split button">
+              <Button
+                color="primary"
+                size="small"
+                aria-label="select merge strategy"
+                aria-haspopup="menu"
+                onClick={()=>{
+                  setStateApp({...stateApp, DocumentDrawer:true})
+                }}
+              >
+                <PostAddIcon></PostAddIcon>  
+                Add Document
+              </Button>
+            </ButtonGroup>
+          }
+          
+          {
+          props.addAble.type === "contact" && (
             <>
               <Button
                 color="secondary"
@@ -2464,91 +2556,9 @@ function SubTable(props) {
                 Mailers
               </Button>
             </>
-          )}
+          )
+          }
         </div>
-          {/* {props.uploadIcon && (
-            //////Upload Icon/////////////////////////
-            <span className={classes.addIcon}>
-              <Tooltip
-                title={`Import ${props.targetLabel.charAt(0).toUpperCase() +
-                  props.targetLabel.slice(1)
-                  }s`}
-              >
-                <IconButton
-                  size="medium"
-                  onClick={(e) => {
-                    routeChange("/bulkupload");
-                  }}
-                >
-                  <BackupIcon />
-                </IconButton>
-              </Tooltip>
-            </span>
-          )}
-          {props.addAble && (
-            //////Add Icon/////////////////////////
-            <span className={classes.addIcon}>
-              <Tooltip
-                title={`Add${props.parent === "assocTaxRollInterests"
-                  ? " Well Interest"
-                  : props.targetLabel
-                    ? " " +
-                    props.targetLabel.charAt(0).toUpperCase() +
-                    props.targetLabel.slice(1)
-                    : ""
-                  }`}
-              >
-                <IconButton
-                  size="medium"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (props.addAble.type && props.addAble.type === "contact")
-                      handleExpandClick(null, null, null, "addContact");
-
-                    if (
-                      props.addAble.type &&
-                      props.addAble.type === "ownerToParcel"
-                    )
-                      handleExpandClick(null, null, null, "addOwnerToParcel");
-
-                    if (props.addAble.type && props.addAble.type === "deals")
-                      setStateApp((stateApp) => ({
-                        ...stateApp,
-                        dealDialog: true,
-                        activeDeal: { cardId: null, laneId: null },
-                      }));
-
-                    if (props.addAble.type && props.addAble.type === "wellInterest") {
-                      setStateApp((stateApp) => ({
-                        ...stateApp,
-                        wellInterestDialog: true,
-                        //activeDeal: { cardId: null, laneId: null },
-                      }));
-                    }
-
-                    if (
-                      props.addAble.type &&
-                      props.addAble.type === "parcelInterestsToEntity"
-                    )
-                      // handleExpandClick(null, null, null, "addOwnerToParcel");
-                      handleExpandClick(
-                        null,
-                        null,
-                        null,
-                        "addParcelInterestsToEntity"
-                      );
-                    if (
-                      props.addAble.type &&
-                      props.addAble.type === "inviteUser"
-                    )
-                      handleExpandClick(null, null, null, "inviteUser");
-                  }}
-                >
-                  <AddCircleOutlineRoundedIcon />
-                </IconButton>
-              </Tooltip>
-            </span>
-          )} */}
         </>
       );
     },
@@ -2596,17 +2606,18 @@ function SubTable(props) {
           ...stateApp,
           selectedContact: rows[dataIndex]._id,
         }));
-
-        setSubComponent(
-          <ContactDetailCard
-            selectRowOpenContact={selectRowOpenContact}
-            handleCloseExpandableCard={handleCloseExpandableCard}
-          />
-        );
+        routeChange(`/contact/details/${rows[dataIndex]._id}`)
+        // setSubComponent(
+        //   <ContactDetailCard
+        //     selectRowOpenContact={selectRowOpenContact}
+        //     handleCloseExpandableCard={handleCloseExpandableCard}
+        //   />
+        // );
         setTitle("Contact Details");
         setSubTitle(" ");
         handleOpenExpandableCard();
       }
+
       if (props.targetLabel === "documents") {
         console.log('Working Inside Table')
         // console.log(rowData, " OnRowClick" )
@@ -2616,10 +2627,19 @@ function SubTable(props) {
           ...stateApp,
           selectedDocument: rows[dataIndex],
         }));
+      }
 
+      if (props.targetLabel === "usermanagement") {
+        if (rows[dataIndex]?.id) {
+          let card = { ...rows[dataIndex] };
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            userDialog: true,
+            activeUser: card,
+          }));
 
-       
-
+          handleExpandClick(null, null, null, "inviteUser");
+        }
       }
     },
     onChangePage: (pageState) => {
@@ -2714,6 +2734,21 @@ function SubTable(props) {
 
 
     onTableChange: (action, tableState) => {
+      // reset selected rows 
+      if ([
+          'changeRowsPerPage',
+          'changePage',
+          'sort',
+          'search',
+          'onSearchClose',
+          'filterChange',
+          'resetFilters'
+        ]
+      .includes(action)) {
+        setM1nSelectedRowsIndexes([]);
+        setM1nSelectedRowsIds([]);
+      }
+        
       if (props.header === "Contacts") {
         let filters = [];
         const leadSourceIndex = tableState.columns.findIndex(
@@ -2781,6 +2816,13 @@ function SubTable(props) {
             userId: stateApp.user.mongoId,
           },
         };
+        if(stateApp.isContactSearching){
+          action = 'search'
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            isContactSearching: false,
+          }));
+        }
         switch (action) {
           case "changeRowsPerPage":
             props.contactsPageProps.setLoading(true);
@@ -2842,12 +2884,14 @@ function SubTable(props) {
             tableState.page = 0;
             setPageInd(tableState.page);
             props.contactsPageProps.getPaginatedContacts(pageVariables);
+            props.contactsPageProps.getContactsFilterOptions(pageVariables);
             break;
           case "resetFilters":
             props.contactsPageProps.setLoading(true);
             tableState.page = 0;
             setPageInd(tableState.page);
             props.contactsPageProps.getPaginatedContacts(pageVariables);
+            props.contactsPageProps.getContactsFilterOptions();
             break;
           default:
         }
@@ -2957,7 +3001,7 @@ function SubTable(props) {
         ? [10, 25, 50]
         : props.contactsPageProps.contactsCount > 10
           ? [10, 25]
-          : [];
+          : [10];
     options.count = props.contactsPageProps.contactsCount;
     options.serverSide = true;
     //options.print = true;
@@ -3090,9 +3134,28 @@ function SubTable(props) {
           }}
           options={{
             ...options,
+            // searchText: props.header === 'Contacts' ? stateApp.contactSearchQuery : null,
+            search: 
+                    (
+                       props.header === 'Contacts'
+                    || props.header === 'Deals'
+                    || props.header === 'Activities'
+                    || props.header === 'Monthly Production'
+                    ) 
+                    ? false : props.parent != "search",
+            // have to use props.parent here for initial value
+            searchOpen: props.parent === "Contacts" ? true : null,
             //download: false,
-            search: props.parent != "search",  // removing the double search on the grid search bar 
+            // search: props.parent != "search",  
             //print: false,
+            ...(props.header === 'Contacts') && {
+              customSearchRender: 
+                (searchText, handleSearch, hideSearch, options) => {
+                  registerSearchHandler(handleSearch);
+
+                  return getHeaders()
+                }
+            }
           }}
         />
         {
@@ -3397,6 +3460,7 @@ function SubTable(props) {
                 rows={rows}
                 setRows={setExpandedObject}
                 onClose={handleCloseDialog}
+                setSelectedRow={setSelectedRow}
               />
             )}
             {openDialog === "reinviteUser" && (

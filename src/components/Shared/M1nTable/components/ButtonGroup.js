@@ -36,6 +36,7 @@ const ButtonDropDown = ({ options }) => {
         setOpen(false);
     };
 
+    
     return (
         <>
             <ButtonGroup variant="contained" color="primary" ref={anchorRef} aria-label="split button">
@@ -51,7 +52,10 @@ const ButtonDropDown = ({ options }) => {
                 >
                     <ArrowDropDownIcon />
                 </Button>
+
             </ButtonGroup>
+
+
             <Popper id="popper-1" open={open} anchorEl={anchorRef.current} role={undefined} transition>
                 {({ TransitionProps, placement }) => (
                     <Grow
@@ -64,7 +68,7 @@ const ButtonDropDown = ({ options }) => {
                             <ClickAwayListener onClickAway={handleClose}>
                                 <MenuList id="split-button-menu">
                                     {options.map((option, index) => {
-                                        if(option.isShow) {
+                                        if (option.isShow) {
                                             return (
                                                 <MenuItem
                                                     key={option.text}

@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Taps(props) {
   const classes = useStyles(props);
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(props.openTabIdex ?? 0);
   ////props.tabLabels brings an array of labels////
   ////props.tabPanels brings an array of panels////
   ////props.whichTapIsActive is an optional function to return the active index////

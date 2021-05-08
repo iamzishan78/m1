@@ -180,6 +180,7 @@ function Search() {
     mapGridCardActivated,
     mapGridCardActiveTap,
     searchInputValue,
+    lastSearch,
     objToPopulateSearchLayer,
   } = useSelector(({ MapGridCard }) => MapGridCard);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -253,6 +254,33 @@ function Search() {
       });
     }
   }, [stateApp.user]);
+
+  useEffect(() => {
+    if (!value && searchInputValue && value !== searchInputValue) {
+      setValue(searchInputValue)
+      if (lastSearch?.Source === ownerCogIndexName && lastSearch?.Id) {
+        getOwnerWells({
+          variables: {
+            ownerId: lastSearch.Id,
+          },
+        });
+      }
+      else if (lastSearch?.Source === operatorIndexName && lastSearch?.Operator) {
+        getOperatorWells({
+          variables: {
+            operatorName: lastSearch.Operator,
+          },
+        });
+      }
+      else if (lastSearch?.Source === contactIndexName  && lastSearch?._id) {
+          getContactsWells({
+            variables: {
+              contactId: lastSearch._id,
+            },
+          });
+      }
+  }
+  }, []);
 
   useEffect(() => {
     if (searchHistoryData && searchHistoryData.getSearchHistory) {
@@ -933,6 +961,7 @@ function Search() {
             : newValue.Secondary
             ? newValue.Secondary
             : "",
+          lastSearch: newValue  
         })
       );
 
@@ -1111,7 +1140,7 @@ function Search() {
       }
       <Autocomplete
         id="cognitive-search-autocomplete"
-        getOptionLabel={(option, value) => option.Primary}
+        getOptionLabel={(option, value) => option.Primary || searchInputValue}
         forcePopupIcon
         filterOptions={(x) => x}
         options={optionsWithHeader}

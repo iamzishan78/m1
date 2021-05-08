@@ -111,6 +111,8 @@ import {
 import { GETALLACTIVITIESFORSEARCH } from "../../graphQL/useQueryGetAllActivities";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import ActivitySearch from "./components/ActivitySearch";
+import ContactSearch from "./components/ContactSearch";
+import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
 
 const theme = createMuiTheme({
   overrides: {
@@ -192,6 +194,7 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerOpen: {
     // background: "rgba(255, 255, 255, 1.0)",
+    zIndex:"99999 !important",
     background: "rgba(250, 250, 250, 1.0)",
     width: drawerWidth,
     height: "100%",
@@ -1082,17 +1085,19 @@ export default function Navigation(props) {
           My Account
         </Typography>
       </MenuItem>
-      <MenuItem
-        className={classes.userMenuItem}
-        onClick={(e) => openUserManagement(e)}
-      >
-        <Typography
-          style={{ textDecoration: "none", color: "#1daee1" }}
-          variant="inherit"
+      { ( stateApp?.user?.roles?.includes("Owner") || stateApp?.user?.roles?.includes("Admin") ) && (
+        <MenuItem
+          className={classes.userMenuItem}
+          onClick={(e) => openUserManagement(e)}
         >
-          User Management
-        </Typography>
-      </MenuItem>
+          <Typography
+            style={{ textDecoration: "none", color: "#1daee1" }}
+            variant="inherit"
+          >
+            User Management
+          </Typography>
+        </MenuItem>
+      )}
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         <Typography variant="inherit">Logout</Typography>
       </MenuItem>
@@ -1241,6 +1246,12 @@ export default function Navigation(props) {
               <>
                 <ActivitySearch />
               </>
+            )}
+            {location.pathname === "/contacts" && (
+                <ContactSearch />
+            )}
+            {location.pathname.includes("/contact/details") && (
+                <ContactDetailsSearch />
             )}
 
             {/*SEARCH UI FOR DEALS */}
@@ -1706,6 +1717,7 @@ export default function Navigation(props) {
               setStateApp((stateApp) => ({
                 ...stateApp,
                 selectedContact: null,
+                contactSearchQuery : null,
               }));
               handleListItemClick(event, 0, "/contacts");
             }}
