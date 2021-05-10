@@ -3051,6 +3051,93 @@ function Map() {
     }
   }, [loading, stateApp.wellSelectedCoordinates]);
 
+  // For recently submitted permits
+  useEffect(() => {
+    (async () => {
+      if (
+        map &&
+        stateApp.selectedPermitId &&
+        stateApp.permitSelectedCoordinates &&
+        stateApp.permitSelectedCoordinates.length > 0 &&
+        !stateApp.selectedPermit
+      ) {
+
+        let point = map.project(stateApp.permitSelectedCoordinates);
+
+        var bbox = [
+          [point.x - 10, point.y - 10],
+          [point.x + 10, point.y + 10],
+        ];
+
+        let features = map.queryRenderedFeatures(bbox, {
+          layers: ["recent_submitted_permits"],
+        });
+
+        let currentFeature = features.find(
+          (element) =>
+            element.properties.Id.toLowerCase() == stateApp.selectedPermitId
+        );
+
+        if (!currentFeature) {
+          features = map.querySourceFeatures("composite", {
+            sourceLayer: "recent_submitted_permits",
+            filter: ["in", "Id", stateApp.selectedPermitId],
+          });
+          currentFeature = features.find(
+            (element) =>
+              element.properties.Id.toLowerCase() == stateApp.selectedPermitId
+          );
+        }
+
+        if (!currentFeature) {
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
+            }`;
+
+          const headers = new Headers();
+          headers.append("Content-Type", "application/json");
+          headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
+
+          const options = {
+            method: "GET",
+            headers: headers,
+          };
+
+          await fetch(endpoint, options)
+            .then((response) => response.json())
+            .then((response) => {
+              features = response.features;
+              currentFeature = features.find(
+                (element) =>
+                  element.properties.Id.toLowerCase() == stateApp.selectedPermitId
+              );
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+
+        if (currentFeature) {
+          let popUps = document.getElementsByClassName("mapboxgl-popup");
+          setStateApp((state) => ({
+            ...state,
+            popupOpen: false,
+            selectedUserDefinedLayer: null,
+            selectedParcel: null,
+          }));
+          setStateApp((state) => ({
+            ...state,
+            selectedPermit: currentFeature.properties,
+          }));
+
+          createPopUp(currentFeature.properties);
+          map.resize();
+
+
+        }
+      }
+    })();
+  }, [loading, stateApp.permitSelectedCoordinates]);
+
   useEffect(() => {
     (async () => {
 

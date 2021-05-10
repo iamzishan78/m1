@@ -28,6 +28,11 @@ const AppProvider = (props) => {
     selectedWellId: null, // move to a selected object context (maybe flyto)
     selectedAbstracts: [], // move to a selected object context (maybe flyto)
     selectedParcel: null, // move to a selected object context (maybe flyto)
+
+    // States for permits
+    selectedPermit: null, 
+    selectedPermitId: null, 
+    permitSelectedCoordinates: [], 
     
     customLayers: [],
     editDraw: false,
