@@ -1040,6 +1040,20 @@ function Map() {
           }));
 
         }
+        else if (properties.Id) {
+          setStateApp((state) => ({
+            ...state,
+            popupOpen: false,
+            selectedUserDefinedLayer: null,
+            selectedParcel: null,
+          }));
+          setStateApp((state) => ({
+            ...state,
+            selectedPermitId: properties.Id.toLowerCase(),
+            PermitSelectedCoordinates: [properties.longitude, properties.latitude],
+          }));
+
+        }
       }
 
     };
@@ -3156,6 +3170,7 @@ function Map() {
         let features = map.queryRenderedFeatures(bbox, {
           layers: ["recent_submitted_permits"],
         });
+
         let currentFeature = features.find(
           (element) =>
             element.properties.Id.toLowerCase() == stateApp.selectedPermitId
