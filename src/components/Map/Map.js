@@ -1,5 +1,3 @@
-
-
 // react imports 
 import React, {
   useContext,
@@ -19,6 +17,7 @@ import { MapControlsContext } from "../MapControls/MapControlsContext";
 // custom components 
 import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
+import PermitCardProvider from "../PermitCard/PermitCardProvider";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
@@ -1050,7 +1049,7 @@ function Map() {
           setStateApp((state) => ({
             ...state,
             selectedPermitId: properties.Id.toLowerCase(),
-            PermitSelectedCoordinates: [properties.longitude, properties.latitude],
+            permitSelectedCoordinates: [properties.longitude, properties.latitude],
           }));
 
         }
@@ -3173,24 +3172,25 @@ function Map() {
 
         let currentFeature = features.find(
           (element) =>
-            element.properties.Id.toLowerCase() == stateApp.selectedPermitId
+			element.properties.Id.toLowerCase() == stateApp.selectedPermitId
         );
         if (!currentFeature) {
           features = map.querySourceFeatures("composite", {
             sourceLayer: "recent_submitted_permits",
-            filter: ["in", "Id", stateApp.selectedPermitId],
+            filter: ["in", "id", stateApp.selectedPermitId],
           });
           currentFeature = features.find(
-            (element) =>
+			(element) =>
               element.properties.Id.toLowerCase() == stateApp.selectedPermitId
           );
-        }
-        if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
-            }`;
+		}
+
+		if (!currentFeature) {
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken }`;
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
-          headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
+		  headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
+
           const options = {
             method: "GET",
             headers: headers,
@@ -3209,19 +3209,16 @@ function Map() {
             });
         }
         if (currentFeature) {
-          let popUps = document.getElementsByClassName("mapboxgl-popup");
+		  let popUps = document.getElementsByClassName("mapboxgl-popup");
           setStateApp((state) => ({
-            ...state,
+			...state,
             popupOpen: false,
             selectedUserDefinedLayer: null,
             selectedParcel: null,
-          }));
-          setStateApp((state) => ({
-            ...state,
             selectedPermit: currentFeature.properties,
           }));
-          createPopUp(currentFeature.properties);
-          map.resize();
+		  createPopUp(currentFeature.properties);
+		  map.resize();
         }
       }
     })();
@@ -4813,6 +4810,28 @@ function Map() {
               cardHeightExpanded="90vh"
               targetSourceId={stateApp.selectedWell.id}
               targetLabel="well"
+            />
+          </div>
+        )
+      }
+
+      {stateApp.selectedPermit !== null && stateApp.expandedCard && (
+          <div className={classes.draggable}>
+            <ExpandableCardProvider
+              expanded
+              handleCloseExpandableCard={handleCloseExpandableCard}
+              component={<PermitCardProvider />}
+              title={stateApp.selectedPermit.permitName}
+              subTitle={stateApp.selectedPermit.api}
+              parent="map"
+              cardTop={20}
+              cardLeft={20}
+              position="relative"
+              zIndex={99}
+              cardWidthExpanded="50vw"
+              cardHeightExpanded="90vh"
+              targetSourceId={stateApp.selectedPermit.Id}
+              targetLabel="recent_submitted_permits"
             />
           </div>
         )
