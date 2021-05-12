@@ -2280,7 +2280,7 @@ function M1nTable(props) {
           for (let i = 0; i < idsToDelete.length; i++) {
             updateParcelOwner({
               variables: {
-                parcelOwner: { _id: idsToDelete[i], IsDeleted: true },
+                parcelOwner: { _id: idsToDelete[i], isDeleted: true },
               },
               refetchQueries: [
                 "getCustomLayer",
