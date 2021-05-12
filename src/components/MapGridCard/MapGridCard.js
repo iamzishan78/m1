@@ -249,6 +249,11 @@ function MapGridCard(props) {
       TrackedTapValue(state);
     }
   };
+  const setViewportTapValue = (state) => {
+    if (viewportTapValue !== state) {
+      ViewportTapValue(state);
+    }
+  };
 
   // styles
   const classes = useStyles({
@@ -616,22 +621,58 @@ function MapGridCard(props) {
                 <TabPanels
                   value={viewportTapValue}
                   panels={[
-                    <div className={classes.viewportWells}>
-                      <M1nTable
-                        id="viewportWellsTable"
-                        dense
-                        parent="mapViewportWells"
-                        header={"Wells"}
-                      />
+                    <M1nTable
+                      dense
+                      parent="trackWells"
+                      header={
+                        <TabLabels
+                          labels={[
+                            `Wells (${stateApp.trackedwells
+                              ? stateApp.trackedwells.length
+                              : 0
+                            })`,
+                            `Tax Owners (${stateApp.owners ? stateApp.owners.length : 0
+                            })`,
+                          ]}
+                          value={viewportTapValue}
+                          setValue={setViewportTapValue}
+                        />
+                      }
+                    />,
+                    <M1nTable
+                      dense
+                      parent="trackOwners"
+                      header={
+                        <TabLabels
+                          labels={[
+                            `Wells (${stateApp.trackedwells
+                              ? stateApp.trackedwells.length
+                              : 0
+                            })`,
+                            `Tax Owners (${stateApp.owners ? stateApp.owners.length : 0
+                            })`,
+                          ]}
+                          value={viewportTapValue}
+                          setValue={setViewportTapValue}
+                        />
+                      }
+                    />,
+                    // <div className={classes.viewportWells}>
+                    //   <M1nTable
+                    //     id="viewportWellsTable"
+                    //     dense
+                    //     parent="mapViewportWells"
+                    //     header={"Wells"}
+                    //   />
 
-                      <h6
-                        id="minimumZoomRequired"
-                        style={{ textAlign: "left", marginLeft: "5rem" }}
-                      >
-                        Please zoom in to leverage this feature (min zoom level
-                        = {stateApp.minZoomToQueryViewport})
-                      </h6>
-                    </div>,
+                    //   <h6
+                    //     id="minimumZoomRequired"
+                    //     style={{ textAlign: "left", marginLeft: "5rem" }}
+                    //   >
+                    //     Please zoom in to leverage this feature (min zoom level
+                    //     = {stateApp.minZoomToQueryViewport})
+                    //   </h6>
+                    // </div>,
                   ]}
                 />
               </div>
