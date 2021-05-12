@@ -1,4 +1,3 @@
-
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../AppContext";
@@ -10,14 +9,14 @@ import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
 import "./index.css";
 import TransactAppBar from "./components/TransactAppBar";
 import TransactTable from "./components/TransactTable";
-import SidePanel from './components/SidePanel'
+import SidePanel from "./components/SidePanel";
 import { useDispatch, useSelector } from "react-redux";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import Drawer from "./components/Drawer";
 import moment from "moment";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
-import DocViewer from '../Shared/DocViewer'
+import DocViewer from "../Shared/DocViewer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -121,7 +120,7 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     flexGrow: 1,
-    marginLeft: "315px"
+    marginLeft: "315px",
   },
 }));
 
@@ -197,7 +196,7 @@ export default function Transact() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { pipeToShow, pipeToShowTab } = useSelector(({ Flow }) => Flow);
-  console.log("PIPETOSHOW: ", pipeToShow)
+  console.log("PIPETOSHOW: ", pipeToShow);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [filteredBoardTransactData, setFilteredBoardTransactData] = useState({
     lanes: [],
@@ -209,8 +208,6 @@ export default function Transact() {
 
   const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
   const [updateDeal] = useMutation(UPDATEDEAL);
-
-
 
   const filterBoardCards = (lanes, filter) => {
     return lanes.map((lane) => {
@@ -288,11 +285,9 @@ export default function Transact() {
     }
   }, [pipeToShowTab, dealFilter]);
 
-  useEffect(() => {
-  }, [filteredTabTransactData]);
+  useEffect(() => {}, [filteredTabTransactData]);
 
-  const handleDataChange = (newData) => {
-  };
+  const handleDataChange = (newData) => {};
 
   const handleCardClick = (cardId, metadata, laneId) => {
     setStateApp((stateApp) => ({
@@ -407,7 +402,7 @@ export default function Transact() {
       if (
         unfilteredTargetLane?.metadata?.dealsStatus &&
         unfilteredTargetLane.metadata.dealsStatus.toLowerCase() !==
-        cardDetails?.metadata?.status?.toLowerCase()
+          cardDetails?.metadata?.status?.toLowerCase()
       )
         updatedDeal = {
           ...updatedDeal,
@@ -523,15 +518,13 @@ export default function Transact() {
     lane &&
       lane.cards.forEach(
         (card) =>
-        (priceSum +=
-          card && card.metadata && card.metadata.offerPrice
-            ? card.metadata.offerPrice
-            : 0)
+          (priceSum +=
+            card && card.metadata && card.metadata.offerPrice
+              ? card.metadata.offerPrice
+              : 0)
       );
 
     const formattedTotal = vf_currency(priceSum);
-
-
 
     let forecast = null;
     let forecastFormatted = "";
@@ -560,10 +553,8 @@ export default function Transact() {
   };
 
   return (
-    <div className={classes.root} >
-      {stateApp.dealDialog
-        && <Drawer />
-      }
+    <div className={classes.root}>
+      {stateApp.dealDialog && <Drawer />}
       <DocViewer></DocViewer>
 
       <AddDealDialog
@@ -623,22 +614,22 @@ export default function Transact() {
                   Card: (cardProps) => getCard(cardProps),
                 }}
 
-              //onCardAdd = {handleCardAdd}
-              //onCardDelete = {handleCardDelete}
-              // handleDragStart = {}
-              // handleDragEnd={}
-              // handleLaneDragStart
-              // onDataChange
-              // onCardAdd
-              // onBeforeCardDelete
-              // onCardDelete
-              // onCardMoveAcrossLanes
-              // onLaneAdd
-              // onLaneDelete
-              // onLaneUpdate
-              // onLaneClick
-              // onLaneScroll
-              //onCardMoveAcrossLanes
+                //onCardAdd = {handleCardAdd}
+                //onCardDelete = {handleCardDelete}
+                // handleDragStart = {}
+                // handleDragEnd={}
+                // handleLaneDragStart
+                // onDataChange
+                // onCardAdd
+                // onBeforeCardDelete
+                // onCardDelete
+                // onCardMoveAcrossLanes
+                // onLaneAdd
+                // onLaneDelete
+                // onLaneUpdate
+                // onLaneClick
+                // onLaneScroll
+                //onCardMoveAcrossLanes
               />
             )}
             {stateApp.dealDisplayType === "table" && (

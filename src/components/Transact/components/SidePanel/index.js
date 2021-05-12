@@ -1,28 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { get } from "lodash";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { TouchBackend } from "react-dnd-touch-backend";
+import { isMobile } from "react-device-detect";
+import { ContextProvider } from "react-sortly";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import {
   Drawer,
   Typography,
   Grid,
-  List,
-  ListItem,
-  ListItemText,
   Tooltip,
   IconButton,
   InputBase,
+  Dialog,
 } from "@material-ui/core";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import CreateNewFolderIcon from "@material-ui/icons/CreateNewFolder";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import DeleteIcon from "@material-ui/icons/Delete";
-import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
 import { makeStyles } from "@material-ui/core/styles";
-import { setFlowState } from "actions";
-import PipelinePopup from "./PipelinePopup";
+import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
+import { setFlowState, showWarningMessage } from "actions";
+import PipelinePopup from "components/Transact/components/PipelinePopup";
+import PipelinesList from "components/Transact/components/SidePanel/PipelinesList";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { DEALSCOUNTINAPIPE } from "graphQL/useQueryNonDeletedDealsCountInAPipeline";
 
+const dnd = isMobile ? TouchBackend : HTML5Backend;
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -63,35 +71,6 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       color: "#fff",
     },
-  },
-  flowlinesList: {
-    margin: "5px 5px 10px 5px",
-    overflowY: "auto",
-    maxHeight: "75%",
-    "&::-webkit-scrollbar": {
-      width: "0.4em",
-    },
-    "&::-webkit-scrollbar-track": {
-      "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#506187",
-      borderRadius: 5,
-    },
-  },
-  listItem: {
-    color: "#fff",
-    backgroundColor: "#0c2150",
-    margin: "5px 10px 0px 6px",
-    borderRadius: "5px",
-    width: "95% !important",
-    "&:hover": {
-      backgroundColor: "#506187",
-    },
-  },
-  listItemIcon: {
-    color: "#fff",
-    float: "right",
   },
   search: {
     position: "relative",
@@ -148,23 +127,40 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SidePanel = ({}) => {
+const SidePanel = ({ }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { selectedPipe, pipelines } = useSelector(({ Flow }) => Flow);
+  const [selectedPipelines, setMultiSelection] = useState([]);
   const [isSearchActive, setSearchState] = useState(false);
   const [filteredPipelines, setPipelines] = useState(pipelines);
-  const [selectedPipelines, setMultiSelection] = useState([]);
+  const [deleteDialogOpen, setModal] = useState(false);
+
+  const [updatePipelines] = useMutation(UPDATEPIPELINES);
+  const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] =
+    useLazyQuery(DEALSCOUNTINAPIPE, {
+      fetchPolicy: "network-only",
+    });
 
   useEffect(() => {
     setPipelines(pipelines);
   }, [pipelines]);
 
   useEffect(() => {
-    if (selectedPipe) {
-      setMultiSelection([selectedPipe._id]);
+    if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
+      // setStateApp((state) => ({
+      //   ...state,
+      //   uniuniversalCircularLoaderAct: false,
+      // }));
+      if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
+        dispatch(
+          showWarningMessage(
+            "There are deals associated to the pipelines, please remove them first."
+          )
+        );
+      else setModal(true);
     }
-  }, [selectedPipe]);
+  }, [dataDealsCountByPipeline]);
 
   const flowlineActions = React.useMemo(
     () => [
@@ -188,44 +184,6 @@ const SidePanel = ({}) => {
     []
   );
 
-  const isCtrlKeyPressed = () => {
-    if (window.event.ctrlKey || window.event.metaKey) return true;
-    return false;
-  };
-
-  const checkMultiSelectPipelines = (newPipeline) => {
-    if (newPipeline._id !== selectedPipe?._id) {
-      if (isCtrlKeyPressed()) {
-        const itemIndex = selectedPipelines.findIndex(
-          (p) => p === newPipeline._id
-        );
-        let newPipelines = [];
-        if (itemIndex === -1) {
-          newPipelines = [...selectedPipelines, newPipeline._id];
-        } else {
-          selectedPipelines.splice(itemIndex, 1);
-          newPipelines = [...selectedPipelines];
-        }
-        setMultiSelection(newPipelines);
-      } else {
-        setMultiSelection([selectedPipe?._id]);
-        return false;
-      }
-    }
-  };
-
-  const onFlowlineSelect = (newPipeline) => {
-    if (checkMultiSelectPipelines(newPipeline)) return;
-    if (selectedPipe._id !== newPipeline._id) {
-      dispatch(
-        setFlowState({
-          selectedPipe: newPipeline,
-          pipeToShow: null,
-        })
-      );
-    }
-  };
-
   const filterSearch = (value) => {
     const newPipelines = pipelines.filter((pipeline) =>
       pipeline.name?.toLowerCase()?.includes(value.toLowerCase())
@@ -238,8 +196,30 @@ const SidePanel = ({}) => {
       case "Add Flowline":
         dispatch(setFlowState({ openPipeDialog: "newPipe" }));
         break;
+      case "Delete Flowline(s)":
+        getDealsCountByPipeline({
+          variables: {
+            pipelinesIds: selectedPipelines,
+          },
+        });
+        break;
       default:
     }
+  };
+
+  const handleDelete = () => {
+    updatePipelines({
+      variables: {
+        pipelines: selectedPipelines.map((pipe) => ({
+          _id: pipe,
+          IsDeleted: true,
+        })),
+      },
+      refetchQueries: ["getPipelines"],
+      awaitRefetchQueries: true,
+    });
+    setMultiSelection([]);
+    setModal(false);
   };
 
   return (
@@ -309,24 +289,17 @@ const SidePanel = ({}) => {
             </Grid>
           </div>
         </div>
-        <List className={classes.flowlinesList}>
-          {filteredPipelines.map((pipeline, index) => (
-            <ListItem
-              button
-              key={index}
-              className={classes.listItem}
-              style={{
-                backgroundColor: `${
-                  selectedPipelines.includes(pipeline._id) ? "#506187" : ""
-                }`,
-              }}
-              onClick={() => checkMultiSelectPipelines(pipeline)}
-            >
-              <ListItemText primary={get(pipeline, "name", pipeline)} />
-              <MenuIcon onClick={() => onFlowlineSelect(pipeline)} />
-            </ListItem>
-          ))}
-        </List>
+        <DndProvider backend={dnd}>
+          <ContextProvider>
+            <PipelinesList
+              selectedPipe={selectedPipe}
+              filteredPipelines={filteredPipelines}
+              selectedPipelines={selectedPipelines}
+              setMultiSelection={setMultiSelection}
+            />
+          </ContextProvider>
+        </DndProvider>
+
         <div className={classes.footer}>
           <Tooltip
             title="Add Flowline"
@@ -343,6 +316,29 @@ const SidePanel = ({}) => {
        * Pipeline Popup for New Pipeline or Edit Pipeline
        */}
       <PipelinePopup />
+      <Dialog
+        className={classes.dialog}
+        open={deleteDialogOpen}
+        onClose={() => setModal(false)}
+        fullWidth={false}
+        maxWidth="sm"
+      >
+        <DeleteConfirmationDialogContent
+          header={
+            selectedPipelines.length > 1
+              ? `Delete Flowline`
+              : `Delete Flowlines`
+          }
+          onClose={() => setModal(false)}
+          deleteFunc={handleDelete}
+          m1nSelectedRowsIds={null}
+          setM1nSelectedRowsIndexes={() => { }}
+        >
+          {selectedPipelines.length > 1
+            ? "Are you sure you want to delete the Flowline?"
+            : "Are you sure you want to delete the Flowlines?"}
+        </DeleteConfirmationDialogContent>
+      </Dialog>
     </>
   );
 };

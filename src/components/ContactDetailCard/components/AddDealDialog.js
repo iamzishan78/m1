@@ -31,30 +31,28 @@ import TaggerWithIcon from "../../Shared/TaggerWithIcon";
 import CommentsWithIcon from "../../Shared/CommentsWithIcon";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
-import { ADDDEAL } from "../../../graphQL/useMutationAddDeal";
+import { ADDDEAL } from "graphQL/useMutationAddDeal";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { UPDATEDEAL } from "../../../graphQL/useMutationUpdateDeal";
-import { UPSERTDEALDESCRIPTOR } from "../../../graphQL/useMutationUpsertDealDescriptor";
-import { UPDATESTAGEDEALDESCRIPTOR } from "../../../graphQL/useMutationUpdateStageDealDescriptor";
+import { UPDATEDEAL } from "graphQL/useMutationUpdateDeal";
+import { UPSERTDEALDESCRIPTOR } from "graphQL/useMutationUpsertDealDescriptor";
+import { UPDATESTAGEDEALDESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
 import {
 	setFlowState,
 	showErrorMessage,
 	showSuccessMessage,
 } from "../../../actions";
-import { GETPIPELINES } from "../../../graphQL/useQueryPipelines";
+import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
 import Drawer from "../../Transact/components/Drawer";
 import Documents from "../../Shared/Documents";
 import AddDialogeUploadZone from "./AddDialogUploadZone";
-import { GETRECENTCONTACTFILES } from "../../../graphQL/useQueryGetContactFiles";
+import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import {
 	VIEWFILEQUERY,
 	VIEWFILESQUERY,
-} from "../../../graphQL/useQueryViewFile";
-import {
-	GETDEAL,
-} from "../../../graphQL/useQueryDeal";
+} from "graphQL/useQueryViewFile";
+import { GETDEAL } from "graphQL/useQueryDeal";
 import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
 import Contacts from "components/FlowDrawer/Contacts";
 

@@ -33,7 +33,7 @@ import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 import { GETPIPELINE } from "../../../graphQL/useQueryPipeline";
 import { ADDPIPELINE } from "../../../graphQL/useMutationAddPipeline";
-import { UPDATEPIPELINE } from "../../../graphQL/useMutationUpdatePipeline";
+import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
 import { ADDSTAGES } from "../../../graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "../../../graphQL/useMutationUpdateStages";
 import { UPDATESTAGE } from "../../../graphQL/useMutationUpdateStage";
@@ -87,7 +87,7 @@ const DialogActions = withStyles((theme) => ({
   },
 }))(MuiDialogActions);
 
-const PipelinePopup = ({}) => {
+const PipelinePopup = ({ }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -100,7 +100,7 @@ const PipelinePopup = ({}) => {
   const [deleteFunc, setDeleteFunc] = useState(null);
 
   const [addPipeline] = useMutation(ADDPIPELINE);
-  const [updatePipeline] = useMutation(UPDATEPIPELINE);
+  const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
 
@@ -190,17 +190,17 @@ const PipelinePopup = ({}) => {
                   pipelineName: pipelineData.pipeline.name,
                   ownerName:
                     card?.metadata?.owners &&
-                    card.metadata.owners[0]?.relatedObject?.name
+                      card.metadata.owners[0]?.relatedObject?.name
                       ? card.metadata.owners[0].relatedObject.name
                       : null,
                   contactName:
                     card?.metadata?.contacts &&
-                    card.metadata.contacts[0]?.relatedObject?.entity?.name
+                      card.metadata.contacts[0]?.relatedObject?.entity?.name
                       ? card.metadata.contacts[0].relatedObject.entity.name
                       : null,
                   isContact:
                     card?.metadata?.contacts &&
-                    card.metadata.contacts[0]?.relatedObject?._id
+                      card.metadata.contacts[0]?.relatedObject?._id
                       ? card.metadata.contacts[0].relatedObject._id
                       : null,
                   ...card.metadata,
@@ -243,14 +243,14 @@ const PipelinePopup = ({}) => {
 
       getDealsCountByPipeline({
         variables: {
-          pipelineId: selectedPipe?._id,
+          pipelinesIds: [selectedPipe?._id],
         },
       });
 
       setDeleteFunc(() => () => {
-        updatePipeline({
+        updatePipelines({
           variables: {
-            pipeline: { _id: selectedPipe._id, IsDeleted: true },
+            pipelines: [{ _id: selectedPipe._id, IsDeleted: true }],
           },
           refetchQueries: ["getPipelines"],
           awaitRefetchQueries: true,
@@ -451,7 +451,7 @@ const PipelinePopup = ({}) => {
           //// if not necessary now
           allPromises.push(
             new Promise((resolve, reject) => {
-              updatePipeline({
+              updatePipelines({
                 variables: {
                   pipeline: pipeToUpdate,
                 },
@@ -459,10 +459,10 @@ const PipelinePopup = ({}) => {
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
-                  data: { updatePipeline },
+                  data: { updatePipelines },
                 } = result;
 
-                if (updatePipeline?.success === false) success = false;
+                if (updatePipelines?.success === false) success = false;
 
                 resolve();
               });
@@ -524,7 +524,7 @@ const PipelinePopup = ({}) => {
                 showErrorMessage("An error occurred during the update.")
               );
           })
-          .catch((reason) => {});
+          .catch((reason) => { });
       }
 
       handleClose();
@@ -540,7 +540,7 @@ const PipelinePopup = ({}) => {
   };
 
   const removeStage = (stage, index) => {
-    if (stages.length == 1)
+    if (stages.length === 1)
       dispatch(
         showWarningMessage(
           "The stage can't be deleted, the pipeline needs at least one stage."
@@ -872,9 +872,9 @@ const PipelinePopup = ({}) => {
             deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`
           }
           onClose={handleCloseDeleteDialog}
-          deleteFunc={deleteFunc ? deleteFunc : () => {}}
+          deleteFunc={deleteFunc ? deleteFunc : () => { }}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           {deleteDialogOpen === "pipe"
             ? "Are you sure you want to delete the Flowline?"

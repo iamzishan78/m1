@@ -33,7 +33,7 @@ import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 import { GETPIPELINE } from "../../../graphQL/useQueryPipeline";
 import { ADDPIPELINE } from "../../../graphQL/useMutationAddPipeline";
-import { UPDATEPIPELINE } from "../../../graphQL/useMutationUpdatePipeline";
+import { UPDATEPIPELINES } from "../../../graphQL/useMutationUpdatePipelines";
 import { ADDSTAGES } from "../../../graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "../../../graphQL/useMutationUpdateStages";
 import { UPDATESTAGE } from "../../../graphQL/useMutationUpdateStage";
@@ -157,7 +157,7 @@ export default function Pipelines(props) {
   const [deleteFunc, setDeleteFunc] = useState(null);
 
   const [addPipeline] = useMutation(ADDPIPELINE);
-  const [updatePipeline] = useMutation(UPDATEPIPELINE);
+  const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
 
@@ -246,17 +246,17 @@ export default function Pipelines(props) {
                   pipelineName: pipelineData.pipeline.name,
                   ownerName:
                     card?.metadata?.owners &&
-                    card.metadata.owners[0]?.relatedObject?.name
+                      card.metadata.owners[0]?.relatedObject?.name
                       ? card.metadata.owners[0].relatedObject.name
                       : null,
                   contactName:
                     card?.metadata?.contacts &&
-                    card.metadata.contacts[0]?.relatedObject?.entity?.name
+                      card.metadata.contacts[0]?.relatedObject?.entity?.name
                       ? card.metadata.contacts[0].relatedObject.entity.name
                       : null,
                   isContact:
                     card?.metadata?.contacts &&
-                    card.metadata.contacts[0]?.relatedObject?._id
+                      card.metadata.contacts[0]?.relatedObject?._id
                       ? card.metadata.contacts[0].relatedObject._id
                       : null,
                   ...card.metadata,
@@ -299,14 +299,14 @@ export default function Pipelines(props) {
 
       getDealsCountByPipeline({
         variables: {
-          pipelineId: selectedPipe?._id,
+          pipelinesIds: [selectedPipe?._id],
         },
       });
 
       setDeleteFunc(() => () => {
-        updatePipeline({
+        updatePipelines({
           variables: {
-            pipeline: { _id: selectedPipe._id, IsDeleted: true },
+            pipelines: [{ _id: selectedPipe._id, IsDeleted: true }],
           },
           refetchQueries: ["getPipelines"],
           awaitRefetchQueries: true,
@@ -514,18 +514,18 @@ export default function Pipelines(props) {
           //// if not necessary now
           allPromises.push(
             new Promise((resolve, reject) => {
-              updatePipeline({
+              updatePipelines({
                 variables: {
-                  pipeline: pipeToUpdate,
+                  pipelines: [pipeToUpdate],
                 },
                 refetchQueries: ["getPipelines", "getPipeline"], //// separete latter to the end all promises
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
-                  data: { updatePipeline },
+                  data: { updatePipelines },
                 } = result;
 
-                if (updatePipeline?.success === false) success = false;
+                if (updatePipelines?.success === false) success = false;
 
                 resolve();
               });
@@ -587,7 +587,7 @@ export default function Pipelines(props) {
                 showErrorMessage("An error occurred during the update.")
               );
           })
-          .catch((reason) => {});
+          .catch((reason) => { });
       }
 
       handleClose();
@@ -956,9 +956,9 @@ export default function Pipelines(props) {
               deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`
             }
             onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => {}}
+            deleteFunc={deleteFunc ? deleteFunc : () => { }}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             {deleteDialogOpen === "pipe"
               ? "Are you sure you want to delete the Flowline?"
