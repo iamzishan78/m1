@@ -16,6 +16,8 @@ import MapGridCardSearch from "./components/MapGridCardSearch";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import Button from "@material-ui/core/Button";
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import { setMapGridCardState } from "../../actions";
 import OwnersSummaryCard from "../OwnersSummaryCard/OwnersSummaryCard";
 
@@ -91,7 +93,7 @@ const useStyles = makeStyles((theme) => {
       position: "fixed",
     },
     tapsRoot: {
-      flexGrow: 1,
+      // flexGrow: 1,
       "& .MuiTab-root": {
         textTransform: "none",
       },
@@ -156,6 +158,15 @@ const useStyles = makeStyles((theme) => {
         display: ({ viewportWells }) => (viewportWells ? "block" : "none"),
       },
     },
+    selectBoundary: {
+      background: 'white',
+      width: '130px',
+      height: '45px',
+      marginTop: '6px',
+      "& .MuiSelect-select.MuiSelect-select": {
+        paddingLeft: '10px',
+      }
+    }
   };
 });
 
@@ -211,6 +222,7 @@ function MapGridCard(props) {
   // function state
   const [searchTapValue, SearchTapValue] = useState(0);
   const [viewportTapValue, ViewportTapValue] = useState(0);
+  const [selectedBoundary, selectBoundary] = useState('Shape Filter');
   const [trackedTapValue, TrackedTapValue] = useState(0);
 
   // selectors
@@ -376,13 +388,28 @@ function MapGridCard(props) {
 
               <Tab
                 className="cancelDraggableEffect"
-                label={`Viewport${stateApp.viewportWells
+                label={`Boundary${stateApp.viewportWells
                   ? " (" + stateApp.viewportWells?.length + ")"
                   : ""
                   }`}
                 {...a11yProps(1)}
-              />
+              >
+
+              </Tab>
             </Tabs>
+            {
+              mapGridCardActiveTap === 2 && <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                className={classes.selectBoundary}
+                value={selectedBoundary}
+                onChange={(e) => { selectBoundary(e.target.value) }}
+              >
+                <MenuItem value={'Shape Filter'}>Shape Filter</MenuItem>
+                <MenuItem value={'Viewport'}>Viewport</MenuItem>
+              </Select>
+            }
+            <div style={{ flexGrow: 1 }}></div>
 
             <IconButton
               className="cancelDraggableEffect"

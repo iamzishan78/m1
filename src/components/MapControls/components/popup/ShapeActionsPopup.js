@@ -442,16 +442,16 @@ const ShapeActionsPopup = (props) => {
         {calculateLandArea()}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
           {/* //temporarily hide until map search grid shape/viewport filter gets built */}
-          {/* <Tooltip title="Grid">
+          <Tooltip title="Grid">
             <IconButton
               size="small"
               onClick={actionShowWellsAndOwners}
               aria-label="Grid"
-              
+
             >
               <GridOnIcon />
             </IconButton>
-          </Tooltip> */}
+          </Tooltip>
           <Tooltip title="Filter">
             <IconButton size="small" onClick={actionFilter} aria-label="Filter">
               <FilterAltIcon
