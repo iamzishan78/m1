@@ -222,7 +222,6 @@ export default function PermitCardDetails(props) {
         temp_row.ReportDate = moment.utc(temp_row.ReportDate).format("MM/YYYY");
         temp.push(temp_row)
       });
-      setProduction(temp);
       if (props.target) {
         setTarget(props.target);
       }
@@ -400,21 +399,6 @@ export default function PermitCardDetails(props) {
                       />
                       <FormControlLabel disabled control={<Switch />} label="Log Scale" />
                     </div>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <WellProdChartProvider />
-                  </Grid>
-                  <Grid item xs={12}>
-                    {
-                      production != null && 
-                      <div className={showSummary ? classes.subContent : classes.subContent2}>
-                        <M1nTable
-                          dense
-                          parent="production_WellDetails"
-                          productionDetails={production}
-                        />
-                      </div>
-                    }
                   </Grid>
                 </Grid>
               </Paper>

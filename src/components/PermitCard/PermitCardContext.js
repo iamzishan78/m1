@@ -2,10 +2,9 @@ import React, { useState, createContext } from 'react'
 const PermitCardContext = createContext([{}, () => {}])
 
 const PermitCardContextProvider = React.memo((props) => {
-  const [statePermitCard, setStateWellCard] = useState({
+  const [statePermitCard, setStatePermitCard] = useState({
     selectedPermit: { permitName: '' },
     openPermitDetails: false,
-    chartData:chartData,
     chartToggleOil: true, 
     chartToggleGas: true, 
     chartToggleWater: true, 
@@ -13,7 +12,7 @@ const PermitCardContextProvider = React.memo((props) => {
 
   })
   return (
-    <PermitCardContext.Provider value={[stateWellCard, setStateWellCard]}>
+    <PermitCardContext.Provider value={[statePermitCard, setStatePermitCard]}>
       {props.children}
     </PermitCardContext.Provider>
   )

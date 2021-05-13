@@ -146,7 +146,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function PermitCard() {
+export default function PermitCard() {
 
   // context
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -187,9 +187,7 @@ function PermitCard() {
 
   useEffect(() => {
     getWellSummaryDetail({
-	  variables: { id: stateApp.selectedPermit.Id },
-	  console.log("asdfasdfasdf");
-	  console.log(stateApp.selectedPermit);
+	  variables: { id: stateApp.selectedPermit.Id }
     });
   }, [stateApp.selectedPermit]);
 
@@ -374,7 +372,7 @@ function PermitCard() {
 	<div style={{ height: "100%" }}>
 	<Card className={classes.card}>
 	<CardContent className={classes.content}>
-	<WellCardDetails target={target} summary={summary} />
+	<PermitCardDetails target={target} summary={summary} />
 	</CardContent>
 	</Card>
 	</div>
