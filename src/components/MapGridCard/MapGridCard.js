@@ -160,9 +160,11 @@ const useStyles = makeStyles((theme) => {
     },
     selectBoundary: {
       background: 'white',
-      width: '130px',
-      height: '45px',
+      width: '180px',
+      height: '35px',
       marginTop: '6px',
+      marginBottom: '6px',
+      marginLeft: '10px',
       "& .MuiSelect-select.MuiSelect-select": {
         paddingLeft: '10px',
       }
