@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { get } from "lodash";
 import { DndProvider } from "react-dnd";
@@ -24,11 +24,13 @@ import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
 import { makeStyles } from "@material-ui/core/styles";
 import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
+import { DUPLICATE_PIPELINES } from "graphQL/useMutationDuplicatePipelines";
 import { setFlowState, showWarningMessage } from "actions";
 import PipelinePopup from "components/Transact/components/PipelinePopup";
 import PipelinesList from "components/Transact/components/SidePanel/PipelinesList";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { DEALSCOUNTINAPIPE } from "graphQL/useQueryNonDeletedDealsCountInAPipeline";
+import { AppContext } from "AppContext";
 
 const dnd = isMobile ? TouchBackend : HTML5Backend;
 const useStyles = makeStyles((theme) => ({
@@ -136,7 +138,9 @@ const SidePanel = ({ }) => {
   const [filteredPipelines, setPipelines] = useState(pipelines);
   const [deleteDialogOpen, setModal] = useState(false);
 
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
+  const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES)
   const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] =
     useLazyQuery(DEALSCOUNTINAPIPE, {
       fetchPolicy: "network-only",
@@ -201,6 +205,19 @@ const SidePanel = ({ }) => {
           variables: {
             pipelinesIds: selectedPipelines,
           },
+        });
+        break;
+      case "Duplicate":
+        duplicatePipelines({
+          variables: {
+            pipelines: selectedPipelines.map((pipe) => ({
+              _id: pipe,
+              name: pipelines.find(p => p._id === pipe).name
+            })),
+            userId: stateApp.user.mongoId
+          },
+          refetchQueries: ["getPipelines"],
+          awaitRefetchQueries: true,
         });
         break;
       default:
