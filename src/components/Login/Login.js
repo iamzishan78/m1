@@ -246,9 +246,9 @@ const Login = (props) => {
           sessionStorage.clear();
           localStorage.clear();
       
-          if(currentAccount) {
-            stateApp.myMSALObj.logout(logoutRequest);
-          }
+          // Need to call this all the time on exception to clear msal cache
+          // in particular when cancelling login to change workspaces
+          stateApp.myMSALObj.logout(logoutRequest);
       
           // window.location.replace(window.location.origin);
           setLoading(false);
