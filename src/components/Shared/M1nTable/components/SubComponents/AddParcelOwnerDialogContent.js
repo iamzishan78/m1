@@ -449,14 +449,16 @@ export default function AddParcelOwnerDialogContent({
             <Grid item xs={4}>
               <h3>Interest</h3>
               <TextField
+                id="standard-number"
+                type="number"
                 size="small"
                 className={classes.maxWidth}
-                multiline
                 value={newOwner.interest}
                 onChange={(e) => {
+                  const value = e.target.value
                   setNewOwner({
                     ...newOwner,
-                    interest: e.target.value,
+                    interest: value ? parseFloat(value): null,
                   });
                 }}
               />
@@ -464,14 +466,16 @@ export default function AddParcelOwnerDialogContent({
             <Grid item xs={4}>
               <h3>NMA</h3>
               <TextField
+                id="standard-number"
+                type="number"
                 size="small"
                 className={classes.maxWidth}
-                multiline
                 value={newOwner.nma}
                 onChange={(e) => {
+                  const value = e.target.value
                   setNewOwner({
                     ...newOwner,
-                    nma: e.target.value,
+                    nma: value ? parseFloat(value): null,
                   });
                 }}
               />
@@ -479,14 +483,16 @@ export default function AddParcelOwnerDialogContent({
             <Grid item xs={4}>
               <h3>NRA</h3>
               <TextField
+                id="standard-number"
+                type="number"
                 size="small"
                 className={classes.maxWidth}
-                multiline
                 value={newOwner.nra}
                 onChange={(e) => {
+                  const value = e.target.value
                   setNewOwner({
                     ...newOwner,
-                    nra: e.target.value,
+                    nra: value ? parseFloat(value): null,
                   });
                 }}
               />
