@@ -9,10 +9,13 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Grid } from "@material-ui/core";
+import get from 'lodash/get'
+
 import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { ADDOWNERTOAPARCEL } from "../../../../../graphQL/useMutationAddOwnerToAParcel";
+import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { UPDATEPARCELOWNER } from "../../../../../graphQL/useMutationUpdateParcelOwner";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
@@ -155,6 +158,9 @@ export default function AddParcelOwnerDialogContent({
     nextFetchPolicy: "cache-first",
   });
 
+  const [addContact, { data: addContactData} ] = useMutation(ADDCONTACT);
+
+
   const [addOwnerToAParcel, { data: mutationData }] = useMutation(
     ADDOWNERTOAPARCEL
   );
@@ -162,6 +168,12 @@ export default function AddParcelOwnerDialogContent({
   const [updateParcelOwner, { data: updateData }] = useMutation(
     UPDATEPARCELOWNER
   );
+
+  useEffect(() => {
+    if(get(addContactData, 'addContact.contact')){
+      setNameAutValue({ name:addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id })
+    }
+  },[addContactData])
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
@@ -342,6 +354,20 @@ export default function AddParcelOwnerDialogContent({
                 isNextPageLoading={isNextPageLoading}
                 loadNextPage={loadNextPage}
                 addNew={true}
+                addNewOnClick={(value) => {
+                  const contact = {name: value};
+                  addContact({
+                      variables: {
+                        contact: {
+                          ...contact,
+                          createBy: stateApp.user.mongoId,
+                          lastUpdateBy: stateApp.user.mongoId,
+                        },
+                      },
+                      refetchQueries: ["getPaginatedContacts", "getContact"],
+                      awaitRefetchQueries: true,
+                    });
+                }}
               />
             </Grid>
 
