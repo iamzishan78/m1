@@ -90,9 +90,9 @@ export default function AddParcelOwnerDialogContent({
     type: "Unknown",
     depthFrom: "",
     depthTo: "",
-    interest: "",
-    nma: "",
-    nra: "",
+    interest: null,
+    nma: null,
+    nra: null,
     customLayer: props.customLayerId,
   });
   const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState(
@@ -225,9 +225,9 @@ export default function AddParcelOwnerDialogContent({
       type: "Unknown",
       depthFrom: "",
       depthTo: "",
-      interest: "",
-      nma: "",
-      nra: "",
+      interest: null,
+      nma: null,
+      nra: null,
       customLayer: props.customLayerId,
     });
     setParcelOwnersRadioBValue("true");
