@@ -5,6 +5,7 @@ import { FormControl, Grid, InputLabel } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import moment from "moment";
+import get from 'lodash/get'
 import Avatar from "react-avatar";
 import Badge from "@material-ui/core/Badge";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -42,6 +43,7 @@ import { setStateIfDeepEqual } from "../../Shared/functions";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import ActivitiesEvent from "./ActivitiesEvent";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { OPENDEALS } from "../../../graphQL/useQueryOpenDeals";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -290,6 +292,7 @@ export default function ActivitiesModal({
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
+  const [addContact, { data: addContactData} ] = useMutation(ADDCONTACT);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
@@ -310,6 +313,12 @@ export default function ActivitiesModal({
       },
     });
   }, [nameAutInputValue]);
+  
+  useEffect(() => {
+    if(get(addContactData, 'addContact.contact')){
+      setNameAutValue({ name:addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id })
+    }
+  },[addContactData])
 
   const loadNextPage = async (pageVariables) => {
     setIsNextPageLoading(true);
@@ -857,6 +866,21 @@ export default function ActivitiesModal({
                       hasNextPage={hasNextPage}
                       isNextPageLoading={isNextPageLoading}
                       loadNextPage={loadNextPage}
+                      addNew={true}
+                      addNewOnClick={(value) => {
+                        const contact = {name: value};
+                        addContact({
+                            variables: {
+                              contact: {
+                                ...contact,
+                                createBy: stateApp.user.mongoId,
+                                lastUpdateBy: stateApp.user.mongoId,
+                              },
+                            },
+                            refetchQueries: ["getPaginatedContacts", "getContact"],
+                            awaitRefetchQueries: true,
+                          });
+                      }}
                     />
                   </div>
 
