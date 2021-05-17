@@ -352,8 +352,8 @@ const SidePanel = ({ }) => {
           setM1nSelectedRowsIndexes={() => { }}
         >
           {selectedPipelines.length > 1
-            ? "Are you sure you want to delete the Flowline?"
-            : "Are you sure you want to delete the Flowlines?"}
+            ? "Are you sure you want to delete the selected flowlines?"
+            : "Are you sure you want to delete the selected flowline?"}
         </DeleteConfirmationDialogContent>
       </Dialog>
     </>
