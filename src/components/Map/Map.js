@@ -1016,16 +1016,28 @@ function Map() {
       // when a well point is clicked 
       // and initiate the mapbox popup 
 
+      console.log("asdfasdf");
+      console.log(feature);
+      console.log(feature.layer.id);
+
       if (feature && feature.properties) {
 
 	let properties = feature.properties;
 
 	// tmp fix because it appears that the data coming back 
 	// from contacts api is slightly different than other apis
-	// need to setup in a standard format         
-	if (!properties.id) { properties.id = properties.wellId }
+	// need to setup in a standard format
+	if (!properties.id) {
+	  if(feature.layer.id == 'recent_submitted_permits'){
+	    properties.id = properties.PermitId
+	    console.log(properties.id);
+	  }
+	  else {
+	    properties.id = properties.wellId
+	  }
+	}
 
-	if (properties.id) {
+	if (properties.id && feature.layer.id == 'wellpoints') {
 	  setStateApp((state) => ({
 	    ...state,
 	    popupOpen: false,
@@ -1039,12 +1051,13 @@ function Map() {
 	  }));
 
 	}
-	else if (properties.Id) {
+	else if (properties.id && feature.layer.id == 'recent_submitted_permits') {
 	  setStateApp((state) => ({
 	    ...state,
 	    popupOpen: false,
 	    selectedUserDefinedLayer: null,
 	    selectedParcel: null,
+	    selectedWellId: null,
 	  }));
 	  setStateApp((state) => ({
 	    ...state,
@@ -3141,15 +3154,13 @@ function Map() {
 	    ...state,
 	    selectedWell: currentFeature.properties,
 	  }));
-
 	  createPopUp(currentFeature.properties);
 	  map.resize();
-
-
 	}
       }
     })();
   }, [loading, stateApp.wellSelectedCoordinates]);
+
 
   // For recently submitted permits
   useEffect(() => {
@@ -4812,7 +4823,8 @@ function Map() {
        )
       }
 
-    {stateApp.selectedPermit !== null && stateApp.expandedCard && (
+    {stateApp.selectedPermit !== null && showExpandableCard &&
+     stateApp.expandedCard && (
       <div className={classes.draggable}>
 	<ExpandableCardProvider
 	  expanded
@@ -4898,6 +4910,7 @@ function Map() {
 	       )}
 	     </PortalD>
 	   )}
+
 	  {stateApp.selectePermit !== null &&
 	   // && stateApp.popupOpen==true
 	   showExpandableCard && (
@@ -4924,6 +4937,7 @@ function Map() {
 	       )}
 	     </PortalD>
 	   )}
+	  
 	  {stateApp.selectedParcel && (
 	    <PortalD id="popupContainer">
 	      {!stateApp.expandedCard && (
