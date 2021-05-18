@@ -186,7 +186,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
         variant="outlined"
       >
         <div className={classes.top} style={{ marginTop: 15 }}>
-          <Pipelines />
+          {/* <Pipelines /> */}
 
           <div className={classes.right}>
             <div className={classes.activeDeals}>
@@ -219,27 +219,24 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
             <ButtonGroup style={{ minHeight: 36 }}>
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "all" && classes.activeBtn
-                }`}
+                className={`${classes.filterToggleBtn} ${dealFilter === "all" && classes.activeBtn
+                  }`}
                 onClick={() => setDealFilter("all")}
               >
                 ALL
               </Button>
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "open" && classes.activeBtn
-                }`}
+                className={`${classes.filterToggleBtn} ${dealFilter === "open" && classes.activeBtn
+                  }`}
                 onClick={() => setDealFilter("open")}
               >
                 OPEN
               </Button>
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "won" && classes.activeBtn
-                }`}
+                className={`${classes.filterToggleBtn} ${dealFilter === "won" && classes.activeBtn
+                  }`}
                 onClick={() => setDealFilter("won")}
               >
                 Won
@@ -247,9 +244,8 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
 
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${
-                  dealFilter === "lost" && classes.activeBtn
-                }`}
+                className={`${classes.filterToggleBtn} ${dealFilter === "lost" && classes.activeBtn
+                  }`}
                 onClick={() => setDealFilter("lost")}
               >
                 Lost

@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import moment from 'moment';
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "@material-ui/core/Button";
@@ -377,6 +378,7 @@ const PipelinePopup = ({ }) => {
             name,
             stages,
             userId: stateApp.user.mongoId,
+            project: `Project ${moment().format('DD/MM/YYYY HH:m')}`
           },
           refetchQueries: ["getPipelines", "getPipeline"],
           awaitRefetchQueries: true,
