@@ -4584,7 +4584,7 @@ function Map() {
   useEffect(() => {
     /////// USE EFFECT  to handle the map zoom /  for selected parcel elements
 
-    if ((stateApp.parcelDetailCardOpen && stateApp.parcelDetailCardOpen === true)) {
+    if ((map && stateApp.parcelDetailCardOpen && stateApp.parcelDetailCardOpen === true)) {
       // set and remove map marker
 
       let coordinates = stateApp.selectedParcel.shapeCenter
