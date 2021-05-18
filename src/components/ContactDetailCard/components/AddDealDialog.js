@@ -57,6 +57,20 @@ import {
 } from "../../../graphQL/useQueryDeal";
 import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
 import Contacts from "components/FlowDrawer/Contacts";
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+  overrides: {
+    MuiIconButton: {
+      root: {
+        '&:hover': {
+          backgroundColor: "$labelcolor"
+        }
+      }
+    }
+  }
+})
+
 
 function NumberFormatCustom(props) {
 	const { inputRef, onChange, ...other } = props;
@@ -154,13 +168,29 @@ const useStyles = makeStyles((theme) => ({
 		marginBottom: "30px",
 		outline: "none",
 	},
-	dealStateOpen: {
+	dealStateOpenWon: {
 		padding: "8px 16px",
 		borderRadius: 5,
 		cursor: "pointer",
 		backgroundColor: "#d9d9d9",
 		"&:hover": {
-			backgroundColor: "#35DA97",
+			backgroundColor: "#a6e5c3",
+			// borderStyle: "solid",
+			fontWeight: 'bold',
+			color: "#54a83c",
+
+		}
+	},
+	dealStateOpenLost: {
+		padding: "8px 16px",
+		borderRadius: 5,
+		cursor: "pointer",
+		backgroundColor: "#d9d9d9",
+		"&:hover": {
+			backgroundColor: "#ffa8a8",
+			// borderStyle: "solid",
+			fontWeight: 'bold',
+			color: "#f96060",
 		}
 	},
 	dealStateClosed: {
@@ -1155,9 +1185,12 @@ function AddDealDialog(props) {
 											viewDoc: null
 										}))
 									}
-									size="large"
+									size="small"
 								>
-									<CloseIcon className={classes.closeIcon} fontSize="medium" />
+									{/* // this is the close icon "x" button for sub panels\ */}
+									<CloseIcon className={classes.closeIcon} 
+									fontSize="small" 
+									/>
 								</IconButton>
 							</div>
 						</Grid>
@@ -1221,7 +1254,7 @@ function AddDealDialog(props) {
 						disabled={updateDealLoading || addContactLoading}
 						onClick={openConfirmationDialog}
 						size="small"
-						style={{ margin: "0 8px" }}
+						style={{ margin: "3px 8px 0 8px" }}
 					>
 						{isDeleting ? (
 							<CircularProgress size={20} color="secondary" />
@@ -1229,7 +1262,7 @@ function AddDealDialog(props) {
 
                           <DeleteIcon
                             className={classes.closeIcon}
-                            fontSize="small"
+                            fontSize="medium"
                           />
                         )}
 											</IconButton>
@@ -1255,7 +1288,7 @@ function AddDealDialog(props) {
 							{(dealState === null || dealState === "open") && (
 								<>
 									<div
-										className={classes.dealStateOpen}
+										className={classes.dealStateOpenWon}
 										onClick={() => setDealState("won")}
 										style={{
 											marginRight: 8,
@@ -1266,7 +1299,7 @@ function AddDealDialog(props) {
 									</div>
 
 									<div
-										className={classes.dealStateOpen}
+										className={classes.dealStateOpenLost}
 										onClick={() => setDealState("lost")}
 										style={{
 											marginBottom: 10,
