@@ -63,9 +63,11 @@ const theme = createMuiTheme({
   overrides: {
     MuiIconButton: {
       root: {
-        '&:hover': {
-          backgroundColor: "$labelcolor"
-        }
+		// color: "red",
+        // '&:hover': {
+        //   color: "red",
+		//   backgroundColor: "#ffa8a8"
+        // }
       }
     }
   }
@@ -1250,6 +1252,9 @@ function AddDealDialog(props) {
                       iconZiseSmall={true}
                       dark={true}
                     /> */}
+
+					<MuiThemeProvider theme={theme}>
+
 					<IconButton
 						disabled={updateDealLoading || addContactLoading}
 						onClick={openConfirmationDialog}
@@ -1265,7 +1270,9 @@ function AddDealDialog(props) {
                             fontSize="medium"
                           />
                         )}
-											</IconButton>
+						</IconButton>
+						</MuiThemeProvider>
+
 										</>
 									)}
 
