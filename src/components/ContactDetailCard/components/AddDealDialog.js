@@ -127,17 +127,17 @@ const useStyles = makeStyles((theme) => ({
 		marginLeft: "30px",
 		verticalAlign: "middle",
 	},
-	dialogFooter: {
-		display: "flex",
-		justifyContent: "flex-end",
-		paddingTop: "10px",
-	},
-	footerButton: {
-		letterSpacing: "1px",
-		textTransform: "capitalize",
-		fontWeight: "bold",
-		padding: "8px 20px",
-	},
+	// dialogFooter: {
+	// 	display: "flex",
+	// 	justifyContent: "flex-end",
+	// 	paddingTop: "10px",
+	// },
+	// footerButton: {
+	// 	letterSpacing: "1px",
+	// 	textTransform: "capitalize",
+	// 	fontWeight: "bold",
+	// 	padding: "8px 20px",
+	// },
 
 	label: {
 		backgroundColor: "white",
@@ -145,8 +145,10 @@ const useStyles = makeStyles((theme) => ({
 
 	closeIcon: {
 		color: theme.palette.secondary.main,
+		"&:hover": {
+			color: "#35DA97",
+		}
 	},
-
 	topBtnGroup: {},
 	inputField: {
 		marginBottom: "30px",
@@ -1153,9 +1155,9 @@ function AddDealDialog(props) {
 											viewDoc: null
 										}))
 									}
-									size="small"
+									size="large"
 								>
-									<CloseIcon className={classes.closeIcon} fontSize="small" />
+									<CloseIcon className={classes.closeIcon} fontSize="medium" />
 								</IconButton>
 							</div>
 						</Grid>
@@ -1215,15 +1217,15 @@ function AddDealDialog(props) {
                       iconZiseSmall={true}
                       dark={true}
                     /> */}
-											<IconButton
-												disabled={updateDealLoading || addContactLoading}
-												onClick={openConfirmationDialog}
-												size="small"
-												style={{ margin: "0 8px" }}
-											>
-												{isDeleting ? (
-													<CircularProgress size={20} color="secondary" />
-												) : (
+					<IconButton
+						disabled={updateDealLoading || addContactLoading}
+						onClick={openConfirmationDialog}
+						size="small"
+						style={{ margin: "0 8px" }}
+					>
+						{isDeleting ? (
+							<CircularProgress size={20} color="secondary" />
+						) : (
 
                           <DeleteIcon
                             className={classes.closeIcon}
@@ -1242,7 +1244,6 @@ function AddDealDialog(props) {
 									<CloseIcon className={classes.closeIcon} fontSize="small" />
 								</IconButton> */}
 							</div>
-						</Grid>
 						<div
 							style={{
 								display: "flex",
@@ -1258,13 +1259,18 @@ function AddDealDialog(props) {
 										onClick={() => setDealState("won")}
 										style={{
 											marginRight: 8,
+											marginBottom: 10,
 										}}
 									>
 										Won
 									</div>
+
 									<div
 										className={classes.dealStateOpen}
 										onClick={() => setDealState("lost")}
+										style={{
+											marginBottom: 10,
+										}}
 									>
 										Lost
 									</div>
@@ -1277,6 +1283,7 @@ function AddDealDialog(props) {
 										style={{
 											backgroundColor: "#35DA97",
 											marginRight: 8,
+									
 										}}
 									>
 										Won
@@ -1309,6 +1316,8 @@ function AddDealDialog(props) {
 								</>
 							)}
 						</div>
+						</Grid>
+
 						<div className={classes.inputFieldDateRoot}>
 							<TextField
 								margin="dense"
