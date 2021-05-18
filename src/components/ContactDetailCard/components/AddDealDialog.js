@@ -157,6 +157,9 @@ const useStyles = makeStyles((theme) => ({
 		borderRadius: 5,
 		cursor: "pointer",
 		backgroundColor: "#d9d9d9",
+		"&:hover": {
+			backgroundColor: "#35DA97",
+		}
 	},
 	dealStateClosed: {
 		padding: "8px 16px",
@@ -561,6 +564,8 @@ function AddDealDialog(props) {
 	  }
 
 	const handleClose = () => {
+		handleValidate()
+		handleUpdate()
 		setTitle("");
 		setLabel("");
 		setDescription("");
@@ -828,7 +833,7 @@ function AddDealDialog(props) {
 				});
 			}
 
-			if (closeAfterUpdate) handleClose();
+			// if (closeAfterUpdate) handleClose();
 		}
 	};
 
@@ -1229,13 +1234,13 @@ function AddDealDialog(props) {
 										</>
 									)}
 
-								<IconButton
+								{/* <IconButton
 									disabled={updateDealLoading || addContactLoading}
 									onClick={handleClose}
 									size="small"
 								>
 									<CloseIcon className={classes.closeIcon} fontSize="small" />
-								</IconButton>
+								</IconButton> */}
 							</div>
 						</Grid>
 						<div
@@ -1537,7 +1542,7 @@ function AddDealDialog(props) {
 									handleOpenExpandableCard={handleOpenExpandableCard}
 								></AddDialogeUploadZone>
 							</div>
-							<div className={classes.dialogFooter}>
+							{/* <div className={classes.dialogFooter}>
 								<Button
 									variant="contained"
 									color="default"
@@ -1578,7 +1583,7 @@ function AddDealDialog(props) {
 
                   )}
 								</Button>
-							</div>
+							</div> */}
 						</div>
 					</div>
 				</RightDialog>
