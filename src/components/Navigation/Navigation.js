@@ -1679,7 +1679,7 @@ export default function Navigation(props) {
                 className={`${classes.sideNavText} uppercase`}
                 primary="Contacts"
               />
-              <ListItemSecondaryAction className={classes.sideNavAction}>
+              {/* <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button
                   disabled
                   className={`${classes.betaSideNav3} uppercase`}
@@ -1688,7 +1688,7 @@ export default function Navigation(props) {
                 >
                   beta
                 </Button>
-              </ListItemSecondaryAction>
+              </ListItemSecondaryAction> */}
             </div>
           </ListItem>
 

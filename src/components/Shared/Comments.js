@@ -561,10 +561,10 @@ export default function Comments(props) {
           {!emptyInput ? (
             <Grid item xs={12}>
               <p className={classes.foodText}>
-                <span>Shift+Return</span> to add a new line
+                <span>Shift+Enter</span> to add a new line
               </p>
               <p className={classes.foodText}>
-                <span>Return</span> to save
+                <span>Enter</span> to save
               </p>
             </Grid>
           ) : (
