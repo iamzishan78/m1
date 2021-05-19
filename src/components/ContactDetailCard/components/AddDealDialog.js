@@ -55,6 +55,22 @@ import {
 import { GETDEAL } from "graphQL/useQueryDeal";
 import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
 import Contacts from "components/FlowDrawer/Contacts";
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+  overrides: {
+    MuiIconButton: {
+      root: {
+		// color: "red",
+        // '&:hover': {
+        //   color: "red",
+		//   backgroundColor: "#ffa8a8"
+        // }
+      }
+    }
+  }
+})
+
 
 function NumberFormatCustom(props) {
 	const { inputRef, onChange, ...other } = props;
@@ -125,17 +141,17 @@ const useStyles = makeStyles((theme) => ({
 		marginLeft: "30px",
 		verticalAlign: "middle",
 	},
-	dialogFooter: {
-		display: "flex",
-		justifyContent: "flex-end",
-		paddingTop: "10px",
-	},
-	footerButton: {
-		letterSpacing: "1px",
-		textTransform: "capitalize",
-		fontWeight: "bold",
-		padding: "8px 20px",
-	},
+	// dialogFooter: {
+	// 	display: "flex",
+	// 	justifyContent: "flex-end",
+	// 	paddingTop: "10px",
+	// },
+	// footerButton: {
+	// 	letterSpacing: "1px",
+	// 	textTransform: "capitalize",
+	// 	fontWeight: "bold",
+	// 	padding: "8px 20px",
+	// },
 
 	label: {
 		backgroundColor: "white",
@@ -143,18 +159,39 @@ const useStyles = makeStyles((theme) => ({
 
 	closeIcon: {
 		color: theme.palette.secondary.main,
+		"&:hover": {
+			color: "#35DA97",
+		}
 	},
-
 	topBtnGroup: {},
 	inputField: {
 		marginBottom: "30px",
 		outline: "none",
 	},
-	dealStateOpen: {
+	dealStateOpenWon: {
 		padding: "8px 16px",
 		borderRadius: 5,
 		cursor: "pointer",
 		backgroundColor: "#d9d9d9",
+		"&:hover": {
+			backgroundColor: "#a6e5c3",
+			// borderStyle: "solid",
+			fontWeight: 'bold',
+			color: "#54a83c",
+
+		}
+	},
+	dealStateOpenLost: {
+		padding: "8px 16px",
+		borderRadius: 5,
+		cursor: "pointer",
+		backgroundColor: "#d9d9d9",
+		"&:hover": {
+			backgroundColor: "#ffa8a8",
+			// borderStyle: "solid",
+			fontWeight: 'bold',
+			color: "#f96060",
+		}
 	},
 	dealStateClosed: {
 		padding: "8px 16px",
@@ -559,6 +596,8 @@ function AddDealDialog(props) {
 	}
 
 	const handleClose = () => {
+		handleValidate()
+		handleUpdate()
 		setTitle("");
 		setLabel("");
 		setDescription("");
@@ -826,7 +865,7 @@ function AddDealDialog(props) {
 				});
 			}
 
-			if (closeAfterUpdate) handleClose();
+			// if (closeAfterUpdate) handleClose();
 		}
 	};
 
@@ -1148,7 +1187,10 @@ function AddDealDialog(props) {
 									}
 									size="small"
 								>
-									<CloseIcon className={classes.closeIcon} fontSize="small" />
+									{/* // this is the close icon "x" button for sub panels\ */}
+									<CloseIcon className={classes.closeIcon} 
+									fontSize="small" 
+									/>
 								</IconButton>
 							</div>
 						</Grid>
@@ -1208,34 +1250,39 @@ function AddDealDialog(props) {
                       iconZiseSmall={true}
                       dark={true}
                     /> */}
-											<IconButton
-												disabled={updateDealLoading || addContactLoading}
-												onClick={openConfirmationDialog}
-												size="small"
-												style={{ margin: "0 8px" }}
-											>
-												{isDeleting ? (
-													<CircularProgress size={20} color="secondary" />
-												) : (
+
+					<MuiThemeProvider theme={theme}>
+
+					<IconButton
+						disabled={updateDealLoading || addContactLoading}
+						onClick={openConfirmationDialog}
+						size="small"
+						style={{ margin: "3px 8px 0 8px" }}
+					>
+						{isDeleting ? (
+							<CircularProgress size={20} color="secondary" />
+						) : (
 
 													<DeleteIcon
 														className={classes.closeIcon}
-														fontSize="small"
+
+                            fontSize="medium"
 													/>
 												)}
-											</IconButton>
+						</IconButton>
+						</MuiThemeProvider>
+
 										</>
 									)}
 
-								<IconButton
+								{/* <IconButton
 									disabled={updateDealLoading || addContactLoading}
 									onClick={handleClose}
 									size="small"
 								>
 									<CloseIcon className={classes.closeIcon} fontSize="small" />
-								</IconButton>
+								</IconButton> */}
 							</div>
-						</Grid>
 						<div
 							style={{
 								display: "flex",
@@ -1247,17 +1294,22 @@ function AddDealDialog(props) {
 							{(dealState === null || dealState === "open") && (
 								<>
 									<div
-										className={classes.dealStateOpen}
+										className={classes.dealStateOpenWon}
 										onClick={() => setDealState("won")}
 										style={{
 											marginRight: 8,
+											marginBottom: 10,
 										}}
 									>
 										Won
 									</div>
+
 									<div
-										className={classes.dealStateOpen}
+										className={classes.dealStateOpenLost}
 										onClick={() => setDealState("lost")}
+										style={{
+											marginBottom: 10,
+										}}
 									>
 										Lost
 									</div>
@@ -1270,6 +1322,7 @@ function AddDealDialog(props) {
 										style={{
 											backgroundColor: "#35DA97",
 											marginRight: 8,
+									
 										}}
 									>
 										Won
@@ -1302,6 +1355,8 @@ function AddDealDialog(props) {
 								</>
 							)}
 						</div>
+						</Grid>
+
 						<div className={classes.inputFieldDateRoot}>
 							<TextField
 								margin="dense"
@@ -1535,7 +1590,7 @@ function AddDealDialog(props) {
 									handleOpenExpandableCard={handleOpenExpandableCard}
 								></AddDialogeUploadZone>
 							</div>
-							<div className={classes.dialogFooter}>
+							{/* <div className={classes.dialogFooter}>
 								<Button
 									variant="contained"
 									color="default"
@@ -1576,7 +1631,7 @@ function AddDealDialog(props) {
 
 									)}
 								</Button>
-							</div>
+							</div> */}
 						</div>
 					</div>
 				</RightDialog>
