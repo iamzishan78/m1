@@ -1333,7 +1333,7 @@ function AddDealDialog(props) {
 										className={classes.dealStateReopen}
 										onClick={() => setDealState(null)}
 									>
-										ReOpen
+										Re-open
 									</div>
 								</>
 							)}
@@ -1354,7 +1354,7 @@ function AddDealDialog(props) {
 										className={classes.dealStateReopen}
 										onClick={() => setDealState(null)}
 									>
-										ReOpen
+										Re-open
 									</div>
 								</>
 							)}
