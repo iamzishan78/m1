@@ -17,6 +17,7 @@ import {
   faFilePowerpoint,
   faFileWord,
   faFileExcel,
+  faFile,
 } from "@fortawesome/free-solid-svg-icons";
 // import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
@@ -354,7 +355,13 @@ export default function Documents(props) {
           />
         );
       default:
-        return <span>{fileExtension}</span>;
+        // return <span>{fileExtension}</span>;
+        return (
+          <FontAwesomeIcon
+            icon={faFile}
+            style={{ fontSize: "5.5rem", color: "#D04424" }}
+          />
+        );
     }
   };
 
