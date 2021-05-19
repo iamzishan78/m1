@@ -65,23 +65,6 @@ function SupportCenterModal(props) {
         <M1neralLogoStyled />
       </DialogTitle>
       <List>
-        {/* <ListItem autoFocus button>
-          <ListItemAvatar>
-            <ScreenShareIcon color="secondary" fontSize="large" />
-          </ListItemAvatar>
-          <ListItemText
-            primary="Draw on the screen feedback tool"
-            secondary="Provide feedback with a screenshot"
-          />
-          <Switch
-            checked={stateApp.userSnap}
-            onChange={toggleUserSnap}
-            color="primary"
-            name="checkedB"
-            inputProps={{ "aria-label": "primary checkbox" }}
-          />
-        </ListItem> */}
-
         <ListItem autoFocus button onClick={openContactForm}>
           <ListItemAvatar>
             <RateReviewIcon color="secondary" fontSize="large" />
