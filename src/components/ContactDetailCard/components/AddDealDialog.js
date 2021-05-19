@@ -196,7 +196,8 @@ const useStyles = makeStyles((theme) => ({
 	dealStateClosed: {
 		padding: "8px 16px",
 		borderRadius: 18,
-		color: "#fff",
+
+		// color: "#fff",
 	},
 	dealStateReopen: {
 		padding: "2px 10px",
@@ -1320,8 +1321,9 @@ function AddDealDialog(props) {
 									<div
 										className={classes.dealStateClosed}
 										style={{
-											backgroundColor: "#35DA97",
-											marginRight: 8,
+											backgroundColor: "#a6e5c3",
+											fontWeight: 'bold',
+											color: "#54a83c",											marginRight: 8,
 									
 										}}
 									>
@@ -1331,7 +1333,7 @@ function AddDealDialog(props) {
 										className={classes.dealStateReopen}
 										onClick={() => setDealState(null)}
 									>
-										Repoen
+										ReOpen
 									</div>
 								</>
 							)}
@@ -1340,8 +1342,10 @@ function AddDealDialog(props) {
 									<div
 										className={classes.dealStateClosed}
 										style={{
-											backgroundColor: "#F74E1E",
-											marginRight: 8,
+											backgroundColor: "#ffa8a8",
+											// borderStyle: "solid",
+											fontWeight: 'bold',
+											color: "#f96060",											marginRight: 8,
 										}}
 									>
 										Lost
@@ -1350,7 +1354,7 @@ function AddDealDialog(props) {
 										className={classes.dealStateReopen}
 										onClick={() => setDealState(null)}
 									>
-										Repoen
+										ReOpen
 									</div>
 								</>
 							)}
