@@ -465,6 +465,7 @@ export default function Comments(props) {
             : {}
         }
       >
+        
         <Grid container>
           {(props.detailCard || props.handleRightDialogClose) && (
             <Grid item xs={12} style={{ minHeight: "35px" }}>
