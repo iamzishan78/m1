@@ -7,6 +7,8 @@ import TextField from "@material-ui/core/TextField";
 import { useDispatch } from "react-redux";
 
 import Taps from "../Shared/Taps";
+import TabPanels from "components/Shared/TabPanels"
+import TabButtons from "components/Shared/TabPanels/TabButtons"
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 import QtrQtrSelector from "./components/QtrQtrSelector";
@@ -145,12 +147,31 @@ const useStyles = makeStyles((theme) => ({
      },
     },
   },
+  tapsPanels: {
+    "& .MuiBox-root": { padding: "0" },
+  },
+  tapsPanelsPadding: {
+    "& .MuiBox-root": { padding: "0" },
+  },
+  tapsLabelsButtonsSelected: {
+    boxShadow: "none",
+    color: "#fff",
+    backgroundColor: theme.palette.secondary.main,
+    "&:hover": { color: "#757575", boxShadow: "none !important" },
+  },
+  tapsLabelsButtons: {
+    boxShadow: "none",
+    backgroundColor: "#fff",
+    color: "#757575",
+    "&:hover": { boxShadow: "none !important" },
+  },
 }));
 
 export default function ParcelsDetailCard(props) {
   
   const classes = useStyles();
   const dispatch = useDispatch();
+  const [selectedTab, setSelectedTab] = useState(0);
   const [parcelObj, setParcelObj] = useState();
   const [parcelWells, setParcelWells] = useState();
   const [parcelProperties, setProperties] = useState();
@@ -234,6 +255,19 @@ export default function ParcelsDetailCard(props) {
       });
     }
   };
+
+const Header = () => (
+  <TabButtons
+    labels={[
+      "Parcel Ownership",
+      "Suggested Ownership",
+    ]}
+    value={selectedTab}
+    setValue={(n) => {
+      setSelectedTab(n);
+    }}
+  />
+);
 
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
@@ -349,10 +383,17 @@ export default function ParcelsDetailCard(props) {
         <Taps
           tabLabels={["Interest Owners"]}
           tabPanels={[
-            <div className={classes.subContent}>
-            <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense />
-            </div>,
-            // <M1nTable parent="ownersPerParcelWells" dense />
+            <TabPanels
+              value={selectedTab}
+              panels={[
+                <div className={classes.subContent}>
+                  <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense header={<Header />} />
+                </div>,
+                <div className={classes.subContent}>
+                  <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense header={<Header />} />
+                </div>
+              ]}
+            />
           ]}
         />
       </Grid>

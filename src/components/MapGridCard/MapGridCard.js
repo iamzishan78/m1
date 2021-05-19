@@ -1,8 +1,6 @@
-import React, { useState, useContext, useEffect } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import React, { useState, useContext } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../AppContext";
-import Draggable from "react-draggable";
 import Card from "@material-ui/core/Card";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -10,43 +8,18 @@ import CloseIcon from "@material-ui/icons/Close";
 import ExpandIcon from "../Shared/svgIcons/ExpandIcon";
 import ShrinkIcon from "../Shared/svgIcons/ShrinkIcon";
 import IconButton from "@material-ui/core/IconButton";
-import PropTypes from "prop-types";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import Box from "@material-ui/core/Box";
 import MapGridCardSearch from "./components/MapGridCardSearch";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import Button from "@material-ui/core/Button";
 import { setMapGridCardState } from "../../actions";
 import OwnersSummaryCard from "../OwnersSummaryCard/OwnersSummaryCard";
+import TabPanels, { TabPanel } from "components/Shared/TabPanels"
+import TabButtons from "components/Shared/TabPanels/TabButtons"
 
 import ContactsHeadCells from '../Shared/constants/contacts-header-schema.js'
-import WellsHeadCells from '../Shared/constants/well-header-schema.js'
 import wellsColumnHeaders from '../Shared/constants/well-interests-header-grid-schema.js'
-import parcelsColumnHeaders from '../Shared/constants/parcel-header-grid.js'
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box p={3}>{children}</Box>}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
-};
 
 function a11yProps(index) {
   return {
@@ -158,53 +131,9 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-
-const TabLabels = ({ labels, value, setValue }) => {
-  const classes = useStyles();
-
-  return (
-    <>
-      {labels &&
-        labels.length &&
-        labels.map((label, i) => (
-          <Button
-            key={i}
-            size="small"
-            variant="contained"
-            className={
-              value === i
-                ? classes.tapsLabelsButtonsSelected
-                : classes.tapsLabelsButtons
-            }
-            onClick={() => {
-              setValue(i);
-            }}
-          >
-            {label}
-          </Button>
-        ))}
-    </>
-  );
-};
-
 function tabPanelsPropsAreEqual(prevProps, nextProps) {
   return Object.is(prevProps.value, nextProps.value);
 }
-
-const TabPanels = ({ panels, value }) => {
-
-  const classes = useStyles();
-  return (
-    panels &&
-    panels.length &&
-    panels.map((panel, i) => (
-      <TabPanel key={i} value={value} index={i} className={classes.tapsPanels}>
-        {panel}
-      </TabPanel>
-    ))
-  );
-};
-
 
 const ownersColumnHeaders = [
   {
@@ -457,7 +386,7 @@ function MapGridCard(props) {
   };
 
   const SearchTabPanels = () => (
-    <TabLabels
+    <TabButtons
       labels={[
         "Wells",
         "Tax Owners",
@@ -680,7 +609,7 @@ function MapGridCard(props) {
                         dense
                         parent="trackWells"
                         header={
-                          <TabLabels
+                          <TabButtons
                             labels={[
                               `Wells (${stateApp.trackedwells
                                 ? stateApp.trackedwells.length
@@ -700,7 +629,7 @@ function MapGridCard(props) {
                         dense
                         parent="trackOwners"
                         header={
-                          <TabLabels
+                          <TabButtons
                             labels={[
                               `Wells (${stateApp.trackedwells
                                 ? stateApp.trackedwells.length
@@ -795,4 +724,4 @@ function areEqual(prevProps, nextProps) {
   );
 }
 
-export default React.memo(MapGridCard, areEqual, TabLabels, TabPanels);
+export default React.memo(MapGridCard, areEqual);

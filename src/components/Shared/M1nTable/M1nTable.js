@@ -1848,7 +1848,7 @@ function M1nTable(props) {
     if (props.parent && props.parent === "ownersPerParcel") {
       setLoading(true);
       setTargetLabel("Parcel Ownership");
-      setHeader("Parcel Ownership");
+      props.header ? setHeader(props.header) :  setHeader("Parcel Ownership");
       setAddAble({
         type: "ownerToParcel",
         customLayerId: props.customLayer._id,
