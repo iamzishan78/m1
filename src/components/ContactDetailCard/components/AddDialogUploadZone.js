@@ -291,9 +291,33 @@ export default function Documents(props) {
           />
         );
       case "csv":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
       case "xlsx":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
       case "xlsb":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
       case "xlsm":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
       case "xltx":
         return (
           <FontAwesomeIcon
@@ -301,16 +325,28 @@ export default function Documents(props) {
             style={{ fontSize: "2rem", color: "#207244" }}
           />
         );
-      case ".doc":
-      case ".docx":
+      case "doc":
+        return(
+          <FontAwesomeIcon
+            icon={faFileWord}
+            style={{ fontSize: "2rem", color: "#2A5599" }}
+          />
+        )
+      case "docx":
         return (
           <FontAwesomeIcon
             icon={faFileWord}
             style={{ fontSize: "2rem", color: "#2A5599" }}
           />
         );
-      case ".ppt":
-      case ".pptx":
+      case "ppt":
+        return (
+          <FontAwesomeIcon
+            icon={faFilePowerpoint}
+            style={{ fontSize: "5.5rem", color: "#D04424" }}
+          />
+        );
+      case "pptx":
         return (
           <FontAwesomeIcon
             icon={faFilePowerpoint}
@@ -330,10 +366,6 @@ export default function Documents(props) {
             <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>
             <h4
               className={classes.viewAll}
-              // onClick={(e) => {
-              //   e.preventDefault();
-              //   props.viewAll("comments");
-              // }}
 
               onClick={() => {
                 setStateApp((stateApp) => ({
