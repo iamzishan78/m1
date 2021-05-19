@@ -556,6 +556,7 @@ const useStyles = makeStyles((theme) => ({
     position: "fixed",
     left: drawerWidth,
     bottom: "30px",
+    zIndex: "9999999 !important",
     background: "rgba(255, 255, 255, 1.0)",
     "& .MuiListItem-gutters": {
       paddingRight: "30px",
@@ -1053,6 +1054,12 @@ export default function Navigation(props) {
 
   const handleDrawerOpen = () => {
     setOpenDrawer(true);
+  };
+
+  const handleSupportOpen = () => {
+    setOpenDrawer(false);
+    setSupportDrawer(false);
+    setOpenSupportCenter(true);
   };
 
   const handleClickLogo = () => {
@@ -1627,11 +1634,15 @@ export default function Navigation(props) {
               />
             </div>
           </ListItem>
-          {supportDrawer && (
+
+        </List>
+      </Drawer>
+
+      {supportDrawer && (
             <ClickAwayListener onClickAway={() => setSupportDrawer(false)}>
               <div className={classes.supportDrawer}>
                 <List component="div">
-                  <ListItem button onClick={() => setOpenSupportCenter(true)}>
+                  <ListItem button onClick={() => handleSupportOpen()}>
                     <ListItemIcon>
                       <HeadsetIcon />
                     </ListItemIcon>
@@ -1648,17 +1659,18 @@ export default function Navigation(props) {
             </ClickAwayListener>
           )}
 
-          <SupportCenterModal
-            open={openSupportCenter}
-            openContactForm={handleOpenContactForm}
-            onClose={() => setOpenSupportCenter(false)}
-          />
+          <ClickAwayListener onClickAway={() => setOpenSupportCenter(false)}>
+              <SupportCenterModal
+                open={openSupportCenter}
+                openContactForm={handleOpenContactForm}
+                onClose={() => setOpenSupportCenter(false)}
+              />
+          </ClickAwayListener>
+
           <ContactFormModal
             open={openContactForm}
             onClose={() => setOpenContactForm(false)}
           />
-        </List>
-      </Drawer>
 
       {openFilterCard ? (
         <div ref={anchorEl} className={classes.tabPanelWrapper}>

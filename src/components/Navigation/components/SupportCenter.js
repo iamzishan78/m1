@@ -55,10 +55,6 @@ function SupportCenterModal(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const { open, onClose, openContactForm } = props;
 
-  // const toggleUserSnap = () => {
-  //   setStateApp({ ...stateApp, userSnap: !stateApp.userSnap });
-  // };
-
   return (
     <Dialog aria-labelledby="simple-dialog-title" open={open} onClose={onClose}>
       <DialogTitle id="simple-dialog-title" className={classes.dialogTitle}>
