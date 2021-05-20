@@ -4,7 +4,7 @@ import { Flipped } from "react-flip-toolkit";
 import { useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import { ListItem, ListItemText } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import MenuIcon from '@material-ui/icons/MoreHoriz';
+import MenuIcon from '@material-ui/icons/MenuIcon';
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
