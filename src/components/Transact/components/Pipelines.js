@@ -625,8 +625,9 @@ export default function Pipelines(props) {
 
   return (
     <React.Fragment>
-      <ButtonGroup>
-        <Autocomplete
+
+        {/* can likely be removed but commenting out for now */}
+        {/* <Autocomplete
           size="small"
           style={{ minWidth: 210, marginLeft: 12 }}
           options={optionsWithHeader}
@@ -672,7 +673,8 @@ export default function Pipelines(props) {
               })
             );
           }}
-        />
+        /> */}
+
         <IconButton
           disabled={!selectedPipe}
           size="small"
@@ -686,7 +688,6 @@ export default function Pipelines(props) {
         >
           <SettingsIcon />
         </IconButton>
-      </ButtonGroup>
 
       {/* //// pipelines dialog //// */}
       {openPipeDialog && (

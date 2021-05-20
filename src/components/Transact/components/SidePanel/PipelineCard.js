@@ -4,7 +4,7 @@ import { Flipped } from "react-flip-toolkit";
 import { useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import { ListItem, ListItemText } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import MenuIcon from '@material-ui/icons/MoreHoriz';
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -82,7 +82,7 @@ const PipelineCard = (props) => {
           onClick={() => checkMultiSelectPipelines(pipeline)}
         >
           <ListItemText ref={drag} primary={get(pipeline, "name", pipeline)} />
-          <MoreHorizIcon onClick={() => onFlowlineSelect(pipeline)} />
+          <MenuIcon onClick={() => onFlowlineSelect(pipeline)} />
         </ListItem>
       </div>
     </Flipped>
