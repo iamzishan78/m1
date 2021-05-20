@@ -1016,10 +1016,6 @@ function Map() {
       // when a well point is clicked 
       // and initiate the mapbox popup 
 
-      console.log("asdfasdf");
-      console.log(feature);
-      console.log(feature.layer.id);
-
       if (feature && feature.properties) {
 
 	let properties = feature.properties;
@@ -1027,17 +1023,11 @@ function Map() {
 	// tmp fix because it appears that the data coming back 
 	// from contacts api is slightly different than other apis
 	// need to setup in a standard format
-	if (!properties.id) {
-	  if(feature.layer.id == 'recent_submitted_permits'){
-	    properties.id = properties.PermitId
-	    console.log(properties.id);
-	  }
-	  else {
-	    properties.id = properties.wellId
-	  }
+	if (!properties.id && feature.layer.id === "wellpoints") {
+	  properties.id = properties.wellId
 	}
 
-	if (properties.id && feature.layer.id == 'wellpoints') {
+	if (properties.id && feature.layer.id === "wellpoints") {
 	  setStateApp((state) => ({
 	    ...state,
 	    popupOpen: false,
@@ -1049,27 +1039,23 @@ function Map() {
 	    selectedWellId: properties.id.toLowerCase(),
 	    wellSelectedCoordinates: [properties.longitude, properties.latitude],
 	  }));
-
 	}
-	else if (properties.id && feature.layer.id == 'recent_submitted_permits') {
+	else if (properties.Id && feature.layer.id === "recent_submitted_permits") {
 	  setStateApp((state) => ({
 	    ...state,
 	    popupOpen: false,
 	    selectedUserDefinedLayer: null,
 	    selectedParcel: null,
-	    selectedWellId: null,
 	  }));
 	  setStateApp((state) => ({
 	    ...state,
 	    selectedPermitId: properties.Id.toLowerCase(),
 	    permitSelectedCoordinates: [properties.longitude, properties.latitude],
 	  }));
-
 	}
       }
 
     };
-
 
     const udLayerClickHandler = (feature) => {
       setStateApp((state) => ({
@@ -3197,7 +3183,7 @@ function Map() {
 	}
 
 	if (!currentFeature) {
-	  const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken }`;
+	  const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=permitPoints&access_token=${stateApp.mapboxglAccessToken }`;
 	  const headers = new Headers();
 	  headers.append("Content-Type", "application/json");
 	  headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
@@ -4911,7 +4897,7 @@ function Map() {
 	     </PortalD>
 	   )}
 
-	  {stateApp.selectePermit !== null &&
+	  {stateApp.selectedPermit !== null &&
 	   // && stateApp.popupOpen==true
 	   showExpandableCard && (
 	     <PortalD id="popupContainer">
