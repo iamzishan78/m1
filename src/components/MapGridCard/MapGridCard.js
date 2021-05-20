@@ -224,7 +224,7 @@ function MapGridCard(props) {
   // function state
   const [searchTapValue, SearchTapValue] = useState(0);
   const [viewportTapValue, ViewportTapValue] = useState(0);
-  const [selectedBoundary, selectBoundary] = useState('Shape Filter');
+  const [selectedBoundary, SelectBoundary] = useState('Shape Filter');
   const [trackedTapValue, TrackedTapValue] = useState(0);
 
   // selectors
@@ -240,6 +240,13 @@ function MapGridCard(props) {
   const dispatch = useDispatch();
 
   // handlers
+
+  const setSelectedBoundary = (state) => {
+    if (selectedBoundary !== state) {
+      SelectBoundary(state);
+    }
+  };
+
   const setSearchTapValue = (state) => {
     if (searchTapValue !== state) {
       SearchTapValue(state);
@@ -410,7 +417,7 @@ function MapGridCard(props) {
                 id="demo-simple-select"
                 className={classes.selectBoundary}
                 value={selectedBoundary}
-                onChange={(e) => { selectBoundary(e.target.value) }}
+                onChange={(e) => { setSelectedBoundary(e.target.value) }}
               >
                 <MenuItem value={'Shape Filter'}>Shape Filter</MenuItem>
                 <MenuItem value={'Viewport'}>Viewport</MenuItem>
@@ -622,10 +629,10 @@ function MapGridCard(props) {
               <div style={{ position: "relative" }}>
                 <TabPanels
                   value={viewportTapValue}
-                  panels={[
+                  panels={selectedBoundary === 'Shape Filter' ? [
                     <M1nTable
                       dense
-                      parent="trackWells"
+                      parent="gridWells"
                       header={
                         <TabLabels
                           labels={[
@@ -643,7 +650,7 @@ function MapGridCard(props) {
                     />,
                     <M1nTable
                       dense
-                      parent="trackOwners"
+                      parent="shapeFilterOwners"
                       header={
                         <TabLabels
                           labels={[
@@ -658,24 +665,25 @@ function MapGridCard(props) {
                           setValue={setViewportTapValue}
                         />
                       }
-                    />,
-                    // <div className={classes.viewportWells}>
-                    //   <M1nTable
-                    //     id="viewportWellsTable"
-                    //     dense
-                    //     parent="mapViewportWells"
-                    //     header={"Wells"}
-                    //   />
-
-                    //   <h6
-                    //     id="minimumZoomRequired"
-                    //     style={{ textAlign: "left", marginLeft: "5rem" }}
-                    //   >
-                    //     Please zoom in to leverage this feature (min zoom level
-                    //     = {stateApp.minZoomToQueryViewport})
-                    //   </h6>
-                    // </div>,
-                  ]}
+                    />
+                  ] : [
+                    <div className={classes.viewportWells}>
+                      <M1nTable
+                        id="viewportWellsTable"
+                        dense
+                        parent="mapViewportWells"
+                        header={"Wells"}
+                      />
+                      <h6
+                        id="minimumZoomRequired"
+                        style={{ textAlign: "left", marginLeft: "5rem" }}
+                      >
+                        Please zoom in to leverage this feature (min zoom level
+                        = {stateApp.minZoomToQueryViewport})
+                      </h6>
+                    </div>
+                  ]
+                  }
                 />
               </div>
             </TabPanel>
