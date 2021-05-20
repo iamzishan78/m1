@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "0px 16px",
     color: "#fff",
     borderBottom: "1px solid rgba(84, 83, 83, 0.85)",
-    maxHeight: "8%",
+    // maxHeight: "8%",
   },
   toolbarHeader: {
     display: "flow-root",
