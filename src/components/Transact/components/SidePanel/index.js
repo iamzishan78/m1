@@ -49,11 +49,10 @@ const useStyles = makeStyles((theme) => ({
   toolbar: {
     display: "block",
     alignItems: "center",
-    marginTop: theme.spacing.unit,
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
     justifyContent: "flex-end",
-    padding: "0 8px",
+    padding: "0px 16px",
     color: "#fff",
     borderBottom: "1px solid rgba(84, 83, 83, 0.85)",
     maxHeight: "8%",
@@ -64,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
   toolbarActions: {
     display: "flex",
     alignItems: "left",
-    marginTop: 5,
+    marginTop: "-7px",
     transition: theme.transitions.create("width"),
   },
   action: {
@@ -92,6 +91,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     color: "rgba(121, 121, 121, 0.85)",
+    "&:hover": {
+      color: "#fff",
+    },
   },
   inputRoot: {
     color: "inherit",
@@ -249,13 +251,13 @@ const SidePanel = ({ }) => {
       >
         <div className={classes.toolbar}>
           <div className={classes.toolbarHeader}>
-            <Typography varient="h4" component="h4" style={{ float: "left" }}>
+            <Typography varient="h4" component="h4" style={{ float: "left", marginTop: "10px" }}>
               Flowlines
             </Typography>
             <Typography
               variant="caption"
               display="block"
-              style={{ float: "right", color: "rgba(121, 121, 121, 0.85)" }}
+              style={{ float: "right", color: "rgba(121, 121, 121, 0.85)", marginTop: "15px"}}
             >
               {get(pipelines, "length", 0)} Flowlines
             </Typography>
@@ -280,10 +282,12 @@ const SidePanel = ({ }) => {
                   ))}
               </Grid>
               <Grid item>
-                <Tooltip title="Search">
+                <Tooltip 
+                    title="Search"
+                    >
                   <div className={classes.search}>
                     <div className={classes.searchIcon}>
-                      <SearchIcon />
+                    <SearchIcon />
                     </div>
                     <InputBase
                       placeholder="Search by flowline name"
