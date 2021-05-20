@@ -2826,7 +2826,12 @@ function SubTable(props) {
           default:
         }
       }
+      if (props.onTableChange) {
+        props.onTableChange(action, tableState, props.rows, { pageInd, setPageInd, setRowsPerPage })
+      }
     },
+
+    ...props.options
   };
 
   if (props.header === "Well Interests"

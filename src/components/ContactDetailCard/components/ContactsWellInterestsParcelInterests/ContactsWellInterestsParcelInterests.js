@@ -1,13 +1,12 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { AppContext } from "../../../../AppContext";
 import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import Search from "./components/Search";
-import M1nTable from "../../../Shared/M1nTable/M1nTable";
-import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import Button from "@material-ui/core/Button";
+import { PAGINATED_CONTACT_WELLINTERESTS_QUERY } from "graphQL/useQueryPaginatedContactWellInterests";
+import { useLazyQuery } from "@apollo/client";
+import ContactWellInterestTable from "components/Table/Contact/ContactWellInterestTable";
 //import { setMapGridCardState } from "../../../../actions";
 //import TabLabels from "../../../MapGridCard/MapGridCard";
 //import TabPanels from "../../../MapGridCard/MapGridCard";
@@ -107,6 +106,7 @@ const useStyles = makeStyles((theme) => ({
 
 function ContactsWellInterestsParcelInterests(props) {
   const [assocTapValue, AssocTapValue] = useState(0);
+  const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY, { fetchPolicy: "cache-and-network", });
   const setAssocTapValue = (state) => {
     if (assocTapValue != state) {
       AssocTapValue(state);
@@ -121,12 +121,6 @@ function ContactsWellInterestsParcelInterests(props) {
   //   value={assocTapValue}
   //   setValue={setAssocTapValue}
   // />
-
-  const header = "Well Interests";
-
-
-  const classes = useStyles({});
-
   /*const handleMainTapChange = (event, newValue) => {
     console.log(`contacts well interests handlemaintapchange newValue: ${newValue}`);
     console.log(`contacts well interests handlemaintapchange event: ${event}`);
@@ -145,42 +139,18 @@ function ContactsWellInterestsParcelInterests(props) {
       {/* temporarily comment search out until we have a chance to build it out fully */}
       <Search contactId={props.contactData._id} />
 
-
-      {/* 
-      <Search
-        searchOption="owner"
-        contactId={props.contactData._id}
-        ativateSearchPanel={() => {
-          // if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
-          // if (mapGridCardActivated === "min") {
-          //   dispatch(
-          //     setMapGridCardState({ mapGridCardActivated: true })
-          //   );
-          // }
-        }}
-      />
-      <div style={{ position: "relative" }}>
-        <M1nTable
-          parent="assocTaxRollInterests"
-          contactId={props.contactData._id}
-        />
-      </div> */}
-
       <div style={{ position: "relative" }}>
 
         <TabPanels
           value={assocTapValue}
           panels={[
-            <M1nTable
+            <ContactWellInterestTable
               parent="assocTaxRollInterests"
-              header={header}
+              header={"Well Interests"}
+              targetLabel="well"
               contactId={props.contactData._id}
-            />,
-            // <M1nTable
-            //   parent="assocTaxRollInterests"
-            //   header={header}
-            //   contactId={ props.contactData._id }
-            // />,
+              showTracks
+            />
           ]}
         />
       </div>
