@@ -124,7 +124,7 @@ const CustomAvatar = ({ text = "" }) => {
   const classes = useStyles();
 
   const getInitials = (name) => {
-    if (!name || name.length === 0) return "N/A";
+    if (!name || name.length === 0) return "--";
     const split = name ? name.split(" ") : [""];
     let initials = "";
     split.forEach((s) => {

@@ -59,20 +59,8 @@ import OwnershipIcon from "../Shared/svgIcons/ownership";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import DoneIcon from "@material-ui/icons/Done";
-import SaveIcon from "@material-ui/icons/Save";
 import MenuIcon from "@material-ui/icons/Menu";
-import ToggleButton from "@material-ui/lab/ToggleButton";
-import NotificationsActiveIcon from "@material-ui/icons/NotificationsActive";
 import HeadsetMicIcon from "@material-ui/icons/HeadsetMic";
-import DvrIcon from "@material-ui/icons/Dvr";
-import TimelineIcon from "@material-ui/icons/Timeline";
-import FolderSharedIcon from "@material-ui/icons/FolderShared";
-import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import DescriptionIcon from "@material-ui/icons/Description";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import FlowIcon from "@material-ui/icons/Repeat";
 import ActivityIcon from "@material-ui/icons/Event";
 import ProfileProvider from "../Profile/ProfileProvider";
@@ -82,13 +70,10 @@ import FilterFromGeo from "./components/FilterFromGeo";
 import FilterFormOwner from "./components/FilterFormOwner";
 import FilterFormProduction from "./components/FilterFormProduction";
 import FilterDefaults from "./components/FilterDefaults";
-import M1neralLogoSvg from "../Shared/m1neralLogoSvg";
 import FilterFormValue from "./components/FilterFormValue";
 import FilterFormTags from "./components/FilterFormTags";
 import FilterFormAI from "./components/FilterFormAI";
 
-import InputBase from "@material-ui/core/InputBase";
-import Search from "./components/Search";
 import DealSearch from "./components/DealSearch";
 import SearchBarWithToggleButton from "./components/SearchBarWithToggleButton";
 
@@ -107,8 +92,6 @@ import {
   createMuiTheme,
   withStyles,
 } from "@material-ui/core/styles";
-import { GETALLACTIVITIESFORSEARCH } from "../../graphQL/useQueryGetAllActivities";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import ActivitySearch from "./components/ActivitySearch";
 import ContactSearch from "./components/ContactSearch";
 import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
@@ -573,6 +556,7 @@ const useStyles = makeStyles((theme) => ({
     position: "fixed",
     left: drawerWidth,
     bottom: "30px",
+    zIndex: "9999999 !important",
     background: "rgba(255, 255, 255, 1.0)",
     "& .MuiListItem-gutters": {
       paddingRight: "30px",
@@ -981,8 +965,6 @@ export default function Navigation(props) {
 
     window.location.replace(window.location.origin);
 
-    // setStateApp((stateApp) => ({ ...stateApp, user: null }));
-    // setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
   };
 
   const handleProfileMenuOpen = (event) => {
@@ -1063,8 +1045,6 @@ export default function Navigation(props) {
   };
 
   const handleListItemClickStudio = (event, index, path) => {
-    // handleRouteChange(path);
-    // handleDrawerClose();
     window.open("https://m1studio-dev.azurewebsites.net/", "_blank");
   };
 
@@ -1074,6 +1054,12 @@ export default function Navigation(props) {
 
   const handleDrawerOpen = () => {
     setOpenDrawer(true);
+  };
+
+  const handleSupportOpen = () => {
+    setOpenDrawer(false);
+    setSupportDrawer(false);
+    setOpenSupportCenter(true);
   };
 
   const handleClickLogo = () => {
@@ -1086,7 +1072,6 @@ export default function Navigation(props) {
 
   const handleFilterCardOpen = () => {
     setOpenFilterCard(true);
-    // setAnchorEl(event.currentTarget)
   };
   const handleFilterCardClose = () => {
     setOpenFilterCard(false);
@@ -1106,15 +1091,6 @@ export default function Navigation(props) {
     setSupportDrawer(!supportDrawer);
   };
 
-  /* const handleFilterCardApply = () => {
-    setDisableApply(false)
-  }
-
-  const onFiltersChanged = filterModel => {
-    setApplySuccess(false)
-    setDisableApply(false)
-  
-  } */
   const handleFilterTabChange = (event, newValue) => {
     if (!openFilterCard) {
       setOpenFilterCard(true);
@@ -1210,23 +1186,9 @@ export default function Navigation(props) {
             {/*SEARCH UI FOR DEALS */}
             {location.pathname === "/flow" && <DealSearch />}
 
-            {/* {openDrawer ? (
-              <div className={classes.toolbar}>
-                <M1neralLogo />
-                <IconButton color="secondary" onClick={handleDrawerClose}>
-                  {theme.direction === "rtl" ? (
-                    <ChevronRightIcon />
-                  ) : (
-                    <ChevronLeftIcon />
-                  )}
-                </IconButton>
-              </div>
-            ) : null} */}
-
             {matchTrack ? (
               <CardHeader
                 className={classes.trackHeader}
-                //title="Track"
               />
             ) : null}
 
@@ -1280,15 +1242,7 @@ export default function Navigation(props) {
             )}
 
             {matchTrack ? (
-              <div
-                styles={
-                  {
-                    // display: "flex",
-                    // flexDirection: "column",
-                    // justifyContent: "center",
-                  }
-                }
-              >
+              <div>
                 <div ref={anchorEl} className={classes.filterTabs}>
                   <Tabs
                     value={valueTabsTrack}
@@ -1298,34 +1252,7 @@ export default function Navigation(props) {
                     aria-label="tabs"
                     classes={{ indicator: classes.indicator }}
                   >
-                    {/*  TEMPORARY COMMENT OUT OF FEATURE IN PROGRESS
-                    <Button
-                      variant="contained"
-                      disableElevation
-                      type="submit"
-                      className={classes.trackButton}
-                      color="primary"
-                      // onClick={signIn}
-                      // onKeyDown={e => onEnterKey(e)}
-                    >
-                      EXPORT REPORT
-                    </Button>
-
-                    <Button
-                      variant="contained"
-                      disableElevation
-                      type="submit"
-                      style={{ marginRight: "40px" }}
-                      className={classes.trackButton}
-                      color="primary"
-                      // onClick={signIn}
-                      // onKeyDown={e => onEnterKey(e)}
-                    >
-                      SEND MAILERS
-                    </Button> */}
-
                     <Tab
-                      //onClick={handleFilterCardOpen}
                       value={0}
                       className={classes.tab}
                       icon={
@@ -1341,8 +1268,6 @@ export default function Navigation(props) {
                       aria-label="well"
                     />
                     <Tab
-                      // disabled
-                      //onClick={handleFilterCardOpen}
                       value={1}
                       className={classes.tab}
                       icon={
@@ -1376,8 +1301,6 @@ export default function Navigation(props) {
                   classes={{ indicator: classes.indicator }}
                 >
                   <Tab
-                    // disabled
-                    //onClick={handleFilterCardOpen}
                     value={0}
                     className={classes.tab}
                     icon={
@@ -1392,7 +1315,6 @@ export default function Navigation(props) {
                   />
 
                   <Tab
-                    //onClick={handleFilterCardOpen}
                     value={1}
                     className={classes.tab}
                     icon={
@@ -1433,7 +1355,6 @@ export default function Navigation(props) {
                     aria-label="production"
                   />
                   <Tab
-                    // disabled={true}
                     value={4}
                     classes={{ root: classes.tab }}
                     aria-label="Value"
@@ -1449,7 +1370,6 @@ export default function Navigation(props) {
                   />
 
                   <Tab
-                    //disabled={true}
                     value={5}
                     classes={{ root: classes.tab }}
                     icon={
@@ -1462,35 +1382,6 @@ export default function Navigation(props) {
                     }
                     aria-label="tags and Tracks"
                   />
-                  {/* <Tab
-                    //disabled={true}
-                    value={6}
-                    classes={{ root: classes.tab }}
-                    icon={
-                      <Badge
-                        badgeContent={stateNav.aiFilterCount}
-                        color="secondary"
-                      >
-                        <PredictiveIcon color="#fff" opacity="1" />
-                      </Badge>
-                    }
-                    aria-label="ai"
-                  /> */}
-
-                  {/* <Tab
-                    value={7}
-                    classes={{ root: classes.tab }}
-                    style={{ paddingTop: 10 }}
-                    icon={
-                      <Badge
-                        badgeContent={stateNav.totalFilterCount}
-                        color="secondary"
-                      >
-                        <SettingsIcon />
-                      </Badge>
-                    }
-                    aria-label="filter settings"
-                  /> */}
                 </Tabs>
               </div>
             ) : (
@@ -1509,9 +1400,7 @@ export default function Navigation(props) {
             </IconButton>
           </Toolbar>
         ) : (
-          <div
-          //className={classes.goHome} onClick={sendHome}
-          >
+          <div>
             {location.pathname !== "/" ? (
               <Link to="/">
                 <M1neralLogoLogin />
@@ -1519,43 +1408,6 @@ export default function Navigation(props) {
             ) : (
               <M1neralLogoLogin />
             )}
-
-            <div
-            //className={classes.homeButton}
-            >
-              {/* <Button
-                variant="contained"
-                disableElevation
-                type="submit"
-                className={classes.homeButton}
-                color="primary"
-                // onClick={signIn}
-                // onKeyDown={e => onEnterKey(e)}
-              >
-                Help?
-              </Button> */}
-              {/* <Link
-                to={location.pathname !== "/" ? "/" : "/signup"}
-                onClick={() => {
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    signUpUserType: null,
-                  }));
-                }}
-              >
-                <Button
-                  variant="contained"
-                  disableElevation
-                  type="submit"
-                  className={classes.homeButton}
-                  color="primary"
-                >
-                  {location.pathname !== "/" ? "SIGN IN" : "SIGN UP"}
-                </Button>
-
-                
-              </Link> */}
-            </div>
           </div>
         )}
       </AppBar>
@@ -1638,22 +1490,6 @@ export default function Navigation(props) {
             </div>
           </ListItem>
 
-          {/* <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexTrack === 1}
-            onClick={(event) => handleListItemClick(event, 0, "/track")}
-            key="track"
-          >
-            <ListItemIcon>
-              <MyLocationIcon />
-            </ListItemIcon>
-            <ListItemText primary="Track" />
-          </ListItem> */}
-
           <ListItem
             classes={{
               root: classes.menuListItem,
@@ -1679,16 +1515,6 @@ export default function Navigation(props) {
                 className={`${classes.sideNavText} uppercase`}
                 primary="Contacts"
               />
-              <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button
-                  disabled
-                  className={`${classes.betaSideNav3} uppercase`}
-                  edge="start"
-                  aria-label="beta"
-                >
-                  beta
-                </Button>
-              </ListItemSecondaryAction>
             </div>
           </ListItem>
 
@@ -1754,22 +1580,6 @@ export default function Navigation(props) {
             </div>
           </ListItem>
 
-          {/* <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexTitle === 1}
-            onClick={(event) => handleListItemClickStudio(event, 0, "/studio")}
-            key="studio"
-          >
-            <ListItemIcon>
-              <LayersIcon />
-            </ListItemIcon>
-            <ListItemText primary="M1Studio" />
-          </ListItem> */}
-
           <ListItem
             classes={{
               root: classes.menuListItem,
@@ -1800,56 +1610,9 @@ export default function Navigation(props) {
               </ListItemSecondaryAction>
             </div>
           </ListItem>
-          {/* temporary */}
-          {/* <ListItem
-            classes={{
-              root: classes.menuListItemDisabled,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexTitle === 1}
-            onClick={(event) => handleListItemClick(event, 0, "/title")}
-            key="title"
-          >
-            <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <DescriptionIcon />
-              </ListItemIcon>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Title"
-              />
-              <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button
-                  disabled
-                  className={classes.betaSideNav5}
-                  edge="end"
-                  aria-label="beta"
-                >
-                  BETA
-                </Button>
-              </ListItemSecondaryAction>
-            </div>
-          </ListItem> */}
         </List>
-        {/* <Divider variant="middle" className={classes.menuListBottomDivider} /> */}
-        <List className={classes.menuListBottom}>
-          {/* <ListItem
-            classes={{
-              root: classes.menuListItemDisabled,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexAlerts === 1}
-            //onClick={(event) => handleListItemClick(event, 0, "/alerts")}
-            key="alerts"
-          >
-            <ListItemIcon>
-              <NotificationsActiveIcon />
-            </ListItemIcon>
-            <ListItemText primary="Alerts" />
-          </ListItem> */}
 
+        <List className={classes.menuListBottom}>
           {/* support menu */}
           <ListItem
             classes={{
@@ -1858,7 +1621,6 @@ export default function Navigation(props) {
             }}
             button
             selected={stateNav.selectedMenuIndex === 1}
-            //onClick={event => handleListItemClick(event, 1, '/track')}
             onClick={() => toggleSupportDrawer()}
             key="support"
           >
@@ -1871,18 +1633,16 @@ export default function Navigation(props) {
                 primary="Support"
               />
             </div>
-
-            {/* <ListItemSecondaryAction>
-              <Button disabled className={classes.betaSideNav2} edge="end" aria-label="BETA">
-                BETA
-              </Button>
-            </ListItemSecondaryAction> */}
           </ListItem>
-          {supportDrawer && (
+
+        </List>
+      </Drawer>
+
+      {supportDrawer && (
             <ClickAwayListener onClickAway={() => setSupportDrawer(false)}>
               <div className={classes.supportDrawer}>
                 <List component="div">
-                  <ListItem button onClick={() => setOpenSupportCenter(true)}>
+                  <ListItem button onClick={() => handleSupportOpen()}>
                     <ListItemIcon>
                       <HeadsetIcon />
                     </ListItemIcon>
@@ -1899,49 +1659,18 @@ export default function Navigation(props) {
             </ClickAwayListener>
           )}
 
-          <SupportCenterModal
-            open={openSupportCenter}
-            openContactForm={handleOpenContactForm}
-            onClose={() => setOpenSupportCenter(false)}
-          />
+          <ClickAwayListener onClickAway={() => setOpenSupportCenter(false)}>
+              <SupportCenterModal
+                open={openSupportCenter}
+                openContactForm={handleOpenContactForm}
+                onClose={() => setOpenSupportCenter(false)}
+              />
+          </ClickAwayListener>
+
           <ContactFormModal
             open={openContactForm}
             onClose={() => setOpenContactForm(false)}
           />
-
-          {/* <ListItem
-            classes={{
-              //root: classes.menuListItemDisabled,
-              //selected: classes.menuListItemDisabled,
-            }}
-            button
-            //selected={stateNav.selectedMenuIndex === 0}
-            //onClick={event => handleListItemClick(event, 0, '/find')}
-            key="pulse"
-          >
-            <ListItemIcon>
-              <TimelineIcon />
-            </ListItemIcon>
-            <ListItemText primary="Pulse" />
-          </ListItem> */}
-
-          {/* <ListItem
-            classes={{
-              //root: classes.menuListItemDisabled,
-              //selected: classes.menuListItemSelected,
-            }}
-            button
-            //selected={stateNav.selectedMenuIndex === 1}
-            //onClick={event => handleListItemClick(event, 1, '/track')}
-            key="presss"
-          >
-            <ListItemIcon>
-              <DvrIcon />
-            </ListItemIcon>
-            <ListItemText primary="Press" />
-          </ListItem> */}
-        </List>
-      </Drawer>
 
       {openFilterCard ? (
         <div ref={anchorEl} className={classes.tabPanelWrapper}>
@@ -1994,11 +1723,6 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Well"
                 />
-                {/* <CardActions
-                  classes={{
-                    root: classes.cardAction,
-                  }}
-                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterFormWell />
                 </CardContent>
@@ -2026,11 +1750,6 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Ownership"
                 />
-                {/* <CardActions
-                  classes={{
-                    root: classes.cardAction,
-                  }}
-                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterFormOwner />
                 </CardContent>
@@ -2058,11 +1777,6 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Production"
                 />
-                {/* <CardActions
-                  classes={{
-                    root: classes.cardAction,
-                  }}
-                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterFormProduction />
                 </CardContent>
@@ -2091,11 +1805,6 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Value"
                 />
-                {/* <CardActions
-                  classes={{
-                    root: classes.cardAction,
-                  }}
-                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterFormValue />
                 </CardContent>
@@ -2123,11 +1832,6 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Tags and Tracks"
                 />
-                {/* <CardActions
-                  classes={{
-                    root: classes.cardAction,
-                  }}
-                ></CardActions> */}
                 <CardContent className={classes.cardContent}>
                   <FilterFormTags />
                 </CardContent>

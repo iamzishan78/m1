@@ -1414,7 +1414,7 @@ function SubTable(props) {
                           margin: "0",
                         }}
                       >
-                        N/A
+                        --
                       </p>
                     );
                   }

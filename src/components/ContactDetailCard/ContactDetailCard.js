@@ -710,7 +710,8 @@ export default function ContactDetailCard(props) {
         {console.log(stateApp.viewDoc, "StateApp Doc")}
         {/*/////////// rigth column //////////// */}
         <div className={classes.rightColumnGrid} >
-          <IconButton
+          
+          {/* <IconButton
             size="small"
             className={classes.shrinkRightColumn}
             onClick={() => {
@@ -722,16 +723,18 @@ export default function ContactDetailCard(props) {
             ) : (
                 <ArrowForwardIosRoundedIcon />
               )}
-          </IconButton>
+          </IconButton> */}
+
           {shrinkRightColumn || showShrinkColumnContent ? (
             <div style={{ width: "68px" }}>
-              <IconButton className={classes.shrinkRightColumnIcons}>
+
+              {/* <IconButton className={classes.shrinkRightColumnIcons}>
                 <MessageRoundedIcon
                   onClick={() => {
                     dispatch(toggleRightColumn());
                   }}
                 />
-              </IconButton>
+              </IconButton> */}
 
               {/* <IconButton className={classes.shrinkRightColumnIcons}>
                 <DescriptionRoundedIcon
