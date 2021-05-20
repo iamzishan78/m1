@@ -3064,6 +3064,42 @@ function Map() {
   }, [loading, stateApp.wellSelectedCoordinates]);
 
   useEffect(() => {
+
+    if (map && stateApp.permitSelectedCoordinates) {
+      if (map.getLayer("well-point")) map.removeLayer("well-point");
+      if (map.getSource("well-select-point")) map.removeSource("well-select-point");
+
+      if (stateApp.permitSelectedCoordinates.length > 0) {
+	map.addSource("well-select-point", {
+	  type: "geojson",
+	  data: {
+	    type: "FeatureCollection",
+	    features: [
+	      {
+		type: "Feature",
+		geometry: {
+		  type: "Point",
+		  coordinates: stateApp.permitSelectedCoordinates,
+		},
+	      },
+	    ],
+	  },
+	});
+
+	map.addLayer({
+	  id: "well-point",
+	  type: "circle",
+	  source: "well-select-point",
+	  paint: {
+	    "circle-radius": 5,
+	    "circle-color": "yellow",
+	  },
+	});
+      }
+    }
+  }, [loading, stateApp.permitSelectedCoordinates]);
+
+  useEffect(() => {
     (async () => {
 
       if (
@@ -3171,6 +3207,7 @@ function Map() {
 	  (element) =>
 	  element.properties.Id.toLowerCase() == stateApp.selectedPermitId
 	);
+
 	if (!currentFeature) {
 	  features = map.querySourceFeatures("composite", {
 	    sourceLayer: "recent_submitted_permits",
@@ -3183,7 +3220,7 @@ function Map() {
 	}
 
 	if (!currentFeature) {
-	  const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=permitPoints&access_token=${stateApp.mapboxglAccessToken }`;
+	  const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken}`;
 	  const headers = new Headers();
 	  headers.append("Content-Type", "application/json");
 	  headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
