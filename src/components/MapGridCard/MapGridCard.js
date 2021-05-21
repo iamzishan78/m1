@@ -31,6 +31,7 @@ import {
   operatorsColumnHeaders,
   ownersColumnHeaders,
 } from "./MapGridCardHeaders";
+import DockMenu from "./DockMenu";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -91,6 +92,17 @@ const useStyles = makeStyles((theme) => {
         mapGridCardActivated === "exp" ? "5vh" : "12vh",
       zIndex: "1300",
       position: "fixed",
+    },
+    dockMenu: ({ dockMenu }) => {
+      let css = {}
+      if (dockMenu === 'bottom' || dockMenu === 'top')
+        css = { top: dockMenu === 'bottom' ? "50vh" : '8vh', width: "96vw", height: "49vh", left: "2vw" }
+      else if (dockMenu === 'left' || dockMenu === 'right')
+        css = { left: dockMenu === 'left' ? "2vw" : '49vw', width: "50vw", height: "91vh", top: "8vh" }
+      else if (dockMenu === 'full')
+        css = { left: "2vw", width: "96vw", height: "91vh", top: "8vh" }
+      css = { ...css, zIndex: "1300", position: "fixed" }
+      return css
     },
     tapsRoot: {
       // flexGrow: 1,
@@ -225,6 +237,7 @@ function MapGridCard(props) {
   const [searchTapValue, SearchTapValue] = useState(0);
   const [viewportTapValue, ViewportTapValue] = useState(0);
   const [selectedBoundary, SelectBoundary] = useState('Shape Filter');
+  const [dockMenu, SetDockMenu] = useState('bottom');
   const [trackedTapValue, TrackedTapValue] = useState(0);
 
   // selectors
@@ -247,6 +260,12 @@ function MapGridCard(props) {
     }
   };
 
+  const setSelectedDockMenu = (state) => {
+    if (dockMenu !== state) {
+      SetDockMenu(state);
+    }
+  };
+
   const setSearchTapValue = (state) => {
     if (searchTapValue !== state) {
       SearchTapValue(state);
@@ -266,6 +285,7 @@ function MapGridCard(props) {
 
   // styles
   const classes = useStyles({
+    dockMenu,
     mapGridCardActivated,
     mapGridCardActiveTap,
     viewportWells: stateApp.viewportWells,
@@ -368,7 +388,7 @@ function MapGridCard(props) {
   const CardReturn = () => {
     return (
       <Card
-        className={`${mapGridCardActivated === "exp" ? "noDrag" : ""} ${classes.rootList
+        className={`${mapGridCardActivated === "exp" ? "noDrag" : ""} ${classes.dockMenu
           }`}
       >
         <AppBar
@@ -424,6 +444,8 @@ function MapGridCard(props) {
               </Select>
             }
             <div style={{ flexGrow: 1 }}></div>
+
+            <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
 
             <IconButton
               className="cancelDraggableEffect"
