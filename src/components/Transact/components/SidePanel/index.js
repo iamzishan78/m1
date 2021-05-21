@@ -81,15 +81,10 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     [theme.breakpoints.up("sm")]: {
       width: "auto",
-    },
+    }
   },
-  searchIcon: {
+  iconSearch: {
     height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
     color: "rgba(121, 121, 121, 0.85)",
     "&:hover": {
       color: "#fff",
@@ -257,7 +252,7 @@ const SidePanel = ({ }) => {
             <Typography
               variant="caption"
               display="block"
-              style={{ float: "right", color: "rgba(121, 121, 121, 0.85)", marginTop: "15px"}}
+              style={{ float: "right", color: "rgba(121, 121, 121, 0.85)", marginTop: "15px" }}
             >
               {get(pipelines, "length", 0)} Flowlines
             </Typography>
@@ -282,30 +277,26 @@ const SidePanel = ({ }) => {
                   ))}
               </Grid>
               <Grid item>
-                <Tooltip 
-                    title="Search"
-                    >
-                  <div className={classes.search}>
-                    <div className={classes.searchIcon}>
-                    <SearchIcon />
-                    </div>
-                    <InputBase
-                      placeholder="Search by flowline name"
-                      classes={{
-                        root: classes.inputRoot,
-                        input: classes.inputInput,
-                      }}
-                      inputProps={{ "aria-label": "search" }}
-                      onFocus={() => setSearchState(true)}
-                      onBlur={() =>
-                        setTimeout(() => {
-                          setSearchState(false);
-                        }, 200)
-                      }
-                      onChange={(evt) => filterSearch(evt.target.value)}
-                    />
-                  </div>
-                </Tooltip>
+                <div className={classes.search}>
+                  <Tooltip title="Search" aria-label="Search" className={classes.iconSearch}>
+                    <SearchIcon fontSize="small" />
+                  </Tooltip>
+                  <InputBase
+                    placeholder="Search by flowline name"
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput,
+                    }}
+                    inputProps={{ "aria-label": "search" }}
+                    onFocus={() => setSearchState(true)}
+                    onBlur={() =>
+                      setTimeout(() => {
+                        setSearchState(false);
+                      }, 200)
+                    }
+                    onChange={(evt) => filterSearch(evt.target.value)}
+                  />
+                </div>
               </Grid>
             </Grid>
           </div>

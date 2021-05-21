@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
+import Typography from '@material-ui/core/Typography'
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import TextField from "@material-ui/core/TextField";
@@ -78,6 +79,9 @@ const useStyles = makeStyles((theme) => ({
   dialog: {
     zIndex: "9999999999 !important",
   },
+  settingGroup: {
+    "& .MuiTypography-body1": { fontSize: "1.2rem !important" },
+  }
 }));
 
 const DialogActions = withStyles((theme) => ({
@@ -626,8 +630,8 @@ export default function Pipelines(props) {
   return (
     <React.Fragment>
 
-        {/* can likely be removed but commenting out for now */}
-        {/* <Autocomplete
+      {/* can likely be removed but commenting out for now */}
+      {/* <Autocomplete
           size="small"
           style={{ minWidth: 210, marginLeft: 12 }}
           options={optionsWithHeader}
@@ -674,7 +678,12 @@ export default function Pipelines(props) {
             );
           }}
         /> */}
-
+      <ButtonGroup className="settingGroup">
+        {selectedPipe && (
+          <Typography variant="h6" color="textPrimary">
+            {selectedPipe.name}
+          </Typography>
+        )}
         <IconButton
           disabled={!selectedPipe}
           size="small"
@@ -688,6 +697,7 @@ export default function Pipelines(props) {
         >
           <SettingsIcon />
         </IconButton>
+      </ButtonGroup>
 
       {/* //// pipelines dialog //// */}
       {openPipeDialog && (

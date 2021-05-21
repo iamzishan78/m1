@@ -52,28 +52,27 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
 
   const checkMultiSelectPipelines = (newPipeline) => {
     if (newPipeline._id !== selectedPipe?._id) {
-      if (isCtrlKeyPressed()) {
-        const itemIndex = selectedPipelines.findIndex(
-          (p) => p === newPipeline._id
-        );
-        let newPipelines = [];
-        if (itemIndex === -1) {
-          newPipelines = [...selectedPipelines, newPipeline._id];
-        } else {
-          selectedPipelines.splice(itemIndex, 1);
-          newPipelines = [...selectedPipelines];
-        }
-        setMultiSelection(newPipelines);
+      const itemIndex = selectedPipelines.findIndex(
+        (p) => p === newPipeline._id
+      );
+      let newPipelines = [];
+      if (itemIndex === -1) {
+        newPipelines = [...selectedPipelines, newPipeline._id];
       } else {
-        setMultiSelection([selectedPipe?._id]);
-        return false;
+        selectedPipelines.splice(itemIndex, 1);
+        newPipelines = [...selectedPipelines];
       }
+      setMultiSelection(newPipelines);
+    } else {
+      setMultiSelection([selectedPipe?._id]);
+      return false;
     }
   };
 
   const onFlowlineSelect = (newPipeline) => {
-    if (checkMultiSelectPipelines(newPipeline)) return;
-    if (selectedPipe._id !== newPipeline._id) {
+    if (isCtrlKeyPressed()) {
+      checkMultiSelectPipelines(newPipeline)
+    } else if (selectedPipe._id !== newPipeline._id) {
       dispatch(
         setFlowState({
           selectedPipe: newPipeline,
@@ -94,7 +93,6 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
               pipeline={props.data}
               selectedPipe={selectedPipe}
               selectedPipelines={selectedPipelines}
-              checkMultiSelectPipelines={checkMultiSelectPipelines}
               onFlowlineSelect={onFlowlineSelect}
             />
           )}
