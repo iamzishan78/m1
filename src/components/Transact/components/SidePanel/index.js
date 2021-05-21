@@ -86,11 +86,14 @@ const useStyles = makeStyles((theme) => ({
   iconSearch: {
     height: "100%",
     display: "flex",
+    position: "absolute",
     alignItems: "center",
     justifyContent: "center",
     color: "rgba(121, 121, 121, 0.85)",
+    zIndex: 1,
     "&:hover": {
       color: "#fff",
+      cursor: "pointer"
     },
   },
   inputRoot: {
@@ -281,10 +284,11 @@ const SidePanel = ({ }) => {
               </Grid>
               <Grid item>
                 <div className={classes.search}>
-                  <Tooltip title="Search" className={classes.iconSearch}>
+                  <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput").focus()}>
                     <SearchIcon />
                   </Tooltip>
                   <InputBase
+                    id="searchInput"
                     placeholder="Search by flowline name"
                     classes={{
                       root: classes.inputRoot,
