@@ -812,14 +812,14 @@ function AddDealDialog(props) {
 				if (allPromises.length > 0)
 					Promise.all(allPromises)
 						.then((values) => {
-							if (success === true)
-								dispatch(
-									showSuccessMessage("The Deal was successfully updated.")
-								);
-							else
-								dispatch(
-									showErrorMessage("An error occurred during the update.")
-								);
+							// if (success === true)
+							// 	dispatch(
+							// 		showSuccessMessage("The Deal was successfully updated.")
+							// 	);
+							// else
+							// 	dispatch(
+							// 		showErrorMessage("An error occurred during the update.")
+							// 	);
 						})
 						.catch((reason) => {
 							console.log(reason);
