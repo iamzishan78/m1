@@ -46,13 +46,11 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
   }, [selectedPipe]);
 
   const isCtrlKeyPressed = () => {
-    debugger;
     if (window.event.ctrlKey || window.event.metaKey) return true;
     return false;
   };
 
   const isShiftKeyPressed = () => {
-    debugger;
     if (window.event.shiftKey) return true;
     return false;
   }
