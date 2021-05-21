@@ -55,33 +55,12 @@ function SupportCenterModal(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const { open, onClose, openContactForm } = props;
 
-  // const toggleUserSnap = () => {
-  //   setStateApp({ ...stateApp, userSnap: !stateApp.userSnap });
-  // };
-
   return (
     <Dialog aria-labelledby="simple-dialog-title" open={open} onClose={onClose}>
       <DialogTitle id="simple-dialog-title" className={classes.dialogTitle}>
         <M1neralLogoStyled />
       </DialogTitle>
       <List>
-        {/* <ListItem autoFocus button>
-          <ListItemAvatar>
-            <ScreenShareIcon color="secondary" fontSize="large" />
-          </ListItemAvatar>
-          <ListItemText
-            primary="Draw on the screen feedback tool"
-            secondary="Provide feedback with a screenshot"
-          />
-          <Switch
-            checked={stateApp.userSnap}
-            onChange={toggleUserSnap}
-            color="primary"
-            name="checkedB"
-            inputProps={{ "aria-label": "primary checkbox" }}
-          />
-        </ListItem> */}
-
         <ListItem autoFocus button onClick={openContactForm}>
           <ListItemAvatar>
             <RateReviewIcon color="secondary" fontSize="large" />
