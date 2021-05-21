@@ -680,7 +680,7 @@ export default function Pipelines(props) {
         /> */}
       <ButtonGroup className="settingGroup">
         {selectedPipe && (
-          <Typography variant="h6" color="textPrimary">
+          <Typography variant="h5" color="textPrimary" fontWeight="fontWeightBold">
             {selectedPipe.name}
           </Typography>
         )}
