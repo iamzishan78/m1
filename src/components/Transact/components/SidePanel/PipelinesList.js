@@ -46,16 +46,23 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
   }, [selectedPipe]);
 
   const isCtrlKeyPressed = () => {
+    debugger;
     if (window.event.ctrlKey || window.event.metaKey) return true;
     return false;
   };
 
+  const isShiftKeyPressed = () => {
+    debugger;
+    if (window.event.shiftKey) return true;
+    return false;
+  }
+
   const checkMultiSelectPipelines = (newPipeline) => {
-    if (newPipeline._id !== selectedPipe?._id) {
-      const itemIndex = selectedPipelines.findIndex(
-        (p) => p === newPipeline._id
-      );
-      let newPipelines = [];
+    let newPipelines = [];
+    const itemIndex = selectedPipelines.findIndex(
+      (p) => p === newPipeline._id
+    );
+    if (isCtrlKeyPressed()) {
       if (itemIndex === -1) {
         newPipelines = [...selectedPipelines, newPipeline._id];
       } else {
@@ -63,22 +70,32 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
         newPipelines = [...selectedPipelines];
       }
       setMultiSelection(newPipelines);
+    } else if (isShiftKeyPressed() && itemIndex === -1) {
+      let newPipelineIndex = filteredPipelines.findIndex(p => p._id === newPipeline._id);
+      let oldPipelineIndex = filteredPipelines.findIndex(p => p._id === selectedPipelines[selectedPipelines.length - 1]);
+      if (newPipelineIndex < oldPipelineIndex) {
+        newPipelineIndex = newPipelineIndex + oldPipelineIndex;
+        oldPipelineIndex = newPipelineIndex - oldPipelineIndex;
+        newPipelineIndex = newPipelineIndex - oldPipelineIndex;
+      }
+      newPipelines = [...selectedPipelines, ...filteredPipelines.slice(oldPipelineIndex, newPipelineIndex + 1).map(p => p._id)];
+      newPipelines = [...new Set(newPipelines)];
+      setMultiSelection(newPipelines);
     } else {
-      setMultiSelection([selectedPipe?._id]);
-      return false;
-    }
-  };
-
-  const onFlowlineSelect = (newPipeline) => {
-    if (isCtrlKeyPressed()) {
-      checkMultiSelectPipelines(newPipeline)
-    } else if (selectedPipe._id !== newPipeline._id) {
       dispatch(
         setFlowState({
           selectedPipe: newPipeline,
           pipeToShow: null,
         })
       );
+    }
+  };
+
+  const onFlowlineSelect = (newPipeline) => {
+    if (selectedPipe._id !== newPipeline._id) {
+      checkMultiSelectPipelines(newPipeline);
+    } else {
+      setMultiSelection([selectedPipe?._id]);
     }
   };
 

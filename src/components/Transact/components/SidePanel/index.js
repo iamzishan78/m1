@@ -85,6 +85,9 @@ const useStyles = makeStyles((theme) => ({
   },
   iconSearch: {
     height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     color: "rgba(121, 121, 121, 0.85)",
     "&:hover": {
       color: "#fff",
@@ -278,8 +281,8 @@ const SidePanel = ({ }) => {
               </Grid>
               <Grid item>
                 <div className={classes.search}>
-                  <Tooltip title="Search" aria-label="Search" className={classes.iconSearch}>
-                    <SearchIcon fontSize="small" />
+                  <Tooltip title="Search" className={classes.iconSearch}>
+                    <SearchIcon />
                   </Tooltip>
                   <InputBase
                     placeholder="Search by flowline name"
