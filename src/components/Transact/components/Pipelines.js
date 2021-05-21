@@ -81,7 +81,13 @@ const useStyles = makeStyles((theme) => ({
   },
   settingGroup: {
     "& .MuiTypography-body1": { fontSize: "1.2rem !important" },
-  }
+  },
+  settingsButton: {
+    display: "flex",
+    alignItems: "right",
+    float: "right",
+    },
+
 }));
 
 const DialogActions = withStyles((theme) => ({
@@ -678,7 +684,6 @@ export default function Pipelines(props) {
             );
           }}
         /> */}
-      <ButtonGroup className="settingGroup">
         {selectedPipe && (
           <Typography variant="h5" color="textPrimary" fontWeight="fontWeightBold">
             {selectedPipe.name}
@@ -686,7 +691,7 @@ export default function Pipelines(props) {
         )}
         <IconButton
           disabled={!selectedPipe}
-          size="small"
+          size="medium"
           onClick={() => {
             dispatch(
               setFlowState({
@@ -697,7 +702,6 @@ export default function Pipelines(props) {
         >
           <SettingsIcon />
         </IconButton>
-      </ButtonGroup>
 
       {/* //// pipelines dialog //// */}
       {openPipeDialog && (
