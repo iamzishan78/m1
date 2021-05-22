@@ -84,7 +84,8 @@ const useStyles = makeStyles((theme) => ({
   },
   settingsButton: {
     display: "flex",
-    alignItems: "right",
+    flexDirection: "row",
+    alignItems: "center",
     float: "right",
     },
 
@@ -636,72 +637,31 @@ export default function Pipelines(props) {
   return (
     <React.Fragment>
 
-      {/* can likely be removed but commenting out for now */}
-      {/* <Autocomplete
-          size="small"
-          style={{ minWidth: 210, marginLeft: 12 }}
-          options={optionsWithHeader}
-          getOptionLabel={(option) => (option?.name ? option.name : option)}
-          groupBy={(option) => {
-            if (option === "header") return "header";
-            return "pipelines";
-          }}
-          renderGroup={(option) => {
-            if (option.group === "header")
-              return (
-                <Button
-                  key={option.key}
-                  style={{ color: "#12ABE0", margin: "0", width: "100%" }}
-                  onClick={() => {
-                    dispatch(
-                      setFlowState({
-                        openPipeDialog: "newPipe",
-                      })
-                    );
-                  }}
-                >
-                  Add New
-                </Button>
-              );
-            return (
-              <React.Fragment key={option.key}>
-                {option.children}
-              </React.Fragment>
-            );
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label="Flowlines" variant="outlined" />
-          )}
-          autoComplete
-          includeInputInList
-          value={selectedPipe}
-          onChange={(event, newValue) => {
-            dispatch(
-              setFlowState({
-                selectedPipe: newValue,
-                pipeToShow: null,
-              })
-            );
-          }}
-        /> */}
-        {selectedPipe && (
-          <Typography variant="h5" color="textPrimary" fontWeight="fontWeightBold">
-            {selectedPipe.name}
-          </Typography>
-        )}
-        <IconButton
-          disabled={!selectedPipe}
-          size="medium"
-          onClick={() => {
-            dispatch(
-              setFlowState({
-                openPipeDialog: true,
-              })
-            );
-          }}
-        >
-          <SettingsIcon />
-        </IconButton>
+        <div className={classes.settingsButton} >
+            {selectedPipe && (
+              <Typography 
+                  style={{ marginLeft: 10}} 
+                  variant="h5" 
+                  color="textPrimary" 
+                  fontWeight="fontWeightBold">
+                {selectedPipe.name}
+              </Typography>
+            )}
+            <IconButton
+              disabled={!selectedPipe}
+              size="medium"
+              style={{ marginLeft: 10, marginRight: 10}}
+              onClick={() => {
+                dispatch(
+                  setFlowState({
+                    openPipeDialog: true,
+                  })
+                );
+              }}
+            >
+              <SettingsIcon />
+            </IconButton>
+        </div>
 
       {/* //// pipelines dialog //// */}
       {openPipeDialog && (

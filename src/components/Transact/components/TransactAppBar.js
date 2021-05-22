@@ -22,22 +22,6 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  bottomRight: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    marginTop: "10px",
-    // padding: 20,
-  },
-  bottomLeft: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    paddingBottom: "4px",
-    // padding: "0 0 20 0",
-  },
   right: {
     display: "flex",
     alignItems: "center",
@@ -77,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
   left: {
     display: "flex",
     alignItems: "center",
+    // justifyContent: "flex-end",
   },
   closedDeals: {
     marginLeft: 8,
