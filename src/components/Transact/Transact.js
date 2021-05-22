@@ -1,4 +1,3 @@
-
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../AppContext";
@@ -10,13 +9,14 @@ import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
 import "./index.css";
 import TransactAppBar from "./components/TransactAppBar";
 import TransactTable from "./components/TransactTable";
+import SidePanel from "./components/SidePanel";
 import { useDispatch, useSelector } from "react-redux";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import Drawer from "./components/Drawer";
 import moment from "moment";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
-import DocViewer from '../Shared/DocViewer'
+import DocViewer from "../Shared/DocViewer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -118,6 +118,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "0.7rem",
     textAlign: "center",
   },
+  content: {
+    flexGrow: 1,
+    marginLeft: "315px",
+  },
 }));
 
 const CustomAvatar = ({ text = "" }) => {
@@ -192,7 +196,7 @@ export default function Transact() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { pipeToShow, pipeToShowTab } = useSelector(({ Flow }) => Flow);
-  console.log("PIPETOSHOW: ", pipeToShow)
+  console.log("PIPETOSHOW: ", pipeToShow);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [filteredBoardTransactData, setFilteredBoardTransactData] = useState({
     lanes: [],
@@ -204,8 +208,6 @@ export default function Transact() {
 
   const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
   const [updateDeal] = useMutation(UPDATEDEAL);
-
-
 
   const filterBoardCards = (lanes, filter) => {
     return lanes.map((lane) => {
@@ -283,11 +285,9 @@ export default function Transact() {
     }
   }, [pipeToShowTab, dealFilter]);
 
-  useEffect(() => {
-  }, [filteredTabTransactData]);
+  useEffect(() => {}, [filteredTabTransactData]);
 
-  const handleDataChange = (newData) => {
-  };
+  const handleDataChange = (newData) => {};
 
   const handleCardClick = (cardId, metadata, laneId) => {
     setStateApp((stateApp) => ({
@@ -526,8 +526,6 @@ export default function Transact() {
 
     const formattedTotal = vf_currency(priceSum);
 
-
-            
     let forecast = null;
     let forecastFormatted = "";
     if (priceSum > 0 && metadata.dealProbability > 0) {
@@ -555,10 +553,8 @@ export default function Transact() {
   };
 
   return (
-    <div className={classes.root} > 
-      {stateApp.dealDialog 
-        && <Drawer />
-        }
+    <div className={classes.root}>
+      {stateApp.dealDialog && <Drawer />}
       <DocViewer></DocViewer>
 
       <AddDealDialog
@@ -573,79 +569,86 @@ export default function Transact() {
           }))
         }
       />
-      <TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} />
-      {pipeToShow ? (
-        <div className={classes.boardAndTable}>
-          {stateApp.dealDisplayType === "board" && (
-            <Board
-              className={classes.list}
-              style={{ backgroundColor: "#fff" }}
-              // data={filteredBoardTransactData || transactData}
-              data={filteredBoardTransactData}
-              draggable={true}
-              laneDraggable={false}
-              cardDraggable={true}
-              collapsibleLanes={false}
-              editable={false}
-              canAddLanes={false}
-              editLaneTitle={false}
-              hideCardDeleteIcon={true}
-              handleDragEnd={handleCardDragEnd}
-              onDataChange={handleDataChange}
-              onCardClick={handleCardClick}
-              onCardMoveAcrossLanes={onCardMoveAcrossLanes}
-              laneStyle={{
-                backgroundColor: "#fff",
-                color: "#011133",
-                fontWeight: "bold",
-                textAlign: "left",
-              }}
-              cardStyle={{
-                boxShadow:
-                  "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
-                backgroundColor: "#F2F2F2",
-                textAlign: "center",
-                marginBottom: "10px",
-              }}
-              components={{
-                LaneHeader: (laneProps) => getLaneHeader(laneProps),
-                Card: (cardProps) => getCard(cardProps),
-              }}
+      {/**
+       * Here goes the Side Panel for Flowlines
+       */}
+      <SidePanel />
 
-              //onCardAdd = {handleCardAdd}
-              //onCardDelete = {handleCardDelete}
-              // handleDragStart = {}
-              // handleDragEnd={}
-              // handleLaneDragStart
-              // onDataChange
-              // onCardAdd
-              // onBeforeCardDelete
-              // onCardDelete
-              // onCardMoveAcrossLanes
-              // onLaneAdd
-              // onLaneDelete
-              // onLaneUpdate
-              // onLaneClick
-              // onLaneScroll
-              //onCardMoveAcrossLanes
-            />
-          )}
-          {stateApp.dealDisplayType === "table" && (
-            <M1nTable
-              dense
-              filteredTabTransactData={filteredTabTransactData}
-              parent="TransactDeals"
-            />
-          )}
-        </div>
-      ) : pipeToShow === false ? (
-        <h1 style={{ marginTop: 80 }}>
-          No flowlines currently exist - please setup a new flowline and
-          corresponding stages.
-        </h1>
-      ) : (
-        <CircularProgress size={80} disableShrink color="secondary" />
-      )}
+      <main className={classes.content}>
+        <TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} />
+        {pipeToShow ? (
+          <div className={classes.boardAndTable}>
+            {stateApp.dealDisplayType === "board" && (
+              <Board
+                className={classes.list}
+                style={{ backgroundColor: "#fff" }}
+                // data={filteredBoardTransactData || transactData}
+                data={filteredBoardTransactData}
+                draggable={true}
+                laneDraggable={false}
+                cardDraggable={true}
+                collapsibleLanes={false}
+                editable={false}
+                canAddLanes={false}
+                editLaneTitle={false}
+                hideCardDeleteIcon={true}
+                handleDragEnd={handleCardDragEnd}
+                onDataChange={handleDataChange}
+                onCardClick={handleCardClick}
+                onCardMoveAcrossLanes={onCardMoveAcrossLanes}
+                laneStyle={{
+                  backgroundColor: "#fff",
+                  color: "#011133",
+                  fontWeight: "bold",
+                  textAlign: "left",
+                }}
+                cardStyle={{
+                  boxShadow:
+                    "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+                  backgroundColor: "#F2F2F2",
+                  textAlign: "center",
+                  marginBottom: "10px",
+                }}
+                components={{
+                  LaneHeader: (laneProps) => getLaneHeader(laneProps),
+                  Card: (cardProps) => getCard(cardProps),
+                }}
+
+                //onCardAdd = {handleCardAdd}
+                //onCardDelete = {handleCardDelete}
+                // handleDragStart = {}
+                // handleDragEnd={}
+                // handleLaneDragStart
+                // onDataChange
+                // onCardAdd
+                // onBeforeCardDelete
+                // onCardDelete
+                // onCardMoveAcrossLanes
+                // onLaneAdd
+                // onLaneDelete
+                // onLaneUpdate
+                // onLaneClick
+                // onLaneScroll
+                //onCardMoveAcrossLanes
+              />
+            )}
+            {stateApp.dealDisplayType === "table" && (
+              <M1nTable
+                dense
+                filteredTabTransactData={filteredTabTransactData}
+                parent="TransactDeals"
+              />
+            )}
+          </div>
+        ) : pipeToShow === false ? (
+          <h1 style={{ marginTop: 80 }}>
+            No flowlines currently exist - please setup a new flowline and
+            corresponding stages.
+          </h1>
+        ) : (
+          <CircularProgress size={80} disableShrink color="secondary" />
+        )}
+      </main>
     </div>
   );
 }
