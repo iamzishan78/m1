@@ -17,6 +17,7 @@ import {
   faFilePdf,
   faFilePowerpoint,
   faFileWord,
+  faFile,
   faFileExcel,
 } from "@fortawesome/free-solid-svg-icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
@@ -294,9 +295,33 @@ export default function Documents(props) {
           />
         );
       case "csv":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
       case "xlsx":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
       case "xlsb":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
       case "xlsm":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
       case "xltx":
         return (
           <FontAwesomeIcon
@@ -304,16 +329,28 @@ export default function Documents(props) {
             style={{ fontSize: "2rem", color: "#207244" }}
           />
         );
-      case ".doc":
-      case ".docx":
+      case "doc":
+        return(
+          <FontAwesomeIcon
+            icon={faFileWord}
+            style={{ fontSize: "2rem", color: "#2A5599" }}
+          />
+        )
+      case "docx":
         return (
           <FontAwesomeIcon
             icon={faFileWord}
             style={{ fontSize: "2rem", color: "#2A5599" }}
           />
         );
-      case ".ppt":
-      case ".pptx":
+      case "ppt":
+        return (
+          <FontAwesomeIcon
+            icon={faFilePowerpoint}
+            style={{ fontSize: "5.5rem", color: "#D04424" }}
+          />
+        );
+      case "pptx":
         return (
           <FontAwesomeIcon
             icon={faFilePowerpoint}
@@ -321,7 +358,13 @@ export default function Documents(props) {
           />
         );
       default:
-        return <span>{fileExtension}</span>;
+        // return <span>{fileExtension}</span>;
+        return (
+          <FontAwesomeIcon
+            icon={faFile}
+            style={{ fontSize: "5.5rem", color: "#D04424" }}
+          />
+        );
     }
   };
 
@@ -478,9 +521,21 @@ export default function Documents(props) {
                             ? classes.disabledDownload
                             : ""
                         }`}
-                        // onClick={() => {
-                        //   handleViewFile(file.id)
-                        // } }
+
+                        onClick={() => {
+                            
+                        viewFileResultt?.viewFiles.map((value) => {
+
+                          if(value.id === file.id && ExtenstionGetter(file.name) === 'pdf')
+                          {
+                              setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:file.name}})
+                          }
+                          else {
+                              handleViewFile(file.id)
+                          }
+
+                        })  
+                      }}
                       >
                         {/* <GetAppIcon fontSize="large" /> */}
                         {new RegExp(
@@ -497,7 +552,7 @@ export default function Documents(props) {
 
                             if(fileExtension === 'pdf')
                             {
-                              setStateApp({ ...stateApp, viewDoc: {uri:file.uri, name:file.name, downloadFn:handleViewFile, downloadData: files?.getFileDescriptors[key].fileId}})
+                              setStateApp({ ...stateApp, viewDoc: {uri:file.uri, name:file.name}})
                             }
                           }}>
                             {/* {fileExtension} */}
@@ -507,14 +562,18 @@ export default function Documents(props) {
                       </div>
                     )}
                     <div  className='DocumentTitle'
-                     onClick={() => {
+                      onClick={() => {
                           
                        viewFileResultt?.viewFiles.map((value) => {
 
                          if(value.id === file.id && ExtenstionGetter(file.name) === 'pdf')
                          {
-                        setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:file.name, downloadFn:handleViewFile, downloadData: file.id}})
+                            setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:file.name}})
                          }
+                         else {
+                            handleViewFile(file.id)
+                         }
+
                        })  
                     }}>
                       <h4 className={classes.uploadTitle } >
