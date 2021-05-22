@@ -2151,7 +2151,7 @@ function SubTable(props) {
                         color="secondary"
                         startIcon={<AssignmentIndOutlinedIcon />}
                         className={classes.multiSelectionTopBarButtons}
-                        disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length <= 1}
+                        disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
                         onClick={() => {
                           handleExpandClick(
                             null,
