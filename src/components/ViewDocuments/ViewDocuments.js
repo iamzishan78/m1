@@ -247,7 +247,7 @@ export default function ViewDocuments(props) {
 										 if(value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf')
 										 {
 											 console.log("teste")
-										setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:doc.fileName, downloadFn:handleViewFile, downloadData: doc.fileId}})
+										setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:doc.fileName,}})
 
 										 }
 									 })      

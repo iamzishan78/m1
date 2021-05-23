@@ -441,24 +441,6 @@ export default function Documents(props) {
                       interactive
                     >
                       <div>
-                        {/* <img src={value.uri} className={classes.forImage}></img> */}
-                        {/* <iframe src={value.uri} frameborder="0"></iframe> */}
-                        {/* {value.name.includes("pdf") ? (
-												<Document
-													className={classes.forImage}
-													file={value.uri}
-													onLoadSuccess={onDocumentLoadSuccess}
-												>
-													<Page
-														className={classes.forImage}
-														pageNumber={pageNumber}
-														width={79}
-														height={70}
-													/>
-												</Document>
-											) : (
-												<img src={value.uri} className={classes.forImage}></img>
-											)} */}
                         {new RegExp(
                           ["jpg", "jpeg", "png", "bmp"].join("|")
                         ).test(fileExtension) ? (
@@ -469,9 +451,18 @@ export default function Documents(props) {
                           ></img>
                         ) : (
                           <div className={classes.forImageContainer}  onClick={() => {
+                            // if(fileExtension === 'pdf')
+                            // {
+                            //   setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name, downloadFn:handleViewFile, downloadData: files?.getFileDescriptors[key].fileId}})
+                            // }
                             if(fileExtension === 'pdf')
                             {
-                              setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name, downloadFn:handleViewFile, downloadData: files?.getFileDescriptors[key].fileId}})
+                                setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name}})
+                            }
+                            else {
+                              handleViewFile(
+                                files?.getFileDescriptors[key].fileId
+                              )
                             }
                           }}>
                             {/* {fileExtension} */}
