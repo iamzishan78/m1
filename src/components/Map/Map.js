@@ -624,11 +624,6 @@ function Map() {
 	}
 
 
-	// geoJson = layerData;
-
-
-
-
       } else {
 	const makeGeoJSON = (mdata) => {
 	  return {
@@ -1023,9 +1018,6 @@ function Map() {
 	// tmp fix because it appears that the data coming back 
 	// from contacts api is slightly different than other apis
 	// need to setup in a standard format
-	if (!properties.id && feature.layer.id === "wellpoints") {
-	  properties.id = properties.wellId
-	}
 
 	if (properties.id && feature.layer.id === "wellpoints") {
 	  setStateApp((state) => ({
@@ -1054,7 +1046,6 @@ function Map() {
 	  }));
 	}
       }
-
     };
 
     const udLayerClickHandler = (feature) => {
@@ -3101,7 +3092,6 @@ function Map() {
 
   useEffect(() => {
     (async () => {
-
       if (
 	map &&
 	  stateApp.selectedWellId &&
@@ -3191,8 +3181,7 @@ function Map() {
 	map &&
 	  stateApp.selectedPermitId &&
 	  stateApp.permitSelectedCoordinates &&
-	  stateApp.permitSelectedCoordinates.length > 0 &&
-	  !stateApp.selectedPermit
+	  stateApp.permitSelectedCoordinates.length > 0
       ) {
 	let point = map.project(stateApp.permitSelectedCoordinates);
 	var bbox = [
@@ -3246,6 +3235,12 @@ function Map() {
 	  let popUps = document.getElementsByClassName("mapboxgl-popup");
 	  setStateApp((state) => ({
 	    ...state,
+	    popupOpen: false,
+	    selectedUserDefinedLayer: null,
+	    selectedParcel: null,
+	  }));
+	  setStateApp((state) => ({
+	    ...state,
 	    selectedPermit: currentFeature.properties,
 	  }));
 	  createPopUp(currentFeature.properties);
@@ -3254,6 +3249,12 @@ function Map() {
       }
     })();
   }, [loading, stateApp.permitSelectedCoordinates]);
+
+  // Just for testing REMOVE THIS
+  useEffect(() => {
+    console.log('SELECTED PERMIT CHANGED')
+    console.log(stateApp.selectedPermit)
+  }, [loading, stateApp.selectedPermit]);
 
   useEffect(() => {
 
@@ -4848,25 +4849,25 @@ function Map() {
 
     {stateApp.selectedPermit !== null && showExpandableCard &&
      stateApp.expandedCard && (
-      <div className={classes.draggable}>
-	<ExpandableCardProvider
-	  expanded
-	  handleCloseExpandableCard={handleCloseExpandableCard}
-	  component={<PermitCardProvider />}
-	  title={stateApp.selectedPermit.permitName}
-	  subTitle={stateApp.selectedPermit.api}
-	  parent="map"
-	  cardTop={20}
-	  cardLeft={20}
-	  position="relative"
-	  zIndex={99}
-	  cardWidthExpanded="50vw"
-	  cardHeightExpanded="90vh"
-	  targetSourceId={stateApp.selectedPermit.Id}
-	  targetLabel="recent_submitted_permits"
-	/>
-      </div>
-    )
+       <div className={classes.draggable}>
+	 <ExpandableCardProvider
+	   expanded
+	   handleCloseExpandableCard={handleCloseExpandableCard}
+	   component={<PermitCardProvider />}
+	   title={stateApp.selectedPermit.permitName}
+	   subTitle={stateApp.selectedPermit.api}
+	   parent="map"
+	   cardTop={20}
+	   cardLeft={20}
+	   position="relative"
+	   zIndex={99}
+	   cardWidthExpanded="50vw"
+	   cardHeightExpanded="90vh"
+	   targetSourceId={stateApp.selectedPermit.Id}
+	   targetLabel="recent_submitted_permits"
+	 />
+       </div>
+     )
     }
 
     {stateApp.selectedParcel !== null &&
