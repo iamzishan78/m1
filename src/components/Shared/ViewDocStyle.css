@@ -39,6 +39,9 @@
 }
 .DocumentTitle{
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 div.DocumentTitle:hover h4,div.DocumentTitle:hover h5 {
   color: rgba(23, 170, 221, 1) !important;
