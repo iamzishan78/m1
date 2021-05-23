@@ -1,21 +1,15 @@
 import React, { useContext, useState, useEffect } from "react";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import RootRef from "@material-ui/core/RootRef";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import Button from "@material-ui/core/Button";
 import { MapControlsContext } from "../../../MapControls/MapControlsContext";
 import { AppContext } from "../../../../AppContext";
 import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
 import LayersIcon from "@material-ui/icons/Layers";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -25,11 +19,8 @@ import MapSatelliteIcon from "../../svgIcons/MapSatelliteIcon";
 import MapLightIcon from "../../svgIcons/MapLightIcon";
 import MapBasicIcon from "../../svgIcons/MapBasicIcon";
 import Collapse from "@material-ui/core/Collapse";
-import Select from "@material-ui/core/Select";
-import { UPDATELAYERSETTINGS } from "../../../../graphQL/useMutationUpdateLayerSettings";
-import { useMutation } from "@apollo/client";
 import Box from "@material-ui/core/Box";
-import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import { ThemeProvider } from "@material-ui/core/styles";
 import { useSelector } from "react-redux";
 import { deepEqualObjects } from "../../functions";
 import StarIcon from "@material-ui/icons/Star";
@@ -158,11 +149,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 							}}
 						>
 							<ThemeProvider theme={theme}>
-								<div>{style.name == "Outdoors" && <MapOutdoorIcon />}</div>
-								<div>{style.name == "Satellite" && <MapSatelliteIcon />}</div>
-								<div>{style.name == "Light" && <MapLightIcon />}</div>
-								<div>{style.name == "Dark" && <MapDarkIcon />}</div>
-								<div>{style.name == "Basic" && <MapBasicIcon />}</div>
+								<div>{style.name === "Outdoors" && <MapOutdoorIcon />}</div>
+								<div>{style.name === "Satellite" && <MapSatelliteIcon />}</div>
+								<div>{style.name === "Light" && <MapLightIcon />}</div>
+								<div>{style.name === "Dark" && <MapDarkIcon />}</div>
+								<div>{style.name === "Basic" && <MapBasicIcon />}</div>
 								<div className={classes.boxtext}>
 									<ListItemText primary={style.name} />
 								</div>

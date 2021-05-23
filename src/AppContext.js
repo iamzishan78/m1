@@ -131,7 +131,7 @@ const AppProvider = (props) => {
           if (stateApp.layers && Array.isArray(stateApp.layers)) {
             const currentLayers = [...stateApp.layers];
             const index = currentLayers.findIndex(
-              (l) => l.identifier == identifier
+              (l) => l.identifier === identifier
             );
 
             const updatedLayer = {
@@ -152,8 +152,6 @@ const AppProvider = (props) => {
             return {
               ...stateApp,
               layers: [...currentLayers],
-              // popupOpen: false,
-              // selectedWell: null,
               mapCircularLoaderAct: false,
             };
           }

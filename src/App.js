@@ -227,7 +227,7 @@ function App() {
     }
 
     if (apolloClient && token) {
-      apolloClient.link.options.headers = { ["X-ZUMO-AUTH"]: token };
+      apolloClient.link.options.headers = { "X-ZUMO-AUTH": token };
     }
   };
 
