@@ -1,19 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, Fragment } from "react";
 import { useDispatch } from "react-redux";
 import {
-  Drawer,
-  Typography,
-  Grid,
   List,
-  ListItem,
-  ListItemText,
-  Tooltip,
-  IconButton,
-  InputBase,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Flipper } from "react-flip-toolkit";
 import Sortly, { findDescendants, findParent } from "react-sortly";
+import PipelineGroup from './PipelineProject';
 import PipelineCard from "./PipelineCard";
 import { setFlowState } from "actions";
 
@@ -99,21 +92,40 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
 
   const handleChange = () => { };
   return (
-    <List className={classes.flowlinesList}>
-      <Flipper flipKey={filteredPipelines.map(({ id }) => id).join(".")}>
-        <Sortly items={filteredPipelines} maxDepth={1} onChange={handleChange}>
-          {(props) => (
-            <PipelineCard
-              index={props.id}
-              pipeline={props.data}
-              selectedPipe={selectedPipe}
-              selectedPipelines={selectedPipelines}
-              onFlowlineSelect={onFlowlineSelect}
-            />
-          )}
-        </Sortly>
-      </Flipper>
-    </List>
+    <Fragment>
+      <List className={classes.flowlinesList}>
+        <Flipper flipKey={filteredPipelines.map(({ id }) => id).join(".")}>
+          <Sortly items={filteredPipelines} maxDepth={1} onChange={handleChange}>
+            {(props) => (
+              <PipelineCard
+                index={props.id}
+                pipeline={props.data}
+                selectedPipe={selectedPipe}
+                selectedPipelines={selectedPipelines}
+                onFlowlineSelect={onFlowlineSelect}
+              />
+            )}
+          </Sortly>
+        </Flipper>
+        <PipelineGroup>
+          <List className={classes.flowlinesList}>
+            <Flipper flipKey={filteredPipelines.map(({ id }) => id).join(".")}>
+              <Sortly items={filteredPipelines} maxDepth={1} onChange={handleChange}>
+                {(props) => (
+                  <PipelineCard
+                    index={props.id}
+                    pipeline={props.data}
+                    selectedPipe={selectedPipe}
+                    selectedPipelines={selectedPipelines}
+                    onFlowlineSelect={onFlowlineSelect}
+                  />
+                )}
+              </Sortly>
+            </Flipper>
+          </List>
+        </PipelineGroup>
+      </List>
+    </Fragment>
   );
 }
 
