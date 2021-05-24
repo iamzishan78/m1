@@ -125,21 +125,22 @@ function PipelinesList({
             (p) => p.type === "Pipeline" && !p.projectId
           )}
         />
-        {filteredPipelines.map(
-          (pipe, index) =>
-            pipe.type === "Project" && (
+        {filteredPipelines
+          .filter((pipe) => pipe.type === "Project")
+          .map((pipe, index) => {
+            const projectPipelines = filteredPipelines.filter(
+              (p) => p.type === "Pipeline" && p.projectId === pipe.projectId
+            );
+            return (
               <Fragment key={index}>
-                <PipelineGroup heading={pipe.projectName}>
-                  <PipelineCardWrapper
-                    pipelines={filteredPipelines.filter(
-                      (p) =>
-                        p.type === "Pipeline" && p.projectId === pipe.projectId
-                    )}
-                  />
+                <PipelineGroup
+                  heading={`${pipe.projectName} (${projectPipelines.length})`}
+                >
+                  <PipelineCardWrapper pipelines={projectPipelines} />
                 </PipelineGroup>
               </Fragment>
-            )
-        )}
+            );
+          })}
       </List>
     </Fragment>
   );

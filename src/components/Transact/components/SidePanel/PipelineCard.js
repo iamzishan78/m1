@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "5px 10px 0px 6px",
     borderRadius: "5px",
     width: "95% !important",
+    fontWeight: 500,
     "&:hover": {
       backgroundColor: "#506187",
     },
