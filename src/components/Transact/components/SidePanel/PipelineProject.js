@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PipelineProject = ({ children }) => {
+const PipelineProject = ({ heading, children }) => {
   const classes = useStyles();
   const [isExpanded, setExpansion] = useState(false);
 
@@ -56,7 +56,7 @@ const PipelineProject = ({ children }) => {
             </Grid>
             <Grid item>
               <Typography className={classes.heading}>
-                Sample Project
+                {heading}
               </Typography>
             </Grid>
           </Grid>

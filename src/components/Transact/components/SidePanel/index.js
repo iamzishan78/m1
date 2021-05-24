@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     [theme.breakpoints.up("sm")]: {
       width: "auto",
-    }
+    },
   },
   iconSearch: {
     height: "100%",
@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     "&:hover": {
       color: "#fff",
-      cursor: "pointer"
+      cursor: "pointer",
     },
   },
   inputRoot: {
@@ -141,25 +141,43 @@ const SidePanel = ({ }) => {
   const [filteredPipelines, setPipelines] = useState(pipelines);
   const [deleteDialogOpen, setModal] = useState(false);
 
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp,] = useContext(AppContext);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
-  const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES)
+  const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES);
   const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] =
     useLazyQuery(DEALSCOUNTINAPIPE, {
       fetchPolicy: "network-only",
     });
 
   useEffect(() => {
-    setPipelines(pipelines);
+    const projectIncludedPipelines = [],
+      projects = {};
+    pipelines.forEach((pipe) => {
+      if (pipe.projectName && !projects[pipe.projectName]) {
+        projects[pipe.projectName] = true;
+        projectIncludedPipelines.push({
+          projectName: pipe.projectName,
+          projectId: pipe.projectId,
+          type: "Project",
+          index: projectIncludedPipelines.length,
+          depth: 0,
+        });
+      }
+      projectIncludedPipelines.push({
+        ...pipe,
+        type: "Pipeline",
+        depth: pipe.projectName ? 1 : 0,
+        index: projectIncludedPipelines.length,
+      });
+    });
+    setPipelines(projectIncludedPipelines);
   }, [pipelines]);
 
   useEffect(() => {
     if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
-      // setStateApp((state) => ({
-      //   ...state,
-      //   uniuniversalCircularLoaderAct: false,
-      // }));
-      if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
+      if (
+        dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0
+      )
         dispatch(
           showWarningMessage(
             "There are deals associated to the pipelines, please remove them first."
@@ -215,9 +233,9 @@ const SidePanel = ({ }) => {
           variables: {
             pipelines: selectedPipelines.map((pipe) => ({
               _id: pipe,
-              name: pipelines.find(p => p._id === pipe).name
+              name: pipelines.find((p) => p._id === pipe).name,
             })),
-            userId: stateApp.user.mongoId
+            userId: stateApp.user.mongoId,
           },
           refetchQueries: ["getPipelines"],
           awaitRefetchQueries: true,
@@ -252,13 +270,21 @@ const SidePanel = ({ }) => {
       >
         <div className={classes.toolbar}>
           <div className={classes.toolbarHeader}>
-            <Typography varient="h4" component="h4" style={{ float: "left", marginTop: "10px" }}>
+            <Typography
+              varient="h4"
+              component="h4"
+              style={{ float: "left", marginTop: "10px" }}
+            >
               Flowlines
             </Typography>
             <Typography
               variant="caption"
               display="block"
-              style={{ float: "right", color: "rgba(121, 121, 121, 0.85)", marginTop: "15px" }}
+              style={{
+                float: "right",
+                color: "rgba(121, 121, 121, 0.85)",
+                marginTop: "15px",
+              }}
             >
               {get(pipelines, "length", 0)} Flowlines
             </Typography>
@@ -284,7 +310,13 @@ const SidePanel = ({ }) => {
               </Grid>
               <Grid item>
                 <div className={classes.search}>
-                  <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput").focus()}>
+                  <Tooltip
+                    title="Search"
+                    className={classes.iconSearch}
+                    onClick={() =>
+                      document.getElementById("searchInput").focus()
+                    }
+                  >
                     <SearchIcon />
                   </Tooltip>
                   <InputBase

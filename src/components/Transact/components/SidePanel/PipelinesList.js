@@ -1,12 +1,10 @@
 import React, { useEffect, Fragment } from "react";
 import { useDispatch } from "react-redux";
-import {
-  List,
-} from "@material-ui/core";
+import { List } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Flipper } from "react-flip-toolkit";
 import Sortly, { findDescendants, findParent } from "react-sortly";
-import PipelineGroup from './PipelineProject';
+import PipelineGroup from "./PipelineProject";
 import PipelineCard from "./PipelineCard";
 import { setFlowState } from "actions";
 
@@ -28,7 +26,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, setMultiSelection }) {
+function PipelinesList({
+  filteredPipelines,
+  selectedPipe,
+  selectedPipelines,
+  setMultiSelection,
+}) {
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -36,7 +39,7 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
     if (selectedPipe) {
       setMultiSelection([selectedPipe._id]);
     }
-  }, [selectedPipe]);
+  }, [selectedPipe, setMultiSelection]);
 
   const isCtrlKeyPressed = () => {
     if (window.event.ctrlKey || window.event.metaKey) return true;
@@ -46,13 +49,11 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
   const isShiftKeyPressed = () => {
     if (window.event.shiftKey) return true;
     return false;
-  }
+  };
 
   const checkMultiSelectPipelines = (newPipeline) => {
     let newPipelines = [];
-    const itemIndex = selectedPipelines.findIndex(
-      (p) => p === newPipeline._id
-    );
+    const itemIndex = selectedPipelines.findIndex((p) => p === newPipeline._id);
     if (isCtrlKeyPressed()) {
       if (itemIndex === -1) {
         newPipelines = [...selectedPipelines, newPipeline._id];
@@ -62,14 +63,23 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
       }
       setMultiSelection(newPipelines);
     } else if (isShiftKeyPressed() && itemIndex === -1) {
-      let newPipelineIndex = filteredPipelines.findIndex(p => p._id === newPipeline._id);
-      let oldPipelineIndex = filteredPipelines.findIndex(p => p._id === selectedPipelines[selectedPipelines.length - 1]);
+      let newPipelineIndex = filteredPipelines.findIndex(
+        (p) => p._id === newPipeline._id
+      );
+      let oldPipelineIndex = filteredPipelines.findIndex(
+        (p) => p._id === selectedPipelines[selectedPipelines.length - 1]
+      );
       if (newPipelineIndex < oldPipelineIndex) {
         newPipelineIndex = newPipelineIndex + oldPipelineIndex;
         oldPipelineIndex = newPipelineIndex - oldPipelineIndex;
         newPipelineIndex = newPipelineIndex - oldPipelineIndex;
       }
-      newPipelines = [...selectedPipelines, ...filteredPipelines.slice(oldPipelineIndex, newPipelineIndex + 1).map(p => p._id)];
+      newPipelines = [
+        ...selectedPipelines,
+        ...filteredPipelines
+          .slice(oldPipelineIndex, newPipelineIndex + 1)
+          .map((p) => p._id),
+      ];
       newPipelines = [...new Set(newPipelines)];
       setMultiSelection(newPipelines);
     } else {
@@ -90,40 +100,46 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
     }
   };
 
+  const PipelineCardWrapper = ({ pipelines }) => (
+    <Flipper flipKey={pipelines.map(({ id }) => id).join(".")}>
+      <Sortly items={pipelines} maxDepth={1} onChange={handleChange}>
+        {(props) => (
+          <PipelineCard
+            index={props.id}
+            pipeline={props.data}
+            selectedPipe={selectedPipe}
+            selectedPipelines={selectedPipelines}
+            onFlowlineSelect={onFlowlineSelect}
+          />
+        )}
+      </Sortly>
+    </Flipper>
+  );
+
   const handleChange = () => { };
   return (
     <Fragment>
       <List className={classes.flowlinesList}>
-        <Flipper flipKey={filteredPipelines.map(({ id }) => id).join(".")}>
-          <Sortly items={filteredPipelines} maxDepth={1} onChange={handleChange}>
-            {(props) => (
-              <PipelineCard
-                index={props.id}
-                pipeline={props.data}
-                selectedPipe={selectedPipe}
-                selectedPipelines={selectedPipelines}
-                onFlowlineSelect={onFlowlineSelect}
-              />
-            )}
-          </Sortly>
-        </Flipper>
-        <PipelineGroup>
-          <List className={classes.flowlinesList}>
-            <Flipper flipKey={filteredPipelines.map(({ id }) => id).join(".")}>
-              <Sortly items={filteredPipelines} maxDepth={1} onChange={handleChange}>
-                {(props) => (
-                  <PipelineCard
-                    index={props.id}
-                    pipeline={props.data}
-                    selectedPipe={selectedPipe}
-                    selectedPipelines={selectedPipelines}
-                    onFlowlineSelect={onFlowlineSelect}
+        <PipelineCardWrapper
+          pipelines={filteredPipelines.filter(
+            (p) => p.type === "Pipeline" && !p.projectId
+          )}
+        />
+        {filteredPipelines.map(
+          (pipe, index) =>
+            pipe.type === "Project" && (
+              <Fragment key={index}>
+                <PipelineGroup heading={pipe.projectName}>
+                  <PipelineCardWrapper
+                    pipelines={filteredPipelines.filter(
+                      (p) =>
+                        p.type === "Pipeline" && p.projectId === pipe.projectId
+                    )}
                   />
-                )}
-              </Sortly>
-            </Flipper>
-          </List>
-        </PipelineGroup>
+                </PipelineGroup>
+              </Fragment>
+            )
+        )}
       </List>
     </Fragment>
   );

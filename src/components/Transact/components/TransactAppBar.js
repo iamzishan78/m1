@@ -13,6 +13,7 @@ import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: "50px",
+    maxHeight: "72px",
     backgroundColor: "#fff",
     padding: "0 16px 10px",
   },

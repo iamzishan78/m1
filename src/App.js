@@ -162,12 +162,12 @@ const PrivateRoute = ({ component, ...options }) => {
 
   const finalComponent =
     stateApp.user &&
-    Date.parse(stateApp.user.authTokenExpires) > Date.now() &&
-    apolloClient?.link?.options?.headers?.['X-ZUMO-AUTH']
+      Date.parse(stateApp.user.authTokenExpires) > Date.now() &&
+      apolloClient?.link?.options?.headers?.['X-ZUMO-AUTH']
       ? component
       : (() => {
-          return stateApp.myMSALB2CObj ? LoginB2C : Login;
-        })();
+        return stateApp.myMSALB2CObj ? LoginB2C : Login;
+      })();
 
   return (
     <div>
