@@ -22,10 +22,11 @@
     "@mapbox/geojson-merge": "^1.1.1",
     "@mapbox/mapbox-gl-draw": "^1.2.2",
     "@mapbox/mapbox-gl-geocoder": "^4.7.0",
-    "@material-ui/core": "^4.11.3",
+    "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/pickers": "^3.3.10",
+    "@material-ui/styles": "^4.11.4",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.0.2",
@@ -108,7 +109,7 @@
     "viewport-mercator-project": "^7.0.2"
   },
   "scripts": {
-    "start": "react-scripts start --profile",
+    "start": "set NODE_OPTIONS=--max_old_space_size=8192&& react-scripts start --profile",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
