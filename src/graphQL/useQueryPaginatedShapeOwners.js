@@ -9,7 +9,7 @@ export const SHAPE_OWNERS = gql`
     $search: String = ""
     $userId: ID
   ) {
-    getPaginatedShapeOwners(
+    paginatedShapeOwners(
       polygon: $polygon
       pagination: $pagination
       sort: $sort
@@ -21,6 +21,7 @@ export const SHAPE_OWNERS = gql`
         node,
         cursor
       },
+      totalCount,
       pageInfo {
         hasNextPage,
         endCursor

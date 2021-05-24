@@ -32,6 +32,9 @@ import {
   ownersColumnHeaders,
 } from "./MapGridCardHeaders";
 import DockMenu from "./DockMenu";
+import ShapeGridWellsTable from "components/Table/Wells/ShapeGridWellsTable";
+import ShapeGridTaxOwnersTable from "components/Table/TaxOwners/ShapeGridTaxOwnersTable";
+import ViewportGridWellsTable from "components/Table/Wells/ViewportGridWellsTable";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -96,11 +99,11 @@ const useStyles = makeStyles((theme) => {
     dockMenu: ({ dockMenu }) => {
       let css = {}
       if (dockMenu === 'bottom' || dockMenu === 'top')
-        css = { top: dockMenu === 'bottom' ? "50vh" : '8vh', width: "96vw", height: "49vh", left: "2vw" }
+        css = { top: dockMenu === 'bottom' ? "50vh" : '6vh', width: "100vw", height: "50vh", left: "0vw" }
       else if (dockMenu === 'left' || dockMenu === 'right')
-        css = { left: dockMenu === 'left' ? "2vw" : '49vw', width: "50vw", height: "91vh", top: "8vh" }
+        css = { left: dockMenu === 'left' ? "0vw" : '50vw', width: "50vw", height: "94vh", top: "6vh" }
       else if (dockMenu === 'full')
-        css = { left: "2vw", width: "96vw", height: "91vh", top: "8vh" }
+        css = { left: "0vw", width: "100vw", height: "94vh", top: "6vh" }
       css = { ...css, zIndex: "1300", position: "fixed" }
       return css
     },
@@ -420,19 +423,21 @@ function MapGridCard(props) {
                 {...a11yProps(1)}
               />
 
-              <Tab
-                className="cancelDraggableEffect"
-                label={`Boundary${stateApp.viewportWells
-                  ? " (" + stateApp.viewportWells?.length + ")"
-                  : ""
-                  }`}
-                {...a11yProps(1)}
-              >
+              {
+                stateApp.gridPolygonString && <Tab
+                  className="cancelDraggableEffect"
+                  label={`Boundary${stateApp.shapeGridWellsCount
+                    ? " (" + (stateApp.shapeGridWellsCount || '') + (stateApp.shapeGridOwnersCount || '') + ")"
+                    : ""
+                    }`}
+                  {...a11yProps(1)}
+                >
+                </Tab>
+              }
 
-              </Tab>
             </Tabs>
             {
-              mapGridCardActiveTap === 2 && <Select
+              mapGridCardActiveTap === 2 && stateApp.gridPolygonString && <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 className={classes.selectBoundary}
@@ -652,50 +657,49 @@ function MapGridCard(props) {
                 <TabPanels
                   value={viewportTapValue}
                   panels={selectedBoundary === 'Shape Filter' ? [
-                    <M1nTable
-                      dense
-                      parent="gridWells"
-                      header={
-                        <TabLabels
-                          labels={[
-                            `Wells (${stateApp.trackedwells
-                              ? stateApp.trackedwells.length
-                              : 0
-                            })`,
-                            `Tax Owners (${stateApp.owners ? stateApp.owners.length : 0
-                            })`,
-                          ]}
-                          value={viewportTapValue}
-                          setValue={setViewportTapValue}
-                        />
-                      }
-                    />,
-                    <M1nTable
-                      dense
-                      parent="shapeFilterOwners"
-                      header={
-                        <TabLabels
-                          labels={[
-                            `Wells (${stateApp.trackedwells
-                              ? stateApp.trackedwells.length
-                              : 0
-                            })`,
-                            `Tax Owners (${stateApp.owners ? stateApp.owners.length : 0
-                            })`,
-                          ]}
-                          value={viewportTapValue}
-                          setValue={setViewportTapValue}
-                        />
-                      }
+
+                    <ShapeGridWellsTable
+                      parent="wells"
+                      header={<TabLabels
+                        labels={[
+                          `Wells (${stateApp.shapeGridWellsCount || 0})`,
+                          `Tax Owners (${stateApp.shapeGridOwnersCount || 0})`,
+                        ]}
+                        value={viewportTapValue}
+                        setValue={setViewportTapValue}
+                      />}
+                      targetLabel="well"
+                      showTracks
+                    />
+                    ,
+                    <ShapeGridTaxOwnersTable
+                      parent="gridOwners"
+                      header={<TabLabels
+                        labels={[
+                          `Wells (${stateApp.shapeGridWellsCount || 0})`,
+                          `Tax Owners (${stateApp.shapeGridOwnersCount || 0})`,
+                        ]}
+                        value={viewportTapValue}
+                        setValue={setViewportTapValue}
+                      />}
+                      targetLabel="owner"
+                      showTracks
                     />
                   ] : [
                     <div className={classes.viewportWells}>
+                      <ViewportGridWellsTable
+                        parent="wells"
+                        header={"Wells"}
+                        targetLabel="well"
+                        showTracks
+                      />
+                      {/* 
                       <M1nTable
                         id="viewportWellsTable"
                         dense
                         parent="mapViewportWells"
                         header={"Wells"}
-                      />
+                      /> */}
                       <h6
                         id="minimumZoomRequired"
                         style={{ textAlign: "left", marginLeft: "5rem" }}

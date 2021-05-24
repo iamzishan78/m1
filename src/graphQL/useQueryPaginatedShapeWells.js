@@ -40,6 +40,7 @@ export const SHAPEWELLS = gql`
         },
         cursor
       },
+      totalCount,
       pageInfo {
         hasNextPage,
         endCursor
