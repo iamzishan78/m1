@@ -213,7 +213,7 @@ const SidePanel = ({}) => {
         createPipelineDescriptors({
           variables: {
             descriptor: {
-              project: `Project ${moment().format("DD/MM/YYYY HH:m")}`,
+              project: `Project ${moment().format("MM/DD/YYYY HH:m")}`,
               pipelines: selectedPipelines,
               userId: stateApp.user.mongoId,
             },

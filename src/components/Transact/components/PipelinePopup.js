@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import moment from 'moment';
+import moment from "moment";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "@material-ui/core/Button";
@@ -9,12 +9,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import SettingsIcon from "@material-ui/icons/Settings";
 import IconButton from "@material-ui/core/IconButton";
 import Dialog from "@material-ui/core/Dialog";
-import {
-  setFlowState,
-  showErrorMessage,
-  showSuccessMessage,
-  showWarningMessage,
-} from "../../../actions";
+import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "../../../actions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import { withStyles } from "@material-ui/core/styles";
@@ -88,7 +83,7 @@ const DialogActions = withStyles((theme) => ({
   },
 }))(MuiDialogActions);
 
-const PipelinePopup = ({ }) => {
+const PipelinePopup = ({}) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -105,26 +100,17 @@ const PipelinePopup = ({ }) => {
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
 
-  const [
-    getPipeline,
-    { loading: loadingPipeline, data: pipelineData },
-  ] = useLazyQuery(GETPIPELINE, {
+  const [getPipeline, { loading: loadingPipeline, data: pipelineData }] = useLazyQuery(GETPIPELINE, {
     fetchPolicy: "cache-and-network",
   });
 
-  const [
-    getDealsCountByPipeline,
-    { data: dataDealsCountByPipeline },
-  ] = useLazyQuery(DEALSCOUNTINAPIPE, {
+  const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
     fetchPolicy: "network-only",
   });
 
-  const [getDealsCountByStage, { data: dataDealsCountByStage }] = useLazyQuery(
-    DEALSCOUNTINANSTAGE,
-    {
-      fetchPolicy: "network-only",
-    }
-  );
+  const [getDealsCountByStage, { data: dataDealsCountByStage }] = useLazyQuery(DEALSCOUNTINANSTAGE, {
+    fetchPolicy: "network-only",
+  });
 
   useEffect(() => {
     if (dataDealsCountByStage?.nonDeletedDealsCountInAnStageByPipeline) {
@@ -132,15 +118,8 @@ const PipelinePopup = ({ }) => {
         ...state,
         uniuniversalCircularLoaderAct: false,
       }));
-      if (
-        dataDealsCountByStage.nonDeletedDealsCountInAnStageByPipeline
-          .dealsCount > 0
-      )
-        dispatch(
-          showWarningMessage(
-            "There are deals associated to the stage, please remove them first."
-          )
-        );
+      if (dataDealsCountByStage.nonDeletedDealsCountInAnStageByPipeline.dealsCount > 0)
+        dispatch(showWarningMessage("There are deals associated to the stage, please remove them first."));
       else {
         // openDeleteDialog();
         deleteFunc();
@@ -154,14 +133,8 @@ const PipelinePopup = ({ }) => {
         ...state,
         uniuniversalCircularLoaderAct: false,
       }));
-      if (
-        dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0
-      )
-        dispatch(
-          showWarningMessage(
-            "There are deals associated to the pipeline, please remove them first."
-          )
-        );
+      if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
+        dispatch(showWarningMessage("There are deals associated to the pipeline, please remove them first."));
       else openDeleteDialog("pipe");
     }
   }, [dataDealsCountByPipeline]);
@@ -190,18 +163,15 @@ const PipelinePopup = ({ }) => {
                   pipeline: pipelineData.pipeline._id,
                   pipelineName: pipelineData.pipeline.name,
                   ownerName:
-                    card?.metadata?.owners &&
-                      card.metadata.owners[0]?.relatedObject?.name
+                    card?.metadata?.owners && card.metadata.owners[0]?.relatedObject?.name
                       ? card.metadata.owners[0].relatedObject.name
                       : null,
                   contactName:
-                    card?.metadata?.contacts &&
-                      card.metadata.contacts[0]?.relatedObject?.entity?.name
+                    card?.metadata?.contacts && card.metadata.contacts[0]?.relatedObject?.entity?.name
                       ? card.metadata.contacts[0].relatedObject.entity.name
                       : null,
                   isContact:
-                    card?.metadata?.contacts &&
-                      card.metadata.contacts[0]?.relatedObject?._id
+                    card?.metadata?.contacts && card.metadata.contacts[0]?.relatedObject?._id
                       ? card.metadata.contacts[0].relatedObject._id
                       : null,
                   ...card.metadata,
@@ -285,12 +255,8 @@ const PipelinePopup = ({ }) => {
 
   const reorder = (list, startPosition, endPosition) => {
     const reorderedStages = Array.from(list);
-    let startIndex = reorderedStages.findIndex(
-      (layer) => layer.position == startPosition
-    );
-    let endIndex = reorderedStages.findIndex(
-      (layer) => layer.position == endPosition
-    );
+    let startIndex = reorderedStages.findIndex((layer) => layer.position == startPosition);
+    let endIndex = reorderedStages.findIndex((layer) => layer.position == endPosition);
 
     //// switch positions between stages
 
@@ -337,18 +303,11 @@ const PipelinePopup = ({ }) => {
 
   const onDragEnd = (result) => {
     // dropped outside the list || same position
-    if (
-      !result.destination ||
-      result.destination.index === result.source.index
-    ) {
+    if (!result.destination || result.destination.index === result.source.index) {
       return;
     }
 
-    const { reorderedStages, stagesToUpdate } = reorder(
-      stages,
-      result.source.index,
-      result.destination.index
-    );
+    const { reorderedStages, stagesToUpdate } = reorder(stages, result.source.index, result.destination.index);
     //// saving state
     setStages([...reorderedStages]);
   };
@@ -378,7 +337,7 @@ const PipelinePopup = ({ }) => {
             name,
             stages,
             userId: stateApp.user.mongoId,
-            project: `Project ${moment().format('DD/MM/YYYY HH:m')}`
+            project: `Project ${moment().format("MM/DD/YYYY HH:m")}`,
           },
           refetchQueries: ["getPipelines", "getPipeline"],
           awaitRefetchQueries: true,
@@ -387,10 +346,7 @@ const PipelinePopup = ({ }) => {
         ////update
         let stagesToUpdate = [];
 
-        let pipeToUpdate =
-          selectedPipe.name !== name
-            ? { _id: selectedPipe._id, name }
-            : { _id: selectedPipe._id }; //// else update the ts
+        let pipeToUpdate = selectedPipe.name !== name ? { _id: selectedPipe._id, name } : { _id: selectedPipe._id }; //// else update the ts
 
         let stagesToAdd = stages.filter((stage) => !stage._id);
         let existingStages = stages.filter((stage) => stage._id);
@@ -407,14 +363,12 @@ const PipelinePopup = ({ }) => {
                 };
 
                 //// checking if the descriptor position changed
-                if (dbStage.position !== frontEndStage.position)
-                  stageToUpdate.position = frontEndStage.position;
+                if (dbStage.position !== frontEndStage.position) stageToUpdate.position = frontEndStage.position;
 
                 //// checking if something change in the real stage object
                 delete dbStage.position;
                 delete frontEndStage.position;
-                if (!deepEqualObjects(dbStage, frontEndStage))
-                  stageToUpdate = { ...stageToUpdate, ...frontEndStage };
+                if (!deepEqualObjects(dbStage, frontEndStage)) stageToUpdate = { ...stageToUpdate, ...frontEndStage };
 
                 ////
                 stagesToUpdate.push(stageToUpdate);
@@ -438,8 +392,7 @@ const PipelinePopup = ({ }) => {
             }
           }
 
-          if (!found)
-            stagesToUpdate.push({ _id: dbStage._id, IsDeleted: true });
+          if (!found) stagesToUpdate.push({ _id: dbStage._id, IsDeleted: true });
         }
 
         //// pipeToUpdate ////
@@ -517,16 +470,10 @@ const PipelinePopup = ({ }) => {
 
         Promise.all(allPromises)
           .then((values) => {
-            if (success === true)
-              dispatch(
-                showSuccessMessage("The Pipeline was successfully updated.")
-              );
-            else
-              dispatch(
-                showErrorMessage("An error occurred during the update.")
-              );
+            if (success === true) dispatch(showSuccessMessage("The Pipeline was successfully updated."));
+            else dispatch(showErrorMessage("An error occurred during the update."));
           })
-          .catch((reason) => { });
+          .catch((reason) => {});
       }
 
       handleClose();
@@ -542,12 +489,7 @@ const PipelinePopup = ({ }) => {
   };
 
   const removeStage = (stage, index) => {
-    if (stages.length === 1)
-      dispatch(
-        showWarningMessage(
-          "The stage can't be deleted, the pipeline needs at least one stage."
-        )
-      );
+    if (stages.length === 1) dispatch(showWarningMessage("The stage can't be deleted, the pipeline needs at least one stage."));
     else {
       if (stage?._id && selectedPipe) {
         setStateApp((state) => ({
@@ -586,8 +528,7 @@ const PipelinePopup = ({ }) => {
         rotting: "",
         rotten: false,
         dealsStatus: "open",
-        position:
-          stages.length > 0 ? stages[stages.length - 1].position + 1 : 0,
+        position: stages.length > 0 ? stages[stages.length - 1].position + 1 : 0,
       },
     ]);
     // }
@@ -595,11 +536,7 @@ const PipelinePopup = ({ }) => {
 
   const checkingIfEdited = () => {
     if (openPipeDialog !== "newPipe" && selectedPipe) {
-      if (
-        selectedPipe.name !== name ||
-        selectedPipe.stages?.length !== stages.length
-      )
-        return true;
+      if (selectedPipe.name !== name || selectedPipe.stages?.length !== stages.length) return true;
 
       ////checking stages
       for (let i = 0; i < stages.length; i++) {
@@ -612,35 +549,20 @@ const PipelinePopup = ({ }) => {
 
   return (
     <>
-      <Dialog
-        open={!!openPipeDialog}
-        onClose={handleClose}
-        fullWidth={true}
-        maxWidth={"lg"}
-      >
+      <Dialog open={!!openPipeDialog} onClose={handleClose} fullWidth={true} maxWidth={"lg"}>
         <DialogTitle className={classes.title}>
-          {openPipeDialog !== "newPipe"
-            ? "Edit Flowline"
-            : "Add a New Flowline"}
+          {openPipeDialog !== "newPipe" ? "Edit Flowline" : "Add a New Flowline"}
 
           <div className={classes.titleClose}>
             {openPipeDialog !== "newPipe" && (
               <Tooltip title="Remove Pipeline" placement="top">
-                <IconButton
-                  size="small"
-                  onClick={handleDeletePipe}
-                  style={{ marginRight: 10, color: "#fff" }}
-                >
+                <IconButton size="small" onClick={handleDeletePipe} style={{ marginRight: 10, color: "#fff" }}>
                   <DeleteIcon />
                 </IconButton>
               </Tooltip>
             )}
             <Tooltip title="Close" placement="top">
-              <IconButton
-                size="small"
-                style={{ color: "#fff" }}
-                onClick={handleClose}
-              >
+              <IconButton size="small" style={{ color: "#fff" }} onClick={handleClose}>
                 <CloseIcon />
               </IconButton>
             </Tooltip>
@@ -672,12 +594,8 @@ const PipelinePopup = ({ }) => {
                               <TableCell padding="checkbox"></TableCell>
                               <TableCell align="left">Stage Name</TableCell>
                               {/* ******DO NOT DELETE - TEMPORARILY COMMENTING OUT UNTIL WE BUILD 'PROBABILITY' and 'ROTTENESS' FUCTIONALITY****** */}
-                              <TableCell align="left">
-                                Deal Probability(%)
-                              </TableCell>
-                              <TableCell align="left">
-                                Rotting in&nbsp;(days)
-                              </TableCell>
+                              <TableCell align="left">Deal Probability(%)</TableCell>
+                              <TableCell align="left">Rotting in&nbsp;(days)</TableCell>
                               <TableCell align="left">Stage Status</TableCell>
                               <TableCell padding="checkbox"></TableCell>
                               {/* <TableCell padding="checkbox"></TableCell> */}
@@ -688,40 +606,22 @@ const PipelinePopup = ({ }) => {
                             {stages.map((stage, index) => {
                               const labelId = `checkbox-list-label-${stage.position}`;
                               return (
-                                <Draggable
-                                  key={labelId}
-                                  draggableId={labelId}
-                                  index={stage.position}
-                                >
+                                <Draggable key={labelId} draggableId={labelId} index={stage.position}>
                                   {(provided, snapshot) => (
-                                    <TableRow
-                                      key={stage.position}
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                    >
-                                      <TableCell
-                                        padding="checkbox"
-                                        {...provided.dragHandleProps}
-                                      >
+                                    <TableRow key={stage.position} ref={provided.innerRef} {...provided.draggableProps}>
+                                      <TableCell padding="checkbox" {...provided.dragHandleProps}>
                                         <DragIndicator />
                                       </TableCell>
                                       <TableCell align="left">
                                         <TextField
-                                          error={
-                                            error &&
-                                            (!stage.name || stage.name === "")
-                                          }
+                                          error={error && (!stage.name || stage.name === "")}
                                           variant="outlined"
                                           size="small"
                                           fullWidth
                                           margin="none"
                                           value={stage.name}
                                           onChange={(event) => {
-                                            handleCellTextChange(
-                                              event.target.value,
-                                              "name",
-                                              index
-                                            );
+                                            handleCellTextChange(event.target.value, "name", index);
                                             if (error) setError(false);
                                           }}
                                         />
@@ -741,11 +641,7 @@ const PipelinePopup = ({ }) => {
                                             type: "number",
                                           }}
                                           onChange={(event) => {
-                                            handleCellTextChange(
-                                              event.target.value,
-                                              "dealProbability",
-                                              index
-                                            );
+                                            handleCellTextChange(event.target.value, "dealProbability", index);
                                           }}
                                         />
                                       </TableCell>
@@ -761,11 +657,7 @@ const PipelinePopup = ({ }) => {
                                             type: "number",
                                           }}
                                           onChange={(event) => {
-                                            handleCellTextChange(
-                                              event.target.value,
-                                              "rotting",
-                                              index
-                                            );
+                                            handleCellTextChange(event.target.value, "rotting", index);
                                           }}
                                         />
                                       </TableCell>
@@ -776,21 +668,11 @@ const PipelinePopup = ({ }) => {
                                           style={{ minWidth: 200 }}
                                           value={stage?.dealsStatus?.capitalize()}
                                           onChange={(event, newValue) => {
-                                            handleCellTextChange(
-                                              newValue?.toLowerCase(),
-                                              "dealsStatus",
-                                              index
-                                            );
+                                            handleCellTextChange(newValue?.toLowerCase(), "dealsStatus", index);
                                           }}
                                           options={["Open", "Won", "Lost"]}
                                           renderInput={(params) => (
-                                            <TextField
-                                              {...params}
-                                              variant="outlined"
-                                              size="small"
-                                              fullWidth
-                                              margin="none"
-                                            />
+                                            <TextField {...params} variant="outlined" size="small" fullWidth margin="none" />
                                           )}
                                         />
 
@@ -798,10 +680,7 @@ const PipelinePopup = ({ }) => {
                                       </TableCell>
 
                                       <TableCell padding="checkbox">
-                                        <Tooltip
-                                          title="Remove Stage"
-                                          placement="top"
-                                        >
+                                        <Tooltip title="Remove Stage" placement="top">
                                           <RemoveCircleOutlineIcon
                                             onClick={() => {
                                               removeStage(stage, index);
@@ -824,11 +703,7 @@ const PipelinePopup = ({ }) => {
               )}
             </Grid>
             <Grid item xs={10} style={{ display: "flex" }}>
-              <IconButton
-                className={classes.addIconButton}
-                onClick={handleAddStage}
-                style={{ backgroundColor: "transparent" }}
-              >
+              <IconButton className={classes.addIconButton} onClick={handleAddStage} style={{ backgroundColor: "transparent" }}>
                 <AddIcon />
                 <span>Add new stage</span>
               </IconButton>
@@ -836,8 +711,7 @@ const PipelinePopup = ({ }) => {
                 style={{
                   marginLeft: 15,
                   color: "red",
-                  visibility:
-                    error && stages.length === 0 ? "visible" : "hidden",
+                  visibility: error && stages.length === 0 ? "visible" : "hidden",
                 }}
               >
                 Please add at least one stage.
@@ -852,35 +726,22 @@ const PipelinePopup = ({ }) => {
             color="primary"
             style={{
               marginRight: 15,
-              visibility:
-                openPipeDialog === "newPipe" || checkingIfEdited()
-                  ? "visible"
-                  : "hidden",
+              visibility: openPipeDialog === "newPipe" || checkingIfEdited() ? "visible" : "hidden",
             }}
           >
             {openPipeDialog === "newPipe" ? "Save" : "Update"}
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog
-        className={classes.dialog}
-        open={!!deleteDialogOpen}
-        onClose={handleCloseDeleteDialog}
-        fullWidth={false}
-        maxWidth="sm"
-      >
+      <Dialog className={classes.dialog} open={!!deleteDialogOpen} onClose={handleCloseDeleteDialog} fullWidth={false} maxWidth="sm">
         <DeleteConfirmationDialogContent
-          header={
-            deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`
-          }
+          header={deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`}
           onClose={handleCloseDeleteDialog}
-          deleteFunc={deleteFunc ? deleteFunc : () => { }}
+          deleteFunc={deleteFunc ? deleteFunc : () => {}}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => { }}
+          setM1nSelectedRowsIndexes={() => {}}
         >
-          {deleteDialogOpen === "pipe"
-            ? "Are you sure you want to delete the Flowline?"
-            : "Are you sure you want to delete the stage?"}
+          {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the Flowline?" : "Are you sure you want to delete the stage?"}
         </DeleteConfirmationDialogContent>
       </Dialog>
     </>
