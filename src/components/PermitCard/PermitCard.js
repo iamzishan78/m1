@@ -31,6 +31,7 @@ import PermitCardDetails from "./PermitCardDetails";
 // queries 
 import { useLazyQuery } from "@apollo/client";
 import { WELLSUMMARYDETAILQUERY } from "../../graphQL/useQueryWellSummaryDetail";
+import { PERMITDETAILQUERY } from "../../graphQL/useQueryRecentPermitDetails";
 
 // value formatters 
 import formatBOE from "../Shared/valueformatters/format_boe.js"
@@ -170,6 +171,10 @@ export default function PermitCard() {
     { loading: loadingWellSummary, data: dataWellSummary },
   ] = useLazyQuery(WELLSUMMARYDETAILQUERY);
 
+  const [
+    sqlQueryRecentSubmittedPermits,
+    { loading: loadingPermitSummary, data: dataPermitSummary },
+  ] = useLazyQuery(PERMITDETAILQUERY);
 
 
   useEffect(() => {
@@ -186,18 +191,26 @@ export default function PermitCard() {
   
 
   useEffect(() => {
-    getWellSummaryDetail({
-	  variables: { id: stateApp.selectedPermit.Id }
+    sqlQueryRecentSubmittedPermits({
+      variables: { id: stateApp.selectedPermit.Id }
     });
   }, [stateApp.selectedPermit]);
 
+  // useEffect(() => {
+  //   if (dataWellSummary) {
+  //     setSummary(dataWellSummary.wellSummaryDetail[0]);
+  //   } else {
+  //     setSummary(null);
+  //   }
+  // }, [dataWellSummary]);
+
   useEffect(() => {
-    if (dataWellSummary) {
-      setSummary(dataWellSummary.wellSummaryDetail[0]);
+    if(dataPermitSummary) {
+      console.log(dataPermitSummary)
     } else {
-      setSummary(null);
+      console.log("GQL Problem")
     }
-  }, [dataWellSummary]);
+  }, [dataPermitSummary])
 
 
   const handleOpenDetails = (isOwner) => {

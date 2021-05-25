@@ -34,7 +34,7 @@ import SimulationContainer from "./components/Stimulation";
 import FormationContainer from "./components/Formation";
 
 import { useLazyQuery } from "@apollo/client";
-import { PRODUCTIONDETAILQUERY } from "../../graphQL/useQueryProductionDetail";
+import { PERMITDETAILQUERY } from "../../graphQL/useQueryRecentPermitDetails";
 import moment from 'moment';
 import { Box, IconButton } from "@material-ui/core";
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
@@ -206,7 +206,7 @@ export default function PermitCardDetails(props) {
   const [
     getProductionDetail,
     { loading: loadingProductionDetail, data: productionDetail },
-  ] = useLazyQuery(PRODUCTIONDETAILQUERY);
+  ] = useLazyQuery(PERMITDETAILQUERY);
 
   useEffect(() => {
     getProductionDetail({
@@ -215,6 +215,7 @@ export default function PermitCardDetails(props) {
   }, []);
 
   useEffect(() => {
+    console.log('asdfsadfdsafsa');
     if (productionDetail) {
       let temp = [];
       productionDetail.productionDetail.forEach(element => {
@@ -304,7 +305,7 @@ export default function PermitCardDetails(props) {
   })(Switch);
 
 
-  return stateApp.selectedWell ? (
+  return stateApp.selectedPermit ? (
     <React.Fragment >
       <Grid item sm={12} className={classes.gridItemGrey}>
         <WellTypeCard />
