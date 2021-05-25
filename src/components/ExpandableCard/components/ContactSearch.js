@@ -1,4 +1,5 @@
 import { useLazyQuery } from "@apollo/client";
+import LinkWithIcon from "components/Shared/LinkWithIcon";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -9,6 +10,7 @@ import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/
 
 const ContactSearch = () => {
   let history = useHistory();
+  const contactId = history.location.pathname.split('/')[history.location.pathname.split('/').length - 1]
   const [
     getPaginatedContacts,
     { data: allContacts, fetchMore: fetchMorePaginatedContacts },
@@ -65,22 +67,31 @@ const ContactSearch = () => {
   }, [allContacts]);
 
   return (
-    <div style={{ width: "70%", marginLeft: "20px", maxWidth: "400px" }}>
-      <AutocompEntityNamesVirtualizeList
-        darkCard={true}
-        mongoEntitiesArray={mongoEntitiesArray}
-        setMongoEntitiesArray={setMongoEntitiesArray}
-        nameAutValue={nameAutValue}
-        setNameAutValue={setNameAutValue}
-        nameAutInputValue={nameAutInputValue}
-        setNameAutInputValue={setNameAutInputValue}
-        variant="outlined"
-        placeholder="Search by contact name"
-        hasNextPage={hasNextPage}
-        isNextPageLoading={isNextPageLoading}
-        loadNextPage={loadNextPage}
+    <div style={{ display: 'flex', width: '100%' }}>
+      <div style={{ width: "70%", marginLeft: "20px", maxWidth: "400px" }}>
+        <AutocompEntityNamesVirtualizeList
+          darkCard={true}
+          mongoEntitiesArray={mongoEntitiesArray}
+          setMongoEntitiesArray={setMongoEntitiesArray}
+          nameAutValue={nameAutValue}
+          setNameAutValue={setNameAutValue}
+          nameAutInputValue={nameAutInputValue}
+          setNameAutInputValue={setNameAutInputValue}
+          variant="outlined"
+          placeholder="Search by contact name"
+          hasNextPage={hasNextPage}
+          isNextPageLoading={isNextPageLoading}
+          loadNextPage={loadNextPage}
+        />
+      </div>
+      <div style={{ flexGrow: 1 }}></div>
+
+      <LinkWithIcon
+        objectId={contactId.toLowerCase()}
+        iconZiseSmall={false}
       />
     </div>
+
   );
 };
 export default ContactSearch;
