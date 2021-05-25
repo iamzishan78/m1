@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -53,7 +51,8 @@ import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 import { GETDEAL } from 'graphQL/useQueryDeal';
 import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider';
 import Contacts from 'components/FlowDrawer/Contacts';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import EventIcon from '@material-ui/icons/Event';
+import './style/dialog.css';
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -208,6 +207,22 @@ const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
     zIndex: '9999999999999999999 !important',
   },
+  root: {
+    '&.Mui-focused fieldset': {
+      border: '1px solid black',
+      backgroundColor: 'transparent',
+    },
+    '&:hover': {
+      backgroundColor: '#EBEBEB',
+    },
+    '&:active': {
+      backgroundColor: '#fff',
+    },
+  },
+  notchedOutline: {
+    border: 0,
+  },
+  focused: {},
 }));
 
 const newContact = {
@@ -1421,8 +1436,16 @@ function AddDealDialog(props) {
                   value={closeDate}
                   placeholder=""
                   fullWidth
+                  style={{ paddingLeft: 0 }}
                   onChange={(e) => {
                     setCloseDate(e.target.value);
+                  }}
+                  InputProps={{
+                    classes: {
+                      root: classes.root,
+                      focused: classes.focused,
+                      notchedOutline: classes.notchedOutline,
+                    },
                   }}
                 />
               </FormControl>

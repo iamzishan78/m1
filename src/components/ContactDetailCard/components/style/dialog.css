@@ -1,0 +1,16 @@
+input::-webkit-datetime-edit {
+  position: relative;
+  left: 12px;
+}
+
+input::-webkit-datetime-edit-fields-wrapper {
+  position: relative;
+  left: 12px;
+}
+input[type='date']::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 10;
+  left: 0;
+  margin-top: 1px;
+  margin-left: 8px;
+}
