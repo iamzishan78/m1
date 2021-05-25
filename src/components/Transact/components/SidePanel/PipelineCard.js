@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
         ? 0
         : theme.spacing(0.5, 0),
     marginLeft: theme.spacing(props.depth * 2),
-    zIndex: props.muted ? 1 : 0
+    zIndex: props.muted ? 1 : 0,
   }),
   listItem: {
     color: "#fff",
@@ -27,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: "#506187",
     },
+    "& .MuiTypography-root.MuiListItemText-primary": {
+      fontSize: theme.typography.pxToRem(14),
+    },
   },
   listItemIcon: {
     color: "#fff",
@@ -35,13 +38,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PipelineCard = (props) => {
-  const {
-    index,
-    depth,
-    pipeline,
-    selectedPipelines,
-    onFlowlineSelect,
-  } = props;
+  const { index, depth, pipeline, selectedPipelines, onFlowlineSelect } = props;
 
   const [{ isDragging }, drag, preview] = useDrag({
     collect: (monitor) => {
@@ -52,11 +49,11 @@ const PipelineCard = (props) => {
     begin(f) {
       // itemRef.current = pipeline;
       // onDragBegin(pipeline);
-      console.log('drag begin');
+      console.log("drag begin");
     },
     end(f) {
       // onDragEnd(itemRef.current, pipeline);
-      console.log('drag end');
+      console.log("drag end");
     },
   });
   const [, drop] = useDrop();
@@ -75,8 +72,9 @@ const PipelineCard = (props) => {
           key={index}
           className={classes.listItem}
           style={{
-            backgroundColor: `${selectedPipelines.includes(pipeline._id) ? "#506187" : ""
-              }`,
+            backgroundColor: `${
+              selectedPipelines.includes(pipeline._id) ? "#506187" : ""
+            }`,
           }}
           onClick={() => onFlowlineSelect(pipeline)}
         >

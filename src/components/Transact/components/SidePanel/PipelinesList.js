@@ -116,7 +116,7 @@ function PipelinesList({
     </Flipper>
   );
 
-  const handleChange = () => { };
+  const handleChange = () => {};
   return (
     <Fragment>
       <List className={classes.flowlinesList}>
@@ -133,13 +133,13 @@ function PipelinesList({
             );
             const project = {
               projectName: pipe.projectName,
-              projectId: pipe.projectId
-            }
+              projectId: pipe.projectId,
+            };
             return (
               <Fragment key={index}>
                 <PipelineGroup
                   project={project}
-                  heading={`${project.projectName} (${projectPipelines.length})`}
+                  containingPipelines={projectPipelines}
                 >
                   <PipelineCardWrapper pipelines={projectPipelines} />
                 </PipelineGroup>
