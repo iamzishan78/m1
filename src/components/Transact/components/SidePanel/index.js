@@ -22,9 +22,11 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 import DeleteIcon from "@material-ui/icons/Delete";
 import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
+import RemoveFromQueueIcon from '@material-ui/icons/RemoveFromQueue';
 import { makeStyles } from "@material-ui/core/styles";
 import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
 import { DUPLICATE_PIPELINES } from "graphQL/useMutationDuplicatePipelines";
+import { UPDATE_PIPELINE_DESCRIPTOR } from "graphQL/useMutationUpdatePipelineDescriptor";
 import { setFlowState, showWarningMessage } from "actions";
 import PipelinePopup from "components/Transact/components/PipelinePopup";
 import PipelinesList from "components/Transact/components/SidePanel/PipelinesList";
@@ -144,6 +146,7 @@ const SidePanel = ({ }) => {
   const [stateApp,] = useContext(AppContext);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES);
+  const [updatePipelineDescriptor] = useMutation(UPDATE_PIPELINE_DESCRIPTOR);
   const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] =
     useLazyQuery(DEALSCOUNTINAPIPE, {
       fetchPolicy: "network-only",
@@ -194,8 +197,8 @@ const SidePanel = ({ }) => {
         icon: <AddBoxIcon fontSize="small" />,
       },
       {
-        title: "Project Group",
-        icon: <CreateNewFolderIcon fontSize="small" />,
+        title: !selectedPipe?.projectId ? "Project Group" : "Remove Pipeline From Group",
+        icon: !selectedPipe?.projectId ? <CreateNewFolderIcon fontSize="small" /> : <RemoveFromQueueIcon fontSize="small" />,
       },
       {
         title: "Duplicate",
@@ -206,7 +209,7 @@ const SidePanel = ({ }) => {
         icon: <DeleteIcon fontSize="small" />,
       },
     ],
-    []
+    [selectedPipe]
   );
 
   const filterSearch = (value) => {
@@ -236,6 +239,19 @@ const SidePanel = ({ }) => {
               name: pipelines.find((p) => p._id === pipe).name,
             })),
             userId: stateApp.user.mongoId,
+          },
+          refetchQueries: ["getPipelines"],
+          awaitRefetchQueries: true,
+        });
+        break;
+      case "Remove Pipeline From Group":
+        updatePipelineDescriptor({
+          variables: {
+            descriptor: {
+              descriptorObject: selectedPipe._id,
+              relatedObject: selectedPipe.projectId,
+              isDeleted: true
+            }
           },
           refetchQueries: ["getPipelines"],
           awaitRefetchQueries: true,
@@ -289,56 +305,55 @@ const SidePanel = ({ }) => {
               {get(pipelines, "length", 0)} Flowlines
             </Typography>
           </div>
-          <div className={classes.toolbarActions}>
-            <Grid
-              container
-              direction="row"
-              justify="space-between"
-              alignItems="center"
-            >
-              <Grid item>
-                {!isSearchActive &&
-                  flowlineActions.map((action, index) => (
-                    <Tooltip
-                      title={action.title}
-                      className={classes.action}
-                      onClick={() => handleAction(action.title)}
-                    >
-                      <IconButton>{action.icon}</IconButton>
-                    </Tooltip>
-                  ))}
-              </Grid>
-              <Grid item>
-                <div className={classes.search}>
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center"
+            className={classes.toolbarActions}
+          >
+            <Grid item>
+              {!isSearchActive &&
+                flowlineActions.map((action, index) => (
                   <Tooltip
-                    title="Search"
-                    className={classes.iconSearch}
-                    onClick={() =>
-                      document.getElementById("searchInput").focus()
-                    }
+                    title={action.title}
+                    className={classes.action}
+                    onClick={() => handleAction(action.title)}
                   >
-                    <SearchIcon />
+                    <IconButton>{action.icon}</IconButton>
                   </Tooltip>
-                  <InputBase
-                    id="searchInput"
-                    placeholder="Search by flowline name"
-                    classes={{
-                      root: classes.inputRoot,
-                      input: classes.inputInput,
-                    }}
-                    inputProps={{ "aria-label": "search" }}
-                    onFocus={() => setSearchState(true)}
-                    onBlur={() =>
-                      setTimeout(() => {
-                        setSearchState(false);
-                      }, 200)
-                    }
-                    onChange={(evt) => filterSearch(evt.target.value)}
-                  />
-                </div>
-              </Grid>
+                ))}
             </Grid>
-          </div>
+            <Grid item>
+              <div className={classes.search}>
+                <Tooltip
+                  title="Search"
+                  className={classes.iconSearch}
+                  onClick={() =>
+                    document.getElementById("searchInput").focus()
+                  }
+                >
+                  <SearchIcon />
+                </Tooltip>
+                <InputBase
+                  id="searchInput"
+                  placeholder="Search by flowline name"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  inputProps={{ "aria-label": "search" }}
+                  onFocus={() => setSearchState(true)}
+                  onBlur={() =>
+                    setTimeout(() => {
+                      setSearchState(false);
+                    }, 200)
+                  }
+                  onChange={(evt) => filterSearch(evt.target.value)}
+                />
+              </div>
+            </Grid>
+          </Grid>
         </div>
         <DndProvider backend={dnd}>
           <ContextProvider>
