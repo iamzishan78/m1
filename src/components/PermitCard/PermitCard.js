@@ -172,7 +172,7 @@ export default function PermitCard() {
   ] = useLazyQuery(WELLSUMMARYDETAILQUERY);
 
   const [
-    sqlQueryRecentSubmittedPermits,
+    getRecentPermitDetail,
     { loading: loadingPermitSummary, data: dataPermitSummary },
   ] = useLazyQuery(PERMITDETAILQUERY);
 
@@ -191,8 +191,8 @@ export default function PermitCard() {
   
 
   useEffect(() => {
-    sqlQueryRecentSubmittedPermits({
-      variables: { id: stateApp.selectedPermit.Id }
+    getRecentPermitDetail({
+      variables: { id: stateApp.selectedPermit.PermitId }
     });
   }, [stateApp.selectedPermit]);
 
@@ -206,9 +206,9 @@ export default function PermitCard() {
 
   useEffect(() => {
     if(dataPermitSummary) {
-      console.log(dataPermitSummary)
+      setSummary(dataPermitSummary.recentPermitDetail[0])
     } else {
-      console.log("GQL Problem")
+      setSummary(null)
     }
   }, [dataPermitSummary])
 
@@ -385,7 +385,6 @@ export default function PermitCard() {
 	<div style={{ height: "100%" }}>
 	<Card className={classes.card}>
 	<CardContent className={classes.content}>
-	<PermitCardDetails target={target} summary={summary} />
 	</CardContent>
 	</Card>
 	</div>

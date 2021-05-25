@@ -1006,6 +1006,8 @@ function Map() {
   useEffect(() => {
 
     const wellPointClick = (feature) => {
+		console.log("wellpoint click");
+		console.log(feature);
 
       // this function is intended to organize the data 
       // when a well point is clicked 
