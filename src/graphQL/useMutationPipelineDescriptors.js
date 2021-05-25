@@ -10,3 +10,13 @@ export const UPDATE_PIPELINE_DESCRIPTOR = gql`
     }
   }
 `;
+
+export const CREATE_PIPELINE_DESCRIPTORS = gql`
+  mutation createPipelineDescriptors($descriptor: JSON) {
+    createPipelineDescriptors(descriptor: $descriptor) {
+      success
+      message
+      error
+    }
+  }
+`;

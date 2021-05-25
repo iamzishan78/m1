@@ -94,7 +94,7 @@ const PipelineProject = ({ children, project, containingPipelines }) => {
             }
             onMouseLeave={() => setEdit({ ...isEdit, able: false })}
           >
-            <Grid item style={{ height: "24px" }}>
+            <Grid item style={{ height: "24px", marginLeft: "-4px" }}>
               {!isExpanded ? <ExpandMore /> : <ExpandLess />}
             </Grid>
             <Grid item className={classes.headingGrid}>

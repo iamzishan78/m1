@@ -1,32 +1,25 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { get } from "lodash";
+import moment from "moment";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { isMobile } from "react-device-detect";
 import { ContextProvider } from "react-sortly";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import {
-  Drawer,
-  Typography,
-  Grid,
-  Tooltip,
-  IconButton,
-  InputBase,
-  Dialog,
-} from "@material-ui/core";
+import { Drawer, Typography, Grid, Tooltip, IconButton, InputBase, Dialog } from "@material-ui/core";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import CreateNewFolderIcon from "@material-ui/icons/CreateNewFolder";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import DeleteIcon from "@material-ui/icons/Delete";
 import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
-import RemoveFromQueueIcon from '@material-ui/icons/RemoveFromQueue';
+import RemoveFromQueueIcon from "@material-ui/icons/RemoveFromQueue";
 import { makeStyles } from "@material-ui/core/styles";
 import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
 import { DUPLICATE_PIPELINES } from "graphQL/useMutationDuplicatePipelines";
-import { UPDATE_PIPELINE_DESCRIPTOR } from "graphQL/useMutationUpdatePipelineDescriptor";
+import { UPDATE_PIPELINE_DESCRIPTOR, CREATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
 import { setFlowState, showWarningMessage } from "actions";
 import PipelinePopup from "components/Transact/components/PipelinePopup";
 import PipelinesList from "components/Transact/components/SidePanel/PipelinesList";
@@ -134,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SidePanel = ({ }) => {
+const SidePanel = ({}) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { selectedPipe, pipelines } = useSelector(({ Flow }) => Flow);
@@ -143,14 +136,14 @@ const SidePanel = ({ }) => {
   const [filteredPipelines, setPipelines] = useState(pipelines);
   const [deleteDialogOpen, setModal] = useState(false);
 
-  const [stateApp,] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES);
   const [updatePipelineDescriptor] = useMutation(UPDATE_PIPELINE_DESCRIPTOR);
-  const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] =
-    useLazyQuery(DEALSCOUNTINAPIPE, {
-      fetchPolicy: "network-only",
-    });
+  const [createPipelineDescriptors] = useMutation(CREATE_PIPELINE_DESCRIPTORS);
+  const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
+    fetchPolicy: "network-only",
+  });
 
   useEffect(() => {
     const projectIncludedPipelines = [],
@@ -178,14 +171,8 @@ const SidePanel = ({ }) => {
 
   useEffect(() => {
     if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
-      if (
-        dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0
-      )
-        dispatch(
-          showWarningMessage(
-            "There are deals associated to the pipelines, please remove them first."
-          )
-        );
+      if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
+        dispatch(showWarningMessage("There are deals associated to the pipelines, please remove them first."));
       else setModal(true);
     }
   }, [dataDealsCountByPipeline]);
@@ -213,9 +200,7 @@ const SidePanel = ({ }) => {
   );
 
   const filterSearch = (value) => {
-    const newPipelines = pipelines.filter((pipeline) =>
-      pipeline.name?.toLowerCase()?.includes(value.toLowerCase())
-    );
+    const newPipelines = pipelines.filter((pipeline) => pipeline.name?.toLowerCase()?.includes(value.toLowerCase()));
     setPipelines(newPipelines);
   };
 
@@ -223,6 +208,19 @@ const SidePanel = ({ }) => {
     switch (action) {
       case "Add Flowline":
         dispatch(setFlowState({ openPipeDialog: "newPipe" }));
+        break;
+      case "Project Group":
+        createPipelineDescriptors({
+          variables: {
+            descriptor: {
+              project: `Project ${moment().format("DD/MM/YYYY HH:m")}`,
+              pipelines: selectedPipelines,
+              userId: stateApp.user.mongoId,
+            },
+          },
+          refetchQueries: ["getPipelines"],
+          awaitRefetchQueries: true,
+        });
         break;
       case "Delete Flowline(s)":
         getDealsCountByPipeline({
@@ -250,8 +248,8 @@ const SidePanel = ({ }) => {
             descriptor: {
               descriptorObject: selectedPipe._id,
               relatedObject: selectedPipe.projectId,
-              isDeleted: true
-            }
+              isDeleted: true,
+            },
           },
           refetchQueries: ["getPipelines"],
           awaitRefetchQueries: true,
@@ -278,19 +276,10 @@ const SidePanel = ({ }) => {
 
   return (
     <>
-      <Drawer
-        variant="permanent"
-        className={classes.drawer}
-        classes={{ paper: classes.drawer }}
-        open={true}
-      >
+      <Drawer variant="permanent" className={classes.drawer} classes={{ paper: classes.drawer }} open={true}>
         <div className={classes.toolbar}>
           <div className={classes.toolbarHeader}>
-            <Typography
-              varient="h4"
-              component="h4"
-              style={{ float: "left", marginTop: "10px" }}
-            >
+            <Typography varient="h4" component="h4" style={{ float: "left", marginTop: "10px" }}>
               Flowlines
             </Typography>
             <Typography
@@ -305,34 +294,18 @@ const SidePanel = ({ }) => {
               {get(pipelines, "length", 0)} Flowlines
             </Typography>
           </div>
-          <Grid
-            container
-            direction="row"
-            justify="space-between"
-            alignItems="center"
-            className={classes.toolbarActions}
-          >
+          <Grid container direction="row" justify="space-between" alignItems="center" className={classes.toolbarActions}>
             <Grid item>
               {!isSearchActive &&
                 flowlineActions.map((action, index) => (
-                  <Tooltip
-                    title={action.title}
-                    className={classes.action}
-                    onClick={() => handleAction(action.title)}
-                  >
+                  <Tooltip title={action.title} className={classes.action} onClick={() => handleAction(action.title)}>
                     <IconButton>{action.icon}</IconButton>
                   </Tooltip>
                 ))}
             </Grid>
             <Grid item>
               <div className={classes.search}>
-                <Tooltip
-                  title="Search"
-                  className={classes.iconSearch}
-                  onClick={() =>
-                    document.getElementById("searchInput").focus()
-                  }
-                >
+                <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput").focus()}>
                   <SearchIcon />
                 </Tooltip>
                 <InputBase
@@ -367,10 +340,7 @@ const SidePanel = ({ }) => {
         </DndProvider>
 
         <div className={classes.footer}>
-          <Tooltip
-            title="Add Flowline"
-            onClick={() => handleAction("Add Flowline")}
-          >
+          <Tooltip title="Add Flowline" onClick={() => handleAction("Add Flowline")}>
             <IconButton className={classes.footerAction}>
               <AddIcon />
             </IconButton>
@@ -382,23 +352,13 @@ const SidePanel = ({ }) => {
        * Pipeline Popup for New Pipeline or Edit Pipeline
        */}
       <PipelinePopup />
-      <Dialog
-        className={classes.dialog}
-        open={deleteDialogOpen}
-        onClose={() => setModal(false)}
-        fullWidth={false}
-        maxWidth="sm"
-      >
+      <Dialog className={classes.dialog} open={deleteDialogOpen} onClose={() => setModal(false)} fullWidth={false} maxWidth="sm">
         <DeleteConfirmationDialogContent
-          header={
-            selectedPipelines.length > 1
-              ? `Delete Flowline`
-              : `Delete Flowlines`
-          }
+          header={selectedPipelines.length > 1 ? `Delete Flowline` : `Delete Flowlines`}
           onClose={() => setModal(false)}
           deleteFunc={handleDelete}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => { }}
+          setM1nSelectedRowsIndexes={() => {}}
         >
           {selectedPipelines.length > 1
             ? "Are you sure you want to delete the selected flowlines?"
