@@ -16,7 +16,12 @@ import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/
 import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
 import { GETMONGOUSERS as GETUSERS } from '../../../graphQL/useQueryGetUsers';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { CircularProgress, Dialog, Typography } from '@material-ui/core';
+import {
+  CircularProgress,
+  Dialog,
+  Typography,
+  Avatar,
+} from '@material-ui/core';
 import RightDialog from './RightDialog';
 import moment from 'moment';
 import {
@@ -216,13 +221,39 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: '#EBEBEB',
     },
     '&:active': {
+      border: '1px solid black',
       backgroundColor: '#fff',
     },
   },
   notchedOutline: {
     border: 0,
   },
-  focused: {},
+  dealOwnerRoot: {
+    '&[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input:first-child': {
+      // Default left padding is 6px
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+      border: 0,
+    },
+    '&:hover.MuiOutlinedInput-root': {
+      backgroundColor: '#EBEBEB',
+    },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      border: '1px solid black',
+      backgroundColor: 'transparent',
+    },
+  },
+  dealOwnerAvatar: {
+    width: theme.spacing(4),
+    height: theme.spacing(4),
+    color: '#fff',
+    fontSize: '0.7rem',
+    backgroundColor: '#4880F6',
+  },
+  dealOwnerLabel: {
+    backgroundColor: 'white',
+    marginLeft: '1.3em',
+  },
 }));
 
 const newContact = {
@@ -257,7 +288,7 @@ function AddDealDialog(props) {
   const [ownerId, setOwnerId] = useState(null);
   const [cardId, setCardId] = useState('');
   const [users, setUsers] = useState([]);
-  const [closeDate, setCloseDate] = useState('');
+  const [closeDate, setCloseDate] = useState(new Date());
   const [colaborators, setColaborators] = useState([]);
   const [originationDate, setOriginationDate] = useState(null);
 
@@ -1533,13 +1564,34 @@ function AddDealDialog(props) {
                   value={users.find((user) => user?.value === ownerId) || null}
                   getOptionLabel={(option) => option.text}
                   getOptionSelected={(option) => option.value === ownerId}
+                  classes={{
+                    inputRoot: classes.dealOwnerRoot,
+                  }}
                   renderInput={(params) => (
                     <TextField
                       margin="dense"
                       {...params}
                       variant="outlined"
                       label="Deal Owner"
-                      InputLabelProps={{ shrink: true }}
+                      InputLabelProps={{
+                        shrink: true,
+                        classes: {
+                          root: classes.dealOwnerLabel,
+                        },
+                      }}
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <>
+                            <InputAdornment position="start">
+                              <Avatar className={classes.dealOwnerAvatar}>
+                                OP
+                              </Avatar>
+                            </InputAdornment>
+                            {params.InputProps.startAdornment}
+                          </>
+                        ),
+                      }}
                     />
                   )}
                 />
