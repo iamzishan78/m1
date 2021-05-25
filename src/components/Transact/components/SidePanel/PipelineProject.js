@@ -8,6 +8,8 @@ import {
   Grid,
 } from "@material-ui/core";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
+import { UPDATE_PROJECT } from 'graphQL/useMutationUpdateProject';
+import { useMutation } from "@apollo/client";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,9 +35,26 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PipelineProject = ({ heading, children }) => {
+const PipelineProject = ({ heading, children, project }) => {
   const classes = useStyles();
   const [isExpanded, setExpansion] = useState(false);
+
+  // MUTATIONS
+  const [updateProject] = useMutation(UPDATE_PROJECT);
+
+  // METHODS
+  const onUpdateProjectNameHandler = (newProjectName) => {
+    updateProject({
+      variables: {
+        project: {
+          ...project,
+          name: newProjectName
+        }
+      },
+      refetchQueries: ["getPipelines"],
+      awaitRefetchQueries: true,
+    })
+  }
 
   return (
     <div className={classes.root}>

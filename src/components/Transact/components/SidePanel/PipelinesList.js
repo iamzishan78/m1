@@ -131,10 +131,15 @@ function PipelinesList({
             const projectPipelines = filteredPipelines.filter(
               (p) => p.type === "Pipeline" && p.projectId === pipe.projectId
             );
+            const project = {
+              projectName: pipe.projectName,
+              projectId: pipe.projectId
+            }
             return (
               <Fragment key={index}>
                 <PipelineGroup
-                  heading={`${pipe.projectName} (${projectPipelines.length})`}
+                  project={project}
+                  heading={`${project.projectName} (${projectPipelines.length})`}
                 >
                   <PipelineCardWrapper pipelines={projectPipelines} />
                 </PipelineGroup>
