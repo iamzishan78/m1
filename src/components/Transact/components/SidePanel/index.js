@@ -15,7 +15,7 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 import DeleteIcon from "@material-ui/icons/Delete";
 import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
-import RemoveFromQueueIcon from "@material-ui/icons/RemoveFromQueue";
+import RemoveCircleIcon from "@material-ui/icons/RemoveCircleOutline";
 import { makeStyles } from "@material-ui/core/styles";
 import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
 import { DUPLICATE_PIPELINES } from "graphQL/useMutationDuplicatePipelines";
@@ -185,7 +185,7 @@ const SidePanel = ({}) => {
       },
       {
         title: !selectedPipe?.projectId ? "Project Group" : "Remove Pipeline From Group",
-        icon: !selectedPipe?.projectId ? <CreateNewFolderIcon fontSize="small" /> : <RemoveFromQueueIcon fontSize="small" />,
+        icon: !selectedPipe?.projectId ? <CreateNewFolderIcon fontSize="small" /> : <RemoveCircleIcon fontSize="small" />,
       },
       {
         title: "Duplicate",

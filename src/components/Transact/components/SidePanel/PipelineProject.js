@@ -1,13 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-  Grid,
-  TextField,
-} from "@material-ui/core";
+import { Accordion, AccordionSummary, AccordionDetails, Typography, Grid, TextField } from "@material-ui/core";
 import { ExpandMore, ExpandLess, Edit } from "@material-ui/icons";
 import { UPDATE_PROJECT } from "graphQL/useMutationUpdateProject";
 import { useMutation } from "@apollo/client";
@@ -27,7 +20,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   headingGrid: {
-    width: "200px",
+    width: "auto",
+    marginRight: 5,
     height: (props) => (props.mode ? "30px" : "20px"),
   },
   heading: {
@@ -89,9 +83,7 @@ const PipelineProject = ({ children, project, containingPipelines }) => {
             justify="flex-start"
             alignItems="center"
             onClick={() => setExpansion(!isExpanded)}
-            onMouseOver={() =>
-              !isEdit.mode && setEdit({ ...isEdit, able: true })
-            }
+            onMouseOver={() => !isEdit.mode && setEdit({ ...isEdit, able: true })}
             onMouseLeave={() => setEdit({ ...isEdit, able: false })}
           >
             <Grid item style={{ height: "24px", marginLeft: "-4px" }}>
@@ -99,9 +91,7 @@ const PipelineProject = ({ children, project, containingPipelines }) => {
             </Grid>
             <Grid item className={classes.headingGrid}>
               {!isEdit.mode ? (
-                <Typography
-                  className={classes.heading}
-                >{`${project.projectName} (${containingPipelines.length})`}</Typography>
+                <Typography className={classes.heading}>{`${project.projectName} (${containingPipelines.length})`}</Typography>
               ) : (
                 <TextField
                   placeholder="Project Name..."
@@ -128,18 +118,11 @@ const PipelineProject = ({ children, project, containingPipelines }) => {
               )}
             </Grid>
             <Grid item style={{ height: "24px" }}>
-              {isEdit.able && (
-                <Edit
-                  fontSize="small"
-                  onClick={() => setEdit({ able: false, mode: true })}
-                />
-              )}
+              {isEdit.able && <Edit fontSize="small" onClick={() => setEdit({ able: false, mode: true })} />}
             </Grid>
           </Grid>
         </AccordionSummary>
-        <AccordionDetails className={classes.detailRoot}>
-          {children}
-        </AccordionDetails>
+        <AccordionDetails className={classes.detailRoot}>{children}</AccordionDetails>
       </Accordion>
     </div>
   );
