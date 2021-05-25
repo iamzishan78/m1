@@ -27,6 +27,7 @@ import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ABSTRACTWELLGEOQUERY } from "../../../graphQL/useQueryAbstractWellGeo";
 import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
+import { GET_DOCUMENTS } from "../../../graphQL/useQueryDocuments";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 import { REMOVEUSER } from "../../../graphQL/useMutationRemoveUser";
@@ -73,26 +74,6 @@ import ContactWellHeadCells from '../constants/contactperwell-header-schema.js'
 
 // import value formatters 
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
-import { gql, useQuery } from '@apollo/client';
-
-const GET_Documents = gql`
-  query getFileDescriptors  {
-     getFileDescriptors{
-      fileName
-      fileState
-      fileUrl
-      fileId
-      userName
-      dateTime
-      descriptorId
-      relatedObjectId
-      documentNumber
-      documentType
-      partyName1
-      partyName2
-    }
-}
-`;
 
 const useStyles = makeStyles((theme) => ({
   container: { 
@@ -109,8 +90,6 @@ function M1nTable(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateGrid, setStateGrid] = useContext(MapGridContext);
-  const { loading: DocumentLoading, error, data: DocumentsData, refetch: reFetchDocuments } = useQuery(GET_Documents);
- console.log(DocumentsData, 'DocumentsData')
 //  console.log(reFetchDocuments(), 'reFetchDocuments')
  
   // function states 
@@ -171,6 +150,7 @@ function M1nTable(props) {
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, { onError: () => { setLoading(false) }, fetchPolicy: "cache-and-network" });
+  const [getDocuments,  {data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS);
   const [removeUser] = useMutation(REMOVEUSER);
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY,{fetchPolicy: "no-cache",});
   const [getContactsFilterOptions,{ data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, {fetchPolicy: "cache-and-network",});
@@ -229,6 +209,15 @@ function M1nTable(props) {
 
   ////////////General end///////////////////////////////////////////////
 
+  useEffect(()=>{    
+    if(props.parent && props.parent === 'Documents'){
+      getDocuments({
+        variables: {
+          search: stateApp.contactSearchQuery
+        }
+      })
+    }
+  },[getDocuments, props.parent, stateApp.contactSearchQuery])
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners") {
@@ -2542,10 +2531,10 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "Documents" &&
-      DocumentsData?.getFileDescriptors 
+      DocumentsData?.getFiles 
     ) {
       setTargetLabel("documents");
-      setRows([...DocumentsData.getFileDescriptors]);
+      setRows([...DocumentsData.getFiles]);
       setColumns([...DocumentsHeadCells]);
       setLoading(false);
     }

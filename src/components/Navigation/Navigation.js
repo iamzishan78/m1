@@ -111,6 +111,7 @@ import {
 import { GETALLACTIVITIESFORSEARCH } from "../../graphQL/useQueryGetAllActivities";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import ActivitySearch from "./components/ActivitySearch";
+import DocumentSearch from "./components/DocumentSearch";
 import ContactSearch from "./components/ContactSearch";
 import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
 
@@ -985,15 +986,15 @@ export default function Navigation(props) {
   }, [location.pathname]);
  
 
- useEffect(() => {
-    if (location.pathname === "/documents") {
-      // setMatchLocation(true);
-      setMatchDocument(true);
-    } else {
-      // setMatchLocation(false);
-      setMatchDocument(false);
-    }
-  }, [location.pathname]);
+//  useEffect(() => {
+//     if (location.pathname === "/documents") {
+//       // setMatchLocation(true);
+//       setMatchDocument(true);
+//     } else {
+//       // setMatchLocation(false);
+//       setMatchDocument(false);
+//     }
+//   }, [location.pathname]);
 
   const handleSearchInputChange = (event) => {
     setStateNav((state) => ({
@@ -1245,6 +1246,11 @@ export default function Navigation(props) {
             {location.pathname === "/activities" && (
               <>
                 <ActivitySearch />
+              </>
+            )}
+            {location.pathname === "/documents" && (
+              <>
+                <DocumentSearch />
               </>
             )}
             {location.pathname === "/contacts" && (

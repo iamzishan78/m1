@@ -1737,10 +1737,10 @@ function SubTable(props) {
                     >
                        <SearchIcon/>
                      </IconButton>
-                     <IconButton    onClick={()=>{
+                     <IconButton    onClick={(e)=>{
+                       e.stopPropagation()
                        console.log("modell download")
-                    handleViewFile(rows[tableMeta.rowIndex].fileId)
-                       
+                        handleViewFile(rows[tableMeta.rowIndex].fileId)
                      }}>
                        <GetAppIcon/>
                      </IconButton>
