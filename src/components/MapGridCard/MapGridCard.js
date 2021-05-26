@@ -1,8 +1,6 @@
-import React, { useState, useContext, useEffect } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import React, { Fragment, useState, useContext, useMemo } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../AppContext";
-import Draggable from "react-draggable";
 import Card from "@material-ui/core/Card";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -18,13 +16,25 @@ import MapGridCardSearch from "./components/MapGridCardSearch";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import Button from "@material-ui/core/Button";
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import { setMapGridCardState } from "../../actions";
 import OwnersSummaryCard from "../OwnersSummaryCard/OwnersSummaryCard";
 
-import ContactsHeadCells from '../Shared/constants/contacts-header-schema.js'
-import WellsHeadCells from '../Shared/constants/well-header-schema.js'
-import wellsColumnHeaders from '../Shared/constants/well-interests-header-grid-schema.js'
-import parcelsColumnHeaders from '../Shared/constants/parcel-header-grid.js'
+import ContactsHeadCells from "../Shared/constants/contacts-header-schema.js";
+import WellsHeadCells from "../Shared/constants/well-header-schema.js";
+import wellsColumnHeaders from "../Shared/constants/well-interests-header-grid-schema.js";
+import parcelsColumnHeaders from "../Shared/constants/parcel-header-grid.js";
+import {
+  leasesColumnHeaders,
+  locationsColumnHeaders,
+  operatorsColumnHeaders,
+  ownersColumnHeaders,
+} from "./MapGridCardHeaders";
+import DockMenu from "./DockMenu";
+import ShapeGridWellsTable from "components/Table/Wells/ShapeGridWellsTable";
+import ShapeGridTaxOwnersTable from "components/Table/TaxOwners/ShapeGridTaxOwnersTable";
+import ViewportGridWellsTable from "components/Table/Wells/ViewportGridWellsTable";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -56,7 +66,6 @@ function a11yProps(index) {
 }
 
 const useStyles = makeStyles((theme) => {
-
   return {
     card: {
       "& .noDrag": {
@@ -70,27 +79,36 @@ const useStyles = makeStyles((theme) => {
     rootList: {
       width: ({ mapGridCardActivated }) =>
         mapGridCardActivated === "min"
-         ? "57vw"
-
+          ? "57vw"
           : mapGridCardActivated === "exp"
             ? "96vw"
             : "57vw",
       height: ({ mapGridCardActivated }) =>
         mapGridCardActivated === "min"
-         ? "60vh"
-
+          ? "60vh"
           : mapGridCardActivated === "exp"
             ? "91vh"
             : "60vh",
-      left: ({ mapGridCardActivated,expandGrid }) =>
-        mapGridCardActivated === "exp"  ? "2vw" : "2vw",
+      left: ({ mapGridCardActivated, expandGrid }) =>
+        mapGridCardActivated === "exp" ? "2vw" : "2vw",
       top: ({ mapGridCardActivated }) =>
         mapGridCardActivated === "exp" ? "5vh" : "12vh",
       zIndex: "1300",
       position: "fixed",
     },
+    dockMenu: ({ dockMenu }) => {
+      let css = {}
+      if (dockMenu === 'bottom' || dockMenu === 'top')
+        css = { top: dockMenu === 'bottom' ? "50vh" : '6vh', width: "100vw", height: "50vh", left: "0vw" }
+      else if (dockMenu === 'left' || dockMenu === 'right')
+        css = { left: dockMenu === 'left' ? "0vw" : '50vw', width: "50vw", height: "94vh", top: "6vh" }
+      else if (dockMenu === 'full')
+        css = { left: "0vw", width: "100vw", height: "94vh", top: "6vh" }
+      css = { ...css, zIndex: "1300", position: "fixed" }
+      return css
+    },
     tapsRoot: {
-      flexGrow: 1,
+      // flexGrow: 1,
       "& .MuiTab-root": {
         textTransform: "none",
       },
@@ -155,9 +173,19 @@ const useStyles = makeStyles((theme) => {
         display: ({ viewportWells }) => (viewportWells ? "block" : "none"),
       },
     },
+    selectBoundary: {
+      background: 'white',
+      width: '180px',
+      height: '35px',
+      marginTop: '6px',
+      marginBottom: '6px',
+      marginLeft: '10px',
+      "& .MuiSelect-select.MuiSelect-select": {
+        paddingLeft: '10px',
+      }
+    }
   };
 });
-
 
 const TabLabels = ({ labels, value, setValue }) => {
   const classes = useStyles();
@@ -192,7 +220,6 @@ function tabPanelsPropsAreEqual(prevProps, nextProps) {
 }
 
 const TabPanels = ({ panels, value }) => {
-
   const classes = useStyles();
   return (
     panels &&
@@ -205,223 +232,69 @@ const TabPanels = ({ panels, value }) => {
   );
 };
 
-
-const ownersColumnHeaders = [
-  {
-    name: "entity",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
-  {
-    name: "OwnerName",
-    label: "Name",
-  },
-  {
-    name: "StreetAddress",
-    label: "Street Address",
-  },
-  {
-    name: "City",
-    label: "City",
-  },
-  {
-    name: "State",
-    label: "State",
-  },
-  {
-    name: "Zip",
-    label: "Zip Code",
-  },
-
-  // {
-  //   name: "FullAddress",
-  //   label: "Address",
-  // },
-];
-
-
-const operatorsColumnHeaders = [
-  {
-    name: "Operator",
-    label: "Operator",
-  },
-  {
-    name: "StateCount",
-    label: "# Active States",
-  },
-  {
-    name: "BasinCount",
-    label: "# Active Basins",
-  },
-  // {
-  //   name: "TotalLeases",
-  //   label: "Total Leases",
-  // },
-  {
-    name: "TotalWellCount",
-    label: "Total Wells",
-  },
-  {
-    name: "GasWellCount",
-    label: "Gas Wells",
-  },
-  {
-    name: "OilWellCount",
-    label: "Oil Wells",
-  },
-  {
-    name: "ActiveWellCount",
-    label: "Active Wells",
-  },
-  {
-    name: "DUCWellCount",
-    label: "DUCs",
-  },
-  {
-    name: "PermitCount",
-    label: "Active Permits",
-  },
-];
-const leasesColumnHeaders = [
-  {
-    name: "Lease",
-    label: "Lease",
-  }, 
-  {
-    name: "LeaseId",
-    label: "Lease Number",
-  },
-  {
-    name: "State",
-    label: "State",
-  },
-  {
-    name: "County",
-    label: "County",
-  },
-  // {
-  //   name: "Acreage",
-  //   label: "Acreage",
-  // },
-  {
-    name: "BasinCount",
-    label: "Basin Count",
-  },
-  {
-    name: "PlayCount",
-    label: "Play Count",
-  },
-  {
-    name: "FormationCount",
-    label: "Formation Count",
-  },
-  {
-    name: "OperatorCount",
-    label: "Operator Count",
-  },
-  {
-    name: "TotalWellCount",
-    label: "Total Wells",
-  },
-  {
-    name: "GasWellCount",
-    label: "Gas Wells",
-  },
-  {
-    name: "OilWellCount",
-    label: "Oil Wells",
-  },
-  {
-    name: "ActiveWellCount",
-    label: "Active Wells",
-  },
-  {
-    name: "DUCWellCount",
-    label: "DUC Wells",
-  },
-  {
-    name: "PermitCount",
-    label: "Active Permits",
-  },
-
-];
-
-const locationsColumnHeaders = [
-  {
-    name: "Primary",
-    label: "Location Name",
-  },
-  {
-    name: "Secondary",
-    label: "Location Address",
-  },
-];
-
-
-
-
 function MapGridCard(props) {
+  // contexts
+  const [stateApp] = useContext(AppContext);
 
-  // contexts 
-  const [stateApp, setStateApp] = useContext(AppContext);
-
-  // function state 
+  // function state
   const [searchTapValue, SearchTapValue] = useState(0);
   const [viewportTapValue, ViewportTapValue] = useState(0);
+  const [selectedBoundary, SelectBoundary] = useState('Shape Filter');
+  const [dockMenu, SetDockMenu] = useState('bottom');
   const [trackedTapValue, TrackedTapValue] = useState(0);
-  const [gridTapValue, GridTapValue] = useState(0);
 
-  // selectors 
+  // selectors
   const {
     mapGridCardActivated,
     mapGridCardActiveTap,
     searchResultData,
-    viewportData,
     trackedDataCount,
     selectedOwner,
   } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
 
-  // queries 
+  // queries
   const dispatch = useDispatch();
 
-  // handlers 
+  // handlers
+
+  const setSelectedBoundary = (state) => {
+    if (selectedBoundary !== state) {
+      SelectBoundary(state);
+    }
+  };
+
+  const setSelectedDockMenu = (state) => {
+    if (dockMenu !== state) {
+      SetDockMenu(state);
+    }
+  };
+
   const setSearchTapValue = (state) => {
-    if (searchTapValue != state) {
+    if (searchTapValue !== state) {
       SearchTapValue(state);
     }
   };
-  const setViewportTapValue = (state) => {
-    if (viewportTapValue != state) {
-      ViewportTapValue(state);
-    }
-  };
+
   const setTrackedTapValue = (state) => {
-    if (trackedTapValue != state) {
+    if (trackedTapValue !== state) {
       TrackedTapValue(state);
     }
   };
-  const setGridTapValue = (state) => {
-    if (gridTapValue != state) {
-      GridTapValue(state);
+  const setViewportTapValue = (state) => {
+    if (viewportTapValue !== state) {
+      ViewportTapValue(state);
     }
   };
 
-  // styles 
+  // styles
   const classes = useStyles({
+    dockMenu,
     mapGridCardActivated,
     mapGridCardActiveTap,
-    viewportWells: stateApp.viewportWells  
+    viewportWells: stateApp.viewportWells,
   });
 
   const handleMainTapChange = (event, newValue) => {
-
     dispatch(
       setMapGridCardState({
         mapGridCardActiveTap: newValue,
@@ -431,18 +304,17 @@ function MapGridCard(props) {
     );
   };
 
-
   const getTargetFromSearchTaps = () => {
     /// this intends to set the search value that gets passed into the mapgridcardsearch.js
-    /// value will control the cog api 
+    /// value will control the cog api
 
     switch (searchTapValue) {
       case 5:
         return "location";
       case 4:
-        return "contacts";  
+        return "contacts";
       // case 5:
-      //   return "permits";      
+      //   return "permits";
       // case 4:
       //   return "parcel";
       case 3:
@@ -455,6 +327,42 @@ function MapGridCard(props) {
         return "well";
     }
   };
+
+  const getTaps = useMemo(
+    () => [
+      {
+        label: "well",
+        privateColumns: wellsColumnHeaders,
+        showTags: true,
+        showComments: true,
+        showTracks: true,
+      },
+      {
+        label: "owner",
+        privateColumns: ownersColumnHeaders,
+        showTags: true,
+        showComments: true,
+        showTracks: true,
+      },
+      {
+        label: "operator",
+        privateColumns: operatorsColumnHeaders,
+      },
+      {
+        label: "lease",
+        privateColumns: leasesColumnHeaders,
+      },
+      {
+        label: "contacts",
+        privateColumns: ContactsHeadCells,
+      },
+      {
+        label: "location",
+        privateColumns: locationsColumnHeaders,
+      },
+    ],
+    []
+  );
 
   const SearchTabPanels = () => (
     <TabLabels
@@ -483,7 +391,7 @@ function MapGridCard(props) {
   const CardReturn = () => {
     return (
       <Card
-        className={`${mapGridCardActivated === "exp" ? "noDrag" : ""} ${classes.rootList
+        className={`${mapGridCardActivated === "exp" ? "noDrag" : ""} ${classes.dockMenu
           }`}
       >
         <AppBar
@@ -515,18 +423,36 @@ function MapGridCard(props) {
                 {...a11yProps(1)}
               />
 
-              <Tab
-                className="cancelDraggableEffect"
-                label={`Viewport${stateApp.viewportWells
-                  ? " (" + stateApp.viewportWells?.length + ")"
-                  : ""
-                  }`}
-                {...a11yProps(1)}
-              />
+              {
+                stateApp.gridPolygonString && <Tab
+                  className="cancelDraggableEffect"
+                  label={`Boundary${stateApp.shapeGridWellsCount
+                    ? " (" + Number((stateApp.shapeGridWellsCount || '') + (stateApp.shapeGridOwnersCount || '')) + ")"
+                    : ""
+                    }`}
+                  {...a11yProps(1)}
+                >
+                </Tab>
+              }
 
             </Tabs>
+            {
+              mapGridCardActiveTap === 2 && stateApp.gridPolygonString && <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                className={classes.selectBoundary}
+                value={selectedBoundary}
+                onChange={(e) => { setSelectedBoundary(e.target.value) }}
+              >
+                <MenuItem value={'Shape Filter'}>Shape Filter</MenuItem>
+                <MenuItem value={'Viewport'}>Viewport</MenuItem>
+              </Select>
+            }
+            <div style={{ flexGrow: 1 }}></div>
 
-            <IconButton
+            <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
+
+            {/* <IconButton
               className="cancelDraggableEffect"
               onClick={(e) => {
                 e.stopPropagation();
@@ -541,9 +467,9 @@ function MapGridCard(props) {
               {mapGridCardActivated === "exp" ? (
                 <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
               ) : (
-                  <ExpandIcon viewBox="0 0 64 64" color="secondary" />
-                )}
-            </IconButton>
+                <ExpandIcon viewBox="0 0 64 64" color="secondary" />
+              )}
+            </IconButton> */}
             <IconButton
               className="cancelDraggableEffect"
               onClick={(e) => {
@@ -562,61 +488,65 @@ function MapGridCard(props) {
           </Toolbar>
         </AppBar>
 
-
         {selectedOwner ? (
           <OwnersSummaryCard />
         ) : (
-            <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{position:"relative"}}>
-              {/* //// search panel //// */}
-              <TabPanel
-                value={mapGridCardActiveTap}
-                index={0}
-                className={classes.tapsPanelsPadding}
-                style={{position:"absolute",width:"96vw"}}
-              >
-                <MapGridCardSearch
-                  ativateSearchPanel={() => {
-                    if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
-                    if (mapGridCardActivated === "min") {
-                      dispatch(
-                        setMapGridCardState({ mapGridCardActivated: true })
-                      );
-                    }
-                  }}
-                  searchOption={getTargetFromSearchTaps()}
+          <div
+            className={`cancelDraggableEffect ${classes.mainPanelsDiv}`}
+            style={{ position: "relative" }}
+          >
+            {/* //// search panel //// */}
+            <TabPanel
+              value={mapGridCardActiveTap}
+              index={0}
+              className={classes.tapsPanelsPadding}
+              style={{ position: "absolute", width: "100vw" }}
+            >
+              <MapGridCardSearch
+                ativateSearchPanel={() => {
+                  if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
+                  if (mapGridCardActivated === "min") {
+                    dispatch(
+                      setMapGridCardState({ mapGridCardActivated: true })
+                    );
+                  }
+                }}
+                searchOption={getTargetFromSearchTaps()}
+              />
+              <div style={{ position: "relative" }}>
+                <TabPanels
+                  value={searchTapValue}
+                  panels={getTaps.map((tab, index) => (
+                    <Fragment key={index}>
+                      <M1nTable
+                        dense
+                        parent="search"
+                        privateColumns={tab.privateColumns}
+                        targetLabel={tab.label}
+                        header={<SearchTabPanels />}
+                        showTags={tab.showTags}
+                        showComments={tab.showComments}
+                        showTracks={tab.showTracks}
+                      />
+                    </Fragment>
+                  ))}
                 />
-                <div style={{ position: "relative" }}>
-                  <TabPanels
-                    value={searchTapValue}
-                    panels={[
-                      <M1nTable
-                        dense
-                        parent="search"
-                        privateColumns={wellsColumnHeaders}
-                        targetLabel={getTargetFromSearchTaps()}
-                        header={<SearchTabPanels />}
-                        showTags
-                        showComments
-                        showTracks
-                      />,
-                      <M1nTable
-                        dense
-                        parent="search"
-                        privateColumns={ownersColumnHeaders}
-                        targetLabel={getTargetFromSearchTaps()}
-                        header={<SearchTabPanels />}
-                        showTags
-                        showComments
-                        showTracks
-                      />,
-                    <M1nTable
-                      dense
-                      style 
-                      parent="search"
-                      privateColumns={operatorsColumnHeaders}
-                      targetLabel={getTargetFromSearchTaps()}
-                      header={<SearchTabPanels />}
-                    />,
+              </div>
+            </TabPanel>
+
+            {/* //// tracked panel //// */}
+            <TabPanel
+              value={mapGridCardActiveTap}
+              index={1}
+              className={classes.tapsPanelsPadding}
+              //
+              style={{ position: "absolute", width: "100vw" }}
+            //
+            >
+              <div style={{ position: "relative" }}>
+                <TabPanels
+                  value={trackedTapValue}
+                  panels={[
                     <M1nTable
                       dense
                       parent="search"
@@ -624,135 +554,167 @@ function MapGridCard(props) {
                       targetLabel={getTargetFromSearchTaps()}
                       header={<SearchTabPanels />}
                     />,
-                  //   <M1nTable
-                  //     dense
-                  //     parent="search"
-                  //     privateColumns={[parcelColumnHeaders]}
-                  //     targetLabel={getTargetFromSearchTaps()}
-                  //     header={<SearchTabPanels />}
-                  //     // showTags
-                  //     // showComments
-                  //     // showTracks
-                  //   />,
-                  //   <M1nTable
-                  //     dense
-                  //     parent="search"
-                  //     privateColumns={[]}
-                  //     targetLabel={getTargetFromSearchTaps()}
-                  //     header={<SearchTabPanels />}
-                  //   />,
+                    //   <M1nTable
+                    //     dense
+                    //     parent="search"
+                    //     privateColumns={[parcelColumnHeaders]}
+                    //     targetLabel={getTargetFromSearchTaps()}
+                    //     header={<SearchTabPanels />}
+                    //     // showTags
+                    //     // showComments
+                    //     // showTracks
+                    //   />,
+                    //   <M1nTable
+                    //     dense
+                    //     parent="search"
+                    //     privateColumns={[]}
+                    //     targetLabel={getTargetFromSearchTaps()}
+                    //     header={<SearchTabPanels />}
+                    //   />,
 
+                    <M1nTable
+                      dense
+                      parent="search"
+                      privateColumns={ContactsHeadCells}
+                      targetLabel={getTargetFromSearchTaps()}
+                      header={<SearchTabPanels />}
+                    />,
 
-                      <M1nTable
-                        dense
-                        parent="search"
-                        privateColumns={ContactsHeadCells}
-                        targetLabel={getTargetFromSearchTaps()}
-                        header={<SearchTabPanels />}
-                      />,
+                    <M1nTable
+                      dense
+                      parent="search"
+                      privateColumns={locationsColumnHeaders}
+                      targetLabel={getTargetFromSearchTaps()}
+                      header={<SearchTabPanels />}
+                    />,
+                  ]}
+                />
+              </div>
+            </TabPanel>
 
-                      <M1nTable
-                        dense
-                        parent="search"
-                        privateColumns={locationsColumnHeaders}
-                        targetLabel={getTargetFromSearchTaps()}
-                        header={<SearchTabPanels />}
-                      />,
-                    ]}
-                  />
-                </div>
-              </TabPanel>
-
-              {/* //// tracked panel //// */}
-              <TabPanel
-                value={mapGridCardActiveTap}
-                index={1}
-                className={classes.tapsPanelsPadding}
-                // 
-                style ={{position:"absolute",width:"96vw"}}
-                // 
-              >
-                <div style={{ position: "relative" }}>
-                  <TabPanels
-                    value={trackedTapValue}
-                    panels={[
-                      <M1nTable
-                        dense
-                        parent="trackWells"
-                        header={
-                          <TabLabels
-                            labels={[
-                              `Wells (${stateApp.trackedwells
-                                ? stateApp.trackedwells.length
-                                : 0
-                              })`,
-                            `Tax Owners (${
-                              stateApp.owners ? stateApp.owners.length : 0
-
-                              })`,
-                            ]}
-                            value={trackedTapValue}
-                            setValue={setTrackedTapValue}
-                          />
-                        }
-                      />,
-                      <M1nTable
-                        dense
-                        parent="trackOwners"
-                        header={
-                          <TabLabels
-                            labels={[
-                              `Wells (${stateApp.trackedwells
-                                ? stateApp.trackedwells.length
-                                : 0
-                              })`,
-                            `Tax Owners (${
-                              stateApp.owners ? stateApp.owners.length : 0
-
-                              })`,
-                            ]}
-                            value={trackedTapValue}
-                            setValue={setTrackedTapValue}
-                          />
-                        }
-                      />,
-                    ]}
-                  />
-                </div>
-              </TabPanel>
-
-              {/* //// viewport panel //// */}
-              <TabPanel
-                value={mapGridCardActiveTap}
-                index={2}
-                className={classes.tapsPanelsPadding}
-                style ={{position:"absolute",width:"96vw"}}
-              >
-                <div style={{ position: "relative" }}>
-
-                  <TabPanels
-                    value={viewportTapValue}
-                    panels={[
-                      <div className={classes.viewportWells}>
-                        <M1nTable
-                          id="viewportWellsTable"
-                          dense
-                          parent="mapViewportWells"
-                          header={"Wells"}
+            {/* //// tracked panel //// */}
+            <TabPanel
+              value={mapGridCardActiveTap}
+              index={1}
+              className={classes.tapsPanelsPadding}
+              //
+              style={{ position: "absolute", width: "100vw" }}
+            //
+            >
+              <div style={{ position: "relative" }}>
+                <TabPanels
+                  value={trackedTapValue}
+                  panels={[
+                    <M1nTable
+                      dense
+                      parent="trackWells"
+                      header={
+                        <TabLabels
+                          labels={[
+                            `Wells (${stateApp.trackedwells
+                              ? stateApp.trackedwells.length
+                              : 0
+                            })`,
+                            `Tax Owners (${stateApp.owners ? stateApp.owners.length : 0
+                            })`,
+                          ]}
+                          value={trackedTapValue}
+                          setValue={setTrackedTapValue}
                         />
+                      }
+                    />,
+                    <M1nTable
+                      dense
+                      parent="trackOwners"
+                      header={
+                        <TabLabels
+                          labels={[
+                            `Wells (${stateApp.trackedwells
+                              ? stateApp.trackedwells.length
+                              : 0
+                            })`,
+                            `Tax Owners (${stateApp.owners ? stateApp.owners.length : 0
+                            })`,
+                          ]}
+                          value={trackedTapValue}
+                          setValue={setTrackedTapValue}
+                        />
+                      }
+                    />,
+                  ]}
+                />
+              </div>
+            </TabPanel>
 
-                        <h6 id="minimumZoomRequired" style={{textAlign:"left", marginLeft:"5rem"}}>
-                          Please zoom in to leverage this feature (min zoom level
+            {/* //// viewport panel //// */}
+            <TabPanel
+              value={mapGridCardActiveTap}
+              index={2}
+              className={classes.tapsPanelsPadding}
+              style={{ position: "absolute", width: "100vw" }}
+            >
+              <div style={{ position: "relative" }}>
+                <TabPanels
+                  value={viewportTapValue}
+                  panels={selectedBoundary === 'Shape Filter' ? [
+
+                    <ShapeGridWellsTable
+                      parent="wells"
+                      header={<TabLabels
+                        labels={[
+                          `Wells (${stateApp.shapeGridWellsCount || 0})`,
+                          `Tax Owners (${stateApp.shapeGridOwnersCount || 0})`,
+                        ]}
+                        value={viewportTapValue}
+                        setValue={setViewportTapValue}
+                      />}
+                      targetLabel="well"
+                      showTracks
+                    />
+                    ,
+                    <ShapeGridTaxOwnersTable
+                      parent="gridOwners"
+                      header={<TabLabels
+                        labels={[
+                          `Wells (${stateApp.shapeGridWellsCount || 0})`,
+                          `Tax Owners (${stateApp.shapeGridOwnersCount || 0})`,
+                        ]}
+                        value={viewportTapValue}
+                        setValue={setViewportTapValue}
+                      />}
+                      targetLabel="owner"
+                      showTracks
+                    />
+                  ] : [
+                    <div className={classes.viewportWells}>
+                      <ViewportGridWellsTable
+                        parent="wells"
+                        header={"Wells"}
+                        targetLabel="well"
+                        showTracks
+                      />
+                      {/* 
+                      <M1nTable
+                        id="viewportWellsTable"
+                        dense
+                        parent="mapViewportWells"
+                        header={"Wells"}
+                      /> */}
+                      <h6
+                        id="minimumZoomRequired"
+                        style={{ textAlign: "left", marginLeft: "5rem" }}
+                      >
+                        Please zoom in to leverage this feature (min zoom level
                         = {stateApp.minZoomToQueryViewport})
                       </h6>
-                      </div>,
-                    ]}
-                  />
-                </div>
-              </TabPanel>
-             
-            </div>
-          )}
+                    </div>
+                  ]
+                  }
+                />
+              </div>
+            </TabPanel>
+          </div>
+        )}
       </Card>
     );
   };
@@ -776,13 +738,7 @@ function MapGridCard(props) {
 
   return (
     <div className={classes.card}>
-      {mapGridCardActivated === "min" ? (
-        CardReturn()
-      ) : (
-
-          CardReturn()
-
-        )}
+      {mapGridCardActivated === "min" ? CardReturn() : CardReturn()}
       {mapGridCardActivated === "exp" && blackOut()}
     </div>
   );

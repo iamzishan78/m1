@@ -1,12 +1,12 @@
 import React, { useState, createContext } from "react";
 
-const MapContext = createContext([{}, () => {}]);
+const MapContext = createContext([{}, () => { }]);
 
 const MapContextProvider = (props) => {
-  const [stateApp, setStateApp] = useState({});
+  const [stateMap, setStateMap] = useState({});
 
   return (
-    <MapContext.Provider value={[stateApp, setStateApp]}>
+    <MapContext.Provider value={[stateMap, setStateMap]}>
       {props.children}
     </MapContext.Provider>
   );

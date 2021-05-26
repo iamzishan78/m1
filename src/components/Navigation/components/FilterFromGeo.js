@@ -6,7 +6,6 @@ import FilterStateName from "./FilterStateName";
 import FilterCountyName from "./FilterCountyName";
 import Grid from "@material-ui/core/Grid";
 import FilterGrid from "./FilterGrid12345";
-import FilterFromDrawing from "./FilterFromDrawing";
 import FilterBasin from "./FilterBasin";
 import FilterAOI from "./FilterAOI";
 import FilterParcel from "./FilterParcel";
@@ -173,9 +172,6 @@ export default function FilterFromGeo() {
       spacing={2}
       style={{ padding: "8px", width: "100%", margin: "0" }}
     >
-      <Grid item sm={12}>
-        <FilterFromDrawing />
-      </Grid>
       <Grid item sm={12} className={classes.gridItem}>
         <FilterAOI />
       </Grid>
