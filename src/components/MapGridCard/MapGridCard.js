@@ -452,7 +452,7 @@ function MapGridCard(props) {
 
             <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
 
-            <IconButton
+            {/* <IconButton
               className="cancelDraggableEffect"
               onClick={(e) => {
                 e.stopPropagation();
@@ -469,7 +469,7 @@ function MapGridCard(props) {
               ) : (
                 <ExpandIcon viewBox="0 0 64 64" color="secondary" />
               )}
-            </IconButton>
+            </IconButton> */}
             <IconButton
               className="cancelDraggableEffect"
               onClick={(e) => {
