@@ -56,48 +56,50 @@ function ShapeGridTaxOwnersTable(props) {
     }, [props.parent]);
 
     useEffect(() => {
-        const getData = async () => {
-            if (tableData?.edges?.length > 0) {
-                let owners = tableData.edges.map((el) => el.node)
-                const objectsIdsArray = owners.map(
-                    (owner) => owner.globalOwnerId
-                );
-                const genericData = await props.getGenericData(objectsIdsArray, ['comments', 'tags', 'ifAreContacts'])
-                owners = owners.map((o) => {
-                    let owner = { ...o };
-                    owner.isTracked = true;
-                    owner.commentsCounter = 0;
-                    owner.tags = [[], 0];
-                    owner.wellsCounter = [];
-                    owner.coordinates = {
-                        objToPopulateSearchLayer: {
-                            objectType: "owner",
-                            objectId: owner.id,
-                        },
-                    };
-                    owner.isContact = false;
-
-                    owner = props.setGenricData(owner, owner.globalOwnerId, genericData, ['comments', 'tracks', 'tags', 'ifAreContacts'])
-
-                    return owner;
-                });
-                props.setRows(owners);
-
-                const cleanAvailableTags = []; // get from backend
-                const columns = handleTagColumn(TableHeader, cleanAvailableTags);
-                setColumns(columns);
-                props.setLoading(false);
-                setStateApp((state) => ({
-                    ...state,
-                    shapeGridOwnersCount: tableData.totalCount,
-                }));
-            }
-            else if (tableData?.edges?.length === 0) {
-                props.setLoading(false);
-            }
+        if (tableData?.edges?.length > 0) {
+            let owners = tableData.edges.map((el) => el.node)
+            const objectsIdsArray = owners.map((owner) => owner.globalOwnerId);
+            props.initializeGenericData(objectsIdsArray, ['comments', 'tags', 'ifAreContacts'])
         }
-        getData()
-    }, [tableData]);
+
+    }, [tableData])
+
+    useEffect(() => {
+        if (tableData?.edges?.length > 0) {
+            let owners = tableData.edges.map((el) => el.node)
+            owners = owners.map((o) => {
+                let owner = { ...o };
+                owner.isTracked = true;
+                owner.commentsCounter = 0;
+                owner.tags = [[], 0];
+                owner.wellsCounter = [];
+                owner.coordinates = {
+                    objToPopulateSearchLayer: {
+                        objectType: "owner",
+                        objectId: owner.id,
+                    },
+                };
+                owner.isContact = false;
+
+                owner = props.setGenricData(owner, owner.globalOwnerId, ['comments', 'tracks', 'tags', 'ifAreContacts'])
+
+                return owner;
+            });
+            props.setRows(owners);
+
+            const cleanAvailableTags = []; // get from backend
+            const columns = handleTagColumn(TableHeader, cleanAvailableTags);
+            setColumns(columns);
+            props.setLoading(false);
+            setStateApp((state) => ({
+                ...state,
+                shapeGridOwnersCount: tableData.totalCount,
+            }));
+        }
+        else if (tableData?.edges?.length === 0) {
+            props.setLoading(false);
+        }
+    }, [tableData, props.dependencyUpdate]);
 
     ////////////Contact Wells end///////////////////////////////////////////////
 

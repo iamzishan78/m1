@@ -39,66 +39,66 @@ function ShapeGridWellsTable(props) {
     const orderByTracks = true
 
     useEffect(() => {
-        const getData = async () => {
-            if (stateApp?.viewportWells?.length > 0) {
-                let wells = stateApp.viewportWells
-                const objectsIdsArray = stateApp.viewportWells.map(
-                    (well) => well.id
-                );
-                const genericData = await props.getGenericData(objectsIdsArray, ['comments', 'tags'])
-
-                wells = wells.map((w) => {
-                    let well = { ...w };
-                    well.wellId = w.id
-                    //// temporary to fix the ticks dates fields comming from the rest api
-                    if (well.permitApprovedDate && well.permitApprovedDate != "null")
-                        well.permitApprovedDate = ticksToDateString(
-                            well.permitApprovedDate
-                        );
-                    if (well.spudDate && well.spudDate != "null")
-                        well.spudDate = ticksToDateString(well.spudDate);
-                    if (well.completionDate && well.completionDate != "null")
-                        well.completionDate = ticksToDateString(well.completionDate);
-                    if (well.firstProductionDate && well.firstProductionDate != "null")
-                        well.firstProductionDate = ticksToDateString(
-                            well.firstProductionDate
-                        );
-                    //// temporary end
-
-                    well.coordinates = {};
-                    well.coordinates.wellId = well.wellId
-                    if (well.longitude && well.latitude)
-                        well.coordinates.center = [well.longitude, well.latitude];
-
-                    well.detailCard = well.id;
-                    well.isTracked = false;
-                    well.commentsCounter = 0;
-                    well.tags = [[], 0];
-
-                    well = props.setGenricData(well, well.id, genericData, ['comments', 'tracks', 'tags'])
-
-                    return well;
-                });
-                props.setRows(wells);
-
-                const cleanAvailableTags = []; // get from backend
-                const columns = handleTagColumn(TableHeader, cleanAvailableTags);
-                setColumns(columns);
-                props.setLoading(false);
-
-                setStateApp((state) => ({
-                    ...state,
-                    shapeGridWellsCount: stateApp.viewportWells.length
-                }));
-            }
-            else if (stateApp?.viewportWells?.length === 0) {
-                props.setLoading(false);
-            }
+        if (stateApp?.viewportWells?.length > 0) {
+            const objectsIdsArray = stateApp.viewportWells.map((well) => well.id);
+            props.initializeGenericData(objectsIdsArray, ['comments', 'tags'])
         }
-        getData()
-    }, [stateApp?.viewportWells]);
 
-    const count = stateApp.viewportWells.length || 0
+    }, [stateApp?.viewportWells])
+
+    useEffect(() => {
+        if (stateApp?.viewportWells?.length > 0) {
+            let wells = stateApp.viewportWells
+            wells = wells.map((w) => {
+                let well = { ...w };
+                well.wellId = w.id
+                //// temporary to fix the ticks dates fields comming from the rest api
+                if (well.permitApprovedDate && well.permitApprovedDate != "null")
+                    well.permitApprovedDate = ticksToDateString(
+                        well.permitApprovedDate
+                    );
+                if (well.spudDate && well.spudDate != "null")
+                    well.spudDate = ticksToDateString(well.spudDate);
+                if (well.completionDate && well.completionDate != "null")
+                    well.completionDate = ticksToDateString(well.completionDate);
+                if (well.firstProductionDate && well.firstProductionDate != "null")
+                    well.firstProductionDate = ticksToDateString(
+                        well.firstProductionDate
+                    );
+                //// temporary end
+
+                well.coordinates = {};
+                well.coordinates.wellId = well.wellId
+                if (well.longitude && well.latitude)
+                    well.coordinates.center = [well.longitude, well.latitude];
+
+                well.detailCard = well.id;
+                well.isTracked = false;
+                well.commentsCounter = 0;
+                well.tags = [[], 0];
+
+                well = props.setGenricData(well, well.id, ['comments', 'tracks', 'tags'])
+
+                return well;
+            });
+            props.setRows(wells);
+
+            const cleanAvailableTags = []; // get from backend
+            const columns = handleTagColumn(TableHeader, cleanAvailableTags);
+            setColumns(columns);
+            props.setLoading(false);
+
+            setStateApp((state) => ({
+                ...state,
+                shapeGridWellsCount: stateApp.viewportWells.length
+            }));
+        }
+        else if (stateApp?.viewportWells?.length === 0) {
+            props.setLoading(false);
+        }
+    }, [stateApp?.viewportWells, props.dependencyUpdate]);
+
+    const count = stateApp?.viewportWells?.length || 0
     const options = {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
         count: count,

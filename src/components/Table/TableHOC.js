@@ -4,7 +4,7 @@ import { AppContext } from "AppContext";
 
 import { setStateIfDeepEqual } from "components/Shared/functions";
 
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useLazyQuery } from "@apollo/client";
 import { TAGSAMPLES } from "graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "graphQL/useQueryCommentsCounter";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
@@ -24,6 +24,12 @@ export const TableHOC = (Component) => {
 
         const [dataTracks, DataTracks] = useState(null);
         const setDataTracks = (newState) => { setStateIfDeepEqual(DataTracks, newState) };
+
+        const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(COMMENTSCOUNTER, { fetchPolicy: "cache-and-network", });
+        const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES, { fetchPolicy: "cache-and-network", });
+        const [checkIfOwnersAreContacts, { data: checkIfOwnersAreContactsData },] = useLazyQuery(IFARECONTACTS, { fetchPolicy: "cache-and-network", });
+
+        const [dependencyUpdate, SetDependencyUpdate] = useState(false);
 
         const client = useApolloClient();
         const [stateApp, setStateApp] = useContext(AppContext);
@@ -55,10 +61,13 @@ export const TableHOC = (Component) => {
             tracksByObjectType()
         }, [stateApp.user, props.targetLabel, props.showTracks]);
 
-        const getGenericData = async (ids, actions) => {
-            let comments = [], tags = [], ifAreContacts = [];
+        useEffect(() => {
+            SetDependencyUpdate(!dependencyUpdate)
+        }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData])
+
+        const initializeGenericData = (ids, actions) => {
             if (actions.includes("comments")) {
-                comments = await client.query({
+                getCommentsCounter({
                     query: COMMENTSCOUNTER,
                     variables: {
                         objectsIdsArray: ids,
@@ -68,7 +77,7 @@ export const TableHOC = (Component) => {
             }
 
             if (actions.includes("tags")) {
-                tags = await client.query({
+                getTagSamples({
                     query: TAGSAMPLES,
                     variables: {
                         objectsIdsArray: ids,
@@ -77,17 +86,16 @@ export const TableHOC = (Component) => {
                 })
             }
             if (actions.includes("ifAreContacts")) {
-                ifAreContacts = await client.query({
+                checkIfOwnersAreContacts({
                     query: IFARECONTACTS,
                     variables: {
                         idsArray: ids
                     },
                 })
             }
-            return { comments: comments?.data?.commentsCounter, tags: tags?.data?.tagSamples, ifAreContacts: ifAreContacts?.data?.ifAreContacts }
-        };
+        }
 
-        const setGenricData = (data, id, genericData, actions) => {
+        const setGenricData = (data, id, actions) => {
             data.isTracked = false;
             data.commentsCounter = 0;
             data.tags = [[], 0];
@@ -101,31 +109,30 @@ export const TableHOC = (Component) => {
                 }
             }
             if (actions.includes('comments')) {
-                for (let i = 0; i < genericData.comments.length; i++) {
-                    if (id === genericData.comments[i]._id) {
-                        data.commentsCounter =
-                            genericData.comments[i].total;
+                const comments = dataCommentsCounter?.commentsCounter || []
+                for (let i = 0; i < comments.length; i++) {
+                    if (id === comments[i]._id) {
+                        data.commentsCounter = comments[i].total;
                         break;
                     }
                 }
             }
             if (actions.includes('tags')) {
-                for (let i = 0; i < genericData.tags.length; i++) {
-                    if (id === genericData.tags[i]._id) {
-                        data.tags = [
-                            genericData.tags[i].tags,
-                            genericData.tags[i].total,
-                        ];
+                const tags = dataTagSamples?.tagSamples || []
+                for (let i = 0; i < tags.length; i++) {
+                    if (id === tags[i]._id) {
+                        data.tags = [tags[i].tags, tags[i].total];
                         break;
                     }
                 }
             }
 
             if (actions.includes('ifAreContacts')) {
-                for (let i = 0; i < genericData.ifAreContacts.length; i++) {
-                    if (data.id === genericData.ifAreContacts[i].globalOwner) {
-                        data.isContact = genericData.ifAreContacts[i].isContact;
-                        data.entity = genericData.ifAreContacts[i]._id;
+                const ifAreContacs = checkIfOwnersAreContactsData?.ifAreContacts || []
+                for (let i = 0; i < ifAreContacs.length; i++) {
+                    if (data.id === ifAreContacs[i].globalOwner) {
+                        data.isContact = ifAreContacs[i].isContact;
+                        data.entity = ifAreContacs[i]._id;
                         break;
                     }
                 }
@@ -141,8 +148,9 @@ export const TableHOC = (Component) => {
                 dataTracks={dataTracksIds}
                 setRows={setRows}
                 setLoading={setLoading}
-                getGenericData={getGenericData}
+                initializeGenericData={initializeGenericData}
                 setGenricData={setGenricData}
+                dependencyUpdate={dependencyUpdate}
             />
         );
     };
