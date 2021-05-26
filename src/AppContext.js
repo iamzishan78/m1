@@ -28,6 +28,7 @@ const AppProvider = (props) => {
     selectedWellId: null, // move to a selected object context (maybe flyto)
     selectedAbstracts: [], // move to a selected object context (maybe flyto)
     selectedParcel: null, // move to a selected object context (maybe flyto)
+    selectedAoi: null,
 
     customLayers: [],
     editDraw: false,
@@ -116,9 +117,13 @@ const AppProvider = (props) => {
     prevParcelVisible: false,
     prevBasinVisible: false,
     transactBarView: "",
+    multiSelectLandGrids: false,
+    isAbstractedLayersPolygon: false,
     contactSearchQuery: "",
     isContactSearching: false,
     viewDoc: null,
+    showDrawShapesPopup: false,
+    showShapeActionsPopup: false,
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;

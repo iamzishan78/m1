@@ -29,7 +29,8 @@ export const SHAPEWELLS = gql`
           longitude
           wellBoreProfile
           ownerCount
-
+          county
+          state
           wellStatus
           lastTwelveMonthBOE
           permitApprovedDate
@@ -39,6 +40,7 @@ export const SHAPEWELLS = gql`
         },
         cursor
       },
+      totalCount,
       pageInfo {
         hasNextPage,
         endCursor

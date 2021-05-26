@@ -77,6 +77,7 @@
     "react-flip-toolkit": "^7.0.13",
     "react-google-recaptcha": "^2.1.0",
     "react-hook-form": "^6.15.4",
+    "react-icons": "^4.2.0",
     "react-iframe": "^1.8.0",
     "react-image-crop": "^8.6.6",
     "react-json-view": "^1.21.3",
