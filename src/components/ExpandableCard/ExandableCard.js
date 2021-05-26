@@ -24,8 +24,6 @@ import LinkWithIcon from "../Shared/LinkWithIcon";
 import BugsIcon from "../Shared/svgIcons/bug.js";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
-
-import { gql } from "@apollo/client";
 import ContactSearch from "./components/ContactSearch";
 
 function ExpandableCard(props) {
@@ -296,6 +294,23 @@ function ExpandableCard(props) {
       setDeleteLoading(true);
       await deleteParcel();
       setDeleteLoading(false);
+
+      // For clearing out selected abstract land grids
+      const { map } = stateApp;
+      let popUps = document.getElementsByClassName("mapboxgl-popup");
+      if (popUps[0]) popUps[0].remove();
+
+      for (let i = 0; i < stateApp.selectedAbstracts.length; i++) {
+        const id = stateApp.selectedAbstracts[i].properties.Id;
+        map.setFeatureState(
+          { source: 'abstract_geo_source', id },
+          { click: false }
+        );
+      }
+      setStateApp((state) => ({
+        ...state,
+        selectedAbstracts: []
+      }));
     } else if (targetLabel === "activity") {
       setDeleteLoading(true);
       await deleteActivity();
@@ -344,7 +359,7 @@ function ExpandableCard(props) {
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => { }}
           >
-            Are you sure you want to delete the selected {targetLabel == "expandedParcel" ? "parcel" : targetLabel}?
+            Are you sure you want to delete the selected {targetLabel === "expandedParcel" ? "parcel" : targetLabel}?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
