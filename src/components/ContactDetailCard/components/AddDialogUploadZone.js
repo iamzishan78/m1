@@ -489,15 +489,6 @@ export default function Documents(props) {
                   relatedObjectType={relatedObjectType} //Contact or Deal
                   loading={props.loading}
                   disabled={props.disabled}
-                  // addFile={addFile}
-                  // addFileData={addFileData}
-                  // getRecentFiles={() => {
-                  //   getRecentFiles({
-                  //     variables: {
-                  //       relatedObjectId: props.id,
-                  //     },
-                  //   });
-                  // }}
                 />
               </div>
             </Grid>

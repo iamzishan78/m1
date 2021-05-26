@@ -103,7 +103,10 @@ const useStyles = makeStyles((theme) => ({
   inputField: {
     marginBottom: '10px',
   },
-  dateLabel: {
+  inputFieldCommonInfo: {
+    marginBottom: '7px',
+  },
+    dateLabel: {
     transform: 'translate(10px, 2px) scale(0.75) !important',
     backgroundColor: '#fff !important',
     padding: '0 6px',
@@ -185,6 +188,11 @@ const useStyles = makeStyles((theme) => ({
 
     // color: "#fff",
   },
+  gridStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   dealStateReopen: {
     padding: '2px 10px',
     cursor: 'pointer',
@@ -195,7 +203,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: '12px',
     fontSize: 12,
     letterSpacing: 2,
-    textAlign: 'center',
+    textAlign: 'right',
   },
   dialog: {
     zIndex: '9999999999 !important',
@@ -207,6 +215,9 @@ const useStyles = makeStyles((theme) => ({
 
     '& .MuiOutlinedInput-root': {
       width: '100%',
+      '& fieldset': {
+        borderColor: 'white',
+      },
     },
   },
   dialogExpCard: {
@@ -1434,11 +1445,16 @@ function AddDealDialog(props) {
               <FormControl
                 variant="outlined"
                 fullWidth
-                className={classes.inputField}
+                className={classes.inputFieldCommonInfo}
                 size="small"
               >
+
+                <Grid container spacing={2} className={classes.gridStyle}>
+                <Grid item xs={3}>
+                <div>Owner</div>
+                </Grid>
+                <Grid item xs={9}>
                 <Autocomplete
-                  className={classes.fieldWidth}
                   options={users}
                   onChange={(e, user) => {
                     setOwnerId(user?.value);
@@ -1454,7 +1470,7 @@ function AddDealDialog(props) {
                       margin="dense"
                       {...params}
                       variant="outlined"
-                      label="Deal Owner"
+                      // label="Deal Owner"
                       InputLabelProps={{
                         shrink: true,
                         classes: {
@@ -1477,16 +1493,24 @@ function AddDealDialog(props) {
                     />
                   )}
                 />
+                </Grid>
+                </Grid>
               </FormControl>
               <FormControl
                 variant="outlined"
                 fullWidth
                 size="small"
-                className={classes.inputField}
+                className={classes.inputFieldCommonInfo}
               >
-                <InputLabel shrink className={classes.dateLabel}>
+                <Grid container spacing={2} className={classes.gridStyle}>
+                <Grid item xs={3}>
+                <div>Close Date</div>
+                </Grid>
+                <Grid item xs={9}>
+
+                {/* <InputLabel shrink className={classes.dateLabel}>
                   Expected Close Date
-                </InputLabel>
+                </InputLabel> */}
                 <TextField
                   margin="dense"
                   type="date"
@@ -1506,36 +1530,24 @@ function AddDealDialog(props) {
                     },
                   }}
                 />
+              </Grid>
+              </Grid>
               </FormControl>
-              <TextField
-                margin="dense"
-                variant="outlined"
-                value={label}
-                error={isNaN(label)}
-                helperText={
-                  isNaN(label) ? 'Offer Price must be a valid number' : ''
-                }
-                label="Offer Price"
-                fullWidth
-                onChange={(e) => {
-                  setLabel(e.target.value);
-                }}
-                className={classes.inputField}
-                InputProps={{
-                  inputComponent: NumberFormatCustom,
-                }}
-              />
-
-
+              
               <FormControl
                 variant="outlined"
                 fullWidth
-                className={classes.inputField}
+                className={classes.inputFieldCommonInfo}
                 size="small"
               >
-                <InputLabel shrink className={classes.shrinkLabel}>
-                  Pipeline
-                </InputLabel>
+                <Grid container spacing={2} className={classes.gridStyle}>
+                <Grid item xs={3}>
+                <div>Flowline</div>
+                </Grid>
+                <Grid item xs={9}>
+                {/* <InputLabel shrink className={classes.shrinkLabel}>
+                  Flowline
+                </InputLabel> */}
                 <Select
                   // disabled={stateApp.activeDeal?.cardId ? true : false}
                   native
@@ -1562,17 +1574,25 @@ function AddDealDialog(props) {
                     );
                   })}
                 </Select>
+                </Grid>
+                </Grid>
               </FormControl>
 
               <FormControl
                 variant="outlined"
                 fullWidth
-                className={classes.inputField}
+                className={classes.inputFieldCommonInfo}
                 size="small"
               >
-                <InputLabel shrink className={classes.shrinkLabel}>
-                  Deal Stage
-                </InputLabel>
+                <Grid container spacing={2} className={classes.gridStyle}>
+                <Grid item xs={3}>
+                <div>Flow Stage</div>
+                </Grid>
+
+                <Grid item xs={9}>
+                {/* <InputLabel shrink className={classes.shrinkLabel}>
+                  Flow Stage
+                </InputLabel> */}
                 <Select
                   native
                   value={stageId}
@@ -1593,7 +1613,37 @@ function AddDealDialog(props) {
                       </option>
                     ))}
                 </Select>
+                </Grid>
+                </Grid>
               </FormControl>
+
+              <Grid container spacing={2} className={classes.gridStyle}>
+                <Grid item xs={3}>
+                <div>Offer Price</div>
+                </Grid>
+                <Grid item xs={9}>
+              <TextField
+                margin="dense"
+                variant="outlined"
+                value={label}
+                error={isNaN(label)}
+                helperText={
+                  isNaN(label) ? 'Offer Price must be a valid number' : ''
+                }
+                // label="Offer Price"
+                fullWidth
+                onChange={(e) => {
+                  setLabel(e.target.value);
+                }}
+                className={classes.inputField}
+                InputProps={{
+                  inputComponent: NumberFormatCustom,
+                }}
+              />
+              </Grid>
+              </Grid>
+
+
 
 
 
