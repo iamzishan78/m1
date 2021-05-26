@@ -540,7 +540,7 @@ function MapGridCard(props) {
               index={1}
               className={classes.tapsPanelsPadding}
               //
-              style={{ position: "absolute", width: "96vw" }}
+              style={{ position: "absolute", width: "100vw" }}
             //
             >
               <div style={{ position: "relative" }}>
@@ -598,7 +598,7 @@ function MapGridCard(props) {
               index={1}
               className={classes.tapsPanelsPadding}
               //
-              style={{ position: "absolute", width: "96vw" }}
+              style={{ position: "absolute", width: "100vw" }}
             //
             >
               <div style={{ position: "relative" }}>
@@ -651,7 +651,7 @@ function MapGridCard(props) {
               value={mapGridCardActiveTap}
               index={2}
               className={classes.tapsPanelsPadding}
-              style={{ position: "absolute", width: "96vw" }}
+              style={{ position: "absolute", width: "100vw" }}
             >
               <div style={{ position: "relative" }}>
                 <TabPanels
