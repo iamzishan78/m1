@@ -1295,7 +1295,6 @@ function M1nTable(props) {
                  (props.parent === "Contacts")  // for parent of contact screen 
               || (props.parent ==='search' && props.targetLabel === "contacts") // for parent of search grid 
               || (props.parent === "detail-well-card-contact-ties") // for parent of detail well card 
-              ||  (props.parent === "Documents")
               ) 
     ) {
 

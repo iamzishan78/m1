@@ -1773,7 +1773,8 @@ function SubTable(props) {
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
                   return (
-                   <div onClick={()=>{
+                   <div onClick={(e)=>{
+                     e.stopPropagation()
                     //  console.log(,'value Div click')
                     handleViewFile(rows[tableMeta.rowIndex].fileId)
                      console.log(rows[tableMeta.rowIndex].fileId,'tablemeta FILENAME')
@@ -2527,7 +2528,7 @@ function SubTable(props) {
                 aria-label="select merge strategy"
                 aria-haspopup="menu"
                 onClick={()=>{
-                  setStateApp({...stateApp, DocumentDrawer:true})
+                  setStateApp({...stateApp, DocumentDrawer:true, selectedDocument: {}})
                 }}
               >
                 <PostAddIcon></PostAddIcon>  
@@ -2620,8 +2621,6 @@ function SubTable(props) {
 
       if (props.targetLabel === "documents") {
         console.log('Working Inside Table')
-        // console.log(rowData, " OnRowClick" )
-        // console.log(dataIndex,'DataIndex')
         console.log(rows[dataIndex],'RowIndex')
         setStateApp((stateApp) => ({
           ...stateApp,

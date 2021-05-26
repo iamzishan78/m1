@@ -49,6 +49,13 @@ const DocumentsHeadCells = [
   {
     name: " ",
     label: " ",
+    options: {
+      display: true,
+      filter: false,
+      searchable: false,
+      sort: false,
+      viewColumns: false,
+    }
   },
   
   

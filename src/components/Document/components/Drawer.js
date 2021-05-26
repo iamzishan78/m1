@@ -1,23 +1,28 @@
-import React,{useEffect,useState} from 'react';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
-import { AppContext } from 'AppContext';
-import CloseIcon from '@material-ui/icons/Close';
-import { CircularProgress, Dialog, DialogTitle, Grid, IconButton, TextField, withStyles } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { KeyboardDatePicker } from '@material-ui/pickers';
-import UploadZone from '../../Shared/UploadZone'
+import React, { useEffect, useState } from "react";
+import clsx from "clsx";
+import { makeStyles } from "@material-ui/core/styles";
+import Drawer from "@material-ui/core/Drawer";
+import Button from "@material-ui/core/Button";
+import List from "@material-ui/core/List";
+import Divider from "@material-ui/core/Divider";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import { AppContext } from "AppContext";
+import CloseIcon from "@material-ui/icons/Close";
+import {
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  IconButton,
+  TextField,
+  withStyles,
+} from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { KeyboardDatePicker } from "@material-ui/pickers";
+import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
-import GetAppIcon from '@material-ui/icons/GetApp'
+import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -26,22 +31,25 @@ import {
   faFileWord,
   faFileExcel,
 } from "@fortawesome/free-solid-svg-icons";
-import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
-import DeleteDocumentConfirmation from 'components/Shared/DeleteDocumentConfirmation';
-import { UPDATEFILE } from 'graphQL/useMutationUpdateFile';
+import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
+import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { DELETEDESCRIPTORFILE } from "graphQL/useMutationDeleteDescriptorFile";
+import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
+import DeleteDocumentConfirmation from "components/Shared/DeleteDocumentConfirmation";
+import { UPDATEFILE } from "graphQL/useMutationUpdateFile";
+import { setStateIfDeepEqual } from "components/Shared/functions";
 const useStyles = makeStyles({
   list: {
     width: 250,
   },
   fullList: {
-    width: 'auto',
+    width: "auto",
   },
   maxWidth: {
     width: "100%",
   },
- 
+
   fileUploadSection: {
     minHeight: "50px",
     display: "flex",
@@ -122,18 +130,18 @@ const useStyles = makeStyles({
     marginBottom: "5px",
   },
   dialogFooter: {
-		display: "flex",
-		justifyContent: "flex-end",
-		paddingTop: "10px",
+    display: "flex",
+    justifyContent: "flex-end",
+    paddingTop: "10px",
     paddingRight: "19px",
-    paddingBottom: "40px"
-	},
-	footerButton: {
-		letterSpacing: "1px",
-		textTransform: "capitalize",
-		fontWeight: "bold",
-		padding: "8px 20px",
-	},
+    paddingBottom: "40px",
+  },
+  footerButton: {
+    letterSpacing: "1px",
+    textTransform: "capitalize",
+    fontWeight: "bold",
+    padding: "8px 20px",
+  },
 });
 
 export default function DocumentDrawer() {
@@ -143,74 +151,118 @@ export default function DocumentDrawer() {
   });
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [recentFiles, setRecentFiles] = useState([]);
+
+  const [mongoEntitiesArray1, setMongoEntitiesArray1] = useState([]);
+  const [mongoEntitiesArray2, setMongoEntitiesArray2] = useState([]);
+  const [nameAutValueParty1, setNameAutValueParty1] = useState({ name: "", _id: null });
+  const [nameAutValueParty2, setNameAutValueParty2] = useState({ name: "", _id: null });
+  const [isNextPageLoading1, setIsNextPageLoading1] = useState(false);
+  const [isNextPageLoading2, setIsNextPageLoading2] = useState(false);
+  const [nameAutInputValue1, NameAutInputValue1] = useState("");
+  const [nameAutInputValue2, NameAutInputValue2] = useState("");
+  const [hasNextPage1, setHasNextPage1] = useState(true);
+  const [hasNextPage2, setHasNextPage2] = useState(true);
+  const setNameAutInputValue1 = (newState) => {
+    setStateIfDeepEqual(NameAutInputValue1, newState);
+  };
+  const setNameAutInputValue2 = (newState) => {
+    setStateIfDeepEqual(NameAutInputValue2, newState);
+  };
+
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
-  const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
-  let [loader,setLoader] = useState(false)
-  let [inputValue,setInputValue] = useState()
-  const [viewFile, { data: viewFileResult ,loading: viewFileLoading}] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "no-cache",
-  });
-  const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
-  const [updateFile,{loading:updateFileloading}] = useMutation(UPDATEFILE);
+  const [selectedDate, setSelectedDate] = React.useState(
+    new Date("2014-08-18T21:11:54")
+  );
+  let [loader, setLoader] = useState(false);
+  let [inputValue, setInputValue] = useState();
+  const [viewFile, { data: viewFileResult, loading: viewFileLoading }] =
+    useLazyQuery(VIEWFILEQUERY, {
+      fetchPolicy: "no-cache",
+    });
 
-  const UpDatefileFN =() => {
-    if(stateApp.selectedDocument.fileId)
+  const [
+    getPaginatedContacts1,
     {
-      setLoader(true)
+      data: allContacts1,
+      loading: contactsLoading,
+      fetchMore: fetchMorePaginatedContacts1,
+    },
+  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+  });
+
+  const [
+    getPaginatedContacts2,
+    {
+      data: allContacts2,
+      loading: contactsLoading2,
+      fetchMore: fetchMorePaginatedContacts2,
+    },
+  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+  });
+
+  const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
+  const [updateFile, { loading: updateFileloading }] = useMutation(UPDATEFILE);
+
+  const UpDatefileFN = () => {
+    if (stateApp.selectedDocument.fileId) {
+      setLoader(true);
       updateFile({
         variables: {
-          descriptorId: stateApp.selectedDocument.descriptorId,
           fileName: stateApp.selectedDocument.fileName,
-            dateTime: String(stateApp.selectedDocument.dateTime),
+          dateTime: String(stateApp.selectedDocument.dateTime),
           documentNumber: stateApp.selectedDocument.documentNumber,
           documentType: stateApp.selectedDocument.documentType,
-          partyName1:    stateApp.selectedDocument.partyName1,
+          partyName1: stateApp.selectedDocument.partyName1,
           partyName2: stateApp.selectedDocument.partyName2,
           relatedObjectId: stateApp.selectedDocument.relatedObjectId,
-         fileId: stateApp.selectedDocument.fileId
+          fileId: stateApp.selectedDocument.fileId,
         },
-      }).then(()=>{
+      }).then(() => {
         setLoader(false);
-      })
+      });
     }
-    
-  }
+  };
   const handleViewFile = async (id) => {
-    viewFile({ variables: { fileId: id } })
-    if(viewFileLoading){
-      console.log(viewFileResult,'ViewFIle Result')
+    viewFile({ variables: { fileId: id } });
+    if (viewFileLoading) {
+      console.log(viewFileResult, "ViewFIle Result");
     }
-    
   };
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
   };
 
-  const handleDeleteAccept =  () => {
+  const handleDeleteAccept = () => {
     // Delete Document Logic goes here
     if (fileIdToDelete) {
-      
       setLoader(true);
-     deleteFile({
+      deleteFile({
         variables: {
           id: fileIdToDelete,
         },
-        refetchQueries: ['getFileDescriptors'],
+        refetchQueries: ["getFileDescriptors"],
         awaitRefetchQueries: true,
-      }).then(()=>{
-        setStateApp({...stateApp, DocumentDrawer:false,selectedDocument:{}})
+      }).then(() => {
+        setStateApp({
+          ...stateApp,
+          DocumentDrawer: false,
+          selectedDocument: {},
+        });
         setFileIdToDelete(null);
-      setOpenDeleteConfirmDialog(false);
+        setOpenDeleteConfirmDialog(false);
 
-        setLoader(false)
+        setLoader(false);
       });
-      
     }
   };
-  console.log(stateApp.DocumentLoader,'Document Loader')
+  console.log(stateApp.DocumentLoader, "Document Loader");
 
   useEffect(() => {
     if (viewFileResult?.viewFile?.uri) {
@@ -226,41 +278,105 @@ export default function DocumentDrawer() {
     }
   }, [viewFileResult]);
 
+  useEffect(() => {
+    //will also run during initial mount
+    setIsNextPageLoading1(true);
+    getPaginatedContacts1({
+      variables: {
+        search: nameAutInputValue1,
+      },
+    });
+  }, [nameAutInputValue1]);
 
-  const [
-		viewFiles,
-		{ data: viewFileSResult, loading: viewFileSLoading },
-	] = useLazyQuery(VIEWFILESQUERY, {
-		fetchPolicy: "no-cache",
-	});
-  
-	useEffect(() => {
-		let ID = [];
-		if(stateApp.selectedDocument?.fileId)
-    {
+  useEffect(() => {
+    //will also run during initial mount
+    setIsNextPageLoading2(true);
+    getPaginatedContacts2({
+      variables: {
+        search: nameAutInputValue2,
+      },
+    });
+  }, [nameAutInputValue2]);
+
+  useEffect(() => {
+    if (allContacts1?.paginatedContacts) {
+      setMongoEntitiesArray1([
+        ...allContacts1?.paginatedContacts?.edges?.map((el) => el.node),
+      ]);
+      setHasNextPage1(allContacts1?.paginatedContacts?.pageInfo?.hasNextPage);
+    }
+    setIsNextPageLoading1(false);
+  }, [allContacts1]);
+
+  useEffect(() => {
+    if (allContacts2?.paginatedContacts) {
+      setMongoEntitiesArray2([
+        ...allContacts2?.paginatedContacts?.edges?.map((el) => el.node),
+      ]);
+      setHasNextPage2(allContacts2?.paginatedContacts?.pageInfo?.hasNextPage);
+    }
+    setIsNextPageLoading2(false);
+  }, [allContacts2]);
+
+  useEffect(() => {
+    if (allContacts1?.paginatedContacts) {
+      setMongoEntitiesArray1([
+        ...allContacts1?.paginatedContacts?.edges?.map((el) => el.node),
+      ]);
+      setHasNextPage1(allContacts1?.paginatedContacts?.pageInfo?.hasNextPage);
+    }
+    setIsNextPageLoading1(false);
+  }, [allContacts1]);
+
+  useEffect(() => {
+    if (allContacts2?.paginatedContacts) {
+      setMongoEntitiesArray2([
+        ...allContacts2?.paginatedContacts?.edges?.map((el) => el.node),
+      ]);
+      setHasNextPage2(allContacts2?.paginatedContacts?.pageInfo?.hasNextPage);
+    }
+    setIsNextPageLoading2(false);
+  }, [allContacts2]);
+
+  const [viewFiles, { data: viewFileSResult, loading: viewFileSLoading }] =
+    useLazyQuery(VIEWFILESQUERY, {
+      fetchPolicy: "no-cache",
+    });
+
+  useEffect(() => {
+    let ID = [];
+    if (stateApp.selectedDocument?.fileId) {
       ID.push(stateApp.selectedDocument?.fileId);
-      
 
       viewFiles({
         variables: { fileIds: ID },
       });
-
     }
-		
-	}, [stateApp.selectedDocument]);
-  
+  }, [stateApp.selectedDocument]);
+
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    console.log(date, 'Date Change')
+    console.log(date, "Date Change");
     setStateApp((stateApp) => ({
       ...stateApp,
-      selectedDocument:{
+      selectedDocument: {
         ...stateApp.selectedDocument,
-        dateTime:String(date['_d'])
+        dateTime: String(date["_d"]),
       },
     }));
-    console.log(stateApp.selectedDocument, 'Selected Document')
+    console.log(stateApp.selectedDocument, "Selected Document");
   };
+  const loadNextPage1 = async (pageVariables) => {
+    setIsNextPageLoading1(true);
+    fetchMorePaginatedContacts1(pageVariables);
+    return null;
+  };
+  const loadNextPage2 = async (pageVariables) => {
+    setIsNextPageLoading2(true);
+    fetchMorePaginatedContacts2(pageVariables);
+    return null;
+  };
+
   const LightTooltip = withStyles((theme) => ({
     tooltip: {
       backgroundColor: theme.palette.common.white,
@@ -269,9 +385,12 @@ export default function DocumentDrawer() {
       fontSize: 11,
     },
   }))(Tooltip);
-  console.log(stateApp.user.mongoId,'user Id')
+  console.log(stateApp.user.mongoId, "user Id");
   const toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
       return;
     }
 
@@ -320,523 +439,742 @@ export default function DocumentDrawer() {
 
   const DocumentDetail = (anchor) => (
     <div
-    style={{ width:'500px',marginLeft:'15px'}}
+      style={{ width: "500px", marginLeft: "15px" }}
       className={clsx(classes.list, {
-        [classes.fullList]: anchor === 'top' || anchor === 'bottom',
+        [classes.fullList]: anchor === "top" || anchor === "bottom",
       })}
       role="presentation"
       onClick={toggleDrawer(anchor, false)}
       onKeyDown={toggleDrawer(anchor, false)}
     >
-     
       <List>
-      <ListItem style={{display:'flex',justifyContent:'between',width:'100%',alignItems:'center'}}>
-      <ListItemText  >
-        <h3>Document Detail</h3>
-      </ListItemText>
-        <ListItemIcon style={{cursor:'pointer'}} >
-        <IconButton
-                            size="small"
-                            onClick={() => {
-                              setOpenDeleteConfirmDialog(true);
-                              setFileIdToDelete(
-                                stateApp.selectedDocument.descriptorId
-                              );
-                              console.log(stateApp.selectedDocument,' StateApp')
-                              
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                          <IconButton
-                            size="small"
-                            onClick={()=>{ setStateApp({...stateApp, DocumentDrawer:false,selectedDocument:{}})}}>
-          <CloseIcon></CloseIcon></IconButton></ListItemIcon>
-      </ListItem>
-      <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Document Number</h4>
-            <TextField
-              className={classes.maxWidth}
-              multiline
-              value={stateApp.selectedDocument?.documentNumber ? (stateApp.selectedDocument?.documentNumber): ('No Number')}
-             onChange={(e)=>{
-                setStateApp({...stateApp,
-                selectedDocument:{
+        <ListItem
+          style={{
+            display: "flex",
+            justifyContent: "between",
+            width: "100%",
+            alignItems: "center",
+          }}
+        >
+          <ListItemText>
+            {stateApp.selectedDocument?.fileId ? (
+              <h3>Document Detail</h3>
+            ) : (
+              <h3>Add New Document</h3>
+            )}
+          </ListItemText>
+          <ListItemIcon style={{ cursor: "pointer" }}>
+            {stateApp.selectedDocument?.fileId && (
+              <IconButton
+                size="small"
+                onClick={() => {
+                  setOpenDeleteConfirmDialog(true);
+                  setFileIdToDelete(stateApp.selectedDocument.fileId);
+                  console.log(stateApp.selectedDocument, " StateApp");
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
+            <IconButton
+              size="small"
+              onClick={() => {
+                setStateApp({
+                  ...stateApp,
+                  DocumentDrawer: false,
+                  selectedDocument: {},
+                });
+              }}
+            >
+              <CloseIcon></CloseIcon>
+            </IconButton>
+          </ListItemIcon>
+        </ListItem>
+        <ListItem
+          style={{
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
+          <h4>Document Number</h4>
+          <TextField
+            className={classes.maxWidth}
+            multiline
+            value={
+              stateApp.selectedDocument?.documentNumber
+                ? stateApp.selectedDocument?.documentNumber
+                : "No Number"
+            }
+            onChange={(e) => {
+              setStateApp({
+                ...stateApp,
+                selectedDocument: {
                   ...stateApp.selectedDocument,
-                  documentNumber:e.target.value
-                }})
+                  documentNumber: e.target.value,
+                },
+              });
             }}
-            />
-          </ListItem>
-          <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Document Name</h4>
-            <TextField
-              className={classes.maxWidth}
-              multiline
-              value={stateApp.selectedDocument.fileName}
-              onChange={(e)=>{
-                setStateApp({...stateApp,
-                selectedDocument:{
+          />
+        </ListItem>
+        <ListItem
+          style={{
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
+          <h4>Document Name</h4>
+          <TextField
+            className={classes.maxWidth}
+            multiline
+            value={stateApp.selectedDocument.fileName}
+            onChange={(e) => {
+              setStateApp({
+                ...stateApp,
+                selectedDocument: {
                   ...stateApp.selectedDocument,
-                  fileName:e.target.value
-                }})}
-              }
-            
-            />
-          </ListItem>
-          <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Document Type</h4>
-            <Autocomplete
-              className={classes.maxWidth}
-              options={['pdf','doc','txt']}
-              value={stateApp.selectedDocument.documentType}
-              onChange={(e, value) => { console.log(value,'DocumentType')
-              e.preventDefault()
-              setStateApp({...stateApp,
-              selectedDocument:{
-                ...stateApp.selectedDocument,
-                documentType:value
-
-              }})
-             }}
-              // value={users.find((user) => user?.value === newContact.contactOwner) || null}
-              // getOptionLabel={(option) => option.text}
-              // getOptionSelected={(option) => option.value === newContact.contactOwner}
-              renderInput={(params) => (
-                <TextField size="small" {...params} className={classes.maxWidth} multiline  />
-              )}
-            />
-          </ListItem>
-         
-          <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
+                  fileName: e.target.value,
+                },
+              });
+            }}
+          />
+        </ListItem>
+        <ListItem
+          style={{
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
+          <h4>Document Type</h4>
+          <Autocomplete
+            className={classes.maxWidth}
+            options={["pdf", "doc", "txt"]}
+            value={stateApp.selectedDocument.documentType}
+            onChange={(e, value) => {
+              console.log(value, "DocumentType");
+              e.preventDefault();
+              setStateApp({
+                ...stateApp,
+                selectedDocument: {
+                  ...stateApp.selectedDocument,
+                  documentType: value,
+                },
+              });
+            }}
+            renderInput={(params) => (
+              <TextField
+                size="small"
+                {...params}
+                className={classes.maxWidth}
+                multiline
+              />
+            )}
+          />
+        </ListItem>
+        <ListItem
+          style={{
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
           <h4>Document Date</h4>
           <KeyboardDatePicker
-          className={classes.maxWidth}
-         
-          disableToolbar
-          variant="inline"
-          format="MM/dd/yyyy"
-          margin="normal"
-          id="date-picker-inline"
-          value={stateApp.selectedDocument.dateTime}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
+            className={classes.maxWidth}
+            disableToolbar
+            variant="inline"
+            format="MM/dd/yyyy"
+            margin="normal"
+            id="date-picker-inline"
+            value={
+              stateApp.selectedDocument?.fileId
+                ? stateApp.selectedDocument?.dateTime
+                : selectedDate
+            }
+            onChange={handleDateChange}
+            KeyboardButtonProps={{
+              "aria-label": "change date",
+            }}
+          />
         </ListItem>
-        <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Party 1 Name</h4>
-            <Autocomplete
-              className={classes.maxWidth}
-              options={['John Doe','Mickel Jackson','Phil Heath']}
-              value={stateApp.selectedDocument.partyName1}
-
-              onChange={(e, value) => {
-                e.preventDefault()
-                setStateApp({
+        <ListItem
+          style={{
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
+          <h4>Party 1 Name</h4>
+          <AutocompEntityNamesVirtualizeList
+            className={classes.maxWidth}
+            mongoEntitiesArray={mongoEntitiesArray1}
+            setMongoEntitiesArray={setMongoEntitiesArray1}
+            nameAutValue={nameAutValueParty1}
+            setNameAutValue={setNameAutValueParty1}
+            nameAutInputValue={nameAutInputValue1}
+            setNameAutInputValue={setNameAutInputValue1}
+            hasNextPage={hasNextPage1}
+            isNextPageLoading={isNextPageLoading1}
+            loadNextPage={loadNextPage1}
+            addNew={true}
+          />
+          {/* <Autocomplete
+            className={classes.maxWidth}
+            options={["John Doe", "Mickel Jackson", "Phil Heath"]}
+            value={stateApp.selectedDocument.partyName1}
+            onChange={(e, value) => {
+              e.preventDefault();
+              setStateApp({
                 ...stateApp,
-                selectedDocument:{
+                selectedDocument: {
                   ...stateApp.selectedDocument,
-                     partyName1:value
-                }
-              }) }}
-              // value={users.find((user) => user?.value === newContact.contactOwner) || null}
-              // getOptionLabel={(option) => option.text}
-              // getOptionSelected={(option) => option.value === newContact.contactOwner}
-              renderInput={(params) => (
-                <TextField size="small" {...params} className={classes.maxWidth} multiline  />
-              )}
-            />
-          </ListItem>
-          <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Party 2 Name</h4>
-            <Autocomplete
-              className={classes.maxWidth}
-              options={['John Doe','Mickel Jackson','Phil Heath']}
-              value={stateApp.selectedDocument.partyName2}
-
-              onChange={(e, value) => { setStateApp({
+                  partyName1: value,
+                },
+              });
+            }}
+            renderInput={(params) => (
+              <TextField
+                size="small"
+                {...params}
+                className={classes.maxWidth}
+                multiline
+              />
+            )}
+          /> */}
+        </ListItem>
+        <ListItem
+          style={{
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
+          <h4>Party 2 Name</h4>
+          <AutocompEntityNamesVirtualizeList
+            className={classes.maxWidth}
+            mongoEntitiesArray={mongoEntitiesArray2}
+            setMongoEntitiesArray={setMongoEntitiesArray2}
+            nameAutValue={nameAutValueParty2}
+            setNameAutValue={setNameAutValueParty2}
+            nameAutInputValue={nameAutInputValue2}
+            setNameAutInputValue={setNameAutInputValue2}
+            hasNextPage={hasNextPage2}
+            isNextPageLoading={isNextPageLoading2}
+            loadNextPage={loadNextPage2}
+            addNew={true}
+          />
+          {/* <Autocomplete
+            className={classes.maxWidth}
+            options={["John Doe", "Mickel Jackson", "Phil Heath"]}
+            value={stateApp.selectedDocument.partyName2}
+            onChange={(e, value) => {
+              setStateApp({
                 ...stateApp,
-                selectedDocument:{
+                selectedDocument: {
                   ...stateApp.selectedDocument,
-                  partyName2:value
-                }
-              }) }}
-              // value={users.find((user) => user?.value === newContact.contactOwner) || null}
-              // getOptionLabel={(option) => option.text}
-              // getOptionSelected={(option) => option.value === newContact.contactOwner}
-              renderInput={(params) => (
-                <TextField size="small" {...params} className={classes.maxWidth} multiline  />
-              )}
-            />
-          </ListItem>
-          {/* <ListItem>
-          <h4>Click or drag and drop file to upload</h4>
-          </ListItem> */}
-<ListItem>
-          <div style={{display:'flex',justifyContent:'start'}}>
-          {console.log(recentFiles, "Files data in Adddialog")}
-            {viewFileSResult?.viewFiles?.map((value, key) => {
-              let fileExtension = value?.name
-                ?.slice(value.name.lastIndexOf(".") + 1)
-                ?.toLowerCase();
-              if (key <= 1) {
-                return (
-                  <div  key={key} >
-                    <LightTooltip
-                      title={
-                        <div className={classes.IconSection}>
-                          <IconButton
-                            size="small"
-                            onClick={() => {
-                              setOpenDeleteConfirmDialog(true);
-                              setFileIdToDelete(
-                                stateApp.selectedDocument.descriptorId
-                              );
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
+                  partyName2: value,
+                },
+              });
+            }}
+            renderInput={(params) => (
+              <TextField
+                size="small"
+                {...params}
+                className={classes.maxWidth}
+                multiline
+              />
+            )}
+          /> */}
+        </ListItem>
+        {stateApp.selectedDocument?.fileId ? (
+          <ListItem>
+            <div style={{ display: "flex", justifyContent: "start" }}>
+              {console.log(recentFiles, "Files data in Adddialog")}
+              {viewFileSResult?.viewFiles?.map((value, key) => {
+                let fileExtension = value?.name
+                  ?.slice(value.name.lastIndexOf(".") + 1)
+                  ?.toLowerCase();
+                if (key <= 1) {
+                  return (
+                    <div key={key}>
+                      <LightTooltip
+                        title={
+                          <div className={classes.IconSection}>
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                setOpenDeleteConfirmDialog(true);
+                                setFileIdToDelete(
+                                  stateApp.selectedDocument.fileId
+                                );
+                              }}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
 
-                          <IconButton
-                            disabled={
-                             false
-                            }
-                            size="small"
-                            onClick={(e) =>
-                              {
+                            <IconButton
+                              disabled={false}
+                              size="small"
+                              onClick={(e) => {
                                 e.preventDefault();
-                                handleViewFile(
-                                  value.id
-                                )
-                              }
-                            }
-                          >
-                            <GetAppIcon />
-                          </IconButton>
-                        </div>
-                      }
-                      interactive
-                    >
-                      <div>
-                      
-                        {new RegExp(
-                          ["jpg", "jpeg", "png", "bmp"].join("|")
-                        ).test(fileExtension) ? (
-                          <img
-                            src={value.uri}
-                            alt={value.name}
-                            className={classes.forImage}
-                          ></img>
-                        ) : (
-                          <div className={classes.forImageContainer}>
-                            {/* {fileExtension} */}
-                            {getFileIcon(fileExtension)}
+                                handleViewFile(value.id);
+                              }}
+                            >
+                              <GetAppIcon />
+                            </IconButton>
                           </div>
-                        )}
-                        <div className={classes.imageSubText}>
-                          {value?.name?.length > 12
-                            ? value.name.slice(0, 8) + "..."
-                            : value.name}
+                        }
+                        interactive
+                      >
+                        <div>
+                          {new RegExp(
+                            ["jpg", "jpeg", "png", "bmp"].join("|")
+                          ).test(fileExtension) ? (
+                            <img
+                              src={value.uri}
+                              alt={value.name}
+                              className={classes.forImage}
+                            ></img>
+                          ) : (
+                            <div className={classes.forImageContainer}>
+                              {/* {fileExtension} */}
+                              {getFileIcon(fileExtension)}
+                            </div>
+                          )}
+                          <div className={classes.imageSubText}>
+                            {value?.name?.length > 12
+                              ? value.name.slice(0, 8) + "..."
+                              : value.name}
+                          </div>
                         </div>
-                      </div>
-                    </LightTooltip>
-                   
-                  </div>
-                );
-              }
-            })}
-           {/* <div style={{width:'150px',marginLeft:'20px'}}>
-           <UploadZone
-                  style={{width:'150px',height:'150px'}}
-               
-                />
-           </div> */}
-          </div>
+                      </LightTooltip>
+                    </div>
+                  );
+                }
+              })}
+              {/* <div style={{width:'150px',marginLeft:'20px'}}>
+         <UploadZone
+                style={{width:'150px',height:'150px'}}
+             
+              />
+         </div> */}
+            </div>
           </ListItem>
-      </List>
-  
-      <div className={classes.dialogFooter}>
-								<Button
-									variant="contained"
-									color="default"
-									size="medium"
-									disableElevation
-								
-									// disabled={updateDealLoading || addContactLoading}
-									className={classes.footerButton}
-									style={{
-										margin: "0px 15px 0px 0px",
-									}}
-                  onClick={()=>{ setStateApp({...stateApp, DocumentDrawer:false,selectedDocument:{}})}}
-								>
-									Cancel
-								</Button>
+        ) : (
+          <ListItem>
+            <h4>Click or drag and drop file to upload</h4>
 
-								<Button
-									variant="contained"
-									color="secondary"
-									size="medium"
-									disableElevation
-									onClick={()=>{
-                    setLoader(true);
-                    UpDatefileFN()
-                  }}
-									className={classes.footerButton}
-								>
-                  Save
-								</Button>
-							</div>
-      
-  
-  
+            <div style={{ display: "flex", justifyContent: "start" }}>
+              {console.log(recentFiles, "Files data in Adddialog")}
+              {recentFiles?.map((value, key) => {
+                let fileExtension = value?.name
+                  ?.slice(value.name.lastIndexOf(".") + 1)
+                  ?.toLowerCase();
+                if (key <= 1) {
+                  return (
+                    <div key={key}>
+                      <LightTooltip
+                        title={
+                          <div className={classes.IconSection}>
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                setOpenDeleteConfirmDialog(true);
+                                setFileIdToDelete(value.id);
+                              }}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+
+                            <IconButton
+                              disabled={false}
+                              size="small"
+                              // onClick={() =>
+                              //   handleViewFile(
+                              //     files?.getFileDescriptors[key].fileId
+                              //   )
+                              // }
+                            >
+                              <GetAppIcon />
+                            </IconButton>
+                          </div>
+                        }
+                        interactive
+                      >
+                        <div>
+                          {new RegExp(
+                            ["jpg", "jpeg", "png", "bmp"].join("|")
+                          ).test(fileExtension) ? (
+                            <img
+                              src={value.uri}
+                              alt={value.name}
+                              className={classes.forImage}
+                            ></img>
+                          ) : (
+                            <div className={classes.forImageContainer}>
+                              {/* {fileExtension} */}
+                              {getFileIcon(fileExtension)}
+                            </div>
+                          )}
+                          <div className={classes.imageSubText}>
+                            {value?.name?.length > 12
+                              ? value.name.slice(0, 8) + "..."
+                              : value.name}
+                          </div>
+                        </div>
+                      </LightTooltip>
+                    </div>
+                  );
+                }
+              })}
+              <div style={{ width: "150px", marginLeft: "20px" }}>
+                <UploadZone style={{ width: "150px", height: "150px" }} />
+              </div>
+            </div>
+          </ListItem>
+        )}
+      </List>
+
+      <div className={classes.dialogFooter}>
+        <Button
+          variant="contained"
+          color="default"
+          size="medium"
+          disableElevation
+          // disabled={updateDealLoading || addContactLoading}
+          className={classes.footerButton}
+          style={{
+            margin: "0px 15px 0px 0px",
+          }}
+          onClick={() => {
+            setStateApp({
+              ...stateApp,
+              DocumentDrawer: false,
+              selectedDocument: {},
+            });
+          }}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          variant="contained"
+          color="secondary"
+          size="medium"
+          disableElevation
+          onClick={() => {
+            setLoader(true);
+            UpDatefileFN();
+          }}
+          className={classes.footerButton}
+        >
+          Save
+        </Button>
+      </div>
+
       <Divider />
-   
     </div>
   );
   const list = (anchor) => (
     <div
-    style={{ width:'500px',marginLeft:'15px'}}
+      style={{ width: "500px", marginLeft: "15px" }}
       className={clsx(classes.list, {
-        [classes.fullList]: anchor === 'top' || anchor === 'bottom',
+        [classes.fullList]: anchor === "top" || anchor === "bottom",
       })}
       role="presentation"
       onClick={toggleDrawer(anchor, false)}
       onKeyDown={toggleDrawer(anchor, false)}
     >
-     
       <List>
-      <ListItem style={{display:'flex',justifyContent:'between',width:'100%',alignItems:'center'}}>
-      <ListItemText  >
-        <h3>Add New Document</h3>
-      </ListItemText>
-        <ListItemIcon style={{cursor:'pointer'}} onClick={()=>{
-          console.log(stateApp.refetchDocument, 'Refetch documents')
-          setStateApp({...stateApp, DocumentDrawer:false,selectedDocument:{}})}}><CloseIcon></CloseIcon></ListItemIcon>
-      </ListItem>
-      <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Document Number</h4>
-            <TextField
-              className={classes.maxWidth}
-              multiline
-            
-            />
-          </ListItem>
-          <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Document Name</h4>
-            <TextField
-              className={classes.maxWidth}
-              multiline
-            
-            />
-          </ListItem>
-          <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Document Type</h4>
-            <Autocomplete
-              className={classes.maxWidth}
-              options={['pdf','doc','txt']}
-              // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
-              // value={users.find((user) => user?.value === newContact.contactOwner) || null}
-              // getOptionLabel={(option) => option.text}
-              // getOptionSelected={(option) => option.value === newContact.contactOwner}
-              renderInput={(params) => (
-                <TextField size="small" {...params} className={classes.maxWidth} multiline  />
-              )}
-            />
-          </ListItem>
-         
-          <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
+        <ListItem
+          style={{
+            display: "flex",
+            justifyContent: "between",
+            width: "100%",
+            alignItems: "center",
+          }}
+        >
+          <ListItemText>
+            <h3>Add New Document</h3>
+          </ListItemText>
+          <ListItemIcon
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              console.log(stateApp.refetchDocument, "Refetch documents");
+              setStateApp({
+                ...stateApp,
+                DocumentDrawer: false,
+                selectedDocument: {},
+              });
+            }}
+          >
+            <CloseIcon></CloseIcon>
+          </ListItemIcon>
+        </ListItem>
+        <ListItem
+          style={{
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
+          <h4>Document Number</h4>
+          <TextField className={classes.maxWidth} multiline />
+        </ListItem>
+        <ListItem
+          style={{
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
+          <h4>Document Name</h4>
+          <TextField className={classes.maxWidth} multiline />
+        </ListItem>
+        <ListItem
+          style={{
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
+          <h4>Document Type</h4>
+          <Autocomplete
+            className={classes.maxWidth}
+            options={["pdf", "doc", "txt"]}
+            // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+            // value={users.find((user) => user?.value === newContact.contactOwner) || null}
+            // getOptionLabel={(option) => option.text}
+            // getOptionSelected={(option) => option.value === newContact.contactOwner}
+            renderInput={(params) => (
+              <TextField
+                size="small"
+                {...params}
+                className={classes.maxWidth}
+                multiline
+              />
+            )}
+          />
+        </ListItem>
+
+        <ListItem
+          style={{
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
           <h4>Document Type</h4>
           <KeyboardDatePicker
-          className={classes.maxWidth}
-          disableToolbar
-          variant="inline"
-          format="MM/dd/yyyy"
-          margin="normal"
-          id="date-picker-inline"
-          // label={<h4 style={{paddingBottom:'30px'}}>Document Date</h4>}
-          value={selectedDate}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
+            className={classes.maxWidth}
+            disableToolbar
+            variant="inline"
+            format="MM/dd/yyyy"
+            margin="normal"
+            id="date-picker-inline"
+            // label={<h4 style={{paddingBottom:'30px'}}>Document Date</h4>}
+            value={selectedDate}
+            onChange={handleDateChange}
+            KeyboardButtonProps={{
+              "aria-label": "change date",
+            }}
+          />
         </ListItem>
-        <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Party 1 Name</h4>
-            <Autocomplete
-              className={classes.maxWidth}
-              options={['John Doe','Mickel Jackson','Phil Heath']}
-              // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
-              // value={users.find((user) => user?.value === newContact.contactOwner) || null}
-              // getOptionLabel={(option) => option.text}
-              // getOptionSelected={(option) => option.value === newContact.contactOwner}
-              renderInput={(params) => (
-                <TextField size="small" {...params} className={classes.maxWidth} multiline  />
-              )}
-            />
-          </ListItem>
-          <ListItem style={{flexDirection:'column',justifyContent:'start',alignItems:'start'}}>
-            <h4>Party 2 Name</h4>
-            <Autocomplete
-              className={classes.maxWidth}
-              options={['John Doe','Mickel Jackson','Phil Heath']}
-              // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
-              // value={users.find((user) => user?.value === newContact.contactOwner) || null}
-              // getOptionLabel={(option) => option.text}
-              // getOptionSelected={(option) => option.value === newContact.contactOwner}
-              renderInput={(params) => (
-                <TextField size="small" {...params} className={classes.maxWidth} multiline  />
-              )}
-            />
-          </ListItem>
-          <ListItem>
+        <ListItem
+          style={{
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
+          <h4>Party 1 Name</h4>
+          <Autocomplete
+            className={classes.maxWidth}
+            options={["John Doe", "Mickel Jackson", "Phil Heath"]}
+            // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+            // value={users.find((user) => user?.value === newContact.contactOwner) || null}
+            // getOptionLabel={(option) => option.text}
+            // getOptionSelected={(option) => option.value === newContact.contactOwner}
+            renderInput={(params) => (
+              <TextField
+                size="small"
+                {...params}
+                className={classes.maxWidth}
+                multiline
+              />
+            )}
+          />
+        </ListItem>
+        <ListItem
+          style={{
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
+          <h4>Party 2 Name</h4>
+          <Autocomplete
+            className={classes.maxWidth}
+            options={["John Doe", "Mickel Jackson", "Phil Heath"]}
+            // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+            // value={users.find((user) => user?.value === newContact.contactOwner) || null}
+            // getOptionLabel={(option) => option.text}
+            // getOptionSelected={(option) => option.value === newContact.contactOwner}
+            renderInput={(params) => (
+              <TextField
+                size="small"
+                {...params}
+                className={classes.maxWidth}
+                multiline
+              />
+            )}
+          />
+        </ListItem>
+        <ListItem>
           <h4>Click or drag and drop file to upload</h4>
-          </ListItem>
+        </ListItem>
 
-          <div style={{display:'flex',justifyContent:'start'}}>
-            {console.log(recentFiles, "Files data in Adddialog")}
-            {recentFiles?.map((value, key) => {
-              let fileExtension = value?.name
-                ?.slice(value.name.lastIndexOf(".") + 1)
-                ?.toLowerCase();
-              if (key <= 1) {
-                return (
-                  <div  key={key} >
-                    <LightTooltip
-                      title={
-                        <div className={classes.IconSection}>
-                          <IconButton
-                            size="small"
-                            onClick={() => {
-                              setOpenDeleteConfirmDialog(true);
-                              setFileIdToDelete(
-                                value.id
-                              );
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
+        <div style={{ display: "flex", justifyContent: "start" }}>
+          {console.log(recentFiles, "Files data in Adddialog")}
+          {recentFiles?.map((value, key) => {
+            let fileExtension = value?.name
+              ?.slice(value.name.lastIndexOf(".") + 1)
+              ?.toLowerCase();
+            if (key <= 1) {
+              return (
+                <div key={key}>
+                  <LightTooltip
+                    title={
+                      <div className={classes.IconSection}>
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            setOpenDeleteConfirmDialog(true);
+                            setFileIdToDelete(value.id);
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
 
-                          <IconButton
-                            disabled={
-                             false
-                            }
-                            size="small"
-                            // onClick={() =>
-                            //   handleViewFile(
-                            //     files?.getFileDescriptors[key].fileId
-                            //   )
-                            // }
-                          >
-                            <GetAppIcon />
-                          </IconButton>
-                        </div>
-                      }
-                      interactive
-                    >
-                      <div>
-                      
-                        {new RegExp(
-                          ["jpg", "jpeg", "png", "bmp"].join("|")
-                        ).test(fileExtension) ? (
-                          <img
-                            src={value.uri}
-                            alt={value.name}
-                            className={classes.forImage}
-                          ></img>
-                        ) : (
-                          <div className={classes.forImageContainer}>
-                            {/* {fileExtension} */}
-                            {getFileIcon(fileExtension)}
-                          </div>
-                        )}
-                        <div className={classes.imageSubText}>
-                          {value?.name?.length > 12
-                            ? value.name.slice(0, 8) + "..."
-                            : value.name}
-                        </div>
+                        <IconButton
+                          disabled={false}
+                          size="small"
+                          // onClick={() =>
+                          //   handleViewFile(
+                          //     files?.getFileDescriptors[key].fileId
+                          //   )
+                          // }
+                        >
+                          <GetAppIcon />
+                        </IconButton>
                       </div>
-                    </LightTooltip>
-                   
-                  </div>
-                );
-              }
-            })}
-           <div style={{width:'150px',marginLeft:'20px'}}>
-           <UploadZone
-                  style={{width:'150px',height:'150px'}}
-               
-                />
-           </div>
+                    }
+                    interactive
+                  >
+                    <div>
+                      {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(
+                        fileExtension
+                      ) ? (
+                        <img
+                          src={value.uri}
+                          alt={value.name}
+                          className={classes.forImage}
+                        ></img>
+                      ) : (
+                        <div className={classes.forImageContainer}>
+                          {/* {fileExtension} */}
+                          {getFileIcon(fileExtension)}
+                        </div>
+                      )}
+                      <div className={classes.imageSubText}>
+                        {value?.name?.length > 12
+                          ? value.name.slice(0, 8) + "..."
+                          : value.name}
+                      </div>
+                    </div>
+                  </LightTooltip>
+                </div>
+              );
+            }
+          })}
+          <div style={{ width: "150px", marginLeft: "20px" }}>
+            <UploadZone style={{ width: "150px", height: "150px" }} />
           </div>
+        </div>
       </List>
-  
-      <div className={classes.dialogFooter}>
-								<Button
-									variant="contained"
-									color="default"
-									size="medium"
-									disableElevation
-								
-									// disabled={updateDealLoading || addContactLoading}
-									className={classes.footerButton}
-									style={{
-										margin: "0px 15px 0px 0px",
-									}}
-                  onClick={()=>{ setStateApp({...stateApp, DocumentDrawer:false,selectedDocument:{}})}}
-								>
-									Cancel
-								</Button>
 
-								<Button
-									variant="contained"
-									color="secondary"
-									size="medium"
-									disableElevation
-									// onClick={handleUpdate}
-									className={classes.footerButton}
-								>
-                  Save
-								</Button>
-							</div>
-      
-  
-  
+      <div className={classes.dialogFooter}>
+        <Button
+          variant="contained"
+          color="default"
+          size="medium"
+          disableElevation
+          // disabled={updateDealLoading || addContactLoading}
+          className={classes.footerButton}
+          style={{
+            margin: "0px 15px 0px 0px",
+          }}
+          onClick={() => {
+            setStateApp({
+              ...stateApp,
+              DocumentDrawer: false,
+              selectedDocument: {},
+            });
+          }}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          variant="contained"
+          color="secondary"
+          size="medium"
+          disableElevation
+          // onClick={handleUpdate}
+          className={classes.footerButton}
+        >
+          Save
+        </Button>
+      </div>
+
       <Divider />
-   
     </div>
   );
   let obj = new Object();
   return (
     <div>
-        
-          <Drawer anchor={'right'} open={stateApp.DocumentDrawer|| Object.entries(stateApp.selectedDocument).length > 0}  
-          // onClose={()=>{
-          //   setStateApp({...stateApp, DocumentDrawer:false})
-          // }}
-          >
-            {
-console.log( stateApp.selectedDocument, 'selecdow')
-
-            }
-            <DeleteDocumentConfirmation
-            open={openDeleteConfirmDialog}
-            handleClose={handleDeleteCancel}
-            handleAccept={() => {
-              handleDeleteAccept();
-            }}
-          />
-          <Dialog open={loader}  style={{zIndex: 99999999999}}>
-          <DialogTitle id="alert-dialog-title"><CircularProgress /></DialogTitle>
-          
-          </Dialog>
-            {/* {list("right")} */}
-            {stateApp.selectedDocument?.descriptorId ? (<>{DocumentDetail('right')}</>) : (<>{list("right")}</>)}
-          </Drawer>
-       
- 
+      <Drawer
+        anchor={"right"}
+        open={
+          stateApp.DocumentDrawer ||
+          Object.entries(stateApp.selectedDocument).length > 0
+        }
+        // onClose={()=>{
+        //   setStateApp({...stateApp, DocumentDrawer:false})
+        // }}
+      >
+        {console.log(stateApp.selectedDocument, "selecdow")}
+        <DeleteDocumentConfirmation
+          open={openDeleteConfirmDialog}
+          handleClose={handleDeleteCancel}
+          handleAccept={() => {
+            handleDeleteAccept();
+          }}
+        />
+        <Dialog open={loader} style={{ zIndex: 99999999999 }}>
+          <DialogTitle id="alert-dialog-title">
+            <CircularProgress />
+          </DialogTitle>
+        </Dialog>
+        {/* {list("right")} */}
+        {/* {stateApp.selectedDocument?.fileId ? ( */}
+        <>{DocumentDetail("right")}</>
+        {/* ) : ( */}
+        {/* <>{list("right")}</> */}
+        {/* )} */}
+      </Drawer>
     </div>
   );
 }

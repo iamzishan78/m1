@@ -211,7 +211,7 @@ const DocumentSearch = () => {
                   <Button
                     className={classes.gridOnIcon}
                     onClick={() => {
-                      setStateApp({ ...stateApp, DocumentDrawer: true });
+                      setStateApp({ ...stateApp, DocumentDrawer: true, selectedDocument:{} });
                     }}
                   >
                     <PostAddOutlinedIcon />
