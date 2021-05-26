@@ -1,4 +1,5 @@
 import { useLazyQuery } from "@apollo/client";
+import { propertiesContainsFilter } from "@turf/clusters";
 import LinkWithIcon from "components/Shared/LinkWithIcon";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -8,7 +9,7 @@ import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContac
 import { setStateIfDeepEqual } from "../../Shared/functions";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 
-const ContactSearch = () => {
+const ContactSearch = (props) => {
   let history = useHistory();
   const contactId = history.location.pathname.split('/')[history.location.pathname.split('/').length - 1]
   const [
@@ -84,12 +85,15 @@ const ContactSearch = () => {
           loadNextPage={loadNextPage}
         />
       </div>
-      <div style={{ flexGrow: 1 }}></div>
 
-      <LinkWithIcon
-        objectId={contactId.toLowerCase()}
-        iconZiseSmall={false}
-      />
+      <div style={{ flexGrow: 1 }}></div>
+      {
+        props.showLinkIcon && <LinkWithIcon
+          objectId={contactId.toLowerCase()}
+          iconZiseSmall={false}
+        />
+      }
+
     </div>
 
   );

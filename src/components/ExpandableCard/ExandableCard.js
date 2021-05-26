@@ -257,7 +257,7 @@ function ExpandableCard(props) {
     }
     setStateApp((state) => ({
       ...state,
-      viewDoc:null
+      viewDoc: null
     }));
     props.handleCloseExpandableCard();
     //if EC is inside map popup you need to close it
@@ -372,17 +372,17 @@ function ExpandableCard(props) {
                     iconZiseSmall={!stateExpandableCard.expanded}
                   />
                 </>
-              ) 
+              )
 
-               : targetLabel == "contact" ? (
-                <>
-                <LinkWithIcon
-                  objectId={targetSourceId.toLowerCase()}
-                  targetLabel={props.targetLabel}
-                  iconZiseSmall={!stateExpandableCard.expanded}
-                />
+                : targetLabel == "contact" ? (
+                  <>
+                    <LinkWithIcon
+                      objectId={targetSourceId.toLowerCase()}
+                      targetLabel={props.targetLabel}
+                      iconZiseSmall={!stateExpandableCard.expanded}
+                    />
 
-                {/* <CommentsWithIcon
+                    {/* <CommentsWithIcon
                   objectId={targetSourceId.toLowerCase()}
                   targetLabel={props.targetLabel}
                   iconZiseSmall={!stateExpandableCard.expanded}
@@ -393,9 +393,9 @@ function ExpandableCard(props) {
                   targetLabel={props.targetLabel}
                   iconZiseSmall={!stateExpandableCard.expanded}
                 /> */}
-              </>
-              )      
-              : null}
+                  </>
+                )
+                  : null}
 
               {!props.noTrackAvailable && (
                 <TrackToggleButton
@@ -408,7 +408,7 @@ function ExpandableCard(props) {
 
               {stateExpandableCard.expanded &&
                 targetLabel !== "activity" &&
-                targetLabel !== "contact" && 
+                targetLabel !== "contact" &&
                 targetLabel !== "parcel" &&
                 targetLabel !== "expandedParcel" && (
                   <Tooltip title={"Report Bug"} placement="top">
@@ -429,14 +429,14 @@ function ExpandableCard(props) {
                     {isDeletingCustomLayer || deleteLoading ? (
                       <CircularProgress size={20} color="secondary" />
                     ) : (
-                        <IconButton
-                          onClick={openConfirmationDialog}
-                          aria-label="Delete"
-                          className={classes.icons}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      )}
+                      <IconButton
+                        onClick={openConfirmationDialog}
+                        aria-label="Delete"
+                        className={classes.icons}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
                   </Tooltip>
                 )}
 
@@ -485,17 +485,17 @@ function ExpandableCard(props) {
                       </IconButton>
                     </Tooltip>
                   ) : (
-                      <Tooltip title={"Shrink"} placement="top">
-                        <IconButton
-                          color="secondary"
-                          onClick={handleExpand}
-                          aria-label="shrink"
-                          className={classes.icons}
-                        >
-                          <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
-                        </IconButton>
-                      </Tooltip>
-                    )
+                    <Tooltip title={"Shrink"} placement="top">
+                      <IconButton
+                        color="secondary"
+                        onClick={handleExpand}
+                        aria-label="shrink"
+                        className={classes.icons}
+                      >
+                        <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
+                      </IconButton>
+                    </Tooltip>
+                  )
                 : (
                   parent !== "table" &&
                   targetLabel !== "activity" && (
@@ -516,7 +516,7 @@ function ExpandableCard(props) {
                 <IconButton
                   size={stateExpandableCard.expanded ? "medium" : "small"}
                   onClick={handleClose}
-                  
+
                   aria-label="close"
                   className={classes.icons}
                 >
