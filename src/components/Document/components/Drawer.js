@@ -151,23 +151,14 @@ export default function DocumentDrawer() {
   });
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [recentFiles, setRecentFiles] = useState([]);
-
-  const [mongoEntitiesArray1, setMongoEntitiesArray1] = useState([]);
-  const [mongoEntitiesArray2, setMongoEntitiesArray2] = useState([]);
-  const [nameAutValueParty1, setNameAutValueParty1] = useState({ name: "", _id: null });
-  const [nameAutValueParty2, setNameAutValueParty2] = useState({ name: "", _id: null });
-  const [isNextPageLoading1, setIsNextPageLoading1] = useState(false);
-  const [isNextPageLoading2, setIsNextPageLoading2] = useState(false);
-  const [nameAutInputValue1, NameAutInputValue1] = useState("");
-  const [nameAutInputValue2, NameAutInputValue2] = useState("");
-  const [hasNextPage1, setHasNextPage1] = useState(true);
-  const [hasNextPage2, setHasNextPage2] = useState(true);
-  const setNameAutInputValue1 = (newState) => {
-    setStateIfDeepEqual(NameAutInputValue1, newState);
-  };
-  const setNameAutInputValue2 = (newState) => {
-    setStateIfDeepEqual(NameAutInputValue2, newState);
-  };
+  const [nameAutValueParty1, setNameAutValueParty1] = useState({
+    name: "",
+    _id: null,
+  });
+  const [nameAutValueParty2, setNameAutValueParty2] = useState({
+    name: "",
+    _id: null,
+  });
 
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 
@@ -181,30 +172,6 @@ export default function DocumentDrawer() {
     useLazyQuery(VIEWFILEQUERY, {
       fetchPolicy: "no-cache",
     });
-
-  const [
-    getPaginatedContacts1,
-    {
-      data: allContacts1,
-      loading: contactsLoading,
-      fetchMore: fetchMorePaginatedContacts1,
-    },
-  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-  });
-
-  const [
-    getPaginatedContacts2,
-    {
-      data: allContacts2,
-      loading: contactsLoading2,
-      fetchMore: fetchMorePaginatedContacts2,
-    },
-  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-  });
 
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
   const [updateFile, { loading: updateFileloading }] = useMutation(UPDATEFILE);
@@ -278,66 +245,6 @@ export default function DocumentDrawer() {
     }
   }, [viewFileResult]);
 
-  useEffect(() => {
-    //will also run during initial mount
-    setIsNextPageLoading1(true);
-    getPaginatedContacts1({
-      variables: {
-        search: nameAutInputValue1,
-      },
-    });
-  }, [nameAutInputValue1]);
-
-  useEffect(() => {
-    //will also run during initial mount
-    setIsNextPageLoading2(true);
-    getPaginatedContacts2({
-      variables: {
-        search: nameAutInputValue2,
-      },
-    });
-  }, [nameAutInputValue2]);
-
-  useEffect(() => {
-    if (allContacts1?.paginatedContacts) {
-      setMongoEntitiesArray1([
-        ...allContacts1?.paginatedContacts?.edges?.map((el) => el.node),
-      ]);
-      setHasNextPage1(allContacts1?.paginatedContacts?.pageInfo?.hasNextPage);
-    }
-    setIsNextPageLoading1(false);
-  }, [allContacts1]);
-
-  useEffect(() => {
-    if (allContacts2?.paginatedContacts) {
-      setMongoEntitiesArray2([
-        ...allContacts2?.paginatedContacts?.edges?.map((el) => el.node),
-      ]);
-      setHasNextPage2(allContacts2?.paginatedContacts?.pageInfo?.hasNextPage);
-    }
-    setIsNextPageLoading2(false);
-  }, [allContacts2]);
-
-  useEffect(() => {
-    if (allContacts1?.paginatedContacts) {
-      setMongoEntitiesArray1([
-        ...allContacts1?.paginatedContacts?.edges?.map((el) => el.node),
-      ]);
-      setHasNextPage1(allContacts1?.paginatedContacts?.pageInfo?.hasNextPage);
-    }
-    setIsNextPageLoading1(false);
-  }, [allContacts1]);
-
-  useEffect(() => {
-    if (allContacts2?.paginatedContacts) {
-      setMongoEntitiesArray2([
-        ...allContacts2?.paginatedContacts?.edges?.map((el) => el.node),
-      ]);
-      setHasNextPage2(allContacts2?.paginatedContacts?.pageInfo?.hasNextPage);
-    }
-    setIsNextPageLoading2(false);
-  }, [allContacts2]);
-
   const [viewFiles, { data: viewFileSResult, loading: viewFileSLoading }] =
     useLazyQuery(VIEWFILESQUERY, {
       fetchPolicy: "no-cache",
@@ -365,16 +272,6 @@ export default function DocumentDrawer() {
       },
     }));
     console.log(stateApp.selectedDocument, "Selected Document");
-  };
-  const loadNextPage1 = async (pageVariables) => {
-    setIsNextPageLoading1(true);
-    fetchMorePaginatedContacts1(pageVariables);
-    return null;
-  };
-  const loadNextPage2 = async (pageVariables) => {
-    setIsNextPageLoading2(true);
-    fetchMorePaginatedContacts2(pageVariables);
-    return null;
   };
 
   const LightTooltip = withStyles((theme) => ({
@@ -607,18 +504,9 @@ export default function DocumentDrawer() {
           }}
         >
           <h4>Party 1 Name</h4>
-          <AutocompEntityNamesVirtualizeList
-            className={classes.maxWidth}
-            mongoEntitiesArray={mongoEntitiesArray1}
-            setMongoEntitiesArray={setMongoEntitiesArray1}
+          <ContactPaginatedDropdown
             nameAutValue={nameAutValueParty1}
             setNameAutValue={setNameAutValueParty1}
-            nameAutInputValue={nameAutInputValue1}
-            setNameAutInputValue={setNameAutInputValue1}
-            hasNextPage={hasNextPage1}
-            isNextPageLoading={isNextPageLoading1}
-            loadNextPage={loadNextPage1}
-            addNew={true}
           />
           {/* <Autocomplete
             className={classes.maxWidth}
@@ -652,18 +540,9 @@ export default function DocumentDrawer() {
           }}
         >
           <h4>Party 2 Name</h4>
-          <AutocompEntityNamesVirtualizeList
-            className={classes.maxWidth}
-            mongoEntitiesArray={mongoEntitiesArray2}
-            setMongoEntitiesArray={setMongoEntitiesArray2}
+          <ContactPaginatedDropdown
             nameAutValue={nameAutValueParty2}
             setNameAutValue={setNameAutValueParty2}
-            nameAutInputValue={nameAutInputValue2}
-            setNameAutInputValue={setNameAutInputValue2}
-            hasNextPage={hasNextPage2}
-            isNextPageLoading={isNextPageLoading2}
-            loadNextPage={loadNextPage2}
-            addNew={true}
           />
           {/* <Autocomplete
             className={classes.maxWidth}
@@ -1178,3 +1057,68 @@ export default function DocumentDrawer() {
     </div>
   );
 }
+
+const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
+  const classes = useStyles();
+  const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [isNextPageLoading, setIsNextPageLoading] = useState(false);
+  const [nameAutInputValue, NameAutInputValue] = useState("");
+  const setNameAutInputValue = (newState) => {
+    setStateIfDeepEqual(NameAutInputValue, newState);
+  };
+
+  const [
+    getPaginatedContacts,
+    {
+      data: allContacts,
+      loading: contactsLoading,
+      fetchMore: fetchMorePaginatedContacts,
+    },
+  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+  });
+
+  useEffect(() => {
+    if (allContacts?.paginatedContacts) {
+      setMongoEntitiesArray([
+        ...allContacts?.paginatedContacts?.edges?.map((el) => el.node),
+      ]);
+      setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
+    }
+    setIsNextPageLoading(false);
+  }, [allContacts]);
+
+  useEffect(() => {
+    //will also run during initial mount
+    setIsNextPageLoading(true);
+    getPaginatedContacts({
+      variables: {
+        search: nameAutInputValue,
+      },
+    });
+  }, [nameAutInputValue]);
+
+  const loadNextPage = async (pageVariables) => {
+    setIsNextPageLoading(true);
+    fetchMorePaginatedContacts(pageVariables);
+    return null;
+  };
+
+  return (
+    <AutocompEntityNamesVirtualizeList
+      className={classes.maxWidth}
+      mongoEntitiesArray={mongoEntitiesArray}
+      setMongoEntitiesArray={setMongoEntitiesArray}
+      nameAutValue={nameAutValue}
+      setNameAutValue={setNameAutValue}
+      nameAutInputValue={nameAutInputValue}
+      setNameAutInputValue={setNameAutInputValue}
+      hasNextPage={hasNextPage}
+      isNextPageLoading={isNextPageLoading}
+      loadNextPage={loadNextPage}
+      addNew={true}
+    />
+  );
+};
