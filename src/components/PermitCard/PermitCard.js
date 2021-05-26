@@ -30,7 +30,6 @@ import PermitCardDetails from "./PermitCardDetails";
 
 // queries 
 import { useLazyQuery } from "@apollo/client";
-import { WELLSUMMARYDETAILQUERY } from "../../graphQL/useQueryWellSummaryDetail";
 import { PERMITDETAILQUERY } from "../../graphQL/useQueryRecentPermitDetails";
 
 // value formatters 
@@ -165,12 +164,6 @@ export default function PermitCard() {
   const theme = useTheme();
   const classes = useStyles();
 
-  // queries 
-  const [
-    getWellSummaryDetail,
-    { loading: loadingWellSummary, data: dataWellSummary },
-  ] = useLazyQuery(WELLSUMMARYDETAILQUERY);
-
   const [
     getRecentPermitDetail,
     { loading: loadingPermitSummary, data: dataPermitSummary },
@@ -180,11 +173,11 @@ export default function PermitCard() {
   useEffect(() => {
     if (!source) {
       setSource({
-	sourceId: stateApp.user.id,
-	label: "user",
-	name: stateApp.user.name,
-	type: "vertex",
-	properties: [],
+        sourceId: stateApp.user.id,
+        label: "user",
+        name: stateApp.user.name,
+        type: "vertex",
+        properties: [],
       });
     }
   }, [stateApp.user, source]);
@@ -196,32 +189,15 @@ export default function PermitCard() {
     });
   }, [stateApp.selectedPermit]);
 
-  // useEffect(() => {
-  //   if (dataWellSummary) {
-  //     setSummary(dataWellSummary.wellSummaryDetail[0]);
-  //   } else {
-  //     setSummary(null);
-  //   }
-  // }, [dataWellSummary]);
-
   useEffect(() => {
     if(dataPermitSummary) {
-      setSummary(dataPermitSummary.recentPermitDetail[0])
-    } else {
-      setSummary(null)
-    }
+      Object.assign(stateApp.selectedPermit, dataPermitSummary.recentPermitDetail[0])
+      setStateApp((state) => ({
+	...state,
+	selectedPermitDetails: stateApp.selectedPermit
+      }));
+    } 
   }, [dataPermitSummary])
-
-
-  const handleOpenDetails = (isOwner) => {
-    setStateApp((state) => ({
-      ...state,
-      expandedCard: true,
-      wellDetailCardOpen: true,
-      wellDetailCardTabIndex:isOwner ? 1 : 0,
-      popupOpen: false,
-    }));
-  };
 
 
   /// can be abstracted 
@@ -262,17 +238,15 @@ export default function PermitCard() {
       className={classes.text2}
       variant="caption"
 	>
-	{stateApp.selectedPermit.wellStatus
-	 ? stateApp.selectedPermit.wellStatus.toUpperCase()
-	 : '--'}
+	 {'PERMIT - NEW DRILL'}
       </Typography>
 	</div>
 
 
 	<div className={classes.iconContainer}>
 	<Avatar variant="circle" className={classes.avatar}>
-	{stateApp.selectedPermit.wellBoreProfile
-	 ? stateApp.selectedPermit.wellBoreProfile.substring(0, 1)
+	{stateApp.selectedPermit.WellBoreProfile
+	 ? stateApp.selectedPermit.WellBoreProfile.substring(0, 1)
 	 : 'H'}{' '}
       </Avatar>
 	<Typography
@@ -287,8 +261,8 @@ export default function PermitCard() {
       className={classes.text2}
       variant="caption"
 	>
-	{stateApp.selectedPermit.wellBoreProfile
-	 ? stateApp.selectedPermit.wellBoreProfile
+	{stateApp.selectedPermit.WellBoreProfile
+	 ? stateApp.selectedPermit.WellBoreProfile
 	 : '--'}
       </Typography>
 	</div>
@@ -296,61 +270,78 @@ export default function PermitCard() {
 	<CardContent className={classes.content}>
 	<Table className={classes.table} size="small" aria-label="well table">
 	<TableBody>
-	<TableRow className={classes.rowGrey}>
+    
+	<TableRow className={classes.rowGray}>
 	<TableCell className={classes.cell1} align="left">
-	Permit #
-      </TableCell>
+	API #
+  </TableCell>
 	<TableCell className={classes.cell2} align="right">
-	{stateApp.selectedPermit.permitNumber
-	 ? stateApp.selectedPermit.permitNumber
+	{stateApp.selectedPermit.ApiNumber
+	 ? stateApp.selectedPermit.ApiNumber
 	 : '--'}
       </TableCell>
 	</TableRow>
+
 	<TableRow className={classes.rowWhite}>
+	<TableCell className={classes.cell1} align="left">
+	Permit #
+  </TableCell>
+	<TableCell className={classes.cell2} align="right">
+	{stateApp.selectedPermit.PermitId
+	 ? stateApp.selectedPermit.PermitId
+	 : '--'}
+      </TableCell>
+	</TableRow>
+
+	<TableRow className={classes.rowGray}>
 	<TableCell className={classes.cell1} align="left">
 	Operator
       </TableCell>
 	<TableCell className={classes.cell2} align="right">
-	{stateApp.selectedPermit.operator
-	 ? stateApp.selectedPermit.operator
+	{stateApp.selectedPermit.OperatorName
+	 ? stateApp.selectedPermit.OperatorName
 	 : '--'}
       </TableCell>
 	</TableRow>
-	<TableRow className={classes.rowGrey}>
+
+	<TableRow className={classes.rowWhite}>
 	<TableCell className={classes.cell1} align="left">
 	Well Type
       </TableCell>
 	<TableCell className={classes.cell2} align="right">
-	{stateApp.selectedPermit.wellType
-	 ? stateApp.selectedPermit.wellType
-	 : '--'}
+	{stateApp.selectedPermit.WellType
+	 ? stateApp.selectedPermit.WellType
+	 : 'UNKOWN'}
       </TableCell>
 	</TableRow>
-	<TableRow className={classes.rowWhite}>
+
+	<TableRow className={classes.rowGray}>
 	<TableCell className={classes.cell1} align="left">
-	Approved Date
+	Submitted Date
       </TableCell>
 	<TableCell className={classes.cell2} align="right">
-	{convertDate(stateApp.selectedPermit.permitApprovedDate)}
+	{convertDate(stateApp.selectedPermit.SubmittedDate)}
       </TableCell>
 	</TableRow>
+
 	<TableRow className={classes.rowGrey}>
 	<TableCell className={classes.cell1} align="left">
-	Measured Depth [ft]
+	Total Depth [ft]
       </TableCell>
 	<TableCell className={classes.cell2} align="right">
-	{stateApp.selectedPermit.measuredDepth
-	 ? formatBOE(stateApp.selectedPermit.measuredDepth)
+	{stateApp.selectedPermit.TotalDepth
+	 ? formatBOE(stateApp.selectedPermit.TotalDepth)
 	 : '--'}
       </TableCell>
 	</TableRow>
+
 	<TableRow className={classes.rowWhite}>
 	<TableCell className={classes.cell1} align="left">
-	Lateral Length [ft]
+	Completion Depth [ft]
       </TableCell>
 	<TableCell className={classes.cell2} align="right">
-	{stateApp.selectedPermit.lateralLength
-	 ? formatBOE(stateApp.selectedPermit.lateralLength)
+	{stateApp.selectedPermit.CompletionDepth
+	 ? formatBOE(stateApp.selectedPermit.CompletionDepth)
 	 : '--'}
       </TableCell>
 	</TableRow>

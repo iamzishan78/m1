@@ -31,6 +31,7 @@ const AppProvider = (props) => {
 
     // States for permits
     selectedPermit: null, 
+    selectedPermitDetails: null, 
     selectedPermitId: null, 
     permitSelectedCoordinates: [], 
     

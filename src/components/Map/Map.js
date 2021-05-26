@@ -3252,14 +3252,7 @@ function Map() {
     })();
   }, [loading, stateApp.permitSelectedCoordinates]);
 
-  // Just for testing REMOVE THIS
   useEffect(() => {
-    console.log('SELECTED PERMIT CHANGED')
-    console.log(stateApp.selectedPermit)
-  }, [loading, stateApp.selectedPermit]);
-
-  useEffect(() => {
-
     const req = new Request(
       "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
       {
@@ -4945,8 +4938,8 @@ function Map() {
 		 <ExpandableCardProvider
 		   handleCloseExpandableCard={handleCloseExpandableCard}
 		   component={<PermitCardProvider />}
-		   title={stateApp.selectedPermit.permitName}
-		   subTitle={stateApp.selectedPermit.api}
+		   title={stateApp.selectedPermit.PermitName}
+		   subTitle={stateApp.selectedPermit.apiNumber}
 		   parent="map"
 		   mouseX={0}
 		   mouseY={0}
