@@ -346,6 +346,7 @@ const useStyles = makeStyles((theme) => ({
     color: "darkgrey",
   },
   dialogExpCard: {
+    zIndex: "10000 !important",
     "& .MuiDialog-paperScrollPaper": {
       height: "100%",
     },
