@@ -2,7 +2,7 @@
     margin:0px;
     padding:0px;
     background:rgba(0,0,0,0);
-    z-index: 9999;
+    /* z-index: 9999; */
 }
 .mapboxgl-popup-content {
     margin:0px;
