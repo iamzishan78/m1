@@ -500,7 +500,7 @@ function MapGridCard(props) {
               value={mapGridCardActiveTap}
               index={0}
               className={classes.tapsPanelsPadding}
-              style={{ position: "absolute", width: "96vw" }}
+              style={{ position: "absolute", width: "100vw" }}
             >
               <MapGridCardSearch
                 ativateSearchPanel={() => {
