@@ -75,21 +75,17 @@ import WellTableStyles from "../customStyles/WellTableStyle";
 import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
 import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
 import moment from "moment";
-import CheckIcon from "@material-ui/icons/Check";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
 import Chip from '@material-ui/core/Chip';
-import FilterIcon from "../../svgIcons/filter";
-import ViewColumnIcon from "../../svgIcons/view_column";
+
 import ButtonDropDown from "./ButtonGroup"
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import PostAddIcon from '@material-ui/icons/PostAdd';
+
 // import value formatters 
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
 import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
 import RightDialog from "../../../ContactDetailCard/components/RightDialog"
-
 
 // queries 
 import { OWNERSLATSLONS } from "../../../../graphQL/useQueryOwnerLatsLonsArray";
@@ -97,11 +93,18 @@ import { OPERATORSLATSLONS } from "../../../../graphQL/useQueryOperatorLatsLonsA
 import { LEASELATSLONS } from "../../../../graphQL/useQueryLeaseLatsLonsArray";
 import { CONTACTWELLS } from "../../../../graphQL/useQueryContactWells";
 import { Typography } from "@material-ui/core";
+import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 
 //icons
 import SearchIcon from '@material-ui/icons/Search';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
+import PageviewIcon from '@material-ui/icons/Pageview';
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import PostAddIcon from '@material-ui/icons/PostAdd';
+import FilterIcon from "../../svgIcons/filter";
+import ViewColumnIcon from "../../svgIcons/view_column";
+import CheckIcon from "@material-ui/icons/Check";
+
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false
@@ -1735,7 +1738,8 @@ function SubTable(props) {
                        console.log("modell open")
                      }}
                     >
-                       <SearchIcon/>
+                      {/* // this is the search icon in the grid on documents */}
+                       <PageviewIcon/>
                      </IconButton>
                      <IconButton    onClick={(e)=>{
                        e.stopPropagation()
