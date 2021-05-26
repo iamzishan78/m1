@@ -427,7 +427,7 @@ function MapGridCard(props) {
                 stateApp.gridPolygonString && <Tab
                   className="cancelDraggableEffect"
                   label={`Boundary${stateApp.shapeGridWellsCount
-                    ? " (" + (stateApp.shapeGridWellsCount || '') + (stateApp.shapeGridOwnersCount || '') + ")"
+                    ? " (" + Number((stateApp.shapeGridWellsCount || '') + (stateApp.shapeGridOwnersCount || '')) + ")"
                     : ""
                     }`}
                   {...a11yProps(1)}
