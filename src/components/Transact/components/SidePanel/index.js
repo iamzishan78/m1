@@ -19,7 +19,7 @@ import RemoveCircleIcon from "@material-ui/icons/RemoveCircleOutline";
 import { makeStyles } from "@material-ui/core/styles";
 import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
 import { DUPLICATE_PIPELINES } from "graphQL/useMutationDuplicatePipelines";
-import { UPDATE_PIPELINE_DESCRIPTOR, CREATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
+import { UPDATE_PIPELINE_DESCRIPTORS, CREATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
 import { setFlowState, showWarningMessage } from "actions";
 import PipelinePopup from "components/Transact/components/PipelinePopup";
 import PipelinesList from "components/Transact/components/SidePanel/PipelinesList";
@@ -139,7 +139,7 @@ const SidePanel = ({}) => {
   const [stateApp] = useContext(AppContext);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES);
-  const [updatePipelineDescriptor] = useMutation(UPDATE_PIPELINE_DESCRIPTOR);
+  const [updatePipelineDescriptors] = useMutation(UPDATE_PIPELINE_DESCRIPTORS);
   const [createPipelineDescriptors] = useMutation(CREATE_PIPELINE_DESCRIPTORS);
   const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
     fetchPolicy: "network-only",
@@ -222,6 +222,18 @@ const SidePanel = ({}) => {
           awaitRefetchQueries: true,
         });
         break;
+      case "Remove Pipeline From Group":
+        const descriptors = filteredPipelines
+          .filter((pipe) => selectedPipelines.includes(pipe._id) && pipe.projectId)
+          .map((pipe) => ({ descriptorObject: pipe._id, relatedObject: pipe.projectId, isDeleted: true }));
+        updatePipelineDescriptors({
+          variables: {
+            descriptors,
+          },
+          refetchQueries: ["getPipelines"],
+          awaitRefetchQueries: true,
+        });
+        break;
       case "Delete Flowline(s)":
         getDealsCountByPipeline({
           variables: {
@@ -237,19 +249,6 @@ const SidePanel = ({}) => {
               name: pipelines.find((p) => p._id === pipe).name,
             })),
             userId: stateApp.user.mongoId,
-          },
-          refetchQueries: ["getPipelines"],
-          awaitRefetchQueries: true,
-        });
-        break;
-      case "Remove Pipeline From Group":
-        updatePipelineDescriptor({
-          variables: {
-            descriptor: {
-              descriptorObject: selectedPipe._id,
-              relatedObject: selectedPipe.projectId,
-              isDeleted: true,
-            },
           },
           refetchQueries: ["getPipelines"],
           awaitRefetchQueries: true,

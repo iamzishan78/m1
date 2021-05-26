@@ -1,12 +1,12 @@
 import gql from "graphql-tag";
 
-export const UPDATE_PIPELINE_DESCRIPTOR = gql`
-  mutation updatePipelineDescriptor($descriptor: JSON) {
-    updatePipelineDescriptor(descriptor: $descriptor) {
+export const UPDATE_PIPELINE_DESCRIPTORS = gql`
+  mutation updatePipelineDescriptors($descriptors: [JSON]) {
+    updatePipelineDescriptors(descriptors: $descriptors) {
       success
       message
       error
-      descriptor
+      descriptors
     }
   }
 `;
