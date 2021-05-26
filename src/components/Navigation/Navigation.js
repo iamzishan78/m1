@@ -39,7 +39,7 @@ import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import PersonIcon from "@material-ui/icons/Person";
-// import DescriptionIcon from '@material-ui/icons/Description';
+import DescriptionIcon from '@material-ui/icons/Description';
 import { Link } from "react-router-dom";
 
 import Menu from "@material-ui/core/Menu";
