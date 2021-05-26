@@ -1431,26 +1431,53 @@ function AddDealDialog(props) {
                 // </div>
                 <></>
               )}
-
-              <TextField
-                margin="dense"
+              <FormControl
                 variant="outlined"
-                value={label}
-                error={isNaN(label)}
-                helperText={
-                  isNaN(label) ? 'Offer Price must be a valid number' : ''
-                }
-                label="Offer Price"
                 fullWidth
-                onChange={(e) => {
-                  setLabel(e.target.value);
-                }}
                 className={classes.inputField}
-                InputProps={{
-                  inputComponent: NumberFormatCustom,
-                }}
-              />
-
+                size="small"
+              >
+                <Autocomplete
+                  className={classes.fieldWidth}
+                  options={users}
+                  onChange={(e, user) => {
+                    setOwnerId(user?.value);
+                  }}
+                  value={users.find((user) => user?.value === ownerId) || null}
+                  getOptionLabel={(option) => option.text}
+                  getOptionSelected={(option) => option.value === ownerId}
+                  classes={{
+                    inputRoot: classes.dealOwnerRoot,
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      margin="dense"
+                      {...params}
+                      variant="outlined"
+                      label="Deal Owner"
+                      InputLabelProps={{
+                        shrink: true,
+                        classes: {
+                          root: classes.dealOwnerLabel,
+                        },
+                      }}
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <>
+                            <InputAdornment position="start">
+                              <Avatar className={classes.dealOwnerAvatar}>
+                                OP
+                              </Avatar>
+                            </InputAdornment>
+                            {params.InputProps.startAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+              </FormControl>
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -1480,6 +1507,25 @@ function AddDealDialog(props) {
                   }}
                 />
               </FormControl>
+              <TextField
+                margin="dense"
+                variant="outlined"
+                value={label}
+                error={isNaN(label)}
+                helperText={
+                  isNaN(label) ? 'Offer Price must be a valid number' : ''
+                }
+                label="Offer Price"
+                fullWidth
+                onChange={(e) => {
+                  setLabel(e.target.value);
+                }}
+                className={classes.inputField}
+                InputProps={{
+                  inputComponent: NumberFormatCustom,
+                }}
+              />
+
 
               <FormControl
                 variant="outlined"
@@ -1549,53 +1595,7 @@ function AddDealDialog(props) {
                 </Select>
               </FormControl>
 
-              <FormControl
-                variant="outlined"
-                fullWidth
-                className={classes.inputField}
-                size="small"
-              >
-                <Autocomplete
-                  className={classes.fieldWidth}
-                  options={users}
-                  onChange={(e, user) => {
-                    setOwnerId(user?.value);
-                  }}
-                  value={users.find((user) => user?.value === ownerId) || null}
-                  getOptionLabel={(option) => option.text}
-                  getOptionSelected={(option) => option.value === ownerId}
-                  classes={{
-                    inputRoot: classes.dealOwnerRoot,
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      margin="dense"
-                      {...params}
-                      variant="outlined"
-                      label="Deal Owner"
-                      InputLabelProps={{
-                        shrink: true,
-                        classes: {
-                          root: classes.dealOwnerLabel,
-                        },
-                      }}
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <>
-                            <InputAdornment position="start">
-                              <Avatar className={classes.dealOwnerAvatar}>
-                                OP
-                              </Avatar>
-                            </InputAdornment>
-                            {params.InputProps.startAdornment}
-                          </>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-              </FormControl>
+
 
               <TextField
                 //   autoFocus
