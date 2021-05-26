@@ -26,8 +26,6 @@ import OwnershipIcon from "./components/svgIcons/OwnershipIcon";
 import Link from "@material-ui/core/Link";
 import moment from "moment";
 
-import PermitCardDetails from "./PermitCardDetails";
-
 // queries 
 import { useLazyQuery } from "@apollo/client";
 import { PERMITDETAILQUERY } from "../../graphQL/useQueryRecentPermitDetails";

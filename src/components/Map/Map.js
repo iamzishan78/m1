@@ -4849,8 +4849,8 @@ function Map() {
 	   expanded
 	   handleCloseExpandableCard={handleCloseExpandableCard}
 	   component={<PermitCardProvider />}
-	   title={stateApp.selectedPermit.permitName}
-	   subTitle={stateApp.selectedPermit.api}
+	   title={stateApp.selectedPermit.OperatorName}
+	   subTitle={stateApp.selectedPermit.ApiNumber}
 	   parent="map"
 	   cardTop={20}
 	   cardLeft={20}
@@ -4938,8 +4938,8 @@ function Map() {
 		 <ExpandableCardProvider
 		   handleCloseExpandableCard={handleCloseExpandableCard}
 		   component={<PermitCardProvider />}
-		   title={stateApp.selectedPermit.PermitName}
-		   subTitle={stateApp.selectedPermit.apiNumber}
+		   title={stateApp.selectedPermit.OperatorName}
+		   subTitle={stateApp.selectedPermit.ApiNumber}
 		   parent="map"
 		   mouseX={0}
 		   mouseY={0}
