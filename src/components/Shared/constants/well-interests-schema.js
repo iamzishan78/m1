@@ -28,6 +28,7 @@ const WellInterests = [
       label: "Well",
       options: {
         filter: false,
+        sort: false,
       },
     },
     {
@@ -35,6 +36,7 @@ const WellInterests = [
       label: "API",
       options: {
         filter: false,
+        sort: false,
       },
     },
     {
@@ -42,6 +44,7 @@ const WellInterests = [
       label: "Operator",
       options: {
         filter: false,
+        sort: false,
       },
     },
     {
@@ -49,6 +52,7 @@ const WellInterests = [
       label: "Type",
       options: {
         filter: false,
+        sort: false,
       },
     },
     {
@@ -56,6 +60,7 @@ const WellInterests = [
       label: "Interest",
       options: {
         filter: false,
+        sort: false,
       },
     },
     {
@@ -63,6 +68,7 @@ const WellInterests = [
       label: "Appraised Value",
       options: {
         filter: false,
+        sort: false,
       },
     },
     {

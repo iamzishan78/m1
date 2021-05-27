@@ -45,6 +45,11 @@ export default function LinkWithIcon(props) {
       fontSize: "initial",
       fontWeight: 800,
       marginBottom: "10px"
+    },
+    badge: {
+      "& .MuiBadge-anchorOriginTopRightRectangle": {
+        top: "7px"
+      }
     }
 
   }));
@@ -61,7 +66,7 @@ export default function LinkWithIcon(props) {
         title={"Linked Global Owner"}
         placement="top"
       >
-        <Badge badgeContent={props.iconZiseSmall ? null : getGlobalOwners().length} color="secondary">
+        <Badge className={classes.badge} badgeContent={props.iconZiseSmall ? null : getGlobalOwners().length} color="secondary">
           <IconButton
             size={props.iconZiseSmall ? "small" : "medium"}
             color="primary"

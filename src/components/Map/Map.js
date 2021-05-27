@@ -1,4 +1,4 @@
-// react imports 
+// react imports
 import React, {
   useContext,
   useState,
@@ -9,12 +9,12 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-// contexts 
+// contexts
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
 
-// custom components 
+// custom components
 import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
 import PermitCardProvider from "../PermitCard/PermitCardProvider";
@@ -26,19 +26,19 @@ import HugeRequest from "./components/HugeRequest";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
+import AbstractSelectionPopup from './components/popup/AbstractSelectionPopup';
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 import MapGridCardProvider from "../MapGridCard/MapGridProvider";
 import MarkerIcon from "./sprites/marker-icon.png";
 import DefaultFiltersTest from "./filtersDefaultTest";
 import FilterControl from "./components/FilterControl";
-import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
 import { deepEqual, deepEqualObjects } from "../Shared/functions";
 import gjv from "geojson-validation";
 import { setMainMapState, showErrorMessage } from "../../actions";
 
-// 3rd party packages 
+// 3rd party packages
 import mapboxgl from "mapbox-gl";
 import * as turf from "@turf/turf";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
@@ -56,7 +56,7 @@ import debounce from "lodash/debounce";
 import { makeStyles } from "@material-ui/core/styles";
 import Portal from "@material-ui/core/Portal";
 
-// queries 
+// queries
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLSQUERY } from "../../graphQL/useQueryWells";
 import { TRACKSBYOBJECTTYPE } from "../../graphQL/useQueryTracksByObjectType";
@@ -73,12 +73,9 @@ import { OWNERSQUERY } from "../../graphQL/useQueryOwners";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
 import { ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
 
-// mutations 
+// mutations
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
-
-
-
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -125,20 +122,21 @@ const random_hex_color_code = () => {
 let hoveredAbstractId = null;
 
 function Map() {
-
   // context states
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
+  const [stateMapControls, setStateMapControls] = useContext(
+    MapControlsContext
+  );
 
-  // function states 
+  // function states
   const [flyVar1, setFlyVar1] = useState([null]);
   const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
 
-  // styles 
+  // styles
   let classes = useStyles({
     drawingCircle:
-    stateApp.draw && stateApp.draw.getMode() == "drag_circle" ? true : false,
+      stateApp.draw && stateApp.draw.getMode() === "drag_circle" ? true : false,
   });
 
   const dispatch = useDispatch();
@@ -154,14 +152,13 @@ function Map() {
     stateApp.user.defaultFilters ? stateApp.user.defaultFilters : []
   );
   const setFiltersDefault = (state) => {
-    if (filtersDefault != state) {
+    if (filtersDefault !== state) {
       FiltersDefault(state);
     }
   };
 
   const [lng, Lng] = useState();
   const [lat, Lat] = useState();
-
 
   const setLng = (state) => {
     if (lng != state) {
@@ -175,14 +172,14 @@ function Map() {
   };
   const [zoom, Zoom] = useState(stateApp.mapVars.zoom);
   const setZoom = (state) => {
-    if (zoom != state) {
+    if (zoom !== state) {
       Zoom(state);
     }
   };
 
   const [transform, Transform] = useState("transform: inherit");
   const setTransform = (state) => {
-    if (transform != state) {
+    if (transform !== state) {
       Transform(state);
     }
   };
@@ -196,49 +193,49 @@ function Map() {
 
   const [mapStyles, MapStyles] = useState([]);
   const setMapStyles = (state) => {
-    if (mapStyles != state) {
+    if (mapStyles !== state) {
       MapStyles(state);
     }
   };
   const [wellsTileset, WellsTileset] = useState();
   const setWellsTileset = (state) => {
-    if (wellsTileset != state) {
+    if (wellsTileset !== state) {
       WellsTileset(state);
     }
   };
   const [defaultsCheckOnOff, DefaultsCheckOnOff] = useState(true);
   const setDefaultsCheckOnOff = (state) => {
-    if (defaultsCheckOnOff != state) {
+    if (defaultsCheckOnOff !== state) {
       DefaultsCheckOnOff(state);
     }
   };
   const [m1neralCheckOnOff, M1neralCheckOnOff] = useState(true);
   const setM1neralCheckOnOff = (state) => {
-    if (m1neralCheckOnOff != state) {
+    if (m1neralCheckOnOff !== state) {
       M1neralCheckOnOff(state);
     }
   };
   const [map, Map] = useState(null);
   const setMap = (state) => {
-    if (map != state) {
+    if (map !== state) {
       Map(state);
     }
   };
   const [mapClick, MapClick] = useState(null);
   const setMapClick = (state) => {
-    if (mapClick != state) {
+    if (mapClick !== state) {
       MapClick(state);
     }
   };
   const [draw, Draw] = useState(null);
   const setDraw = (state) => {
-    if (draw != state) {
+    if (draw !== state) {
       Draw(state);
     }
   };
   const [drawStatus, DrawStatus] = useState(false);
   const setDrawStatus = (state) => {
-    if (drawStatus != state) {
+    if (drawStatus !== state) {
       DrawStatus(state);
     }
   };
@@ -255,14 +252,14 @@ function Map() {
 
   const [drawingFilterFeatureId, DrawingFilterFeatureId] = useState(null);
   const setDrawingFilterFeatureId = (state) => {
-    if (drawingFilterFeatureId != state) {
+    if (drawingFilterFeatureId !== state) {
       DrawingFilterFeatureId(state);
     }
   };
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, AnchorElPoPOver] = useState(null);
   const setAnchorElPoPOver = (state) => {
-    if (anchorElPoPOver != state) {
+    if (anchorElPoPOver !== state) {
       AnchorElPoPOver(state);
     }
   };
@@ -272,7 +269,7 @@ function Map() {
   const setHoverUdIds = (id) => {
     const ids = hoverUdIds.slice(0);
     if (ids.indexOf(id) > -1) {
-      const tmpIds = ids.filter((item) => item != id);
+      const tmpIds = ids.filter((item) => item !== id);
       HoverUdIds(tmpIds);
     } else {
       ids.push(id);
@@ -289,14 +286,10 @@ function Map() {
 
   const [filterAbstract, setFilterAbstract] = useState(false);
 
-
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
-
 
   const [rows, Rows] = React.useState([]);
   const [loading, Loading] = useState(true);
-
-
 
   const setRows = (state) => {
     if (rows != state) {
@@ -309,8 +302,7 @@ function Map() {
     }
   };
 
-
-  // queries 
+  // queries
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
   const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
   const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(TRACKSBYOBJECTTYPE);
@@ -320,20 +312,31 @@ function Map() {
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, { fetchPolicy: "network-only", });
   const [getWellsForLayer, { data: dataWellsForOwnerWellTrackLayer }] = useLazyQuery(WELLSQUERY);
   const [getPermits, { data: permitData }] = useLazyQuery(PERMITSQUERY);
-  const [getRecentSubmittedPermits, { data: permitRecentSubmittedData }] = useLazyQuery(RECENT_SUBMITTED_PERMITS_QUERY);
+  const [
+    getRecentSubmittedPermits,
+    { data: permitRecentSubmittedData },
+  ] = useLazyQuery(RECENT_SUBMITTED_PERMITS_QUERY);
   const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
-  const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
-  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(ABSTRACTWELLGEOQUERY);
-  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
-  const [getPLSSSecondDivisionGeo, { data: plssSecondDivisionData }] = useLazyQuery(PLSSSECONDDIVISIONGEO);
-  const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(ALLLAYERSETTINGSBYUSER);
+  const [getAbstractGeo, { data: abstractData }] = useLazyQuery(
+    ABSTRACTGEOQUERY
+  );
+  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(
+    ABSTRACTWELLGEOQUERY
+  );
+  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(
+    ABSTRACTGEOCONTAINSQUERY
+  );
+  const [
+    getPLSSSecondDivisionGeo,
+    { data: plssSecondDivisionData },
+  ] = useLazyQuery(PLSSSECONDDIVISIONGEO);
+  const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(
+    ALLLAYERSETTINGSBYUSER
+  );
 
-
-  // mutations 
+  // mutations
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
   const [removeCustomLayer] = useMutation(REMOVECUSTOMLAYER);
-
-
 
   /////end/////////temporary
 
@@ -413,7 +416,11 @@ function Map() {
   }, [dataOwners]);
 
   useEffect(() => {
-    if (customLayerData && customLayerData.allCustomLayers && customLayerData.allCustomLayers != stateApp.customLayers) {
+    if (
+      customLayerData &&
+      customLayerData.allCustomLayers &&
+      customLayerData.allCustomLayers != stateApp.customLayers
+    ) {
       setStateApp((state) => ({
 	...state,
 	customLayers: customLayerData.allCustomLayers,
@@ -425,8 +432,7 @@ function Map() {
 
   useEffect(() => {
     if (layerStates && layerStates.allLayerSettingsByUser) {
-
-      console.log('layer states', layerStates)
+      console.log("layer states", layerStates);
 
       setStateApp({
 	...stateApp,
@@ -434,19 +440,19 @@ function Map() {
       });
 
       if (layerStates.allLayerSettingsByUser.length > 0) {
-	setLayersData(layerStates.allLayerSettingsByUser);
-	for (let i = 0; i < layerStates.allLayerSettingsByUser.length; i++) {
-	  const layer = layerStates.allLayerSettingsByUser[i];
-	  if (layer.layerType == "file layer") {
-	    setFileRequestCounter(1);
-	    viewFile({
-	      variables: {
-		fileId: layer.file,
-	      },
-	    });
-	    break;
-	  }
-	}
+        setLayersData(layerStates.allLayerSettingsByUser);
+        for (let i = 0; i < layerStates.allLayerSettingsByUser.length; i++) {
+          const layer = layerStates.allLayerSettingsByUser[i];
+          if (layer.layerType === "file layer") {
+            setFileRequestCounter(1);
+            viewFile({
+              variables: {
+                fileId: layer.file,
+              },
+            });
+            break;
+          }
+        }
       }
     }
   }, [layerStates]);
@@ -509,10 +515,10 @@ function Map() {
       const result = viewFileResult.viewFile;
       const fileId = result.id;
       if (result.uri && result.internalKey) {
-	const layerIndex = stateApp.layers.findIndex(
-	  (layer) => layer.file == fileId
-	);
-	handleFileAsync(result.uri, result.internalKey, layerIndex);
+        const layerIndex = stateApp.layers.findIndex(
+          (layer) => layer.file === fileId
+        );
+        handleFileAsync(result.uri, result.internalKey, layerIndex);
       } else if (fileId && fileRequestCounter < 30) {
 	let waitBeforeRequestAgain = setTimeout(() => {
 	  setFileRequestCounter(fileRequestCounter + 1);
@@ -539,7 +545,6 @@ function Map() {
   }, [viewFileResult]);
 
   useEffect(() => {
-
     if (dataOwnersWells && dataOwnersWells.length !== 0) {
       var ownerObjectIds = dataOwnersWells.ownersWells.map(
 	(item) => item.wells
@@ -558,7 +563,6 @@ function Map() {
   }, [dataOwnersWells]);
 
   useEffect(() => {
-
     if (dataWells) {
       if (
 	dataWells.wells &&
@@ -592,21 +596,21 @@ function Map() {
     for (let i = (paintProps ? paintProps.length : 0) - 1; i >= 0; i--) {
       const prop = paintProps[i];
       let layerData = null;
-      if (identifier == "Parcels" || identifier == "Area of Interest") {
-	const dataId = prop.id;
-	const groupBy = (arr, property) => {
-	  return arr.reduce((memo, x) => {
-	    if (!memo[x[property]]) {
-	      memo[x[property]] = [];
-	    }
-	    memo[x[property]].push(x);
-	    return memo;
-	  }, {});
-	};
-	layerData = groupBy(data, "layer")[dataId];
-	if (!layerData) {
-	  layerData = [];
-	}
+      if (identifier === "Parcels" || identifier === "Area of Interest") {
+        const dataId = prop.id;
+        const groupBy = (arr, property) => {
+          return arr.reduce((memo, x) => {
+            if (!memo[x[property]]) {
+              memo[x[property]] = [];
+            }
+            memo[x[property]].push(x);
+            return memo;
+          }, {});
+        };
+        layerData = groupBy(data, "layer")[dataId];
+        if (!layerData) {
+          layerData = [];
+        }
       } else {
 	layerData = data;
       }
@@ -614,57 +618,64 @@ function Map() {
       let geoJson = null;
 
       if (config.layerType == "file layer") {
-	if (layerData?.features) {
-	  geoJson = {
-	    ...layerData,
-	    features: layerData?.features?.filter((feature) => !!feature?.geometry) || []
-	  }
-	} else {
-	  geoJson = layerData
-	}
+        if (layerData?.features) {
+          geoJson = {
+            ...layerData,
+            features: layerData?.features?.filter((feature) => !!feature?.geometry) || []
+          }
+        } else {
+          geoJson = layerData
+        }
 
 
+        // geoJson = layerData;
       } else {
-	const makeGeoJSON = (mdata) => {
-	  return {
-	    type: "FeatureCollection",
-	    features: mdata.map((feature) => {
-	      if (feature.latitude && feature.longitude) {
-		return {
-		  type: "Feature",
-		  properties: feature,
-		  geometry: {
-		    type: "Point",
-		    coordinates: [Number(feature.longitude), Number(feature.latitude)],
-		  },
-		};
-	      } else if (feature.shape) {
-		// This is temporary solution to replace Mapbox.Draw library's autogenerated `id`
-		// with mongondb id.
-		if (feature._id) {
-		  let shape = JSON.parse(feature.shape);
-		  shape.id = feature._id;
-		  shape.properties.id = feature._id;
-		  return shape;
-		}
-		///////////
+        const makeGeoJSON = (mdata) => {
+          return {
+            type: "FeatureCollection",
+            features: mdata.map((feature) => {
+              if (feature.latitude && feature.longitude) {
+                return {
+                  type: "Feature",
+                  properties: feature,
+                  geometry: {
+                    type: "Point",
+                    coordinates: [
+                      Number(feature.longitude),
+                      Number(feature.latitude),
+                    ],
+                  },
+                };
+              } else if (feature.shape) {
+                // This is temporary solution to replace Mapbox.Draw library's autogenerated `id`
+                // with mongondb id.
+                if (feature._id) {
+                  let shape = JSON.parse(feature.shape);
+                  shape.id = feature._id;
+                  shape.properties.id = feature._id;
+                  return shape;
+                }
+                ///////////
 
-		return JSON.parse(feature.shape);
-	      } else {
-		return {
-		  type: "Feature",
-		  properties: feature,
-		  geometry: {
-		    type: "Point",
-		    coordinates: [Number(feature.Longitude), Number(feature.Latitude)],
-		  },
-		};
-	      }
-	    }),
-	  };
-	};
+                return JSON.parse(feature.shape);
+              } else {
+                return {
+                  type: "Feature",
+                  properties: feature,
+                  geometry: {
+                    type: "Point",
+                    coordinates: [
+                      Number(feature.Longitude),
+                      Number(feature.Latitude),
+                    ],
+                  },
+                };
+              }
+            }),
+          };
+        };
 
-	geoJson = makeGeoJSON(layerData);
+        geoJson = makeGeoJSON(layerData);
       }
 
       const sourceId = prop.sourceProps;
@@ -676,21 +687,21 @@ function Map() {
 	if (mapSourceData && !deepEqualObjects(geoJson, mapSourceData))
 	  map.getSource(sourceId).setData(geoJson);
       } else {
-	if (paintType == "circle" || paintType == "symbol") {
-	  map.addSource(sourceId, {
-	    type: "geojson",
-	    data: geoJson,
-	    cluster: true,
-	    clusterRadius: 50,
-	    clusterMaxZoom: 6,
-	  });
-	} else {
-	  map.addSource(sourceId, {
-	    type: "geojson",
-	    data: geoJson,
-	    // promoteId: "id",
-	  });
-	}
+        if (paintType === "circle" || paintType === "symbol") {
+          map.addSource(sourceId, {
+            type: "geojson",
+            data: geoJson,
+            cluster: true,
+            clusterRadius: 50,
+            clusterMaxZoom: 6,
+          });
+        } else {
+          map.addSource(sourceId, {
+            type: "geojson",
+            data: geoJson,
+            // promoteId: "id",
+          });
+        }
       }
 
 
@@ -709,19 +720,21 @@ function Map() {
 	  return output
 	})
 
+        pointSource = { type: "FeatureCollection", features: [...pointSource] }
 
-	pointSource = { type: "FeatureCollection", features: [...pointSource] }
-
-	if (map.getSource(`${sourceId}_point`)) {
-	  let pointSourceData = map.getSource(`${sourceId}_point`)._data;
-	  if (pointSourceData && !deepEqualObjects(pointSource, pointSourceData))
-	    map.getSource(`${sourceId}_point`).setData(pointSource);
-	} else {
-	  map.addSource(`${sourceId}_point`, {
-	    type: "geojson",
-	    data: pointSource
-	  })
-	}
+        if (map.getSource(`${sourceId}_point`)) {
+          let pointSourceData = map.getSource(`${sourceId}_point`)._data;
+          if (
+            pointSourceData &&
+            !deepEqualObjects(pointSource, pointSourceData)
+          )
+            map.getSource(`${sourceId}_point`).setData(pointSource);
+        } else {
+          map.addSource(`${sourceId}_point`, {
+            type: "geojson",
+            data: pointSource,
+          });
+        }
       }
 
 
@@ -747,32 +760,30 @@ function Map() {
 	    layerSettings.showable && layerSettings.visiable !== false;
 
       if (prop.paintProps) {
-	Object.keys(prop.paintProps).forEach((key) => {
-	  if (prop.paintProps[key] == "#undefined") {
-	    prop.paintProps[key] = random_hex_color_code();
-	  }
-	});
+        Object.keys(prop.paintProps).forEach((key) => {
+          if (prop.paintProps[key] === "#undefined") {
+            prop.paintProps[key] = random_hex_color_code();
+          }
+        });
       }
 
       if (map.getLayer(layerId)) {
-
-	map.moveLayer(`${layerId}_point`);
-	map.setLayoutProperty(
-	  layerId,
-	  "visibility",
-	  visible ? "visible" : "none"
-	);
-	map.setLayoutProperty(
-	  `${layerId}_point`,
-	  "visibility",
-	  visible ? "visible" : "none"
-	)
-	if (prop.paintProps) {
-	  Object.keys(prop.paintProps).forEach((key) => {
-	    map.setPaintProperty(layerId, key, prop.paintProps[key]);
-	  });
-	}
-
+        map.moveLayer(`${layerId}_point`);
+        map.setLayoutProperty(
+          layerId,
+          "visibility",
+          visible ? "visible" : "none"
+        );
+        map.setLayoutProperty(
+          `${layerId}_point`,
+          "visibility",
+          visible ? "visible" : "none"
+        );
+        if (prop.paintProps) {
+          Object.keys(prop.paintProps).forEach((key) => {
+            map.setPaintProperty(layerId, key, prop.paintProps[key]);
+          });
+        }
       } else {
 	//// joining all properties before to set the new layer ////
 	let layout = { visibility: visible ? "visible" : "none" };
@@ -959,7 +970,7 @@ function Map() {
   };
 
   useEffect(() => {
-    console.log('PERMIT DATA ====', permitData)
+    console.log("PERMIT DATA ====", permitData);
     if (permitData && permitData.permits && permitData.permits.length > 0) {
       const nextOffset = permits.length + permitData.permits.length;
       setPermitData([...permits, ...permitData.permits]);
@@ -967,13 +978,21 @@ function Map() {
   }, [permitData]);
 
   useEffect(() => {
-    console.log('RECENT PERMIT DATA ====', permitRecentSubmittedData)
-    if (permitRecentSubmittedData && permitRecentSubmittedData.recent_submitted_permits && permitRecentSubmittedData.recent_submitted_permits.length > 0) {
-      const nextOffset = recent_submitted_permits.length + permitRecentSubmittedData.recent_submitted_permits.length;
-      setRecentSubmittedPermitData([...recent_submitted_permits, ...permitRecentSubmittedData.recent_submitted_permits]);
+    console.log("RECENT PERMIT DATA ====", permitRecentSubmittedData);
+    if (
+      permitRecentSubmittedData &&
+      permitRecentSubmittedData.recent_submitted_permits &&
+      permitRecentSubmittedData.recent_submitted_permits.length > 0
+    ) {
+      const nextOffset =
+        recent_submitted_permits.length +
+        permitRecentSubmittedData.recent_submitted_permits.length;
+      setRecentSubmittedPermitData([
+        ...recent_submitted_permits,
+        ...permitRecentSubmittedData.recent_submitted_permits,
+      ]);
     }
   }, [permitRecentSubmittedData]);
-
 
   useEffect(() => {
     if (rigData && rigData.rigs && rigData.rigs.length > 0) {
@@ -983,7 +1002,6 @@ function Map() {
   }, [rigData]);
 
   useEffect(() => {
-
     if (dataWellsForOwnerWellTrackLayer) {
       if (
 	dataWellsForOwnerWellTrackLayer.wells &&
@@ -1004,11 +1022,7 @@ function Map() {
   }, [dataWellsForOwnerWellTrackLayer]);
 
   useEffect(() => {
-
     const wellPointClick = (feature) => {
-		console.log("wellpoint click");
-		console.log(feature);
-
       // this function is intended to organize the data 
       // when a well point is clicked 
       // and initiate the mapbox popup 
@@ -1050,6 +1064,7 @@ function Map() {
       }
     };
 
+    // AOI/Parcel Click Handler
     const udLayerClickHandler = (feature) => {
       setStateApp((state) => ({
 	...state,
@@ -1065,17 +1080,17 @@ function Map() {
 	}));
       }
       if (feature.source === "interests_source") {
-	setStateApp((state) => ({
-	  ...state,
-	  selectedUserDefinedLayer: feature,
-	  selectedParcel: null,
-	}));
+        setStateApp((state) => ({
+          ...state,
+          showShapeActionsPopup: true,
+          selectedUserDefinedLayer: feature,
+          selectedParcel: null,
+        }));
       }
 
       createUDPopUp(feature.properties);
       map.resize();
     };
-
 
     const clusterClickHandler = (feature, map) => {
       if (feature && feature.properties && feature.properties.cluster_id) {
@@ -1106,71 +1121,71 @@ function Map() {
       let udLayers = [];
       let clusterLayers = [];
 
-      stateApp.layers.forEach((layer) => {
-	const interaction =
-	      layer.layerSettings.interaction.interactionAble &&
-	      layer.layerSettings.interaction.interactionDetail.click;
-	const visible =
-	      layer.layerSettings.showable &&
-	      layer.layerSettings.visiable !== false;
-	if (interaction && visible) {
-	  if (layer.layerCategory == "UD layer") {
-	    layer.layerPaintProps.forEach((paintProps) => {
-	      const layerId = paintProps.id;
-	      if (paintProps.clusterProps) {
-		if (map.getLayer(`${layerId}-clusters`)) {
-		  clusterUDLayers.push(`${layerId}-clusters`);
-		  layers.push(`${layerId}-clusters`);
-		}
-		if (map.getLayer(`${layerId}-clusters-counts`)) {
-		  clusterUDLayers.push(`${layerId}-clusters-counts`);
-		  layers.push(`${layerId}-clusters-counts`);
-		}
-	      }
-	      if (map.getLayer(layerId)) {
-		if (
-		  layer.identifier == "Parcels" ||
-		    layer.identifier == "Area of Interest" ||
-		    layer.identifier == "Tracked Wells" ||
-		    layer.identifier == "Tracked Owners" ||
-		    layer.identifier == "User Tags" ||
-		    layer.identifier == "Search"
-		)
-		  layers.push(layerId);
+      stateApp.layers?.forEach((layer) => {
+        const interaction =
+          layer.layerSettings.interaction.interactionAble &&
+          layer.layerSettings.interaction.interactionDetail.click;
+        const visible =
+          layer.layerSettings.showable &&
+          layer.layerSettings.visiable !== false;
+        if (interaction && visible) {
+          if (layer.layerCategory == "UD layer") {
+            layer.layerPaintProps.forEach((paintProps) => {
+              const layerId = paintProps.id;
+              if (paintProps.clusterProps) {
+                if (map.getLayer(`${layerId}-clusters`)) {
+                  clusterUDLayers.push(`${layerId}-clusters`);
+                  layers.push(`${layerId}-clusters`);
+                }
+                if (map.getLayer(`${layerId}-clusters-counts`)) {
+                  clusterUDLayers.push(`${layerId}-clusters-counts`);
+                  layers.push(`${layerId}-clusters-counts`);
+                }
+              }
+              if (map.getLayer(layerId)) {
+                if (
+                  layer.identifier === "Parcels" ||
+                  layer.identifier === "Area of Interest" ||
+                  layer.identifier === "Tracked Wells" ||
+                  layer.identifier === "Tracked Owners" ||
+                  layer.identifier === "User Tags" ||
+                  layer.identifier === "Search"
+                )
+                  layers.push(layerId);
 
-		if (
-		  layer.identifier == "Parcels" ||
-		    layer.identifier == "Area of Interest"
-		) {
-		  udLayers.push(layerId);
-		}
-	      }
-	    });
-	  } else {
-	    if (layer.layerPaintProps.ids) {
-	      layer.layerPaintProps.ids.forEach((id) => {
-		layers.push(id);
-	      });
-	    } else {
-	      layer.layerPaintProps.forEach((paintProps) => {
-		const layerId = paintProps.id;
-		if (paintProps.clusterProps) {
-		  if (map.getLayer(`${layerId}-clusters`)) {
-		    clusterLayers.push(`${layerId}-clusters`);
-		    layers.push(`${layerId}-clusters`);
-		  }
-		  if (map.getLayer(`${layerId}-clusters-counts`)) {
-		    clusterLayers.push(`${layerId}-clusters-counts`);
-		    layers.push(`${layerId}-clusters-counts`);
-		  }
-		}
-		if (map.getLayer(layerId)) {
-		  layers.push(layerId);
-		}
-	      });
-	    }
-	  }
-	}
+                if (
+                  layer.identifier === "Parcels" ||
+                  layer.identifier === "Area of Interest"
+                ) {
+                  udLayers.push(layerId);
+                }
+              }
+            });
+          } else {
+            if (layer.layerPaintProps.ids) {
+              layer.layerPaintProps.ids.forEach((id) => {
+                layers.push(id);
+              });
+            } else {
+              layer.layerPaintProps.forEach((paintProps) => {
+                const layerId = paintProps.id;
+                if (paintProps.clusterProps) {
+                  if (map.getLayer(`${layerId}-clusters`)) {
+                    clusterLayers.push(`${layerId}-clusters`);
+                    layers.push(`${layerId}-clusters`);
+                  }
+                  if (map.getLayer(`${layerId}-clusters-counts`)) {
+                    clusterLayers.push(`${layerId}-clusters-counts`);
+                    layers.push(`${layerId}-clusters-counts`);
+                  }
+                }
+                if (map.getLayer(layerId)) {
+                  layers.push(layerId);
+                }
+              });
+            }
+          }
+        }
       });
 
       var bbox = [
@@ -1241,82 +1256,81 @@ function Map() {
     let beforeLayer = null;
     if (stateApp.layers && stateApp.layers.length > 0 && map) {
       for (let i = 0; i < stateApp.layers.length; i++) {
-	const layer = stateApp.layers[i];
-	if (layer.layerType == "vector layer") {
-	  const props = layer.layerPaintProps;
-	  const visible =
-		layer.layerSettings &&
-		layer.layerSettings.showable &&
-		layer.layerSettings.visiable !== false;
-	  const ids = props && props.ids ? props.ids : [];
-	  ids.forEach((id) => {
-	    if (map.getLayer(id)) {
-	      map.setLayoutProperty(
-		id,
-		"visibility",
-		visible ? "visible" : "none"
-	      );
-	      if (beforeLayer) {
-		map.moveLayer(id, beforeLayer);
-	      }
-	      beforeLayer = id;
+        const layer = stateApp.layers[i];
+        if (layer.layerType === "vector layer") {
+          const props = layer.layerPaintProps;
+          const visible =
+            layer.layerSettings &&
+            layer.layerSettings.showable &&
+            layer.layerSettings.visiable !== false;
+          const ids = props && props.ids ? props.ids : [];
+          ids.forEach((id) => {
+            if (map.getLayer(id)) {
+              map.setLayoutProperty(
+                id,
+                "visibility",
+                visible ? "visible" : "none"
+              );
+              if (beforeLayer) {
+                map.moveLayer(id, beforeLayer);
+              }
+              beforeLayer = id;
 
-	      if (id == "basinLayer" || id == "GLOUnits" || id == "GLOLeases")
-		dispatch(
-		  setMainMapState({
-		    [`${id}Color`]: map.getPaintProperty(id, "fill-color"),
-		  })
-		);
-	    }
-	    if (layer.layerSettings.interaction.interactionAble) {
-	      map.off("mousemove", id, mouseMoveHandler);
-	      map.off("mouseleave", id, mouseLeaveHandler);
-	      if (layer.layerSettings.interaction.interactionDetail.hover) {
-		map.on("mousemove", id, mouseMoveHandler);
-		map.on("mouseleave", id, mouseLeaveHandler);
-	      }
-	    }
-	  });
-	} else if (layer.layerType == "data layer") {
-	  let data = null;
-	  if (layer.layerPaintProps && layer.layerPaintProps.length > 0) {
-	    switch (layer.identifier) {
-	    case "Tracked Wells":
-	      data = stateApp.trackedwells;
-	      break;
-	    case "Tracked Owners":
-	      data = stateApp.trackedOwnerWells;
-	      break;
-	    case "Rig Activity":
-	      data = rigs;
-	      break;
-	    case "Recent Permits":
-	      data = permits;
-	      break;
-	    case "Recent Submitted Permits":
-	      data = recent_submitted_permits;
-	      break;
-	    case "Search":
-	      data = stateApp.wellListFromSearch;
-	      break;
-	    case "User Tags":
-	      data = stateApp.wellListFromTagsFilter;
-	      break;
-	    default:
-	      data = stateApp.customLayers;
-	    }
-	    if (data) {
-	      beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
-	    }
-	  }
-	} else if (layer.layerType == "file layer" && layersData[i].fileUrl) {
-	  let data = layersData[i].fileUrl;
-	  if (data) {
-	    beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
-	  }
-	}
+              if (id === "basinLayer" || id === "GLOUnits" || id === "GLOLeases")
+                dispatch(
+                  setMainMapState({
+                    [`${id}Color`]: map.getPaintProperty(id, "fill-color"),
+                  })
+                );
+            }
+            if (layer.layerSettings.interaction.interactionAble) {
+              map.off("mousemove", id, mouseMoveHandler);
+              map.off("mouseleave", id, mouseLeaveHandler);
+              if (layer.layerSettings.interaction.interactionDetail.hover) {
+                map.on("mousemove", id, mouseMoveHandler);
+                map.on("mouseleave", id, mouseLeaveHandler);
+              }
+            }
+          });
+        } else if (layer.layerType === "data layer") {
+          let data = null;
+          if (layer.layerPaintProps && layer.layerPaintProps.length > 0) {
+            switch (layer.identifier) {
+              case "Tracked Wells":
+                data = stateApp.trackedwells;
+                break;
+              case "Tracked Owners":
+                data = stateApp.trackedOwnerWells;
+                break;
+              case "Rig Activity":
+                data = rigs;
+                break;
+              case "Recent Permits":
+                data = permits;
+                break;
+              case "Recent Submitted Permits":
+                data = recent_submitted_permits;
+                break;
+              case "Search":
+                data = stateApp.wellListFromSearch;
+                break;
+              case "User Tags":
+                data = stateApp.wellListFromTagsFilter;
+                break;
+              default:
+                data = stateApp.customLayers;
+            }
+            if (data) {
+              beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
+            }
+          }
+        } else if (layer.layerType == "file layer" && layersData[i].fileUrl) {
+          let data = layersData[i].fileUrl;
+          if (data) {
+            beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
+          }
+        }
       }
-
     }
   }, [
     stateApp.layers,
@@ -1353,8 +1367,10 @@ function Map() {
       // -> remove source
       const sourceId = prop.sourceProps;
       if (map.getSource(sourceId)) map.removeSource(sourceId);
-      if (map.getSource(`${sourceId}_point`)) map.removeSource(`${sourceId}_point`);
-      if (map.getSource(`${sourceId}_filter`)) map.removeSource(`${sourceId}_filter`);
+      if (map.getSource(`${sourceId}_point`))
+        map.removeSource(`${sourceId}_point`);
+      if (map.getSource(`${sourceId}_filter`))
+        map.removeSource(`${sourceId}_filter`);
     }
   };
 
@@ -1366,7 +1382,6 @@ function Map() {
   }, [removeLayerFromMap]);
 
   useEffect(() => {
-
     // USE EFFECT FOR BASEMAP LAYER HANDLING
     if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
       stateApp.baseMapLayers.forEach((l) => {
@@ -1407,7 +1422,6 @@ function Map() {
   }, [map, stateApp.checkedBaseLayers, stateApp.baseMapLayers]);
 
   useEffect(() => {
-
     // USE EFFECT FOR HEATMAP LAYER HANDLES
     if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
       stateApp.heatLayers.forEach((l) => {
@@ -1448,7 +1462,6 @@ function Map() {
   }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
   useEffect(() => {
-
     if (showExpandableCard) {
       setTransform("transform: none");
     } else {
@@ -1457,7 +1470,6 @@ function Map() {
   }, [showExpandableCard]);
 
   useEffect(() => {
-
     if (stateNav.m1neralDefaultsOnOff) {
       setDefaultsCheckOnOff((defaultsCheckOnOff) => !defaultsCheckOnOff);
     }
@@ -1485,11 +1497,11 @@ function Map() {
       let defaultOverride = true;
 
       if (
-	defaultOverride == true &&
-	  stateNav.defaultOn &&
-	  !stateNav.filterWellStatus &&
-	  !stateNav.filterWellType &&
-	  filterArray.length === 0
+        defaultOverride === true &&
+        stateNav.defaultOn &&
+        !stateNav.filterWellStatus &&
+        !stateNav.filterWellType &&
+        filterArray.length === 0
       ) {
 	let defaultTypeName = ["typeName", []];
 	let defaultStatusName = ["statusName", []];
@@ -2050,210 +2062,210 @@ function Map() {
       }
 
       const setLayerSource = (layerId, source, sourceLayer = null) => {
-	const oldLayers = map.getStyle().layers;
-	const cluster_layer = `${layerId}-clusters`;
-	const cluster_counts_layer = `${layerId}-clusters-counts`;
-	const layer = map.getLayer(layerId);
-	if (source.includes("_filter")) {
-	  if (map.getLayer(cluster_layer)) {
-	    map.setLayoutProperty(cluster_layer, "visibility", "none");
-	  }
+        const oldLayers = map.getStyle().layers;
+        const cluster_layer = `${layerId}-clusters`;
+        const cluster_counts_layer = `${layerId}-clusters-counts`;
+        const layer = map.getLayer(layerId);
+        if (source.includes("_filter")) {
+          if (map.getLayer(cluster_layer)) {
+            map.setLayoutProperty(cluster_layer, "visibility", "none");
+          }
 
-	  if (map.getLayer(cluster_counts_layer)) {
-	    map.setLayoutProperty(cluster_counts_layer, "visibility", "none");
-	  }
-	} else {
-	  if (layer.visibility == "visible") {
-	    if (map.getLayer(cluster_layer)) {
-	      map.setLayoutProperty(cluster_layer, "visibility", "visible");
-	    }
+          if (map.getLayer(cluster_counts_layer)) {
+            map.setLayoutProperty(cluster_counts_layer, "visibility", "none");
+          }
+        } else {
+          if (layer.visibility === "visible") {
+            if (map.getLayer(cluster_layer)) {
+              map.setLayoutProperty(cluster_layer, "visibility", "visible");
+            }
 
-	    if (map.getLayer(cluster_counts_layer)) {
-	      map.setLayoutProperty(
-		cluster_counts_layer,
-		"visibility",
-		"visible"
-	      );
-	    }
-	  }
-	}
-	const layerIndex = oldLayers.findIndex((l) => l.id === layerId);
-	const layerDef = oldLayers[layerIndex];
-	const before =
-	      oldLayers[layerIndex + 1] && oldLayers[layerIndex + 1].id;
-	layerDef.source = source;
-	if (sourceLayer) {
-	  layerDef["source-layer"] = sourceLayer;
-	}
-	map.removeLayer(layerId);
-	map.addLayer(layerDef, before);
+            if (map.getLayer(cluster_counts_layer)) {
+              map.setLayoutProperty(
+                cluster_counts_layer,
+                "visibility",
+                "visible"
+              );
+            }
+          }
+        }
+        const layerIndex = oldLayers.findIndex((l) => l.id === layerId);
+        const layerDef = oldLayers[layerIndex];
+        const before =
+          oldLayers[layerIndex + 1] && oldLayers[layerIndex + 1].id;
+        layerDef.source = source;
+        if (sourceLayer) {
+          layerDef["source-layer"] = sourceLayer;
+        }
+        map.removeLayer(layerId);
+        map.addLayer(layerDef, before);
       };
 
       const filterShapeAction = (shapeList, filterLayers) => {
-	filterLayers.forEach((filterLayer) => {
-	  if (
-	    [
-	      "wellpoints",
-	      "welllines",
-	      "Tracked Wells",
-	      "Tracked Owners",
-	      "Tags Filter",
-	      "permits",
-	      "recent_submitted_permits",
-	      "rigs",
-	    ].indexOf(filterLayer) > -1
-	  ) {
-	    if (shapeList.length > 0) {
-	      if (!filterCustomArray[filterLayer]) {
-		filterCustomArray[filterLayer] = [];
-	      }
-	      filterCustomArray[filterLayer] = [
-		...filterCustomArray[filterLayer],
-		...shapeList,
-	      ];
-	    }
+        filterLayers.forEach((filterLayer) => {
+          if (
+            [
+              "wellpoints",
+              "welllines",
+              "Tracked Wells",
+              "Tracked Owners",
+              "Tags Filter",
+              "permits",
+              "recent_submitted_permits",
+              "rigs",
+            ].indexOf(filterLayer) > -1
+          ) {
+            if (shapeList.length > 0) {
+              if (!filterCustomArray[filterLayer]) {
+                filterCustomArray[filterLayer] = [];
+              }
+              filterCustomArray[filterLayer] = [
+                ...filterCustomArray[filterLayer],
+                ...shapeList,
+              ];
+            }
 
-	    return;
-	  }
+            return;
+          }
 
-	  let layer = map.getLayer(filterLayer);
+          let layer = map.getLayer(filterLayer);
 
-	  if (layer) {
-	    let featuresList = [];
-	    if (layer.source === "composite") {
-	      featuresList = map.querySourceFeatures("composite", {
-		sourceLayer: layer.sourceLayer,
-	      });
-	    } else {
-	      featuresList = map.getSource(layer.source)._data.features;
-	    }
-	    if (featuresList && featuresList.length > 0) {
-	      const result = featuresList.filter((feature) => {
-		if (
-		  feature &&
-		    feature.geometry &&
-		    feature.geometry.type === "MultiPolygon"
-		) {
-		  for (
-		    let i = 0;
-		    i < feature.geometry.coordinates.length;
-		    i++
-		  ) {
-		    const coordinates = feature.geometry.coordinates[i];
-		    const geometry = {
-		      type: "Polygon",
-		      coordinates: coordinates,
-		    };
-		    let flag = 0;
-		    for (let k = 0; k < shapeList.length; k++) {
-		      if (shapeList[k].type === "MultiPolygon") {
-			let flagM = 0;
-			for (
-			  let j = 0;
-			  j < shapeList[k].coordinates.length;
-			  j++
-			) {
-			  let filterCoordinates = shapeList[k].coordinates[j];
-			  if (
-			    filterCoordinates[0] &&
-			      filterCoordinates[0].length > 2
-			  ) {
-			    filterCoordinates = filterCoordinates[0];
-			  }
-			  const filterGeometry = {
-			    type: "Polygon",
-			    coordinates: filterCoordinates,
-			  };
-			  if (!turf.booleanContains(filterGeometry, geometry)) {
-			    flagM++;
-			  }
-			}
-			if (flagM == shapeList[k].coordinates.length) {
-			  flag++;
-			}
-		      } else {
-			if (!turf.booleanContains(shapeList[k], geometry)) {
-			  flag++;
-			}
-		      }
-		    }
-		    if (flag === shapeList.length) {
-		      return false;
-		    }
-		  }
-		  return true;
-		} else {
-		  for (let i = 0; i < shapeList.length; i++) {
-		    if (shapeList[i] && shapeList[i].type === "MultiPolygon") {
-		      for (
-			let j = 0;
-			j < shapeList[i].coordinates.length;
-			j++
-		      ) {
-			let filterCoordinates = shapeList[i].coordinates[j];
-			if (
-			  filterCoordinates[0] &&
-			    filterCoordinates[0].length > 2
-			) {
-			  filterCoordinates = filterCoordinates[0];
-			}
-			const filterGeometry = {
-			  type: "Polygon",
-			  coordinates: filterCoordinates,
-			};
-			if (
-			  feature.geometry &&
-			    feature.geometry.coordinates[0] &&
-			    turf.booleanContains(filterGeometry, feature)
-			) {
-			  return true;
-			}
-		      }
-		    } else {
-		      if (
-			feature.geometry &&
-			  feature.geometry.coordinates[0] &&
-			  turf.booleanContains(shapeList[i], feature)
-		      ) {
-			return true;
-		      }
-		    }
-		  }
-		  return false;
-		}
-	      });
+          if (layer) {
+            let featuresList = [];
+            if (layer.source === "composite") {
+              featuresList = map.querySourceFeatures("composite", {
+                sourceLayer: layer.sourceLayer,
+              });
+            } else {
+              featuresList = map.getSource(layer.source)._data.features;
+            }
+            if (featuresList && featuresList.length > 0) {
+              const result = featuresList.filter((feature) => {
+                if (
+                  feature &&
+                  feature.geometry &&
+                  feature.geometry.type === "MultiPolygon"
+                ) {
+                  for (
+                    let i = 0;
+                    i < feature.geometry.coordinates.length;
+                    i++
+                  ) {
+                    const coordinates = feature.geometry.coordinates[i];
+                    const geometry = {
+                      type: "Polygon",
+                      coordinates: coordinates,
+                    };
+                    let flag = 0;
+                    for (let k = 0; k < shapeList.length; k++) {
+                      if (shapeList[k].type === "MultiPolygon" || shapeList[k].geometry.type === "MultiPolygon") {
+                        let flagM = 0;
+                        for (
+                          let j = 0;
+                          j < shapeList[k].geometry.coordinates.length;
+                          j++
+                        ) {
+                          let filterCoordinates = shapeList[k].geometry.coordinates[j];
+                          if (
+                            filterCoordinates[0] &&
+                            filterCoordinates[0].length > 2
+                          ) {
+                            filterCoordinates = filterCoordinates[0];
+                          }
+                          const filterGeometry = {
+                            type: "Polygon",
+                            coordinates: filterCoordinates,
+                          };
+                          if (!turf.booleanContains(filterGeometry, geometry)) {
+                            flagM++;
+                          }
+                        }
+                        if (flagM === shapeList[k].geometry.coordinates.length) {
+                          flag++;
+                        }
+                      } else {
+                        if (!turf.booleanContains(shapeList[k], geometry)) {
+                          flag++;
+                        }
+                      }
+                    }
+                    if (flag === shapeList.length) {
+                      return false;
+                    }
+                  }
+                  return true;
+                } else {
+                  for (let i = 0; i < shapeList.length; i++) {
+                    if (shapeList[i] && (shapeList[i].type === "MultiPolygon" || shapeList[i].geometry.type === "MultiPolygon")) {
+                      for (
+                        let j = 0;
+                        j < shapeList[i].geometry.coordinates.length;
+                        j++
+                      ) {
+                        let filterCoordinates = shapeList[i].geometry.coordinates[j];
+                        if (
+                          filterCoordinates[0] &&
+                          filterCoordinates[0].length > 2
+                        ) {
+                          filterCoordinates = filterCoordinates[0];
+                        }
+                        const filterGeometry = {
+                          type: "Polygon",
+                          coordinates: filterCoordinates,
+                        };
+                        if (
+                          feature.geometry &&
+                          feature.geometry.coordinates[0] &&
+                          turf.booleanContains(filterGeometry, feature)
+                        ) {
+                          return true;
+                        }
+                      }
+                    } else {
+                      if (
+                        feature.geometry &&
+                        feature.geometry.coordinates[0] &&
+                        turf.booleanContains(shapeList[i], feature)
+                      ) {
+                        return true;
+                      }
+                    }
+                  }
+                  return false;
+                }
+              });
 
-	      let ids = result.map(function (feature) {
-		if (["interest", "parcel"].indexOf(filterLayer) > -1) {
-		  return feature.properties.shapeLabel;
-		}
-		return feature.properties.VIEWID;
-	      });
+              let ids = result.map(function (feature) {
+                if (["interest", "parcel"].indexOf(filterLayer) > -1) {
+                  return feature.properties.shapeLabel;
+                }
+                return feature.properties.VIEWID;
+              });
 
-	      const onlyUnique = (value, index, self) => {
-		return (
-		  self.indexOf(value) === index &&
-		    (typeof value === "number" || typeof value === "string")
-		);
-	      };
+              const onlyUnique = (value, index, self) => {
+                return (
+                  self.indexOf(value) === index &&
+                  (typeof value === "number" || typeof value === "string")
+                );
+              };
 
-	      ids = ids.filter(onlyUnique);
+              ids = ids.filter(onlyUnique);
 
-	      if (ids.length > 0) {
-		if (!filterCustomArray[filterLayer]) {
-		  filterCustomArray[filterLayer] = [];
-		}
-		filterCustomArray[filterLayer].push(ids);
-	      }
-	      if (result.length > 0) {
-		if (!filterCustomArray[filterLayer + "_Source"]) {
-		  filterCustomArray[filterLayer + "_Source"] = [];
-		}
-		filterCustomArray[filterLayer + "_Source"].push(result);
-	      }
-	    }
-	  }
-	});
+              if (ids.length > 0) {
+                if (!filterCustomArray[filterLayer]) {
+                  filterCustomArray[filterLayer] = [];
+                }
+                filterCustomArray[filterLayer].push(ids);
+              }
+              if (result.length > 0) {
+                if (!filterCustomArray[filterLayer + "_Source"]) {
+                  filterCustomArray[filterLayer + "_Source"] = [];
+                }
+                filterCustomArray[filterLayer + "_Source"].push(result);
+              }
+            }
+          }
+        });
       };
 
       if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
@@ -2468,353 +2480,353 @@ function Map() {
       }));
 
       //// turn on clusters if no shape filter && it was off
-      if (Object.keys(filterCustomArray).length == 0 && clustersOff)
-	dispatch(
-	  setMainMapState({
-	    clustersOff: false,
-	  })
-	);
+      if (Object.keys(filterCustomArray).length === 0 && clustersOff)
+        dispatch(
+          setMainMapState({
+            clustersOff: false,
+          })
+        );
 
       if (isFilterSet) {
-	//// turn off clusters if shape filter on
-	if (Object.keys(filterCustomArray).length > 0 && !clustersOff)
-	  dispatch(
-	    setMainMapState({
-	      clustersOff: true,
-	    })
-	  );
+        //// turn off clusters if shape filter on
+        if (Object.keys(filterCustomArray).length > 0 && !clustersOff)
+          dispatch(
+            setMainMapState({
+              clustersOff: true,
+            })
+          );
 
-	const mergeArrays = (arrays) => {
-	  let jointArray = [];
+        const mergeArrays = (arrays) => {
+          let jointArray = [];
 
-	  arrays.forEach((array) => {
-	    jointArray = [...jointArray, ...array];
-	  });
-	  return Array.from(new Set([...jointArray]));
-	};
-	const mergeIntoMultiPolygon = (d) => {
-	  const data = d.map((f) => {
-	    if (f.type == "Feature") return f;
-	    return turf.feature(f);
-	  });
-	  return turf.combine(turf.featureCollection(data));
-	};
+          arrays.forEach((array) => {
+            jointArray = [...jointArray, ...array];
+          });
+          return Array.from(new Set([...jointArray]));
+        };
+        const mergeIntoMultiPolygon = (d) => {
+          const data = d.map((f) => {
+            if (f.type === "Feature") return f;
+            return turf.feature(f);
+          });
+          return turf.combine(turf.featureCollection(data));
+        };
 
-	filterArray.unshift("all");
+        filterArray.unshift("all");
 
-	//// start filtering
-	if (filterCustomArray["wellpoints"]) {
-	  map.setFilter("wellpoints", [
-	    ...filterArray,
+        //// start filtering
+        if (filterCustomArray["wellpoints"]) {
+          map.setFilter("wellpoints", [
+            ...filterArray,
 
-	    ["within", mergeIntoMultiPolygon(filterCustomArray["wellpoints"])],
-	  ]);
-	} else if (Object.keys(filterCustomArray).length > 0) {
-	  map.setFilter("wellpoints", [
-	    "match",
-	    ["get", "id"],
-	    "-1",
-	    true,
-	    false,
-	  ]);
-	} else {
-	  map.setFilter("wellpoints", filterArray);
-	}
+            ["within", mergeIntoMultiPolygon(filterCustomArray["wellpoints"])],
+          ]);
+        } else if (Object.keys(filterCustomArray).length > 0) {
+          map.setFilter("wellpoints", [
+            "match",
+            ["get", "id"],
+            "-1",
+            true,
+            false,
+          ]);
+        } else {
+          map.setFilter("wellpoints", filterArray);
+        }
 
-	if (filterCustomArray["welllines"]) {
-	  map.setFilter("welllines", [
-	    ...filterArray,
-	    ["within", mergeIntoMultiPolygon(filterCustomArray["welllines"])],
-	  ]);
-	} else if (Object.keys(filterCustomArray).length > 0) {
-	  map.setFilter("welllines", [
-	    "match",
-	    ["get", "id"],
-	    "-1",
-	    true,
-	    false,
-	  ]);
-	} else {
-	  map.setFilter("welllines", filterArray);
-	}
+        if (filterCustomArray["welllines"]) {
+          map.setFilter("welllines", [
+            ...filterArray,
+            ["within", mergeIntoMultiPolygon(filterCustomArray["welllines"])],
+          ]);
+        } else if (Object.keys(filterCustomArray).length > 0) {
+          map.setFilter("welllines", [
+            "match",
+            ["get", "id"],
+            "-1",
+            true,
+            false,
+          ]);
+        } else {
+          map.setFilter("welllines", filterArray);
+        }
 
-	map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
+        map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
 
-	map.setFilter("wellsHeatmapLast12", [
-	  ">",
-	  ["get", "lastTwelveMonthBOE"],
-	  0,
-	]);
+        map.setFilter("wellsHeatmapLast12", [
+          ">",
+          ["get", "lastTwelveMonthBOE"],
+          0,
+        ]);
 
-	map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
+        map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
 
-	map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
+        map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
 
-	map.setFilter("wellsHeatmapRecentlyDrilled", [
-	  ">",
-	  ["get", "daysSinceDrilled"],
-	  0,
-	]);
-	map.setFilter("wellsHeatmapRecentlyCompleted", [
-	  ">",
-	  ["get", "daysSinceCompletion"],
-	  0,
-	]);
+        map.setFilter("wellsHeatmapRecentlyDrilled", [
+          ">",
+          ["get", "daysSinceDrilled"],
+          0,
+        ]);
+        map.setFilter("wellsHeatmapRecentlyCompleted", [
+          ">",
+          ["get", "daysSinceCompletion"],
+          0,
+        ]);
 
-	const filterLayers = [
-	  "GLOLeaseLabels",
-	  "GLOUnitLabels",
-	  "Tracked Wells",
-	  "Tracked Owners",
-	  "Tags Filter",
-	  "interest",
-	  "parcel",
-	  "permits",
-	  "recent_submitted_permits",
-	  "rigs",
-	];
-	filterLayers.forEach((filterLayer) => {
-	  if (filterCustomArray[filterLayer]) {
-	    if (
-	      [
-		"Tracked Wells",
-		"Tracked Owners",
-		"Tags Filter",
-		"permits",
-		"recent_submitted_permits",
-		"rigs",
-	      ].indexOf(filterLayer) > -1
-	    ) {
-	      // const filterClusterLayer = filterLayer + "-clusters";
-	      // const filterClusterLayerLabel = filterLayer + "-clusters-counts";
+        const filterLayers = [
+          "GLOLeaseLabels",
+          "GLOUnitLabels",
+          "Tracked Wells",
+          "Tracked Owners",
+          "Tags Filter",
+          "interest",
+          "parcel",
+          "permits",
+          "recent_submitted_permits",
+          "rigs",
+        ];
+        filterLayers.forEach((filterLayer) => {
+          if (filterCustomArray[filterLayer]) {
+            if (
+              [
+                "Tracked Wells",
+                "Tracked Owners",
+                "Tags Filter",
+                "permits",
+                "recent_submitted_permits",
+                "rigs",
+              ].indexOf(filterLayer) > -1
+            ) {
+              // const filterClusterLayer = filterLayer + "-clusters";
+              // const filterClusterLayerLabel = filterLayer + "-clusters-counts";
 
-	      map.setFilter(filterLayer, [
-		"within",
-		mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
-	      ]);
-	    } else if (["interest", "parcel"].indexOf(filterLayer) > -1) {
-	      map.setFilter(filterLayer, [
-		"match",
-		["get", "shapeLabel"],
-		mergeArrays(filterCustomArray[filterLayer]),
-		true,
-		false,
-	      ]);
-	      map.setFilter(filterLayer + "_point", [
-		"match",
-		["get", "shapeLabel"],
-		mergeArrays(filterCustomArray[filterLayer]),
-		true,
-		false,
-	      ]);
-	      map.setFilter(filterLayer + "_labels", [
-		"match",
-		["get", "shapeLabel"],
-		mergeArrays(filterCustomArray[filterLayer]),
-		true,
-		false,
-	      ]);
-	    } else {
-	      const baseLayer = filterLayer.replace("Labels", "s");
-	      if (filterCustomArray[baseLayer]) {
-		map.setFilter(filterLayer, [
-		  "match",
-		  ["get", "VIEWID"],
-		  mergeArrays(filterCustomArray[baseLayer]),
-		  true,
-		  false,
-		]);
-		map.setFilter(baseLayer, [
-		  "match",
-		  ["get", "VIEWID"],
-		  mergeArrays(filterCustomArray[baseLayer]),
-		  true,
-		  false,
-		]);
-	      } else {
-		map.setFilter(filterLayer, [
-		  "match",
-		  ["get", "VIEWID"],
-		  mergeArrays(filterCustomArray[filterLayer]),
-		  true,
-		  false,
-		]);
-		map.setFilter(baseLayer, [
-		  "match",
-		  ["get", "VIEWID"],
-		  mergeArrays(filterCustomArray[filterLayer]),
-		  true,
-		  false,
-		]);
-	      }
-	    }
-	  } else {
-	    const layer = map.getLayer(filterLayer);
-	    if (Object.keys(filterCustomArray).length > 0) {
-	      if (layer) {
-		if (
-		  [
-		    "Tracked Wells",
-		    "Tracked Owners",
-		    "Tags Filter",
-		    "permits",
-		    "recent_submitted_permits",
-		    "rigs",
-		  ].indexOf(filterLayer) > -1
-		) {
-		  map.setFilter(filterLayer, [
-		    "match",
-		    ["get", "id"],
-		    "-1",
-		    true,
-		    false,
-		  ]);
-		} else if (["interest", "parcel"].indexOf(filterLayer) > -1) {
-		  map.setFilter(filterLayer, [
-		    "match",
-		    ["get", "shapeLabel"],
-		    "-1",
-		    true,
-		    false,
-		  ]);
-		  map.setFilter(filterLayer + "_point", [
-		    "match",
-		    ["get", "shapeLabel"],
-		    "-1",
-		    true,
-		    false,
-		  ]);
-		  map.setFilter(filterLayer + "_labels", [
-		    "match",
-		    ["get", "shapeLabel"],
-		    "-1",
-		    true,
-		    false,
-		  ]);
-		} else {
-		  const baseLayer = filterLayer.replace("Labels", "s");
-		  map.setFilter(filterLayer, [
-		    "match",
-		    ["get", "VIEWID"],
-		    -1,
-		    true,
-		    false,
-		  ]);
-		  map.setFilter(baseLayer, [
-		    "match",
-		    ["get", "VIEWID"],
-		    -1,
-		    true,
-		    false,
-		  ]);
-		}
-	      }
-	    } else {
-	      const layer = map.getLayer(filterLayer);
-	      if (layer) {
-		map.setFilter(filterLayer, null);
-		if (map.getLayer(filterLayer + "_point")) {
-		  map.setFilter(filterLayer + "_point", null);
-		}
-		if (map.getLayer(filterLayer + "_labels")) {
-		  map.setFilter(filterLayer + "_labels", null);
-		}
-		if (map.getLayer(filterLayer.replace("Labels", "s"))) {
-		  map.setFilter(filterLayer.replace("Labels", "s"), null);
-		}
-		if (layer.type == "circle" && layer.id != "wellpoints") {
-		  if (layer.source.includes("_filter")) {
-		    const clusterSource = layer.source.replace("_filter", "");
-		    setLayerSource(layer.id, clusterSource);
-		  }
-		}
-	      }
-	    }
-	  }
-	});
-	if (filterCustomArray["basin"]) {
-	  if (filterCustomArray["basin"].length == 1) {
-	    map.setFilter("basinLayer", filterCustomArray["basin"][0]);
-	    map.setFilter("basinLabels", filterCustomArray["basin"][0]);
-	  } else {
-	    map.setFilter("basinLayer", filterCustomArray["basin"]);
-	    map.setFilter("basinLabels", filterCustomArray["basin"]);
-	  }
-	} else {
-	  map.setFilter("basinLayer", null);
-	  map.setFilter("basinLabels", null);
-	}
+              map.setFilter(filterLayer, [
+                "within",
+                mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
+              ]);
+            } else if (["interest", "parcel"].indexOf(filterLayer) > -1) {
+              map.setFilter(filterLayer, [
+                "match",
+                ["get", "shapeLabel"],
+                mergeArrays(filterCustomArray[filterLayer]),
+                true,
+                false,
+              ]);
+              map.setFilter(filterLayer + "_point", [
+                "match",
+                ["get", "shapeLabel"],
+                mergeArrays(filterCustomArray[filterLayer]),
+                true,
+                false,
+              ]);
+              map.setFilter(filterLayer + "_labels", [
+                "match",
+                ["get", "shapeLabel"],
+                mergeArrays(filterCustomArray[filterLayer]),
+                true,
+                false,
+              ]);
+            } else {
+              const baseLayer = filterLayer.replace("Labels", "s");
+              if (filterCustomArray[baseLayer]) {
+                map.setFilter(filterLayer, [
+                  "match",
+                  ["get", "VIEWID"],
+                  mergeArrays(filterCustomArray[baseLayer]),
+                  true,
+                  false,
+                ]);
+                map.setFilter(baseLayer, [
+                  "match",
+                  ["get", "VIEWID"],
+                  mergeArrays(filterCustomArray[baseLayer]),
+                  true,
+                  false,
+                ]);
+              } else {
+                map.setFilter(filterLayer, [
+                  "match",
+                  ["get", "VIEWID"],
+                  mergeArrays(filterCustomArray[filterLayer]),
+                  true,
+                  false,
+                ]);
+                map.setFilter(baseLayer, [
+                  "match",
+                  ["get", "VIEWID"],
+                  mergeArrays(filterCustomArray[filterLayer]),
+                  true,
+                  false,
+                ]);
+              }
+            }
+          } else {
+            const layer = map.getLayer(filterLayer);
+            if (Object.keys(filterCustomArray).length > 0) {
+              if (layer) {
+                if (
+                  [
+                    "Tracked Wells",
+                    "Tracked Owners",
+                    "Tags Filter",
+                    "permits",
+                    "recent_submitted_permits",
+                    "rigs",
+                  ].indexOf(filterLayer) > -1
+                ) {
+                  map.setFilter(filterLayer, [
+                    "match",
+                    ["get", "id"],
+                    "-1",
+                    true,
+                    false,
+                  ]);
+                } else if (["interest", "parcel"].indexOf(filterLayer) > -1) {
+                  map.setFilter(filterLayer, [
+                    "match",
+                    ["get", "shapeLabel"],
+                    "-1",
+                    true,
+                    false,
+                  ]);
+                  map.setFilter(filterLayer + "_point", [
+                    "match",
+                    ["get", "shapeLabel"],
+                    "-1",
+                    true,
+                    false,
+                  ]);
+                  map.setFilter(filterLayer + "_labels", [
+                    "match",
+                    ["get", "shapeLabel"],
+                    "-1",
+                    true,
+                    false,
+                  ]);
+                } else {
+                  const baseLayer = filterLayer.replace("Labels", "s");
+                  map.setFilter(filterLayer, [
+                    "match",
+                    ["get", "VIEWID"],
+                    -1,
+                    true,
+                    false,
+                  ]);
+                  map.setFilter(baseLayer, [
+                    "match",
+                    ["get", "VIEWID"],
+                    -1,
+                    true,
+                    false,
+                  ]);
+                }
+              }
+            } else {
+              const layer = map.getLayer(filterLayer);
+              if (layer) {
+                map.setFilter(filterLayer, null);
+                if (map.getLayer(filterLayer + "_point")) {
+                  map.setFilter(filterLayer + "_point", null);
+                }
+                if (map.getLayer(filterLayer + "_labels")) {
+                  map.setFilter(filterLayer + "_labels", null);
+                }
+                if (map.getLayer(filterLayer.replace("Labels", "s"))) {
+                  map.setFilter(filterLayer.replace("Labels", "s"), null);
+                }
+                if (layer.type === "circle" && layer.id != "wellpoints") {
+                  if (layer.source.includes("_filter")) {
+                    const clusterSource = layer.source.replace("_filter", "");
+                    setLayerSource(layer.id, clusterSource);
+                  }
+                }
+              }
+            }
+          }
+        });
+        if (filterCustomArray["basin"]) {
+          if (filterCustomArray["basin"].length === 1) {
+            map.setFilter("basinLayer", filterCustomArray["basin"][0]);
+            map.setFilter("basinLabels", filterCustomArray["basin"][0]);
+          } else {
+            map.setFilter("basinLayer", filterCustomArray["basin"]);
+            map.setFilter("basinLabels", filterCustomArray["basin"]);
+          }
+        } else {
+          map.setFilter("basinLayer", null);
+          map.setFilter("basinLabels", null);
+        }
       } else {
-	map.setFilter("wellpoints", null);
-	map.setFilter("welllines", null);
-	map.setFilter("GLOLeases", null);
-	map.setFilter("GLOLeaseLabels", null);
-	map.setFilter("GLOUnits", null);
-	map.setFilter("GLOUnitLabels", null);
-	map.setFilter("basinLayer", null);
-	map.setFilter("basinLabels", null);
-	map.setFilter("interest", null);
-	map.setFilter("interest_point", null);
-	map.setFilter("parcel", null);
-	map.setFilter("parcel_point", null);
-	map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
-	map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
-	map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
-	map.setFilter("wellsHeatmapRecentlyDrilled", [
-	  ">",
-	  ["get", "daysSinceDrilled"],
-	  0,
-	]);
-	map.setFilter("wellsHeatmapRecentlyCompleted", [
-	  ">",
-	  ["get", "daysSinceCompletion"],
-	  0,
-	]);
+        map.setFilter("wellpoints", null);
+        map.setFilter("welllines", null);
+        map.setFilter("GLOLeases", null);
+        map.setFilter("GLOLeaseLabels", null);
+        map.setFilter("GLOUnits", null);
+        map.setFilter("GLOUnitLabels", null);
+        map.setFilter("basinLayer", null);
+        map.setFilter("basinLabels", null);
+        map.setFilter("interest", null);
+        map.setFilter("interest_point", null);
+        map.setFilter("parcel", null);
+        map.setFilter("parcel_point", null);
+        map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
+        map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
+        map.setFilter("wellsHeatmapIP90Gas", [">", ["get", "ipGas"], 0]);
+        map.setFilter("wellsHeatmapRecentlyDrilled", [
+          ">",
+          ["get", "daysSinceDrilled"],
+          0,
+        ]);
+        map.setFilter("wellsHeatmapRecentlyCompleted", [
+          ">",
+          ["get", "daysSinceCompletion"],
+          0,
+        ]);
 
-	map.setFilter("wellsHeatmapCumGas", [">", ["get", "cumulativeGas"], 0]);
-	map.setFilter("wellsHeatmapCumOil", [">", ["get", "cumulativeOil"], 0]);
+        map.setFilter("wellsHeatmapCumGas", [">", ["get", "cumulativeGas"], 0]);
+        map.setFilter("wellsHeatmapCumOil", [">", ["get", "cumulativeOil"], 0]);
 
-	map.setFilter("wellsHeatmapLast12", [
-	  ">",
-	  ["get", "lastTwelveMonthBOE"],
-	  0,
-	]);
-	map.setFilter("wellsHeatmapLast12Oil", [
-	  ">",
-	  ["get", "lastTwelveMonthOil"],
-	  0,
-	]);
-	map.setFilter("wellsHeatmapLast12Gas", [
-	  ">",
-	  ["get", "lastTwelveMonthGas"],
-	  0,
-	]);
-	map.setFilter("wellsHeatmapTVD", [
-	  ">",
-	  ["get", "trueVerticalDepth"],
-	  0,
-	]);
+        map.setFilter("wellsHeatmapLast12", [
+          ">",
+          ["get", "lastTwelveMonthBOE"],
+          0,
+        ]);
+        map.setFilter("wellsHeatmapLast12Oil", [
+          ">",
+          ["get", "lastTwelveMonthOil"],
+          0,
+        ]);
+        map.setFilter("wellsHeatmapLast12Gas", [
+          ">",
+          ["get", "lastTwelveMonthGas"],
+          0,
+        ]);
+        map.setFilter("wellsHeatmapTVD", [
+          ">",
+          ["get", "trueVerticalDepth"],
+          0,
+        ]);
 
-	const filterLayers = [
-	  "Tracked Wells",
-	  "Tracked Owners",
-	  "Tags Filter",
-	  "permits",
-	  "recent_submitted_permits",
-	  "rigs",
-	];
-	filterLayers.forEach((filterLayer) => {
-	  const layer = map.getLayer(filterLayer);
-	  if (layer) {
-	    map.setFilter(filterLayer, null);
-	    if (layer.type == "circle") {
-	      if (layer.source.includes("_filter")) {
-		const clusterSource = layer.source.replace("_filter", "");
-		setLayerSource(layer.id, clusterSource);
-	      }
-	    }
-	  }
-	});
+        const filterLayers = [
+          "Tracked Wells",
+          "Tracked Owners",
+          "Tags Filter",
+          "permits",
+          "recent_submitted_permits",
+          "rigs",
+        ];
+        filterLayers.forEach((filterLayer) => {
+          const layer = map.getLayer(filterLayer);
+          if (layer) {
+            map.setFilter(filterLayer, null);
+            if (layer.type === "circle") {
+              if (layer.source.includes("_filter")) {
+                const clusterSource = layer.source.replace("_filter", "");
+                setLayerSource(layer.id, clusterSource);
+              }
+            }
+          }
+        });
       }
     }
   }, [
@@ -2889,7 +2901,6 @@ function Map() {
   ]);
 
   useEffect(() => {
-
     //sets style of map when changed in Map Controls
     if (stateApp.selectedLayerId && map) {
       if (stateApp.selectedLayerId) {
@@ -3021,10 +3032,10 @@ function Map() {
   );
 
   useEffect(() => {
-
     if (map && stateApp.wellSelectedCoordinates) {
       if (map.getLayer("well-point")) map.removeLayer("well-point");
-      if (map.getSource("well-select-point")) map.removeSource("well-select-point");
+      if (map.getSource("well-select-point"))
+        map.removeSource("well-select-point");
 
       if (stateApp.wellSelectedCoordinates.length > 0) {
 	map.addSource("well-select-point", {
@@ -3101,76 +3112,75 @@ function Map() {
 	  stateApp.wellSelectedCoordinates.length > 0 &&
 	  !stateApp.selectedWell
       ) {
+        let point = map.project(stateApp.wellSelectedCoordinates);
 
-	let point = map.project(stateApp.wellSelectedCoordinates);
+        var bbox = [
+          [point.x - 10, point.y - 10],
+          [point.x + 10, point.y + 10],
+        ];
 
-	var bbox = [
-	  [point.x - 10, point.y - 10],
-	  [point.x + 10, point.y + 10],
-	];
+        let features = map.queryRenderedFeatures(bbox, {
+          layers: ["wellpoints"],
+        });
 
-	let features = map.queryRenderedFeatures(bbox, {
-	  layers: ["wellpoints"],
-	});
+        let currentFeature = features.find(
+          (element) =>
+            element.properties.id.toLowerCase() === stateApp.selectedWellId
+        );
 
-	let currentFeature = features.find(
-	  (element) =>
-	  element.properties.id.toLowerCase() == stateApp.selectedWellId
-	);
+        if (!currentFeature) {
+          features = map.querySourceFeatures("composite", {
+            sourceLayer: "wellPoints",
+            filter: ["in", "id", stateApp.selectedWellId],
+          });
+          currentFeature = features.find(
+            (element) =>
+              element.properties.id.toLowerCase() === stateApp.selectedWellId
+          );
+        }
 
-	if (!currentFeature) {
-	  features = map.querySourceFeatures("composite", {
-	    sourceLayer: "wellPoints",
-	    filter: ["in", "id", stateApp.selectedWellId],
-	  });
-	  currentFeature = features.find(
-	    (element) =>
-	    element.properties.id.toLowerCase() == stateApp.selectedWellId
-	  );
-	}
+        if (!currentFeature) {
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
+            }`;
 
-	if (!currentFeature) {
-	  const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
-	    }`;
+          const headers = new Headers();
+          headers.append("Content-Type", "application/json");
+          headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
 
-	  const headers = new Headers();
-	  headers.append("Content-Type", "application/json");
-	  headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
+          const options = {
+            method: "GET",
+            headers: headers,
+          };
 
-	  const options = {
-	    method: "GET",
-	    headers: headers,
-	  };
+          await fetch(endpoint, options)
+            .then((response) => response.json())
+            .then((response) => {
+              features = response.features;
+              currentFeature = features.find(
+                (element) =>
+                  element.properties.id.toLowerCase() === stateApp.selectedWellId
+              );
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
 
-	  await fetch(endpoint, options)
-	    .then((response) => response.json())
-	    .then((response) => {
-	      features = response.features;
-	      currentFeature = features.find(
-		(element) =>
-		element.properties.id.toLowerCase() == stateApp.selectedWellId
-	      );
-	    })
-	    .catch((error) => {
-	      console.log(error);
-	    });
-	}
+        if (currentFeature) {
+          setStateApp((state) => ({
+            ...state,
+            popupOpen: false,
+            selectedUserDefinedLayer: null,
+            selectedParcel: null,
+          }));
+          setStateApp((state) => ({
+            ...state,
+            selectedWell: currentFeature.properties,
+          }));
 
-	if (currentFeature) {
-	  let popUps = document.getElementsByClassName("mapboxgl-popup");
-	  setStateApp((state) => ({
-	    ...state,
-	    popupOpen: false,
-	    selectedUserDefinedLayer: null,
-	    selectedParcel: null,
-	  }));
-	  setStateApp((state) => ({
-	    ...state,
-	    selectedWell: currentFeature.properties,
-	  }));
-	  createPopUp(currentFeature.properties);
-	  map.resize();
-	}
+          createPopUp(currentFeature.properties);
+          map.resize();
+        }
       }
     })();
   }, [loading, stateApp.wellSelectedCoordinates]);
@@ -3281,7 +3291,7 @@ function Map() {
 
     setStateApp((state) => ({
       ...state,
-      popupOpen: stateApp.wellSelectedCoordinates?.length > 0 && searchInputValue ? true : false ,
+      popupOpen: stateApp.wellSelectedCoordinates?.length > 0 && searchInputValue ? true : false,
       expandedCard: false,
       selectedUserDefinedLayer: undefined,
     }));
@@ -3293,7 +3303,6 @@ function Map() {
   }, []);
 
   useEffect(() => {
-
     if (map) {
       setStateApp((stateApp) => ({
 	...stateApp,
@@ -3370,29 +3379,30 @@ function Map() {
       };
 
       const makeLabelGeoJson = (data) => {
-	return {
-	  type: "FeatureCollection",
-	  features: data.map((feature) => {
-	    const geoJSON = JSON.parse(feature.geo_json);
-	    if (
-	      geoJSON.geometry &&
-		geoJSON.geometry.coordinates[0].length >= 4
-	    ) {
-	      const polygon = turf.polygon(geoJSON.geometry.coordinates);
-	      const centroid = turf.centroid(polygon);
-	      centroid.properties.ShortName =
-		geoJSON.properties.ShortName;
-	      return centroid;
-	    }
-	  }),
-	};
+        return {
+          type: "FeatureCollection",
+          features: data.map((feature) => {
+            const geoJSON = JSON.parse(feature.geo_json);
+            if (
+              geoJSON.geometry &&
+              geoJSON.geometry.coordinates[0].length >= 4
+            ) {
+              const polygon = turf.polygon(geoJSON.geometry.coordinates);
+              const centroid = turf.centroid(polygon);
+              centroid.properties.ShortName = geoJSON.properties.ShortName;
+              return centroid;
+            }
+          }),
+        };
       };
 
       const geoJson = makeGeoJSON(data);
       const labelGeoJson = makeLabelGeoJson(data);
 
       map.getSource("plssseconddivision_geo_source").setData(geoJson);
-      map.getSource("plssseconddivision_label_geo_source").setData(labelGeoJson);
+      map
+        .getSource("plssseconddivision_label_geo_source")
+        .setData(labelGeoJson);
     }
   }, [plssSecondDivisionData]);
 
@@ -3493,8 +3503,9 @@ function Map() {
     }));
     if (action === "add") {
       setStateApp((state) => ({
-	...state,
-	selectedAbstracts: [...state.selectedAbstracts, feature],
+        ...state,
+        selectedAbstracts: [...state.selectedAbstracts, feature],
+        showDrawShapesPopup: true
       }));
     }
     if (action === "remove") {
@@ -3508,52 +3519,60 @@ function Map() {
   };
 
   useEffect(() => {
-    // HERE FOOL
+    // UseEffect for Land Grids Selection
     if (map) {
-      map.on("click", "abstract_geo_fill_layer", function (e) {
-	if (!e.features.length) {
-	  return;
-	}
-	const currentFeature = e.features[0];
-	const featureState = map.getFeatureState({
-	  source: "abstract_geo_source",
-	  id: currentFeature.id,
-	});
-	const featuresList = map.getSource("abstract_geo_source")._data
-	      .features;
+      const LandClickListener = (e) => {
+        if (!e.features.length) {
+          return;
+        }
+        const currentFeature = e.features[0];
+        const featureState = map.getFeatureState({
+          source: "abstract_geo_source",
+          id: currentFeature.id,
+        });
+        const featuresList = map.getSource("abstract_geo_source")._data
+          .features;
 
-	if (window.event.ctrlKey || window.event.metaKey) {
+        const geoSourceFeature = featuresList.find((feature) => feature.properties.Id === currentFeature.id)
+        if (geoSourceFeature) currentFeature.geometry = geoSourceFeature.geometry
+        if (
+          window.event.ctrlKey ||
+          window.event.metaKey ||
+          stateApp.multiSelectLandGrids
+        ) {
+          // this is making trouble
+          if (featureState && featureState.click) {
+            // Unselect feature
+            map.setFeatureState(
+              { source: "abstract_geo_source", id: currentFeature.id },
+              { click: false }
+            );
+            onAbstactLayerClick(currentFeature, "remove");
+          } else {
+            let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
 
-	  if (featureState && featureState.click) {
-	    // Unselect feature
-	    map.setFeatureState(
-	      { source: "abstract_geo_source", id: currentFeature.id },
-	      { click: false }
-	    );
-	    onAbstactLayerClick(currentFeature, "remove");
-	  } else {
-	    let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
+            if (!isExisting) {
+              map.setFeatureState(
+                { source: "abstract_geo_source", id: currentFeature.id },
+                { click: true }
+              );
+              onAbstactLayerClick(currentFeature, "add");
+            }
+          }
+        } else {
+          // Clear all selected features when click off the shapes
+          for (let i = 0; i < featuresList.length; i++) {
+            const id = featuresList[i].properties.Id;
+            map.setFeatureState(
+              { source: "abstract_geo_source", id: id },
+              { click: false }
+            );
+          }
+          onAbstactLayerClick(null, "remove");
+        }
+      };
 
-	    if (!isExisting) {
-	      map.setFeatureState(
-		{ source: "abstract_geo_source", id: e.features[0].id },
-		{ click: true }
-	      );
-	      onAbstactLayerClick(currentFeature, "add");
-	    }
-	  }
-	} else {
-	  // Clear all selected features
-	  for (let i = 0; i < featuresList.length; i++) {
-	    const id = featuresList[i].properties.Id;
-	    map.setFeatureState(
-	      { source: "abstract_geo_source", id: id },
-	      { click: false }
-	    );
-	  }
-	  onAbstactLayerClick(null, "remove");
-	}
-      });
+      map.on("click", "abstract_geo_fill_layer", LandClickListener);
 
       map.on("mousemove", "abstract_geo_fill_layer", function (e) {
 	if (e.features.length > 0) {
@@ -3571,322 +3590,337 @@ function Map() {
 	}
       });
 
-      map.on("mouseleave", "abstract_geo_fill_layer", function (e) {
-	if (hoveredAbstractId) {
-	  map.setFeatureState(
-	    { source: "abstract_geo_source", id: hoveredAbstractId },
-	    { hover: false }
-	  );
-	}
+      map.on("mouselecustomLayersave", "abstract_geo_fill_layer", function (e) {
+        if (hoveredAbstractId) {
+          map.setFeatureState(
+            { source: "abstract_geo_source", id: hoveredAbstractId },
+            { hover: false }
+          );
+        }
       });
+      return () => {
+        // Unsubscribing the provious event for updated states
+        map.off("click", "abstract_geo_fill_layer", LandClickListener);
+      };
     }
-  }, [map, stateApp.customLayers]);
+  }, [map, stateApp.customLayers, stateApp.multiSelectLandGrids]);
 
   useEffect(() => {
-
     if (mapStyles.length > 0) {
       // const SET_INITIAL_MAP_STYLE = "Satellite";
 
       const initializeMap = ({ setMap, mapEl, setStateApp, setDraw }) => {
-	let id = mapEl.current.id;
+        let id = mapEl.current.id;
 
-	var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
+        var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
 
-	const newMap = new mapboxgl.Map({
-	  container: `${id}`,
-	  style: "mapbox://styles/m1neral/" + mapStyles[index].id,
-	  center: stateApp.mapVars.center,
-	  zoom: stateApp.mapVars.zoom,
-	  pitch: stateApp.mapVars.pitch,
-	  bearing: stateApp.mapVars.bearing,
-	});
+        const newMap = new mapboxgl.Map({
+          container: `${id}`,
+          style: "mapbox://styles/m1neral/" + mapStyles[index].id,
+          center: stateApp.mapVars.center,
+          zoom: stateApp.mapVars.zoom,
+          pitch: stateApp.mapVars.pitch,
+          bearing: stateApp.mapVars.bearing,
+        });
 
-	setWellsTileset(
-	  mapStyles[index].sources.composite.url
-	    .split(",")
-	    .find((element) => element.indexOf("m1neral.wells") > -1)
-	    .replace("mapbox://", "")
-	);
+        setWellsTileset(
+          mapStyles[index].sources.composite.url
+            .split(",")
+            .find((element) => element.indexOf("m1neral.wells") > -1)
+            .replace("mapbox://", "")
+        );
 
-	/// optimized interactions w/ map
-	newMap.scrollZoom.enable();
-	newMap.dragPan.enable();
-	newMap.dragRotate.enable();
-	newMap.keyboard.enable();
-	newMap.doubleClickZoom.disable();
-	newMap.boxZoom.enable();
-	newMap.touchZoomRotate.enable();
+        /// optimized interactions w/ map
+        newMap.scrollZoom.enable();
+        newMap.dragPan.enable();
+        newMap.dragRotate.enable();
+        newMap.keyboard.enable();
+        newMap.doubleClickZoom.disable();
+        newMap.boxZoom.enable();
+        newMap.touchZoomRotate.enable();
 
-	newMap.addControl(
-	  new mapboxgl.ScaleControl({
-	    maxWidth: 80,
-	    unit: "imperial",
-	  }),
-	  "bottom-right"
-	);
+        newMap.addControl(
+          new mapboxgl.ScaleControl({
+            maxWidth: 80,
+            unit: "imperial",
+          }),
+          "bottom-right"
+        );
 
-	newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+        newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
 
-	newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
+        newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
 
-	var geoLocate = new mapboxgl.GeolocateControl({
-	  positionOptions: {
-	    enableHighAccuracy: true,
-	  },
-	  fitBoundsOptions: {
-	    maxZoom: 24,
-	  },
-	  trackUserLocation: false,
-	  showAccuracyCircle: true,
-	  showUserLocation: true,
-	});
-	newMap.addControl(geoLocate, "bottom-right");
-	geoLocate.on("geolocate", function (e) {
-	  newMap.flyTo({
-	    center: [e.coords.longitude, e.coords.latitude],
-	    zoom: 14,
-	    pitch: 80,
-	    bearing: 20,
-	    speed: 0.4,
-	  });
-	});
+        var geoLocate = new mapboxgl.GeolocateControl({
+          positionOptions: {
+            enableHighAccuracy: true,
+          },
+          fitBoundsOptions: {
+            maxZoom: 24,
+          },
+          trackUserLocation: false,
+          showAccuracyCircle: true,
+          showUserLocation: true,
+        });
+        newMap.addControl(geoLocate, "bottom-right");
+        geoLocate.on("geolocate", function (e) {
+          newMap.flyTo({
+            center: [e.coords.longitude, e.coords.latitude],
+            zoom: 14,
+            pitch: 80,
+            bearing: 20,
+            speed: 0.4,
+          });
+        });
 
-	//// selecting the rect after draw
-	let CostumDrawRectangle = { ...DrawRectangle };
-	CostumDrawRectangle.onClick = function onClick(state, e) {
-	  // if state.startPoint exist, means its second click
-	  //change to  simple_select mode
-	  if (
-	    state.startPoint &&
-	      state.startPoint[0] !== e.lngLat.lng &&
-	      state.startPoint[1] !== e.lngLat.lat
-	  ) {
-	    this.updateUIClasses({ mouse: "pointer" });
-	    state.endPoint = [e.lngLat.lng, e.lngLat.lat];
-	    this.changeMode("simple_select", {
-	      featuresId: state.rectangle.id,
-	    });
-	    this.setSelected(state.rectangle.id); //// selecting the rect after draw
-	  }
-	  // on first click, save clicked point coords as starting for  rectangle
-	  var startPoint = [e.lngLat.lng, e.lngLat.lat];
-	  state.startPoint = startPoint;
-	};
+        //// selecting the rect after draw
+        let CostumDrawRectangle = { ...DrawRectangle };
+        CostumDrawRectangle.onClick = function onClick(state, e) {
+          // if state.startPoint exist, means its second click
+          //change to  simple_select mode
+          if (
+            state.startPoint &&
+            state.startPoint[0] !== e.lngLat.lng &&
+            state.startPoint[1] !== e.lngLat.lat
+          ) {
+            this.updateUIClasses({ mouse: "pointer" });
+            state.endPoint = [e.lngLat.lng, e.lngLat.lat];
+            this.changeMode("simple_select", {
+              featuresId: state.rectangle.id,
+            });
+            this.setSelected(state.rectangle.id); //// selecting the rect after draw
+          }
+          // on first click, save clicked point coords as starting for  rectangle
+          var startPoint = [e.lngLat.lng, e.lngLat.lat];
+          state.startPoint = startPoint;
+        };
 
-	let Draw = new MapboxDraw({
-	  displayControlsDefault: false,
-	  userProperties: true,
-	  modes: {
-	    ...MapboxDraw.modes,
-	    draw_circle: CircleMode,
-	    drag_circle: DragCircleMode,
-	    direct_select: DirectMode,
-	    simple_select: SimpleSelectMode,
-	    draw_rectangle: CostumDrawRectangle,
-	  },
-	});
-	newMap.addControl(Draw);
+        let Draw = new MapboxDraw({
+          displayControlsDefault: false,
+          userProperties: true,
+          modes: {
+            ...MapboxDraw.modes,
+            draw_circle: CircleMode,
+            drag_circle: DragCircleMode,
+            direct_select: DirectMode,
+            simple_select: SimpleSelectMode,
+            draw_rectangle: CostumDrawRectangle,
+          },
+        });
+        newMap.addControl(Draw);
 
-	const abstractControl = (e) => {
-	  const map = e.target;
-	  if (map.getZoom() >= 12) {
-	    const bounds = map.getBounds();
-	    const bbox = [
-	      bounds.getWest(),
-	      bounds.getSouth(),
-	      bounds.getEast(),
-	      bounds.getNorth(),
-	    ];
-	    const bboxPolygon = turf.bboxPolygon(bbox);
-	    let polygonString = "POLYGON((";
-	    bboxPolygon.geometry.coordinates[0].forEach((coordinate, index) => {
-	      polygonString += coordinate[0] + " " + coordinate[1];
-	      if (index < bboxPolygon.geometry.coordinates[0].length - 1) {
-		polygonString += ", ";
-	      }
-	    });
-	    polygonString += "))";
+        const abstractControl = (e) => {
+          const map = e.target;
+          if (map.getZoom() >= 12) {
+            const bounds = map.getBounds();
+            const bbox = [
+              bounds.getWest(),
+              bounds.getSouth(),
+              bounds.getEast(),
+              bounds.getNorth(),
+            ];
+            const bboxPolygon = turf.bboxPolygon(bbox);
+            let polygonString = "POLYGON((";
+            bboxPolygon.geometry.coordinates[0].forEach((coordinate, index) => {
+              polygonString += coordinate[0] + " " + coordinate[1];
+              if (index < bboxPolygon.geometry.coordinates[0].length - 1) {
+                polygonString += ", ";
+              }
+            });
+            polygonString += "))";
 
-	    getAbstractGeo({
-	      variables: {
-		polygon: polygonString,
-	      },
-	    });
+            getAbstractGeo({
+              variables: {
+                polygon: polygonString,
+              },
+            });
 
-	    setStateApp((state) => ({
-	      ...state,
-	      selectedPolygonString: polygonString
-	    }));
-	  }
+            setStateApp((state) => ({
+              ...state,
+              selectedPolygonString: polygonString,
+            }));
+          }
 
-	  if (map.getZoom() >= 14) {
-	    const bounds = map.getBounds();
-	    const bbox = [
-	      bounds.getWest(),
-	      bounds.getSouth(),
-	      bounds.getEast(),
-	      bounds.getNorth(),
-	    ];
-	    const bboxPolygon = turf.bboxPolygon(bbox);
-	    let polygonString = "POLYGON((";
-	    bboxPolygon.geometry.coordinates[0].forEach((coordinate, index) => {
-	      polygonString += coordinate[0] + " " + coordinate[1];
-	      if (index < bboxPolygon.geometry.coordinates[0].length - 1) {
-		polygonString += ", ";
-	      }
-	    });
-	    polygonString += "))";
+          if (map.getZoom() >= 14) {
+            const bounds = map.getBounds();
+            const bbox = [
+              bounds.getWest(),
+              bounds.getSouth(),
+              bounds.getEast(),
+              bounds.getNorth(),
+            ];
+            const bboxPolygon = turf.bboxPolygon(bbox);
+            let polygonString = "POLYGON((";
+            bboxPolygon.geometry.coordinates[0].forEach((coordinate, index) => {
+              polygonString += coordinate[0] + " " + coordinate[1];
+              if (index < bboxPolygon.geometry.coordinates[0].length - 1) {
+                polygonString += ", ";
+              }
+            });
+            polygonString += "))";
 
-	    getPLSSSecondDivisionGeo({
-	      variables: {
-		polygon: polygonString,
-	      },
-	    });
-	  }
-	};
+            getPLSSSecondDivisionGeo({
+              variables: {
+                polygon: polygonString,
+              },
+            });
+          }
+          // setting zoom level on every zoom
+          setStateApp((state) => ({
+            ...state,
+            mapVars: { ...state.mapVars, zoom: map.getZoom() },
+          }));
+        };
 
-	newMap.on("zoomend", function (e) {
-	  abstractControl(e);
-	});
-	newMap.on("moveend", function (e) {
-	  abstractControl(e);
-	});
+        newMap.on("zoomend", function (e) {
+          abstractControl(e);
+        });
+        newMap.on("moveend", function (e) {
+          abstractControl(e);
+        });
 
-	setStateApp({ ...stateApp, map: newMap, draw: Draw });
+        setStateApp({ ...stateApp, map: newMap, draw: Draw });
 
-	newMap.on("load", function (e) {
-	  newMap.loadImage(MarkerIcon, function (error, image) {
-	    if (error) throw error;
-	    // add image to the active style and make it SDF-enabled
-	    newMap.addImage("marker-icon", image, { sdf: true });
-	  });
+        newMap.on("load", function (e) {
+          newMap.loadImage(MarkerIcon, function (error, image) {
+            if (error) throw error;
+            // add image to the active style and make it SDF-enabled
+            newMap.addImage("marker-icon", image, { sdf: true });
+          });
 
-	  newMap.addSource("abstract_geo_source", {
-	    type: "geojson",
-	    data: {
-	      type: "FeatureCollection",
-	      features: [],
-	    },
-	    promoteId: "Id",
-	  });
+          newMap.addSource("abstract_geo_source", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: [],
+            },
+            promoteId: "Id",
+          });
 
-	  newMap.addSource("abstract_label_geo_source", {
-	    type: "geojson",
-	    data: {
-	      type: "FeatureCollection",
-	      features: [],
-	    },
-	    promoteId: "Id",
-	  });
+          newMap.addSource("abstract_label_geo_source", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: [],
+            },
+            promoteId: "Id",
+          });
 
-	  newMap.addSource("plssseconddivision_geo_source", {
-	    type: "geojson",
-	    data: {
-	      type: "FeatureCollection",
-	      features: [],
-	    },
-	    // promoteId: "Id",
-	  });
+          newMap.addSource("plssseconddivision_geo_source", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: [],
+            },
+            // promoteId: "Id",
+          });
 
-	  newMap.addSource("plssseconddivision_label_geo_source", {
-	    type: "geojson",
-	    data: {
-	      type: "FeatureCollection",
-	      features: [],
-	    },
-	    // promoteId: "Id",
-	  });
+          newMap.addSource("plssseconddivision_label_geo_source", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: [],
+            },
+            // promoteId: "Id",
+          });
 
-	  newMap.addLayer({
-	    id: "abstract_geo_fill_layer",
-	    type: "fill",
-	    minzoom: 12,
-	    source: "abstract_geo_source",
-	    paint: {
-	      "fill-color": "#888",
-	      "fill-opacity": [
-		"case",
-		["boolean", ["feature-state", "hover"], false],
-		0.3,
-		["boolean", ["feature-state", "click"], false],
-		0.3,
-		0,
-	      ],
-	    },
-	  });
+          // FOR aoi_labels
+          newMap.addSource('aoi_label_source', {
+            'type': 'geojson',
+            'data': {
+              'type': 'FeatureCollection',
+              'features': []
+            }
+          });
 
-	  newMap.addLayer({
-	    id: "abstract_geo_layer",
-	    type: "line",
-	    minzoom: 12,
-	    source: "abstract_geo_source",
-	    layout: {
-	      "line-join": "round",
-	      "line-cap": "round",
-	    },
-	    paint: {
-	      "line-color": "#292424",
-	      "line-opacity": "0.5",
-	      "line-width": 3,
-	    },
-	  });
+          newMap.addLayer({
+            id: "abstract_geo_fill_layer",
+            type: "fill",
+            minzoom: 12,
+            source: "abstract_geo_source",
+            paint: {
+              "fill-color": "#888",
+              "fill-opacity": [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                0.3,
+                ["boolean", ["feature-state", "click"], false],
+                0.3,
+                0,
+              ],
+            },
+          });
 
-	  newMap.addLayer({
-	    id: "abstract_geo_label_layer",
-	    type: "symbol",
-	    minzoom: 12,
-	    source: "abstract_label_geo_source",
-	    layout: {
-	      "text-field": "{AbstractName}",
-	      "text-anchor": "center",
-	    },
-	    paint: {
-	      "text-color": "#888",
-	    },
-	  });
+          newMap.addLayer({
+            id: "abstract_geo_layer",
+            type: "line",
+            minzoom: 12,
+            source: "abstract_geo_source",
+            layout: {
+              "line-join": "round",
+              "line-cap": "round",
+            },
+            paint: {
+              "line-color": "#292424",
+              "line-opacity": "0.5",
+              "line-width": 3,
+            },
+          });
 
-	  newMap.addLayer({
-	    id: "plssseconddivision_geo_layer",
-	    type: "fill",
-	    minzoom: 14,
-	    source: "plssseconddivision_geo_source",
-	    paint: {
-	      "fill-color": "rgba(0, 0, 0, 0)",
-	      "fill-outline-color": "rgba(0, 6, 15, 0.17)"
-	    },
-	  });
+          newMap.addLayer({
+            id: "abstract_geo_label_layer",
+            type: "symbol",
+            minzoom: 12,
+            source: "abstract_label_geo_source",
+            layout: {
+              "text-field": "{AbstractName}",
+              "text-anchor": "center",
+            },
+            paint: {
+              "text-color": "#888",
+            },
+          });
 
-	  newMap.addLayer({
-	    id: "plssseconddivision_geo_label_layer",
-	    type: "symbol",
-	    minzoom: 14,
-	    source: "plssseconddivision_label_geo_source",
-	    layout: {
-	      "text-font": ["Open Sans SemiBold", "Arial Unicode MS Regular"],
-	      "text-field": "{ShortName}",
-	      "text-anchor": "center",
-	    },
-	    paint: {
-	      "text-color": "hsla(0, 0%, 0%, 0.75)",
-	      "text-halo-color": "hsl(35, 16%, 100%)",
-	      "text-halo-width": 0.5,
-	      "text-halo-blur": 0.5
-	    },
-	  });
+          newMap.addLayer({
+            id: "plssseconddivision_geo_layer",
+            type: "fill",
+            minzoom: 14,
+            source: "plssseconddivision_geo_source",
+            paint: {
+              "fill-color": "rgba(0, 0, 0, 0)",
+              "fill-outline-color": "rgba(0, 6, 15, 0.17)",
+            },
+          });
 
-	  setDraw(Draw);
-	  setMap(newMap);
-	  setLoading(false)
-	});
+          newMap.addLayer({
+            id: "plssseconddivision_geo_label_layer",
+            type: "symbol",
+            minzoom: 14,
+            source: "plssseconddivision_label_geo_source",
+            layout: {
+              "text-font": ["Open Sans SemiBold", "Arial Unicode MS Regular"],
+              "text-field": "{ShortName}",
+              "text-anchor": "center",
+            },
+            paint: {
+              "text-color": "hsla(0, 0%, 0%, 0.75)",
+              "text-halo-color": "hsl(35, 16%, 100%)",
+              "text-halo-width": 0.5,
+              "text-halo-blur": 0.5,
+            },
+          });
+
+          setDraw(Draw);
+          setMap(newMap);
+          setLoading(false)
+        });
       };
 
       if (!map) {
 	initializeMap({ setMap, mapEl, setStateApp, setDraw });
       } else {
-
-	// map.on("mousemove", mapMouseMove);
-	// map.on("zoom", mapZoom);
-
+        // map.on("mousemove", mapMouseMove);
+        // map.on("zoom", mapZoom);
       }
     }
   }, [
@@ -3960,7 +3994,6 @@ function Map() {
 
   // Use effect for adding shape filter
   useEffect(() => {
-
     function drawCreateListener(e) {
       if (stateNav.drawingMode !== null) {
 	let feature = e.features[0];
@@ -4046,7 +4079,7 @@ function Map() {
   }, [stateNav.filterFeatureId]);
 
   useEffect(() => {
-    if (draw && stateNav.filterDrawing && stateNav.filterDrawing.length == 2) {
+    if (draw && stateNav.filterDrawing && stateNav.filterDrawing.length === 2) {
       const feature = stateNav.filterDrawing[1];
       setDrawingFilterFeatureId(feature.id);
       draw.delete(feature.id);
@@ -4057,43 +4090,39 @@ function Map() {
   useEffect(() => {
     if (map) {
       return () => {
-	var list = document.getElementById("searchBar");
-	if (list && list.childNodes && list.childNodes.length > 0) {
-	  list.removeChild(list.childNodes[0]);
-	}
-	var zoom = map.getZoom();
-	var center = map.getCenter();
-	var pitch = map.getPitch();
-	var bearing = map.getBearing();
+        var list = document.getElementById("searchBar");
+        if (list && list.childNodes && list.childNodes.length > 0) {
+          list.removeChild(list.childNodes[0]);
+        }
+        var zoom = map.getZoom();
+        var center = map.getCenter();
+        var pitch = map.getPitch();
+        var bearing = map.getBearing();
 
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          mapVars: {
+            ...stateApp.mapVars,
+            zoom: zoom,
+            center: center,
+            pitch: pitch,
+            bearing: bearing,
+          },
+        }));
 
-	setStateApp((stateApp) => ({
-	  ...stateApp,
-	  mapVars: {
-	    ...stateApp.mapVars,
-	    zoom: zoom,
-	    center: center,
-	    pitch: pitch,
-	    bearing: bearing,
-	  },
-	}));
-
-
-	//Loading state is not being handled and causes undefined mapList Array
-	//Added '?' to mapList, temp fix to avoid undefined errors.
-	var mapList = document.getElementById("map");
-	if (mapList?.childNodes?.length > 1) {
-	  mapList.removeChild(mapList.childNodes[1]);
-	  mapList.removeChild(mapList.childNodes[1]);
-	  mapList.removeChild(mapList.childNodes[1]);
-	}
+        //Loading state is not being handled and causes undefined mapList Array
+        //Added '?' to mapList, temp fix to avoid undefined errors.
+        var mapList = document.getElementById("map");
+        if (mapList?.childNodes?.length > 1) {
+          mapList.removeChild(mapList.childNodes[1]);
+          mapList.removeChild(mapList.childNodes[1]);
+          mapList.removeChild(mapList.childNodes[1]);
+        }
       };
     }
   }, [map]);
 
-
   useEffect(() => {
-
     ////// USE EFFECT TO MANAGE THE FLY TO FEATURE
 
     if (map && stateApp.flyTo) {
@@ -4246,7 +4275,6 @@ function Map() {
   }, [map, stateApp.wellListFromSearch]);
 
   useEffect(() => {
-
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
 	map.flyTo({
@@ -4289,29 +4317,29 @@ function Map() {
   }, [stateApp.toggleZoomOut]);
 
   useEffect(() => {
-    // use effect to toggle the map into a 3d state 
+    // use effect to toggle the map into a 3d state
 
     if (map && stateApp.toggle3d) {
       if (stateApp.toggle3d === true) {
-	if (map.getPitch() == 0 && map.getBearing() == 0) {
-	  map.setPitch(70);
-	  map.setBearing(20);
-	} else {
-	  map.setPitch(0);
-	  map.setBearing(0);
-	}
+        if (map.getPitch() === 0 && map.getBearing() === 0) {
+          map.setPitch(70);
+          map.setBearing(20);
+        } else {
+          map.setPitch(0);
+          map.setBearing(0);
+        }
 
-	setStateApp((stateApp) => ({
-	  ...stateApp,
-	  mapVars: {
-	    ...stateApp.mapVars,
-	    zoom: map.getZoom(),
-	    center: map.getCenter(),
-	    pitch: map.getPitch(),
-	    bearing: map.getBearing(),
-	  },
-	}));
-	setStateApp((stateApp) => ({ ...stateApp, toggle3d: null }));
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          mapVars: {
+            ...stateApp.mapVars,
+            zoom: map.getZoom(),
+            center: map.getCenter(),
+            pitch: map.getPitch(),
+            bearing: map.getBearing(),
+          },
+        }));
+        setStateApp((stateApp) => ({ ...stateApp, toggle3d: null }));
       }
     }
   }, [stateApp.toggle3d]);
@@ -4319,10 +4347,10 @@ function Map() {
   const handleToggleInteraction = (layerIdentifier, value) => {
     let layer;
     let index;
-    stateApp.layers.forEach((l, i) => {
-      if (l.identifier == layerIdentifier) {
-	layer = l;
-	index = i;
+    stateApp.layers?.forEach((l, i) => {
+      if (l.identifier === layerIdentifier) {
+        layer = l;
+        index = i;
       }
     });
     if (
@@ -4357,7 +4385,6 @@ function Map() {
   };
 
   useEffect(() => {
-
     if (stateApp.editDraw === true || stateNav.drawingMode) {
       setDrawStatus(true);
       if (mapClick && mapClick.mapClickHandler != null) {
@@ -4390,7 +4417,7 @@ function Map() {
       expandedCard: false,
       activateWellDetailsFromTable: false,
     }));
-    getCustomLayers()
+    getCustomLayers();
   };
 
   const deleteParcel = () => {
@@ -4404,7 +4431,7 @@ function Map() {
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
     });
-  }
+  };
 
   const handleCloseSpatialDataCard = (complete = true) => {
     setStateApp((state) => ({
@@ -4412,7 +4439,7 @@ function Map() {
       popupOpen: false,
       selectedUserDefinedLayer: undefined,
     }));
-    if (complete == true) {
+    if (complete === true) {
       setStateApp((state) => ({
 	...state,
 	selectedUserDefinedLayer: undefined,
@@ -4511,7 +4538,6 @@ function Map() {
 	refetchQueries: ["getCustomLayers"],
 	awaitRefetchQueries: true,
       });
-
     }
   };
 
@@ -4605,9 +4631,8 @@ function Map() {
     }
   };
 
-
   // useEffect(() => {
-  //   // use effect to add usersnap to the application 
+  //   // use effect to add usersnap to the application
 
   //   if (stateApp.userSnap === true) {
   //     var script = document.createElement("script");
@@ -4662,9 +4687,8 @@ function Map() {
   useEffect(() => {
     /////// USE EFFECT  to handle the map zoom /  for selected well elements
 
-    if ((stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true)) {
+    if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
       // set and remove map marker
-
 
       // mathematical formula for screen fit
       const alpha = 0.01;
@@ -4689,38 +4713,33 @@ function Map() {
 	...stateApp,
 	wellDetailCardOpen: false,
       });
-
     }
   }, [stateApp.wellDetailCardOpen]);
-
 
   useEffect(() => {
     /////// USE EFFECT  to handle the map zoom /  for selected parcel elements
 
-    if ((stateApp.parcelDetailCardOpen && stateApp.parcelDetailCardOpen === true)) {
+    if (
+      stateApp.parcelDetailCardOpen &&
+      stateApp.parcelDetailCardOpen === true
+    ) {
       // set and remove map marker
 
-      let coordinates = stateApp.selectedParcel.shapeCenter
+      let coordinates = stateApp.selectedParcel.shapeCenter;
       if (typeof stateApp.selectedParcel.shapeCenter === "string") {
 	coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter);
       }
-      const longitude = coordinates[0]
-      const latitude = coordinates[1]
+      const longitude = coordinates[0];
+      const latitude = coordinates[1];
 
-      const mapBounds = map.getBounds()
-      const screenLeftLng = mapBounds._sw.lng
-      const screenRightLng = mapBounds._ne.lng
-      const alpha = (screenRightLng - screenLeftLng) / 2
+      const mapBounds = map.getBounds();
+      const screenLeftLng = mapBounds._sw.lng;
+      const screenRightLng = mapBounds._ne.lng;
+      const alpha = (screenRightLng - screenLeftLng) / 2;
 
       const bbox = [
-	[
-	  longitude - 1.5 * alpha,
-	  latitude,
-	],
-	[
-	  longitude + 0.5 * alpha,
-	  latitude,
-	],
+        [longitude - 1.5 * alpha, latitude],
+        [longitude + 0.5 * alpha, latitude],
       ];
 
       map.fitBounds(bbox, {
@@ -4732,55 +4751,51 @@ function Map() {
 	...stateApp,
 	parcelDetailCardOpen: false,
       });
-
     }
   }, [stateApp.parcelDetailCardOpen]);
-
-
-
 
   useEffect(() => {
     if (parcelBoundaryId && map) {
       let mapSourceData = map.getSource('parcels_source')._data;
       const idx = mapSourceData.features.findIndex(feature => feature.id === parcelBoundaryId)
       if (idx > -1) {
-	const geoJson = {
-	  type: 'Feature',
-	  properties: {},
-	  geometry: {
-	    type: 'LineString',
-	    coordinates: mapSourceData.features[idx].geometry.coordinates[0]
-	  }
-	}
+        const geoJson = {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "LineString",
+            coordinates: mapSourceData.features[idx].geometry.coordinates[0],
+          },
+        };
 
-	if (map.getSource('parcelBoundarySource')) {
-	  map.getSource('parcelBoundarySource').setData(geoJson);
-	  if (map.getLayer('parcelBoundary')) {
-	    map.removeLayer('parcelBoundary')
-	  }
-	} else {
-	  map.addSource('parcelBoundarySource', {
-	    type: "geojson",
-	    data: geoJson
-	  });
-	}
+        if (map.getSource('parcelBoundarySource')) {
+          map.getSource('parcelBoundarySource').setData(geoJson);
+          if (map.getLayer('parcelBoundary')) {
+            map.removeLayer('parcelBoundary')
+          }
+        } else {
+          map.addSource("parcelBoundarySource", {
+            type: "geojson",
+            data: geoJson
+          });
+        }
 
-	map.addLayer({
-	  id: 'parcelBoundary',
-	  type: 'line',
-	  source: 'parcelBoundarySource',
-	  layout: {
-	    'line-join': 'round',
-	    'line-cap': 'round'
-	  },
-	  paint: {
-	    'line-color': '#FFFF00',
-	    'line-width': 8
-	  }
-	});
+        map.addLayer({
+          id: "parcelBoundary",
+          type: "line",
+          source: "parcelBoundarySource",
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#FFFF00",
+            "line-width": 8,
+          },
+        });
       }
     }
-  }, [parcelBoundaryId])
+  }, [parcelBoundaryId]);
 
   useEffect(() => {
     if (map && stateApp.selectedParcel) {
@@ -4790,7 +4805,7 @@ function Map() {
       if (map.getSource('parcelBoundarySource')) map.removeSource('parcelBoundarySource');
       setParcelBoundaryId(null);
     }
-  }, [stateApp.selectedParcel])
+  }, [stateApp.selectedParcel]);
 
   return (
     <div className={classes.mapWrapper}>
@@ -4865,148 +4880,117 @@ function Map() {
      )
     }
 
-    {stateApp.selectedParcel !== null &&
-     stateApp.expandedCard && (
+      <div id="modalHolder" ref={modalContainer} />
+      <Portal container={modalContainer.current}>
+        {/* {stateApp.selectedAbstracts.length > 0 && (
+          <AbstractSelectionPopup
+            abstracts={stateApp.selectedAbstracts}
+            map={map}
+            onClickExpand={handleAnchorElPopOver}
+          />
+        )} */}
 
-       <div className={classes.draggable}>
-	 <ExpandableCardProvider
-	   expanded={true}
-	   handleCloseExpandableCard={handleCloseExpandableCard}
-	   component={<ParcelCardProvider></ParcelCardProvider>}
-	   title={stateApp.selectedParcel.shapeLabel}
-	   subTitle=""
-	   parent="map"
-	   position="relative"
-	   cardTop={20}
-	   cardLeft={20}
-	   zIndex={99}
-	   cardWidthExpanded="50vw"
-	   cardHeightExpanded="90vh"
-	   targetSourceId={stateApp.selectedParcel.id}
-	   targetLabel="parcel"
-	   deleteParcel={deleteParcel}
-	 ></ExpandableCardProvider>
-       </div>
-     )
-    }
+        {/* {stateApp.selectedParcel !== null && stateApp.expandedCard && (
+          <div className={classes.draggable}>
+            <ExpandableCardProvider
+              expanded={true}
+              handleCloseExpandableCard={handleCloseExpandableCard}
+              component={<ParcelCardProvider></ParcelCardProvider>}
+              title={stateApp.selectedParcel.shapeLabel}
+              subTitle=""
+              parent="map"
+              position="relative"
+              cardTop={20}
+              cardLeft={20}
+              zIndex={99}
+              cardWidthExpanded="50vw"
+              cardHeightExpanded="90vh"
+              targetSourceId={stateApp.selectedParcel.id}
+              targetLabel="parcel"
+              deleteParcel={deleteParcel}
+            ></ExpandableCardProvider>
+          </div>
+        )} */}
+      </Portal>
+      <Portal container={container.current}>
+        {stateApp.popupOpen === true ? (
+          <div>
+            {stateApp.selectedWell !== null &&
+              // && stateApp.popupOpen==true
+              showExpandableCard && (
+                <PortalD id="popupContainer">
+                  {!stateApp.expandedCard && (
+                    <ExpandableCardProvider
+                      handleCloseExpandableCard={handleCloseExpandableCard}
+                      component={<WellCardProvider />}
+                      title={stateApp.selectedWell.wellName}
+                      subTitle={stateApp.selectedWell.api}
+                      parent="map"
+                      mouseX={0}
+                      mouseY={0}
+                      position="relative"
+                      cardLeft={0}
+                      cardTop={0}
+                      zIndex={3000}
+                      cardWidth="350px"
+                      cardWidthExpanded="50vw"
+                      cardHeightExpanded="95vh"
+                      targetSourceId={stateApp.selectedWell.id}
+                      targetLabel="well"
+                    ></ExpandableCardProvider>
+                  )}
+                </PortalD>
+              )}
+            {stateApp.selectedParcel && (
+              <PortalD id="popupContainer">
+                {!stateApp.expandedCard && (
+                  <ExpandableCardProvider
+                    expanded={false}
+                    handleCloseExpandableCard={handleCloseExpandableCard}
+                    component={<ParcelCardProvider></ParcelCardProvider>}
+                    title={stateApp.selectedParcel.shapeLabel}
+                    subTitle=""
+                    parent="map"
+                    mouseX={0}
+                    mouseY={0}
+                    position="relative"
+                    cardLeft={20}
+                    cardTop={70}
+                    zIndex={99}
+                    cardWidth="350px"
+                    cardWidthExpanded="50vw"
+                    cardHeightExpanded="90vh"
+                    targetSourceId={stateApp.selectedParcel.id}
+                    targetLabel="parcel"
+                    deleteParcel={deleteParcel}
+                  ></ExpandableCardProvider>
+                )}
+              </PortalD>
+            )}
 
-    <div id="modalHolder" ref={modalContainer} />
-    <Portal container={modalContainer.current}>
-      {stateApp.selectedAbstracts.length > 0 && (
-	<AbstractSelectionPopup
-	  abstracts={stateApp.selectedAbstracts}
-	  map={map}
-	  onClickExpand={handleAnchorElPopOver}
-	/>
-      )}
-    </Portal>
-    <Portal container={container.current}>
-      {stateApp.popupOpen === true ? (
-	<div>
-	  {stateApp.selectedWell !== null &&
-	   // && stateApp.popupOpen==true
-	   showExpandableCard && (
-	     <PortalD id="popupContainer">
-	       {!stateApp.expandedCard && (
-		 <ExpandableCardProvider
-		   handleCloseExpandableCard={handleCloseExpandableCard}
-		   component={<WellCardProvider />}
-		   title={stateApp.selectedWell.wellName}
-		   subTitle={stateApp.selectedWell.api}
-		   parent="map"
-		   mouseX={0}
-		   mouseY={0}
-		   position="relative"
-		   cardLeft={0}
-		   cardTop={0}
-		   zIndex={3000}
-		   cardWidth="350px"
-		   cardWidthExpanded="50vw"
-		   cardHeightExpanded="95vh"
-		   targetSourceId={stateApp.selectedWell.id}
-		   targetLabel="well"
-		 ></ExpandableCardProvider>
-	       )}
-	     </PortalD>
-	   )}
-
-	  {stateApp.selectedPermit !== null &&
-	   // && stateApp.popupOpen==true
-	   showExpandableCard && (
-	     <PortalD id="popupContainer">
-	       {!stateApp.expandedCard && (
-		 <ExpandableCardProvider
-		   handleCloseExpandableCard={handleCloseExpandableCard}
-		   component={<PermitCardProvider />}
-		   title={stateApp.selectedPermit.OperatorName}
-		   subTitle={stateApp.selectedPermit.ApiNumber}
-		   parent="map"
-		   mouseX={0}
-		   mouseY={0}
-		   position="relative"
-		   cardLeft={0}
-		   cardTop={0}
-		   zIndex={3000}
-		   cardWidth="350px"
-		   cardWidthExpanded="50vw"
-		   cardHeightExpanded="95vh"
-		   targetSourceId={stateApp.selectedPermit.Id}
-		   targetLabel="well"
-		 ></ExpandableCardProvider>
-	       )}
-	     </PortalD>
-	   )}
-	  
-	  {stateApp.selectedParcel && (
-	    <PortalD id="popupContainer">
-	      {!stateApp.expandedCard && (
-		<ExpandableCardProvider
-		  expanded={false}
-		  handleCloseExpandableCard={handleCloseExpandableCard}
-		  component={<ParcelCardProvider></ParcelCardProvider>}
-		  title={stateApp.selectedParcel.shapeLabel}
-		  subTitle=""
-		  parent="map"
-		  mouseX={0}
-		  mouseY={0}
-		  position="relative"
-		  cardLeft={20}
-		  cardTop={70}
-		  zIndex={99}
-		  cardWidth="350px"
-		  cardWidthExpanded="50vw"
-		  cardHeightExpanded="90vh"
-		  targetSourceId={stateApp.selectedParcel.id}
-		  targetLabel="parcel"
-		  deleteParcel={deleteParcel}
-		></ExpandableCardProvider>
-	      )}
-	    </PortalD>
-	  )}
-
-	  {stateApp.selectedUserDefinedLayer && (
-	    <PortalD id="popupContainer">
-	      <SpatialDataCardEdit
-		selectedFeature={stateApp.selectedUserDefinedLayer}
-		saveSpatialData={handleSaveSpatialDataToShape}
-		closeSpatialDataCard={handleCloseSpatialDataCard}
-		deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
-		cardClass={"cardPopup"}
-	      />
-	    </PortalD>
-	  )}
-	  {stateApp.filterFeature && (
-	    <PortalD id="filterPopupContainer">
-	      <FilterControl filterFeature={stateApp.filterFeature} />
-	    </PortalD>
-	  )}
-	</div>
-      ) : null}
-    </Portal>
-    </div>
+            {/* {stateApp.selectedUserDefinedLayer && (
+              <PortalD id="popupContainer">
+                <SpatialDataCardEdit
+                  selectedFeature={stateApp.selectedUserDefinedLayer}
+                  saveSpatialData={handleSaveSpatialDataToShape}
+                  closeSpatialDataCard={handleCloseSpatialDataCard}
+                  deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
+                  cardClass={"cardPopup"}
+                />
+              </PortalD>
+            )} */}
+            {stateApp.filterFeature && (
+              <PortalD id="filterPopupContainer">
+                <FilterControl filterFeature={stateApp.filterFeature} />
+              </PortalD>
+            )}
+          </div>
+        ) : null}
+      </Portal>
+    </div >
   );
 }
 
-Map.whyDidYouRender = true
+Map.whyDidYouRender = true;
 
 export default React.memo(Map);

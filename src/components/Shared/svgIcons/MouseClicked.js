@@ -1,0 +1,71 @@
+// Copyright (c) 2020 Uber Technologies, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import Base from "./base";
+
+export default class DrawClickedMouse extends Component {
+  static propTypes = {
+    /** Set the height of the icon, ex. '16px' */
+    height: PropTypes.string,
+    predefinedClassName: PropTypes.string,
+    viewBox: PropTypes.string,
+    style: PropTypes.object,
+  };
+
+  static defaultProps = {
+    height: "18px",
+    width: "18px",
+    predefinedClassName: "data-ex-icons-mouse-clicked",
+    viewBox: "0 0 22 18",
+  };
+
+  render() {
+    return (
+      <Base {...this.props}>
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 35.999989 37.000289"
+          id="svg8381"
+        >
+          <g id="pixel_51-layer-1" transform="translate(-351.51351,-301.99097)">
+            <path
+              id="pixel_51-path-cursor_click"
+              d="m 354.17289,304.65034 c 3.73463,-3.59301 9.65735,-3.53839 13.32543,0.12254 1.7217,1.72887 2.70676,4.05189 2.76592,6.48766 a 1.6379033,1.6379033 0 0 1 0.007,0.13301 1.6379033,1.6379033 0 0 1 -0.4779,1.21316 1.6379033,1.6379033 0 0 1 -1.21316,0.47791 1.6379033,1.6379033 0 0 1 -1.10287,-0.47966 1.6379033,1.6379033 0 0 1 -0.47616,-1.09937 c -0.004,-0.0143 9e-5,-0.0209 0,-0.0316 -0.0175,-3.42712 -2.80087,-6.20018 -6.23208,-6.20054 -1.58833,0.003 -3.1154,0.61231 -4.26967,1.70332 -1.091,1.15428 -1.70038,2.68136 -1.70333,4.26968 3.9e-4,3.43118 2.77344,6.21453 6.20054,6.23209 0.0107,0 0.0176,-0.003 0.0315,0 a 1.6379033,1.6379033 0 0 1 1.09937,0.47615 1.6379033,1.6379033 0 0 1 0.47966,1.10287 1.6379033,1.6379033 0 0 1 -0.47791,1.21316 1.6379033,1.6379033 0 0 1 -1.21315,0.4779 1.6379033,1.6379033 0 0 1 -0.13301,-0.007 c -2.43577,-0.0592 -4.75879,-1.04423 -6.48766,-2.76593 -3.66092,-3.66809 -3.71554,-9.59081 -0.12253,-13.32544 z m 6.13055,6.13055 c 0.15996,-0.16032 0.38042,-0.2605 0.62495,-0.26084 0.14018,-3.6e-4 0.2794,0.0325 0.40438,0.0963 6.9279,2.99664 14.19418,6.12125 21.40433,9.36032 0.0188,0.008 0.0368,0.0152 0.0561,0.0246 0.0134,0.004 0.0161,0.009 0.0224,0.0116 l -0.002,0.002 c 0.22398,0.11482 0.36479,0.34526 0.36586,0.59695 -5e-4,0.20163 -0.12574,0.35734 -0.28183,0.48493 -1.66519,1.60782 -2.89222,2.86174 -4.30643,4.30643 l 8.67581,8.67939 c 0.0179,0.0143 0.0332,0.0296 0.0493,0.0457 0.26294,0.263 0.26291,0.68932 -5e-5,0.95227 -0.0108,0.0115 -0.0218,0.0225 -0.0333,0.0333 -1.26048,1.26065 -1.30764,1.30763 -1.32344,1.32343 -0.0158,0.0158 -0.0628,0.063 -1.32345,1.32345 -0.0108,0.0115 -0.0218,0.0225 -0.0333,0.0333 -0.26296,0.26296 -0.68927,0.263 -0.95227,5e-5 -0.0161,-0.0161 -0.0314,-0.0313 -0.0457,-0.0493 l -8.6794,-8.67581 c -1.44468,1.41421 -2.69859,2.64123 -4.30643,4.30643 -0.12749,0.15618 -0.28231,0.28232 -0.48493,0.28183 -0.25169,-10e-4 -0.48212,-0.14188 -0.59693,-0.36587 l -0.002,0.002 c -0.007,-0.0108 -0.008,-0.01 -0.0116,-0.0224 -0.01,-0.0188 -0.0165,-0.0373 -0.0246,-0.0561 -3.23907,-7.21016 -6.36368,-14.47644 -9.36032,-21.40433 -0.0638,-0.12495 -0.0966,-0.26423 -0.0963,-0.40439 3.5e-4,-0.2445 0.10052,-0.46499 0.26084,-0.62496 z"
+              style={{
+                opacity: 1,
+                stroke: "#ffffff",
+                "stroke-width": 0,
+                "stroke-linecap": "round",
+                "stroke-linejoin": "miter",
+                "stroke-miterlimit": 4,
+                "stroke-dasharray": "none",
+                "stroke-dashoffset": 0,
+                "stroke-opacity": 1,
+              }}
+            />
+          </g>
+        </svg>
+      </Base>
+    );
+  }
+}

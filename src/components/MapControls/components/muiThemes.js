@@ -20,7 +20,7 @@ const MUIPopoverProps = {
     horizontal: "right"
   }
 };
-export const useStyles = makeStyles(theme => ({
+export const AppStyles = makeStyles(theme => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important"
   }
