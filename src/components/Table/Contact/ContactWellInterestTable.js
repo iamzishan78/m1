@@ -16,7 +16,8 @@ import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functio
 import AddWellInterestDialog from "components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 
 // Header Schemas 
-import ContactWellHeadCells from 'components/Shared/constants/contactperwell-header-schema.js'
+import TableHeader from 'components/Shared/constants/contactperwell-header-schema.js'
+import { handleTagColumn } from "../helpers";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -38,6 +39,7 @@ function ContactWellInterestTable(props) {
 
   // queries 
   const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY);
+  const tableData = dataContactWells?.paginatedContactWellInterests
 
   const addAble = { type: "wellInterest" }
   const total = false
@@ -56,13 +58,17 @@ function ContactWellInterestTable(props) {
   }, [props.parent]);
 
   useEffect(() => {
-     const getData = async() => {
-    if (props.parent && props.parent === "assocTaxRollInterests" && dataContactWells?.paginatedContactWellInterests?.edges?.length > 0) {
+    if (tableData?.edges?.length > 0) {
+      let wells = tableData.edges.map((el) => el.node)
+      const objectsIdsArray = wells.map((well) => well.wellId);
+      props.initializeGenericData(objectsIdsArray, ['comments', 'tags'])
+    }
+
+  }, [tableData])
+
+  useEffect(() => {
+    if (dataContactWells?.paginatedContactWellInterests?.edges?.length > 0) {
       let wells = dataContactWells.paginatedContactWellInterests.edges.map((el) => el.node)
-      const objectsIdsArray = wells.map(
-        (well) => well.wellId
-      );
-      const genericData = await props.getGenericData(objectsIdsArray, ['comments','tags'])
 
       wells = wells.map((w) => {
         let well = { ...w };
@@ -72,48 +78,20 @@ function ContactWellInterestTable(props) {
         well.commentsCounter = 0;
         well.tags = [[], 0];
 
-        well = props.setGenricData(well, well.wellId, genericData, ['comments', 'tracks', 'tags'])
+        well = props.setGenricData(well, well.wellId, ['comments', 'tracks', 'tags'])
 
         return well;
       });
       props.setRows(wells);
-
       const cleanAvailableTags = []; // get from backend
-      setColumns([
-        ...(cleanAvailableTags.length > 0
-          ? ContactWellHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filterOptions: {
-                    ...column.options.filterOptions,
-                    names: cleanAvailableTags,
-                  },
-                },
-              };
-            }
-            return column;
-          })
-          : ContactWellHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filter: false,
-                },
-              };
-            }
-            return column;
-          })),
-      ]);
+      const columns = handleTagColumn(TableHeader, cleanAvailableTags);
+      setColumns(columns);
       props.setLoading(false);
     }
-  }
-  getData()
-  }, [dataContactWells]);
+    else if (tableData?.edges?.length === 0) {
+      props.setLoading(false);
+    }
+  }, [tableData, props.dependencyUpdate]);
 
   ////////////Contact Wells end///////////////////////////////////////////////
 

@@ -106,12 +106,11 @@ const useStyles = makeStyles((theme) => ({
 
 function ContactsWellInterestsParcelInterests(props) {
   const [assocTapValue, AssocTapValue] = useState(0);
-  const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY, { fetchPolicy: "cache-and-network", });
-  const setAssocTapValue = (state) => {
-    if (assocTapValue != state) {
-      AssocTapValue(state);
-    }
-  };
+  // const setAssocTapValue = (state) => {
+  //   if (assocTapValue != state) {
+  //     AssocTapValue(state);
+  //   }
+  // };
 
   //temporarily commented out until we have other tabs to show such as parcels, leases, etc.
   // const header = <TabLabels
