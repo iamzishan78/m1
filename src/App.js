@@ -4,23 +4,24 @@ import { AppProvider, AppContext } from './AppContext';
 import { Switch, Route } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 //components
-import Login from './components/Login/Login';
-import LoginB2C from './components/Login/LoginB2C';
-import SignUpCard from './components/Login/SignUpCard';
-import ForgotPassword from './components/Login/ForgotPassword';
-import NavigationProvider from './components/Navigation/NavigationProvider';
-import MapProvider from './components/Map/MapProvider';
-import TrackProvider from './components/Track/TrackProvider';
-import TransactProvider from './components/Transact/TransactProvider';
-import TitleOpinionProvider from './components/TitleOpinion/TitleOpinionProvider';
-import ContactsProvider from './components/Contacts/ContactsProvider';
-import ContactDetailsProvider from './components/ContactDetailCard/ContactDetailsProvider';
-import AlertsProvider from './components/Alerts/AlertsProvider';
-import DashboardProvider from './components/Dashboard/DashboardProvider';
-import StudioProvider from './components/Studio/StudioProvider';
-import BulkUpload from './components/BulkUpload/BulkUpload';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import ActivitiesProvider from './components/Activities/ActivitiesProvider';
+import Login from "./components/Login/Login";
+import LoginB2C from "./components/Login/LoginB2C";
+import SignUpCard from "./components/Login/SignUpCard";
+import ForgotPassword from "./components/Login/ForgotPassword";
+import NavigationProvider from "./components/Navigation/NavigationProvider";
+import MapProvider from "./components/Map/MapProvider";
+import TrackProvider from "./components/Track/TrackProvider";
+import TransactProvider from "./components/Transact/TransactProvider";
+import DocumentProvider from './components/Document/DocumentProvider'
+import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider";
+import ContactsProvider from "./components/Contacts/ContactsProvider";
+import ContactDetailsProvider from "./components/ContactDetailCard/ContactDetailsProvider";
+import AlertsProvider from "./components/Alerts/AlertsProvider";
+import DashboardProvider from "./components/Dashboard/DashboardProvider";
+import StudioProvider from "./components/Studio/StudioProvider";
+import BulkUpload from "./components/BulkUpload/BulkUpload";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
 
 // pick a date util library
 import MomentUtils from '@date-io/moment';
@@ -194,8 +195,8 @@ function App() {
   };
 
   const updateApolloClient = (endpoint, token) => {
-    //uncomment to run against local
-    //endpoint = "http://localhost:7071/api/m1graph"
+    // uncomment to run against local
+    // endpoint = "http://localhost:7071/api/m1graph"
 
     if (!apolloClient) {
       let client = new ApolloClient({
@@ -269,6 +270,11 @@ function App() {
                         exact
                         path="/flow"
                         component={TransactProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/documents"
+                        component={DocumentProvider}
                       />
                       <PrivateRoute
                         exact
