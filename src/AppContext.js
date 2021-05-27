@@ -121,6 +121,7 @@ const AppProvider = (props) => {
     contactSearchQuery: "",
     isContactSearching: false,
     viewDoc:null,
+    pdfView: null,
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;
