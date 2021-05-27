@@ -492,7 +492,6 @@ function SubTable(props) {
 
   // handlers 
   const handleWellFlyTo = (value) => {
-
     // setting state to fly to the selected well 
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -598,7 +597,7 @@ function SubTable(props) {
   useEffect(() => {
     if (
       props.parent &&
-      (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests") &&
+      (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests" || props.parent === "wells") &&
       props.targetLabel == "well" &&
       dataWell &&
       dataWell.well
@@ -993,7 +992,6 @@ function SubTable(props) {
                         }`}
                       onClick={(e) => {
                         e.stopPropagation();
-
                         if (value) {
                           setStateApp((state) => ({
                             ...state,
@@ -2151,7 +2149,7 @@ function SubTable(props) {
                         color="secondary"
                         startIcon={<AssignmentIndOutlinedIcon />}
                         className={classes.multiSelectionTopBarButtons}
-                        disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length <= 1}
+                        disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
                         onClick={() => {
                           handleExpandClick(
                             null,
