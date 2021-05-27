@@ -1445,7 +1445,7 @@ function AddDealDialog(props) {
               <FormControl
                 variant="outlined"
                 fullWidth
-                className={classes.inputFieldCommonInfo}
+                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
 
@@ -1465,11 +1465,15 @@ function AddDealDialog(props) {
                   classes={{
                     inputRoot: classes.dealOwnerRoot,
                   }}
+                  // className={classes.inputFieldCommonInfo}
+
                   renderInput={(params) => (
                     <TextField
                       margin="dense"
                       {...params}
                       variant="outlined"
+                      className={classes.inputFieldCommonInfo}
+
                       // label="Deal Owner"
                       InputLabelProps={{
                         shrink: true,
@@ -1482,7 +1486,9 @@ function AddDealDialog(props) {
                         startAdornment: (
                           <>
                             <InputAdornment position="start">
-                              <Avatar className={classes.dealOwnerAvatar}>
+                              <Avatar 
+                              className={classes.dealOwnerAvatar}
+                              >
                                 OP
                               </Avatar>
                             </InputAdornment>
@@ -1558,6 +1564,8 @@ function AddDealDialog(props) {
                   }}
                   fullWidth
                   label="Pipeline"
+                  className={classes.inputFieldCommonInfo}
+
                 >
                   {selectedPipe && (
                     <option value={selectedPipe._id}>
@@ -1581,7 +1589,7 @@ function AddDealDialog(props) {
               <FormControl
                 variant="outlined"
                 fullWidth
-                className={classes.inputFieldCommonInfo}
+                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
                 <Grid container spacing={2} className={classes.gridStyle}>
@@ -1596,6 +1604,7 @@ function AddDealDialog(props) {
                 <Select
                   native
                   value={stageId}
+                  className={classes.inputFieldCommonInfo}
                   onChange={(e) => {
                     // setStageId(e.target.value);
                     settingNewStageAndFindNextAvailablePosition(
@@ -1617,6 +1626,15 @@ function AddDealDialog(props) {
                 </Grid>
               </FormControl>
 
+
+              <FormControl
+                variant="outlined"
+                fullWidth
+                className={classes.inputFieldCommonInfo}
+                size="small"
+              >
+
+
               <Grid container spacing={2} className={classes.gridStyle}>
                 <Grid item xs={3}>
                 <div>Offer Price</div>
@@ -1635,13 +1653,13 @@ function AddDealDialog(props) {
                 onChange={(e) => {
                   setLabel(e.target.value);
                 }}
-                className={classes.inputField}
                 InputProps={{
                   inputComponent: NumberFormatCustom,
                 }}
               />
               </Grid>
               </Grid>
+              </FormControl>
 
 
 
