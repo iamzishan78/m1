@@ -38,6 +38,7 @@ import MakeItAContactConfirmationDialogContent from "./SubComponents/MakeItACont
 import Button from "@material-ui/core/Button";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
 import MergeTypeIcon from "@material-ui/icons/MergeType";
+import AssignmentIndOutlinedIcon from '@material-ui/icons/AssignmentIndOutlined';
 import ContactPhoneRoundedIcon from "@material-ui/icons/ContactPhoneRounded";
 import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
 import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
@@ -75,21 +76,18 @@ import WellTableStyles from "../customStyles/WellTableStyle";
 import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
 import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
 import moment from "moment";
-import CheckIcon from "@material-ui/icons/Check";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
+import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
 import Chip from '@material-ui/core/Chip';
-import FilterIcon from "../../svgIcons/filter";
-import ViewColumnIcon from "../../svgIcons/view_column";
+
 import ButtonDropDown from "./ButtonGroup"
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import PostAddIcon from '@material-ui/icons/PostAdd';
+
 // import value formatters 
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
 import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
 import RightDialog from "../../../ContactDetailCard/components/RightDialog"
-
 
 // queries 
 import { OWNERSLATSLONS } from "../../../../graphQL/useQueryOwnerLatsLonsArray";
@@ -97,11 +95,18 @@ import { OPERATORSLATSLONS } from "../../../../graphQL/useQueryOperatorLatsLonsA
 import { LEASELATSLONS } from "../../../../graphQL/useQueryLeaseLatsLonsArray";
 import { CONTACTWELLS } from "../../../../graphQL/useQueryContactWells";
 import { Typography } from "@material-ui/core";
+import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 
 //icons
 import SearchIcon from '@material-ui/icons/Search';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
+import PageviewIcon from '@material-ui/icons/Pageview';
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import PostAddIcon from '@material-ui/icons/PostAdd';
+import FilterIcon from "../../svgIcons/filter";
+import ViewColumnIcon from "../../svgIcons/view_column";
+import CheckIcon from "@material-ui/icons/Check";
+
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false
@@ -213,7 +218,7 @@ const useStyles = makeStyles((theme) => ({
       paddingLeft: '11px !important'
     },
     "& .MuiPaper-elevation1": {
-      flexDirection: "row !important" ,
+      flexDirection: "row !important",
       height: '65px !important',
       width: '100% !important',
       display: 'flex !important',
@@ -244,9 +249,9 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "#F2F2F2",
         zIndex: "auto",
         padding: (props) => (props.dense ? "10px" : null),
-        "& button":{
-          "& .MuiButton-label":{
-              textAlign:'left'
+        "& button": {
+          "& .MuiButton-label": {
+            textAlign: 'left'
           }
         }
       },
@@ -373,7 +378,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "rgba(1, 17, 51, 1)",
     color: "#fff",
     border: '1px solid #B3B3B3',
-    "&:hover":{
+    "&:hover": {
       backgroundColor: "#263451",
       color: "#fff",
     }
@@ -468,7 +473,7 @@ function SubTable(props) {
   const [year, setYear] = React.useState(2020);
   const [total, Total] = useState(false);
   const [rows, Rows] = useState([]);
-  const [handleSearch, setHandleSearch] = useState(() => () => {});
+  const [handleSearch, setHandleSearch] = useState(() => () => { });
   // const [handleSearchClose, setHandleSearchClose] = useState(() => () => {});
 
   // deep state 
@@ -534,7 +539,6 @@ function SubTable(props) {
   }, [viewFileResult]);
   // handlers 
   const handleWellFlyTo = (value) => {
-
     // setting state to fly to the selected well 
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -640,7 +644,7 @@ function SubTable(props) {
   useEffect(() => {
     if (
       props.parent &&
-      (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests") &&
+      (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests" || props.parent === "wells") &&
       props.targetLabel == "well" &&
       dataWell &&
       dataWell.well
@@ -1035,7 +1039,6 @@ function SubTable(props) {
                         }`}
                       onClick={(e) => {
                         e.stopPropagation();
-
                         if (value) {
                           setStateApp((state) => ({
                             ...state,
@@ -1444,7 +1447,7 @@ function SubTable(props) {
                           margin: "0",
                         }}
                       >
-                        N/A
+                        --
                       </p>
                     );
                   }
@@ -1742,7 +1745,8 @@ function SubTable(props) {
                         }
                       }}
                     >
-                       <SearchIcon/>
+                      {/* // this is the search icon in the grid on documents */}
+                       <PageviewIcon/>
                      </IconButton>
                      <IconButton    onClick={(e)=>{
                        e.stopPropagation()
@@ -2294,9 +2298,26 @@ function SubTable(props) {
                     display: "flex",
                   }}
                 >
-                {(props.header !== "Active Users" &&  props.header !== 'Documents') && (
-                  <>
-                    {/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
+                  {props.header !== "Active Users" && (
+                    <>
+                      {/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
+                      <Button
+                        color="secondary"
+                        startIcon={<AssignmentIndOutlinedIcon />}
+                        className={classes.multiSelectionTopBarButtons}
+                        disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+                        onClick={() => {
+                          handleExpandClick(
+                            null,
+                            null,
+                            getSelectedRows(),
+                            "asign"
+                          );
+                        }}
+                      >
+                        Assign
+                      </Button>
+
                       <Button
                         color="secondary"
                         startIcon={<MergeTypeIcon />}
@@ -2313,10 +2334,11 @@ function SubTable(props) {
                       >
                         Merge
                       </Button>
-                    {/* )} */}
 
-                    {/* temporary comment out until melissa is back */}
-                    {/* <Button
+                      {/* )} */}
+
+                      {/* temporary comment out until melissa is back */}
+                      {/* <Button
                       color="secondary"
                       startIcon={<ContactPhoneRoundedIcon />}
                       className={classes.multiSelectionTopBarButtons}
@@ -2331,39 +2353,39 @@ function SubTable(props) {
                     >
                       Buy Contact Info
                       </Button> */}
-                    <Button
-                      color="secondary"
-                      startIcon={<EmailRoundedIcon />}
-                      className={classes.multiSelectionTopBarButtons}
-                      onClick={() => {
-                        handleExpandClick(
-                          null,
-                          null,
-                          getSelectedRows(),
-                          "sendMailers"
-                        );
-                      }}
-                    >
-                      Mailers
+                      <Button
+                        color="secondary"
+                        startIcon={<EmailRoundedIcon />}
+                        className={classes.multiSelectionTopBarButtons}
+                        onClick={() => {
+                          handleExpandClick(
+                            null,
+                            null,
+                            getSelectedRows(),
+                            "sendMailers"
+                          );
+                        }}
+                      >
+                        Mailers
                       </Button>
 
-                    <Divider orientation="vertical" flexItem />
-                  </>
-                )}
-                <Tooltip title={"Delete"}>
-                  <IconButton
-                    size="medium"
-                    style={{ margin: "0 5px" }}
-                    onClick={(e) => {
-                      props.header !== "Active Users"
-                        ? handleExpandClick(null, null, null, "deleteContact")
-                        : handleExpandClick(null, null, null, "deleteUser");
-                    }}
-                    aria-label="delete"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
+                      <Divider orientation="vertical" flexItem />
+                    </>
+                  )}
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        props.header !== "Active Users"
+                          ? handleExpandClick(null, null, null, "deleteContact")
+                          : handleExpandClick(null, null, null, "deleteUser");
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
                 </div>
               </div>
             );
@@ -2429,12 +2451,12 @@ function SubTable(props) {
     customToolbar: () => {
 
       console.log('props addable type', props.addAble.type)
-      var buttonLabel = "+ ADD"; 
-      if (props.addAble.type === "contact"){buttonLabel = '+ ADD CONTACT'}
-      if (props.addAble.type === "wellInterest"){buttonLabel = '+ ADD INTEREST'}
-      if (props.addAble.type === "deals"){buttonLabel = '+ ADD DEAL'}
-      if (props.addAble && props.parent === "UserManagement"){buttonLabel = "+ ADD USER"}
-      if (props.addAble.type === "ownerToParcel"){buttonLabel = '+ ADD INTEREST OWNER'}
+      var buttonLabel = "+ ADD";
+      if (props.addAble.type === "contact") { buttonLabel = '+ ADD CONTACT' }
+      if (props.addAble.type === "wellInterest") { buttonLabel = '+ ADD INTEREST' }
+      if (props.addAble.type === "deals") { buttonLabel = '+ ADD DEAL' }
+      if (props.addAble && props.parent === "UserManagement") { buttonLabel = "+ ADD USER" }
+      if (props.addAble.type === "ownerToParcel") { buttonLabel = '+ ADD INTEREST OWNER' }
 
 
       const addAction = (e) => {
@@ -2482,12 +2504,12 @@ function SubTable(props) {
 
 
       const options = [
-        { 
+        {
           text: buttonLabel,
           isShow: false,
           action: addAction
         },
-        {  text: 'Import Contacts', isShow: true, action: () => routeChange("/bulkupload") }
+        { text: 'Import Contacts', isShow: true, action: () => routeChange("/bulkupload") }
       ];
       const getSelectedRows = () => {
         const selectedRows = [];
@@ -2499,43 +2521,25 @@ function SubTable(props) {
 
       return (
         <>
-         {/*
-         {props.header === 'Documents' &&     <ButtonGroup variant="contained" style={{height:'40px'}} color="primary" aria-label="split button"><Button
-                    color="primary"
-                    size="small"
-                    // aria-controls={open ? 'split-button-menu' : undefined}
-                    // aria-expanded={open ? 'true' : undefined}
-                    aria-label="select merge strategy"
-                    aria-haspopup="menu"
-                    onClick={()=>{
-                      setStateApp({...stateApp, DocumentDrawer:true})
-                    }}
+
+          <div style={{ display: 'inline', cssFloat: 'left', marginRight: '15px', marginTop: '5px' }}>
+            {(props.addAble.type === "wellInterest"
+              || props.addAble.type === "deals"
+              || props.addAble.type === "ownerToParcel"
+              || (props.addAble && props.parent === "UserManagement"))
+
+              && (
+                <Button
+                  color="secondary"
+                  className={classes.multiSelectionTopBarButtons}
+                  onClick={addAction}
                 >
-                  <PostAddIcon></PostAddIcon>
-                   
-           Add Document
-                </Button></ButtonGroup>}
-          {props.header !== "Active Users" && props.header !== 'Documents' && ( */}
-
-
-
-        <div style={{ display: 'inline', float: 'left', marginRight: '15px',  marginTop: '5px'}}>
-          {(props.addAble.type === "wellInterest" 
-          || props.addAble.type === "deals"
-          || props.addAble.type === "ownerToParcel"
-          || (props.addAble && props.parent === "UserManagement"))
-          
-          && (
-            <Button
-              color="secondary"
-              className={classes.multiSelectionTopBarButtons}
-              onClick={addAction}
-            >
-              {buttonLabel}
-            </Button>
-          )}
-          {props.addAble.type === "contact" && (<ButtonDropDown options={options} />)}
-          {props.header === 'Documents' &&     
+                  {buttonLabel}
+                </Button>
+              )}
+            {props.addAble.type === "contact" && (<ButtonDropDown options={options} />)}
+            
+            {props.header === 'Documents' &&     
             <ButtonGroup variant="contained" style={{height:'40px'}} color="primary" aria-label="split button">
               <Button
                 color="primary"
@@ -2551,30 +2555,38 @@ function SubTable(props) {
               </Button>
             </ButtonGroup>
           }
-          
-          {
-          props.addAble.type === "contact" && (
-            <>
-              <Button
-                color="secondary"
-                startIcon={<MergeTypeIcon />}
-                className={classes.multiSelectionTopBarButtons}
-                disabled
-              >
-                Merge
+
+            {
+              props.addAble.type === "contact" && (
+                <>
+                  <Button
+                    color="secondary"
+                    startIcon={<AssignmentIndOutlinedIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    disabled
+                  >
+                    Assign
+                </Button>
+                  <Button
+                    color="secondary"
+                    startIcon={<MergeTypeIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    disabled
+                  >
+                    Merge
+                </Button>
+                  <Button
+                    color="secondary"
+                    startIcon={<EmailRoundedIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    disabled
+                  >
+                    Mailers
               </Button>
-              <Button
-                color="secondary"
-                startIcon={<EmailRoundedIcon />}
-                className={classes.multiSelectionTopBarButtons}
-                disabled
-              >
-                Mailers
-              </Button>
-            </>
-          )
-          }
-        </div>
+                </>
+              )
+            }
+          </div>
         </>
       );
     },
@@ -2750,19 +2762,19 @@ function SubTable(props) {
     onTableChange: (action, tableState) => {
       // reset selected rows 
       if ([
-          'changeRowsPerPage',
-          'changePage',
-          'sort',
-          'search',
-          'onSearchClose',
-          'filterChange',
-          'resetFilters'
-        ]
-      .includes(action)) {
+        'changeRowsPerPage',
+        'changePage',
+        'sort',
+        'search',
+        'onSearchClose',
+        'filterChange',
+        'resetFilters'
+      ]
+        .includes(action)) {
         setM1nSelectedRowsIndexes([]);
         setM1nSelectedRowsIds([]);
       }
-        
+
       if (props.header === "Contacts") {
         let filters = [];
         const leadSourceIndex = tableState.columns.findIndex(
@@ -2830,7 +2842,7 @@ function SubTable(props) {
             userId: stateApp.user.mongoId,
           },
         };
-        if(stateApp.isContactSearching){
+        if (stateApp.isContactSearching) {
           action = 'search'
           setStateApp((stateApp) => ({
             ...stateApp,
@@ -2912,7 +2924,7 @@ function SubTable(props) {
       }
 
       if (props.header === "Well Interests"
-      && props.parent === "owner_WellInterests") {
+        && props.parent === "owner_WellInterests") {
 
         const pageVariables = {
           variables: {
@@ -2994,7 +3006,12 @@ function SubTable(props) {
           default:
         }
       }
+      if (props.onTableChange) {
+        props.onTableChange(action, tableState, props.rows, { pageInd, setPageInd, setRowsPerPage })
+      }
     },
+
+    ...props.options
   };
 
   if (props.header === "Well Interests"
@@ -3076,7 +3093,7 @@ function SubTable(props) {
     //     <label style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</label>
     //   </div>
     //   ) : props.header
-      if(props.header ==='Contacs')
+      if(props.header ==='Contacts')
       {
        return  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left'}}>
        {props.header === 'Documents' ? ( <DescriptionOutlinedIcon />) : ( <Contact />)}
@@ -3149,21 +3166,21 @@ function SubTable(props) {
           options={{
             ...options,
             // searchText: props.header === 'Contacts' ? stateApp.contactSearchQuery : null,
-            search: 
-                    (
-                       props.header === 'Contacts'
-                    || props.header === 'Deals'
-                    || props.header === 'Activities'
-                    || props.header === 'Monthly Production'
-                    ) 
-                    ? false : props.parent != "search",
+            search:
+              (
+                props.header === 'Contacts'
+                || props.header === 'Deals'
+                || props.header === 'Activities'
+                || props.header === 'Monthly Production'
+              )
+                ? false : props.parent != "search",
             // have to use props.parent here for initial value
             searchOpen: props.parent === "Contacts" ? true : null,
             //download: false,
             // search: props.parent != "search",  
             //print: false,
             ...(props.header === 'Contacts') && {
-              customSearchRender: 
+              customSearchRender:
                 (searchText, handleSearch, hideSearch, options) => {
                   registerSearchHandler(handleSearch);
 
@@ -3435,6 +3452,15 @@ function SubTable(props) {
                 rows={expandedObject}
                 setRows={setExpandedObject}
                 setSelectedRow={setSelectedRow}
+              />
+            )}
+
+            {openDialog === "asign" && (
+              <AssignOwnerToContactDrawer
+                onClose={handleCloseDialog}
+                rows={expandedObject}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+                setRows={setExpandedObject}
               />
             )}
             {openDialog === "merge" && (

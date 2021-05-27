@@ -24,8 +24,6 @@ import LinkWithIcon from "../Shared/LinkWithIcon";
 import BugsIcon from "../Shared/svgIcons/bug.js";
 import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
-
-import { gql } from "@apollo/client";
 import ContactSearch from "./components/ContactSearch";
 
 function ExpandableCard(props) {
@@ -99,7 +97,7 @@ function ExpandableCard(props) {
       position: position,
       left: cardLeft,
       top: cardTop,
-      // zIndex: 9999,
+      zIndex: 9999,
       webkitTransform: "translateZ(0)",
       transition: "width 0.1s, height 0.1s, left 0.1s, top 0.1s",
       width: width,
@@ -257,7 +255,7 @@ function ExpandableCard(props) {
     }
     setStateApp((state) => ({
       ...state,
-      viewDoc:null
+      viewDoc: null
     }));
     props.handleCloseExpandableCard();
     //if EC is inside map popup you need to close it
@@ -296,6 +294,23 @@ function ExpandableCard(props) {
       setDeleteLoading(true);
       await deleteParcel();
       setDeleteLoading(false);
+
+      // For clearing out selected abstract land grids
+      const { map } = stateApp;
+      let popUps = document.getElementsByClassName("mapboxgl-popup");
+      if (popUps[0]) popUps[0].remove();
+
+      for (let i = 0; i < stateApp.selectedAbstracts.length; i++) {
+        const id = stateApp.selectedAbstracts[i].properties.Id;
+        map.setFeatureState(
+          { source: 'abstract_geo_source', id },
+          { click: false }
+        );
+      }
+      setStateApp((state) => ({
+        ...state,
+        selectedAbstracts: []
+      }));
     } else if (targetLabel === "activity") {
       setDeleteLoading(true);
       await deleteActivity();
@@ -344,7 +359,7 @@ function ExpandableCard(props) {
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => { }}
           >
-            Are you sure you want to delete the selected {targetLabel == "expandedParcel" ? "parcel" : targetLabel}?
+            Are you sure you want to delete the selected {targetLabel === "expandedParcel" ? "parcel" : targetLabel}?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
@@ -372,17 +387,17 @@ function ExpandableCard(props) {
                     iconZiseSmall={!stateExpandableCard.expanded}
                   />
                 </>
-              ) 
+              )
 
-               : targetLabel == "contact" ? (
-                <>
-                <LinkWithIcon
-                  objectId={targetSourceId.toLowerCase()}
-                  targetLabel={props.targetLabel}
-                  iconZiseSmall={!stateExpandableCard.expanded}
-                />
+                : targetLabel == "contact" ? (
+                  <>
+                    <LinkWithIcon
+                      objectId={targetSourceId.toLowerCase()}
+                      targetLabel={props.targetLabel}
+                      iconZiseSmall={!stateExpandableCard.expanded}
+                    />
 
-                {/* <CommentsWithIcon
+                    {/* <CommentsWithIcon
                   objectId={targetSourceId.toLowerCase()}
                   targetLabel={props.targetLabel}
                   iconZiseSmall={!stateExpandableCard.expanded}
@@ -393,9 +408,9 @@ function ExpandableCard(props) {
                   targetLabel={props.targetLabel}
                   iconZiseSmall={!stateExpandableCard.expanded}
                 /> */}
-              </>
-              )      
-              : null}
+                  </>
+                )
+                  : null}
 
               {!props.noTrackAvailable && (
                 <TrackToggleButton
@@ -408,7 +423,7 @@ function ExpandableCard(props) {
 
               {stateExpandableCard.expanded &&
                 targetLabel !== "activity" &&
-                targetLabel !== "contact" && 
+                targetLabel !== "contact" &&
                 targetLabel !== "parcel" &&
                 targetLabel !== "expandedParcel" && (
                   <Tooltip title={"Report Bug"} placement="top">
@@ -429,14 +444,14 @@ function ExpandableCard(props) {
                     {isDeletingCustomLayer || deleteLoading ? (
                       <CircularProgress size={20} color="secondary" />
                     ) : (
-                        <IconButton
-                          onClick={openConfirmationDialog}
-                          aria-label="Delete"
-                          className={classes.icons}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      )}
+                      <IconButton
+                        onClick={openConfirmationDialog}
+                        aria-label="Delete"
+                        className={classes.icons}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
                   </Tooltip>
                 )}
 
@@ -485,17 +500,17 @@ function ExpandableCard(props) {
                       </IconButton>
                     </Tooltip>
                   ) : (
-                      <Tooltip title={"Shrink"} placement="top">
-                        <IconButton
-                          color="secondary"
-                          onClick={handleExpand}
-                          aria-label="shrink"
-                          className={classes.icons}
-                        >
-                          <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
-                        </IconButton>
-                      </Tooltip>
-                    )
+                    <Tooltip title={"Shrink"} placement="top">
+                      <IconButton
+                        color="secondary"
+                        onClick={handleExpand}
+                        aria-label="shrink"
+                        className={classes.icons}
+                      >
+                        <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
+                      </IconButton>
+                    </Tooltip>
+                  )
                 : (
                   parent !== "table" &&
                   targetLabel !== "activity" && (
@@ -516,7 +531,7 @@ function ExpandableCard(props) {
                 <IconButton
                   size={stateExpandableCard.expanded ? "medium" : "small"}
                   onClick={handleClose}
-                  
+
                   aria-label="close"
                   className={classes.icons}
                 >

@@ -8,11 +8,11 @@ import { ContextProvider } from "react-sortly";
 
 const dnd = isMobile ? TouchBackend : HTML5Backend;
 const SortableLayer = ({ layerMap }) => (
-    <DndProvider backend={dnd}>
-        <ContextProvider>
-            {layerMap.length > 0 && <FileTree layerMap={layerMap} />}
-        </ContextProvider>
-    </DndProvider>
+  <DndProvider backend={dnd}>
+    <ContextProvider>
+      {layerMap.length > 0 && <FileTree layerMap={layerMap} />}
+    </ContextProvider>
+  </DndProvider>
 );
 
 export default SortableLayer;

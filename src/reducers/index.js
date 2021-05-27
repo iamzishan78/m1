@@ -15,8 +15,7 @@ const createRootReducer = (history) =>
     MapGridCard,
     AddParcelInterest,
     MainMap,
-    Flow,
-    //// .....
+    Flow
   });
 
 export default createRootReducer;

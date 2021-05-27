@@ -3,18 +3,23 @@ import { area, convertArea, length } from "@turf/turf";
 import polylabel from "polylabel";
 
 export const addCustomShapeProperties = (feature, Draw) => {
-  spatialDataAttributes.forEach(attribute => {
-    let data = "";
-    switch (attribute) {
-      case "shapeArea":
-        data = calculateLandArea(feature);
-        break;
-      case "shapeCenter":
-        data = calculateShapeCenter(feature.geometry.coordinates);
-        break;
-    }
-    Draw.setFeatureProperty(feature.id, attribute, data);
-  });
+  try {
+    spatialDataAttributes.forEach(attribute => {
+      let data = feature.properties[attribute] || "";
+      switch (attribute) {
+        case "shapeArea":
+          data = calculateLandArea(feature);
+          break;
+        case "shapeCenter":
+          data = calculateShapeCenter(feature.geometry.coordinates);
+          break;
+        default:
+      }
+      Draw.setFeatureProperty(feature.id, attribute, data);
+    });
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 const calculateLandArea = feature => {
