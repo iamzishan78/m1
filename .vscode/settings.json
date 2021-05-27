@@ -1,6 +1,9 @@
 {
     "git.ignoreLimitWarning": true,
     "git.autofetch": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
     "spellright.language": [
         "en"
     ],

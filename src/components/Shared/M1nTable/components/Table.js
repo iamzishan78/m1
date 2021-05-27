@@ -38,6 +38,7 @@ import MakeItAContactConfirmationDialogContent from "./SubComponents/MakeItACont
 import Button from "@material-ui/core/Button";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
 import MergeTypeIcon from "@material-ui/icons/MergeType";
+import AssignmentIndOutlinedIcon from '@material-ui/icons/AssignmentIndOutlined';
 import ContactPhoneRoundedIcon from "@material-ui/icons/ContactPhoneRounded";
 import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
 import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
@@ -78,6 +79,7 @@ import moment from "moment";
 import CheckIcon from "@material-ui/icons/Check";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
+import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
 import Chip from '@material-ui/core/Chip';
 import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
@@ -490,7 +492,6 @@ function SubTable(props) {
 
   // handlers 
   const handleWellFlyTo = (value) => {
-
     // setting state to fly to the selected well 
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -596,7 +597,7 @@ function SubTable(props) {
   useEffect(() => {
     if (
       props.parent &&
-      (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests") &&
+      (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests" || props.parent === "wells") &&
       props.targetLabel == "well" &&
       dataWell &&
       dataWell.well
@@ -912,6 +913,7 @@ function SubTable(props) {
   };
 
   const openMenu = (event, rowIndex, user) => {
+    event.stopPropagation();
     setSelectedUser(user);
     setSelectedUserIndex(rowIndex);
     setM1nSelectedRowsIds([user._id]);
@@ -990,7 +992,6 @@ function SubTable(props) {
                         }`}
                       onClick={(e) => {
                         e.stopPropagation();
-
                         if (value) {
                           setStateApp((state) => ({
                             ...state,
@@ -1397,7 +1398,7 @@ function SubTable(props) {
                           margin: "0",
                         }}
                       >
-                        N/A
+                        --
                       </p>
                     );
                   }
@@ -1956,7 +1957,8 @@ function SubTable(props) {
     setColInd(null);
     setRowInd(null);
     setExpandedObject(null);
-    setStateApp({ ...stateApp, isEditSelectedProfileName: null });
+    // setStateApp({ ...stateApp, isEditSelectedProfileName: null });
+    setStateApp((stateApp) => ({ ...stateApp, isEditSelectedProfileName: null }));
   };
 
   const handleOpenExpandableCard = () => {
@@ -2145,6 +2147,23 @@ function SubTable(props) {
                       {/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
                       <Button
                         color="secondary"
+                        startIcon={<AssignmentIndOutlinedIcon />}
+                        className={classes.multiSelectionTopBarButtons}
+                        disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+                        onClick={() => {
+                          handleExpandClick(
+                            null,
+                            null,
+                            getSelectedRows(),
+                            "asign"
+                          );
+                        }}
+                      >
+                        Assign
+                      </Button>
+
+                      <Button
+                        color="secondary"
                         startIcon={<MergeTypeIcon />}
                         className={classes.multiSelectionTopBarButtons}
                         disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length <= 1}
@@ -2159,6 +2178,7 @@ function SubTable(props) {
                       >
                         Merge
                       </Button>
+
                       {/* )} */}
 
                       {/* temporary comment out until melissa is back */}
@@ -2327,7 +2347,7 @@ function SubTable(props) {
       }
 
 
-      let options = [
+      const options = [
         {
           text: buttonLabel,
           isShow: false,
@@ -2369,12 +2389,20 @@ function SubTable(props) {
                 <>
                   <Button
                     color="secondary"
+                    startIcon={<AssignmentIndOutlinedIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    disabled
+                  >
+                    Assign
+                </Button>
+                  <Button
+                    color="secondary"
                     startIcon={<MergeTypeIcon />}
                     className={classes.multiSelectionTopBarButtons}
                     disabled
                   >
                     Merge
-              </Button>
+                </Button>
                   <Button
                     color="secondary"
                     startIcon={<EmailRoundedIcon />}
@@ -2443,6 +2471,19 @@ function SubTable(props) {
         setTitle("Contact Details");
         setSubTitle(" ");
         handleOpenExpandableCard();
+      }
+
+      if (props.targetLabel === "usermanagement") {
+        if (rows[dataIndex]?.id) {
+          let card = { ...rows[dataIndex] };
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            userDialog: true,
+            activeUser: card,
+          }));
+
+          handleExpandClick(null, null, null, "inviteUser");
+        }
       }
     },
     onChangePage: (pageState) => {
@@ -2783,7 +2824,6 @@ function SubTable(props) {
           default:
         }
       }
-
       if (props.onTableChange) {
         props.onTableChange(action, tableState, props.rows, { pageInd, setPageInd, setRowsPerPage })
       }
@@ -3186,6 +3226,15 @@ function SubTable(props) {
                 setSelectedRow={setSelectedRow}
               />
             )}
+
+            {openDialog === "asign" && (
+              <AssignOwnerToContactDrawer
+                onClose={handleCloseDialog}
+                rows={expandedObject}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+                setRows={setExpandedObject}
+              />
+            )}
             {openDialog === "merge" && (
               <MergeContactDrawer
                 onClose={handleCloseDialog}
@@ -3223,6 +3272,7 @@ function SubTable(props) {
                 rows={rows}
                 setRows={setExpandedObject}
                 onClose={handleCloseDialog}
+                setSelectedRow={setSelectedRow}
               />
             )}
             {openDialog === "reinviteUser" && (

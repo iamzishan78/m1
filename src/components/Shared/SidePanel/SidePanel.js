@@ -6,7 +6,10 @@ import { AppContext } from "../../../AppContext";
 import Panel from "./compoennts/Panel";
 import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
 import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyLayerSettings";
+import { makeStyles } from "@material-ui/core/styles";
 
+
+  
 const reorder = (list, startIndex, endIndex) => {
 	const result = Array.from(list);
 	const [removed] = result.splice(startIndex, 1);
@@ -74,6 +77,7 @@ export default function SidePanel() {
 	const [panelButton, setPanelButton] = useState();
 	const [panelTitle, setPanelTitle] = useState();
 	const [headerFilters, setHeaderFilters] = useState();
+
 
 	const [stateMapControls, setStateMapControls] = useContext(
 		MapControlsContext
@@ -176,7 +180,7 @@ export default function SidePanel() {
 			const layerAndGroups = []
 			stateApp.layers && stateApp.layers.forEach((item) => {
 				if (item.groupId && !groupHandled.includes(item.groupId)) {
-					groupHandled.push(item.groupId)
+					groupHandled.push(item.groupId);
 					const groups = stateApp.layers.filter((i) => i.groupId === item.groupId)
 					layerAndGroups.push({
 						depth: 0,
@@ -185,7 +189,16 @@ export default function SidePanel() {
 						name: item.groupName
 						, id: item.groupId
 					})
-					groups.forEach((item) => { layerAndGroups.push({ ...item, collapsed: true, name: item.layerName, depth: 1, type: 'layer', id: item._id }) })
+					groups.forEach((item) => {
+						layerAndGroups.push({
+							...item,
+							collapsed: true,
+							name: item.layerName,
+							depth: 1,
+							type: 'layer',
+							id: item._id
+						})
+					})
 				}
 				if (!item.groupId) {
 					layerAndGroups.push({ ...item, name: item.layerName, depth: 0, type: 'layer', id: item._id })
@@ -396,6 +409,7 @@ export default function SidePanel() {
 	}, [panelType]);
 
 	return panelItems ? (
+
 		<Panel
 			type={panelType}
 			headerButton={panelButton}
