@@ -6,7 +6,7 @@ import Search from "./components/Search";
 import Button from "@material-ui/core/Button";
 import { PAGINATED_CONTACT_WELLINTERESTS_QUERY } from "graphQL/useQueryPaginatedContactWellInterests";
 import { useLazyQuery } from "@apollo/client";
-import ContactWellInterestTable from "./ContactWellInterestTable";
+import ContactWellInterestTable from "components/Table/Contact/ContactWellInterestTable";
 //import { setMapGridCardState } from "../../../../actions";
 //import TabLabels from "../../../MapGridCard/MapGridCard";
 //import TabPanels from "../../../MapGridCard/MapGridCard";
@@ -147,8 +147,9 @@ function ContactsWellInterestsParcelInterests(props) {
             <ContactWellInterestTable
               parent="assocTaxRollInterests"
               header={"Well Interests"}
-              targetLabel={'well'}
+              targetLabel="well"
               contactId={props.contactData._id}
+              showTracks
             />
           ]}
         />
