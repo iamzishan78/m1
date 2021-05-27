@@ -401,7 +401,7 @@ function AddDealDialog(props) {
 	}, [selectedPipe, stateApp.dealDialog, stateApp.activeDeal]);
 
 	useEffect(() => {
-		getAllUsers();
+		// getAllUsers();
 	}, []);
 
 	useEffect(() => {

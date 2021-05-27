@@ -198,7 +198,7 @@ function AddActivityDialog(props) {
   };
   
   useEffect(() => {
-    getAllUsers();
+    // getAllUsers();
   }, []);
 
   useEffect(() => {
