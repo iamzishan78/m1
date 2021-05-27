@@ -1734,9 +1734,16 @@ function SubTable(props) {
                   return (
                     <div style={{ marginRight: "10px",display:'flex',justifyContent:'center',alignItems:'center' }}>
                      <IconButton
-                onClick={()=>{
-                       console.log("modell open")
-                     }}
+                      onClick={(e)=>{
+                        e.stopPropagation()
+                        const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length-1]
+                        if(type === 'pdf'){
+                        setStateApp((state) => ({
+                          ...state,
+                          pdfView: rows[tableMeta.rowIndex]
+                        }));
+                        }
+                      }}
                     >
                       {/* // this is the search icon in the grid on documents */}
                        <PageviewIcon/>
@@ -1780,7 +1787,15 @@ function SubTable(props) {
                    <div onClick={(e)=>{
                      e.stopPropagation()
                     //  console.log(,'value Div click')
-                    handleViewFile(rows[tableMeta.rowIndex].fileId)
+                     const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length-1]
+                     if(type === 'pdf'){
+                      setStateApp((state) => ({
+                        ...state,
+                        pdfView: rows[tableMeta.rowIndex]
+                      }));
+                     }else{
+                      handleViewFile(rows[tableMeta.rowIndex].fileId)
+                     }
                      console.log(rows[tableMeta.rowIndex].fileId,'tablemeta FILENAME')
                      }}>
 

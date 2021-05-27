@@ -178,7 +178,7 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerOpen: {
     // background: "rgba(255, 255, 255, 1.0)",
-    zIndex:"99999 !important",
+    zIndex: "99999 !important",
     background: "rgba(250, 250, 250, 1.0)",
     width: drawerWidth,
     height: "100%",
@@ -197,14 +197,14 @@ const useStyles = makeStyles((theme) => ({
     }),
     overflowX: "hidden",
     /*width: theme.spacing(8) + 1,*/
-    width: "0%",
+    width: "0%"
     /*[theme.breakpoints.up('sm')]: {
       width: theme.spacing(8) + 1
     }*/
   },
   toolbar: {
     display: "flex",
-    alignItems: "center",
+    alignItems: "center"
     // justifyContent: "flex-end",
     // padding: theme.spacing(0, 1),
     // ...theme.mixins.toolbar
@@ -238,7 +238,7 @@ const useStyles = makeStyles((theme) => ({
       mapGridCardActivated ? "80px" : "34%",
     transition: "width 0.5s",
     [theme.breakpoints.up("sm")]: {
-      marginLeft: 5,
+      marginLeft: 5
       // width: "34%",
     },
   },
@@ -840,7 +840,7 @@ export default function Navigation(props) {
       setStateGrid((state) => ({
         ...state,
         gridSearchTarget: null,
-      }));      
+      }));
       setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
@@ -995,9 +995,9 @@ export default function Navigation(props) {
       currentAccounts && currentAccounts.length === 1
         ? currentAccounts[0]
         : (() => {
-            // Add choose account code here
-            return;
-          })();
+          // Add choose account code here
+          return;
+        })();
 
     const logoutRequest = {
       account: currentAccount,
@@ -1068,7 +1068,7 @@ export default function Navigation(props) {
           My Account
         </Typography>
       </MenuItem>
-      { ( stateApp?.user?.roles?.includes("Owner") || stateApp?.user?.roles?.includes("Admin") ) && (
+      { (stateApp?.user?.roles?.includes("Owner") || stateApp?.user?.roles?.includes("Admin")) && (
         <MenuItem
           className={classes.userMenuItem}
           onClick={(e) => openUserManagement(e)}
@@ -1230,10 +1230,10 @@ export default function Navigation(props) {
               </>
             )}
             {location.pathname === "/contacts" && (
-                <ContactSearch />
+              <ContactSearch />
             )}
             {location.pathname.includes("/contact/details") && (
-                <ContactDetailsSearch />
+              <ContactDetailsSearch showLinkIcon={true} />
             )}
 
             {/*SEARCH UI FOR DEALS */}
@@ -1559,7 +1559,7 @@ export default function Navigation(props) {
               setStateApp((stateApp) => ({
                 ...stateApp,
                 selectedContact: null,
-                contactSearchQuery : null,
+                contactSearchQuery: null,
               }));
               handleListItemClick(event, 0, "/contacts");
             }}
@@ -1732,38 +1732,38 @@ export default function Navigation(props) {
       </Drawer>
 
       {supportDrawer && (
-            <ClickAwayListener onClickAway={() => setSupportDrawer(false)}>
-              <div className={classes.supportDrawer}>
-                <List component="div">
-                  <ListItem button onClick={() => handleSupportOpen()}>
-                    <ListItemIcon>
-                      <HeadsetIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Support Center" />
-                  </ListItem>
-                  <ListItem button onClick={requestDemo}>
-                    <ListItemIcon>
-                      <DesktopWindowsIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Request Demo" />
-                  </ListItem>
-                </List>
-              </div>
-            </ClickAwayListener>
-          )}
+        <ClickAwayListener onClickAway={() => setSupportDrawer(false)}>
+          <div className={classes.supportDrawer}>
+            <List component="div">
+              <ListItem button onClick={() => handleSupportOpen()}>
+                <ListItemIcon>
+                  <HeadsetIcon />
+                </ListItemIcon>
+                <ListItemText primary="Support Center" />
+              </ListItem>
+              <ListItem button onClick={requestDemo}>
+                <ListItemIcon>
+                  <DesktopWindowsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Request Demo" />
+              </ListItem>
+            </List>
+          </div>
+        </ClickAwayListener>
+      )}
 
-          <ClickAwayListener onClickAway={() => setOpenSupportCenter(false)}>
-              <SupportCenterModal
-                open={openSupportCenter}
-                openContactForm={handleOpenContactForm}
-                onClose={() => setOpenSupportCenter(false)}
-              />
-          </ClickAwayListener>
+      <ClickAwayListener onClickAway={() => setOpenSupportCenter(false)}>
+        <SupportCenterModal
+          open={openSupportCenter}
+          openContactForm={handleOpenContactForm}
+          onClose={() => setOpenSupportCenter(false)}
+        />
+      </ClickAwayListener>
 
-          <ContactFormModal
-            open={openContactForm}
-            onClose={() => setOpenContactForm(false)}
-          />
+      <ContactFormModal
+        open={openContactForm}
+        onClose={() => setOpenContactForm(false)}
+      />
 
       {openFilterCard ? (
         <div ref={anchorEl} className={classes.tabPanelWrapper}>
