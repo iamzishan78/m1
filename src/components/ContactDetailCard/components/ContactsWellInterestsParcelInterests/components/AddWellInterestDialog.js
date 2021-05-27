@@ -281,10 +281,16 @@ function AddWellInterestDialog(props) {
     setValid({});
   }
 
+  const formatRoyaltyAcres = (royaltyAcres) => {
+    const decimals = royaltyAcres.toString().split('.')
+    if (decimals[1] && decimals[1].length > 6)
+      royaltyAcres = royaltyAcres.toFixed(6)
+    return Number(royaltyAcres)
+  }
+
   const handleRecalcNRA = (leaseAcres, interest) => {
     if (initializing || leaseAcres == null || interest == null) return;
-
-    setFormRoyaltyAcres(leaseAcres * interest);
+    setFormRoyaltyAcres(formatRoyaltyAcres(leaseAcres * interest));
   }
 
   const handleValidate = () => {
@@ -710,16 +716,16 @@ function AddWellInterestDialog(props) {
                     <OutlinedInput
                       id="royality-acres"
                       inputComponent={NumberFormatCustom}
-                      className={formRoyaltyAcres !== (formInterestAmount * formLeaseAcres) ? classes.royaltyAcres : ''}
+                      className={formRoyaltyAcres !== (formatRoyaltyAcres(formInterestAmount * formLeaseAcres)) ? classes.royaltyAcres : ''}
                       value={formRoyaltyAcres === 0 || formRoyaltyAcres ? formRoyaltyAcres : ''}
                       onChange={event => setFormRoyaltyAcres(parseFloat(event.target.value))}
                       labelWidth={140}
                       endAdornment={
                         <InputAdornment position="end" style={{ position: 'absolute', right: "-3px" }}>
                           {
-                            formRoyaltyAcres !== '' && formRoyaltyAcres !== (formInterestAmount * formLeaseAcres) && <IconButton
+                            formRoyaltyAcres !== '' && formRoyaltyAcres !== (formatRoyaltyAcres(formInterestAmount * formLeaseAcres)) && <IconButton
                               aria-label="toggle royality-acres"
-                              onClick={() => setFormRoyaltyAcres(formInterestAmount * formLeaseAcres)}
+                              onClick={() => setFormRoyaltyAcres(formatRoyaltyAcres(formInterestAmount * formLeaseAcres))}
                             >
                               <AutorenewIcon />
                             </IconButton>
