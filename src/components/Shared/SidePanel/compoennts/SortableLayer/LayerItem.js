@@ -25,10 +25,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: props.data.type === "group" ? 20 : 18,
     position: "relative",
     // cursor: "move",
-    padding:
-      props.data.collapsed && props.data.type === "layer"
-        ? 0
-        : theme.spacing(0.5, 0),
+    padding: props.data.collapsed && props.data.type === "layer" ? 0 : theme.spacing(0.5, 0),
     // margin: props.data.collapsed && props.data.type === "layer" ? 0 : theme.spacing(0.5),
     marginLeft: theme.spacing(props.depth * 2),
     color: props.muted ? theme.palette.primary.dark : "inherit",
@@ -46,16 +43,7 @@ const useStyles = makeStyles((theme) => ({
 const LayerItem = React.memo((props) => {
   const colors = useSelector(({ MainMap }) => MainMap);
 
-  const {
-    id,
-    depth,
-    data,
-    onToggleCollapse,
-    updateLayer,
-    onDragEnd,
-    onDragBegin,
-    stateApp,
-  } = props;
+  const { id, depth, data, onToggleCollapse, updateLayer, onDragEnd, onDragBegin, stateApp } = props;
   const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
   const { type, collapsed, name } = data;
 
@@ -91,41 +79,20 @@ const LayerItem = React.memo((props) => {
     <Flipped flipId={id}>
       <div ref={(ref) => drop(preview(ref))} className={classes.root}>
         <Box borderColor={getLayerColor(data, "layer", colors)} borderLeft={4}>
-          <Grid
-            container
-            className={classes.root}
-            direction="row"
-            justify="space-between"
-            alignItems="center"
-          >
+          <Grid container className={classes.root} direction="row" justify="space-between" alignItems="center">
             <Grid item>
               <Box display="flex" flex={1} px={1}>
                 <ListItemIcon ref={drag}>
                   {" "}
                   <DragIndicator style={{ cursor: "move" }} />
                 </ListItemIcon>
-                <ListItemText
-                  id={id}
-                  primary={name}
-                  className={
-                    !ifLayerHaveData(data, stateApp)
-                      ? classes.disabledLayerTitle
-                      : ""
-                  }
-                />
+                <ListItemText id={id} primary={name} className={!ifLayerHaveData(data, stateApp) ? classes.disabledLayerTitle : ""} />
               </Box>
             </Grid>
 
             <Grid item>
               <Box display="inline-flex">
-                {type === "layer" && (
-                  <LayerControls
-                    type={"layer"}
-                    layer={data}
-                    labelId={id}
-                    updateLayer={updateLayer}
-                  />
-                )}
+                {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} />}
                 {type === "group" && !collapsed && (
                   <ListItemIcon onClick={handleClick}>
                     <ExpandLessIcon />

@@ -74,7 +74,7 @@ const PipelineProject = ({ key, children, project, containingPipelines }) => {
   };
 
   return (
-    <div key={key} className={classes.root}>
+    <div className={classes.root}>
       <Accordion className={classes.accordionRoot}>
         <AccordionSummary aria-controls="panel1a-content" id="panel1a-header">
           <Grid

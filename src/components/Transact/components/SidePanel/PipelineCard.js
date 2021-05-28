@@ -1,18 +1,22 @@
 import React, { Fragment } from "react";
 import { get } from "lodash";
-import Sortly, { ContextProvider, useDrag, useDrop } from "react-sortly";
+import Sortly, { ContextProvider, useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import { Flipped } from "react-flip-toolkit";
 import { ListItem, ListItemText } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
-    overflowY: "hidden",
+    // overflowY: "hidden",
     alignItems: "center",
     // cursor: "move",
     padding: props.pipeline.collapsed && props.pipeline.type === "layer" ? 0 : theme.spacing(0.5, 0),
     zIndex: props.muted ? 1 : 0,
-    overflow: "hidden",
+    // overflow: "hidden",
+    color: props.muted ? theme.palette.primary.dark : "inherit",
+    "&:hover": {
+      background: props.muted ? "#4B618F" : "#263451",
+    },
   }),
   listItem: {
     color: "#fff",
@@ -35,27 +39,46 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PipelineCard = (props) => {
-  const classes = useStyles(props);
-  const { index, pipeline, selectedPipelines, onFlowlineSelect } = props;
-  const [, drag] = useDrag();
+  const { pipeline, selectedPipelines, onFlowlineSelect, data } = props;
+
+  const { type, collapsed, name } = data;
+
+  const [{ isDragging }, drag, preview] = useDrag({
+    collect: (monitor) => {
+      return {
+        isDragging: monitor.isDragging(),
+      };
+    },
+    begin(f) {
+      // itemRef.current = data;
+      // onDragBegin(data);
+      console.log("begin drag");
+    },
+    end(f) {
+      // onDragEnd(itemRef.current, data);
+      console.log("end drag");
+    },
+  });
+
   const [, drop] = useDrop();
 
+  const classes = useStyles({ ...props, muted: useIsClosestDragging() || isDragging });
+
   return (
-    // <Flipped flipId={index}>
-    <div>
-      <ListItem
-        button
-        key={index}
-        className={classes.listItem}
-        style={{
-          backgroundColor: `${selectedPipelines.includes(pipeline._id) ? "#506187" : ""}`,
-        }}
-        onClick={() => onFlowlineSelect(pipeline)}
-      >
-        <ListItemText primary={get(pipeline, "name", pipeline)} />
-      </ListItem>
-    </div>
-    // </Flipped>
+    <Flipped flipId={data._id}>
+      <div ref={(ref) => drop(preview(ref))} className={classes.root}>
+        <ListItem
+          button
+          className={classes.listItem}
+          style={{
+            backgroundColor: `${selectedPipelines.includes(pipeline._id) ? "#506187" : ""}`,
+          }}
+          onClick={() => onFlowlineSelect(pipeline)}
+        >
+          <ListItemText ref={drag} primary={get(pipeline, "name", pipeline)} />
+        </ListItem>
+      </div>
+    </Flipped>
   );
 };
 
