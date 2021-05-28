@@ -1,25 +1,26 @@
-import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Select from "@material-ui/core/Select";
-import Grid from "@material-ui/core/Grid";
-import { AppContext } from "../../../AppContext";
-import { CONTACT } from "../../../graphQL/useQueryContact";
-import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
-import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
-import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
-import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { CircularProgress, Dialog, Typography } from "@material-ui/core";
-import RightDialog from "./RightDialog";
-import moment from "moment";
+import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
+import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Select from '@material-ui/core/Select';
+import Grid from '@material-ui/core/Grid';
+import { AppContext } from '../../../AppContext';
+import { CONTACT } from '../../../graphQL/useQueryContact';
+import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
+import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
+import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
+import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { CircularProgress, Dialog, Typography } from '@material-ui/core';
+import RightDialog from './RightDialog';
+import moment from 'moment';
 import {
 	deepEqual,
 	deepEqualObjects,
