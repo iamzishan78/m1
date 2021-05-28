@@ -432,21 +432,6 @@ export default function ContactDetailCard(props) {
       <div className={classes.header}>
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left', paddingLeft: '10px'}}>
           
-          {/* <label style={{ marginLeft: '10px', 
-                          fontSize: '16px', 
-                          cursor: 'pointer',
-                          // color: "#18AADD",
-                          // textDecoration: 'underline',
-
-                          "&:hover": {
-                            color: "#18AADD",
-                            textDecoration: 'underline',
-                          },
-                          }} onClick={()=> history.push('/contacts')} >Contacts</label>
-          <ArrowRight/>
-          <label style={{ color: '#18AADD', fontSize: '16px' }}>{contactData.name}</label> */}
-
-
       <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
         <Link style={{ marginLeft: '10px', 
                           fontSize: '16px', 
