@@ -28,7 +28,7 @@ import TableRow from "@material-ui/core/TableRow";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 import { GETPIPELINE } from "../../../graphQL/useQueryPipeline";
-import { ADDPIPELINE } from "../../../graphQL/useMutationAddPipeline";
+import { ADD_PIPELINE } from "../../../graphQL/useMutationAddPipeline";
 import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
 import { ADDSTAGES } from "../../../graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "../../../graphQL/useMutationUpdateStages";
@@ -95,7 +95,7 @@ const PipelinePopup = ({}) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteFunc, setDeleteFunc] = useState(null);
 
-  const [addPipeline] = useMutation(ADDPIPELINE);
+  const [addPipeline] = useMutation(ADD_PIPELINE);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
@@ -335,9 +335,9 @@ const PipelinePopup = ({}) => {
         addPipeline({
           variables: {
             name,
+            project: `Project ${moment().format("MM/DD/YYYY HH:m")}`,
             stages,
             userId: stateApp.user.mongoId,
-            project: `Project ${moment().format("MM/DD/YYYY HH:m")}`,
           },
           refetchQueries: ["getPipelines", "getPipeline"],
           awaitRefetchQueries: true,
