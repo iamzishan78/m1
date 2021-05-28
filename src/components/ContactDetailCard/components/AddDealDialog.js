@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -15,7 +15,7 @@ import { CONTACT } from "../../../graphQL/useQueryContact";
 import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
-import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
+import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CircularProgress, Dialog, Typography } from "@material-ui/core";
 import RightDialog from "./RightDialog";
@@ -259,8 +259,8 @@ function AddDealDialog(props) {
 		},
 	] = useMutation(ADDCONTACT);
 
-	const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
-		fetchPolicy: "cache-and-network",
+	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
+		fetchPolicy: "no-cache",
 	});
 
 	const [addDeal, { data: dealData }] = useMutation(ADDDEAL);
@@ -401,7 +401,7 @@ function AddDealDialog(props) {
 	}, [selectedPipe, stateApp.dealDialog, stateApp.activeDeal]);
 
 	useEffect(() => {
-		// getAllUsers();
+		getAllMongoUsers();
 	}, []);
 
 	useEffect(() => {
@@ -469,9 +469,9 @@ function AddDealDialog(props) {
 	// TRACK END
 
 	useEffect(() => {
-		if (userLists && userLists.allUsers) {
+		if (userLists && userLists.allMongoUsers) {
 			setUsers(
-				userLists.allUsers.map((user) => ({
+				userLists.allMongoUsers.map((user) => ({
 					value: user._id,
 					text: user.name,
 				}))
