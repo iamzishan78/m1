@@ -503,19 +503,21 @@ export default function Documents(props) {
           </div>
         )}
         <div className={classes.fileUploadSection}>
+
           {/* this is for view all */}
           {filteredDocuments?.map((file,key) => {
-            console.log(file, "File Data")
+
             let fileExtension = file?.name
                 ?.slice(file.name.lastIndexOf(".") + 1)
                 ?.toLowerCase();
+
             return (
               <div key={file.id} 
          
           >
                 <div className={classes.fileUploadTopSection}>
                   <div className={classes.flexIcon}>
-                    {props.isTransactPage && (
+                    {
                       <div
                         className={`${classes.greySquare} ${
                           file.state !== "active"
@@ -538,7 +540,6 @@ export default function Documents(props) {
                         })  
                       }}
                       >
-                        {/* <GetAppIcon fontSize="large" /> */}
                         {new RegExp(
                           ["jpg", "jpeg", "png", "bmp"].join("|")
                         ).test(fileExtension) ? (
@@ -559,9 +560,10 @@ export default function Documents(props) {
                             {/* {fileExtension} */}
                             {getFileIcon(fileExtension)}
                           </div>
-                        )}
+                        )
+                        }
                       </div>
-                    )}
+                    }
                     <div  className='DocumentTitle'
                       onClick={() => {
                           
