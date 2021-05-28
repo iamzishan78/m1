@@ -1016,6 +1016,7 @@ function AddDealDialog(props) {
                 variables: {
                   relatedObjectId: stateApp.activeDeal?.cardId,
                   relatedObjectType: 'Deal',
+                  limit: 2,
                 },
               });
               clearTimeout(waitBeforeRequestAgain);
