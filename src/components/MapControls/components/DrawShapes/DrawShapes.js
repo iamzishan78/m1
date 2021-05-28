@@ -1,10 +1,4 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  Fragment,
-  useRef,
-} from "react";
+import React, { useContext, useEffect, useState, Fragment, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { get } from "lodash";
 // STATE MANAGEMENT
@@ -27,10 +21,7 @@ import ShapeAOIPopup from "../popup/ShapeAOIPopup";
 // HELPERS
 import { area, convertArea } from "@turf/turf";
 import { spatialDataAttributes } from "./constants";
-import {
-  addCustomShapeProperties,
-  createShapeLabelLayer,
-} from "./drawShapesHelpers";
+import { addCustomShapeProperties, createShapeLabelLayer } from "./drawShapesHelpers";
 import mapboxgl, { Marker } from "mapbox-gl";
 import { makeStyles, Icon } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
@@ -198,15 +189,11 @@ export default function DrawShapes() {
   let history = useHistory();
   const classes = useStyles();
   const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
+  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(
-    UPSERTCUSTOMLAYER
-  );
+  const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER);
 
   const eventsConfiguredRef = useRef(false);
 
@@ -215,16 +202,17 @@ export default function DrawShapes() {
   const [user, setUser] = useState({ _id: "" });
 
   useEffect(() => {
-    if (stateApp.selectedUserDefinedLayer?.source === "interests_source" && stateApp.showShapeActionsPopup === true && stateApp.selectedParcel == null) {
-      toggleSpatialDataCard(true)
+    if (
+      stateApp.selectedUserDefinedLayer?.source === "interests_source" &&
+      stateApp.showShapeActionsPopup === true &&
+      stateApp.selectedParcel == null
+    ) {
+      toggleSpatialDataCard(true);
     }
   }, [stateApp.selectedUserDefinedLayer]);
 
   useEffect(() => {
-    const customLayer = get(
-      customLayerInsertedData,
-      "upsertCustomLayer.customLayer"
-    );
+    const customLayer = get(customLayerInsertedData, "upsertCustomLayer.customLayer");
     if (customLayer) {
       setStateApp((state) => ({
         ...state,
@@ -345,10 +333,7 @@ export default function DrawShapes() {
     const featuresList = map.getSource("abstract_geo_source")._data.features;
     for (let i = 0; i < featuresList.length; i++) {
       const id = featuresList[i].properties.Id;
-      map.setFeatureState(
-        { source: "abstract_geo_source", id: id },
-        { click: false }
-      );
+      map.setFeatureState({ source: "abstract_geo_source", id: id }, { click: false });
     }
   };
 
@@ -358,11 +343,11 @@ export default function DrawShapes() {
     // Removing layer of AOI Label
     if (stateApp.map.getLayer("aoi_label_layer")) {
       stateApp.map.removeLayer("aoi_label_layer");
-      setStateApp((state) => ({
-        ...state,
-        selectedAoi: null,
-      }));
     }
+    setStateApp((state) => ({
+      ...state,
+      selectedAoi: null,
+    }));
   };
 
   const handleClose = () => {
@@ -379,12 +364,7 @@ export default function DrawShapes() {
                 <DrawShapePopup handleClose={handleClose} classes={classes}>
                   <span className={classes.clearAction}>
                     <Tooltip title="Close">
-                      <IconButton
-                        size="small"
-                        onClick={actionClose}
-                        aria-label="Close"
-                        className={classes.clearAction}
-                      >
+                      <IconButton size="small" onClick={actionClose} aria-label="Close" className={classes.clearAction}>
                         <CloseIcon className="close" fontSize="small" />
                       </IconButton>
                     </Tooltip>
@@ -396,18 +376,14 @@ export default function DrawShapes() {
         </ClickAwayListener>
       )}
       {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
-        stateApp.currentFeature !== undefined &&
-        !stateApp.currentFeature.id.includes("draw_polygon") &&
-        !stateApp.currentFeature.id.includes("drag_circle") &&
-        !stateApp.currentFeature.id.includes("draw_rectangle") &&
-        !stateApp.currentFeature.id.includes("edit_polygon") ? (
+      stateApp.currentFeature !== undefined &&
+      !stateApp.currentFeature.id.includes("draw_polygon") &&
+      !stateApp.currentFeature.id.includes("drag_circle") &&
+      !stateApp.currentFeature.id.includes("draw_rectangle") &&
+      !stateApp.currentFeature.id.includes("edit_polygon") ? (
         <Fragment>
           {showSpatialDataCard && ( // for edit/create AOI
-            <ShapeAOIPopup
-              upsertCustomLayer={upsertCustomLayer}
-              user={user}
-              toggleSpatialDataCard={toggleSpatialDataCard}
-            />
+            <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} user={user} toggleSpatialDataCard={toggleSpatialDataCard} />
           )}
           <div className={classes.mapOverlay}>
             <div class={classes.mapOverlayInner}>
@@ -421,12 +397,7 @@ export default function DrawShapes() {
                 >
                   <span className={classes.clearAction}>
                     <Tooltip title="Close">
-                      <IconButton
-                        size="small"
-                        onClick={actionClose}
-                        aria-label="Close"
-                        className={classes.clearAction}
-                      >
+                      <IconButton size="small" onClick={actionClose} aria-label="Close" className={classes.clearAction}>
                         <CloseIcon className="close" fontSize="small" />
                       </IconButton>
                     </Tooltip>
