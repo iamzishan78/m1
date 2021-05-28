@@ -199,6 +199,7 @@ export default function Documents(props) {
                 variables: {
                   relatedObjectId: props.id,
                   relatedObjectType,
+                  limit,
                 },
               });
               clearTimeout(waitBeforeRequestAgain);
