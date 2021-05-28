@@ -503,7 +503,7 @@ export default function Documents(props) {
           </div>
         )}
         <div className={classes.fileUploadSection}>
-          {/* Show two recent docs */}
+          {/* this is for view all */}
           {filteredDocuments?.map((file,key) => {
             console.log(file, "File Data")
             let fileExtension = file?.name

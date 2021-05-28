@@ -130,6 +130,35 @@ export default function UploadZone(props) {
 					".txt",
 					".xls",
 					".xlsx",
+					".mdb",
+
+					// shape 
+					".shp",
+					".shx",
+					".sbn",
+					".fbn",
+					".ain",
+					".atx",
+					".ixs",
+
+					// phdwin
+					".phd",
+					".mod",
+					".phb",
+					".phz",
+
+					// IHS
+					".98c",
+
+					// DRILLING INFO 
+					".DRI",
+
+					// LASSER 
+					".PRN",
+
+					// DIVESTCO 
+					".pds",
+
 				]}
 				maxFileSize={104857600}
 				dropzoneClass={classes.dropzoneClass}

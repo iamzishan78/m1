@@ -125,20 +125,49 @@ export default function UploadZone(props) {
         }}
         dropzoneText={"+"}
         acceptedFiles={[
-          "image/*",
-          "video/*",
-          "application/*",
-          ".*",
-          ".geojson",
-          ".csv",
-          ".pdf",
-          ".docx",
-          ".doc",
-          ".ppt",
-          ".pptx",
-          ".txt",
-          ".xls",
-          ".xlsx",
+					"image/*",
+					"video/*",
+					"application/*",
+					".*",
+					".geojson",
+					".csv",
+					".pdf",
+					".docx",
+					".doc",
+					".ppt",
+					".pptx",
+					".txt",
+					".xls",
+					".xlsx",
+					".mdb",
+
+					// shape 
+					".shp",
+					".shx",
+					".sbn",
+					".fbn",
+					".ain",
+					".atx",
+					".ixs",
+
+					// phdwin
+					".phd",
+					".mod",
+					".phb",
+					".phz",
+
+					// IHS
+					".98c",
+
+					// DRILLING INFO 
+					".DRI",
+
+					// LASSER 
+					".PRN",
+
+					// DIVESTCO 
+					".pds",
+
         ]}
         maxFileSize={104857600}
         dropzoneClass={classes.dropzoneClass}
