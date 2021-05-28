@@ -534,63 +534,6 @@ function MapGridCard(props) {
               </div>
             </TabPanel>
 
-            {/* //// tracked panel //// */}
-            <TabPanel
-              value={mapGridCardActiveTap}
-              index={1}
-              className={classes.tapsPanelsPadding}
-              //
-              style={{ position: "absolute", width: "100vw" }}
-            //
-            >
-              <div style={{ position: "relative" }}>
-                <TabPanels
-                  value={trackedTapValue}
-                  panels={[
-                    <M1nTable
-                      dense
-                      parent="search"
-                      privateColumns={leasesColumnHeaders}
-                      targetLabel={getTargetFromSearchTaps()}
-                      header={<SearchTabPanels />}
-                    />,
-                    //   <M1nTable
-                    //     dense
-                    //     parent="search"
-                    //     privateColumns={[parcelColumnHeaders]}
-                    //     targetLabel={getTargetFromSearchTaps()}
-                    //     header={<SearchTabPanels />}
-                    //     // showTags
-                    //     // showComments
-                    //     // showTracks
-                    //   />,
-                    //   <M1nTable
-                    //     dense
-                    //     parent="search"
-                    //     privateColumns={[]}
-                    //     targetLabel={getTargetFromSearchTaps()}
-                    //     header={<SearchTabPanels />}
-                    //   />,
-
-                    <M1nTable
-                      dense
-                      parent="search"
-                      privateColumns={ContactsHeadCells}
-                      targetLabel={getTargetFromSearchTaps()}
-                      header={<SearchTabPanels />}
-                    />,
-
-                    <M1nTable
-                      dense
-                      parent="search"
-                      privateColumns={locationsColumnHeaders}
-                      targetLabel={getTargetFromSearchTaps()}
-                      header={<SearchTabPanels />}
-                    />,
-                  ]}
-                />
-              </div>
-            </TabPanel>
 
             {/* //// tracked panel //// */}
             <TabPanel
@@ -693,13 +636,6 @@ function MapGridCard(props) {
                         targetLabel="well"
                         showTracks
                       />
-                      {/* 
-                      <M1nTable
-                        id="viewportWellsTable"
-                        dense
-                        parent="mapViewportWells"
-                        header={"Wells"}
-                      /> */}
                       <h6
                         id="minimumZoomRequired"
                         style={{ textAlign: "left", marginLeft: "5rem" }}

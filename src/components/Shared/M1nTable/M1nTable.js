@@ -24,6 +24,7 @@ import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ABSTRACTWELLGEOQUERY } from "../../../graphQL/useQueryAbstractWellGeo";
 import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
+import { GET_DOCUMENTS } from "../../../graphQL/useQueryDocuments";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 import { REMOVEUSER } from "../../../graphQL/useMutationRemoveUser";
@@ -51,6 +52,7 @@ import { setMapGridCardState, showWarningMessage } from "../../../actions";
 
 // Header Schemas 
 import ContactsHeadCells from '../constants/contacts-header-schema.js'
+import DocumentsHeadCells from '../constants/documents-header-schema'
 import WellsHeadCells from '../constants/well-header-schema.js'
 import TrackedOwnersHeadCells from '../constants/track-owners-header-schema.js'
 import CustomWellsHeadCells from '../constants/custom-wells-header-schema.js'
@@ -85,8 +87,8 @@ function M1nTable(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateGrid, setStateGrid] = useContext(MapGridContext);
-
-
+//  console.log(reFetchDocuments(), 'reFetchDocuments')
+ 
   // function states 
   const [addDealOpen, setAddDealOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState();
@@ -145,6 +147,7 @@ function M1nTable(props) {
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, { onError: () => { setLoading(false) }, fetchPolicy: "cache-and-network" });
+  const [getDocuments,  {data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS);
   const [removeUser] = useMutation(REMOVEUSER);
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, { fetchPolicy: "no-cache", });
   const [getContactsFilterOptions, { data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
@@ -203,6 +206,15 @@ function M1nTable(props) {
 
   ////////////General end///////////////////////////////////////////////
 
+  useEffect(()=>{    
+    if(props.parent && props.parent === 'Documents'){
+      getDocuments({
+        variables: {
+          search: stateApp.contactSearchQuery
+        }
+      })
+    }
+  },[getDocuments, props.parent, stateApp.contactSearchQuery])
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners") {
@@ -1210,22 +1222,39 @@ function M1nTable(props) {
       setColumnsBase(ContactsHeadCells);
     }
 
-    else if (
-      props.parent
-      && (props.parent === 'search' && props.targetLabel === "contacts")  // for parent of contact screen              
+      else  if (    
+          props.parent  
+          && (props.parent ==='search' && props.targetLabel === "contacts")  // for parent of contact screen              
+      ) {
+        setLoading(true);
+        setTargetLabel("contact");
+        setHeader("Contacts");
+        setOrderByTracks(false);
+        setAddAble({ parent: false, type: "contact" });
+        getPaginatedContacts({variables: { search: stateGrid.gridSearchTarget }});
+        getContactsFilterOptions();
+        updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
+        setUploadIcon(false);
+        setStartPaginationAt(25);
+        setColumnsBase(ContactsHeadCells);
+
+      } 
+      else if (    
+        props.parent  
+        && (props.parent === "Documents")  // for parent of contact screen 
     ) {
       setLoading(true);
-      setTargetLabel("contact");
-      setHeader("Contacts");
+      setTargetLabel("documents");
+      setHeader("Documents");
       setOrderByTracks(false);
-      setAddAble({ parent: false, type: "contact" });
-      getPaginatedContacts({ variables: { search: stateGrid.gridSearchTarget } });
+      setAddAble({ parent: false, type: "document" });
+      getPaginatedContacts({variables: { search: stateGrid.gridSearchTarget }});
       getContactsFilterOptions();
       updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
-      setUploadIcon(false);
+      setUploadIcon(true);
       setStartPaginationAt(25);
-      setColumnsBase(ContactsHeadCells);
-    }
+      setColumnsBase(DocumentsHeadCells);}
+    
 
   }, [props.parent,
   stateGrid.gridSearchTarget]);
@@ -2491,6 +2520,20 @@ function M1nTable(props) {
     }
 
   }, [dataDeals]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Documents" &&
+      DocumentsData?.getFiles 
+    ) {
+      setTargetLabel("documents");
+      setRows([...DocumentsData.getFiles]);
+      setColumns([...DocumentsHeadCells]);
+      setLoading(false);
+    }
+
+  }, [DocumentsData]);
 
   // deals delete
   useEffect(() => {

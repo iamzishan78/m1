@@ -174,7 +174,7 @@ export default function Documents(props) {
     if (props.isTransactPage) return ["Deal", 99];
     else return ["Contact", 2];
   }, [props.isTransactPage]);
-
+  console.log(relatedObjectType, 'relatedObjectType')
   const [getRecentFiles, { data: files }] = useLazyQuery(
     GETRECENTCONTACTFILES,
     {
@@ -199,6 +199,7 @@ export default function Documents(props) {
                 variables: {
                   relatedObjectId: props.id,
                   relatedObjectType,
+                  limit,
                 },
               });
               clearTimeout(waitBeforeRequestAgain);

@@ -18,7 +18,7 @@ import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginated
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { makeStyles } from "@material-ui/core/styles";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
-import { GETMONGOUSERS as GETUSERS } from "../../../../../graphQL/useQueryGetUsers";
+import { GETMONGOUSERS } from "../../../../../graphQL/useQueryGetUsers";
 
 const phonenumber = (inputtxt) => {
   if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
@@ -110,7 +110,7 @@ export default function AddContactDialogContent(props) {
     nextFetchPolicy: "cache-first",
   });
 
-  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
+  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "cache-and-network",
   });
 
@@ -158,13 +158,13 @@ export default function AddContactDialogContent(props) {
   }, [activeTapIndex]);
 
   useEffect(() => {
-    getAllUsers();
+    getAllMongoUsers();
   }, []);
 
   useEffect(() => {
-    if (userLists && userLists.allUsers) {
+    if (userLists && userLists.allMongoUsers) {
       setUsers(
-        userLists.allUsers.map((user) => ({
+        userLists.allMongoUsers.map((user) => ({
           value: user._id,
           text: user.name
         }))

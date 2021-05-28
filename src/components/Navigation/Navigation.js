@@ -39,6 +39,7 @@ import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import PersonIcon from "@material-ui/icons/Person";
+import DescriptionIcon from '@material-ui/icons/Description';
 import { Link } from "react-router-dom";
 
 import Menu from "@material-ui/core/Menu";
@@ -93,6 +94,7 @@ import {
   withStyles,
 } from "@material-ui/core/styles";
 import ActivitySearch from "./components/ActivitySearch";
+import DocumentSearch from "./components/DocumentSearch";
 import ContactSearch from "./components/ContactSearch";
 import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
 
@@ -723,6 +725,8 @@ export default function Navigation(props) {
   const [matchTransact, setMatchTransact] = useState(false);
   const [matchActivities, setMatchActivities] = useState(false);
   const [matchFind, setMatchFind] = useState(false);
+  const [matchDocument, setMatchDocument] = useState(false);
+
   const [profileImage, setProfileImage] = useState(null);
   const classes = useStyles({ mapGridCardActivated });
   const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE);
@@ -784,6 +788,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
+        selectedMenuIndexDocuments:0
       }));
     } else if (location.pathname === "/track") {
       setStateNav((state) => ({
@@ -797,6 +802,8 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
+        selectedMenuIndexDocuments:0
+
       }));
     } else if (location.pathname === "/flow") {
       setStateNav((state) => ({
@@ -810,6 +817,8 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
+        selectedMenuIndexDocuments:0
+
       }));
     } else if (location.pathname === "/title") {
       setStateNav((state) => ({
@@ -824,6 +833,8 @@ export default function Navigation(props) {
         selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
+        selectedMenuIndexDocuments:0
+
       }));
     } else if (location.pathname === "/contacts") {
       setStateGrid((state) => ({
@@ -841,6 +852,8 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
+        selectedMenuIndexDocuments:0
+
       }));
     } else if (location.pathname === "/alerts") {
       setStateNav((state) => ({
@@ -854,6 +867,8 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
+        selectedMenuIndexDocuments:0
+
       }));
     } else if (location.pathname === "/dashboard") {
       setStateNav((state) => ({
@@ -867,6 +882,8 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 1,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
+        selectedMenuIndexDocuments:0
+
       }));
     } else if (location.pathname === "/studio") {
       setStateNav((state) => ({
@@ -880,6 +897,8 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 1,
         selectedMenuIndexActivities: 0,
+        selectedMenuIndexDocuments:0
+
       }));
     } else if (location.pathname === "/activities") {
       setStateNav((state) => ({
@@ -893,6 +912,24 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 1,
+        selectedMenuIndexDocuments:0
+
+      }));
+    }
+    else if (location.pathname === "/documents") {
+      setStateNav((state) => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
+        selectedMenuIndexActivities: 0,
+        selectedMenuIndexDocuments:1
+
       }));
     }
   }, [location, setStateNav]);
@@ -931,6 +968,17 @@ export default function Navigation(props) {
       setMatchFind(false);
     }
   }, [location.pathname]);
+ 
+
+//  useEffect(() => {
+//     if (location.pathname === "/documents") {
+//       // setMatchLocation(true);
+//       setMatchDocument(true);
+//     } else {
+//       // setMatchLocation(false);
+//       setMatchDocument(false);
+//     }
+//   }, [location.pathname]);
 
   const handleSearchInputChange = (event) => {
     setStateNav((state) => ({
@@ -1176,6 +1224,11 @@ export default function Navigation(props) {
                 <ActivitySearch />
               </>
             )}
+            {location.pathname === "/documents" && (
+              <>
+                <DocumentSearch />
+              </>
+            )}
             {location.pathname === "/contacts" && (
               <ContactSearch />
             )}
@@ -1193,6 +1246,11 @@ export default function Navigation(props) {
             ) : null}
 
             {matchFind ? (
+              <div className={classes.search} id="searchBarDivParent">
+                <SearchBarWithToggleButton />
+              </div>
+            ) : null}
+            {matchDocument ? (
               <div className={classes.search} id="searchBarDivParent">
                 <SearchBarWithToggleButton />
               </div>
@@ -1548,7 +1606,42 @@ export default function Navigation(props) {
               </ListItemSecondaryAction>
             </div>
           </ListItem>
-
+          <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexDocuments === 1}
+            onClick={(event) => {
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                selectedContact: null,
+              }));
+              handleListItemClick(event, 0, "/documents");
+            }}
+            key="documents"
+          >
+            <div className={classes.tabContent}>
+              <ListItemIcon className={classes.sideNavIcon}>
+                <DescriptionIcon />
+              </ListItemIcon>
+              <ListItemText
+                className={`${classes.sideNavText} uppercase`}
+                primary="Documents"
+              />
+              <ListItemSecondaryAction className={classes.sideNavAction}>
+                <Button
+                  disabled
+                  className={`${classes.betaSideNav3} uppercase`}
+                  edge="start"
+                  aria-label="beta"
+                >
+                  beta
+                </Button>
+              </ListItemSecondaryAction>
+            </div>
+          </ListItem>
           <ListItem
             classes={{
               root: classes.menuListItem,

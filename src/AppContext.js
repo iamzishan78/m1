@@ -28,6 +28,13 @@ const AppProvider = (props) => {
     selectedWellId: null, // move to a selected object context (maybe flyto)
     selectedAbstracts: [], // move to a selected object context (maybe flyto)
     selectedParcel: null, // move to a selected object context (maybe flyto)
+
+    // States for permits
+    selectedPermit: null, 
+    selectedPermitDetails: null, 
+    selectedPermitId: null, 
+    permitSelectedCoordinates: [], 
+    
     selectedAoi: null,
 
     customLayers: [],
@@ -115,13 +122,16 @@ const AppProvider = (props) => {
     activityDisplayType: "calendar",
     prevAOIVisible: false,
     prevParcelVisible: false,
-    prevBasinVisible: false,
+    prevBasinVisible: false, 
+    DocumentDrawer:false,  
+    selectedDocument:{},
     transactBarView: "",
     multiSelectLandGrids: false,
     isAbstractedLayersPolygon: false,
     contactSearchQuery: "",
     isContactSearching: false,
     viewDoc: null,
+    pdfView: null,
     showDrawShapesPopup: false,
     showShapeActionsPopup: false,
     toggleLayersActivity: (identifier, activityValue) => {
