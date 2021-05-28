@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
       width: "0.4em",
     },
     "&::-webkit-scrollbar-track": {
-      "-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+      "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
     },
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#506187",
@@ -29,6 +29,8 @@ const useStyles = makeStyles((theme) => ({
 function PipelinesList({ filteredPipelines, setPipelines, selectedPipe, selectedPipelines, setMultiSelection }) {
   const dispatch = useDispatch();
   const classes = useStyles();
+  const itemsRef = React.useRef([]);
+  const currentItem = React.useRef();
 
   useEffect(() => {
     if (selectedPipe) {
@@ -87,22 +89,21 @@ function PipelinesList({ filteredPipelines, setPipelines, selectedPipe, selected
   };
 
   const handleChange = (newItems) => {
-    // const index = newItems.findIndex(
-    //   (item) => item.id === currentItem.current.id
-    // );
-    // if (newItems[index].depth === 1) {
-    //   const parent = findParent(newItems, index);
-    //   if (parent.type !== "group") {
-    //     newItems[index].depth = 0;
-    //   }
-    // }
-    // setItems(newItems);
+    const index = newItems.findIndex((item) => item.id === currentItem.current.id);
+    if (newItems[index].depth === 1) {
+      const parent = findParent(newItems, index);
+      if (parent.type !== "Project") {
+        newItems[index].depth = 0;
+      }
+    }
+    currentItem.current = newItems[index];
+    setPipelines(newItems);
     console.log("in handle change");
   };
 
   const handleDragBegin = (item) => {
-    // itemsRef.current = items;
-    // currentItem.current = item;
+    itemsRef.current = filteredPipelines;
+    currentItem.current = item;
     console.log("in drag begin");
   };
 
@@ -124,6 +125,8 @@ function PipelinesList({ filteredPipelines, setPipelines, selectedPipe, selected
             selectedPipe={selectedPipe}
             selectedPipelines={selectedPipelines}
             onFlowlineSelect={onFlowlineSelect}
+            handleDragBegin={handleDragBegin}
+            handleDragEnd={handleDragEnd}
           />
         )}
       </Sortly>
@@ -152,7 +155,7 @@ function PipelinesList({ filteredPipelines, setPipelines, selectedPipe, selected
     <Fragment>
       <List className={classes.flowlinesList}>
         <PipelineCardWrapper pipelines={filteredPipelines.filter((p) => p.type === "Pipeline" && !p.projectId)} />
-        {/* {filteredPipelines
+        {filteredPipelines
           .filter((pipe) => pipe.type === "Project")
           .map((pipe, index) => {
             const projectPipelines = filteredPipelines.filter((p) => p.type === "Pipeline" && p.projectId === pipe.projectId);
@@ -165,7 +168,7 @@ function PipelinesList({ filteredPipelines, setPipelines, selectedPipe, selected
                 <PipelineCardWrapper pipelines={projectPipelines} />
               </PipelineProject>
             );
-          })} */}
+          })}
       </List>
     </Fragment>
   );

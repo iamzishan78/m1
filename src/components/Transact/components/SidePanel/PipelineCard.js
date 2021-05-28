@@ -10,13 +10,14 @@ const useStyles = makeStyles((theme) => ({
     // overflowY: "hidden",
     alignItems: "center",
     // cursor: "move",
+    position: "relative",
     padding: props.pipeline.collapsed && props.pipeline.type === "layer" ? 0 : theme.spacing(0.5, 0),
     zIndex: props.muted ? 1 : 0,
     // overflow: "hidden",
     color: props.muted ? theme.palette.primary.dark : "inherit",
-    "&:hover": {
-      background: props.muted ? "#4B618F" : "#263451",
-    },
+    // "&:hover": {
+    //   background: props.muted ? "#4B618F" : "#263451",
+    // },
   }),
   listItem: {
     color: "#fff",
@@ -39,8 +40,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PipelineCard = (props) => {
-  const { pipeline, selectedPipelines, onFlowlineSelect, data } = props;
-
+  const { pipeline, selectedPipelines, onFlowlineSelect, data, handleDragBegin, handleDragEnd } = props;
+  const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
   const { type, collapsed, name } = data;
 
   const [{ isDragging }, drag, preview] = useDrag({
@@ -50,12 +51,12 @@ const PipelineCard = (props) => {
       };
     },
     begin(f) {
-      // itemRef.current = data;
-      // onDragBegin(data);
+      itemRef.current = data;
+      handleDragBegin(data);
       console.log("begin drag");
     },
     end(f) {
-      // onDragEnd(itemRef.current, data);
+      handleDragEnd(itemRef.current, data);
       console.log("end drag");
     },
   });
@@ -66,7 +67,7 @@ const PipelineCard = (props) => {
 
   return (
     <Flipped flipId={data._id}>
-      <div ref={(ref) => drop(preview(ref))} className={classes.root}>
+      <div /*ref={(ref) => drop(preview(ref))}*/ className={classes.root}>
         <ListItem
           button
           className={classes.listItem}
@@ -75,7 +76,7 @@ const PipelineCard = (props) => {
           }}
           onClick={() => onFlowlineSelect(pipeline)}
         >
-          <ListItemText ref={drag} primary={get(pipeline, "name", pipeline)} />
+          <ListItemText /*ref={drag*/ primary={get(pipeline, "name", pipeline)} />
         </ListItem>
       </div>
     </Flipped>
