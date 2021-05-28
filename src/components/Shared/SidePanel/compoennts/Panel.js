@@ -93,15 +93,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		}
 	}, [type]);
 
-	console.log("props", {
-		type,
-		title,
-		headerButton,
-		handleToggle,
-		onDragEnd,
-		items,
-	});
-
 	useEffect(() => {
 
 		console.log("type and layer", type, items);

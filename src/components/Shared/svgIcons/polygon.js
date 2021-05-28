@@ -18,9 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import Base from './base';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import Base from "./base";
 
 export default class DrawPolygon extends Component {
   static propTypes = {
@@ -28,13 +28,13 @@ export default class DrawPolygon extends Component {
     height: PropTypes.string,
     predefinedClassName: PropTypes.string,
     viewBox: PropTypes.string,
-    style: PropTypes.object
+    style: PropTypes.object,
   };
 
   static defaultProps = {
-    height: '16px',
-    predefinedClassName: 'data-ex-icons-polygon',
-    viewBox: '0 0 22 18'
+    height: "16px",
+    predefinedClassName: "data-ex-icons-polygon",
+    viewBox: "0 0 22 18",
   };
 
   render() {

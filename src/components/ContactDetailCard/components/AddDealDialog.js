@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -16,7 +16,7 @@ import { CONTACT } from '../../../graphQL/useQueryContact';
 import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
 import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
 import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
-import { GETMONGOUSERS as GETUSERS } from '../../../graphQL/useQueryGetUsers';
+import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { CircularProgress, Dialog, Typography } from '@material-ui/core';
 import RightDialog from './RightDialog';
@@ -36,6 +36,7 @@ import { ADDDEAL } from 'graphQL/useMutationAddDeal';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { UPDATEDEAL } from 'graphQL/useMutationUpdateDeal';
 import { UPSERTDEALDESCRIPTOR } from 'graphQL/useMutationUpsertDealDescriptor';
+import { REMOVEDEALDESCRIPTOR } from "../../../graphQL/useMutationRemoveDealDescriptor";
 import { UPDATESTAGEDEALDESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
 import {
   setFlowState,
@@ -275,13 +276,15 @@ function AddDealDialog(props) {
     },
   ] = useMutation(ADDCONTACT);
 
-  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
-    fetchPolicy: 'cache-and-network',
+
+	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
+		fetchPolicy: 'no-cache',
   });
 
   const [addDeal, { data: dealData }] = useMutation(ADDDEAL);
   const [updateDeal, { loading: updateDealLoading }] = useMutation(UPDATEDEAL);
   const [upsertDealDescriptor] = useMutation(UPSERTDEALDESCRIPTOR);
+  const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
   const [updateStageDealDescriptor] = useMutation(UPDATESTAGEDEALDESCRIPTOR);
 
   const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
@@ -416,7 +419,7 @@ function AddDealDialog(props) {
   }, [selectedPipe, stateApp.dealDialog, stateApp.activeDeal]);
 
   useEffect(() => {
-    getAllUsers();
+		getAllMongoUsers();
   }, []);
 
   useEffect(() => {
@@ -480,9 +483,9 @@ function AddDealDialog(props) {
   // TRACK END
 
   useEffect(() => {
-    if (userLists && userLists.allUsers) {
+		if (userLists && userLists.allMongoUsers) {
       setUsers(
-        userLists.allUsers.map((user) => ({
+				userLists.allMongoUsers.map((user) => ({
           value: user._id,
           text: user.name,
         }))
@@ -537,13 +540,7 @@ function AddDealDialog(props) {
       // setColaborators(card.colaborators ? card.colaborators : []);
       setOriginationDate(card.ts ? card.ts : null);
 
-      setOwnerId(
-        card.owners?.length > 0
-          ? card.owners[0]?.relatedObject?._id
-            ? card.owners[0]?.relatedObject?._id
-            : card.ownerId
-          : stateApp.user.mongoId
-      );
+      setOwnerId(card.owners[0]?.relatedObject?._id || card.ownerId);
 
       if (card.contacts?.length > 0)
         // setting contact
@@ -692,35 +689,56 @@ function AddDealDialog(props) {
           );
         }
 
-        if (
-          ownerId &&
-          ((stateApp.activeDeal?.owners?.length > 0 &&
-            stateApp.activeDeal?.owners[0]?.relatedObject?._id !== ownerId) ||
-            !stateApp.activeDeal.owners ||
-            stateApp.activeDeal.owners.length <= 0)
-        ) {
-          //// updating the owner
-          allPromises.push(
-            new Promise((resolve, reject) => {
-              upsertDealDescriptor({
-                variables: {
-                  dealId: cardId,
-                  relatedObject: [ownerId],
-                  relatedObjectType: 'User',
-                  userId: stateApp.user.mongoId,
-                },
-                refetchQueries: ['getPipeline', 'getContactDeals'],
-                awaitRefetchQueries: true,
-              }).then((result) => {
-                const {
-                  data: { upsertDealDescriptor },
-                } = result;
-                if (upsertDealDescriptor?.success === false) success = false;
-                resolve();
-              });
-            })
-          );
-        }
+		if ((stateApp.activeDeal?.owners?.length > 0 &&
+			stateApp.activeDeal?.owners[0]?.relatedObject?._id !== ownerId) ||
+			!stateApp.activeDeal.owners ||
+			stateApp.activeDeal.owners.length <= 0) {
+			//// updating the owner
+			if (ownerId) {
+				allPromises.push(
+					new Promise((resolve, reject) => {
+						upsertDealDescriptor({
+							variables: {
+								dealId: cardId,
+								relatedObject: [ownerId],
+								relatedObjectType: 'User',
+								userId: stateApp.user.mongoId,
+							},
+							refetchQueries: ['getPipeline', 'getContactDeals'],
+							awaitRefetchQueries: true,
+						}).then((result) => {
+							const {
+								data: { upsertDealDescriptor },
+							} = result;
+							if (upsertDealDescriptor?.success === false) success = false;
+							resolve();
+						});
+					})
+				);
+			}
+			// removing the owner
+			else if (!ownerId &&
+				stateApp.activeDeal?.owners?.length > 0) {
+				allPromises.push(
+					new Promise((resolve, reject) => {
+						removeDealDescriptor({
+							variables: {
+								id: stateApp.activeDeal?.owners[0]?._id,
+								relatedObjectType: "User",
+							},
+							refetchQueries: ["getPipeline", "getContactDeals"],
+							awaitRefetchQueries: true,
+						}).then((result) => {
+							const {
+								data: { removeDealDescriptor },
+							} = result;
+							if (removeDealDescriptor?.success === false) success = false;
+							resolve();
+						});
+					})
+				);
+			}
+		}
 
         //// checking if stage or pipe changed
         if (
@@ -999,6 +1017,7 @@ function AddDealDialog(props) {
                 variables: {
                   relatedObjectId: stateApp.activeDeal?.cardId,
                   relatedObjectType: 'Deal',
+                  limit: 2,
                 },
               });
               clearTimeout(waitBeforeRequestAgain);

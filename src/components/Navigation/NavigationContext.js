@@ -1,5 +1,11 @@
 import React, { useState, createContext } from "react";
 
+export const DRAWING_MODES = {
+  DRAW_POLYGON: "draw_polygon",
+  DRAW_RECTANGLE: "draw_rectangle",
+  DRAW_CIRCLE: "drag_circle"
+}
+
 const NavigationContext = createContext([{}, () => {}]);
 
 const NavigationContextProvider = (props) => {
