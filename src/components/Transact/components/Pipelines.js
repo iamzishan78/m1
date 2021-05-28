@@ -1,12 +1,13 @@
 import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
+import Typography from '@material-ui/core/Typography'
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import SettingsIcon from '@material-ui/icons/Settings';
-import IconButton from '@material-ui/core/IconButton';
+import SettingsIcon from "@material-ui/icons/Settings";
+import IconButton from "@material-ui/core/IconButton";
 import Dialog from "@material-ui/core/Dialog";
 import {
   setFlowState,
@@ -33,7 +34,7 @@ import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 import { GETPIPELINE } from "../../../graphQL/useQueryPipeline";
 import { ADDPIPELINE } from "../../../graphQL/useMutationAddPipeline";
-import { UPDATEPIPELINE } from "../../../graphQL/useMutationUpdatePipeline";
+import { UPDATEPIPELINES } from "../../../graphQL/useMutationUpdatePipelines";
 import { ADDSTAGES } from "../../../graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "../../../graphQL/useMutationUpdateStages";
 import { UPDATESTAGE } from "../../../graphQL/useMutationUpdateStage";
@@ -78,6 +79,16 @@ const useStyles = makeStyles((theme) => ({
   dialog: {
     zIndex: "9999999999 !important",
   },
+  settingGroup: {
+    "& .MuiTypography-body1": { fontSize: "1.2rem !important" },
+  },
+  settingsButton: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    float: "right",
+    },
+
 }));
 
 const DialogActions = withStyles((theme) => ({
@@ -157,10 +168,9 @@ export default function Pipelines(props) {
   const [deleteFunc, setDeleteFunc] = useState(null);
 
   const [addPipeline] = useMutation(ADDPIPELINE);
-  const [updatePipeline] = useMutation(UPDATEPIPELINE);
+  const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
-  const [updateStage] = useMutation(UPDATESTAGE);
 
   const [
     getPipeline,
@@ -247,17 +257,17 @@ export default function Pipelines(props) {
                   pipelineName: pipelineData.pipeline.name,
                   ownerName:
                     card?.metadata?.owners &&
-                    card.metadata.owners[0]?.relatedObject?.name
+                      card.metadata.owners[0]?.relatedObject?.name
                       ? card.metadata.owners[0].relatedObject.name
                       : null,
                   contactName:
                     card?.metadata?.contacts &&
-                    card.metadata.contacts[0]?.relatedObject?.entity?.name
+                      card.metadata.contacts[0]?.relatedObject?.entity?.name
                       ? card.metadata.contacts[0].relatedObject.entity.name
                       : null,
                   isContact:
                     card?.metadata?.contacts &&
-                    card.metadata.contacts[0]?.relatedObject?._id
+                      card.metadata.contacts[0]?.relatedObject?._id
                       ? card.metadata.contacts[0].relatedObject._id
                       : null,
                   ...card.metadata,
@@ -300,14 +310,14 @@ export default function Pipelines(props) {
 
       getDealsCountByPipeline({
         variables: {
-          pipelineId: selectedPipe?._id,
+          pipelinesIds: [selectedPipe?._id],
         },
       });
 
       setDeleteFunc(() => () => {
-        updatePipeline({
+        updatePipelines({
           variables: {
-            pipeline: { _id: selectedPipe._id, IsDeleted: true },
+            pipelines: [{ _id: selectedPipe._id, IsDeleted: true }],
           },
           refetchQueries: ["getPipelines"],
           awaitRefetchQueries: true,
@@ -515,18 +525,18 @@ export default function Pipelines(props) {
           //// if not necessary now
           allPromises.push(
             new Promise((resolve, reject) => {
-              updatePipeline({
+              updatePipelines({
                 variables: {
-                  pipeline: pipeToUpdate,
+                  pipelines: [pipeToUpdate],
                 },
                 refetchQueries: ["getPipelines", "getPipeline"], //// separete latter to the end all promises
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
-                  data: { updatePipeline },
+                  data: { updatePipelines },
                 } = result;
 
-                if (updatePipeline?.success === false) success = false;
+                if (updatePipelines?.success === false) success = false;
 
                 resolve();
               });
@@ -588,8 +598,7 @@ export default function Pipelines(props) {
                 showErrorMessage("An error occurred during the update.")
               );
           })
-          .catch((reason) => {
-          });
+          .catch((reason) => { });
       }
 
       handleClose();
@@ -603,8 +612,6 @@ export default function Pipelines(props) {
   const openDeleteDialog = (open = true) => {
     setDeleteDialogOpen(open);
   };
-
-
 
   //// checking if the something to update in the pipe or the stages
   const checkingIfEdited = () => {
@@ -629,92 +636,32 @@ export default function Pipelines(props) {
 
   return (
     <React.Fragment>
-      {deleteDialogOpen && (
-        <Dialog
-          className={classes.dialog}
-          open={deleteDialogOpen ? true : false}
-          onClose={handleCloseDeleteDialog}
-          fullWidth={false}
-          maxWidth="sm"
-        >
-          <DeleteConfirmationDialogContent
-            header={
-              deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`
-            }
-            onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => {}}
-            m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
-          >
-            {deleteDialogOpen === "pipe"
-              ? "Are you sure you want to delete the Flowline?"
-              : "Are you sure you want to delete the stage?"}
-          </DeleteConfirmationDialogContent>
-        </Dialog>
-      )}
-      <ButtonGroup>
-        <Autocomplete
-          size="small"
-          style={{ minWidth: 210, marginLeft: 12 }}
-          options={optionsWithHeader}
-          getOptionLabel={(option) => (option?.name ? option.name : option)}
-          groupBy={(option) => {
-            if (option === "header") return "header";
-            return "pipelines";
-          }}
-          renderGroup={(option) => {
-            if (option.group === "header")
-              return (
-                <Button
-                  key={option.key}
-                  style={{ color: "#12ABE0", margin: "0", width: "100%" }}
-                  onClick={() => {
-                    dispatch(
-                      setFlowState({
-                        openPipeDialog: "newPipe",
-                      })
-                    );
-                  }}
-                >
-                  Add New
-                </Button>
-              );
 
-            return (
-              <React.Fragment key={option.key}>
-                {option.children}
-              </React.Fragment>
-            );
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label="Flowlines" variant="outlined" />
-          )}
-          autoComplete
-          includeInputInList
-          value={selectedPipe}
-          onChange={(event, newValue) => {
-            dispatch(
-              setFlowState({
-                selectedPipe: newValue,
-                pipeToShow: null,
-              })
-            );
-          }}
-        />
-          <IconButton
-            disabled={!selectedPipe}
-            size="small"
-            onClick={() => {
-              dispatch(
-                setFlowState({
-                  openPipeDialog: true,
-                })
-              );
-            }}
-          >
-            <SettingsIcon />
-          </IconButton>
-      </ButtonGroup>
+        <div className={classes.settingsButton} >
+            {selectedPipe && (
+              <Typography 
+                  style={{ marginLeft: 10}} 
+                  variant="h5" 
+                  color="textPrimary" 
+                  fontWeight="fontWeightBold">
+                {selectedPipe.name}
+              </Typography>
+            )}
+            <IconButton
+              disabled={!selectedPipe}
+              size="medium"
+              style={{ marginLeft: 10, marginRight: 10}}
+              onClick={() => {
+                dispatch(
+                  setFlowState({
+                    openPipeDialog: true,
+                  })
+                );
+              }}
+            >
+              <SettingsIcon />
+            </IconButton>
+        </div>
 
       {/* //// pipelines dialog //// */}
       {openPipeDialog && (
@@ -969,6 +916,29 @@ export default function Pipelines(props) {
               {openPipeDialog === "newPipe" ? "Save" : "Update"}
             </Button>
           </DialogActions>
+        </Dialog>
+      )}
+      {deleteDialogOpen && (
+        <Dialog
+          className={classes.dialog}
+          open={deleteDialogOpen ? true : false}
+          onClose={handleCloseDeleteDialog}
+          fullWidth={false}
+          maxWidth="sm"
+        >
+          <DeleteConfirmationDialogContent
+            header={
+              deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`
+            }
+            onClose={handleCloseDeleteDialog}
+            deleteFunc={deleteFunc ? deleteFunc : () => { }}
+            m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => { }}
+          >
+            {deleteDialogOpen === "pipe"
+              ? "Are you sure you want to delete the Flowline?"
+              : "Are you sure you want to delete the stage?"}
+          </DeleteConfirmationDialogContent>
         </Dialog>
       )}
     </React.Fragment>

@@ -6,11 +6,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
 import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
 
-
-
 import { Container } from "@material-ui/core";
 import Table from "./components/Table";
-
 
 // QUERIES 
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -27,6 +24,7 @@ import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ABSTRACTWELLGEOQUERY } from "../../../graphQL/useQueryAbstractWellGeo";
 import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
+import { GET_DOCUMENTS } from "../../../graphQL/useQueryDocuments";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
 import { REMOVEUSER } from "../../../graphQL/useMutationRemoveUser";
@@ -54,6 +52,7 @@ import { setMapGridCardState, showWarningMessage } from "../../../actions";
 
 // Header Schemas 
 import ContactsHeadCells from '../constants/contacts-header-schema.js'
+import DocumentsHeadCells from '../constants/documents-header-schema'
 import WellsHeadCells from '../constants/well-header-schema.js'
 import TrackedOwnersHeadCells from '../constants/track-owners-header-schema.js'
 import CustomWellsHeadCells from '../constants/custom-wells-header-schema.js'
@@ -88,7 +87,7 @@ function M1nTable(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateGrid, setStateGrid] = useContext(MapGridContext);
-
+  //  console.log(reFetchDocuments(), 'reFetchDocuments')
 
   // function states 
   const [addDealOpen, setAddDealOpen] = useState(false);
@@ -148,6 +147,7 @@ function M1nTable(props) {
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, { onError: () => { setLoading(false) }, fetchPolicy: "cache-and-network" });
+  const [getDocuments, { data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS);
   const [removeUser] = useMutation(REMOVEUSER);
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, { fetchPolicy: "no-cache", });
   const [getContactsFilterOptions, { data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
@@ -206,6 +206,15 @@ function M1nTable(props) {
 
   ////////////General end///////////////////////////////////////////////
 
+  useEffect(() => {
+    if (props.parent && props.parent === 'Documents') {
+      getDocuments({
+        variables: {
+          search: stateApp.contactSearchQuery
+        }
+      })
+    }
+  }, [getDocuments, props.parent, stateApp.contactSearchQuery])
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners") {
@@ -1025,7 +1034,9 @@ function M1nTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
+
         console.log('data wells owners', dataWellOwners)
+
         setLoading(true);
         const objectsIdsArray = dataWellOwners.wellOwners.map(
           (wellOwner) => wellOwner.globalOwnerId
@@ -1228,7 +1239,25 @@ function M1nTable(props) {
       setUploadIcon(false);
       setStartPaginationAt(25);
       setColumnsBase(ContactsHeadCells);
+
     }
+    else if (
+      props.parent
+      && (props.parent === "Documents")  // for parent of contact screen 
+    ) {
+      setLoading(true);
+      setTargetLabel("documents");
+      setHeader("Documents");
+      setOrderByTracks(false);
+      setAddAble({ parent: false, type: "document" });
+      getPaginatedContacts({ variables: { search: stateGrid.gridSearchTarget } });
+      getContactsFilterOptions();
+      updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
+      setUploadIcon(true);
+      setStartPaginationAt(25);
+      setColumnsBase(DocumentsHeadCells);
+    }
+
 
   }, [props.parent,
   stateGrid.gridSearchTarget]);
@@ -1667,12 +1696,12 @@ function M1nTable(props) {
             result.detailCard = result.Id;
 
             // setting flyto coordinates for location 
-          } else if (props.targetLabel && props.targetLabel == "location") {
+          } else if (props.targetLabel && props.targetLabel === "location") {
             result.coordinates = {};
             if (result.bbox) result.coordinates.bbox = result.bbox;
             if (result.center) result.coordinates.center = result.center;
 
-          } else if (props.targetLabel && props.targetLabel == "operator") {
+          } else if (props.targetLabel && props.targetLabel === "operator") {
             result.coordinates = {
               objToPopulateSearchLayer: {
                 objectType: props.targetLabel,
@@ -1680,7 +1709,7 @@ function M1nTable(props) {
                 objectName: result.Operator,
               },
             };
-          } else if (props.targetLabel && props.targetLabel == "lease") {
+          } else if (props.targetLabel && props.targetLabel === "lease") {
             result.coordinates = {
               objToPopulateSearchLayer: {
                 objectType: props.targetLabel,
@@ -1689,8 +1718,7 @@ function M1nTable(props) {
               },
             };
             // setting flyto coordinates for owners 
-          } else if (props.targetLabel && props.targetLabel == "owner") {
-
+          } else if (props.targetLabel && props.targetLabel === "owner") {
             result.coordinates = {
               objToPopulateSearchLayer: {
                 objectType: "owner",
@@ -1741,7 +1769,6 @@ function M1nTable(props) {
                   dataTagSamples.tagSamples[i].tags,
                   dataTagSamples.tagSamples[i].total,
                 ];
-
                 break;
               }
             }
@@ -1789,7 +1816,7 @@ function M1nTable(props) {
           );
         }
 
-        if (props.targetLabel && props.targetLabel == "owner")
+        if (props.targetLabel && props.targetLabel === "owner")
           buildingColumns.push(SearchsHeadCells[6]);
 
         if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
@@ -1798,7 +1825,7 @@ function M1nTable(props) {
           buildingColumns.push(SearchsHeadCells[3]);
         if (
           props.targetLabel &&
-          (props.targetLabel == "well" || props.targetLabel == "owner")
+          (props.targetLabel === "well" || props.targetLabel === "owner")
         )
           //would only set the detail card icon for wells & owners
           buildingColumns.push(SearchsHeadCells[5]);
@@ -2495,6 +2522,20 @@ function M1nTable(props) {
     }
 
   }, [dataDeals]);
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Documents" &&
+      DocumentsData?.getFiles
+    ) {
+      setTargetLabel("documents");
+      setRows([...DocumentsData.getFiles]);
+      setColumns([...DocumentsHeadCells]);
+      setLoading(false);
+    }
+
+  }, [DocumentsData]);
 
   // deals delete
   useEffect(() => {

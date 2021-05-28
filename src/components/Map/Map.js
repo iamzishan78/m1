@@ -1,6 +1,4 @@
-
-
-// react imports 
+// react imports
 import React, {
   useContext,
   useState,
@@ -11,14 +9,15 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-// contexts 
+// contexts
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
 
-// custom components 
+// custom components
 import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
+import PermitCardProvider from "../PermitCard/PermitCardProvider";
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
@@ -27,19 +26,19 @@ import HugeRequest from "./components/HugeRequest";
 import SpatialDataCardEdit from "../MapControls/components/spatialDataCardEdit";
 import SpatialDataCard from "../MapControls/components/spatialDataCard";
 import "./popup.css";
+import AbstractSelectionPopup from './components/popup/AbstractSelectionPopup';
 import { spatialDataAttributes } from "../MapControls/components/DrawShapes/constants";
 import { addCustomShapeProperties } from "../MapControls/components/DrawShapes/drawShapesHelpers";
 import MapGridCardProvider from "../MapGridCard/MapGridProvider";
 import MarkerIcon from "./sprites/marker-icon.png";
 import DefaultFiltersTest from "./filtersDefaultTest";
 import FilterControl from "./components/FilterControl";
-import AbstractSelectionPopup from "./components/popup/AbstractSelectionPopup";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
 import { deepEqual, deepEqualObjects } from "../Shared/functions";
 import gjv from "geojson-validation";
 import { setMainMapState, showErrorMessage } from "../../actions";
 
-// 3rd party packages 
+// 3rd party packages
 import mapboxgl from "mapbox-gl";
 import * as turf from "@turf/turf";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
@@ -57,7 +56,7 @@ import debounce from "lodash/debounce";
 import { makeStyles } from "@material-ui/core/styles";
 import Portal from "@material-ui/core/Portal";
 
-// queries 
+// queries
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { WELLSQUERY } from "../../graphQL/useQueryWells";
 import { TRACKSBYOBJECTTYPE } from "../../graphQL/useQueryTracksByObjectType";
@@ -74,12 +73,9 @@ import { OWNERSQUERY } from "../../graphQL/useQueryOwners";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
 import { ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
 
-// mutations 
+// mutations
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
-
-
-
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -126,20 +122,21 @@ const random_hex_color_code = () => {
 let hoveredAbstractId = null;
 
 function Map() {
-
   // context states
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
+  const [stateMapControls, setStateMapControls] = useContext(
+    MapControlsContext
+  );
 
-  // function states 
+  // function states
   const [flyVar1, setFlyVar1] = useState([null]);
   const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
 
-  // styles 
+  // styles
   let classes = useStyles({
     drawingCircle:
-      stateApp.draw && stateApp.draw.getMode() == "drag_circle" ? true : false,
+      stateApp.draw && stateApp.draw.getMode() === "drag_circle" ? true : false,
   });
 
   const dispatch = useDispatch();
@@ -155,14 +152,13 @@ function Map() {
     stateApp.user.defaultFilters ? stateApp.user.defaultFilters : []
   );
   const setFiltersDefault = (state) => {
-    if (filtersDefault != state) {
+    if (filtersDefault !== state) {
       FiltersDefault(state);
     }
   };
 
   const [lng, Lng] = useState();
   const [lat, Lat] = useState();
-
 
   const setLng = (state) => {
     if (lng != state) {
@@ -176,14 +172,14 @@ function Map() {
   };
   const [zoom, Zoom] = useState(stateApp.mapVars.zoom);
   const setZoom = (state) => {
-    if (zoom != state) {
+    if (zoom !== state) {
       Zoom(state);
     }
   };
 
   const [transform, Transform] = useState("transform: inherit");
   const setTransform = (state) => {
-    if (transform != state) {
+    if (transform !== state) {
       Transform(state);
     }
   };
@@ -197,49 +193,49 @@ function Map() {
 
   const [mapStyles, MapStyles] = useState([]);
   const setMapStyles = (state) => {
-    if (mapStyles != state) {
+    if (mapStyles !== state) {
       MapStyles(state);
     }
   };
   const [wellsTileset, WellsTileset] = useState();
   const setWellsTileset = (state) => {
-    if (wellsTileset != state) {
+    if (wellsTileset !== state) {
       WellsTileset(state);
     }
   };
   const [defaultsCheckOnOff, DefaultsCheckOnOff] = useState(true);
   const setDefaultsCheckOnOff = (state) => {
-    if (defaultsCheckOnOff != state) {
+    if (defaultsCheckOnOff !== state) {
       DefaultsCheckOnOff(state);
     }
   };
   const [m1neralCheckOnOff, M1neralCheckOnOff] = useState(true);
   const setM1neralCheckOnOff = (state) => {
-    if (m1neralCheckOnOff != state) {
+    if (m1neralCheckOnOff !== state) {
       M1neralCheckOnOff(state);
     }
   };
   const [map, Map] = useState(null);
   const setMap = (state) => {
-    if (map != state) {
+    if (map !== state) {
       Map(state);
     }
   };
   const [mapClick, MapClick] = useState(null);
   const setMapClick = (state) => {
-    if (mapClick != state) {
+    if (mapClick !== state) {
       MapClick(state);
     }
   };
   const [draw, Draw] = useState(null);
   const setDraw = (state) => {
-    if (draw != state) {
+    if (draw !== state) {
       Draw(state);
     }
   };
   const [drawStatus, DrawStatus] = useState(false);
   const setDrawStatus = (state) => {
-    if (drawStatus != state) {
+    if (drawStatus !== state) {
       DrawStatus(state);
     }
   };
@@ -256,14 +252,14 @@ function Map() {
 
   const [drawingFilterFeatureId, DrawingFilterFeatureId] = useState(null);
   const setDrawingFilterFeatureId = (state) => {
-    if (drawingFilterFeatureId != state) {
+    if (drawingFilterFeatureId !== state) {
       DrawingFilterFeatureId(state);
     }
   };
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, AnchorElPoPOver] = useState(null);
   const setAnchorElPoPOver = (state) => {
-    if (anchorElPoPOver != state) {
+    if (anchorElPoPOver !== state) {
       AnchorElPoPOver(state);
     }
   };
@@ -273,7 +269,7 @@ function Map() {
   const setHoverUdIds = (id) => {
     const ids = hoverUdIds.slice(0);
     if (ids.indexOf(id) > -1) {
-      const tmpIds = ids.filter((item) => item != id);
+      const tmpIds = ids.filter((item) => item !== id);
       HoverUdIds(tmpIds);
     } else {
       ids.push(id);
@@ -290,14 +286,10 @@ function Map() {
 
   const [filterAbstract, setFilterAbstract] = useState(false);
 
-
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
-
 
   const [rows, Rows] = React.useState([]);
   const [loading, Loading] = useState(true);
-
-
 
   const setRows = (state) => {
     if (rows != state) {
@@ -310,8 +302,7 @@ function Map() {
     }
   };
 
-
-  // queries 
+  // queries
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
   const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY);
   const [tracksByObjectType, { data: dataTracks }] = useLazyQuery(TRACKSBYOBJECTTYPE);
@@ -321,20 +312,31 @@ function Map() {
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, { fetchPolicy: "network-only", });
   const [getWellsForLayer, { data: dataWellsForOwnerWellTrackLayer }] = useLazyQuery(WELLSQUERY);
   const [getPermits, { data: permitData }] = useLazyQuery(PERMITSQUERY);
-  const [getRecentSubmittedPermits, { data: permitRecentSubmittedData }] = useLazyQuery(RECENT_SUBMITTED_PERMITS_QUERY);
+  const [
+    getRecentSubmittedPermits,
+    { data: permitRecentSubmittedData },
+  ] = useLazyQuery(RECENT_SUBMITTED_PERMITS_QUERY);
   const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
-  const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
-  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(ABSTRACTWELLGEOQUERY);
-  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
-  const [getPLSSSecondDivisionGeo, { data: plssSecondDivisionData }] = useLazyQuery(PLSSSECONDDIVISIONGEO);
-  const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(ALLLAYERSETTINGSBYUSER);
+  const [getAbstractGeo, { data: abstractData }] = useLazyQuery(
+    ABSTRACTGEOQUERY
+  );
+  const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(
+    ABSTRACTWELLGEOQUERY
+  );
+  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(
+    ABSTRACTGEOCONTAINSQUERY
+  );
+  const [
+    getPLSSSecondDivisionGeo,
+    { data: plssSecondDivisionData },
+  ] = useLazyQuery(PLSSSECONDDIVISIONGEO);
+  const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(
+    ALLLAYERSETTINGSBYUSER
+  );
 
-
-  // mutations 
+  // mutations
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
   const [removeCustomLayer] = useMutation(REMOVECUSTOMLAYER);
-
-
 
   /////end/////////temporary
 
@@ -343,21 +345,21 @@ function Map() {
       setLoading(true);
 
       tracksByObjectType({
-        variables: {
-          objectType: "well",
-        },
+	variables: {
+	  objectType: "well",
+	},
       });
 
       tracksByObjectTypeOwner({
-        variables: {
-          objectType: "owner",
-        },
+	variables: {
+	  objectType: "owner",
+	},
       });
 
       getAllLayerSettingsByUser({
-        variables: {
-          userId: stateApp.user.mongoId,
-        },
+	variables: {
+	  userId: stateApp.user.mongoId,
+	},
       });
 
       getCustomLayers();
@@ -367,18 +369,18 @@ function Map() {
   useEffect(() => {
     if (dataTracks && dataTracks.tracksByObjectType) {
       if (dataTracks.tracksByObjectType.length !== 0) {
-        const tracksIdArray = dataTracks.tracksByObjectType.map(
-          (track) => track.trackOn
-        );
+	const tracksIdArray = dataTracks.tracksByObjectType.map(
+	  (track) => track.trackOn
+	);
 
-        getWells({
-          variables: {
-            wellIdArray: tracksIdArray,
-          },
-        });
+	getWells({
+	  variables: {
+	    wellIdArray: tracksIdArray,
+	  },
+	});
       } else {
-        setRows([]);
-        setLoading(false);
+	setRows([]);
+	setLoading(false);
       }
     }
   }, [dataTracks]);
@@ -386,14 +388,14 @@ function Map() {
   useEffect(() => {
     if (dataTracksOwner && dataTracksOwner.tracksByObjectType) {
       if (dataTracksOwner.tracksByObjectType.length !== 0) {
-        var objectsIdsArray = dataTracksOwner.tracksByObjectType.map(
-          (item) => item.trackOn
-        );
-        getOwners({
-          variables: {
-            ownerIdArray: objectsIdsArray,
-          },
-        });
+	var objectsIdsArray = dataTracksOwner.tracksByObjectType.map(
+	  (item) => item.trackOn
+	);
+	getOwners({
+	  variables: {
+	    ownerIdArray: objectsIdsArray,
+	  },
+	});
       }
     }
   }, [dataTracksOwner]);
@@ -401,44 +403,47 @@ function Map() {
   useEffect(() => {
     if (dataOwners) {
       if (dataOwners.owners?.length >= 0)
-        setStateApp((state) => ({
-          ...state,
-          owners: [...dataOwners.owners],
-        }));
+	setStateApp((state) => ({
+	  ...state,
+	  owners: [...dataOwners.owners],
+	}));
       else
-        setStateApp((state) => ({
-          ...state,
-          owners: [],
-        }));
+	setStateApp((state) => ({
+	  ...state,
+	  owners: [],
+	}));
     }
   }, [dataOwners]);
 
   useEffect(() => {
-    if (customLayerData && customLayerData.allCustomLayers && customLayerData.allCustomLayers != stateApp.customLayers) {
+    if (
+      customLayerData &&
+      customLayerData.allCustomLayers &&
+      customLayerData.allCustomLayers != stateApp.customLayers
+    ) {
       setStateApp((state) => ({
-        ...state,
-        customLayers: customLayerData.allCustomLayers,
-        selectedUserDefinedLayer: null,
-        editLayer: false,
+	...state,
+	customLayers: customLayerData.allCustomLayers,
+	selectedUserDefinedLayer: null,
+	editLayer: false,
       }));
     }
   }, [customLayerData]);
 
   useEffect(() => {
     if (layerStates && layerStates.allLayerSettingsByUser) {
-
-      console.log('layer states', layerStates)
+      console.log("layer states", layerStates);
 
       setStateApp({
-        ...stateApp,
-        layers: [...layerStates.allLayerSettingsByUser],
+	...stateApp,
+	layers: [...layerStates.allLayerSettingsByUser],
       });
 
       if (layerStates.allLayerSettingsByUser.length > 0) {
         setLayersData(layerStates.allLayerSettingsByUser);
         for (let i = 0; i < layerStates.allLayerSettingsByUser.length; i++) {
           const layer = layerStates.allLayerSettingsByUser[i];
-          if (layer.layerType == "file layer") {
+          if (layer.layerType === "file layer") {
             setFileRequestCounter(1);
             viewFile({
               variables: {
@@ -475,32 +480,32 @@ function Map() {
       let nextLayerIndex;
 
       if (layerIndex < layersData.length - 1)
-        for (let i = layerIndex + 1; i < layers.length; i++) {
-          const fileFound = layers.find((l) => l.file === layers[i].file && l.fileUrl)
-          if (fileFound) {
-            let currentLayer = { ...layers[i] };
-            // currentLayer.fileContent = fileFound.fileContent
-            currentLayer.fileUrl = fileFound.fileUrl
-            layers[i] = currentLayer;
-            setLayersData(layers);
-          }
-          else if (layers[i].layerType == "file layer") {
-            setFileRequestCounter(1);
-            viewFile({
-              variables: {
-                fileId: layers[i].file,
-              },
-            });
-            nextLayerIndex = i;
-            break;
-          }
-        }
+	for (let i = layerIndex + 1; i < layers.length; i++) {
+	  const fileFound = layers.find((l) => l.file === layers[i].file && l.fileUrl)
+	  if (fileFound) {
+	    let currentLayer = { ...layers[i] };
+	    // currentLayer.fileContent = fileFound.fileContent
+	    currentLayer.fileUrl = fileFound.fileUrl
+	    layers[i] = currentLayer;
+	    setLayersData(layers);
+	  }
+	  else if (layers[i].layerType == "file layer") {
+	    setFileRequestCounter(1);
+	    viewFile({
+	      variables: {
+		fileId: layers[i].file,
+	      },
+	    });
+	    nextLayerIndex = i;
+	    break;
+	  }
+	}
       //// no more file layers to looks for
       if (!nextLayerIndex) {
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          layers: [...layers],
-        }));
+	setStateApp((stateApp) => ({
+	  ...stateApp,
+	  layers: [...layers],
+	}));
       }
     }
   };
@@ -511,39 +516,38 @@ function Map() {
       const fileId = result.id;
       if (result.uri && result.internalKey) {
         const layerIndex = stateApp.layers.findIndex(
-          (layer) => layer.file == fileId
+          (layer) => layer.file === fileId
         );
         handleFileAsync(result.uri, result.internalKey, layerIndex);
       } else if (fileId && fileRequestCounter < 30) {
-        let waitBeforeRequestAgain = setTimeout(() => {
-          setFileRequestCounter(fileRequestCounter + 1);
-          viewFile({
-            variables: {
-              fileId,
-            },
-          });
-          clearTimeout(waitBeforeRequestAgain);
-        }, 1000);
+	let waitBeforeRequestAgain = setTimeout(() => {
+	  setFileRequestCounter(fileRequestCounter + 1);
+	  viewFile({
+	    variables: {
+	      fileId,
+	    },
+	  });
+	  clearTimeout(waitBeforeRequestAgain);
+	}, 1000);
       } else {
-        ////fail all request
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          universalCircularLoaderAct: false,
-        }));
-        dispatch(
-          showErrorMessage(
-            "The file is not ready yet, please wait a few minutes and then reload the application."
-          )
-        );
+	////fail all request
+	setStateApp((stateApp) => ({
+	  ...stateApp,
+	  universalCircularLoaderAct: false,
+	}));
+	dispatch(
+	  showErrorMessage(
+	    "The file is not ready yet, please wait a few minutes and then reload the application."
+	  )
+	);
       }
     }
   }, [viewFileResult]);
 
   useEffect(() => {
-
     if (dataOwnersWells && dataOwnersWells.length !== 0) {
       var ownerObjectIds = dataOwnersWells.ownersWells.map(
-        (item) => item.wells
+	(item) => item.wells
       );
 
       var merged = [].concat.apply([], ownerObjectIds);
@@ -551,30 +555,29 @@ function Map() {
       var stripped = merged.map((item) => item.wellId);
 
       getWellsForLayer({
-        variables: {
-          wellIdArray: stripped,
-        },
+	variables: {
+	  wellIdArray: stripped,
+	},
       });
     }
   }, [dataOwnersWells]);
 
   useEffect(() => {
-
     if (dataWells) {
       if (
-        dataWells.wells &&
-        dataWells.wells.results &&
-        dataWells.wells.results.length > 0
+	dataWells.wells &&
+	  dataWells.wells.results &&
+	  dataWells.wells.results.length > 0
       ) {
-        setStateApp((state) => ({
-          ...state,
-          trackedwells: dataWells.wells.results,
-        }));
+	setStateApp((state) => ({
+	  ...state,
+	  trackedwells: dataWells.wells.results,
+	}));
       } else {
-        setStateApp((state) => ({
-          ...state,
-          trackedwells: null,
-        }));
+	setStateApp((state) => ({
+	  ...state,
+	  trackedwells: null,
+	}));
       }
     }
   }, [dataWells]);
@@ -593,7 +596,7 @@ function Map() {
     for (let i = (paintProps ? paintProps.length : 0) - 1; i >= 0; i--) {
       const prop = paintProps[i];
       let layerData = null;
-      if (identifier == "Parcels" || identifier == "Area of Interest") {
+      if (identifier === "Parcels" || identifier === "Area of Interest") {
         const dataId = prop.id;
         const groupBy = (arr, property) => {
           return arr.reduce((memo, x) => {
@@ -609,7 +612,7 @@ function Map() {
           layerData = [];
         }
       } else {
-        layerData = data;
+	layerData = data;
       }
 
       let geoJson = null;
@@ -626,10 +629,6 @@ function Map() {
 
 
         // geoJson = layerData;
-
-
-
-
       } else {
         const makeGeoJSON = (mdata) => {
           return {
@@ -641,7 +640,10 @@ function Map() {
                   properties: feature,
                   geometry: {
                     type: "Point",
-                    coordinates: [Number(feature.longitude), Number(feature.latitude)],
+                    coordinates: [
+                      Number(feature.longitude),
+                      Number(feature.latitude),
+                    ],
                   },
                 };
               } else if (feature.shape) {
@@ -662,7 +664,10 @@ function Map() {
                   properties: feature,
                   geometry: {
                     type: "Point",
-                    coordinates: [Number(feature.Longitude), Number(feature.Latitude)],
+                    coordinates: [
+                      Number(feature.Longitude),
+                      Number(feature.Latitude),
+                    ],
                   },
                 };
               }
@@ -678,11 +683,11 @@ function Map() {
 
       // -> add source
       if (map.getSource(sourceId)) {
-        let mapSourceData = map.getSource(sourceId)._data;
-        if (mapSourceData && !deepEqualObjects(geoJson, mapSourceData))
-          map.getSource(sourceId).setData(geoJson);
+	let mapSourceData = map.getSource(sourceId)._data;
+	if (mapSourceData && !deepEqualObjects(geoJson, mapSourceData))
+	  map.getSource(sourceId).setData(geoJson);
       } else {
-        if (paintType == "circle" || paintType == "symbol") {
+        if (paintType === "circle" || paintType === "symbol") {
           map.addSource(sourceId, {
             type: "geojson",
             data: geoJson,
@@ -702,66 +707,67 @@ function Map() {
 
       if (sourceId == "parcels_source" || sourceId == "interests_source") {
 
-        let pointSource = geoJson.features.map(feature => {
+	let pointSource = geoJson.features.map(feature => {
 
-          var output = feature
+	  var output = feature
 
-          if (feature.geometry.type == "Point") {
-            output = feature
-          } else {
-            output = { ...turf.centroid(feature), properties: feature.properties }
-          }
+	  if (feature.geometry.type == "Point") {
+	    output = feature
+	  } else {
+	    output = { ...turf.centroid(feature), properties: feature.properties }
+	  }
 
-          return output
-        })
-
+	  return output
+	})
 
         pointSource = { type: "FeatureCollection", features: [...pointSource] }
 
         if (map.getSource(`${sourceId}_point`)) {
           let pointSourceData = map.getSource(`${sourceId}_point`)._data;
-          if (pointSourceData && !deepEqualObjects(pointSource, pointSourceData))
+          if (
+            pointSourceData &&
+            !deepEqualObjects(pointSource, pointSourceData)
+          )
             map.getSource(`${sourceId}_point`).setData(pointSource);
         } else {
           map.addSource(`${sourceId}_point`, {
             type: "geojson",
-            data: pointSource
-          })
+            data: pointSource,
+          });
         }
       }
 
 
 
       if (map.getSource(`${sourceId}_filter`)) {
-        let mapSourceFilterData = map.getSource(`${sourceId}_filter`)._data;
-        if (
-          mapSourceFilterData &&
-          !deepEqualObjects(geoJson, mapSourceFilterData)
-        )
-          map.getSource(`${sourceId}_filter`).setData(geoJson);
+	let mapSourceFilterData = map.getSource(`${sourceId}_filter`)._data;
+	if (
+	  mapSourceFilterData &&
+	    !deepEqualObjects(geoJson, mapSourceFilterData)
+	)
+	  map.getSource(`${sourceId}_filter`).setData(geoJson);
       } else {
-        map.addSource(`${sourceId}_filter`, {
-          type: "geojson",
-          data: geoJson,
-          // promoteId: "id",
-        });
+	map.addSource(`${sourceId}_filter`, {
+	  type: "geojson",
+	  data: geoJson,
+	  // promoteId: "id",
+	});
       }
 
       // -> add layer
       const layerId = prop.id;
       const visible =
-        layerSettings.showable && layerSettings.visiable !== false;
+	    layerSettings.showable && layerSettings.visiable !== false;
 
       if (prop.paintProps) {
         Object.keys(prop.paintProps).forEach((key) => {
-          if (prop.paintProps[key] == "#undefined") {
+          if (prop.paintProps[key] === "#undefined") {
             prop.paintProps[key] = random_hex_color_code();
           }
         });
       }
 
       if (map.getLayer(layerId)) {
-
         map.moveLayer(`${layerId}_point`);
         map.setLayoutProperty(
           layerId,
@@ -772,200 +778,199 @@ function Map() {
           `${layerId}_point`,
           "visibility",
           visible ? "visible" : "none"
-        )
+        );
         if (prop.paintProps) {
           Object.keys(prop.paintProps).forEach((key) => {
             map.setPaintProperty(layerId, key, prop.paintProps[key]);
           });
         }
-
       } else {
-        //// joining all properties before to set the new layer ////
-        let layout = { visibility: visible ? "visible" : "none" };
-        if (prop.layoutProps) layout = { ...layout, ...prop.layoutProps };
-        // symbols
-        if (prop.symbolProps) layout = { ...layout, ...prop.symbolProps };
+	//// joining all properties before to set the new layer ////
+	let layout = { visibility: visible ? "visible" : "none" };
+	if (prop.layoutProps) layout = { ...layout, ...prop.layoutProps };
+	// symbols
+	if (prop.symbolProps) layout = { ...layout, ...prop.symbolProps };
 
-        const layerConfig = {
-          id: layerId,
-          type: paintType,
-          source: sourceId,
-          layout,
-        };
+	const layerConfig = {
+	  id: layerId,
+	  type: paintType,
+	  source: sourceId,
+	  layout,
+	};
 
-        if (prop.paintProps) layerConfig.paint = prop.paintProps;
-        if (config.layerGeometry && data.featureTypes) layerConfig.filter = ['==', 'layerGeometry', config.layerGeometry]
+	if (prop.paintProps) layerConfig.paint = prop.paintProps;
+	if (config.layerGeometry && data.featureTypes) layerConfig.filter = ['==', 'layerGeometry', config.layerGeometry]
 
-        if (prop.minZoom) {
-          layerConfig.minzoom = prop.minZoom;
-        }
+	if (prop.minZoom) {
+	  layerConfig.minzoom = prop.minZoom;
+	}
 
-        map.addLayer(layerConfig);
+	map.addLayer(layerConfig);
 
-        if (prop.labelProps) {
-          let labelLayout = { visibility: visible ? "visible" : "none" };
-          labelLayout = {
-            ...labelLayout,
-            ...prop.labelProps.symbolProps,
-          };
-          // map.addLayer({
-          //   id: `${prop.id}_label`,
-          //   type: prop.labelProps.paintType,
-          //   source: sourceId,
-          //   minzoom: prop.labelProps.minZoom,
-          //   // layout: labelLayout,
-          // });
+	if (prop.labelProps) {
+	  let labelLayout = { visibility: visible ? "visible" : "none" };
+	  labelLayout = {
+	    ...labelLayout,
+	    ...prop.labelProps.symbolProps,
+	  };
+	  // map.addLayer({
+	  //   id: `${prop.id}_label`,
+	  //   type: prop.labelProps.paintType,
+	  //   source: sourceId,
+	  //   minzoom: prop.labelProps.minZoom,
+	  //   // layout: labelLayout,
+	  // });
 
-          // override label properties for parcel and interest
-          if (layerId === 'parcel') {
-            labelLayout = {
-              ...labelLayout,
-              "text-size": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                12,
-                12,
-                15,
-                28
-              ]
-            }
-          } else if (layerId === 'interest') {
-            labelLayout = {
-              ...labelLayout,
-              "text-size": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                9,
-                16,
-                11,
-                32,
-                15,
-                54
-              ]
-            }
-          }
+	  // override label properties for parcel and interest
+	  if (layerId === 'parcel') {
+	    labelLayout = {
+	      ...labelLayout,
+	      "text-size": [
+		"interpolate",
+		["linear"],
+		["zoom"],
+		12,
+		12,
+		15,
+		28
+	      ]
+	    }
+	  } else if (layerId === 'interest') {
+	    labelLayout = {
+	      ...labelLayout,
+	      "text-size": [
+		"interpolate",
+		["linear"],
+		["zoom"],
+		9,
+		16,
+		11,
+		32,
+		15,
+		54
+	      ]
+	    }
+	  }
 
-          // add point
-          map.addLayer({
-            id: `${layerId}_point`,
-            type: 'symbol',
-            source: `${sourceId}_point`,
-            minzoom: prop.labelProps.minZoom,
-            layout: labelLayout,
-          });
-          map.moveLayer(`${layerId}_point`);
-        }
+	  // add point
+	  map.addLayer({
+	    id: `${layerId}_point`,
+	    type: 'symbol',
+	    source: `${sourceId}_point`,
+	    minzoom: prop.labelProps.minZoom,
+	    layout: labelLayout,
+	  });
+	  map.moveLayer(`${layerId}_point`);
+	}
       }
 
       if (prop.clusterProps) {
-        const mLayer = map.getLayer(layerId);
-        const clusterVisible =
-          visible &&
-          mLayer &&
-          !mLayer.source.includes("_filter") &&
-          !clustersOff;
+	const mLayer = map.getLayer(layerId);
+	const clusterVisible =
+	      visible &&
+	      mLayer &&
+	      !mLayer.source.includes("_filter") &&
+	  !clustersOff;
 
-        const clusterVar = layerId + "-clusters";
-        const clusterLabelBar = layerId + "-clusters-counts";
-        if (map.getLayer(clusterLabelBar)) {
-          map.setLayoutProperty(
-            clusterLabelBar,
-            "visibility",
-            clusterVisible ? "visible" : "none"
-          );
-        } else {
-          map.addLayer({
-            id: clusterLabelBar,
-            type: "symbol",
-            source: sourceId,
-            filter: ["has", "point_count"],
-            layout: prop.clusterProps.clusterSymbolProps,
-          });
-          map.setLayoutProperty(
-            clusterLabelBar,
-            "visibility",
-            clusterVisible ? "visible" : "none"
-          );
-        }
+	const clusterVar = layerId + "-clusters";
+	const clusterLabelBar = layerId + "-clusters-counts";
+	if (map.getLayer(clusterLabelBar)) {
+	  map.setLayoutProperty(
+	    clusterLabelBar,
+	    "visibility",
+	    clusterVisible ? "visible" : "none"
+	  );
+	} else {
+	  map.addLayer({
+	    id: clusterLabelBar,
+	    type: "symbol",
+	    source: sourceId,
+	    filter: ["has", "point_count"],
+	    layout: prop.clusterProps.clusterSymbolProps,
+	  });
+	  map.setLayoutProperty(
+	    clusterLabelBar,
+	    "visibility",
+	    clusterVisible ? "visible" : "none"
+	  );
+	}
 
-        if (beforelayer) {
-          map.moveLayer(clusterLabelBar, beforelayer);
-        }
-        beforelayer = clusterLabelBar;
+	if (beforelayer) {
+	  map.moveLayer(clusterLabelBar, beforelayer);
+	}
+	beforelayer = clusterLabelBar;
 
-        if (config.layerSettings.interaction.interactionAble) {
-          map.off("mousemove", clusterLabelBar, mouseMoveHandler);
-          map.off("mouseleave", clusterLabelBar, mouseLeaveHandler);
-          if (config.layerSettings.interaction.interactionDetail.hover) {
-            map.on("mousemove", clusterLabelBar, mouseMoveHandler);
-            map.on("mouseleave", clusterLabelBar, mouseLeaveHandler);
-          }
-        }
+	if (config.layerSettings.interaction.interactionAble) {
+	  map.off("mousemove", clusterLabelBar, mouseMoveHandler);
+	  map.off("mouseleave", clusterLabelBar, mouseLeaveHandler);
+	  if (config.layerSettings.interaction.interactionDetail.hover) {
+	    map.on("mousemove", clusterLabelBar, mouseMoveHandler);
+	    map.on("mouseleave", clusterLabelBar, mouseLeaveHandler);
+	  }
+	}
 
-        if (map.getLayer(clusterVar)) {
-          map.setLayoutProperty(
-            clusterVar,
-            "visibility",
-            clusterVisible ? "visible" : "none"
-          );
-          Object.keys(prop.clusterProps.clusterPaintProps).forEach((key) => {
-            map.setPaintProperty(
-              clusterVar,
-              key,
-              prop.clusterProps.clusterPaintProps[key]
-            );
-          });
-        } else {
-          map.addLayer({
-            id: clusterVar,
-            type: "circle",
-            source: sourceId,
-            filter: ["has", "point_count"],
-            paint: prop.clusterProps.clusterPaintProps,
-          });
-          map.setLayoutProperty(
-            clusterVar,
-            "visibility",
-            clusterVisible ? "visible" : "none"
-          );
-        }
+	if (map.getLayer(clusterVar)) {
+	  map.setLayoutProperty(
+	    clusterVar,
+	    "visibility",
+	    clusterVisible ? "visible" : "none"
+	  );
+	  Object.keys(prop.clusterProps.clusterPaintProps).forEach((key) => {
+	    map.setPaintProperty(
+	      clusterVar,
+	      key,
+	      prop.clusterProps.clusterPaintProps[key]
+	    );
+	  });
+	} else {
+	  map.addLayer({
+	    id: clusterVar,
+	    type: "circle",
+	    source: sourceId,
+	    filter: ["has", "point_count"],
+	    paint: prop.clusterProps.clusterPaintProps,
+	  });
+	  map.setLayoutProperty(
+	    clusterVar,
+	    "visibility",
+	    clusterVisible ? "visible" : "none"
+	  );
+	}
 
-        if (beforelayer) {
-          map.moveLayer(clusterVar, beforelayer);
-        }
-        beforelayer = clusterVar;
+	if (beforelayer) {
+	  map.moveLayer(clusterVar, beforelayer);
+	}
+	beforelayer = clusterVar;
 
-        if (config.layerSettings.interaction.interactionAble) {
-          map.off("mousemove", clusterVar, mouseMoveHandler);
-          map.off("mouseleave", clusterVar, mouseLeaveHandler);
-          if (config.layerSettings.interaction.interactionDetail.hover) {
-            map.on("mousemove", clusterVar, mouseMoveHandler);
-            map.on("mouseleave", clusterVar, mouseLeaveHandler);
-          }
-        }
+	if (config.layerSettings.interaction.interactionAble) {
+	  map.off("mousemove", clusterVar, mouseMoveHandler);
+	  map.off("mouseleave", clusterVar, mouseLeaveHandler);
+	  if (config.layerSettings.interaction.interactionDetail.hover) {
+	    map.on("mousemove", clusterVar, mouseMoveHandler);
+	    map.on("mouseleave", clusterVar, mouseLeaveHandler);
+	  }
+	}
       }
 
       if (beforelayer) {
-        map.moveLayer(layerId, beforelayer);
+	map.moveLayer(layerId, beforelayer);
       }
       beforelayer = layerId;
 
       if (config.layerSettings.interaction.interactionAble) {
-        map.off("mousemove", layerId, mouseMoveHandler);
-        map.off("mouseleave", layerId, mouseLeaveHandler);
-        if (config.layerSettings.interaction.interactionDetail.hover) {
-          map.on("mousemove", layerId, mouseMoveHandler);
-          map.on("mouseleave", layerId, mouseLeaveHandler);
-        }
+	map.off("mousemove", layerId, mouseMoveHandler);
+	map.off("mouseleave", layerId, mouseLeaveHandler);
+	if (config.layerSettings.interaction.interactionDetail.hover) {
+	  map.on("mousemove", layerId, mouseMoveHandler);
+	  map.on("mouseleave", layerId, mouseLeaveHandler);
+	}
       }
     }
     return beforelayer;
   };
 
   useEffect(() => {
-    console.log('PERMIT DATA ====', permitData)
+    console.log("PERMIT DATA ====", permitData);
     if (permitData && permitData.permits && permitData.permits.length > 0) {
       const nextOffset = permits.length + permitData.permits.length;
       setPermitData([...permits, ...permitData.permits]);
@@ -973,13 +978,21 @@ function Map() {
   }, [permitData]);
 
   useEffect(() => {
-    console.log('RECENT PERMIT DATA ====', permitRecentSubmittedData)
-    if (permitRecentSubmittedData && permitRecentSubmittedData.recent_submitted_permits && permitRecentSubmittedData.recent_submitted_permits.length > 0) {
-      const nextOffset = recent_submitted_permits.length + permitRecentSubmittedData.recent_submitted_permits.length;
-      setRecentSubmittedPermitData([...recent_submitted_permits, ...permitRecentSubmittedData.recent_submitted_permits]);
+    console.log("RECENT PERMIT DATA ====", permitRecentSubmittedData);
+    if (
+      permitRecentSubmittedData &&
+      permitRecentSubmittedData.recent_submitted_permits &&
+      permitRecentSubmittedData.recent_submitted_permits.length > 0
+    ) {
+      const nextOffset =
+        recent_submitted_permits.length +
+        permitRecentSubmittedData.recent_submitted_permits.length;
+      setRecentSubmittedPermitData([
+        ...recent_submitted_permits,
+        ...permitRecentSubmittedData.recent_submitted_permits,
+      ]);
     }
   }, [permitRecentSubmittedData]);
-
 
   useEffect(() => {
     if (rigData && rigData.rigs && rigData.rigs.length > 0) {
@@ -989,79 +1002,87 @@ function Map() {
   }, [rigData]);
 
   useEffect(() => {
-
     if (dataWellsForOwnerWellTrackLayer) {
       if (
-        dataWellsForOwnerWellTrackLayer.wells &&
-        dataWellsForOwnerWellTrackLayer.wells.results &&
-        dataWellsForOwnerWellTrackLayer.wells.results.length > 0
+	dataWellsForOwnerWellTrackLayer.wells &&
+	  dataWellsForOwnerWellTrackLayer.wells.results &&
+	  dataWellsForOwnerWellTrackLayer.wells.results.length > 0
       ) {
-        setStateApp((state) => ({
-          ...state,
-          trackedOwnerWells: dataWellsForOwnerWellTrackLayer.wells.results,
-        }));
+	setStateApp((state) => ({
+	  ...state,
+	  trackedOwnerWells: dataWellsForOwnerWellTrackLayer.wells.results,
+	}));
       } else {
-        setStateApp((state) => ({
-          ...state,
-          trackedOwnerWells: null,
-        }));
+	setStateApp((state) => ({
+	  ...state,
+	  trackedOwnerWells: null,
+	}));
       }
     }
   }, [dataWellsForOwnerWellTrackLayer]);
 
   useEffect(() => {
-
     const wellPointClick = (feature) => {
-
       // this function is intended to organize the data 
       // when a well point is clicked 
       // and initiate the mapbox popup 
 
       if (feature && feature.properties) {
 
-        let properties = feature.properties;
+	let properties = feature.properties;
 
-        // tmp fix because it appears that the data coming back 
-        // from contacts api is slightly different than other apis
-        // need to setup in a standard format         
-        if (!properties.id) { properties.id = properties.wellId }
+	// tmp fix because it appears that the data coming back 
+	// from contacts api is slightly different than other apis
+	// need to setup in a standard format
 
-        if (properties.id) {
-          setStateApp((state) => ({
-            ...state,
-            popupOpen: false,
-            selectedUserDefinedLayer: null,
-            selectedParcel: null,
-          }));
-          setStateApp((state) => ({
-            ...state,
-            selectedWellId: properties.id.toLowerCase(),
-            wellSelectedCoordinates: [properties.longitude, properties.latitude],
-          }));
-
-        }
+	if (properties.id && feature.layer.id === "wellpoints") {
+	  setStateApp((state) => ({
+	    ...state,
+	    popupOpen: false,
+	    selectedUserDefinedLayer: null,
+	    selectedParcel: null,
+	  }));
+	  setStateApp((state) => ({
+	    ...state,
+	    selectedWellId: properties.id.toLowerCase(),
+	    wellSelectedCoordinates: [properties.longitude, properties.latitude],
+	  }));
+	}
+	else if (properties.Id && feature.layer.id === "recent_submitted_permits") {
+	  setStateApp((state) => ({
+	    ...state,
+	    popupOpen: false,
+	    selectedUserDefinedLayer: null,
+	    selectedParcel: null,
+	  }));
+	  setStateApp((state) => ({
+	    ...state,
+	    selectedPermitId: properties.Id.toLowerCase(),
+	    permitSelectedCoordinates: [properties.longitude, properties.latitude],
+	  }));
+	}
       }
-
     };
 
-
+    // AOI/Parcel Click Handler
     const udLayerClickHandler = (feature) => {
       setStateApp((state) => ({
-        ...state,
-        expandedCard: false,
-        popupOpen: false,
+	...state,
+	expandedCard: false,
+	popupOpen: false,
       }));
 
       if (feature.source === "parcels_source") {
-        setStateApp((state) => ({
-          ...state,
-          selectedUserDefinedLayer: null,
-          selectedParcel: feature.properties,
-        }));
+	setStateApp((state) => ({
+	  ...state,
+	  selectedUserDefinedLayer: null,
+	  selectedParcel: feature.properties,
+	}));
       }
       if (feature.source === "interests_source") {
         setStateApp((state) => ({
           ...state,
+          showShapeActionsPopup: true,
           selectedUserDefinedLayer: feature,
           selectedParcel: null,
         }));
@@ -1071,20 +1092,19 @@ function Map() {
       map.resize();
     };
 
-
     const clusterClickHandler = (feature, map) => {
       if (feature && feature.properties && feature.properties.cluster_id) {
-        var clusterId = feature.properties.cluster_id;
-        map
-          .getSource(feature.source)
-          .getClusterExpansionZoom(clusterId, function (err, zoom) {
-            if (err) return;
+	var clusterId = feature.properties.cluster_id;
+	map
+	  .getSource(feature.source)
+	  .getClusterExpansionZoom(clusterId, function (err, zoom) {
+	    if (err) return;
 
-            map.easeTo({
-              center: feature.geometry.coordinates,
-              zoom: zoom,
-            });
-          });
+	    map.easeTo({
+	      center: feature.geometry.coordinates,
+	      zoom: zoom,
+	    });
+	  });
       }
     };
 
@@ -1101,7 +1121,7 @@ function Map() {
       let udLayers = [];
       let clusterLayers = [];
 
-      stateApp.layers.forEach((layer) => {
+      stateApp.layers?.forEach((layer) => {
         const interaction =
           layer.layerSettings.interaction.interactionAble &&
           layer.layerSettings.interaction.interactionDetail.click;
@@ -1124,18 +1144,18 @@ function Map() {
               }
               if (map.getLayer(layerId)) {
                 if (
-                  layer.identifier == "Parcels" ||
-                  layer.identifier == "Area of Interest" ||
-                  layer.identifier == "Tracked Wells" ||
-                  layer.identifier == "Tracked Owners" ||
-                  layer.identifier == "User Tags" ||
-                  layer.identifier == "Search"
+                  layer.identifier === "Parcels" ||
+                  layer.identifier === "Area of Interest" ||
+                  layer.identifier === "Tracked Wells" ||
+                  layer.identifier === "Tracked Owners" ||
+                  layer.identifier === "User Tags" ||
+                  layer.identifier === "Search"
                 )
                   layers.push(layerId);
 
                 if (
-                  layer.identifier == "Parcels" ||
-                  layer.identifier == "Area of Interest"
+                  layer.identifier === "Parcels" ||
+                  layer.identifier === "Area of Interest"
                 ) {
                   udLayers.push(layerId);
                 }
@@ -1169,63 +1189,63 @@ function Map() {
       });
 
       var bbox = [
-        [e.point.x - 10, e.point.y - 10],
-        [e.point.x + 10, e.point.y + 10],
+	[e.point.x - 10, e.point.y - 10],
+	[e.point.x + 10, e.point.y + 10],
       ];
 
       let features = map.queryRenderedFeatures(bbox, {
-        layers: [...layers],
+	layers: [...layers],
       });
 
       if (
-        !(window.event.ctrlKey && window.event.metaKey) &&
-        hoverUdIds.length > 0
+	!(window.event.ctrlKey && window.event.metaKey) &&
+	  hoverUdIds.length > 0
       ) {
-        for (let i = 0; i < hoverUdIds.length; i++) {
-          map.setFeatureState(
-            { source: "parcels_source", id: hoverUdIds[i] },
-            { hover: false }
-          );
-          HoverUdIds([]);
-        }
+	for (let i = 0; i < hoverUdIds.length; i++) {
+	  map.setFeatureState(
+	    { source: "parcels_source", id: hoverUdIds[i] },
+	    { hover: false }
+	  );
+	  HoverUdIds([]);
+	}
       }
 
       const isNormalClick = !isCtrlKeyPressed();
 
       if (isNormalClick && features && features.length > 0) {
-        const feature = features[0];
-        const layerId = feature.layer.id;
+	const feature = features[0];
+	const layerId = feature.layer.id;
 
-        switch (true) {
-          case clusterUDLayers.indexOf(layerId) > -1:
-            clusterClickHandler(feature, map);
-            break;
-          case clusterLayers.indexOf(layerId) > -1:
-            clusterClickHandler(feature, map);
-            break;
-          case udLayers.indexOf(layerId) > -1:
-            udLayerClickHandler(feature);
-            break;
-          case layerId === "wellpoints" ||
-            layerId === "welllines" ||
-            layerId === "Parcels" ||
-            layerId === "Area of Interest" ||
-            layerId === "Tracked Wells" ||
-            layerId === "Tracked Owners" ||
-            layerId === "Tags Filter" ||
-            layerId === "Search" ||
-            layerId === "recent_submitted_permits" ||
-            layerId === "permits":
-            wellPointClick(feature);
-            break;
-          default:
-            break;
-        }
+	switch (true) {
+	case clusterUDLayers.indexOf(layerId) > -1:
+	  clusterClickHandler(feature, map);
+	  break;
+	case clusterLayers.indexOf(layerId) > -1:
+	  clusterClickHandler(feature, map);
+	  break;
+	case udLayers.indexOf(layerId) > -1:
+	  udLayerClickHandler(feature);
+	  break;
+	case layerId === "wellpoints" ||
+	    layerId === "welllines" ||
+	    layerId === "Parcels" ||
+	    layerId === "Area of Interest" ||
+	    layerId === "Tracked Wells" ||
+	    layerId === "Tracked Owners" ||
+	    layerId === "Tags Filter" ||
+	    layerId === "Search" ||
+	    layerId === "recent_submitted_permits" ||
+	    layerId === "permits":
+	  wellPointClick(feature);
+	  break;
+	default:
+	  break;
+	}
       }
     };
     if (map) {
       if (mapClick && mapClick.mapClickHandler) {
-        map.off("click", mapClick.mapClickHandler);
+	map.off("click", mapClick.mapClickHandler);
       }
       map.on("click", mapClickHandler);
       setMapClick({ mapClickHandler });
@@ -1237,7 +1257,7 @@ function Map() {
     if (stateApp.layers && stateApp.layers.length > 0 && map) {
       for (let i = 0; i < stateApp.layers.length; i++) {
         const layer = stateApp.layers[i];
-        if (layer.layerType == "vector layer") {
+        if (layer.layerType === "vector layer") {
           const props = layer.layerPaintProps;
           const visible =
             layer.layerSettings &&
@@ -1256,7 +1276,7 @@ function Map() {
               }
               beforeLayer = id;
 
-              if (id == "basinLayer" || id == "GLOUnits" || id == "GLOLeases")
+              if (id === "basinLayer" || id === "GLOUnits" || id === "GLOLeases")
                 dispatch(
                   setMainMapState({
                     [`${id}Color`]: map.getPaintProperty(id, "fill-color"),
@@ -1272,7 +1292,7 @@ function Map() {
               }
             }
           });
-        } else if (layer.layerType == "data layer") {
+        } else if (layer.layerType === "data layer") {
           let data = null;
           if (layer.layerPaintProps && layer.layerPaintProps.length > 0) {
             switch (layer.identifier) {
@@ -1311,7 +1331,6 @@ function Map() {
           }
         }
       }
-
     }
   }, [
     stateApp.layers,
@@ -1338,18 +1357,20 @@ function Map() {
       if (map.getLayer(layerId)) map.removeLayer(layerId);
 
       if (prop.clusterProps) {
-        if (map.getLayer(layerId + "-clusters-counts"))
-          map.removeLayer(layerId + "-clusters-counts");
+	if (map.getLayer(layerId + "-clusters-counts"))
+	  map.removeLayer(layerId + "-clusters-counts");
 
-        if (map.getLayer(layerId + "-clusters"))
-          map.removeLayer(layerId + "-clusters");
+	if (map.getLayer(layerId + "-clusters"))
+	  map.removeLayer(layerId + "-clusters");
       }
 
       // -> remove source
       const sourceId = prop.sourceProps;
       if (map.getSource(sourceId)) map.removeSource(sourceId);
-      if (map.getSource(`${sourceId}_point`)) map.removeSource(`${sourceId}_point`);
-      if (map.getSource(`${sourceId}_filter`)) map.removeSource(`${sourceId}_filter`);
+      if (map.getSource(`${sourceId}_point`))
+        map.removeSource(`${sourceId}_point`);
+      if (map.getSource(`${sourceId}_filter`))
+        map.removeSource(`${sourceId}_filter`);
     }
   };
 
@@ -1361,89 +1382,86 @@ function Map() {
   }, [removeLayerFromMap]);
 
   useEffect(() => {
-
     // USE EFFECT FOR BASEMAP LAYER HANDLING
     if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
       stateApp.baseMapLayers.forEach((l) => {
-        l.id.forEach((k) => {
-          if (map.getLayer(k)) {
-            map.setLayoutProperty(k, "visibility", "none");
-          }
-        });
+	l.id.forEach((k) => {
+	  if (map.getLayer(k)) {
+	    map.setLayoutProperty(k, "visibility", "none");
+	  }
+	});
       });
 
       if (stateApp.checkedBaseLayers.length > 0) {
-        let layers = stateApp.checkedBaseLayers.slice(0);
-        layers.sort(function (a, b) {
-          return b - a;
-        });
-        if (layers.length > 0) {
-          let belowlayer = null;
-          for (let k = layers.length - 1; k >= 0; k--) {
-            let i = layers[k];
-            let currentLayerArray = stateApp.baseMapLayers[i].id;
-            // eslint-disable-next-line no-loop-func
-            currentLayerArray.forEach((j) => {
-              var mapLayer = map.getLayer(j);
-              if (typeof mapLayer !== "undefined") {
-                if (map.getLayer(j)) {
-                  map.setLayoutProperty(j, "visibility", "visible");
-                  if (belowlayer != null) {
-                    map.moveLayer(j, belowlayer);
-                  }
-                  belowlayer = j;
-                }
-              }
-            });
-          }
-        }
+	let layers = stateApp.checkedBaseLayers.slice(0);
+	layers.sort(function (a, b) {
+	  return b - a;
+	});
+	if (layers.length > 0) {
+	  let belowlayer = null;
+	  for (let k = layers.length - 1; k >= 0; k--) {
+	    let i = layers[k];
+	    let currentLayerArray = stateApp.baseMapLayers[i].id;
+	    // eslint-disable-next-line no-loop-func
+	    currentLayerArray.forEach((j) => {
+	      var mapLayer = map.getLayer(j);
+	      if (typeof mapLayer !== "undefined") {
+		if (map.getLayer(j)) {
+		  map.setLayoutProperty(j, "visibility", "visible");
+		  if (belowlayer != null) {
+		    map.moveLayer(j, belowlayer);
+		  }
+		  belowlayer = j;
+		}
+	      }
+	    });
+	  }
+	}
       }
     }
   }, [map, stateApp.checkedBaseLayers, stateApp.baseMapLayers]);
 
   useEffect(() => {
-
     // USE EFFECT FOR HEATMAP LAYER HANDLES
     if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
       stateApp.heatLayers.forEach((l) => {
-        l.id.forEach((k) => {
-          if (map.getLayer(k)) {
-            map.setLayoutProperty(k, "visibility", "none");
-          }
-        });
+	l.id.forEach((k) => {
+	  if (map.getLayer(k)) {
+	    map.setLayoutProperty(k, "visibility", "none");
+	  }
+	});
       });
 
       if (stateApp.checkedHeats.length > 0) {
-        let layers = stateApp.checkedHeats.slice(0);
-        layers.sort(function (a, b) {
-          return b - a;
-        });
-        if (layers.length > 0) {
-          let belowlayer = null;
-          for (let k = layers.length - 1; k >= 0; k--) {
-            let i = layers[k];
-            let currentLayerArray = stateApp.heatLayers[i].id;
-            // eslint-disable-next-line no-loop-func
-            currentLayerArray.forEach((j) => {
-              var mapLayer = map.getLayer(j);
-              if (typeof mapLayer !== "undefined") {
-                if (map.getLayer(j)) {
-                  map.setLayoutProperty(j, "visibility", "visible");
-                  if (belowlayer != null) {
-                    map.moveLayer(j, belowlayer);
-                  }
-                  belowlayer = j;
-                }
-              }
-            });
-          }
-        }
+	let layers = stateApp.checkedHeats.slice(0);
+	layers.sort(function (a, b) {
+	  return b - a;
+	});
+	if (layers.length > 0) {
+	  let belowlayer = null;
+	  for (let k = layers.length - 1; k >= 0; k--) {
+	    let i = layers[k];
+	    let currentLayerArray = stateApp.heatLayers[i].id;
+	    // eslint-disable-next-line no-loop-func
+	    currentLayerArray.forEach((j) => {
+	      var mapLayer = map.getLayer(j);
+	      if (typeof mapLayer !== "undefined") {
+		if (map.getLayer(j)) {
+		  map.setLayoutProperty(j, "visibility", "visible");
+		  if (belowlayer != null) {
+		    map.moveLayer(j, belowlayer);
+		  }
+		  belowlayer = j;
+		}
+	      }
+	    });
+	  }
+	}
       }
     }
   }, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
   useEffect(() => {
-
     if (showExpandableCard) {
       setTransform("transform: none");
     } else {
@@ -1452,7 +1470,6 @@ function Map() {
   }, [showExpandableCard]);
 
   useEffect(() => {
-
     if (stateNav.m1neralDefaultsOnOff) {
       setDefaultsCheckOnOff((defaultsCheckOnOff) => !defaultsCheckOnOff);
     }
@@ -1480,568 +1497,568 @@ function Map() {
       let defaultOverride = true;
 
       if (
-        defaultOverride == true &&
+        defaultOverride === true &&
         stateNav.defaultOn &&
         !stateNav.filterWellStatus &&
         !stateNav.filterWellType &&
         filterArray.length === 0
       ) {
-        let defaultTypeName = ["typeName", []];
-        let defaultStatusName = ["statusName", []];
+	let defaultTypeName = ["typeName", []];
+	let defaultStatusName = ["statusName", []];
 
-        let defaultFiltersWellStatus = [
-          "filterWellStatus",
-          ["match", ["get", "wellStatus"], defaultStatusName[1], true, false],
-        ];
-        let defaultFiltersWellType = [
-          "filterWellType",
-          ["match", ["get", "wellType"], defaultTypeName[1], true, false],
-        ];
-        const m1neralDefaults = [
-          {
-            name: "M1neral Default Filters",
-            filters: [defaultFiltersWellStatus, defaultFiltersWellType],
-            types: [defaultTypeName, defaultStatusName],
-            on: m1neralCheckOnOff,
-            default: defaultsCheckOnOff,
-          },
-        ];
+	let defaultFiltersWellStatus = [
+	  "filterWellStatus",
+	  ["match", ["get", "wellStatus"], defaultStatusName[1], true, false],
+	];
+	let defaultFiltersWellType = [
+	  "filterWellType",
+	  ["match", ["get", "wellType"], defaultTypeName[1], true, false],
+	];
+	const m1neralDefaults = [
+	  {
+	    name: "M1neral Default Filters",
+	    filters: [defaultFiltersWellStatus, defaultFiltersWellType],
+	    types: [defaultTypeName, defaultStatusName],
+	    on: m1neralCheckOnOff,
+	    default: defaultsCheckOnOff,
+	  },
+	];
 
-        let wellTypeFilter = null;
-        let wellStatusFilter = null;
+	let wellTypeFilter = null;
+	let wellStatusFilter = null;
 
-        if (defaultTypeName[1].length > 0) {
-          wellTypeFilter = defaultFiltersWellType[1];
-        }
-        if (defaultStatusName[1].length > 0) {
-          wellStatusFilter = defaultFiltersWellStatus[1];
-        }
+	if (defaultTypeName[1].length > 0) {
+	  wellTypeFilter = defaultFiltersWellType[1];
+	}
+	if (defaultStatusName[1].length > 0) {
+	  wellStatusFilter = defaultFiltersWellStatus[1];
+	}
 
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          defaultOn: false,
-          statusName: defaultStatusName[1],
-          typeName: defaultTypeName[1],
-          m1neralDefaultFilters: m1neralDefaults,
-          filterWellStatus: wellStatusFilter,
-          filterWellType: wellTypeFilter,
-        }));
+	setStateNav((stateNav) => ({
+	  ...stateNav,
+	  defaultOn: false,
+	  statusName: defaultStatusName[1],
+	  typeName: defaultTypeName[1],
+	  m1neralDefaultFilters: m1neralDefaults,
+	  filterWellStatus: wellStatusFilter,
+	  filterWellType: wellTypeFilter,
+	}));
       }
       if (stateNav.filterWellProfile && stateNav.filterWellProfile.length > 0) {
-        let total = stateNav.filterWellProfile[2].length;
-        filterArray.push(stateNav.filterWellProfile);
-        isFilterSet = true;
+	let total = stateNav.filterWellProfile[2].length;
+	filterArray.push(stateNav.filterWellProfile);
+	isFilterSet = true;
 
-        wellFilterCount += total;
-        totalCount += total;
+	wellFilterCount += total;
+	totalCount += total;
       }
       if (stateNav.filterWellType && stateNav.filterWellType.length > 0) {
-        let total = stateNav.filterWellType[2].length;
-        filterArray.push(stateNav.filterWellType);
-        isFilterSet = true;
-        wellFilterCount += total;
-        totalCount += total;
+	let total = stateNav.filterWellType[2].length;
+	filterArray.push(stateNav.filterWellType);
+	isFilterSet = true;
+	wellFilterCount += total;
+	totalCount += total;
       }
       if (stateNav.filterOwnerCount && stateNav.filterOwnerCount.length > 0) {
-        filterArray.push(stateNav.filterOwnerCount);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterOwnerCount);
+	isFilterSet = true;
+	ownershipFilterCount += 1;
+	totalCount += 1;
       }
       if (stateNav.filterTVD && stateNav.filterTVD.length > 0) {
-        filterArray.push(stateNav.filterTVD);
-        isFilterSet = true;
-        wellFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterTVD);
+	isFilterSet = true;
+	wellFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterLateralLength &&
-        stateNav.filterLateralLength.length > 0
+	stateNav.filterLateralLength &&
+	  stateNav.filterLateralLength.length > 0
       ) {
-        filterArray.push(stateNav.filterLateralLength);
-        isFilterSet = true;
-        wellFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterLateralLength);
+	isFilterSet = true;
+	wellFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterMeasuredDistance &&
-        stateNav.filterMeasuredDistance.length > 0
+	stateNav.filterMeasuredDistance &&
+	  stateNav.filterMeasuredDistance.length > 0
       ) {
-        filterArray.push(stateNav.filterMeasuredDistance);
-        isFilterSet = true;
-        wellFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterMeasuredDistance);
+	isFilterSet = true;
+	wellFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterOwnerConfidence &&
-        stateNav.filterOwnerConfidence.length > 0
+	stateNav.filterOwnerConfidence &&
+	  stateNav.filterOwnerConfidence.length > 0
       ) {
-        filterArray.push(stateNav.filterOwnerConfidence);
-        isFilterSet = true;
-        aiFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterOwnerConfidence);
+	isFilterSet = true;
+	aiFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterNoOwnerCount &&
-        stateNav.filterNoOwnerCount.length > 0
+	stateNav.filterNoOwnerCount &&
+	  stateNav.filterNoOwnerCount.length > 0
       ) {
-        filterArray.push(stateNav.filterNoOwnerCount);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterNoOwnerCount);
+	isFilterSet = true;
+	ownershipFilterCount += 1;
+	totalCount += 1;
       }
 
       if (
-        stateNav.filterHasOwnerCount &&
-        stateNav.filterHasOwnerCount.length > 0
+	stateNav.filterHasOwnerCount &&
+	  stateNav.filterHasOwnerCount.length > 0
       ) {
-        filterArray.push(stateNav.filterHasOwnerCount);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterHasOwnerCount);
+	isFilterSet = true;
+	ownershipFilterCount += 1;
+	totalCount += 1;
       }
       if (stateNav.filterHasOwners && stateNav.filterHasOwners.length > 0) {
-        filterArray.push(stateNav.filterHasOwners);
-        isFilterSet = true;
-        ownershipFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterHasOwners);
+	isFilterSet = true;
+	ownershipFilterCount += 1;
+	totalCount += 1;
       }
       if (stateNav.filterWellStatus && stateNav.filterWellStatus.length > 0) {
-        let total = stateNav.filterWellStatus[2].length;
-        filterArray.push(stateNav.filterWellStatus);
-        isFilterSet = true;
-        wellFilterCount += total;
-        totalCount += total;
+	let total = stateNav.filterWellStatus[2].length;
+	filterArray.push(stateNav.filterWellStatus);
+	isFilterSet = true;
+	wellFilterCount += total;
+	totalCount += total;
       }
 
       if (stateNav.filterPlay && stateNav.filterPlay.length > 0) {
-        let total = stateNav.filterPlay[2].length;
-        filterArray.push(stateNav.filterPlay);
-        isFilterSet = true;
-        wellFilterCount += total;
-        totalCount += total;
+	let total = stateNav.filterPlay[2].length;
+	filterArray.push(stateNav.filterPlay);
+	isFilterSet = true;
+	wellFilterCount += total;
+	totalCount += total;
       }
 
       if (stateNav.filterField && stateNav.filterField.length > 0) {
-        let total = stateNav.filterField[2].length;
-        filterArray.push(stateNav.filterField);
-        isFilterSet = true;
-        wellFilterCount += total;
-        totalCount += total;
+	let total = stateNav.filterField[2].length;
+	filterArray.push(stateNav.filterField);
+	isFilterSet = true;
+	wellFilterCount += total;
+	totalCount += total;
       }
 
       if (
-        stateNav.filterPrimaryFormation &&
-        stateNav.filterPrimaryFormation.length > 0
+	stateNav.filterPrimaryFormation &&
+	  stateNav.filterPrimaryFormation.length > 0
       ) {
-        let total = stateNav.filterPrimaryFormation[2].length;
-        filterArray.push(stateNav.filterPrimaryFormation);
-        isFilterSet = true;
-        wellFilterCount += total;
-        totalCount += total;
+	let total = stateNav.filterPrimaryFormation[2].length;
+	filterArray.push(stateNav.filterPrimaryFormation);
+	isFilterSet = true;
+	wellFilterCount += total;
+	totalCount += total;
       }
 
       if (stateNav.filterOperator && stateNav.filterOperator.length > 0) {
-        let total = stateNav.filterOperator[2].length;
-        filterArray.push(stateNav.filterOperator);
-        isFilterSet = true;
-        wellFilterCount += total;
-        totalCount += total;
+	let total = stateNav.filterOperator[2].length;
+	filterArray.push(stateNav.filterOperator);
+	isFilterSet = true;
+	wellFilterCount += total;
+	totalCount += total;
       }
       if (
-        stateNav.filterWellAppraisal &&
-        stateNav.filterWellAppraisal.length > 0
+	stateNav.filterWellAppraisal &&
+	  stateNav.filterWellAppraisal.length > 0
       ) {
-        filterArray.push(stateNav.filterWellAppraisal);
-        isFilterSet = true;
-        valuationFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterWellAppraisal);
+	isFilterSet = true;
+	valuationFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterCumulativeOil &&
-        stateNav.filterCumulativeOil.length > 0
+	stateNav.filterCumulativeOil &&
+	  stateNav.filterCumulativeOil.length > 0
       ) {
-        filterArray.push(stateNav.filterCumulativeOil);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterCumulativeOil);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterCumulativeGas &&
-        stateNav.filterCumulativeGas.length > 0
+	stateNav.filterCumulativeGas &&
+	  stateNav.filterCumulativeGas.length > 0
       ) {
-        filterArray.push(stateNav.filterCumulativeGas);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterCumulativeGas);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterCumulativeWater &&
-        stateNav.filterCumulativeWater.length > 0
+	stateNav.filterCumulativeWater &&
+	  stateNav.filterCumulativeWater.length > 0
       ) {
-        filterArray.push(stateNav.filterCumulativeWater);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterCumulativeWater);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterFirstMonthWater &&
-        stateNav.filterFirstMonthWater.length > 0
+	stateNav.filterFirstMonthWater &&
+	  stateNav.filterFirstMonthWater.length > 0
       ) {
-        filterArray.push(stateNav.filterFirstMonthWater);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterFirstMonthWater);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterFirstThreeMonthWater &&
-        stateNav.filterFirstThreeMonthWater.length > 0
+	stateNav.filterFirstThreeMonthWater &&
+	  stateNav.filterFirstThreeMonthWater.length > 0
       ) {
-        filterArray.push(stateNav.filterFirstThreeMonthWater);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterFirstThreeMonthWater);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterFirstSixMonthWater &&
-        stateNav.filterFirstSixMonthWater.length > 0
+	stateNav.filterFirstSixMonthWater &&
+	  stateNav.filterFirstSixMonthWater.length > 0
       ) {
-        filterArray.push(stateNav.filterFirstSixMonthWater);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterFirstSixMonthWater);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterFirstTwelveMonthWater &&
-        stateNav.filterFirstTwelveMonthWater.length > 0
+	stateNav.filterFirstTwelveMonthWater &&
+	  stateNav.filterFirstTwelveMonthWater.length > 0
       ) {
-        filterArray.push(stateNav.filterFirstTwelveMonthWater);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterFirstTwelveMonthWater);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterLastMonthWater &&
-        stateNav.filterLastMonthWater.length > 0
+	stateNav.filterLastMonthWater &&
+	  stateNav.filterLastMonthWater.length > 0
       ) {
-        filterArray.push(stateNav.filterLastMonthWater);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterLastMonthWater);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterLastThreeMonthWater &&
-        stateNav.filterLastThreeMonthWater.length > 0
+	stateNav.filterLastThreeMonthWater &&
+	  stateNav.filterLastThreeMonthWater.length > 0
       ) {
-        filterArray.push(stateNav.filterLastThreeMonthWater);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterLastThreeMonthWater);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterLastSixMonthWater &&
-        stateNav.filterLastSixMonthWater.length > 0
+	stateNav.filterLastSixMonthWater &&
+	  stateNav.filterLastSixMonthWater.length > 0
       ) {
-        filterArray.push(stateNav.filterLastSixMonthWater);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterLastSixMonthWater);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterLastTwelveMonthWater &&
-        stateNav.filterLastTwelveMonthWater.length > 0
+	stateNav.filterLastTwelveMonthWater &&
+	  stateNav.filterLastTwelveMonthWater.length > 0
       ) {
-        filterArray.push(stateNav.filterLastTwelveMonthWater);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterLastTwelveMonthWater);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterFirstMonthGas &&
-        stateNav.filterFirstMonthGas.length > 0
+	stateNav.filterFirstMonthGas &&
+	  stateNav.filterFirstMonthGas.length > 0
       ) {
-        filterArray.push(stateNav.filterFirstMonthGas);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterFirstMonthGas);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterFirstThreeMonthGas &&
-        stateNav.filterFirstThreeMonthGas.length > 0
+	stateNav.filterFirstThreeMonthGas &&
+	  stateNav.filterFirstThreeMonthGas.length > 0
       ) {
-        filterArray.push(stateNav.filterFirstThreeMonthGas);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterFirstThreeMonthGas);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterFirstSixMonthGas &&
-        stateNav.filterFirstSixMonthGas.length > 0
+	stateNav.filterFirstSixMonthGas &&
+	  stateNav.filterFirstSixMonthGas.length > 0
       ) {
-        filterArray.push(stateNav.filterFirstSixMonthGas);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterFirstSixMonthGas);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterFirstTwelveMonthGas &&
-        stateNav.filterFirstTwelveMonthGas.length > 0
+	stateNav.filterFirstTwelveMonthGas &&
+	  stateNav.filterFirstTwelveMonthGas.length > 0
       ) {
-        filterArray.push(stateNav.filterFirstTwelveMonthGas);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterFirstTwelveMonthGas);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterLastMonthGas &&
-        stateNav.filterLastMonthGas.length > 0
+	stateNav.filterLastMonthGas &&
+	  stateNav.filterLastMonthGas.length > 0
       ) {
-        filterArray.push(stateNav.filterLastMonthGas);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterLastMonthGas);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterLastThreeMonthGas &&
-        stateNav.filterLastThreeMonthGas.length > 0
+	stateNav.filterLastThreeMonthGas &&
+	  stateNav.filterLastThreeMonthGas.length > 0
       ) {
-        filterArray.push(stateNav.filterLastThreeMonthGas);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterLastThreeMonthGas);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterLastSixMonthGas &&
-        stateNav.filterLastSixMonthGas.length > 0
+	stateNav.filterLastSixMonthGas &&
+	  stateNav.filterLastSixMonthGas.length > 0
       ) {
-        filterArray.push(stateNav.filterLastSixMonthGas);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterLastSixMonthGas);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterLastTwelveMonthGas &&
-        stateNav.filterLastTwelveMonthGas.length > 0
+	stateNav.filterLastTwelveMonthGas &&
+	  stateNav.filterLastTwelveMonthGas.length > 0
       ) {
-        filterArray.push(stateNav.filterLastTwelveMonthGas);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterLastTwelveMonthGas);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterFirstMonthOil &&
-        stateNav.filterFirstMonthOil.length > 0
+	stateNav.filterFirstMonthOil &&
+	  stateNav.filterFirstMonthOil.length > 0
       ) {
-        filterArray.push(stateNav.filterFirstMonthOil);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterFirstMonthOil);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterFirstThreeMonthOil &&
-        stateNav.filterFirstThreeMonthOil.length > 0
+	stateNav.filterFirstThreeMonthOil &&
+	  stateNav.filterFirstThreeMonthOil.length > 0
       ) {
-        filterArray.push(stateNav.filterFirstThreeMonthOil);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterFirstThreeMonthOil);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterFirstSixMonthOil &&
-        stateNav.filterFirstSixMonthOil.length > 0
+	stateNav.filterFirstSixMonthOil &&
+	  stateNav.filterFirstSixMonthOil.length > 0
       ) {
-        filterArray.push(stateNav.filterFirstSixMonthOil);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterFirstSixMonthOil);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterFirstTwelveMonthOil &&
-        stateNav.filterFirstTwelveMonthOil.length > 0
+	stateNav.filterFirstTwelveMonthOil &&
+	  stateNav.filterFirstTwelveMonthOil.length > 0
       ) {
-        filterArray.push(stateNav.filterFirstTwelveMonthOil);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterFirstTwelveMonthOil);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterLastMonthOil &&
-        stateNav.filterLastMonthOil.length > 0
+	stateNav.filterLastMonthOil &&
+	  stateNav.filterLastMonthOil.length > 0
       ) {
-        filterArray.push(stateNav.filterLastMonthOil);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterLastMonthOil);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterLastThreeMonthOil &&
-        stateNav.filterLastThreeMonthOil.length > 0
+	stateNav.filterLastThreeMonthOil &&
+	  stateNav.filterLastThreeMonthOil.length > 0
       ) {
-        filterArray.push(stateNav.filterLastThreeMonthOil);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterLastThreeMonthOil);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterLastSixMonthOil &&
-        stateNav.filterLastSixMonthOil.length > 0
+	stateNav.filterLastSixMonthOil &&
+	  stateNav.filterLastSixMonthOil.length > 0
       ) {
-        filterArray.push(stateNav.filterLastSixMonthOil);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterLastSixMonthOil);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterLastTwelveMonthOil &&
-        stateNav.filterLastTwelveMonthOil.length > 0
+	stateNav.filterLastTwelveMonthOil &&
+	  stateNav.filterLastTwelveMonthOil.length > 0
       ) {
-        filterArray.push(stateNav.filterLastTwelveMonthOil);
-        isFilterSet = true;
-        productionFilterCount += 1;
-        totalCount += 1;
+	filterArray.push(stateNav.filterLastTwelveMonthOil);
+	isFilterSet = true;
+	productionFilterCount += 1;
+	totalCount += 1;
       }
       if (
-        stateNav.filterAllInterestTypes &&
-        stateNav.filterAllInterestTypes.length > 0
+	stateNav.filterAllInterestTypes &&
+	  stateNav.filterAllInterestTypes.length > 0
       ) {
-        let removeAny = 1;
-        let numberFiltes = stateNav.filterAllInterestTypes.length;
-        let total = numberFiltes - removeAny;
-        filterArray.push(stateNav.filterAllInterestTypes);
-        isFilterSet = true;
-        ownershipFilterCount += total;
-        totalCount += total;
+	let removeAny = 1;
+	let numberFiltes = stateNav.filterAllInterestTypes.length;
+	let total = numberFiltes - removeAny;
+	filterArray.push(stateNav.filterAllInterestTypes);
+	isFilterSet = true;
+	ownershipFilterCount += total;
+	totalCount += total;
       }
       if (
-        stateNav.filterAllOwnershipTypes &&
-        stateNav.filterAllOwnershipTypes.length > 0
+	stateNav.filterAllOwnershipTypes &&
+	  stateNav.filterAllOwnershipTypes.length > 0
       ) {
-        let removeAny = 1;
-        let numberFiltes = stateNav.filterAllOwnershipTypes.length;
-        let total = numberFiltes - removeAny;
-        filterArray.push(stateNav.filterAllOwnershipTypes);
-        isFilterSet = true;
-        ownershipFilterCount += total;
-        totalCount += total;
+	let removeAny = 1;
+	let numberFiltes = stateNav.filterAllOwnershipTypes.length;
+	let total = numberFiltes - removeAny;
+	filterArray.push(stateNav.filterAllOwnershipTypes);
+	isFilterSet = true;
+	ownershipFilterCount += total;
+	totalCount += total;
       }
 
       if (
-        stateNav.filterOwnerAppraisals &&
-        stateNav.filterOwnerAppraisals.length > 0
+	stateNav.filterOwnerAppraisals &&
+	  stateNav.filterOwnerAppraisals.length > 0
       ) {
-        let removeAny = 1;
-        let numberFiltes = stateNav.filterOwnerAppraisals.length;
-        let total = numberFiltes - removeAny;
-        filterArray.push(stateNav.filterOwnerAppraisals);
-        isFilterSet = true;
-        valuationFilterCount += total;
-        totalCount += total;
+	let removeAny = 1;
+	let numberFiltes = stateNav.filterOwnerAppraisals.length;
+	let total = numberFiltes - removeAny;
+	filterArray.push(stateNav.filterOwnerAppraisals);
+	isFilterSet = true;
+	valuationFilterCount += total;
+	totalCount += total;
       }
 
       let fitBounds = null;
 
       const findBounds = (shapes) => {
-        let bound = null;
-        if (
-          fitBounds &&
-          fitBounds.maxLat &&
-          fitBounds.minLat &&
-          fitBounds.maxLong &&
-          fitBounds.minLong
-        ) {
-          bound = fitBounds;
-        }
-        if (shapes && shapes.length > 0) {
-          shapes.forEach((shape) => {
-            if (gjv.valid(shape)) {
-              const bbox = turf.bbox(shape);
+	let bound = null;
+	if (
+	  fitBounds &&
+	    fitBounds.maxLat &&
+	    fitBounds.minLat &&
+	    fitBounds.maxLong &&
+	    fitBounds.minLong
+	) {
+	  bound = fitBounds;
+	}
+	if (shapes && shapes.length > 0) {
+	  shapes.forEach((shape) => {
+	    if (gjv.valid(shape)) {
+	      const bbox = turf.bbox(shape);
 
-              if (bound) {
-                bound.minLong =
-                  bound.minLong > bbox[0] ? bbox[0] : bound.minLong;
-                bound.minLat = bound.minLat > bbox[1] ? bbox[1] : bound.minLat;
-                bound.maxLong =
-                  bound.maxLong < bbox[2] ? bbox[2] : bound.maxLong;
-                bound.maxLat = bound.maxLat < bbox[3] ? bbox[3] : bound.maxLat;
-              } else {
-                bound = {
-                  minLong: bbox[0],
-                  minLat: bbox[1],
-                  maxLong: bbox[2],
-                  maxLat: bbox[3],
-                };
-              }
-            }
-          });
-        }
-        return { ...bound };
+	      if (bound) {
+		bound.minLong =
+		  bound.minLong > bbox[0] ? bbox[0] : bound.minLong;
+		bound.minLat = bound.minLat > bbox[1] ? bbox[1] : bound.minLat;
+		bound.maxLong =
+		  bound.maxLong < bbox[2] ? bbox[2] : bound.maxLong;
+		bound.maxLat = bound.maxLat < bbox[3] ? bbox[3] : bound.maxLat;
+	      } else {
+		bound = {
+		  minLong: bbox[0],
+		  minLat: bbox[1],
+		  maxLong: bbox[2],
+		  maxLat: bbox[3],
+		};
+	      }
+	    }
+	  });
+	}
+	return { ...bound };
       };
 
       const formatIt = (mdata) => {
-        return [
-          {
-            type: "FeatureCollection",
-            features: mdata
-              .filter(
-                (feature) =>
-                  (feature.latitude && feature.longitude) ||
-                  (feature.Latitude && feature.Longitude)
-              )
-              .map((feature) => {
-                if (feature.latitude && feature.longitude) {
-                  return {
-                    type: "Feature",
-                    properties: feature,
-                    geometry: {
-                      type: "Point",
-                      coordinates: [feature.longitude, feature.latitude],
-                    },
-                  };
-                } else {
-                  return {
-                    type: "Feature",
-                    properties: feature,
-                    geometry: {
-                      type: "Point",
-                      coordinates: [feature.Longitude, feature.Latitude],
-                    },
-                  };
-                }
-              }),
-          },
-        ];
+	return [
+	  {
+	    type: "FeatureCollection",
+	    features: mdata
+	      .filter(
+		(feature) =>
+		(feature.latitude && feature.longitude) ||
+		  (feature.Latitude && feature.Longitude)
+	      )
+	      .map((feature) => {
+		if (feature.latitude && feature.longitude) {
+		  return {
+		    type: "Feature",
+		    properties: feature,
+		    geometry: {
+		      type: "Point",
+		      coordinates: [feature.longitude, feature.latitude],
+		    },
+		  };
+		} else {
+		  return {
+		    type: "Feature",
+		    properties: feature,
+		    geometry: {
+		      type: "Point",
+		      coordinates: [feature.Longitude, feature.Latitude],
+		    },
+		  };
+		}
+	      }),
+	  },
+	];
       };
 
       if (stateNav.filterTrackedWells) {
-        // filterArray.push(stateNav.filterTrackedWells);
-        // isFilterSet = true;
-        tagFilterCount += 1;
-        totalCount += 1;
-        if (stateApp.trackedwells && stateApp.trackedwells.length > 0)
-          fitBounds = findBounds(formatIt(stateApp.trackedwells));
+	// filterArray.push(stateNav.filterTrackedWells);
+	// isFilterSet = true;
+	tagFilterCount += 1;
+	totalCount += 1;
+	if (stateApp.trackedwells && stateApp.trackedwells.length > 0)
+	  fitBounds = findBounds(formatIt(stateApp.trackedwells));
       }
       if (stateNav.filterTrackedOwners) {
-        // filterArray.push(stateNav.filterTrackedWells);
-        // isFilterSet = true;
-        tagFilterCount += 1;
-        totalCount += 1;
-        if (stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0)
-          fitBounds = findBounds(formatIt(stateApp.trackedOwnerWells));
+	// filterArray.push(stateNav.filterTrackedWells);
+	// isFilterSet = true;
+	tagFilterCount += 1;
+	totalCount += 1;
+	if (stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0)
+	  fitBounds = findBounds(formatIt(stateApp.trackedOwnerWells));
       }
 
       if (stateNav.filterTags && stateNav.filterTags.length > 0) {
-        filterArray.push(stateNav.filterTags);
-        isFilterSet = true;
-        totalCount += stateNav.selectedTags ? stateNav.selectedTags.length : 0;
-        tagFilterCount += stateNav.selectedTags
-          ? stateNav.selectedTags.length
-          : 0;
+	filterArray.push(stateNav.filterTags);
+	isFilterSet = true;
+	totalCount += stateNav.selectedTags ? stateNav.selectedTags.length : 0;
+	tagFilterCount += stateNav.selectedTags
+	  ? stateNav.selectedTags.length
+	  : 0;
 
-        if (
-          stateApp.wellListFromTagsFilter &&
-          stateApp.wellListFromTagsFilter.length > 0
-        )
-          fitBounds = findBounds(formatIt(stateApp.wellListFromTagsFilter));
+	if (
+	  stateApp.wellListFromTagsFilter &&
+	    stateApp.wellListFromTagsFilter.length > 0
+	)
+	  fitBounds = findBounds(formatIt(stateApp.wellListFromTagsFilter));
       }
 
       const setLayerSource = (layerId, source, sourceLayer = null) => {
@@ -2058,7 +2075,7 @@ function Map() {
             map.setLayoutProperty(cluster_counts_layer, "visibility", "none");
           }
         } else {
-          if (layer.visibility == "visible") {
+          if (layer.visibility === "visible") {
             if (map.getLayer(cluster_layer)) {
               map.setLayoutProperty(cluster_layer, "visibility", "visible");
             }
@@ -2141,14 +2158,14 @@ function Map() {
                     };
                     let flag = 0;
                     for (let k = 0; k < shapeList.length; k++) {
-                      if (shapeList[k].type === "MultiPolygon") {
+                      if (shapeList[k].type === "MultiPolygon" || shapeList[k].geometry.type === "MultiPolygon") {
                         let flagM = 0;
                         for (
                           let j = 0;
-                          j < shapeList[k].coordinates.length;
+                          j < shapeList[k].geometry.coordinates.length;
                           j++
                         ) {
-                          let filterCoordinates = shapeList[k].coordinates[j];
+                          let filterCoordinates = shapeList[k].geometry.coordinates[j];
                           if (
                             filterCoordinates[0] &&
                             filterCoordinates[0].length > 2
@@ -2163,7 +2180,7 @@ function Map() {
                             flagM++;
                           }
                         }
-                        if (flagM == shapeList[k].coordinates.length) {
+                        if (flagM === shapeList[k].geometry.coordinates.length) {
                           flag++;
                         }
                       } else {
@@ -2179,13 +2196,13 @@ function Map() {
                   return true;
                 } else {
                   for (let i = 0; i < shapeList.length; i++) {
-                    if (shapeList[i] && shapeList[i].type === "MultiPolygon") {
+                    if (shapeList[i] && (shapeList[i].type === "MultiPolygon" || shapeList[i].geometry.type === "MultiPolygon")) {
                       for (
                         let j = 0;
-                        j < shapeList[i].coordinates.length;
+                        j < shapeList[i].geometry.coordinates.length;
                         j++
                       ) {
-                        let filterCoordinates = shapeList[i].coordinates[j];
+                        let filterCoordinates = shapeList[i].geometry.coordinates[j];
                         if (
                           filterCoordinates[0] &&
                           filterCoordinates[0].length > 2
@@ -2252,218 +2269,218 @@ function Map() {
       };
 
       if (stateNav.filterBasin && stateNav.filterBasin.length > 0) {
-        stateApp.toggleLayersActivity("Basins", true);
+	stateApp.toggleLayersActivity("Basins", true);
 
-        const filterLayers = [
-          "GLOLeases",
-          "GLOLeaseLabels",
-          "GLOUnits",
-          "GLOUnitLabels",
-          "wellpoints",
-          "welllines",
-          "Tracked Wells",
-          "Tracked Owners",
-          "Tags Filter",
-          "permits",
-          "recent_submitted_permits",
-          "rigs",
-          "interest",
-          "parcel",
-        ];
+	const filterLayers = [
+	  "GLOLeases",
+	  "GLOLeaseLabels",
+	  "GLOUnits",
+	  "GLOUnitLabels",
+	  "wellpoints",
+	  "welllines",
+	  "Tracked Wells",
+	  "Tracked Owners",
+	  "Tags Filter",
+	  "permits",
+	  "recent_submitted_permits",
+	  "rigs",
+	  "interest",
+	  "parcel",
+	];
 
-        const basinShapes = stateNav.filterBasin;
+	const basinShapes = stateNav.filterBasin;
 
-        fitBounds = findBounds(basinShapes);
-        filterShapeAction(basinShapes, filterLayers);
+	fitBounds = findBounds(basinShapes);
+	filterShapeAction(basinShapes, filterLayers);
 
-        isFilterSet = true;
-        if (stateNav.basinName) {
-          filterCustomArray["basin"] = [
-            "match",
-            ["get", "NAME"],
-            stateNav.basinName,
-            true,
-            false,
-          ];
+	isFilterSet = true;
+	if (stateNav.basinName) {
+	  filterCustomArray["basin"] = [
+	    "match",
+	    ["get", "NAME"],
+	    stateNav.basinName,
+	    true,
+	    false,
+	  ];
 
-          if (stateNav.basinName.length) {
-            geographyFilterCount += stateNav.basinName.length;
-            totalCount += stateNav.basinName.length;
-          }
-        }
+	  if (stateNav.basinName.length) {
+	    geographyFilterCount += stateNav.basinName.length;
+	    totalCount += stateNav.basinName.length;
+	  }
+	}
       }
 
       if (stateNav.filterAOI && stateNav.filterAOI.length > 0) {
-        stateApp.toggleLayersActivity("Area of Interest", true);
+	stateApp.toggleLayersActivity("Area of Interest", true);
 
-        let aoiName = stateNav.aoiName;
-        if (aoiName) {
-          if (!filterCustomArray["interest"]) {
-            filterCustomArray["interest"] = [];
-          }
-          filterCustomArray["interest"].push(aoiName);
-        }
-        const filterLayers = [
-          "GLOLeases",
-          "GLOLeaseLabels",
-          "GLOUnits",
-          "GLOUnitLabels",
-          "wellpoints",
-          "welllines",
-          "Tracked Wells",
-          "Tracked Owners",
-          "Tags Filter",
-          "permits",
-          "recent_submitted_permits",
-          "rigs",
-          "parcel",
-        ];
+	let aoiName = stateNav.aoiName;
+	if (aoiName) {
+	  if (!filterCustomArray["interest"]) {
+	    filterCustomArray["interest"] = [];
+	  }
+	  filterCustomArray["interest"].push(aoiName);
+	}
+	const filterLayers = [
+	  "GLOLeases",
+	  "GLOLeaseLabels",
+	  "GLOUnits",
+	  "GLOUnitLabels",
+	  "wellpoints",
+	  "welllines",
+	  "Tracked Wells",
+	  "Tracked Owners",
+	  "Tags Filter",
+	  "permits",
+	  "recent_submitted_permits",
+	  "rigs",
+	  "parcel",
+	];
 
-        const aoiShapes = stateNav.filterAOI;
-        fitBounds = findBounds(aoiShapes);
+	const aoiShapes = stateNav.filterAOI;
+	fitBounds = findBounds(aoiShapes);
 
-        filterShapeAction(aoiShapes, filterLayers);
+	filterShapeAction(aoiShapes, filterLayers);
 
-        isFilterSet = true;
-        geographyFilterCount += stateNav.aoiName.length;
-        totalCount += stateNav.aoiName.length;
+	isFilterSet = true;
+	geographyFilterCount += stateNav.aoiName.length;
+	totalCount += stateNav.aoiName.length;
       }
 
       if (stateNav.filterParcel && stateNav.filterParcel.length > 0) {
-        stateApp.toggleLayersActivity("Parcels", true);
+	stateApp.toggleLayersActivity("Parcels", true);
 
-        let parcelName = stateNav.parcelName;
-        if (parcelName) {
-          if (!filterCustomArray["parcel"]) {
-            filterCustomArray["parcel"] = [];
-          }
-          filterCustomArray["parcel"].push(parcelName);
-        }
-        const filterLayers = [
-          "GLOLeases",
-          "GLOLeaseLabels",
-          "GLOUnits",
-          "GLOUnitLabels",
-          "wellpoints",
-          "welllines",
-          "Tracked Wells",
-          "Tracked Owners",
-          "Tags Filter",
-          "permits",
-          "recent_submitted_permits",
-          "rigs",
-          "interest",
-        ];
+	let parcelName = stateNav.parcelName;
+	if (parcelName) {
+	  if (!filterCustomArray["parcel"]) {
+	    filterCustomArray["parcel"] = [];
+	  }
+	  filterCustomArray["parcel"].push(parcelName);
+	}
+	const filterLayers = [
+	  "GLOLeases",
+	  "GLOLeaseLabels",
+	  "GLOUnits",
+	  "GLOUnitLabels",
+	  "wellpoints",
+	  "welllines",
+	  "Tracked Wells",
+	  "Tracked Owners",
+	  "Tags Filter",
+	  "permits",
+	  "recent_submitted_permits",
+	  "rigs",
+	  "interest",
+	];
 
-        const parcelShapes = stateNav.filterParcel;
-        fitBounds = findBounds(parcelShapes);
+	const parcelShapes = stateNav.filterParcel;
+	fitBounds = findBounds(parcelShapes);
 
-        filterShapeAction(parcelShapes, filterLayers);
+	filterShapeAction(parcelShapes, filterLayers);
 
-        isFilterSet = true;
-        geographyFilterCount += stateNav.parcelName.length;
-        totalCount += stateNav.parcelName.length;
+	isFilterSet = true;
+	geographyFilterCount += stateNav.parcelName.length;
+	totalCount += stateNav.parcelName.length;
       }
 
       if (fitBounds) {
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          fitBounds: { ...fitBounds },
-        }));
+	setStateApp((stateApp) => ({
+	  ...stateApp,
+	  fitBounds: { ...fitBounds },
+	}));
       }
 
       if (
-        stateNav.filterPermitDateRange &&
-        stateNav.filterPermitDateRange.length > 0
+	stateNav.filterPermitDateRange &&
+	  stateNav.filterPermitDateRange.length > 0
       ) {
-        filterArray.push(stateNav.filterPermitDateRange);
-        isFilterSet = true;
-        totalCount += 1;
-        wellFilterCount += 1;
+	filterArray.push(stateNav.filterPermitDateRange);
+	isFilterSet = true;
+	totalCount += 1;
+	wellFilterCount += 1;
       }
       if (
-        stateNav.filterSpudDateRange &&
-        stateNav.filterSpudDateRange.length > 0
+	stateNav.filterSpudDateRange &&
+	  stateNav.filterSpudDateRange.length > 0
       ) {
-        filterArray.push(stateNav.filterSpudDateRange);
-        isFilterSet = true;
-        totalCount += 1;
-        wellFilterCount += 1;
+	filterArray.push(stateNav.filterSpudDateRange);
+	isFilterSet = true;
+	totalCount += 1;
+	wellFilterCount += 1;
       }
       if (
-        stateNav.filterCompletetionDateRange &&
-        stateNav.filterCompletetionDateRange.length > 0
+	stateNav.filterCompletetionDateRange &&
+	  stateNav.filterCompletetionDateRange.length > 0
       ) {
-        filterArray.push(stateNav.filterCompletetionDateRange);
-        isFilterSet = true;
-        totalCount += 1;
-        wellFilterCount += 1;
+	filterArray.push(stateNav.filterCompletetionDateRange);
+	isFilterSet = true;
+	totalCount += 1;
+	wellFilterCount += 1;
       }
       if (
-        stateNav.filterFirstProdDateRange &&
-        stateNav.filterFirstProdDateRange.length > 0
+	stateNav.filterFirstProdDateRange &&
+	  stateNav.filterFirstProdDateRange.length > 0
       ) {
-        filterArray.push(stateNav.filterFirstProdDateRange);
-        isFilterSet = true;
-        totalCount += 1;
-        wellFilterCount += 1;
+	filterArray.push(stateNav.filterFirstProdDateRange);
+	isFilterSet = true;
+	totalCount += 1;
+	wellFilterCount += 1;
       }
       if (stateNav.filterGeography && stateNav.filterGeography.length > 0) {
-        filterArray.push(stateNav.filterGeography);
-        isFilterSet = true;
-        totalCount += 1;
-        geographyFilterCount += stateNav.filterGeography.length - 1;
+	filterArray.push(stateNav.filterGeography);
+	isFilterSet = true;
+	totalCount += 1;
+	geographyFilterCount += stateNav.filterGeography.length - 1;
       }
 
       if (
-        stateNav.filterOwnerWellInterestSum &&
-        stateNav.filterOwnerWellInterestSum.length > 0
+	stateNav.filterOwnerWellInterestSum &&
+	  stateNav.filterOwnerWellInterestSum.length > 0
       ) {
-        filterArray.push(stateNav.filterOwnerWellInterestSum);
-        isFilterSet = true;
-        totalCount += 1;
-        ownershipFilterCount += 1;
+	filterArray.push(stateNav.filterOwnerWellInterestSum);
+	isFilterSet = true;
+	totalCount += 1;
+	ownershipFilterCount += 1;
       }
 
       if (stateNav.filterDrawing && stateNav.filterDrawing.length > 0) {
-        isFilterSet = true;
-        totalCount += 1;
-        geographyFilterCount += 1;
+	isFilterSet = true;
+	totalCount += 1;
+	geographyFilterCount += 1;
 
-        const filterLayers = [
-          "GLOLeases",
-          "GLOLeaseLabels",
-          "GLOUnits",
-          "GLOUnitLabels",
-          "wellpoints",
-          "welllines",
-          "Tracked Wells",
-          "Tracked Owners",
-          "Tags Filter",
-          "permits",
-          "recent_submitted_permits",
-          "rigs",
-          "interest",
-          "parcel",
-        ];
-        const filterFeature = stateNav.filterDrawing[1];
-        filterShapeAction([filterFeature], filterLayers);
+	const filterLayers = [
+	  "GLOLeases",
+	  "GLOLeaseLabels",
+	  "GLOUnits",
+	  "GLOUnitLabels",
+	  "wellpoints",
+	  "welllines",
+	  "Tracked Wells",
+	  "Tracked Owners",
+	  "Tags Filter",
+	  "permits",
+	  "recent_submitted_permits",
+	  "rigs",
+	  "interest",
+	  "parcel",
+	];
+	const filterFeature = stateNav.filterDrawing[1];
+	filterShapeAction([filterFeature], filterLayers);
       }
 
       setStateNav((state) => ({
-        ...state,
-        productionFilterCount: productionFilterCount,
-        geographyFilterCount: geographyFilterCount,
-        ownershipFilterCount: ownershipFilterCount,
-        wellFilterCount: wellFilterCount,
-        totalFilterCount: totalCount,
-        valuationFilterCount: valuationFilterCount,
-        tagFilterCount: tagFilterCount,
-        aiFilterCount: aiFilterCount,
+	...state,
+	productionFilterCount: productionFilterCount,
+	geographyFilterCount: geographyFilterCount,
+	ownershipFilterCount: ownershipFilterCount,
+	wellFilterCount: wellFilterCount,
+	totalFilterCount: totalCount,
+	valuationFilterCount: valuationFilterCount,
+	tagFilterCount: tagFilterCount,
+	aiFilterCount: aiFilterCount,
       }));
 
       //// turn on clusters if no shape filter && it was off
-      if (Object.keys(filterCustomArray).length == 0 && clustersOff)
+      if (Object.keys(filterCustomArray).length === 0 && clustersOff)
         dispatch(
           setMainMapState({
             clustersOff: false,
@@ -2489,7 +2506,7 @@ function Map() {
         };
         const mergeIntoMultiPolygon = (d) => {
           const data = d.map((f) => {
-            if (f.type == "Feature") return f;
+            if (f.type === "Feature") return f;
             return turf.feature(f);
           });
           return turf.combine(turf.featureCollection(data));
@@ -2717,7 +2734,7 @@ function Map() {
                 if (map.getLayer(filterLayer.replace("Labels", "s"))) {
                   map.setFilter(filterLayer.replace("Labels", "s"), null);
                 }
-                if (layer.type == "circle" && layer.id != "wellpoints") {
+                if (layer.type === "circle" && layer.id != "wellpoints") {
                   if (layer.source.includes("_filter")) {
                     const clusterSource = layer.source.replace("_filter", "");
                     setLayerSource(layer.id, clusterSource);
@@ -2728,7 +2745,7 @@ function Map() {
           }
         });
         if (filterCustomArray["basin"]) {
-          if (filterCustomArray["basin"].length == 1) {
+          if (filterCustomArray["basin"].length === 1) {
             map.setFilter("basinLayer", filterCustomArray["basin"][0]);
             map.setFilter("basinLabels", filterCustomArray["basin"][0]);
           } else {
@@ -2802,7 +2819,7 @@ function Map() {
           const layer = map.getLayer(filterLayer);
           if (layer) {
             map.setFilter(filterLayer, null);
-            if (layer.type == "circle") {
+            if (layer.type === "circle") {
               if (layer.source.includes("_filter")) {
                 const clusterSource = layer.source.replace("_filter", "");
                 setLayerSource(layer.id, clusterSource);
@@ -2884,11 +2901,10 @@ function Map() {
   ]);
 
   useEffect(() => {
-
     //sets style of map when changed in Map Controls
     if (stateApp.selectedLayerId && map) {
       if (stateApp.selectedLayerId) {
-        map.setStyle(stateApp.selectedLayerId);
+	map.setStyle(stateApp.selectedLayerId);
       }
     }
   }, [map, stateApp.selectedLayerId]);
@@ -2898,17 +2914,17 @@ function Map() {
       let coordinates = [currentFeature.longitude, currentFeature.latitude];
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) {
-        popUps[0].remove();
+	popUps[0].remove();
       }
       new mapboxgl.Popup({ offset: 0, closeOnClick: false })
-        .setLngLat(coordinates)
-        .setMaxWidth("none")
-        .setHTML(`<div id="popupContainer"></div>`)
-        .addTo(map);
+	.setLngLat(coordinates)
+	.setMaxWidth("none")
+	.setHTML(`<div id="popupContainer"></div>`)
+	.addTo(map);
       setStateApp((state) => ({
-        ...state,
-        popupOpen: true,
-        expandedCard: stateApp.activateWellDetailsFromTable ? true : false,
+	...state,
+	popupOpen: true,
+	expandedCard: stateApp.activateWellDetailsFromTable ? true : false,
       }));
       handleOpenExpandableCard();
     },
@@ -2921,29 +2937,29 @@ function Map() {
       const coordinates = geometry.coordinates;
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) {
-        popUps[0].remove();
+	popUps[0].remove();
       }
       if (coordinates.length > 0) {
-        const minLatitude = coordinates.reduce((a, b) =>
-          a[0] < b[0] ? a : b
-        )[0][0];
-        const maxLongitude = coordinates.reduce((a, b) =>
-          a[1] > b[1] ? a : b
-        )[0][1];
+	const minLatitude = coordinates.reduce((a, b) =>
+	  a[0] < b[0] ? a : b
+	)[0][0];
+	const maxLongitude = coordinates.reduce((a, b) =>
+	  a[1] > b[1] ? a : b
+	)[0][1];
 
-        let popupCoordinate = [minLatitude, maxLongitude];
+	let popupCoordinate = [minLatitude, maxLongitude];
 
-        let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
-          .setLngLat(popupCoordinate)
-          .setMaxWidth("none")
-          .setHTML(`<div id="filterPopupContainer"></div>`)
-          .addTo(map);
+	let popup = new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+	    .setLngLat(popupCoordinate)
+	    .setMaxWidth("none")
+	    .setHTML(`<div id="filterPopupContainer"></div>`)
+	    .addTo(map);
 
-        setStateApp((state) => ({
-          ...state,
-          popupOpen: true,
-          filterFeature: filterFeature,
-        }));
+	setStateApp((state) => ({
+	  ...state,
+	  popupOpen: true,
+	  filterFeature: filterFeature,
+	}));
       }
     },
     [map, setStateApp]
@@ -2953,7 +2969,7 @@ function Map() {
     (currentFeature) => {
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) {
-        popUps[0].remove();
+	popUps[0].remove();
       }
 
       if (!currentFeature) return;
@@ -2961,32 +2977,32 @@ function Map() {
       const latLng = map.getCenter();
 
       if (map.getZoom() < 12.5) {
-        latLng.lat = latLng.lat - 0.0375;
+	latLng.lat = latLng.lat - 0.0375;
       } else if (map.getZoom() > 12.5 && map.getZoom() < 13) {
-        latLng.lat = latLng.lat - 0.025;
+	latLng.lat = latLng.lat - 0.025;
       } else if (map.getZoom() > 13 && map.getZoom() < 13.5) {
-        latLng.lat = latLng.lat - 0.0175;
+	latLng.lat = latLng.lat - 0.0175;
       } else {
-        if (map.getZoom() > 13.5 && map.getZoom() < 14) {
-          latLng.lat = latLng.lat - 0.0125;
-        } else latLng.lat = latLng.lat - 0.005;
+	if (map.getZoom() > 13.5 && map.getZoom() < 14) {
+	  latLng.lat = latLng.lat - 0.0125;
+	} else latLng.lat = latLng.lat - 0.005;
       }
 
       new mapboxgl.Popup({
-        offset: 10,
-        closeOnClick: false,
-        closeButton: false,
-        className: "abstractPopup",
+	offset: 10,
+	closeOnClick: false,
+	closeButton: false,
+	className: "abstractPopup",
       })
 
-        .setLngLat(latLng)
-        .setMaxWidth("none")
-        .setHTML(`<div id="popupContainer"></div>`)
-        .addTo(map);
+	.setLngLat(latLng)
+	.setMaxWidth("none")
+	.setHTML(`<div id="popupContainer"></div>`)
+	.addTo(map);
 
       setStateApp((state) => ({
-        ...state,
-        popupOpen: true,
+	...state,
+	popupOpen: true,
       }));
     },
     [map, setStateApp]
@@ -2996,18 +3012,18 @@ function Map() {
     (currentFeature) => {
       let coordinates = currentFeature.shapeCenter;
       if (typeof currentFeature.shapeCenter === "string") {
-        coordinates = JSON.parse(currentFeature.shapeCenter);
+	coordinates = JSON.parse(currentFeature.shapeCenter);
       }
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) {
-        popUps[0].remove();
+	popUps[0].remove();
       }
 
       new mapboxgl.Popup({ offset: 0, closeOnClick: false })
-        .setLngLat(coordinates)
-        .setMaxWidth("none")
-        .setHTML(`<div id="popupContainer"></div>`)
-        .addTo(map);
+	.setLngLat(coordinates)
+	.setMaxWidth("none")
+	.setHTML(`<div id="popupContainer"></div>`)
+	.addTo(map);
 
       setStateApp((state) => ({ ...state, popupOpen: true }));
       handleOpenExpandableCard();
@@ -3016,52 +3032,86 @@ function Map() {
   );
 
   useEffect(() => {
-
     if (map && stateApp.wellSelectedCoordinates) {
       if (map.getLayer("well-point")) map.removeLayer("well-point");
-      if (map.getSource("well-select-point")) map.removeSource("well-select-point");
+      if (map.getSource("well-select-point"))
+        map.removeSource("well-select-point");
 
       if (stateApp.wellSelectedCoordinates.length > 0) {
-        map.addSource("well-select-point", {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: [
-              {
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: stateApp.wellSelectedCoordinates,
-                },
-              },
-            ],
-          },
-        });
+	map.addSource("well-select-point", {
+	  type: "geojson",
+	  data: {
+	    type: "FeatureCollection",
+	    features: [
+	      {
+		type: "Feature",
+		geometry: {
+		  type: "Point",
+		  coordinates: stateApp.wellSelectedCoordinates,
+		},
+	      },
+	    ],
+	  },
+	});
 
-        map.addLayer({
-          id: "well-point",
-          type: "circle",
-          source: "well-select-point",
-          paint: {
-            "circle-radius": 5,
-            "circle-color": "yellow",
-          },
-        });
+	map.addLayer({
+	  id: "well-point",
+	  type: "circle",
+	  source: "well-select-point",
+	  paint: {
+	    "circle-radius": 5,
+	    "circle-color": "yellow",
+	  },
+	});
       }
     }
   }, [loading, stateApp.wellSelectedCoordinates]);
 
   useEffect(() => {
+
+    if (map && stateApp.permitSelectedCoordinates) {
+      if (map.getLayer("well-point")) map.removeLayer("well-point");
+      if (map.getSource("well-select-point")) map.removeSource("well-select-point");
+
+      if (stateApp.permitSelectedCoordinates.length > 0) {
+	map.addSource("well-select-point", {
+	  type: "geojson",
+	  data: {
+	    type: "FeatureCollection",
+	    features: [
+	      {
+		type: "Feature",
+		geometry: {
+		  type: "Point",
+		  coordinates: stateApp.permitSelectedCoordinates,
+		},
+	      },
+	    ],
+	  },
+	});
+
+	map.addLayer({
+	  id: "well-point",
+	  type: "circle",
+	  source: "well-select-point",
+	  paint: {
+	    "circle-radius": 5,
+	    "circle-color": "yellow",
+	  },
+	});
+      }
+    }
+  }, [loading, stateApp.permitSelectedCoordinates]);
+
+  useEffect(() => {
     (async () => {
-
       if (
-        map &&
-        stateApp.selectedWellId &&
-        stateApp.wellSelectedCoordinates &&
-        stateApp.wellSelectedCoordinates.length > 0 &&
-        !stateApp.selectedWell
+	map &&
+	  stateApp.selectedWellId &&
+	  stateApp.wellSelectedCoordinates &&
+	  stateApp.wellSelectedCoordinates.length > 0 &&
+	  !stateApp.selectedWell
       ) {
-
         let point = map.project(stateApp.wellSelectedCoordinates);
 
         var bbox = [
@@ -3075,7 +3125,7 @@ function Map() {
 
         let currentFeature = features.find(
           (element) =>
-            element.properties.id.toLowerCase() == stateApp.selectedWellId
+            element.properties.id.toLowerCase() === stateApp.selectedWellId
         );
 
         if (!currentFeature) {
@@ -3085,7 +3135,7 @@ function Map() {
           });
           currentFeature = features.find(
             (element) =>
-              element.properties.id.toLowerCase() == stateApp.selectedWellId
+              element.properties.id.toLowerCase() === stateApp.selectedWellId
           );
         }
 
@@ -3108,7 +3158,7 @@ function Map() {
               features = response.features;
               currentFeature = features.find(
                 (element) =>
-                  element.properties.id.toLowerCase() == stateApp.selectedWellId
+                  element.properties.id.toLowerCase() === stateApp.selectedWellId
               );
             })
             .catch((error) => {
@@ -3117,7 +3167,6 @@ function Map() {
         }
 
         if (currentFeature) {
-          let popUps = document.getElementsByClassName("mapboxgl-popup");
           setStateApp((state) => ({
             ...state,
             popupOpen: false,
@@ -3131,25 +3180,99 @@ function Map() {
 
           createPopUp(currentFeature.properties);
           map.resize();
-
-
         }
       }
     })();
   }, [loading, stateApp.wellSelectedCoordinates]);
 
-  useEffect(() => {
 
+  // For recently submitted permits
+  useEffect(() => {
+    (async () => {
+      if (
+	map &&
+	  stateApp.selectedPermitId &&
+	  stateApp.permitSelectedCoordinates &&
+	  stateApp.permitSelectedCoordinates.length > 0
+      ) {
+	let point = map.project(stateApp.permitSelectedCoordinates);
+	var bbox = [
+	  [point.x - 10, point.y - 10],
+	  [point.x + 10, point.y + 10],
+	];
+	let features = map.queryRenderedFeatures(bbox, {
+	  layers: ["recent_submitted_permits"],
+	});
+
+	let currentFeature = features.find(
+	  (element) =>
+	  element.properties.Id.toLowerCase() == stateApp.selectedPermitId
+	);
+
+	if (!currentFeature) {
+	  features = map.querySourceFeatures("composite", {
+	    sourceLayer: "recent_submitted_permits",
+	    filter: ["in", "id", stateApp.selectedPermitId],
+	  });
+	  currentFeature = features.find(
+	    (element) =>
+	    element.properties.Id.toLowerCase() == stateApp.selectedPermitId
+	  );
+	}
+
+	if (!currentFeature) {
+	  const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken}`;
+	  const headers = new Headers();
+	  headers.append("Content-Type", "application/json");
+	  headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
+
+	  const options = {
+	    method: "GET",
+	    headers: headers,
+	  };
+	  await fetch(endpoint, options)
+	    .then((response) => response.json())
+	    .then((response) => {
+	      features = response.features;
+	      currentFeature = features.find(
+		(element) =>
+		element.properties.Id.toLowerCase() == stateApp.selectedPermitId
+	      );
+	    })
+	    .catch((error) => {
+	      console.log(error);
+	    });
+	}
+	if (currentFeature) {
+	  let popUps = document.getElementsByClassName("mapboxgl-popup");
+	  setStateApp((state) => ({
+	    ...state,
+	    popupOpen: false,
+	    selectedUserDefinedLayer: null,
+	    selectedParcel: null,
+	  }));
+	  setStateApp((state) => ({
+	    ...state,
+	    selectedPermit: currentFeature.properties,
+	  }));
+	  createPopUp(currentFeature.properties);
+	  map.resize();
+	}
+      }
+    })();
+  }, [loading, stateApp.permitSelectedCoordinates]);
+
+  useEffect(() => {
     const req = new Request(
       "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
       {
-        method: "GET",
-        mode: "cors",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "Cache-Control": "max-age=0",
-        },
+	method: "GET",
+	mode: "cors",
+	headers: {
+	  Accept: "application/json",
+	  "Content-Type": "application/json",
+	  "Cache-Control": "max-age=0",
+	},
       }
     );
 
@@ -3163,12 +3286,12 @@ function Map() {
     fetch(req, { signal: signal })
       .then((results) => results.json())
       .then((data) => {
-        setMapStyles(data.slice(0, 5));
+	setMapStyles(data.slice(0, 5));
       });
 
     setStateApp((state) => ({
       ...state,
-      popupOpen: stateApp.wellSelectedCoordinates?.length > 0 && searchInputValue ? true : false ,
+      popupOpen: stateApp.wellSelectedCoordinates?.length > 0 && searchInputValue ? true : false,
       expandedCard: false,
       selectedUserDefinedLayer: undefined,
     }));
@@ -3180,17 +3303,16 @@ function Map() {
   }, []);
 
   useEffect(() => {
-
     if (map) {
       setStateApp((stateApp) => ({
-        ...stateApp,
-        mapVars: {
-          ...stateApp.mapVars,
-          zoom: map.getZoom(),
-          center: map.getCenter(),
-          pitch: map.getPitch(),
-          bearing: map.getBearing(),
-        },
+	...stateApp,
+	mapVars: {
+	  ...stateApp.mapVars,
+	  zoom: map.getZoom(),
+	  center: map.getCenter(),
+	  pitch: map.getPitch(),
+	  bearing: map.getBearing(),
+	},
       }));
 
       setMap(null);
@@ -3200,36 +3322,36 @@ function Map() {
   useEffect(() => {
     if (
       abstractData &&
-      abstractData.abstractGeo &&
-      abstractData.abstractGeo.length > 0
+	abstractData.abstractGeo &&
+	abstractData.abstractGeo.length > 0
     ) {
       const data = abstractData.abstractGeo;
       const makeGeoJSON = (data) => {
-        return {
-          type: "FeatureCollection",
-          features: data.map((feature) => {
-            return JSON.parse(feature.geo_json);
-          }),
-        };
+	return {
+	  type: "FeatureCollection",
+	  features: data.map((feature) => {
+	    return JSON.parse(feature.geo_json);
+	  }),
+	};
       };
 
       const makeLabelGeoJson = (data) => {
-        return {
-          type: "FeatureCollection",
-          features: data.map((feature) => {
-            const geoJSON = JSON.parse(feature.geo_json);
-            if (
-              geoJSON.geometry &&
-              geoJSON.geometry.coordinates[0].length >= 4
-            ) {
-              const polygon = turf.polygon(geoJSON.geometry.coordinates);
-              const centroid = turf.centroid(polygon);
-              centroid.properties.AbstractName =
-                geoJSON.properties.AbstractName;
-              return centroid;
-            }
-          }),
-        };
+	return {
+	  type: "FeatureCollection",
+	  features: data.map((feature) => {
+	    const geoJSON = JSON.parse(feature.geo_json);
+	    if (
+	      geoJSON.geometry &&
+		geoJSON.geometry.coordinates[0].length >= 4
+	    ) {
+	      const polygon = turf.polygon(geoJSON.geometry.coordinates);
+	      const centroid = turf.centroid(polygon);
+	      centroid.properties.AbstractName =
+		geoJSON.properties.AbstractName;
+	      return centroid;
+	    }
+	  }),
+	};
       };
 
       const geoJson = makeGeoJSON(data);
@@ -3243,17 +3365,17 @@ function Map() {
   useEffect(() => {
     if (
       plssSecondDivisionData &&
-      plssSecondDivisionData.plssSecondDivisionGeo &&
-      plssSecondDivisionData.plssSecondDivisionGeo.length > 0
+	plssSecondDivisionData.plssSecondDivisionGeo &&
+	plssSecondDivisionData.plssSecondDivisionGeo.length > 0
     ) {
       const data = plssSecondDivisionData.plssSecondDivisionGeo;
       const makeGeoJSON = (data) => {
-        return {
-          type: "FeatureCollection",
-          features: data.map((feature) => {
-            return JSON.parse(feature.geo_json);
-          }),
-        };
+	return {
+	  type: "FeatureCollection",
+	  features: data.map((feature) => {
+	    return JSON.parse(feature.geo_json);
+	  }),
+	};
       };
 
       const makeLabelGeoJson = (data) => {
@@ -3267,8 +3389,7 @@ function Map() {
             ) {
               const polygon = turf.polygon(geoJSON.geometry.coordinates);
               const centroid = turf.centroid(polygon);
-              centroid.properties.ShortName =
-                geoJSON.properties.ShortName;
+              centroid.properties.ShortName = geoJSON.properties.ShortName;
               return centroid;
             }
           }),
@@ -3279,25 +3400,27 @@ function Map() {
       const labelGeoJson = makeLabelGeoJson(data);
 
       map.getSource("plssseconddivision_geo_source").setData(geoJson);
-      map.getSource("plssseconddivision_label_geo_source").setData(labelGeoJson);
+      map
+        .getSource("plssseconddivision_label_geo_source")
+        .setData(labelGeoJson);
     }
   }, [plssSecondDivisionData]);
 
   useEffect(() => {
     if (
       abstractContainsData &&
-      abstractContainsData.abstractGeoContains &&
-      abstractContainsData.abstractGeoContains.length > 0
+	abstractContainsData.abstractGeoContains &&
+	abstractContainsData.abstractGeoContains.length > 0
     ) {
       const data = abstractContainsData.abstractGeoContains;
 
       const makeGeoJSON = (data) => {
-        return {
-          type: "FeatureCollection",
-          features: data.map((feature) => {
-            return JSON.parse(feature.geo_json);
-          }),
-        };
+	return {
+	  type: "FeatureCollection",
+	  features: data.map((feature) => {
+	    return JSON.parse(feature.geo_json);
+	  }),
+	};
       };
 
       const geoJson = makeGeoJSON(data);
@@ -3310,11 +3433,11 @@ function Map() {
     if (map) {
       const featuresList = map.getSource("abstract_geo_source")._data.features;
       for (let i = 0; i < featuresList.length; i++) {
-        const id = featuresList[i].properties.Id;
-        map.setFeatureState(
-          { source: "abstract_geo_source", id: id },
-          { click: stateApp.filterSelectAllAbstract }
-        );
+	const id = featuresList[i].properties.Id;
+	map.setFeatureState(
+	  { source: "abstract_geo_source", id: id },
+	  { click: stateApp.filterSelectAllAbstract }
+	);
       }
     }
   }, [stateApp.filterSelectAllAbstract, map]);
@@ -3323,13 +3446,13 @@ function Map() {
     if (stateApp.popupOpen === false) {
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) {
-        popUps[0].remove();
+	popUps[0].remove();
       }
 
       setStateApp((state) => ({
-        ...state,
-        wellSelectedCoordinates: [],
-        selectedWell: null,
+	...state,
+	wellSelectedCoordinates: [],
+	selectedWell: null,
       }));
     }
   }, [stateApp.popupOpen]);
@@ -3337,7 +3460,7 @@ function Map() {
   function getIndex(value, arr, prop) {
     for (var i = 0; i < arr.length; i++) {
       if (arr[i][prop] === value) {
-        return i;
+	return i;
       }
     }
     return -1; //to handle the case where the value doesn't exist
@@ -3369,8 +3492,8 @@ function Map() {
 
     if (!feature) {
       setStateApp((state) => ({
-        ...state,
-        selectedAbstracts: [],
+	...state,
+	selectedAbstracts: [],
       }));
       return;
     }
@@ -3382,22 +3505,23 @@ function Map() {
       setStateApp((state) => ({
         ...state,
         selectedAbstracts: [...state.selectedAbstracts, feature],
+        showDrawShapesPopup: true
       }));
     }
     if (action === "remove") {
       setStateApp((state) => ({
-        ...state,
-        selectedAbstracts: state.selectedAbstracts.filter(
-          (abstract) => abstract.id !== feature.id
-        ),
+	...state,
+	selectedAbstracts: state.selectedAbstracts.filter(
+	  (abstract) => abstract.id !== feature.id
+	),
       }));
     }
   };
 
   useEffect(() => {
-    // HERE FOOL
+    // UseEffect for Land Grids Selection
     if (map) {
-      map.on("click", "abstract_geo_fill_layer", function (e) {
+      const LandClickListener = (e) => {
         if (!e.features.length) {
           return;
         }
@@ -3409,8 +3533,14 @@ function Map() {
         const featuresList = map.getSource("abstract_geo_source")._data
           .features;
 
-        if (window.event.ctrlKey || window.event.metaKey) {
-
+        const geoSourceFeature = featuresList.find((feature) => feature.properties.Id === currentFeature.id)
+        if (geoSourceFeature) currentFeature.geometry = geoSourceFeature.geometry
+        if (
+          window.event.ctrlKey ||
+          window.event.metaKey ||
+          stateApp.multiSelectLandGrids
+        ) {
+          // this is making trouble
           if (featureState && featureState.click) {
             // Unselect feature
             map.setFeatureState(
@@ -3423,14 +3553,14 @@ function Map() {
 
             if (!isExisting) {
               map.setFeatureState(
-                { source: "abstract_geo_source", id: e.features[0].id },
+                { source: "abstract_geo_source", id: currentFeature.id },
                 { click: true }
               );
               onAbstactLayerClick(currentFeature, "add");
             }
           }
         } else {
-          // Clear all selected features
+          // Clear all selected features when click off the shapes
           for (let i = 0; i < featuresList.length; i++) {
             const id = featuresList[i].properties.Id;
             map.setFeatureState(
@@ -3440,25 +3570,27 @@ function Map() {
           }
           onAbstactLayerClick(null, "remove");
         }
-      });
+      };
+
+      map.on("click", "abstract_geo_fill_layer", LandClickListener);
 
       map.on("mousemove", "abstract_geo_fill_layer", function (e) {
-        if (e.features.length > 0) {
-          if (hoveredAbstractId) {
-            map.setFeatureState(
-              { source: "abstract_geo_source", id: hoveredAbstractId },
-              { hover: false }
-            );
-          }
-          hoveredAbstractId = e.features[0].id;
-          map.setFeatureState(
-            { source: "abstract_geo_source", id: hoveredAbstractId },
-            { hover: true }
-          );
-        }
+	if (e.features.length > 0) {
+	  if (hoveredAbstractId) {
+	    map.setFeatureState(
+	      { source: "abstract_geo_source", id: hoveredAbstractId },
+	      { hover: false }
+	    );
+	  }
+	  hoveredAbstractId = e.features[0].id;
+	  map.setFeatureState(
+	    { source: "abstract_geo_source", id: hoveredAbstractId },
+	    { hover: true }
+	  );
+	}
       });
 
-      map.on("mouseleave", "abstract_geo_fill_layer", function (e) {
+      map.on("mouselecustomLayersave", "abstract_geo_fill_layer", function (e) {
         if (hoveredAbstractId) {
           map.setFeatureState(
             { source: "abstract_geo_source", id: hoveredAbstractId },
@@ -3466,11 +3598,14 @@ function Map() {
           );
         }
       });
+      return () => {
+        // Unsubscribing the provious event for updated states
+        map.off("click", "abstract_geo_fill_layer", LandClickListener);
+      };
     }
-  }, [map, stateApp.customLayers]);
+  }, [map, stateApp.customLayers, stateApp.multiSelectLandGrids]);
 
   useEffect(() => {
-
     if (mapStyles.length > 0) {
       // const SET_INITIAL_MAP_STYLE = "Satellite";
 
@@ -3602,7 +3737,7 @@ function Map() {
 
             setStateApp((state) => ({
               ...state,
-              selectedPolygonString: polygonString
+              selectedPolygonString: polygonString,
             }));
           }
 
@@ -3630,6 +3765,11 @@ function Map() {
               },
             });
           }
+          // setting zoom level on every zoom
+          setStateApp((state) => ({
+            ...state,
+            mapVars: { ...state.mapVars, zoom: map.getZoom() },
+          }));
         };
 
         newMap.on("zoomend", function (e) {
@@ -3682,6 +3822,15 @@ function Map() {
               features: [],
             },
             // promoteId: "Id",
+          });
+
+          // FOR aoi_labels
+          newMap.addSource('aoi_label_source', {
+            'type': 'geojson',
+            'data': {
+              'type': 'FeatureCollection',
+              'features': []
+            }
           });
 
           newMap.addLayer({
@@ -3739,7 +3888,7 @@ function Map() {
             source: "plssseconddivision_geo_source",
             paint: {
               "fill-color": "rgba(0, 0, 0, 0)",
-              "fill-outline-color": "rgba(0, 6, 15, 0.17)"
+              "fill-outline-color": "rgba(0, 6, 15, 0.17)",
             },
           });
 
@@ -3757,7 +3906,7 @@ function Map() {
               "text-color": "hsla(0, 0%, 0%, 0.75)",
               "text-halo-color": "hsl(35, 16%, 100%)",
               "text-halo-width": 0.5,
-              "text-halo-blur": 0.5
+              "text-halo-blur": 0.5,
             },
           });
 
@@ -3768,12 +3917,10 @@ function Map() {
       };
 
       if (!map) {
-        initializeMap({ setMap, mapEl, setStateApp, setDraw });
+	initializeMap({ setMap, mapEl, setStateApp, setDraw });
       } else {
-
         // map.on("mousemove", mapMouseMove);
         // map.on("zoom", mapZoom);
-
       }
     }
   }, [
@@ -3788,37 +3935,37 @@ function Map() {
   useEffect(() => {
     if (stateApp.map) {
       const queryViewportHandler = debounce(() => {
-        if (stateApp.map.getZoom() >= stateApp.minZoomToQueryViewport) {
-          const points = stateApp.map.queryRenderedFeatures({
-            layers: [
-              "wellpoints",
-              // "Tracked Wells",
-              // "Tags Filter",
-              // "Search",
-            ],
-          });
+	if (stateApp.map.getZoom() >= stateApp.minZoomToQueryViewport) {
+	  const points = stateApp.map.queryRenderedFeatures({
+	    layers: [
+	      "wellpoints",
+	      // "Tracked Wells",
+	      // "Tags Filter",
+	      // "Search",
+	    ],
+	  });
 
-          const featuresArray = [];
-          points.forEach((point) => {
-            if (point && point.properties && point.properties.id) {
-              featuresArray.push({
-                ...point.properties,
-                id: point.properties.id.toLowerCase(),
-              });
-            }
-          });
+	  const featuresArray = [];
+	  points.forEach((point) => {
+	    if (point && point.properties && point.properties.id) {
+	      featuresArray.push({
+		...point.properties,
+		id: point.properties.id.toLowerCase(),
+	      });
+	    }
+	  });
 
-          setStateApp((stateApp) => {
-            if (!deepEqual(stateApp.viewportWells, featuresArray))
-              return { ...stateApp, viewportWells: featuresArray };
-            return stateApp;
-          });
-        } else
-          setStateApp((stateApp) => {
-            if (stateApp.viewportWells)
-              return { ...stateApp, viewportWells: null };
-            return stateApp;
-          });
+	  setStateApp((stateApp) => {
+	    if (!deepEqual(stateApp.viewportWells, featuresArray))
+	      return { ...stateApp, viewportWells: featuresArray };
+	    return stateApp;
+	  });
+	} else
+	  setStateApp((stateApp) => {
+	    if (stateApp.viewportWells)
+	      return { ...stateApp, viewportWells: null };
+	    return stateApp;
+	  });
       }, 300);
 
       // stateApp.map.off("render", queryViewportHandler);
@@ -3832,90 +3979,89 @@ function Map() {
     if (!loading && stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
       if (draw) draw.delete(drawingFilterFeatureId);
       setStateNav((stateNav) => ({
-        ...stateNav,
-        drawingMode: null,
-        filterDrawing: stateNav.filterDrawing,
-        filterFeatureId: null,
+	...stateNav,
+	drawingMode: null,
+	filterDrawing: stateNav.filterDrawing,
+	filterFeatureId: null,
       }));
       setDrawingFilterFeatureId(null);
       setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
+	...state,
+	popupOpen: false,
       }));
     }
   }, [stateNav.filterDrawing]);
 
   // Use effect for adding shape filter
   useEffect(() => {
-
     function drawCreateListener(e) {
       if (stateNav.drawingMode !== null) {
-        let feature = e.features[0];
+	let feature = e.features[0];
 
-        let polygonString = "POLYGON((";
-        feature.geometry.coordinates[0].forEach((coordinate, index) => {
-          polygonString += coordinate[0] + " " + coordinate[1];
-          if (index < feature.geometry.coordinates[0].length - 1) {
-            polygonString += ", ";
-          }
-        });
-        polygonString += "))";
+	let polygonString = "POLYGON((";
+	feature.geometry.coordinates[0].forEach((coordinate, index) => {
+	  polygonString += coordinate[0] + " " + coordinate[1];
+	  if (index < feature.geometry.coordinates[0].length - 1) {
+	    polygonString += ", ";
+	  }
+	});
+	polygonString += "))";
 
-        getAbstractGeoContains({
-          variables: {
-            polygon: polygonString,
-          },
-        });
+	getAbstractGeoContains({
+	  variables: {
+	    polygon: polygonString,
+	  },
+	});
 
-        setFilterAbstract(true);
+	setFilterAbstract(true);
 
-        //delete feature, and create a copy with custom id
-        draw.delete(feature.id);
-        feature.id = stateNav.filterFeatureId;
-        draw.add(feature);
+	//delete feature, and create a copy with custom id
+	draw.delete(feature.id);
+	feature.id = stateNav.filterFeatureId;
+	draw.add(feature);
 
-        createFilterPopup(feature, map);
+	createFilterPopup(feature, map);
 
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          drawingMode: null,
-          filterDrawing: ["within", feature],
-        }));
-        map.off("draw.create", drawCreateListener);
+	setStateNav((stateNav) => ({
+	  ...stateNav,
+	  drawingMode: null,
+	  filterDrawing: ["within", feature],
+	}));
+	map.off("draw.create", drawCreateListener);
       }
     }
 
     function drawUpdateListener(e) {
       if (
-        e.features[0].id.includes("draw_polygon") ||
-        e.features[0].id.includes("drag_circle") ||
-        e.features[0].id.includes("draw_rectangle")
+	e.features[0].id.includes("draw_polygon") ||
+	  e.features[0].id.includes("drag_circle") ||
+	  e.features[0].id.includes("draw_rectangle")
       ) {
-        let feature = e.features[0];
+	let feature = e.features[0];
 
-        let polygonString = "POLYGON((";
-        feature.geometry.coordinates[0].forEach((coordinate, index) => {
-          polygonString += coordinate[0] + " " + coordinate[1];
-          if (index < feature.geometry.coordinates[0].length - 1) {
-            polygonString += ", ";
-          }
-        });
-        polygonString += "))";
+	let polygonString = "POLYGON((";
+	feature.geometry.coordinates[0].forEach((coordinate, index) => {
+	  polygonString += coordinate[0] + " " + coordinate[1];
+	  if (index < feature.geometry.coordinates[0].length - 1) {
+	    polygonString += ", ";
+	  }
+	});
+	polygonString += "))";
 
-        getAbstractGeoContains({
-          variables: {
-            polygon: polygonString,
-          },
-        });
+	getAbstractGeoContains({
+	  variables: {
+	    polygon: polygonString,
+	  },
+	});
 
-        setFilterAbstract(true);
+	setFilterAbstract(true);
 
-        createFilterPopup(feature, map);
+	createFilterPopup(feature, map);
 
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterDrawing: ["within", feature],
-        }));
+	setStateNav((stateNav) => ({
+	  ...stateNav,
+	  filterDrawing: ["within", feature],
+	}));
       }
     }
 
@@ -3926,14 +4072,14 @@ function Map() {
       setDrawingFilterFeatureId(stateNav.filterFeatureId);
       stateApp.draw.changeMode(stateNav.drawingMode);
       if (map) {
-        map.on("draw.create", drawCreateListener);
-        map.on("draw.update", drawUpdateListener);
+	map.on("draw.create", drawCreateListener);
+	map.on("draw.update", drawUpdateListener);
       }
     }
   }, [stateNav.filterFeatureId]);
 
   useEffect(() => {
-    if (draw && stateNav.filterDrawing && stateNav.filterDrawing.length == 2) {
+    if (draw && stateNav.filterDrawing && stateNav.filterDrawing.length === 2) {
       const feature = stateNav.filterDrawing[1];
       setDrawingFilterFeatureId(feature.id);
       draw.delete(feature.id);
@@ -3953,7 +4099,6 @@ function Map() {
         var pitch = map.getPitch();
         var bearing = map.getBearing();
 
-
         setStateApp((stateApp) => ({
           ...stateApp,
           mapVars: {
@@ -3964,7 +4109,6 @@ function Map() {
             bearing: bearing,
           },
         }));
-
 
         //Loading state is not being handled and causes undefined mapList Array
         //Added '?' to mapList, temp fix to avoid undefined errors.
@@ -3978,28 +4122,26 @@ function Map() {
     }
   }, [map]);
 
-
   useEffect(() => {
-
     ////// USE EFFECT TO MANAGE THE FLY TO FEATURE
 
     if (map && stateApp.flyTo) {
       var zVal = 12;
 
       setStateApp((stateApp) => ({
-        ...stateApp,
-        wellSelectedCoordinates: [
-          stateApp.flyTo.longitude,
-          stateApp.flyTo.latitude,
-        ],
+	...stateApp,
+	wellSelectedCoordinates: [
+	  stateApp.flyTo.longitude,
+	  stateApp.flyTo.latitude,
+	],
       }));
 
       !stateApp.activateWellDetailsFromTable &&
-        map.flyTo({
-          center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
-          zoom: stateApp.flyTo.zoom ? stateApp.flyTo.zoom : zVal,
-          speed: 0.5,
-        });
+	map.flyTo({
+	  center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
+	  zoom: stateApp.flyTo.zoom ? stateApp.flyTo.zoom : zVal,
+	  speed: 0.5,
+	});
     }
   }, [map, stateApp.flyTo]); //createPopUp
 
@@ -4008,53 +4150,53 @@ function Map() {
 
     if (
       map &&
-      stateApp.fitBounds &&
-      stateApp.fitBounds.maxLat &&
-      stateApp.fitBounds.minLat &&
-      stateApp.fitBounds.maxLong &&
-      stateApp.fitBounds.minLong
+	stateApp.fitBounds &&
+	stateApp.fitBounds.maxLat &&
+	stateApp.fitBounds.minLat &&
+	stateApp.fitBounds.maxLong &&
+	stateApp.fitBounds.minLong
     ) {
       const fitOverBounds = () => {
-        let { maxLat, minLat, maxLong, minLong } = stateApp.fitBounds;
+	let { maxLat, minLat, maxLong, minLong } = stateApp.fitBounds;
 
-        const latDif = maxLat - minLat;
-        const longDif = maxLong - minLong;
+	const latDif = maxLat - minLat;
+	const longDif = maxLong - minLong;
 
-        if (latDif === 0) {
-          maxLat = maxLat + 0.005 > 90 ? 89.995 : maxLat + 0.005;
-          minLat = minLat - 0.005 < -90 ? -89.995 : minLat - 0.005;
-        } else {
-          maxLat =
-            maxLat + latDif * 0.08 > 90 ? 89.995 : maxLat + latDif * 0.08;
-          minLat =
-            minLat - latDif * 0.08 < -90 ? -89.995 : minLat - latDif * 0.08;
-        }
+	if (latDif === 0) {
+	  maxLat = maxLat + 0.005 > 90 ? 89.995 : maxLat + 0.005;
+	  minLat = minLat - 0.005 < -90 ? -89.995 : minLat - 0.005;
+	} else {
+	  maxLat =
+	    maxLat + latDif * 0.08 > 90 ? 89.995 : maxLat + latDif * 0.08;
+	  minLat =
+	    minLat - latDif * 0.08 < -90 ? -89.995 : minLat - latDif * 0.08;
+	}
 
-        if (longDif === 0) {
-          maxLong = maxLong + 0.005 > 180 ? 179.995 : maxLong + 0.005;
-          minLong = minLong - 0.005 < -180 ? -179.995 : minLong - 0.005;
-        } else {
-          maxLong =
-            maxLong + longDif * 0.08 > 180 ? 179.995 : maxLong + latDif * 0.08;
-          maxLong =
-            maxLong - longDif * 0.08 < -180
-              ? -179.995
-              : maxLong - latDif * 0.08;
-        }
+	if (longDif === 0) {
+	  maxLong = maxLong + 0.005 > 180 ? 179.995 : maxLong + 0.005;
+	  minLong = minLong - 0.005 < -180 ? -179.995 : minLong - 0.005;
+	} else {
+	  maxLong =
+	    maxLong + longDif * 0.08 > 180 ? 179.995 : maxLong + latDif * 0.08;
+	  maxLong =
+	    maxLong - longDif * 0.08 < -180
+	    ? -179.995
+	    : maxLong - latDif * 0.08;
+	}
 
-        return {
-          maxLat,
-          minLat,
-          maxLong,
-          minLong,
-        };
+	return {
+	  maxLat,
+	  minLat,
+	  maxLong,
+	  minLong,
+	};
       };
 
       let bounds = fitOverBounds();
 
       map.fitBounds([
-        [bounds.minLong, bounds.minLat],
-        [bounds.maxLong, bounds.maxLat],
+	[bounds.minLong, bounds.minLat],
+	[bounds.maxLong, bounds.maxLat],
       ]);
     }
   }, [map, stateApp.fitBounds]);
@@ -4062,125 +4204,124 @@ function Map() {
   useEffect(() => {
     if (
       map &&
-      stateApp.wellListFromSearch &&
-      stateApp.wellListFromSearch.length > 0
+	stateApp.wellListFromSearch &&
+	stateApp.wellListFromSearch.length > 0
     ) {
       if (stateApp.wellListFromSearch.length > 1) {
-        const findBounds = (shape) => {
-          if (gjv.valid(shape)) {
-            const bbox = turf.bbox(shape);
-            return {
-              minLong: bbox[0],
-              minLat: bbox[1],
-              maxLong: bbox[2],
-              maxLat: bbox[3],
-            };
-          }
-        };
+	const findBounds = (shape) => {
+	  if (gjv.valid(shape)) {
+	    const bbox = turf.bbox(shape);
+	    return {
+	      minLong: bbox[0],
+	      minLat: bbox[1],
+	      maxLong: bbox[2],
+	      maxLat: bbox[3],
+	    };
+	  }
+	};
 
-        const formatIt = (mdata) => {
-          return {
-            type: "FeatureCollection",
-            features: mdata
-              .filter(
-                (feature) =>
-                  (feature.latitude && feature.longitude) ||
-                  (feature.Latitude && feature.Longitude)
-              )
-              .map((feature) => {
-                if (feature.latitude && feature.longitude) {
-                  return {
-                    type: "Feature",
-                    properties: feature,
-                    geometry: {
-                      type: "Point",
-                      coordinates: [feature.longitude, feature.latitude],
-                    },
-                  };
-                } else {
-                  return {
-                    type: "Feature",
-                    properties: feature,
-                    geometry: {
-                      type: "Point",
-                      coordinates: [feature.Longitude, feature.Latitude],
-                    },
-                  };
-                }
-              }),
-          };
-        };
+	const formatIt = (mdata) => {
+	  return {
+	    type: "FeatureCollection",
+	    features: mdata
+	      .filter(
+		(feature) =>
+		(feature.latitude && feature.longitude) ||
+		  (feature.Latitude && feature.Longitude)
+	      )
+	      .map((feature) => {
+		if (feature.latitude && feature.longitude) {
+		  return {
+		    type: "Feature",
+		    properties: feature,
+		    geometry: {
+		      type: "Point",
+		      coordinates: [feature.longitude, feature.latitude],
+		    },
+		  };
+		} else {
+		  return {
+		    type: "Feature",
+		    properties: feature,
+		    geometry: {
+		      type: "Point",
+		      coordinates: [feature.Longitude, feature.Latitude],
+		    },
+		  };
+		}
+	      }),
+	  };
+	};
 
-        setStateApp((state) => ({
-          ...state,
-          fitBounds: findBounds(formatIt(stateApp.wellListFromSearch)),
-        }));
+	setStateApp((state) => ({
+	  ...state,
+	  fitBounds: findBounds(formatIt(stateApp.wellListFromSearch)),
+	}));
       } else {
-        if (
-          stateApp.wellListFromSearch[0] &&
-          stateApp.wellListFromSearch[0].latitude &&
-          stateApp.wellListFromSearch[0].longitude
-        )
-          map.flyTo({
-            center: {
-              lng: stateApp.wellListFromSearch[0].longitude,
-              lat: stateApp.wellListFromSearch[0].latitude,
-            },
-            zoom: 12,
-          });
+	if (
+	  stateApp.wellListFromSearch[0] &&
+	    stateApp.wellListFromSearch[0].latitude &&
+	    stateApp.wellListFromSearch[0].longitude
+	)
+	  map.flyTo({
+	    center: {
+	      lng: stateApp.wellListFromSearch[0].longitude,
+	      lat: stateApp.wellListFromSearch[0].latitude,
+	    },
+	    zoom: 12,
+	  });
       }
     }
   }, [map, stateApp.wellListFromSearch]);
 
   useEffect(() => {
-
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
-        map.flyTo({
-          center: stateApp.defaultMapVars.center,
-          zoom: stateApp.defaultMapVars.zoom,
-          pitch: stateApp.defaultMapVars.pitch,
-          bearing: stateApp.defaultMapVars.bearing,
-          speed: 0.5,
-        });
+	map.flyTo({
+	  center: stateApp.defaultMapVars.center,
+	  zoom: stateApp.defaultMapVars.zoom,
+	  pitch: stateApp.defaultMapVars.pitch,
+	  bearing: stateApp.defaultMapVars.bearing,
+	  speed: 0.5,
+	});
 
-        let flying = null;
+	let flying = null;
 
-        map.on("flystart", function () {
-          flying = true;
-        });
+	map.on("flystart", function () {
+	  flying = true;
+	});
 
-        map.on("flyend", function () {
-          flying = false;
-        });
+	map.on("flyend", function () {
+	  flying = false;
+	});
 
-        map.on("moveend", function (e) {
-          if (flying) {
-            setStateApp((stateApp) => ({
-              ...stateApp,
-              mapVars: {
-                ...stateApp.mapVars,
-                zoom: map.getZoom(),
-                center: map.getCenter(),
-                pitch: map.getPitch(),
-                bearing: map.getBearing(),
-              },
-            }));
-            map.fire("flyend");
-          }
-        });
+	map.on("moveend", function (e) {
+	  if (flying) {
+	    setStateApp((stateApp) => ({
+	      ...stateApp,
+	      mapVars: {
+		...stateApp.mapVars,
+		zoom: map.getZoom(),
+		center: map.getCenter(),
+		pitch: map.getPitch(),
+		bearing: map.getBearing(),
+	      },
+	    }));
+	    map.fire("flyend");
+	  }
+	});
 
-        setStateApp((stateApp) => ({ ...stateApp, toggleZoomOut: null }));
+	setStateApp((stateApp) => ({ ...stateApp, toggleZoomOut: null }));
       }
     }
   }, [stateApp.toggleZoomOut]);
 
   useEffect(() => {
-    // use effect to toggle the map into a 3d state 
+    // use effect to toggle the map into a 3d state
 
     if (map && stateApp.toggle3d) {
       if (stateApp.toggle3d === true) {
-        if (map.getPitch() == 0 && map.getBearing() == 0) {
+        if (map.getPitch() === 0 && map.getBearing() === 0) {
           map.setPitch(70);
           map.setBearing(20);
         } else {
@@ -4206,34 +4347,34 @@ function Map() {
   const handleToggleInteraction = (layerIdentifier, value) => {
     let layer;
     let index;
-    stateApp.layers.forEach((l, i) => {
-      if (l.identifier == layerIdentifier) {
+    stateApp.layers?.forEach((l, i) => {
+      if (l.identifier === layerIdentifier) {
         layer = l;
         index = i;
       }
     });
     if (
       index &&
-      layer &&
-      layer.layerSettings &&
-      layer.layerSettings.interaction &&
-      layer.layerSettings.interaction.interactionDetail &&
-      layer.layerSettings.interaction.interactionDetail.click !== value
+	layer &&
+	layer.layerSettings &&
+	layer.layerSettings.interaction &&
+	layer.layerSettings.interaction.interactionDetail &&
+	layer.layerSettings.interaction.interactionDetail.click !== value
     ) {
       const currentLayers = [...stateApp.layers];
       const updatedLayer = {
-        ...layer,
-        layerSettings: {
-          ...layer.layerSettings,
-          interaction: {
-            ...layer.layerSettings.interaction,
-            // interactionAble: value,
-            interactionDetail: {
-              hover: value,
-              click: value,
-            },
-          },
-        },
+	...layer,
+	layerSettings: {
+	  ...layer.layerSettings,
+	  interaction: {
+	    ...layer.layerSettings.interaction,
+	    // interactionAble: value,
+	    interactionDetail: {
+	      hover: value,
+	      click: value,
+	    },
+	  },
+	},
       };
 
       //// saving to stateApp
@@ -4244,18 +4385,17 @@ function Map() {
   };
 
   useEffect(() => {
-
     if (stateApp.editDraw === true || stateNav.drawingMode) {
       setDrawStatus(true);
       if (mapClick && mapClick.mapClickHandler != null) {
-        handleToggleInteraction("Wells", false);
+	handleToggleInteraction("Wells", false);
       }
     } else {
       setDrawStatus(false);
       if (mapClick && mapClick.mapClickHandler != null) {
-        setTimeout(() => {
-          handleToggleInteraction("Wells", true);
-        }, 500);
+	setTimeout(() => {
+	  handleToggleInteraction("Wells", true);
+	}, 500);
       }
     }
   }, [stateApp.editDraw, stateNav.drawingMode]);
@@ -4277,21 +4417,21 @@ function Map() {
       expandedCard: false,
       activateWellDetailsFromTable: false,
     }));
-    getCustomLayers()
+    getCustomLayers();
   };
 
   const deleteParcel = () => {
     updateCustomLayer({
       variables: {
-        customLayerId: stateApp.selectedParcel.id,
-        customLayer: {
-          IsDeleted: true,
-        },
+	customLayerId: stateApp.selectedParcel.id,
+	customLayer: {
+	  IsDeleted: true,
+	},
       },
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
     });
-  }
+  };
 
   const handleCloseSpatialDataCard = (complete = true) => {
     setStateApp((state) => ({
@@ -4299,10 +4439,10 @@ function Map() {
       popupOpen: false,
       selectedUserDefinedLayer: undefined,
     }));
-    if (complete == true) {
+    if (complete === true) {
       setStateApp((state) => ({
-        ...state,
-        selectedUserDefinedLayer: undefined,
+	...state,
+	selectedUserDefinedLayer: undefined,
       }));
     }
   };
@@ -4323,10 +4463,10 @@ function Map() {
 
     spatialDataAttributes.forEach((attribute) => {
       if (
-        spatialData[attribute] != null ||
-        typeof spatialData[attribute] !== "undefined"
+	spatialData[attribute] != null ||
+	  typeof spatialData[attribute] !== "undefined"
       ) {
-        selectedUserDefinedLayer.properties[attribute] = spatialData[attribute];
+	selectedUserDefinedLayer.properties[attribute] = spatialData[attribute];
       }
     });
     selectedUserDefinedLayer.id = selectedUserDefinedLayer.properties.id;
@@ -4343,12 +4483,12 @@ function Map() {
       addCustomShapeProperties(current_feature, stateApp.draw);
       current_feature = stateApp.draw.get(draw_id);
       spatialDataAttributes.forEach((attribute) => {
-        if (
-          spatialData[attribute] != null ||
-          typeof spatialData[attribute] !== "undefined"
-        ) {
-          current_feature.properties[attribute] = spatialData[attribute];
-        }
+	if (
+	  spatialData[attribute] != null ||
+	    typeof spatialData[attribute] !== "undefined"
+	) {
+	  current_feature.properties[attribute] = spatialData[attribute];
+	}
       });
       current_feature.id = current_feature.properties.id;
       update_layer = current_feature;
@@ -4358,47 +4498,46 @@ function Map() {
     if (stateApp.user.mongoId !== "") {
       const id = update_layer.properties.id;
       let update_layers = stateApp.editingUserDefinedLayers.filter((layer) => {
-        const shape_properties = JSON.parse(layer.shape).properties;
-        return shape_properties.id && shape_properties.id.includes(id);
+	const shape_properties = JSON.parse(layer.shape).properties;
+	return shape_properties.id && shape_properties.id.includes(id);
       });
       if (update_layers.length === 0) {
-        update_layers = stateApp.customLayers.filter((layer) => {
-          return layer._id && layer._id.includes(id);
-        });
-        handleCloseSpatialDataCard();
+	update_layers = stateApp.customLayers.filter((layer) => {
+	  return layer._id && layer._id.includes(id);
+	});
+	handleCloseSpatialDataCard();
       } else {
-        stateApp.draw.delete(`edit_polygon_${id}`);
-        const updated_layers = stateApp.editingUserDefinedLayers.filter(
-          (layer) => {
-            const shape_properties = JSON.parse(layer.shape).properties;
-            return !shape_properties.id || !shape_properties.id.includes(id);
-          }
-        );
-        setStateApp({
-          ...stateApp,
-          selectedUserDefinedLayer: null,
-          editingUserDefinedLayers: updated_layers,
-        });
-        handleCloseSpatialDataCardEdit();
+	stateApp.draw.delete(`edit_polygon_${id}`);
+	const updated_layers = stateApp.editingUserDefinedLayers.filter(
+	  (layer) => {
+	    const shape_properties = JSON.parse(layer.shape).properties;
+	    return !shape_properties.id || !shape_properties.id.includes(id);
+	  }
+	);
+	setStateApp({
+	  ...stateApp,
+	  selectedUserDefinedLayer: null,
+	  editingUserDefinedLayers: updated_layers,
+	});
+	handleCloseSpatialDataCardEdit();
       }
       const customLayerId = update_layers[0]._id;
 
       const customLayerData = {
-        shape: JSON.stringify(update_layer),
-        layer: dataType,
-        name: spatialData.shapeLabel,
-        user: stateApp.user.mongoId,
+	shape: JSON.stringify(update_layer),
+	layer: dataType,
+	name: spatialData.shapeLabel,
+	user: stateApp.user.mongoId,
       };
 
       updateCustomLayer({
-        variables: {
-          customLayerId: customLayerId,
-          customLayer: customLayerData,
-        },
-        refetchQueries: ["getCustomLayers"],
-        awaitRefetchQueries: true,
+	variables: {
+	  customLayerId: customLayerId,
+	  customLayer: customLayerData,
+	},
+	refetchQueries: ["getCustomLayers"],
+	awaitRefetchQueries: true,
       });
-
     }
   };
 
@@ -4411,90 +4550,89 @@ function Map() {
     if (selectedUserDefinedLayer) {
       let id = selectedUserDefinedLayer.properties.id;
       if (id.includes("edit_polygon")) {
-        id = id.replace("edit_polygon_", "");
+	id = id.replace("edit_polygon_", "");
       }
       if (editingUserDefinedLayers.length > 0) {
-        const delete_layers = editingUserDefinedLayers.filter((layer) => {
-          const shape_properties = JSON.parse(layer.shape).properties;
-          return shape_properties.id && shape_properties.id.includes(id);
-        });
-        if (delete_layers.length > 0) {
-          for (let i = 0; i < delete_layers.length; i++) {
-            const delete_layer = delete_layers[i];
-            removeCustomLayer({
-              variables: {
-                customLayerId: delete_layer._id,
-              },
-            });
-          }
-          const updated_layers = editingUserDefinedLayers.filter((layer) => {
-            const shape_properties = JSON.parse(layer.shape).properties;
-            return !shape_properties.id || !shape_properties.id.includes(id);
-          });
-          stateApp.draw.delete(`edit_polygon_${id}`);
-          setStateApp({
-            ...stateApp,
-            editingUserDefinedLayers: updated_layers,
-          });
-          handleCloseSpatialDataCardEdit();
-        } else if (customLayers.length > 0) {
-          const delete_layers = customLayers.filter((layer) => {
-            const shape_properties = JSON.parse(layer.shape).properties;
-            return shape_properties.id && shape_properties.id.includes(id);
-          });
-          if (delete_layers.length > 0) {
-            for (let i = 0; i < delete_layers.length; i++) {
-              const delete_layer = delete_layers[i];
-              removeCustomLayer({
-                variables: {
-                  customLayerId: delete_layer._id,
-                },
-              });
-            }
-            const updated_layers = customLayers.filter((layer) => {
-              const shape_properties = JSON.parse(layer.shape).properties;
-              return !shape_properties.id || !shape_properties.id.includes(id);
-            });
-            setStateApp({
-              ...stateApp,
-              customLayers: updated_layers,
-            });
-          }
-          handleCloseSpatialDataCard();
-        }
+	const delete_layers = editingUserDefinedLayers.filter((layer) => {
+	  const shape_properties = JSON.parse(layer.shape).properties;
+	  return shape_properties.id && shape_properties.id.includes(id);
+	});
+	if (delete_layers.length > 0) {
+	  for (let i = 0; i < delete_layers.length; i++) {
+	    const delete_layer = delete_layers[i];
+	    removeCustomLayer({
+	      variables: {
+		customLayerId: delete_layer._id,
+	      },
+	    });
+	  }
+	  const updated_layers = editingUserDefinedLayers.filter((layer) => {
+	    const shape_properties = JSON.parse(layer.shape).properties;
+	    return !shape_properties.id || !shape_properties.id.includes(id);
+	  });
+	  stateApp.draw.delete(`edit_polygon_${id}`);
+	  setStateApp({
+	    ...stateApp,
+	    editingUserDefinedLayers: updated_layers,
+	  });
+	  handleCloseSpatialDataCardEdit();
+	} else if (customLayers.length > 0) {
+	  const delete_layers = customLayers.filter((layer) => {
+	    const shape_properties = JSON.parse(layer.shape).properties;
+	    return shape_properties.id && shape_properties.id.includes(id);
+	  });
+	  if (delete_layers.length > 0) {
+	    for (let i = 0; i < delete_layers.length; i++) {
+	      const delete_layer = delete_layers[i];
+	      removeCustomLayer({
+		variables: {
+		  customLayerId: delete_layer._id,
+		},
+	      });
+	    }
+	    const updated_layers = customLayers.filter((layer) => {
+	      const shape_properties = JSON.parse(layer.shape).properties;
+	      return !shape_properties.id || !shape_properties.id.includes(id);
+	    });
+	    setStateApp({
+	      ...stateApp,
+	      customLayers: updated_layers,
+	    });
+	  }
+	  handleCloseSpatialDataCard();
+	}
       } else {
-        if (customLayers.length > 0) {
-          const delete_layers = customLayers.filter((layer) => {
-            const shape_properties = JSON.parse(layer.shape).properties;
-            return shape_properties.id && shape_properties.id.includes(id);
-          });
-          if (delete_layers.length > 0) {
-            for (let i = 0; i < delete_layers.length; i++) {
-              const delete_layer = delete_layers[i];
-              removeCustomLayer({
-                variables: {
-                  customLayerId: delete_layer._id,
-                },
-              });
-            }
-            const updated_layers = customLayers.filter((layer) => {
-              const shape_properties = JSON.parse(layer.shape).properties;
-              return !shape_properties.id || !shape_properties.id.includes(id);
-            });
-            setStateApp({
-              ...stateApp,
-              customLayers: updated_layers,
-            });
-          }
-          handleCloseSpatialDataCard();
-        }
+	if (customLayers.length > 0) {
+	  const delete_layers = customLayers.filter((layer) => {
+	    const shape_properties = JSON.parse(layer.shape).properties;
+	    return shape_properties.id && shape_properties.id.includes(id);
+	  });
+	  if (delete_layers.length > 0) {
+	    for (let i = 0; i < delete_layers.length; i++) {
+	      const delete_layer = delete_layers[i];
+	      removeCustomLayer({
+		variables: {
+		  customLayerId: delete_layer._id,
+		},
+	      });
+	    }
+	    const updated_layers = customLayers.filter((layer) => {
+	      const shape_properties = JSON.parse(layer.shape).properties;
+	      return !shape_properties.id || !shape_properties.id.includes(id);
+	    });
+	    setStateApp({
+	      ...stateApp,
+	      customLayers: updated_layers,
+	    });
+	  }
+	  handleCloseSpatialDataCard();
+	}
       }
     }
   };
 
-
   // useEffect(() => {
-  //   // use effect to add usersnap to the application 
+  //   // use effect to add usersnap to the application
 
   //   if (stateApp.userSnap === true) {
   //     var script = document.createElement("script");
@@ -4525,23 +4663,23 @@ function Map() {
       const { map } = stateApp;
 
       map.on("draw.selectionchange", ({ features }) => {
-        const [feature] = features;
-        if (feature && feature.id.includes("edit_polygon")) {
-          setStateApp({
-            ...stateApp,
-            selectedUserDefinedLayer: feature,
-            editLayer: true,
-            editDraw: true,
-          });
-        } else {
-          setStateApp({
-            ...stateApp,
-            popupOpen: false,
-            selectedUserDefinedLayer: undefined,
-            editLayer: false,
-            editDraw: false,
-          });
-        }
+	const [feature] = features;
+	if (feature && feature.id.includes("edit_polygon")) {
+	  setStateApp({
+	    ...stateApp,
+	    selectedUserDefinedLayer: feature,
+	    editLayer: true,
+	    editDraw: true,
+	  });
+	} else {
+	  setStateApp({
+	    ...stateApp,
+	    popupOpen: false,
+	    selectedUserDefinedLayer: undefined,
+	    editLayer: false,
+	    editDraw: false,
+	  });
+	}
       });
     }
   }, [stateApp.editingUserDefinedLayers]);
@@ -4549,82 +4687,72 @@ function Map() {
   useEffect(() => {
     /////// USE EFFECT  to handle the map zoom /  for selected well elements
 
-    if ((stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true)) {
+    if (stateApp.wellDetailCardOpen && stateApp.wellDetailCardOpen === true) {
       // set and remove map marker
-
 
       // mathematical formula for screen fit
       const alpha = 0.01;
       const bbox = [
-        [
-          stateApp.selectedWell.longitude - 1.5 * alpha,
-          stateApp.selectedWell.latitude,
-        ],
-        [
-          stateApp.selectedWell.longitude + 0.5 * alpha,
-          stateApp.selectedWell.latitude,
-        ],
+	[
+	  stateApp.selectedWell.longitude - 1.5 * alpha,
+	  stateApp.selectedWell.latitude,
+	],
+	[
+	  stateApp.selectedWell.longitude + 0.5 * alpha,
+	  stateApp.selectedWell.latitude,
+	],
       ];
 
       // map may be null when wellDetailCard is launched from somewhere else
       map?.fitBounds(bbox, {
-        speed: 0.75,
-        linear: true,
+	speed: 0.75,
+	linear: true,
       });
 
       setStateApp({
-        ...stateApp,
-        wellDetailCardOpen: false,
+	...stateApp,
+	wellDetailCardOpen: false,
       });
-
     }
   }, [stateApp.wellDetailCardOpen]);
-
 
   useEffect(() => {
     /////// USE EFFECT  to handle the map zoom /  for selected parcel elements
 
-    if ((stateApp.parcelDetailCardOpen && stateApp.parcelDetailCardOpen === true)) {
+    if (
+      stateApp.parcelDetailCardOpen &&
+      stateApp.parcelDetailCardOpen === true
+    ) {
       // set and remove map marker
 
-      let coordinates = stateApp.selectedParcel.shapeCenter
+      let coordinates = stateApp.selectedParcel.shapeCenter;
       if (typeof stateApp.selectedParcel.shapeCenter === "string") {
-        coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter);
+	coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter);
       }
-      const longitude = coordinates[0]
-      const latitude = coordinates[1]
+      const longitude = coordinates[0];
+      const latitude = coordinates[1];
 
-      const mapBounds = map.getBounds()
-      const screenLeftLng = mapBounds._sw.lng
-      const screenRightLng = mapBounds._ne.lng
-      const alpha = (screenRightLng - screenLeftLng) / 2
+      const mapBounds = map.getBounds();
+      const screenLeftLng = mapBounds._sw.lng;
+      const screenRightLng = mapBounds._ne.lng;
+      const alpha = (screenRightLng - screenLeftLng) / 2;
 
       const bbox = [
-        [
-          longitude - 1.5 * alpha,
-          latitude,
-        ],
-        [
-          longitude + 0.5 * alpha,
-          latitude,
-        ],
+        [longitude - 1.5 * alpha, latitude],
+        [longitude + 0.5 * alpha, latitude],
       ];
 
       map.fitBounds(bbox, {
-        speed: 0.75,
-        linear: true,
+	speed: 0.75,
+	linear: true,
       });
 
       setStateApp({
-        ...stateApp,
-        parcelDetailCardOpen: false,
+	...stateApp,
+	parcelDetailCardOpen: false,
       });
-
     }
   }, [stateApp.parcelDetailCardOpen]);
-
-
-
 
   useEffect(() => {
     if (parcelBoundaryId && map) {
@@ -4632,13 +4760,13 @@ function Map() {
       const idx = mapSourceData.features.findIndex(feature => feature.id === parcelBoundaryId)
       if (idx > -1) {
         const geoJson = {
-          type: 'Feature',
+          type: "Feature",
           properties: {},
           geometry: {
-            type: 'LineString',
-            coordinates: mapSourceData.features[idx].geometry.coordinates[0]
-          }
-        }
+            type: "LineString",
+            coordinates: mapSourceData.features[idx].geometry.coordinates[0],
+          },
+        };
 
         if (map.getSource('parcelBoundarySource')) {
           map.getSource('parcelBoundarySource').setData(geoJson);
@@ -4646,28 +4774,28 @@ function Map() {
             map.removeLayer('parcelBoundary')
           }
         } else {
-          map.addSource('parcelBoundarySource', {
+          map.addSource("parcelBoundarySource", {
             type: "geojson",
             data: geoJson
           });
         }
 
         map.addLayer({
-          id: 'parcelBoundary',
-          type: 'line',
-          source: 'parcelBoundarySource',
+          id: "parcelBoundary",
+          type: "line",
+          source: "parcelBoundarySource",
           layout: {
-            'line-join': 'round',
-            'line-cap': 'round'
+            "line-join": "round",
+            "line-cap": "round",
           },
           paint: {
-            'line-color': '#FFFF00',
-            'line-width': 8
-          }
+            "line-color": "#FFFF00",
+            "line-width": 8,
+          },
         });
       }
     }
-  }, [parcelBoundaryId])
+  }, [parcelBoundaryId]);
 
   useEffect(() => {
     if (map && stateApp.selectedParcel) {
@@ -4677,61 +4805,92 @@ function Map() {
       if (map.getSource('parcelBoundarySource')) map.removeSource('parcelBoundarySource');
       setParcelBoundaryId(null);
     }
-  }, [stateApp.selectedParcel])
+  }, [stateApp.selectedParcel]);
 
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
-        {map ? <DefaultFiltersTest /> : null}
-        <div className={classes.footerLeftLogo}>
-          <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="150" />
-        </div>
+	{map ? <DefaultFiltersTest /> : null}
+	<div className={classes.footerLeftLogo}>
+	  <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="150" />
+	</div>
       </div>
       <MapControlsProvider />
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <HugeRequest />
       {/* <Coordinates long={lng} lat={lat} zoom={zoom} /> */}
       {stateApp.selectedUserDefinedLayer &&
-        !stateApp.popupOpen &&
-        stateApp.editLayer && (
-          <SpatialDataCard
-            selectedFeature={stateApp.selectedUserDefinedLayer}
-            saveSpatialData={handleSaveSpatialDataToShape}
-            closeSpatialDataCard={handleCloseSpatialDataCardEdit}
-            deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
-          />
-        )}
+       !stateApp.popupOpen &&
+       stateApp.editLayer && (
+	 <SpatialDataCard
+	   selectedFeature={stateApp.selectedUserDefinedLayer}
+	   saveSpatialData={handleSaveSpatialDataToShape}
+	   closeSpatialDataCard={handleCloseSpatialDataCardEdit}
+	   deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
+	 />
+       )}
 
       {mapGridCardActivated && (
-        <MapGridCardProvider mapGridCardActivated={mapGridCardActivated} />
+	<MapGridCardProvider mapGridCardActivated={mapGridCardActivated} />
       )}
 
       {stateApp.selectedWell !== null && showExpandableCard &&
-        stateApp.expandedCard && (
-          <div className={classes.draggable}>
-            <ExpandableCardProvider
-              expanded
-              handleCloseExpandableCard={handleCloseExpandableCard}
-              component={<WellCardProvider />}
-              title={stateApp.selectedWell.wellName}
-              subTitle={stateApp.selectedWell.api}
-              parent="map"
-              cardTop={20}
-              cardLeft={20}
-              position="relative"
-              zIndex={99}
-              cardWidthExpanded="50vw"
-              cardHeightExpanded="90vh"
-              targetSourceId={stateApp.selectedWell.id}
-              targetLabel="well"
-            />
-          </div>
-        )
+       stateApp.expandedCard && (
+	 <div className={classes.draggable}>
+	   <ExpandableCardProvider
+	     expanded
+	     handleCloseExpandableCard={handleCloseExpandableCard}
+	     component={<WellCardProvider />}
+	     title={stateApp.selectedWell.wellName}
+	     subTitle={stateApp.selectedWell.api}
+	     parent="map"
+	     cardTop={20}
+	     cardLeft={20}
+	     position="relative"
+	     zIndex={99}
+	     cardWidthExpanded="50vw"
+	     cardHeightExpanded="90vh"
+	     targetSourceId={stateApp.selectedWell.id}
+	     targetLabel="well"
+	   />
+	 </div>
+       )
       }
 
-      {stateApp.selectedParcel !== null &&
-        stateApp.expandedCard && (
+    {stateApp.selectedPermit !== null && showExpandableCard &&
+     stateApp.expandedCard && (
+       <div className={classes.draggable}>
+	 <ExpandableCardProvider
+	   expanded
+	   handleCloseExpandableCard={handleCloseExpandableCard}
+	   component={<PermitCardProvider />}
+	   title={stateApp.selectedPermit.OperatorName}
+	   subTitle={stateApp.selectedPermit.ApiNumber}
+	   parent="map"
+	   cardTop={20}
+	   cardLeft={20}
+	   position="relative"
+	   zIndex={99}
+	   cardWidthExpanded="50vw"
+	   cardHeightExpanded="90vh"
+	   targetSourceId={stateApp.selectedPermit.Id}
+	   targetLabel="recent_submitted_permits"
+	 />
+       </div>
+     )
+    }
 
+      <div id="modalHolder" ref={modalContainer} />
+      <Portal container={modalContainer.current}>
+        {/* {stateApp.selectedAbstracts.length > 0 && (
+          <AbstractSelectionPopup
+            abstracts={stateApp.selectedAbstracts}
+            map={map}
+            onClickExpand={handleAnchorElPopOver}
+          />
+        )} */}
+
+        {/* {stateApp.selectedParcel !== null && stateApp.expandedCard && (
           <div className={classes.draggable}>
             <ExpandableCardProvider
               expanded={true}
@@ -4751,18 +4910,7 @@ function Map() {
               deleteParcel={deleteParcel}
             ></ExpandableCardProvider>
           </div>
-        )
-      }
-
-      <div id="modalHolder" ref={modalContainer} />
-      <Portal container={modalContainer.current}>
-        {stateApp.selectedAbstracts.length > 0 && (
-          <AbstractSelectionPopup
-            abstracts={stateApp.selectedAbstracts}
-            map={map}
-            onClickExpand={handleAnchorElPopOver}
-          />
-        )}
+        )} */}
       </Portal>
       <Portal container={container.current}>
         {stateApp.popupOpen === true ? (
@@ -4820,7 +4968,7 @@ function Map() {
               </PortalD>
             )}
 
-            {stateApp.selectedUserDefinedLayer && (
+            {/* {stateApp.selectedUserDefinedLayer && (
               <PortalD id="popupContainer">
                 <SpatialDataCardEdit
                   selectedFeature={stateApp.selectedUserDefinedLayer}
@@ -4830,7 +4978,7 @@ function Map() {
                   cardClass={"cardPopup"}
                 />
               </PortalD>
-            )}
+            )} */}
             {stateApp.filterFeature && (
               <PortalD id="filterPopupContainer">
                 <FilterControl filterFeature={stateApp.filterFeature} />
@@ -4839,10 +4987,10 @@ function Map() {
           </div>
         ) : null}
       </Portal>
-    </div>
+    </div >
   );
 }
 
-Map.whyDidYouRender = true
+Map.whyDidYouRender = true;
 
 export default React.memo(Map);

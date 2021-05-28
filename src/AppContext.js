@@ -1,12 +1,12 @@
 import React, { useState, createContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import {MSALB2CObj,B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
+import { MSALB2CObj, B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
-import { heatLayers, baseMapLayers,} from "./LayerConfig";
+import { heatLayers, baseMapLayers, } from "./LayerConfig";
 
-const AppContext = createContext([{}, () => {}]);
+const AppContext = createContext([{}, () => { }]);
 
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
@@ -20,7 +20,7 @@ const AppProvider = (props) => {
     user: null, /// potenitally login context or maybe a specific user context?? 
     signUpUserType: null,/// potenitally login context or maybe a specific user context?? 
     wellDetailCardOpen: null, // move to map data card context 
-    wellDetailCardTabIndex:null,
+    wellDetailCardTabIndex: null,
     parcelDetailCardOpen: false, // move to map data card context 
     trackedwells: null, // move to a grid context or query context 
     trackedOwnerWells: null, // move to a grid context or query context 
@@ -28,7 +28,15 @@ const AppProvider = (props) => {
     selectedWellId: null, // move to a selected object context (maybe flyto)
     selectedAbstracts: [], // move to a selected object context (maybe flyto)
     selectedParcel: null, // move to a selected object context (maybe flyto)
+
+    // States for permits
+    selectedPermit: null, 
+    selectedPermitDetails: null, 
+    selectedPermitId: null, 
+    permitSelectedCoordinates: [], 
     
+    selectedAoi: null,
+
     customLayers: [],
     editDraw: false,
     editLayer: true,
@@ -97,7 +105,7 @@ const AppProvider = (props) => {
     toggle3d: null,  // move to a map context
     toggleZoomOut: null, // move to a map context 
     map: null, // move to a map context
-    draw: null, 
+    draw: null,
     zoomFault: null,
     hugeRequest: null,
     currentFeature: undefined,
@@ -114,11 +122,18 @@ const AppProvider = (props) => {
     activityDisplayType: "calendar",
     prevAOIVisible: false,
     prevParcelVisible: false,
-    prevBasinVisible: false,    
+    prevBasinVisible: false, 
+    DocumentDrawer:false,  
+    selectedDocument:{},
     transactBarView: "",
+    multiSelectLandGrids: false,
+    isAbstractedLayersPolygon: false,
     contactSearchQuery: "",
     isContactSearching: false,
-    viewDoc:null,
+    viewDoc: null,
+    pdfView: null,
+    showDrawShapesPopup: false,
+    showShapeActionsPopup: false,
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;
@@ -126,7 +141,7 @@ const AppProvider = (props) => {
           if (stateApp.layers && Array.isArray(stateApp.layers)) {
             const currentLayers = [...stateApp.layers];
             const index = currentLayers.findIndex(
-              (l) => l.identifier == identifier
+              (l) => l.identifier === identifier
             );
 
             const updatedLayer = {
@@ -147,8 +162,6 @@ const AppProvider = (props) => {
             return {
               ...stateApp,
               layers: [...currentLayers],
-              // popupOpen: false,
-              // selectedWell: null,
               mapCircularLoaderAct: false,
             };
           }

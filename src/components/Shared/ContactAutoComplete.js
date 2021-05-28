@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import { useLazyQuery } from '@apollo/client';
-import { GETMONGOUSERS as GETUSERS } from 'graphQL/useQueryGetUsers';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from "@material-ui/core/TextField";
 
@@ -21,18 +21,18 @@ export default function ContactAutoComplete({ value, onChange, onKeyDown, onBlur
     let classes = useStyles();
     const [users, setUsers] = useState([]);
 
-    const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
+    const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
         fetchPolicy: "cache-and-network",
     });
 
     useEffect(() => {
-        getAllUsers();
+        getAllMongoUsers();
     }, []);
 
     useEffect(() => {
-        if (userLists && userLists.allUsers) {
+        if (userLists && userLists.allMongoUsers) {
             setUsers(
-                userLists.allUsers.map((user) => ({
+                userLists.allMongoUsers.map((user) => ({
                     value: user._id,
                     text: user.name
                 }))
