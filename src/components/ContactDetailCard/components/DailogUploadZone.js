@@ -124,51 +124,52 @@ export default function UploadZone(props) {
           disabled: props.loading || addFileLoading || props.disabled
         }}
         dropzoneText={"+"}
-        acceptedFiles={[
-					"image/*",
-					"video/*",
-					"application/*",
-					".*",
-					".geojson",
-					".csv",
-					".pdf",
-					".docx",
-					".doc",
-					".ppt",
-					".pptx",
-					".txt",
-					".xls",
-					".xlsx",
-					".mdb",
+        // acceptedFiles={[
+				// 	"image/*",
+				// 	"video/*",
+				// 	"application/*",
+				// 	".*",
+				// 	".geojson",
+				// 	".csv",
+				// 	".pdf",
+				// 	".docx",
+				// 	".doc",
+				// 	".ppt",
+				// 	".pptx",
+				// 	".txt",
+				// 	".xls",
+				// 	".xlsx",
+				// 	".mdb",
 
-					// shape 
-					".shp",
-					".shx",
-					".sbn",
-					".fbn",
-					".ain",
-					".atx",
-					".ixs",
+				// 	// shape 
+				// 	".shp",
+				// 	".shx",
+				// 	".sbn",
+				// 	".fbn",
+				// 	".ain",
+				// 	".atx",
+				// 	".ixs",
 
-					// phdwin
-					".phd",
-					".mod",
-					".phb",
-					".phz",
+				// 	// phdwin
+				// 	".phd",
+				// 	".mod",
+				// 	".phb",
+				// 	".phz",
 
-					// IHS
-					".98c",
+				// 	// IHS
+				// 	".98c",
 
-					// DRILLING INFO 
-					".DRI",
+				// 	// DRILLING INFO 
+				// 	".DRI",
 
-					// LASSER 
-					".PRN",
+				// 	// LASSER 
+				// 	".PRN",
 
-					// DIVESTCO 
-					".pds",
+				// 	// DIVESTCO 
+				// 	".pds",
 
-        ]}
+        // ]}
+
         maxFileSize={104857600}
         dropzoneClass={classes.dropzoneClass}
         // getFileAddedMessage={(value) => {
