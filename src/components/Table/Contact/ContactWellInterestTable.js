@@ -51,7 +51,7 @@ function ContactWellInterestTable(props) {
       getPaginatedContactWellInterests({
         variables: {
           contactId: props.contactId,
-          filters: [{ field: 'contact', value: props.contactId }]
+          filters: [{ field: 'contact._id', value: props.contactId }]
         },
       });
     }
@@ -116,7 +116,7 @@ function ContactWellInterestTable(props) {
           : [],
 
         filters: {
-          field: "contact",
+          field: "contact._id",
           value: props.contactId,
         },
       },
