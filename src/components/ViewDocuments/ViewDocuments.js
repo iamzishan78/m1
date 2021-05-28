@@ -70,18 +70,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 	documentRight: {
 		alignSelf: "center",
-	},
-	greySquare: {
-		cursor: "pointer",
-		borderRadius: "12px",
+		minHeight: "35px",
 		display: "flex",
 		justifyContent: "center",
-		alignItems: "center",
-		color: "#999",
-		fontSize: "30px",
-		height: "80px",
-		width: "80px",
-		backgroundColor: "#cecece",
+		flexDirection: "column",
+		width: "fit-content",
 	},
 	disabledDownload: {
 		cursor: "auto !important",
@@ -228,14 +221,6 @@ export default function ViewDocuments(props) {
 					return (
 						<li className={classes.document} key={doc.fileUrl}>
 							<div className={classes.documentLeft}>
-								<div
-									className={`${classes.greySquare} ${
-										doc.fileState !== "active" ? classes.disabledDownload : ""
-									}`}
-									onClick={() => handleViewFile(doc.fileId)}
-								>
-									<GetAppIcon fontSize="large" />
-								</div>
 								<div className={classes.fileText.concat(' DocumentTitle')} style={{cursor:'pointer'}} 
 								onClick={() => {
 
@@ -261,13 +246,19 @@ export default function ViewDocuments(props) {
 							</div>
 							<div className={classes.documentRight}>
 								<IconButton
-									style={{ marginBottom: "8px" }}
 									onClick={() => {
 										props.setOpenDeleteConfirmDialog(true);
 										props.setFileIdToDelete(doc.descriptorId);
 									}}
 								>
 									<DeleteIcon />
+								</IconButton>
+
+								<IconButton
+									disabled={doc.fileState !== "active" ? classes.disabledDownload : ""}
+									onClick={() => handleViewFile(doc.fileId)}
+								>
+									<GetAppIcon />
 								</IconButton>
 							</div>
 						</li>
