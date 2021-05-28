@@ -312,7 +312,10 @@ export default function AddLayer(props) {
             dropzoneText={
               <span className={classes.uploaderText}>
                 To add a new user-defined layer, drag and drop a GeoJSON or
-                Shapefile or click{" "}
+                Shapefile or click to select file.
+
+                {/* //hiding for now as this functionality does not work currently
+                {" "}
                 <span
                   onClick={(e) => {
                     e.preventDefault();
@@ -323,7 +326,7 @@ export default function AddLayer(props) {
                 >
                   here
                 </span>{" "}
-                to enter an URL.
+                to enter an URL. */}
               </span>
             }
             acceptedFiles={[".geojson", ".zip"]}
