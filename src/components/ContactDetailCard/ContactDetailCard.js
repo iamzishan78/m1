@@ -48,6 +48,12 @@ import DocViewer from '../Shared/DocViewer'
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import ArrowRight from "../Shared/svgIcons/arrow-right";
 
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import Link from '@material-ui/core/Link';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Typography from '@material-ui/core/Typography';
+
+
 const useStyles = makeStyles((theme) => ({
   Contacts: {
     color: "#011133",
@@ -425,9 +431,34 @@ export default function ContactDetailCard(props) {
     <>
       <div className={classes.header}>
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left', paddingLeft: '10px'}}>
-          <label style={{ marginLeft: '10px', fontSize: '16px', cursor: 'pointer'}} onClick={()=> history.push('/contacts')} >Contacts</label>
+          
+          {/* <label style={{ marginLeft: '10px', 
+                          fontSize: '16px', 
+                          cursor: 'pointer',
+                          // color: "#18AADD",
+                          // textDecoration: 'underline',
+
+                          "&:hover": {
+                            color: "#18AADD",
+                            textDecoration: 'underline',
+                          },
+                          }} onClick={()=> history.push('/contacts')} >Contacts</label>
           <ArrowRight/>
-          <label style={{ color: '#18AADD', fontSize: '16px' }}>{contactData.name}</label>
+          <label style={{ color: '#18AADD', fontSize: '16px' }}>{contactData.name}</label> */}
+
+
+      <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+        <Link style={{ marginLeft: '10px', 
+                          fontSize: '16px', 
+                          cursor: 'pointer',
+                          }}  
+                          color="inherit"
+                          onClick={()=> history.push('/contacts')}>
+          Contacts
+        </Link>
+        <Typography style={{ color: '#18AADD', fontSize: '16px' }}>{contactData.name}</Typography>
+      </Breadcrumbs>
+
         </div>
       </div>
       <div className={classes.mainGridContainer} >
