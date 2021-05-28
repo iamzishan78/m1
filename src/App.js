@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-import { AppProvider, AppContext } from "./AppContext";
-import { Switch, Route } from "react-router-dom";
+import React, { useContext, useEffect, useState } from 'react';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { AppProvider, AppContext } from './AppContext';
+import { Switch, Route } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 //components
 import Login from "./components/Login/Login";
@@ -12,6 +12,7 @@ import NavigationProvider from "./components/Navigation/NavigationProvider";
 import MapProvider from "./components/Map/MapProvider";
 import TrackProvider from "./components/Track/TrackProvider";
 import TransactProvider from "./components/Transact/TransactProvider";
+import DocumentProvider from './components/Document/DocumentProvider'
 import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider";
 import ContactsProvider from "./components/Contacts/ContactsProvider";
 import ContactDetailsProvider from "./components/ContactDetailCard/ContactDetailsProvider";
@@ -23,64 +24,69 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
 
 // pick a date util library
-import MomentUtils from "@date-io/moment";
-import { CircularProgress } from "@material-ui/core";
+import MomentUtils from '@date-io/moment';
+import { CircularProgress } from '@material-ui/core';
 
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
-import { ApolloProvider, ApolloClient, InMemoryCache, useApolloClient } from "@apollo/client";
-import { relayStylePagination } from "./graphQL/apolloPaginationSchemes.js";
+import {
+  ApolloProvider,
+  ApolloClient,
+  InMemoryCache,
+  useApolloClient,
+} from '@apollo/client';
+import { relayStylePagination } from './graphQL/apolloPaginationSchemes.js';
 // import ProfileProvider from "./components/Profile/ProfileProvider";
 // import ProfileDetailsProvider from "./components/Profile/ProfileDetailsProvider";
 // import { UserManagementContextProvider } from "./components/UserManagement/UserManagementContext";
 // import UserManagementContainer from "./components/UserManagement/Container";
-import Notifications from "./components/Notifications/Notifications";
+import Notifications from './components/Notifications/Notifications';
 //redux
-import { Provider as ReduxProvider } from "react-redux";
-import { ConnectedRouter } from "connected-react-router";
-import configureStore, { history } from "./store";
+import { Provider as ReduxProvider } from 'react-redux';
+import { ConnectedRouter } from 'connected-react-router';
+import configureStore, { history } from './store';
 // user management
 const store = configureStore(/ provide initial state if any /);
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
 const theme = createMuiTheme({
   palette: {
-    type: "light",
-    common: { black: "#000", white: "#fff" },
-    background: { paper: "#fff", default: "#fff" },
+    type: 'light',
+    common: { black: '#000', white: '#fff' },
+    background: { paper: '#fff', default: '#fff' },
     primary: {
-      light: "rgba(75, 97, 143, 1)",
-      main: "rgba(1, 17, 51, 1)",
-      dark: "rgba(38, 52, 81, 1)",
-      contrastText: "rgba(255, 255, 255, 1)",
+      light: 'rgba(75, 97, 143, 1)',
+      main: 'rgba(1, 17, 51, 1)',
+      dark: 'rgba(38, 52, 81, 1)',
+      contrastText: 'rgba(255, 255, 255, 1)',
     },
     secondary: {
-      light: "rgba(75, 97, 143, 1)",
-      main: "rgba(23, 170, 221, 1)",
-      dark: "rgba(38, 52, 81, 1)",
-      contrastText: "#fff",
+      light: 'rgba(75, 97, 143, 1)',
+      main: 'rgba(23, 170, 221, 1)',
+      dark: 'rgba(38, 52, 81, 1)',
+      contrastText: '#fff',
     },
     error: {
-      light: "#e57373",
-      main: "#f44336",
-      dark: "#d32f2f",
-      contrastText: "rgba(255, 255, 255, 1)",
+      light: '#e57373',
+      main: '#f44336',
+      dark: '#d32f2f',
+      contrastText: 'rgba(255, 255, 255, 1)',
     },
     text: {
-      primary: "rgba(0, 0, 0, 0.87)",
-      secondary: "rgba(0, 0, 0, 0.54)",
-      disabled: "rgba(0, 0, 0, 0.38)",
-      hint: "rgba(0, 0, 0, 0.38)",
+      primary: 'rgba(0, 0, 0, 0.87)',
+      secondary: 'rgba(0, 0, 0, 0.54)',
+      disabled: 'rgba(0, 0, 0, 0.38)',
+      hint: 'rgba(0, 0, 0, 0.38)',
     },
     action: {
-      active: "rgba(0, 0, 0, 0.54)",
-      hover: "rgba(0, 0, 0, 0.08)",
+      active: 'rgba(0, 0, 0, 0.54)',
+      hover: 'rgba(0, 0, 0, 0.08)',
       hoverOpacity: 0.08,
-      selected: "rgba(0, 0, 0, 0.14)",
-      disabled: "rgba(0, 0, 0, 0.26)",
-      disabledBackground: "rgba(0, 0, 0, 0.12)",
+      selected: 'rgba(0, 0, 0, 0.14)',
+      disabled: 'rgba(0, 0, 0, 0.26)',
+      disabledBackground: 'rgba(0, 0, 0, 0.12)',
     },
   },
   typography: {
-    fontFamily: "Poppins",
+    fontFamily: 'Poppins',
   },
 });
 
@@ -104,11 +110,11 @@ const SetApolloClient = (props) => {
   }, [stateApp.user]);
 
   useEffect(() => {
-    let draggableArea = document.getElementById("root");
-    if (window.location.pathname == "/") {
-      draggableArea.style.overflow = 'hidden'
+    let draggableArea = document.getElementById('root');
+    if (window.location.pathname == '/') {
+      draggableArea.style.overflow = 'hidden';
     } else {
-      draggableArea.style.overflow = 'visible'
+      draggableArea.style.overflow = 'visible';
     }
   }, [stateApp]);
 
@@ -156,8 +162,9 @@ const PrivateRoute = ({ component, ...options }) => {
   }
 
   const finalComponent =
-    stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now()
-      && apolloClient?.link?.options?.headers?.["X-ZUMO-AUTH"]
+    stateApp.user &&
+      Date.parse(stateApp.user.authTokenExpires) > Date.now() &&
+      apolloClient?.link?.options?.headers?.['X-ZUMO-AUTH']
       ? component
       : (() => {
         return stateApp.myMSALB2CObj ? LoginB2C : Login;
@@ -188,9 +195,8 @@ function App() {
   };
 
   const updateApolloClient = (endpoint, token) => {
-    //uncomment to run against local
-    //endpoint = "http://localhost:7071/api/m1graph"
-
+    // uncomment to run against local
+    // endpoint = "http://localhost:7071/api/m1graph"
 
     if (!apolloClient) {
       let client = new ApolloClient({
@@ -216,7 +222,6 @@ function App() {
     }
 
     if (apolloClient && endpoint) {
-
       setApolloClient((state, props) => {
         return new ApolloClient({
           ...state.link.options,
@@ -227,7 +232,7 @@ function App() {
     }
 
     if (apolloClient && token) {
-      apolloClient.link.options.headers = { ["X-ZUMO-AUTH"]: token };
+      apolloClient.link.options.headers = { 'X-ZUMO-AUTH': token };
     }
   };
 
@@ -265,6 +270,11 @@ function App() {
                         exact
                         path="/flow"
                         component={TransactProvider}
+                      />
+                      <PrivateRoute
+                        exact
+                        path="/documents"
+                        component={DocumentProvider}
                       />
                       <PrivateRoute
                         exact

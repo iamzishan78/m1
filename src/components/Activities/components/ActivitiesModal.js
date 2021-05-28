@@ -47,7 +47,7 @@ import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { OPENDEALS } from "../../../graphQL/useQueryOpenDeals";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
+import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
 import Typography from "@material-ui/core/Typography";
 import {
   ADDACTIVITY,
@@ -233,18 +233,18 @@ export default function ActivitiesModal({
   const [errors, setErrors] = useState({ ...initialErrors });
   const [users, setUsers] = useState([]);
 
-  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
+  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "cache-and-network",
   });
 
   useEffect(() => {
-    getAllUsers();
+    getAllMongoUsers();
   }, []);
 
   useEffect(() => {
-    if (userLists && userLists.allUsers) {
+    if (userLists && userLists.allMongoUsers) {
       setUsers(
-        userLists.allUsers.map((user) => ({
+        userLists.allMongoUsers.map((user) => ({
           value: user._id,
           text: user.name,
         }))

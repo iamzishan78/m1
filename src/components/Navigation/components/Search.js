@@ -49,11 +49,15 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Box from "@material-ui/core/Box";
 import { CircularProgress } from "@material-ui/core";
 import ClearIcon from "@material-ui/icons/Clear";
-
-
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { useDispatch, useSelector } from "react-redux";
-
+import { useLocation } from "react-router-dom";
 
 const leaseIndexName = 'lease-index-v2';
 const operatorIndexName = 'operator-index';
@@ -230,6 +234,7 @@ function Search() {
     setStateIfDeepEqual(Loading, newState);
   };
 
+  let location = useLocation();
 
 
   //////////// Search History Begin//////////////////
@@ -1106,7 +1111,33 @@ function Search() {
   console.log("orig optionsWithHeader", optionsWithHeader)
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} style={{display:'flex',justifyContent:'center',alignContent:'center'}}>
+      
+      {location.pathname === '/documents' && ( 
+      <Accordion style={{width:'40px',backgroundColor:'transparent',display:'flex',flexDirection:'column',padding:'0px',}}>
+        <AccordionSummary
+          // expandIcon={<SearchIcon style={{color:'white',backgroundColor:'transparent'}}></SearchIcon>}
+        
+           style={{ maxHeight:'43px',backgroundColor:'transparent',marginTop:'0px !important'}}
+        >
+          <SearchIcon style={{color:'white',backgroundColor:'transparent',padding:'0px'}}></SearchIcon>
+        </AccordionSummary>
+        <AccordionDetails style={{width:'300px',backgroundColor:'white',display:'flex',flexDirection:'column',padding:'0px',border:'2px solid #d1cfcf',    marginTop: '-11px'}}>
+         
+          <Typography style={{padding:'9px',color:'rgb(24, 170, 221)', cursor:'pointer'}} variant='subtitle2'>
+              All Documents
+          </Typography>
+          
+          <Typography style={{padding:'6px',paddingLeft:'9px',backgroundColor:'#f2f2f2',width:'100%',borderTop:'1px solid #d1cfcf'}} variant='subtitle2'>
+              Agreements
+          </Typography>
+          <Typography style={{padding:'9px',cursor:'pointer'}} variant='subtitle2'>
+             Shapefiles
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      )
+      }
       <Autocomplete
         id="cognitive-search-autocomplete"
         getOptionLabel={(option, value) => option.Primary || searchInputValue}
@@ -1123,6 +1154,7 @@ function Search() {
           if (option.Source === "loader") return "loader";
           return "header";
         }}
+       
         // leftIconButton={<SearchIcon />}
         renderGroup={(option) => {
           if (option.group === "loader")
@@ -1135,8 +1167,8 @@ function Search() {
               />
             );
 
-          return option.group === "header" ? (
-            <div>
+          return (option.group === "header" && location.pathname !=='/documents')  ? (
+            <div >
             <Grid
               key={option.group}
               container
@@ -1268,7 +1300,7 @@ function Search() {
             </div>
           ) : (
             (searchOption === "all" ||
-              searchOption === option.group.toLowerCase()) && (
+              searchOption === option.group.toLowerCase()) && location.pathname !== '/documents' && (
               <Grid key={option.group} container item>
                 <Grid container item xs={12} className={classes.groupsHeaders}>
                   <Grid item item xs={6}>
@@ -1374,226 +1406,242 @@ function Search() {
         renderInput={(params) => (
 
           <div>
-          <TextField
-            {...params}
-            variant="outlined"
-            fullWidth
-            placeholder="Search by well name, API, owner, operator, lease or a location"
-            InputProps={{
-              ...params.InputProps,
-              startAdornment: (
-                <InputAdornment className={classes.startAdornmentIcon}>
-                  <Button
-                    style={{ minWidth: "0", height: "42px" }}
-                    onClick={() => {
-                      if (mapGridCardActivated)
-                        dispatch(toggleMapGridCardAtived());
-                    }}
-                  >
-                    <SearchIcon htmlColor="#fff" />
-                  </Button>
-                </InputAdornment>
-              ),
-              endAdornment: !mapGridCardActivated && (
-                <InputAdornment className={classes.endAdornmentIcon}>
-                  <div>
-                    {((searchInputValue && searchInputValue !== "") ||
-                      (stateApp.wellListFromSearch &&
-                        stateApp.wellListFromSearch.length > 0)) && (
-                      <Tooltip title="Clear" placement="top">
-                        <IconButton
-                          size="small"
-                          onClick={() => {
-                            dispatch(
-                              setMapGridCardState({
-                                searchInputValue: "",
-                                searchResultData: [],
-                              })
-                            );
-                            setStateApp((state) => ({
-                              ...state,
-                              wellListFromSearch: [],
-                            }));
-                          }}
-                        >
-                          <ClearIcon htmlColor="#fff" />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                    <Tooltip title="Search History" placement="top">
-                      <IconButton
-                        size="small"
-                        onClick={(event) => {
-                          setAnchorEl(event.currentTarget);
-                        }}
-                      >
-                        <ArrowDropDownIcon htmlColor="#fff" />
-                      </IconButton>
-                    </Tooltip>
-
-                    <Popover
-                      onBlur={() => {
-                        setAnchorEl(null);
-                      }}
-                      open={Boolean(anchorEl)}
-                      anchorEl={anchorEl}
-                      onClose={() => {
-                        setAnchorEl(null);
-                      }}
-                      anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "right",
-                      }}
-                      transformOrigin={{
-                        vertical: "top",
-                        horizontal: "right",
-                      }}
-                      style={{
-                        width: document.getElementById("searchBarDivParent")
-                          ? document.getElementById("searchBarDivParent")
-                              .offsetWidth
-                          : "400px",
-                      }}
-                      className={classes.historyPopover}
-                    >
-                      {searchHistoryList && searchHistoryList.length > 0 ? (
-                        searchHistoryList.map((search, i) => {
-                          let option = search.searchData;
-                          const parts = parse(option.Primary, Array());
-
-                          /// THIS IS THEI LIST FOR THE SEARCH HISTORY 
-                          return (
-                            <div>
-                            <Box
-                              p={1}
-                              key={i}
-                              className={classes.historyRow}
-                              onClick={() => {
-                                setSearchTop(5);
-                                setSearchOption(
-                                  option.Source === ownerCogIndexName
-                                    ? "owners"
-                                    : option.Source === wellCogIndexName
-                                    ? "wells"
-                                    : option.Source === operatorIndexName
-                                    ? "operators"
-                                    : option.Source === leaseIndexName
-                                    ? "leases"
-                                    : option.Source === contactIndexName
-                                    ? "contacts"
-                                    : option.group === "mapboxSearch"
-                                    ? "locations"
-                                    : "all"
-                                );
-
-                                dispatch(
-                                  setMapGridCardState({
-                                    mapGridCardActiveTap: 0,
-                                    searchInputValue: option.Primary
-                                      ? option.Primary
-                                      : option.Secondary,
-                                  })
-                                );
-                                handleChange({
-                                  ...option,
-                                  searchId: search._id,
-                                });
-                              }}
-                            >
-                              <Grid container spacing={0}>
-                                <Grid container item xs={9} alignItems="center">
-                                  <Grid item>
-                                    {option.Source === ownerCogIndexName && (
-                                      <PersonIcon className={classes.icon} />
-                                    )}
-                                    {option.Source === contactIndexName && (
-                                      //will need to change this to something different 
-                                      <PersonIcon className={classes.icon} />
-                                    )}
-                                    {option.Source === operatorIndexName && (
-                                      <OperatorIcon
-                                        className={classes.icon}
-                                        color={"#757575"}
-                                      />
-                                    )}
-                                    {option.Source ===
-                                      wellCogIndexName && (
-                                      <WellIcon
-                                        className={classes.icon}
-                                        color={"#757575"}
-                                        opacity="1.0"
-                                        small
-                                      />
-                                    )}
-                                    {option.Source === leaseIndexName && (
-                                      <LeaseIcon
-                                        className={classes.icon}
-                                        color={"#757575"}
-                                      />
-                                    )}
-                                    {option.Source === "mapboxSearch" && (
-                                      <LocationOnIcon
-                                        className={classes.icon}
-                                      />
-                                    )}
-                                  </Grid>
-                                  <Grid item xs>
-                                    {parts.map((part, index) => (
-                                      <span
-                                        key={index}
-                                        style={{
-                                          fontWeight: part.highlight
-                                            ? 700
-                                            : 400,
-                                        }}
-                                      >
-                                        {part.text}
-                                      </span>
-                                    ))}
-
-                                    {option && option.Secondary && (
-                                      <Typography
-                                        variant="body2"
-                                        color="textSecondary"
-                                      >
-                                        {option.Secondary}
-                                      </Typography>
-                                    )}
-                                  </Grid>
-                                </Grid>
-                                <Grid container item xs={3} alignItems="center">
-                                  <Grid item>
-                                    <Typography
-                                      variant="body2"
-                                      style={{ color: "rgb(80, 187, 223)" }}
-                                    >
-                                      {new Intl.DateTimeFormat("en-US", {
-                                        year: "2-digit",
-                                        month: "2-digit",
-                                        day: "2-digit",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      }).format(search.ts)}
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                              </Grid>
-                            </Box>
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <Box p={1}>
-                          <Typography>There is no history yet.</Typography>
-                        </Box>
-                      )}
-                    </Popover>
-                  </div>
-                </InputAdornment>
-              ),
-            }}
-            className={classes.textF}
-          />
+           {location.pathname === '/documents' ? (
+              <div style={{display:'flex',justifyContent:"center",alignItems:'center',backgroundColor:'transparent'}}>
+              {/* <IconButton>
+              <SearchIcon style={{color:'white'}}></SearchIcon>
+              </IconButton> */}
+            
+                <TextField
+              {...params}
+              variant="outlined"
+             fullWidth
+             placeholder={"Search for documents by name"}
+             className={classes.textF}
+             >
+             </TextField></div>
+           ) : (
+             <TextField
+             {...params}
+             variant="outlined"
+             fullWidth
+             placeholder="Search by well name, API, owner, operator, lease or a location"
+             InputProps={{
+               ...params.InputProps,
+               startAdornment: (
+                 <InputAdornment className={classes.startAdornmentIcon}>
+                   <Button
+                     style={{ minWidth: "0", height: "42px" }}
+                     onClick={() => {
+                       if (mapGridCardActivated)
+                         dispatch(toggleMapGridCardAtived());
+                     }}
+                   >
+                     <SearchIcon htmlColor="#fff" />
+                   </Button>
+                 </InputAdornment>
+               ),
+               endAdornment: !mapGridCardActivated && (
+                 <InputAdornment className={classes.endAdornmentIcon}>
+                   <div>
+                     {((searchInputValue && searchInputValue !== "") ||
+                       (stateApp.wellListFromSearch &&
+                         stateApp.wellListFromSearch.length > 0)) && (
+                       <Tooltip title="Clear" placement="top">
+                         <IconButton
+                           size="small"
+                           onClick={() => {
+                             dispatch(
+                               setMapGridCardState({
+                                 searchInputValue: "",
+                                 searchResultData: [],
+                               })
+                             );
+                             setStateApp((state) => ({
+                               ...state,
+                               wellListFromSearch: [],
+                             }));
+                           }}
+                         >
+                           <ClearIcon htmlColor="#fff" />
+                         </IconButton>
+                       </Tooltip>
+                     )}
+                     <Tooltip title="Search History" placement="top">
+                       <IconButton
+                         size="small"
+                         onClick={(event) => {
+                           setAnchorEl(event.currentTarget);
+                         }}
+                       >
+                         <ArrowDropDownIcon htmlColor="#fff" />
+                       </IconButton>
+                     </Tooltip>
+ 
+                     <Popover
+                       onBlur={() => {
+                         setAnchorEl(null);
+                       }}
+                       open={Boolean(anchorEl)}
+                       anchorEl={anchorEl}
+                       onClose={() => {
+                         setAnchorEl(null);
+                       }}
+                       anchorOrigin={{
+                         vertical: "bottom",
+                         horizontal: "right",
+                       }}
+                       transformOrigin={{
+                         vertical: "top",
+                         horizontal: "right",
+                       }}
+                       style={{
+                         width: document.getElementById("searchBarDivParent")
+                           ? document.getElementById("searchBarDivParent")
+                               .offsetWidth
+                           : "400px",
+                       }}
+                       className={classes.historyPopover}
+                     >
+                       {searchHistoryList && searchHistoryList.length > 0 ? (
+                         searchHistoryList.map((search, i) => {
+                           let option = search.searchData;
+                           const parts = parse(option.Primary, Array());
+ 
+                           /// THIS IS THEI LIST FOR THE SEARCH HISTORY 
+                           return (
+                             <div>
+                             <Box
+                               p={1}
+                               key={i}
+                               className={classes.historyRow}
+                               onClick={() => {
+                                 setSearchTop(5);
+                                 setSearchOption(
+                                   option.Source === ownerCogIndexName
+                                     ? "owners"
+                                     : option.Source === wellCogIndexName
+                                     ? "wells"
+                                     : option.Source === operatorIndexName
+                                     ? "operators"
+                                     : option.Source === leaseIndexName
+                                     ? "leases"
+                                     : option.Source === contactIndexName
+                                     ? "contacts"
+                                     : option.group === "mapboxSearch"
+                                     ? "locations"
+                                     : "all"
+                                 );
+ 
+                                 dispatch(
+                                   setMapGridCardState({
+                                     mapGridCardActiveTap: 0,
+                                     searchInputValue: option.Primary
+                                       ? option.Primary
+                                       : option.Secondary,
+                                   })
+                                 );
+                                 handleChange({
+                                   ...option,
+                                   searchId: search._id,
+                                 });
+                               }}
+                             >
+                               <Grid container spacing={0}>
+                                 <Grid container item xs={9} alignItems="center">
+                                   <Grid item>
+                                     {option.Source === ownerCogIndexName && (
+                                       <PersonIcon className={classes.icon} />
+                                     )}
+                                     {option.Source === contactIndexName && (
+                                       //will need to change this to something different 
+                                       <PersonIcon className={classes.icon} />
+                                     )}
+                                     {option.Source === operatorIndexName && (
+                                       <OperatorIcon
+                                         className={classes.icon}
+                                         color={"#757575"}
+                                       />
+                                     )}
+                                     {option.Source ===
+                                       wellCogIndexName && (
+                                       <WellIcon
+                                         className={classes.icon}
+                                         color={"#757575"}
+                                         opacity="1.0"
+                                         small
+                                       />
+                                     )}
+                                     {option.Source === leaseIndexName && (
+                                       <LeaseIcon
+                                         className={classes.icon}
+                                         color={"#757575"}
+                                       />
+                                     )}
+                                     {option.Source === "mapboxSearch" && (
+                                       <LocationOnIcon
+                                         className={classes.icon}
+                                       />
+                                     )}
+                                   </Grid>
+                                   <Grid item xs>
+                                     {parts.map((part, index) => (
+                                       <span
+                                         key={index}
+                                         style={{
+                                           fontWeight: part.highlight
+                                             ? 700
+                                             : 400,
+                                         }}
+                                       >
+                                         {part.text}
+                                       </span>
+                                     ))}
+ 
+                                     {option && option.Secondary && (
+                                       <Typography
+                                         variant="body2"
+                                         color="textSecondary"
+                                       >
+                                         {option.Secondary}
+                                       </Typography>
+                                     )}
+                                   </Grid>
+                                 </Grid>
+                                 <Grid container item xs={3} alignItems="center">
+                                   <Grid item>
+                                     <Typography
+                                       variant="body2"
+                                       style={{ color: "rgb(80, 187, 223)" }}
+                                     >
+                                       {new Intl.DateTimeFormat("en-US", {
+                                         year: "2-digit",
+                                         month: "2-digit",
+                                         day: "2-digit",
+                                         hour: "2-digit",
+                                         minute: "2-digit",
+                                       }).format(search.ts)}
+                                     </Typography>
+                                   </Grid>
+                                 </Grid>
+                               </Grid>
+                             </Box>
+                             </div>
+                           );
+                         })
+                       ) : (
+                         <Box p={1}>
+                           <Typography>There is no history yet.</Typography>
+                         </Box>
+                       )}
+                     </Popover>
+                   </div>
+                 </InputAdornment>
+               ),
+             }}
+             className={classes.textF}
+           />
+           )}
           </div>
         )}
         renderOption={(option) => {
@@ -1603,7 +1651,7 @@ function Search() {
           const parts = parse(option.Primary, Array());
 
           return (
-            <Grid container spacing={0}>
+            <Grid container spacing={0} >
               <Grid container item xs={11} alignItems="center">
                 <Grid item>
                   {option.Source === ownerCogIndexName && (

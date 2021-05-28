@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { MapControlsContext } from "./MapControlsContext";
 import { AppContext } from "../../AppContext";
 import SpeedDial from "@material-ui/lab/SpeedDial";
@@ -22,7 +22,6 @@ import AspectRatioOutlinedIcon from "@material-ui/icons/AspectRatioOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../actions";
 import SidePanel from "../Shared/SidePanel/SidePanel";
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -124,9 +123,21 @@ export default function MapControls(props) {
       setStateMapControls({
         ...stateMapControls,
         selectedControl: action,
-        panelExpanded: (action === stateMapControls.selectedControl) && stateMapControls.panelExpanded ? false : true,
+        panelExpanded:
+          action === stateMapControls.selectedControl &&
+            stateMapControls.panelExpanded
+            ? false
+            : true,
         anchorEl: anchorEl,
       });
+    }
+
+    if (action === "draw" && !stateApp.editDraw) {
+      setStateApp((state) => ({
+        ...state,
+        showDrawShapesPopup: !state.showDrawShapesPopup,
+        showShapeActionsPopup: false,
+      }));
     }
 
     setStateApp((stateApp) => ({
@@ -207,6 +218,12 @@ export default function MapControls(props) {
       case "layer":
       case "marketplace":
       case "heatMaps":
+        if (
+          selectedControl === "layer" &&
+          (stateApp.selectedAbstracts.length > 0 ||
+            stateApp.selectedUserDefinedLayer)
+        )
+          return <DrawShapes />;
         return <SidePanel />;
       case "add":
         return <AddUserData />;

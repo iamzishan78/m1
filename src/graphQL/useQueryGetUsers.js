@@ -8,6 +8,11 @@ export const GETUSERS = gql`
 
 export const GETMONGOUSERS = gql`
   query getAllMongoUsers {
-    allUsers: allUsersFromMongo
+    allMongoUsers {
+      _id
+      email
+      name
+      ts
+    }
   }
 `;

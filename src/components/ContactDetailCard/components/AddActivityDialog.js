@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import clsx from "clsx";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import moment from "moment";
@@ -28,7 +28,7 @@ import {
   ADDACTIVITY,
   UPDATEACTIVITY,
 } from "../../../graphQL/useMutationActivity";
-import { GETMONGOUSERS as GETUSERS } from "../../../graphQL/useQueryGetUsers";
+import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { OPENDEALS } from "../../../graphQL/useQueryOpenDeals";
@@ -176,8 +176,8 @@ function AddActivityDialog(props) {
   const [users, setUsers] = useState([]);
 
 
-  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
-    fetchPolicy: "cache-and-network",
+  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
+    fetchPolicy: "no-cache",
   });
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -198,13 +198,13 @@ function AddActivityDialog(props) {
   };
   
   useEffect(() => {
-    getAllUsers();
+    getAllMongoUsers();
   }, []);
 
   useEffect(() => {
-    if (userLists && userLists.allUsers) {
+    if (userLists && userLists.allMongoUsers) {
       setUsers(
-        userLists.allUsers.map((user) => ({
+        userLists.allMongoUsers.map((user) => ({
           value: user._id,
           text: user.name,
         }))

@@ -17,6 +17,7 @@ import {
   faFilePowerpoint,
   faFileWord,
   faFileExcel,
+  faFile,
 } from "@fortawesome/free-solid-svg-icons";
 // import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
@@ -173,7 +174,7 @@ export default function Documents(props) {
     if (props.isTransactPage) return ["Deal", 99];
     else return ["Contact", 2];
   }, [props.isTransactPage]);
-
+  console.log(relatedObjectType, 'relatedObjectType')
   const [getRecentFiles, { data: files }] = useLazyQuery(
     GETRECENTCONTACTFILES,
     {
@@ -198,6 +199,7 @@ export default function Documents(props) {
                 variables: {
                   relatedObjectId: props.id,
                   relatedObjectType,
+                  limit,
                 },
               });
               clearTimeout(waitBeforeRequestAgain);
@@ -291,9 +293,33 @@ export default function Documents(props) {
           />
         );
       case "csv":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
       case "xlsx":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
       case "xlsb":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
       case "xlsm":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
       case "xltx":
         return (
           <FontAwesomeIcon
@@ -301,16 +327,28 @@ export default function Documents(props) {
             style={{ fontSize: "2rem", color: "#207244" }}
           />
         );
-      case ".doc":
-      case ".docx":
+      case "doc":
+        return(
+          <FontAwesomeIcon
+            icon={faFileWord}
+            style={{ fontSize: "2rem", color: "#2A5599" }}
+          />
+        )
+      case "docx":
         return (
           <FontAwesomeIcon
             icon={faFileWord}
             style={{ fontSize: "2rem", color: "#2A5599" }}
           />
         );
-      case ".ppt":
-      case ".pptx":
+      case "ppt":
+        return (
+          <FontAwesomeIcon
+            icon={faFilePowerpoint}
+            style={{ fontSize: "5.5rem", color: "#D04424" }}
+          />
+        );
+      case "pptx":
         return (
           <FontAwesomeIcon
             icon={faFilePowerpoint}
@@ -318,7 +356,13 @@ export default function Documents(props) {
           />
         );
       default:
-        return <span>{fileExtension}</span>;
+        // return <span>{fileExtension}</span>;
+        return (
+          <FontAwesomeIcon
+            icon={faFile}
+            style={{ fontSize: "5.5rem", color: "#D04424" }}
+          />
+        );
     }
   };
 
@@ -330,10 +374,6 @@ export default function Documents(props) {
             <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>
             <h4
               className={classes.viewAll}
-              // onClick={(e) => {
-              //   e.preventDefault();
-              //   props.viewAll("comments");
-              // }}
 
               onClick={() => {
                 setStateApp((stateApp) => ({
@@ -402,24 +442,6 @@ export default function Documents(props) {
                       interactive
                     >
                       <div>
-                        {/* <img src={value.uri} className={classes.forImage}></img> */}
-                        {/* <iframe src={value.uri} frameborder="0"></iframe> */}
-                        {/* {value.name.includes("pdf") ? (
-												<Document
-													className={classes.forImage}
-													file={value.uri}
-													onLoadSuccess={onDocumentLoadSuccess}
-												>
-													<Page
-														className={classes.forImage}
-														pageNumber={pageNumber}
-														width={79}
-														height={70}
-													/>
-												</Document>
-											) : (
-												<img src={value.uri} className={classes.forImage}></img>
-											)} */}
                         {new RegExp(
                           ["jpg", "jpeg", "png", "bmp"].join("|")
                         ).test(fileExtension) ? (
@@ -430,9 +452,18 @@ export default function Documents(props) {
                           ></img>
                         ) : (
                           <div className={classes.forImageContainer}  onClick={() => {
+                            // if(fileExtension === 'pdf')
+                            // {
+                            //   setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name, downloadFn:handleViewFile, downloadData: files?.getFileDescriptors[key].fileId}})
+                            // }
                             if(fileExtension === 'pdf')
                             {
-                              setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name, downloadFn:handleViewFile, downloadData: files?.getFileDescriptors[key].fileId}})
+                                setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name}})
+                            }
+                            else {
+                              handleViewFile(
+                                files?.getFileDescriptors[key].fileId
+                              )
                             }
                           }}>
                             {/* {fileExtension} */}
