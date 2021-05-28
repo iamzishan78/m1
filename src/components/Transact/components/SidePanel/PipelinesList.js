@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { List } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Flipper } from "react-flip-toolkit";
-import Sortly, { findDescendants, findParent } from "react-sortly";
+import Sortly, { findDescendants, findParent, useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import PipelineGroup from "./PipelineProject";
 import PipelineCard from "./PipelineCard";
 import { setFlowState } from "actions";
@@ -26,13 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function PipelinesList({
-  filteredPipelines,
-  selectedPipe,
-  selectedPipelines,
-  setMultiSelection,
-}) {
-  const classes = useStyles();
+function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, setMultiSelection }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -63,23 +57,14 @@ function PipelinesList({
       }
       setMultiSelection(newPipelines);
     } else if (isShiftKeyPressed() && itemIndex === -1) {
-      let newPipelineIndex = filteredPipelines.findIndex(
-        (p) => p._id === newPipeline._id
-      );
-      let oldPipelineIndex = filteredPipelines.findIndex(
-        (p) => p._id === selectedPipelines[selectedPipelines.length - 1]
-      );
+      let newPipelineIndex = filteredPipelines.findIndex((p) => p._id === newPipeline._id);
+      let oldPipelineIndex = filteredPipelines.findIndex((p) => p._id === selectedPipelines[selectedPipelines.length - 1]);
       if (newPipelineIndex < oldPipelineIndex) {
         newPipelineIndex = newPipelineIndex + oldPipelineIndex;
         oldPipelineIndex = newPipelineIndex - oldPipelineIndex;
         newPipelineIndex = newPipelineIndex - oldPipelineIndex;
       }
-      newPipelines = [
-        ...selectedPipelines,
-        ...filteredPipelines
-          .slice(oldPipelineIndex, newPipelineIndex + 1)
-          .map((p) => p._id),
-      ];
+      newPipelines = [...selectedPipelines, ...filteredPipelines.slice(oldPipelineIndex, newPipelineIndex + 1).map((p) => p._id)];
       newPipelines = [...new Set(newPipelines)];
       setMultiSelection(newPipelines);
     } else {
@@ -101,49 +86,60 @@ function PipelinesList({
   };
 
   const PipelineCardWrapper = ({ pipelines }) => (
-    <Flipper flipKey={pipelines.map(({ id }) => id).join(".")}>
-      <Sortly items={pipelines} maxDepth={1} onChange={handleChange}>
-        {(props) => (
-          <PipelineCard
-            index={props.id}
-            pipeline={props.data}
-            selectedPipe={selectedPipe}
-            selectedPipelines={selectedPipelines}
-            onFlowlineSelect={onFlowlineSelect}
-          />
-        )}
-      </Sortly>
-    </Flipper>
+    // <Flipper flipKey={pipelines.map(({ id }) => id).join(".")}>
+    <Sortly items={pipelines} maxDepth={1} onChange={handleChange}>
+      {(props) => (
+        <PipelineCard
+          index={props.id}
+          pipeline={props.data}
+          selectedPipe={selectedPipe}
+          selectedPipelines={selectedPipelines}
+          onFlowlineSelect={onFlowlineSelect}
+        />
+      )}
+    </Sortly>
+    // </Flipper>
   );
 
-  const handleChange = () => {};
+  const [{ isDragging }, drag, preview] = useDrag({
+    collect: (monitor) => {
+      return {
+        isDragging: monitor.isDragging(),
+      };
+    },
+    begin(f) {
+      // itemRef.current = pipeline;
+      // onDragBegin(pipeline);
+      console.log("drag begin");
+    },
+    end(f) {
+      // onDragEnd(itemRef.current, pipeline);
+      console.log("drag end");
+    },
+  });
+  const [, drop] = useDrop();
+
+  const classes = useStyles();
+
+  const handleChange = () => {
+    console.log("changing");
+  };
   return (
     <Fragment>
       <List className={classes.flowlinesList}>
-        <PipelineCardWrapper
-          pipelines={filteredPipelines.filter(
-            (p) => p.type === "Pipeline" && !p.projectId
-          )}
-        />
+        <PipelineCardWrapper pipelines={filteredPipelines.filter((p) => p.type === "Pipeline" && !p.projectId)} />
         {filteredPipelines
           .filter((pipe) => pipe.type === "Project")
           .map((pipe, index) => {
-            const projectPipelines = filteredPipelines.filter(
-              (p) => p.type === "Pipeline" && p.projectId === pipe.projectId
-            );
+            const projectPipelines = filteredPipelines.filter((p) => p.type === "Pipeline" && p.projectId === pipe.projectId);
             const project = {
               projectName: pipe.projectName,
               projectId: pipe.projectId,
             };
             return (
-              <Fragment key={index}>
-                <PipelineGroup
-                  project={project}
-                  containingPipelines={projectPipelines}
-                >
-                  <PipelineCardWrapper pipelines={projectPipelines} />
-                </PipelineGroup>
-              </Fragment>
+              <PipelineGroup key={index} project={project} containingPipelines={projectPipelines}>
+                <PipelineCardWrapper pipelines={projectPipelines} />
+              </PipelineGroup>
             );
           })}
       </List>

@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PipelineProject = ({ children, project, containingPipelines }) => {
+const PipelineProject = ({ key, children, project, containingPipelines }) => {
   const [isExpanded, setExpansion] = useState(false);
   const [isEdit, setEdit] = useState({});
   const classes = useStyles(isEdit);
@@ -74,7 +74,7 @@ const PipelineProject = ({ children, project, containingPipelines }) => {
   };
 
   return (
-    <div className={classes.root}>
+    <div key={key} className={classes.root}>
       <Accordion className={classes.accordionRoot}>
         <AccordionSummary aria-controls="panel1a-content" id="panel1a-header">
           <Grid
