@@ -350,7 +350,7 @@ const SidePanel = ({}) => {
       {/**
        * Pipeline Popup for New Pipeline or Edit Pipeline
        */}
-      <PipelinePopup />
+      {/* <PipelinePopup /> */}
       <Dialog className={classes.dialog} open={deleteDialogOpen} onClose={() => setModal(false)} fullWidth={false} maxWidth="sm">
         <DeleteConfirmationDialogContent
           header={selectedPipelines.length > 1 ? `Delete Flowline` : `Delete Flowlines`}

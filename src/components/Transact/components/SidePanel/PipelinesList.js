@@ -101,23 +101,23 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
     // </Flipper>
   );
 
-  const [{ isDragging }, drag, preview] = useDrag({
-    collect: (monitor) => {
-      return {
-        isDragging: monitor.isDragging(),
-      };
-    },
-    begin(f) {
-      // itemRef.current = pipeline;
-      // onDragBegin(pipeline);
-      console.log("drag begin");
-    },
-    end(f) {
-      // onDragEnd(itemRef.current, pipeline);
-      console.log("drag end");
-    },
-  });
-  const [, drop] = useDrop();
+  // const [{ isDragging }, drag, preview] = useDrag({
+  //   collect: (monitor) => {
+  //     return {
+  //       isDragging: monitor.isDragging(),
+  //     };
+  //   },
+  //   begin(f) {
+  //     // itemRef.current = pipeline;
+  //     // onDragBegin(pipeline);
+  //     console.log("drag begin");
+  //   },
+  //   end(f) {
+  //     // onDragEnd(itemRef.current, pipeline);
+  //     console.log("drag end");
+  //   },
+  // });
+  // const [, drop] = useDrop();
 
   const classes = useStyles();
 
