@@ -691,7 +691,7 @@ function SubTable(props) {
           selectedWell.wellName ? selectedWell.wellName : selectedWell.WellName
         );
         setSubTitle(
-          selectedWell.operator ? selectedWell.operator : selectedWell.Operator
+          selectedWell.api ? selectedWell.api : selectedWell.api
         );
         handleOpenExpandableCard();
       }
@@ -1079,9 +1079,9 @@ function SubTable(props) {
                                   : selectedWell.WellName
                               );
                               setSubTitle(
-                                selectedWell.operator
-                                  ? selectedWell.operator
-                                  : selectedWell.Operator
+                                selectedWell.api
+                                  ? selectedWell.api
+                                  : selectedWell.api
                               );
                               handleOpenExpandableCard();
                             } else if (props.targetLabel === "owner") {

@@ -344,6 +344,8 @@ function ExpandableCard(props) {
 
   return (
     <React.Fragment>
+
+      {/* Dialog for deleting parcel  */}
       {openDialog && (
         <Dialog
           className={classes.dialog}
@@ -363,7 +365,12 @@ function ExpandableCard(props) {
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
+
+
+
       <Card className={classes.card}>
+
+        {/* Modal popup for reporting bugs on expandable card  */}
         <ReportBugModal
           open={openBugModal}
           onClose={() => setOpenBugModal(false)}
@@ -540,7 +547,11 @@ function ExpandableCard(props) {
               </Tooltip>
             </div>
           }
+
+          // Expandable Card Title 
           title={getTitle()}
+
+          // Expandable Card Secondary Header 
           subheader={
             subTitle
               ? subTitle.length > 35
