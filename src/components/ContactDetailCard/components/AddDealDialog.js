@@ -16,7 +16,7 @@ import { CONTACT } from '../../../graphQL/useQueryContact';
 import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
 import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
 import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
-import { GETMONGOUSERS as GETUSERS } from '../../../graphQL/useQueryGetUsers';
+import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { CircularProgress, Dialog, Typography } from '@material-ui/core';
 import RightDialog from './RightDialog';
