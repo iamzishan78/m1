@@ -420,14 +420,14 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: "underline",
     },
     fontWeight: "bold",
-   
+
   },
-  filenamediv:{
-    color:'black',
-    cursor:'pointer',
+  filenamediv: {
+    color: 'black',
+    cursor: 'pointer',
     "&:hover": {
       color: "#18aadd",
-      textDecoration:'underline'
+      textDecoration: 'underline'
     }
   }
 }));
@@ -487,8 +487,8 @@ function SubTable(props) {
   const [total, Total] = useState(false);
   const [rows, Rows] = useState([]);
   const [parcelOwnerTab, setParcelOwnerTab] = useState("Parcel Ownership");
-  const [handleSearch, setHandleSearch] = useState(() => () => {});
-
+  const [isSearchOpen, openSearch] = useState(false);
+  const [handleSearch, setHandleSearch] = useState(() => () => { });
   // const [handleSearchClose, setHandleSearchClose] = useState(() => () => {});
 
   // deep state 
@@ -522,19 +522,19 @@ function SubTable(props) {
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
 
-  
-  const [viewFile, { data: viewFileResult ,loading: viewFileLoading}] = useLazyQuery(VIEWFILEQUERY, {
+
+  const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } })
-    if(viewFileLoading){
-      console.log(viewFileResult,'ViewFIle Result')
+    if (viewFileLoading) {
+      console.log(viewFileResult, 'ViewFIle Result')
     }
-    
+
   };
   useEffect(() => {
-      console.log(viewFileLoading,'Loading FileResult')
+    console.log(viewFileLoading, 'Loading FileResult')
   }, [viewFileLoading])
 
   useEffect(() => {
@@ -542,8 +542,8 @@ function SubTable(props) {
       let a = document.createElement("a");
       a.href = viewFileResult.viewFile.uri;
       a.download = viewFileResult.viewFile.name;
-  // selectors
-  // const { searchloading } = useSelector(({ MapGridCard }) => MapGridCard);
+      // selectors
+      // const { searchloading } = useSelector(({ MapGridCard }) => MapGridCard);
 
       // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
       // a.target = "_blank";
@@ -704,7 +704,7 @@ function SubTable(props) {
           selectedWell.wellName ? selectedWell.wellName : selectedWell.WellName
         );
         setSubTitle(
-          selectedWell.operator ? selectedWell.operator : selectedWell.Operator
+          selectedWell.api ? selectedWell.api : selectedWell.api
         );
         handleOpenExpandableCard();
       }
@@ -1092,9 +1092,9 @@ function SubTable(props) {
                                   : selectedWell.WellName
                               );
                               setSubTitle(
-                                selectedWell.operator
-                                  ? selectedWell.operator
-                                  : selectedWell.Operator
+                                selectedWell.api
+                                  ? selectedWell.api
+                                  : selectedWell.api
                               );
                               handleOpenExpandableCard();
                             } else if (props.targetLabel === "owner") {
@@ -1731,7 +1731,7 @@ function SubTable(props) {
               };
             }
             break;
-            case " ":
+          case " ":
             {
               column.options = {
                 ...column.options,
@@ -1747,29 +1747,43 @@ function SubTable(props) {
                           : tableMeta.rowData[0];
 
                   return (
-                    <div style={{ marginRight: "10px",display:'flex',justifyContent:'center',alignItems:'center' }}>
+                    <div style={{ marginRight: "10px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    
+
+                       {/* BEGINNING OF SHITTY CODE === this find the file type and if pdf will show the icon */}
+                       {rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length-1] 
+                       === "pdf" 
+                       && 
+                                           
                      <IconButton
-                      onClick={(e)=>{
-                        e.stopPropagation()
-                        const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length-1]
-                        if(type === 'pdf'){
-                        setStateApp((state) => ({
-                          ...state,
-                          pdfView: rows[tableMeta.rowIndex]
-                        }));
-                        }
-                      }}
-                    >
-                      {/* // this is the search icon in the grid on documents */}
-                       <PageviewIcon/>
-                     </IconButton>
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length - 1]
+                          if (type === 'pdf') {
+                            setStateApp((state) => ({
+                              ...state,
+                              pdfView: rows[tableMeta.rowIndex]
+                            }));
+                          }
+                        }}
+                      >
+                        {/* // this is the search icon in the grid on documents */}
+
+                        <PageviewIcon />
+                       
+
+                      </IconButton>
+
+                    }
+                    {/* END OF THIS PARTICULAR BLOCK OF SHITTY CODE  */}
+                     
                      <IconButton    onClick={(e)=>{
-                       e.stopPropagation()
-                       console.log("modell download")
+                        e.stopPropagation()
+                        console.log("modell download")
                         handleViewFile(rows[tableMeta.rowIndex].fileId)
-                     }}>
-                       <GetAppIcon/>
-                     </IconButton>
+                      }}>
+                        <GetAppIcon />
+                      </IconButton>
 
                     </div>
                   );
@@ -1777,7 +1791,7 @@ function SubTable(props) {
               };
             }
             break;
-            case "fileName":
+          case "fileName":
             {
               column.options = {
                 ...column.options,
@@ -1786,7 +1800,7 @@ function SubTable(props) {
                     (trueTargetLabel ? trueTargetLabel : props.targetLabel) +
                     tableMeta.columnIndex;
                   // console.log(value,'Value FILENAME')
-                  
+
                   // console.log(updateValue,'upDatevalue FILENAME')
 
 
@@ -1799,23 +1813,23 @@ function SubTable(props) {
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
                   return (
-                   <div onClick={(e)=>{
-                     e.stopPropagation()
-                    //  console.log(,'value Div click')
-                     const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length-1]
-                     if(type === 'pdf'){
-                      setStateApp((state) => ({
-                        ...state,
-                        pdfView: rows[tableMeta.rowIndex]
-                      }));
-                     }else{
-                      handleViewFile(rows[tableMeta.rowIndex].fileId)
-                     }
-                     console.log(rows[tableMeta.rowIndex].fileId,'tablemeta FILENAME')
-                     }}>
+                    <div onClick={(e) => {
+                      e.stopPropagation()
+                      //  console.log(,'value Div click')
+                      const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length - 1]
+                      if (type === 'pdf') {
+                        setStateApp((state) => ({
+                          ...state,
+                          pdfView: rows[tableMeta.rowIndex]
+                        }));
+                      } else {
+                        handleViewFile(rows[tableMeta.rowIndex].fileId)
+                      }
+                      console.log(rows[tableMeta.rowIndex].fileId, 'tablemeta FILENAME')
+                    }}>
 
-                      <h4  className={classes.filenamediv}>{value}</h4>
-                   </div>
+                      <h4 className={classes.filenamediv}>{value}</h4>
+                    </div>
                   );
                 },
               };
@@ -2009,7 +2023,7 @@ function SubTable(props) {
                       {props.targetLabel !== "contact" &&
                         (
                           <CellContentEdition
-                            
+
                             id={tableMeta.rowData[0]}
                             content={{ [column.name]: valueFormatter(value) }}
                             targetLabel={props.targetLabel}
@@ -2027,7 +2041,7 @@ function SubTable(props) {
                           />
                         )}
                       {props.targetLabel === "contact" &&
-                        column.name !== "name"  &&  (
+                        column.name !== "name" && (
                           <CellContentEdition
                             id={tableMeta.rowData[0]}
                             content={{ [column.name]: valueFormatter(value) }}
@@ -2065,8 +2079,8 @@ function SubTable(props) {
                             }}
                           >{value}</p>
                         )}
-                        
-                        {/* {props.targetLabel === "documents" &&
+
+                      {/* {props.targetLabel === "documents" &&
                         column.name === "fileName" && (
                           <p className={classes.clickableCell}
                             onClick={() => {
@@ -2392,9 +2406,13 @@ function SubTable(props) {
                       size="medium"
                       style={{ margin: "0 5px" }}
                       onClick={(e) => {
-                        props.header !== "Active Users"
-                          ? handleExpandClick(null, null, null, "deleteContact")
-                          : handleExpandClick(null, null, null, "deleteUser");
+                        if (props.header === 'Documents') {
+                          handleExpandClick(null, null, null, "deleteDocument")
+                        } else if (props.header !== "Active Users") {
+                          handleExpandClick(null, null, null, "deleteContact")
+                        }else{
+                          handleExpandClick(null, null, null, "deleteUser");
+                        }
                       }}
                       aria-label="delete"
                     >
@@ -2537,7 +2555,6 @@ function SubTable(props) {
 
       return (
         <>
-
           <div style={{ display: 'inline', cssFloat: 'left', marginRight: '15px', marginTop: '5px' }}>
             {(props.addAble.type === "wellInterest"
               || props.addAble.type === "deals"
@@ -2554,23 +2571,23 @@ function SubTable(props) {
                 </Button>
               )}
             {props.addAble.type === "contact" && (<ButtonDropDown options={options} />)}
-            
-            {props.header === 'Documents' &&     
-            <ButtonGroup variant="contained" style={{height:'40px'}} color="primary" aria-label="split button">
-              <Button
-                color="primary"
-                size="small"
-                aria-label="select merge strategy"
-                aria-haspopup="menu"
-                onClick={()=>{
-                  setStateApp({...stateApp, DocumentDrawer:true, selectedDocument: {}})
-                }}
-              >
-                <PostAddIcon></PostAddIcon>  
+
+            {props.header === 'Documents' &&
+              <ButtonGroup variant="contained" style={{ height: '40px' }} color="primary" aria-label="split button">
+                <Button
+                  color="primary"
+                  size="small"
+                  aria-label="select merge strategy"
+                  aria-haspopup="menu"
+                  onClick={() => {
+                    setStateApp({ ...stateApp, DocumentDrawer: true, selectedDocument: {} })
+                  }}
+                >
+                  <PostAddIcon></PostAddIcon>
                 Add Document
               </Button>
-            </ButtonGroup>
-          }
+              </ButtonGroup>
+            }
 
             {
               props.addAble.type === "contact" && (
@@ -2664,7 +2681,7 @@ function SubTable(props) {
 
       if (props.targetLabel === "documents") {
         console.log('Working Inside Table')
-        console.log(rows[dataIndex],'RowIndex')
+        console.log(rows[dataIndex], 'RowIndex')
         setStateApp((stateApp) => ({
           ...stateApp,
           selectedDocument: rows[dataIndex],
@@ -3109,12 +3126,11 @@ function SubTable(props) {
     //     <label style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</label>
     //   </div>
     //   ) : props.header
-      if(props.header ==='Contacts')
-      {
-       return  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left'}}>
-       {props.header === 'Documents' ? ( <DescriptionOutlinedIcon />) : ( <Contact />)}
-        <label style={{ marginLeft: '10px', fontSize: '16px'}}>{props.header}</label>
-        <ArrowRight/>
+    if (props.header === 'Contacts') {
+      return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
+        {props.header === 'Documents' ? (<DescriptionOutlinedIcon />) : (<Contact />)}
+        <label style={{ marginLeft: '10px', fontSize: '16px' }}>{props.header}</label>
+        <ArrowRight />
         <label style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</label>
       </div> 
       }
@@ -3186,7 +3202,7 @@ function SubTable(props) {
       width: "100%",
       height: "100%",
       position: "relative",
-     
+
     }}>
       <div
         className={`${classes.table} ${rows && !props.loading ? "" : classes.loadingTable
@@ -3199,7 +3215,7 @@ function SubTable(props) {
           data={rows ? rows : []}
           columns={columns ? columns : []}
           components={{
-            TableFilterList: props.header == 'Tax Roll Ownership' ? TableFilterList : null,
+            TableFilterList: props.header == 'Tax Roll Ownership' && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,
               ViewColumnIcon,
@@ -3208,6 +3224,8 @@ function SubTable(props) {
           options={{
             ...options,
             // searchText: props.header === 'Contacts' ? stateApp.contactSearchQuery : null,
+            onSearchOpen: () => openSearch(true),
+            onSearchClose: () => openSearch(false),
             search:
               (
                 props.header === 'Contacts'
@@ -3314,6 +3332,7 @@ function SubTable(props) {
                     openDialog === "addOwnerToParcel" ||
                     openDialog === "deleteOwnersFromContact" ||
                     openDialog === "deleteContact" ||
+                    openDialog === "deleteDocument" ||
                     openDialog === "deleteUser"
                     ? "xs"
                     : "sm"
@@ -3446,6 +3465,23 @@ function SubTable(props) {
 
                 {props.header === "Contacts" &&
                   `Do you want to delete the selected contact${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
+                  }?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "deleteDocument" && (
+              <DeleteConfirmationDialogContent
+                header="Delete Document(s)"
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {props.header === "Documents" &&
+                  `Do you want to delete the selected documents${m1nSelectedRowsIds &&
                     m1nSelectedRowsIds.length > 1 &&
                     removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                     ? "s"

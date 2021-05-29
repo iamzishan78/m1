@@ -99,11 +99,10 @@ const useStyles = makeStyles((theme) => ({
 
 function Layer({ layerMap, type, handleToggle }) {
     const [stateApp, setStateApp] = useContext(AppContext);
-
     const classes = useStyles();
     return (
         <>
-            {layerMap.map((layer, index) => {
+            {layerMap && layerMap.map((layer, index) => {
 
                 const labelId = `checkbox-list-label-${index}`;
                 //// remove the (layer.identifier!="Tracked Owners") condition from the if statement to show the tracked owers layer
@@ -113,7 +112,7 @@ function Layer({ layerMap, type, handleToggle }) {
                     (type === "layer" &&
                         (layer.layerSettings &&
                             layer.layerSettings.showable &&
-                            layer.identifier != "Tracked Owners") || layer.groupId)
+                            layer.identifier != "Tracked Owners"))
                 ) {
 
                     return (
@@ -125,60 +124,7 @@ function Layer({ layerMap, type, handleToggle }) {
                             {(provided, snapshot) => (
 
                                 <RootRef rootRef={provided.innerRef}>
-                                    {
-                                        layer.groupId ?
-                                            <Accordion {...provided.draggableProps} className={classes.accordion}>
-                                                <AccordionSummary
-                                                    expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
-                                                    aria-controls="panel1a-content"
-                                                    id="panel1a-header"
-
-                                                >
-                                                    <div  {...provided.dragHandleProps} style={{ paddingLeft: '4px', color: 'white' }}>
-                                                        <DragIndicator />
-                                                    </div>
-                                                    <Typography style={{ paddingLeft: '32px' }} className={classes.heading}>{layer.groupName}</Typography>
-                                                </AccordionSummary>
-
-                                                <Droppable droppableId={layer.groupId}>
-                                                    {(provided, snapshot) => (
-                                                        <AccordionDetails ref={provided.innerRef}>
-                                                            <List
-                                                                style={{
-                                                                    // maxHeight: "775px",
-                                                                    overflowY: type === "marketplace" ? "scroll" : "scroll",
-                                                                }}
-                                                                className={classes.list}
-                                                            >
-                                                                {layer.groups.map((groupLayer, groupIndex) => {
-                                                                    const labelId = `checkbox-list-label-g-${groupLayer.position}`;
-
-                                                                    return (
-                                                                        <Draggable
-                                                                            key={labelId}
-                                                                            draggableId={labelId}
-                                                                            index={groupIndex}
-                                                                        >
-                                                                            {(provided, snapshot) => (
-
-                                                                                <LayerItem index={groupIndex} labelId={labelId} provided={provided} type={type} layer={groupLayer} handleToggle={handleToggle} stateApp={stateApp} setStateApp={setStateApp} />
-                                                                            )}
-                                                                        </Draggable>
-                                                                    );
-
-                                                                })}
-                                                                {provided.placeholder}
-                                                            </List>
-                                                        </AccordionDetails>
-                                                    )}
-                                                </Droppable>
-
-                                            </Accordion>
-                                            :
-                                            <LayerItem index={index} labelId={labelId} provided={provided} type={type} layer={layer} handleToggle={handleToggle} stateApp={stateApp} setStateApp={setStateApp} />
-
-                                    }
-
+                                    <LayerItem index={index} labelId={labelId} provided={provided} type={type} layer={layer} handleToggle={handleToggle} stateApp={stateApp} setStateApp={setStateApp} />
                                 </RootRef>
                             )}
                         </Draggable>
