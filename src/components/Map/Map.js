@@ -4857,38 +4857,18 @@ function Map() {
        )
       }
 
-    {stateApp.selectedPermit !== null && showExpandableCard &&
-     stateApp.expandedCard && (
-       <div className={classes.draggable}>
-	 <ExpandableCardProvider
-	   expanded
-	   handleCloseExpandableCard={handleCloseExpandableCard}
-	   component={<PermitCardProvider />}
-	   title={stateApp.selectedPermit.OperatorName}
-	   subTitle={stateApp.selectedPermit.ApiNumber}
-	   parent="map"
-	   cardTop={20}
-	   cardLeft={20}
-	   position="relative"
-	   zIndex={99}
-	   cardWidthExpanded="50vw"
-	   cardHeightExpanded="90vh"
-	   targetSourceId={stateApp.selectedPermit.Id}
-	   targetLabel="recent_submitted_permits"
-	 />
-       </div>
-     )
-    }
-
     {stateApp.selectedPermit !== null &&
      // && stateApp.popupOpen==true
      showExpandableCard && (
        <PortalD id="popupContainer">
+         {console.log('PERMITS INFO', stateApp.selectedPermit)}
+         {console.log('LEASE', stateApp.selectedPermit.Lease)}
+
 	 {!stateApp.expandedCard && (
 	   <ExpandableCardProvider
 	     handleCloseExpandableCard={handleCloseExpandableCard}
 	     component={<PermitCardProvider />}
-	     title={stateApp.selectedPermit.OperatorName}
+	     title={stateApp.selectedPermit.Lease + " Well-" + stateApp.selectedPermit.WellNumber}
 	     subTitle={stateApp.selectedPermit.ApiNumber}
 	     parent="map"
 	     mouseX={0}
@@ -4897,11 +4877,11 @@ function Map() {
 	     cardLeft={0}
 	     cardTop={0}
 	     zIndex={3000}
-	     cardWidth="350px"
+	     cardWidth="375px"
 	     cardWidthExpanded="50vw"
 	     cardHeightExpanded="95vh"
 	     targetSourceId={stateApp.selectedPermit.Id}
-	     targetLabel="well"
+	     targetLabel="recent_submitted_permits"
 	   ></ExpandableCardProvider>
 	 )}
        </PortalD>
