@@ -93,15 +93,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		}
 	}, [type]);
 
-	console.log("props", {
-		type,
-		title,
-		headerButton,
-		handleToggle,
-		onDragEnd,
-		items,
-	});
-
 	useEffect(() => {
 
 		console.log("type and layer", type, items);
@@ -291,6 +282,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 
 		</DragDropContext>
 	);
+	debugger;
 	return (
 		// <ClickAwayListener onClickAway={handleClose}>
 		<div>
@@ -435,10 +427,16 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					zIndex: "99999"
 				}}
 			>
+				{
+					// console.log('===============')
+					// console.log('type',type)
+					console.log('&&& panelExpanded', stateMapControls.panelExpanded)
+					// console.log('===============')
+				}
 				<StyledMenu
 					id="checklist-menu"
 					// anchorEl={stateMapControls.anchorEl}
-					style={!stateMapControls.panelExpanded && type === 'layer' ? { display: 'none' } : {}}
+					style={!stateMapControls.panelExpanded ? { display: 'none' } : {}}
 					keepMounted
 					open={Boolean(stateMapControls.selectedControl)}
 
@@ -497,7 +495,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 							<StyledListItemSecondaryAction>
 								<Button
 									onClick={headerButton.fn}
-									color="primary"
+									color="secondary"
 									startIcon={headerButton.icon}
 								>
 									{headerButton.text}
@@ -510,7 +508,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					{type === "base" && getBasemapImageBox()}
 
 					{
-						type === "layer" ? <SortableLayer layerMap={layerMap} /> : type === "base" ? (
+						type === "layer" && layerMap && layerMap[0]?.type ? <SortableLayer layerMap={layerMap} /> : type === "base" ? (
 							<Collapse in={open} timeout="auto" unmountOnExit>
 								{displayList}
 							</Collapse>
@@ -519,13 +517,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 						)
 					}
 
-					{/* </Collapse> */}
 				</StyledMenu>
 				<div
 					className={classes.pulloutBox}
-					// style={{
-					// 	left: stateMapControls.panelExpanded ? "530px !important" : "0px",
-					// }}
+
 					onClick={togglePullout}
 				>
 					{stateMapControls.panelExpanded ? (

@@ -25,9 +25,7 @@ const FileTree = ({ layerMap }) => {
   }, [layerMap]);
 
   const handleChange = (newItems) => {
-    const index = newItems.findIndex(
-      (item) => item.id === currentItem.current.id
-    );
+    const index = newItems.findIndex((item) => item.id === currentItem.current.id);
     if (newItems[index].depth === 1) {
       const parent = findParent(newItems, index);
       if (parent.type !== "group") {
@@ -64,12 +62,7 @@ const FileTree = ({ layerMap }) => {
   };
 
   const handleDragEnd = (oldItem, newItem) => {
-    // debugger;
-    if (
-      oldItem.depth === 0 &&
-      newItem.depth === 1 &&
-      newItem.type === "group"
-    ) {
+    if (oldItem.depth === 0 && newItem.depth === 1 && newItem.type === "group") {
       return revert();
     }
 
@@ -77,7 +70,8 @@ const FileTree = ({ layerMap }) => {
     const layersToUpdate = [];
     let groupIndex;
 
-    if (oldItem.depth === 0 && newItem.depth === 1) { // if layer into group
+    if (oldItem.depth === 0 && newItem.depth === 1) {
+      // if layer into group
       groupIndex = items.findIndex((item) => item.id === newItem.id);
       const parent = findParent(items, groupIndex);
       if (parent.type === "group") {
@@ -92,14 +86,10 @@ const FileTree = ({ layerMap }) => {
       items[groupIndex].groupId = null;
     }
     if (groupIndex) {
-      groupIndex = layersWithoutGroup.findIndex(
-        (item) => item.id === newItem.id
-      );
+      groupIndex = layersWithoutGroup.findIndex((item) => item.id === newItem.id);
     }
 
-    const sortedLayers = stateApp.layers.sort((a, b) =>
-      a.position > b.position ? 1 : b.position > a.position ? -1 : 0
-    );
+    const sortedLayers = stateApp.layers.sort((a, b) => (a.position > b.position ? 1 : b.position > a.position ? -1 : 0));
     layersWithoutGroup.forEach((layer, i) => {
       if (i === groupIndex) {
         layersToUpdate.push({

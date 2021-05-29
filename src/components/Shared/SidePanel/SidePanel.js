@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useMutation } from "@apollo/client";
 import AddIcon from "@material-ui/icons/Add";
+import AddLayerIcon from "@material-ui/icons/Queue";
 import { MapControlsContext } from "../../MapControls/MapControlsContext";
 import { AppContext } from "../../../AppContext";
 import Panel from "./compoennts/Panel";
@@ -9,7 +10,7 @@ import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyL
 import { makeStyles } from "@material-ui/core/styles";
 
 
-  
+
 const reorder = (list, startIndex, endIndex) => {
 	const result = Array.from(list);
 	const [removed] = result.splice(startIndex, 1);
@@ -100,7 +101,7 @@ export default function SidePanel() {
 		layer: {
 			text: "Add Layer",
 			fn: openAddLayer,
-			icon: <AddIcon />,
+			icon: <AddLayerIcon />,
 		},
 	};
 

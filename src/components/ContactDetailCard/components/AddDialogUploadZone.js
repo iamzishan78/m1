@@ -174,7 +174,7 @@ export default function Documents(props) {
     if (props.isTransactPage) return ["Deal", 99];
     else return ["Contact", 2];
   }, [props.isTransactPage]);
-
+  console.log(relatedObjectType, 'relatedObjectType')
   const [getRecentFiles, { data: files }] = useLazyQuery(
     GETRECENTCONTACTFILES,
     {
@@ -199,6 +199,7 @@ export default function Documents(props) {
                 variables: {
                   relatedObjectId: props.id,
                   relatedObjectType,
+                  limit,
                 },
               });
               clearTimeout(waitBeforeRequestAgain);
@@ -344,14 +345,14 @@ export default function Documents(props) {
         return (
           <FontAwesomeIcon
             icon={faFilePowerpoint}
-            style={{ fontSize: "5.5rem", color: "#D04424" }}
+            style={{ fontSize: "2rem", color: "#D04424" }}
           />
         );
       case "pptx":
         return (
           <FontAwesomeIcon
             icon={faFilePowerpoint}
-            style={{ fontSize: "5.5rem", color: "#D04424" }}
+            style={{ fontSize: "2rem", color: "#D04424" }}
           />
         );
       default:
@@ -359,7 +360,7 @@ export default function Documents(props) {
         return (
           <FontAwesomeIcon
             icon={faFile}
-            style={{ fontSize: "5.5rem", color: "#D04424" }}
+            style={{ fontSize: "2rem", color: "grey" }}
           />
         );
     }

@@ -90,6 +90,11 @@ export default function UploadZone(props) {
 
       if (inputFile && fileName) {
         setInputFile(inputFile);
+         console.log(props.userId,'add show')
+         console.log(props.relatedObjectId,'add show')
+
+         console.log(props.relatedObjectType,'add show')
+         console.log(fileName,'add show')
 
         addFile({
           variables: {
@@ -119,22 +124,52 @@ export default function UploadZone(props) {
           disabled: props.loading || addFileLoading || props.disabled
         }}
         dropzoneText={"+"}
-        acceptedFiles={[
-          "image/*",
-          "video/*",
-          "application/*",
-          ".*",
-          ".geojson",
-          ".csv",
-          ".pdf",
-          ".docx",
-          ".doc",
-          ".ppt",
-          ".pptx",
-          ".txt",
-          ".xls",
-          ".xlsx",
-        ]}
+        // acceptedFiles={[
+				// 	"image/*",
+				// 	"video/*",
+				// 	"application/*",
+				// 	".*",
+				// 	".geojson",
+				// 	".csv",
+				// 	".pdf",
+				// 	".docx",
+				// 	".doc",
+				// 	".ppt",
+				// 	".pptx",
+				// 	".txt",
+				// 	".xls",
+				// 	".xlsx",
+				// 	".mdb",
+
+				// 	// shape 
+				// 	".shp",
+				// 	".shx",
+				// 	".sbn",
+				// 	".fbn",
+				// 	".ain",
+				// 	".atx",
+				// 	".ixs",
+
+				// 	// phdwin
+				// 	".phd",
+				// 	".mod",
+				// 	".phb",
+				// 	".phz",
+
+				// 	// IHS
+				// 	".98c",
+
+				// 	// DRILLING INFO 
+				// 	".DRI",
+
+				// 	// LASSER 
+				// 	".PRN",
+
+				// 	// DIVESTCO 
+				// 	".pds",
+
+        // ]}
+
         maxFileSize={104857600}
         dropzoneClass={classes.dropzoneClass}
         // getFileAddedMessage={(value) => {

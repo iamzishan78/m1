@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import { default as DrawPoly } from "../../Shared/svgIcons/polygon";
@@ -6,7 +6,7 @@ import { default as Rect } from "../../Shared/svgIcons/rectangle";
 import { FormLabel } from "@material-ui/core";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import CancelIcon from "@material-ui/icons/Cancel";
-import { NavigationContext } from "../NavigationContext";
+import { NavigationContext, DRAWING_MODES } from "../NavigationContext";
 import { AppContext } from "../../../AppContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -38,28 +38,28 @@ export default function FilterFromDrawing(props) {
   const [stateApp] = useContext(AppContext);
 
   const handleDrawPolygon = (event, e) => {
-    let id = "draw_polygon" + Date.now();
+    let id = DRAWING_MODES.DRAW_POLYGON + Date.now();
     setStateNav((stateNav) => ({
       ...stateNav,
-      drawingMode: "draw_polygon",
+      drawingMode: DRAWING_MODES.DRAW_POLYGON,
       filterFeatureId: id,
     }));
   };
 
   const handleDrawRect = (event, e) => {
-    let id = "draw_rectangle" + Date.now();
+    let id = DRAWING_MODES.DRAW_RECTANGLE + Date.now();
     setStateNav((stateNav) => ({
       ...stateNav,
-      drawingMode: "draw_rectangle",
+      drawingMode: DRAWING_MODES.DRAW_RECTANGLE,
       filterFeatureId: id,
     }));
   };
 
   const handleDrawCircle = (event, e) => {
-    let id = "drag_circle" + Date.now();
+    let id = DRAWING_MODES.DRAW_CIRCLE + Date.now();
     setStateNav((stateNav) => ({
       ...stateNav,
-      drawingMode: "drag_circle",
+      drawingMode: DRAWING_MODES.DRAW_CIRCLE,
       filterFeatureId: id,
     }));
   };

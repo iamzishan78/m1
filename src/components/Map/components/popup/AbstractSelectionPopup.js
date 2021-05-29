@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center"
   },
-  label : {
+  label: {
     margin: "0 10px"
   },
   footer: {
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 export default (props) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel}] = useMutation(
+  const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel }] = useMutation(
     UPSERTCUSTOMLAYER,
     {
       update(cache, { data: { upsertCustomLayer: { customLayer } } }) {
@@ -103,7 +103,7 @@ export default (props) => {
   const parcelLabel = props.abstracts.length > 1 ? "tracts" : "tract";
 
   useEffect(() => {
-    if(!customLayerInsertedData) {
+    if (!customLayerInsertedData) {
       return;
     }
     if (customLayerInsertedData.upsertCustomLayer && customLayerInsertedData.upsertCustomLayer.customLayer) {
@@ -133,7 +133,7 @@ export default (props) => {
         }));
       }
     }
-    if (customLayerInsertedData.upsertCustomLayer  && customLayerInsertedData.upsertCustomLayer.customLayer && !customLayerInsertedData.upsertCustomLayer.success) {
+    if (customLayerInsertedData.upsertCustomLayer && customLayerInsertedData.upsertCustomLayer.customLayer && !customLayerInsertedData.upsertCustomLayer.success) {
       setError(true);
     }
   }, [customLayerInsertedData]);
@@ -177,13 +177,13 @@ export default (props) => {
     let township = properties?.Township;
     let range = properties?.Range;
     let section = properties?.ShortName;
-    
+
     let parcelName, originalProperties;
-    if(abstractShape.properties.State === "TX") {
+    if (abstractShape.properties.State === "TX") {
       parcelName = abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
-    } else if(township && range && section) {
+    } else if (township && range && section) {
       parcelName = `T${township} R${range} — Section ${section}`;
-    } else {  
+    } else {
       parcelName = "PLSS Default Name";
     }
     originalProperties = [abstractShape.properties];
@@ -224,7 +224,7 @@ export default (props) => {
     setStateApp((state) => ({
       ...state,
       selectedParcel: {
-        "originalProperties":  abstractShape.properties.State === "TX" ?  JSON.stringify(abstractShape.properties) : [],
+        "originalProperties": abstractShape.properties.State === "TX" ? JSON.stringify(abstractShape.properties) : [],
         "sdType": "parcel",
         "shapeLabel": parcelName,
         "projectName": "",
@@ -268,12 +268,12 @@ export default (props) => {
             <div className={classes.actions}>
               {isSavingParcel ? (
                 <CircularProgress size={20} color="secondary" />
-              ): (
-              <Tooltip title="Create Parcel">
-              <IconButton size="small" onClick={saveAndOpenParcelDetail} aria-label="Parcel" >
-                <LayerIcon color="secondary" />
-              </IconButton>
-              </Tooltip>
+              ) : (
+                <Tooltip title="Create Parcel">
+                  <IconButton size="small" onClick={saveAndOpenParcelDetail} aria-label="Parcel" >
+                    <LayerIcon color="secondary" />
+                  </IconButton>
+                </Tooltip>
               )}
               {/* <strong className={classes.label}>Parcel/Tract</strong> */}
               <IconButton size="small" onClick={handleClose} aria-label="Close">

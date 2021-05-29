@@ -21,7 +21,7 @@ import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import MUIDataTable, { TableFilterList } from "mui-datatables";
 import { DndProvider } from 'react-dnd';
-import { Box, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
+import { Box, ButtonGroup, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
 import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
@@ -76,26 +76,37 @@ import WellTableStyles from "../customStyles/WellTableStyle";
 import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
 import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
 import moment from "moment";
-import CheckIcon from "@material-ui/icons/Check";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
 import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
 import Chip from '@material-ui/core/Chip';
-import FilterIcon from "../../svgIcons/filter";
-import ViewColumnIcon from "../../svgIcons/view_column";
+
 import ButtonDropDown from "./ButtonGroup"
+
 // import value formatters 
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
 import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
 import RightDialog from "../../../ContactDetailCard/components/RightDialog"
 
-
 // queries 
 import { OWNERSLATSLONS } from "../../../../graphQL/useQueryOwnerLatsLonsArray";
 import { OPERATORSLATSLONS } from "../../../../graphQL/useQueryOperatorLatsLonsArray";
 import { LEASELATSLONS } from "../../../../graphQL/useQueryLeaseLatsLonsArray";
 import { CONTACTWELLS } from "../../../../graphQL/useQueryContactWells";
+import { Typography } from "@material-ui/core";
+import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
+
+//icons
+import SearchIcon from '@material-ui/icons/Search';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import PageviewIcon from '@material-ui/icons/Pageview';
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import PostAddIcon from '@material-ui/icons/PostAdd';
+import FilterIcon from "../../svgIcons/filter";
+import ViewColumnIcon from "../../svgIcons/view_column";
+import CheckIcon from "@material-ui/icons/Check";
+
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false
@@ -346,6 +357,7 @@ const useStyles = makeStyles((theme) => ({
     color: "darkgrey",
   },
   dialogExpCard: {
+    zIndex: "10000 !important",
     "& .MuiDialog-paperScrollPaper": {
       height: "100%",
     },
@@ -395,7 +407,16 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       textDecoration: "underline",
     },
-    fontWeight: "bold"
+    fontWeight: "bold",
+
+  },
+  filenamediv: {
+    color: 'black',
+    cursor: 'pointer',
+    "&:hover": {
+      color: "#18aadd",
+      textDecoration: 'underline'
+    }
   }
 }));
 
@@ -453,6 +474,7 @@ function SubTable(props) {
   const [year, setYear] = React.useState(2020);
   const [total, Total] = useState(false);
   const [rows, Rows] = useState([]);
+  const [isSearchOpen, openSearch] = useState(false);
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   // const [handleSearchClose, setHandleSearchClose] = useState(() => () => {});
 
@@ -487,12 +509,38 @@ function SubTable(props) {
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
 
-  // selectors
-  // const { searchloading } = useSelector(({ MapGridCard }) => MapGridCard);
 
+  const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "no-cache",
+  });
+  const handleViewFile = async (id) => {
+    viewFile({ variables: { fileId: id } })
+    if (viewFileLoading) {
+      console.log(viewFileResult, 'ViewFIle Result')
+    }
+
+  };
+  useEffect(() => {
+    console.log(viewFileLoading, 'Loading FileResult')
+  }, [viewFileLoading])
+
+  useEffect(() => {
+    if (viewFileResult?.viewFile?.uri) {
+      let a = document.createElement("a");
+      a.href = viewFileResult.viewFile.uri;
+      a.download = viewFileResult.viewFile.name;
+      // selectors
+      // const { searchloading } = useSelector(({ MapGridCard }) => MapGridCard);
+
+      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
+      // a.target = "_blank";
+
+      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
+      a.click();
+    }
+  }, [viewFileResult]);
   // handlers 
   const handleWellFlyTo = (value) => {
-
     // setting state to fly to the selected well 
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -598,7 +646,7 @@ function SubTable(props) {
   useEffect(() => {
     if (
       props.parent &&
-      (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests") &&
+      (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests" || props.parent === "wells") &&
       props.targetLabel == "well" &&
       dataWell &&
       dataWell.well
@@ -643,7 +691,7 @@ function SubTable(props) {
           selectedWell.wellName ? selectedWell.wellName : selectedWell.WellName
         );
         setSubTitle(
-          selectedWell.operator ? selectedWell.operator : selectedWell.Operator
+          selectedWell.api ? selectedWell.api : selectedWell.api
         );
         handleOpenExpandableCard();
       }
@@ -993,7 +1041,6 @@ function SubTable(props) {
                         }`}
                       onClick={(e) => {
                         e.stopPropagation();
-
                         if (value) {
                           setStateApp((state) => ({
                             ...state,
@@ -1032,9 +1079,9 @@ function SubTable(props) {
                                   : selectedWell.WellName
                               );
                               setSubTitle(
-                                selectedWell.operator
-                                  ? selectedWell.operator
-                                  : selectedWell.Operator
+                                selectedWell.api
+                                  ? selectedWell.api
+                                  : selectedWell.api
                               );
                               handleOpenExpandableCard();
                             } else if (props.targetLabel === "owner") {
@@ -1268,6 +1315,7 @@ function SubTable(props) {
                           : tableMeta.rowData[0];
 
                   return (
+                    //add download and search icons here
                     <Tooltip
                       title={
                         !value || value === 0 ? "Add Comments" : "Comments"
@@ -1300,6 +1348,7 @@ function SubTable(props) {
                           }}
                           aria-label="show comments"
                           onMouseOver={() => {
+                            console.log("hover Effect Table")
                             if (
                               m1nSelectedRowsIndexes.indexOf(
                                 tableMeta.rowIndex
@@ -1669,6 +1718,112 @@ function SubTable(props) {
               };
             }
             break;
+          case " ":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
+                  let targetSourceId =
+                    props.parent === "OwnersPerWell"
+                      ? tableMeta.rowData[2]
+                      : props.parent === "owner_WellInterests"
+                        ? tableMeta.rowData[1]
+                        : props.parent === "ownersPerParcel"
+                          ? tableMeta.rowData[1]
+                          : tableMeta.rowData[0];
+
+                  return (
+                    <div style={{ marginRight: "10px", display: 'flex', justifyContent: 'left', alignItems: 'center' }}>
+                    
+                    <IconButton    onClick={(e)=>{
+                        e.stopPropagation()
+                        console.log("modell download")
+                        handleViewFile(rows[tableMeta.rowIndex].fileId)
+                      }}>
+                        <GetAppIcon />
+                      </IconButton>
+
+
+                       {/* BEGINNING OF SHITTY CODE === this find the file type and if pdf will show the icon */}
+                       {rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length-1] 
+                       === "pdf" 
+                       && 
+                                           
+                     <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length - 1]
+                          if (type === 'pdf') {
+                            setStateApp((state) => ({
+                              ...state,
+                              pdfView: rows[tableMeta.rowIndex]
+                            }));
+                          }
+                        }}
+                      >
+                        {/* // this is the search icon in the grid on documents */}
+
+                        <PageviewIcon />
+                       
+
+                      </IconButton>
+
+                    }
+                    {/* END OF THIS PARTICULAR BLOCK OF SHITTY CODE  */}
+                     
+
+                    </div>
+                  );
+                },
+              };
+            }
+            break;
+          case "fileName":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  let id =
+                    (trueTargetLabel ? trueTargetLabel : props.targetLabel) +
+                    tableMeta.columnIndex;
+                  // console.log(value,'Value FILENAME')
+
+                  // console.log(updateValue,'upDatevalue FILENAME')
+
+
+                  let targetSourceId =
+                    props.parent === "OwnersPerWell"
+                      ? tableMeta.rowData[2]
+                      : props.parent === "owner_WellInterests"
+                        ? tableMeta.rowData[1]
+                        : props.parent === "ownersPerParcel"
+                          ? tableMeta.rowData[1]
+                          : tableMeta.rowData[0];
+                  return (
+                    <div onClick={(e) => {
+                      e.stopPropagation()
+                      //  console.log(,'value Div click')
+                      const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length - 1]
+                      if (type === 'pdf') {
+                        setStateApp((state) => ({
+                          ...state,
+                          pdfView: rows[tableMeta.rowIndex]
+                        }));
+                      } else {
+                        handleViewFile(rows[tableMeta.rowIndex].fileId)
+                      }
+                      console.log(rows[tableMeta.rowIndex].fileId, 'tablemeta FILENAME')
+                    }}>
+
+                      <h4 className={classes.filenamediv}>{value}</h4>
+                    </div>
+                  );
+                },
+              };
+            }
+
+            break;
           case "fullContactAddress":
             {
               column.options = {
@@ -1856,6 +2011,7 @@ function SubTable(props) {
                       {props.targetLabel !== "contact" &&
                         (
                           <CellContentEdition
+
                             id={tableMeta.rowData[0]}
                             content={{ [column.name]: valueFormatter(value) }}
                             targetLabel={props.targetLabel}
@@ -1911,6 +2067,20 @@ function SubTable(props) {
                             }}
                           >{value}</p>
                         )}
+
+                      {/* {props.targetLabel === "documents" &&
+                        column.name === "fileName" && (
+                          <p className={classes.clickableCell}
+                            onClick={() => {
+                              setStateApp((stateApp) => ({
+                                ...stateApp,
+                                selectedContact: tableMeta.rowData[0],
+                              }));
+                              console.log(tableMeta.rowData[0], 'Meta File Name')
+                             
+                            }}
+                          ></p>
+                        )} */}
 
 
                       {/* temporarily removing the purchased data icon as we do not have functionality to actually purchase contact data currently - KC 3/17/21 */}
@@ -2120,7 +2290,8 @@ function SubTable(props) {
           if (
             props.header === "Owner's Contacts" ||
             props.header === "Contacts" ||
-            props.header === "Active Users"
+            props.header === "Active Users" ||
+            props.header === 'Documents'
           ) {
             const getSelectedRows = () => {
               const selectedRows = [];
@@ -2223,9 +2394,13 @@ function SubTable(props) {
                       size="medium"
                       style={{ margin: "0 5px" }}
                       onClick={(e) => {
-                        props.header !== "Active Users"
-                          ? handleExpandClick(null, null, null, "deleteContact")
-                          : handleExpandClick(null, null, null, "deleteUser");
+                        if (props.header === 'Documents') {
+                          handleExpandClick(null, null, null, "deleteDocument")
+                        } else if (props.header !== "Active Users") {
+                          handleExpandClick(null, null, null, "deleteContact")
+                        }else{
+                          handleExpandClick(null, null, null, "deleteUser");
+                        }
                       }}
                       aria-label="delete"
                     >
@@ -2357,7 +2532,6 @@ function SubTable(props) {
         },
         { text: 'Import Contacts', isShow: true, action: () => routeChange("/bulkupload") }
       ];
-
       const getSelectedRows = () => {
         const selectedRows = [];
         for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
@@ -2385,6 +2559,22 @@ function SubTable(props) {
               )}
             {props.addAble.type === "contact" && (<ButtonDropDown options={options} />)}
 
+            {props.header === 'Documents' &&
+              <ButtonGroup variant="contained" style={{ height: '40px' }} color="primary" aria-label="split button">
+                <Button
+                  color="primary"
+                  size="small"
+                  aria-label="select merge strategy"
+                  aria-haspopup="menu"
+                  onClick={() => {
+                    setStateApp({ ...stateApp, DocumentDrawer: true, selectedDocument: {} })
+                  }}
+                >
+                  <PostAddIcon></PostAddIcon>
+                Add Document
+              </Button>
+              </ButtonGroup>
+            }
 
             {
               props.addAble.type === "contact" && (
@@ -2421,6 +2611,7 @@ function SubTable(props) {
       );
     },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
+      console.log("props target label", props.targetLabel)
       setSelectedRow(rows[dataIndex]);
 
       if (props.targetLabel === "deal") {
@@ -2473,6 +2664,15 @@ function SubTable(props) {
         setTitle("Contact Details");
         setSubTitle(" ");
         handleOpenExpandableCard();
+      }
+
+      if (props.targetLabel === "documents") {
+        console.log('Working Inside Table')
+        console.log(rows[dataIndex], 'RowIndex')
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedDocument: rows[dataIndex],
+        }));
       }
 
       if (props.targetLabel === "usermanagement") {
@@ -2826,7 +3026,12 @@ function SubTable(props) {
           default:
         }
       }
+      if (props.onTableChange) {
+        props.onTableChange(action, tableState, props.rows, { pageInd, setPageInd, setRowsPerPage })
+      }
     },
+
+    ...props.options
   };
 
   if (props.header === "Well Interests"
@@ -2900,20 +3105,64 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    return props.header === 'Contacts' ? (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
-        <Contact />
+    // return  props.header === 'Contacts' || props.header === 'Documents' ? (
+    //   <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left'}}>
+    //    {props.header === 'Documents' ? ( <DescriptionOutlinedIcon />) : ( <Contact />)}
+    //     <label style={{ marginLeft: '10px', fontSize: '16px'}}>{props.header}</label>
+    //     <ArrowRight/>
+    //     <label style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</label>
+    //   </div>
+    //   ) : props.header
+    if (props.header === 'Contacts') {
+      return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
+        {props.header === 'Documents' ? (<DescriptionOutlinedIcon />) : (<Contact />)}
         <label style={{ marginLeft: '10px', fontSize: '16px' }}>{props.header}</label>
         <ArrowRight />
-        <label style={{ color: '#18AADD', fontSize: '16px' }}>All Contacts</label>
+        <label style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</label>
       </div>
-    ) : props.header
+    }
+    else if (props.header === 'Documents') {
+      return <div style={{ display: 'flex', justifyContent: 'left' }}>
+        {props.header === 'Documents' ? (
+          //   <Accordion style={{width:'40px',backgroundColor:'transparent',display:'flex',flexDirection:'column',padding:'0px',}}>
+          //   <AccordionSummary
+          //     // expandIcon={<SearchIcon style={{color:'white',backgroundColor:'transparent'}}></SearchIcon>}
+
+          //      style={{ maxHeight:'43px',backgroundColor:'transparent',marginTop:'0px !important'}}
+          //   >
+          //     <DescriptionOutlinedIcon style={{backgroundColor:'transparent',padding:'0px'}}></DescriptionOutlinedIcon>
+          //   </AccordionSummary>
+          //   <AccordionDetails style={{width:'300px',backgroundColor:'white',display:'flex',flexDirection:'column',padding:'0px',border:'2px solid #d1cfcf',    marginTop: '-11px'}}>
+
+          //     <Typography style={{padding:'9px',color:'rgb(24, 170, 221)', cursor:'pointer'}} variant='subtitle2'>
+          //         All Documents
+          //     </Typography>
+
+          //     <Typography style={{padding:'6px',paddingLeft:'9px',backgroundColor:'#f2f2f2',width:'100%',borderTop:'1px solid #d1cfcf'}} variant='caption'>
+          //         Agreements
+          //     </Typography>
+          //     <Typography style={{padding:'9px',cursor:'pointer'}} variant='subtitle2'>
+          //        ShapFiles
+          //     </Typography>
+          //   </AccordionDetails>
+          // </Accordion>
+          <DescriptionOutlinedIcon ></DescriptionOutlinedIcon>
+        ) : (<Contact />)}
+        <label style={{ marginLeft: '10px', fontSize: '16px' }}>{props.header}</label>
+        <ArrowRight />
+        <label style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</label>
+      </div>
+    }
+    else {
+      return props.header
+    }
   }
   return (
     <div style={{
       width: "100%",
       height: "100%",
-      position: "relative"
+      position: "relative",
+
     }}>
       <div
         className={`${classes.table} ${rows && !props.loading ? "" : classes.loadingTable
@@ -2926,7 +3175,7 @@ function SubTable(props) {
           data={rows ? rows : []}
           columns={columns ? columns : []}
           components={{
-            TableFilterList: props.header == 'Tax Roll Ownership' ? TableFilterList : null,
+            TableFilterList: props.header == 'Tax Roll Ownership' && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,
               ViewColumnIcon,
@@ -2935,6 +3184,8 @@ function SubTable(props) {
           options={{
             ...options,
             // searchText: props.header === 'Contacts' ? stateApp.contactSearchQuery : null,
+            onSearchOpen: () => openSearch(true),
+            onSearchClose: () => openSearch(false),
             search:
               (
                 props.header === 'Contacts'
@@ -3028,6 +3279,7 @@ function SubTable(props) {
                     openDialog === "addOwnerToParcel" ||
                     openDialog === "deleteOwnersFromContact" ||
                     openDialog === "deleteContact" ||
+                    openDialog === "deleteDocument" ||
                     openDialog === "deleteUser"
                     ? "xs"
                     : "sm"
@@ -3160,6 +3412,23 @@ function SubTable(props) {
 
                 {props.header === "Contacts" &&
                   `Do you want to delete the selected contact${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
+                  }?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "deleteDocument" && (
+              <DeleteConfirmationDialogContent
+                header="Delete Document(s)"
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {props.header === "Documents" &&
+                  `Do you want to delete the selected documents${m1nSelectedRowsIds &&
                     m1nSelectedRowsIds.length > 1 &&
                     removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                     ? "s"
