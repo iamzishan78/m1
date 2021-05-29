@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     // overflow: "hidden",
     color: props.muted ? theme.palette.primary.dark : "inherit",
     "&:hover": {
-      background: props.muted ? "#4B618F" : "#263451",
+      background: props.muted ? "#4B618F" : "transparent",
     },
   }),
   listItem: {
@@ -36,14 +36,14 @@ const useStyles = makeStyles((theme) => ({
   },
   listItemIcon: {
     color: "#fff",
-    "float": "right",
+    float: "right",
   },
 }));
 
 const PipelineCard = (props) => {
   const { pipeline, selectedPipelines, onFlowlineSelect, data, handleDragBegin, handleDragEnd } = props;
   const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
-  const { type, collapsed, name } = data;
+  // const { type, collapsed, name } = data;
 
   const [{ isDragging }, drag, preview] = useDrag({
     collect: (monitor) => {
