@@ -4804,6 +4804,7 @@ function Map() {
     }
   }, [stateApp.selectedParcel]);
 
+
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
@@ -4882,13 +4883,12 @@ function Map() {
      showExpandableCard && (
        <PortalD id="popupContainer">
          {console.log('PERMITS INFO', stateApp.selectedPermit)}
-         {console.log('LEASE', stateApp.selectedPermit.Lease)}
 
 	 {!stateApp.expandedCard && (
 	   <ExpandableCardProvider
 	     handleCloseExpandableCard={handleCloseExpandableCard}
 	     component={<PermitCardProvider />}
-	     title={stateApp.selectedPermit.Lease + " Well-" + stateApp.selectedPermit.WellNumber}
+	     title={stateApp.selectedPermit.Lease}
 	     subTitle={stateApp.selectedPermit.ApiNumber}
 	     parent="map"
 	     mouseX={0}
