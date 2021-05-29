@@ -225,6 +225,21 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: '#fff',
     },
   },
+  dealNameRoot: {
+    fontWeight: 'bold',
+    fontSize: '1.2rem',
+    '&.Mui-focused fieldset': {
+      border: '1px solid black',
+      backgroundColor: 'transparent',
+    },
+    '&:hover': {
+      border: '1px solid black',
+    },
+    '&:active': {
+      border: '1px solid black',
+      backgroundColor: '#fff',
+    },
+  },
   notchedOutline: {
     border: 0,
   },
@@ -295,7 +310,7 @@ function AddDealDialog(props) {
   );
   const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [title, setTitle] = useState(''); // title change from contact.name to dealName
+  const [title, setTitle] = useState('GSC PROJECT 1'); // title change from contact.name to dealName
   const [titleFocus, setTitleFocus] = useState(false);
   const [label, setLabel] = useState('');
   const [stageId, setStageId] = useState(null);
@@ -1272,7 +1287,6 @@ function AddDealDialog(props) {
                 <TextField
                   margin="dense"
                   value={title}
-                  label="Deal Name"
                   variant="outlined"
                   required
                   error={valid['title']}
@@ -1288,8 +1302,12 @@ function AddDealDialog(props) {
                       title: false,
                     });
                   }}
-                  style={{
-                    fontSize: '2rem',
+                  InputProps={{
+                    classes: {
+                      root: classes.dealNameRoot,
+                      focused: classes.focused,
+                      notchedOutline: classes.notchedOutline,
+                    },
                   }}
                   onBlur={() => setTitleFocus(false)}
                   onFocus={() => setTitleFocus(true)}
