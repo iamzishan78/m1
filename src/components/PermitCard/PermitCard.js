@@ -280,7 +280,7 @@ export default function PermitCard() {
       </TableCell>
 	</TableRow>
 
-	<TableRow className={classes.rowWhite}>
+	<TableRow className={classes.rowGrey}>
 	<TableCell className={classes.cell1} align="left">
 	Permit #
   </TableCell>
@@ -291,7 +291,7 @@ export default function PermitCard() {
       </TableCell>
 	</TableRow>
 
-	<TableRow className={classes.rowGray}>
+	<TableRow className={classes.rowWhite}>
 	<TableCell className={classes.cell1} align="left">
 	Operator
       </TableCell>
@@ -302,7 +302,7 @@ export default function PermitCard() {
       </TableCell>
 	</TableRow>
 
-	<TableRow className={classes.rowWhite}>
+	<TableRow className={classes.rowGrey}>
 	<TableCell className={classes.cell1} align="left">
 	Well Type
       </TableCell>
@@ -313,7 +313,7 @@ export default function PermitCard() {
       </TableCell>
 	</TableRow>
 
-	<TableRow className={classes.rowGray}>
+	<TableRow className={classes.rowWhite}>
 	<TableCell className={classes.cell1} align="left">
 	Submitted Date
       </TableCell>
