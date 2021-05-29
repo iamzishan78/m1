@@ -229,30 +229,48 @@ const useStyles = makeStyles((theme) => ({
     border: 0,
   },
   dealOwnerRoot: {
+    // This matches the specificity of the default styles at https://github.com/mui-org/material-ui/blob/v4.11.3/packages/material-ui-lab/src/Autocomplete/Autocomplete.js#L90
     '&[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input:first-child': {
       // Default left padding is 6px
+      paddingLeft: 26,
     },
+
     '& .MuiOutlinedInput-notchedOutline': {
       border: 0,
     },
     '&:hover.MuiOutlinedInput-root': {
       backgroundColor: '#EBEBEB',
     },
-    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+    '&:hover .MuiAutocomplete-popupIndicator': {
+      visibility: 'visible',
+      padding: '2px',
+      marginRight: '-2px',
+    },
+  },
+  dealOwnerRootFocused: {
+    '& .MuiOutlinedInput-notchedOutline': {
       border: '1px solid black',
-      backgroundColor: 'transparent',
     },
   },
   dealOwnerAvatar: {
-    width: theme.spacing(4),
-    height: theme.spacing(4),
+    width: theme.spacing(3),
+    height: theme.spacing(3),
     color: '#fff',
-    fontSize: '0.7rem',
+    fontSize: '0.6rem',
     backgroundColor: '#4880F6',
+    padding: '0.5em',
   },
   dealOwnerLabel: {
-    backgroundColor: 'white',
-    marginLeft: '1.3em',
+    marginLeft: 4,
+    marginTOP: -2,
+  },
+  popupIndicator: {
+    visibility: 'hidden',
+    padding: '2px',
+    marginRight: '-2px',
+    '&:hover': {
+      visibility: 'visible',
+    },
   },
 }));
 
@@ -285,7 +303,7 @@ function AddDealDialog(props) {
   const [description, setDescription] = useState('');
   const [pipelineId, setPipelineId] = useState(selectedPipe?._id);
   const [stagesToChoose, setStagesToChoose] = useState([]);
-  const [ownerId, setOwnerId] = useState(null);
+  const [ownerId, setOwnerId] = useState('');
   const [cardId, setCardId] = useState('');
   const [users, setUsers] = useState([]);
   const [closeDate, setCloseDate] = useState(new Date());
@@ -301,6 +319,7 @@ function AddDealDialog(props) {
 
   const [openContactDialog, setOpenContactDialog] = useState(false);
 
+  const [dealInfoFocus, setDealInfoFocus] = useState(false);
   const [pageVariables, setPageVariables] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
@@ -1431,53 +1450,26 @@ function AddDealDialog(props) {
                 // </div>
                 <></>
               )}
-              <FormControl
+
+              <TextField
+                margin="dense"
                 variant="outlined"
+                value={label}
+                error={isNaN(label)}
+                helperText={
+                  isNaN(label) ? 'Offer Price must be a valid number' : ''
+                }
+                label="Offer Price"
                 fullWidth
+                onChange={(e) => {
+                  setLabel(e.target.value);
+                }}
                 className={classes.inputField}
-                size="small"
-              >
-                <Autocomplete
-                  className={classes.fieldWidth}
-                  options={users}
-                  onChange={(e, user) => {
-                    setOwnerId(user?.value);
-                  }}
-                  value={users.find((user) => user?.value === ownerId) || null}
-                  getOptionLabel={(option) => option.text}
-                  getOptionSelected={(option) => option.value === ownerId}
-                  classes={{
-                    inputRoot: classes.dealOwnerRoot,
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      margin="dense"
-                      {...params}
-                      variant="outlined"
-                      label="Deal Owner"
-                      InputLabelProps={{
-                        shrink: true,
-                        classes: {
-                          root: classes.dealOwnerLabel,
-                        },
-                      }}
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <>
-                            <InputAdornment position="start">
-                              <Avatar className={classes.dealOwnerAvatar}>
-                                OP
-                              </Avatar>
-                            </InputAdornment>
-                            {params.InputProps.startAdornment}
-                          </>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-              </FormControl>
+                InputProps={{
+                  inputComponent: NumberFormatCustom,
+                }}
+              />
+
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -1498,6 +1490,9 @@ function AddDealDialog(props) {
                   onChange={(e) => {
                     setCloseDate(e.target.value);
                   }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
                   InputProps={{
                     classes: {
                       root: classes.root,
@@ -1507,25 +1502,6 @@ function AddDealDialog(props) {
                   }}
                 />
               </FormControl>
-              <TextField
-                margin="dense"
-                variant="outlined"
-                value={label}
-                error={isNaN(label)}
-                helperText={
-                  isNaN(label) ? 'Offer Price must be a valid number' : ''
-                }
-                label="Offer Price"
-                fullWidth
-                onChange={(e) => {
-                  setLabel(e.target.value);
-                }}
-                className={classes.inputField}
-                InputProps={{
-                  inputComponent: NumberFormatCustom,
-                }}
-              />
-
 
               <FormControl
                 variant="outlined"
@@ -1595,7 +1571,75 @@ function AddDealDialog(props) {
                 </Select>
               </FormControl>
 
-
+              <FormControl
+                variant="outlined"
+                fullWidth
+                className={classes.inputField}
+                size="small"
+              >
+                <Autocomplete
+                  className={classes.fieldWidth}
+                  options={users}
+                  onChange={(e, user) => {
+                    setOwnerId(user?.value);
+                  }}
+                  value={users.find((user) => user?.value === ownerId) || null}
+                  getOptionLabel={(option) => option.text}
+                  getOptionSelected={(option) => option.value === ownerId}
+                  classes={{
+                    inputRoot: classes.dealOwnerRoot,
+                    focused: classes.dealOwnerRootFocused,
+                    popupIndicator: classes.popupIndicator,
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      margin="dense"
+                      {...params}
+                      variant="outlined"
+                      label="Deal Owner"
+                      InputLabelProps={{
+                        ...params.InputLabelProps,
+                        shrink: true,
+                        classes: {
+                          root: classes.dealOwnerLabel,
+                        },
+                      }}
+                      placeholder="Assign Owner"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <>
+                            <InputAdornment position="start">
+                              <Avatar className={classes.dealOwnerAvatar}>
+                                {users.find((user) => user?.value === ownerId)
+                                  ? users
+                                      .find((user) => user?.value === ownerId)
+                                      .text.toString()
+                                      .toUpperCase()
+                                      .split(' ').length > 1
+                                    ? users
+                                        .find((user) => user?.value === ownerId)
+                                        .text.toString()
+                                        .toUpperCase()
+                                        .split(' ')[0][0] +
+                                      '' +
+                                      users
+                                        .find((user) => user?.value === ownerId)
+                                        .text.toString()
+                                        .toUpperCase()
+                                        .split(' ')[1][0]
+                                    : 'AO'
+                                  : 'AO'}
+                              </Avatar>
+                            </InputAdornment>
+                            {params.InputProps.startAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+              </FormControl>
 
               <TextField
                 //   autoFocus
