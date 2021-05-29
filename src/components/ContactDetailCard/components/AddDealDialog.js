@@ -1469,7 +1469,75 @@ function AddDealDialog(props) {
                   inputComponent: NumberFormatCustom,
                 }}
               />
-
+              <FormControl
+                variant="outlined"
+                fullWidth
+                className={classes.inputField}
+                size="small"
+              >
+                <Autocomplete
+                  className={classes.fieldWidth}
+                  options={users}
+                  onChange={(e, user) => {
+                    setOwnerId(user?.value);
+                  }}
+                  value={users.find((user) => user?.value === ownerId) || null}
+                  getOptionLabel={(option) => option.text}
+                  getOptionSelected={(option) => option.value === ownerId}
+                  classes={{
+                    inputRoot: classes.dealOwnerRoot,
+                    focused: classes.dealOwnerRootFocused,
+                    popupIndicator: classes.popupIndicator,
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      margin="dense"
+                      {...params}
+                      variant="outlined"
+                      label="Deal Owner"
+                      InputLabelProps={{
+                        ...params.InputLabelProps,
+                        shrink: true,
+                        classes: {
+                          root: classes.dealOwnerLabel,
+                        },
+                      }}
+                      placeholder="Assign Owner"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <>
+                            <InputAdornment position="start">
+                              <Avatar className={classes.dealOwnerAvatar}>
+                                {users.find((user) => user?.value === ownerId)
+                                  ? users
+                                      .find((user) => user?.value === ownerId)
+                                      .text.toString()
+                                      .toUpperCase()
+                                      .split(' ').length > 1
+                                    ? users
+                                        .find((user) => user?.value === ownerId)
+                                        .text.toString()
+                                        .toUpperCase()
+                                        .split(' ')[0][0] +
+                                      '' +
+                                      users
+                                        .find((user) => user?.value === ownerId)
+                                        .text.toString()
+                                        .toUpperCase()
+                                        .split(' ')[1][0]
+                                    : 'AO'
+                                  : 'AO'}
+                              </Avatar>
+                            </InputAdornment>
+                            {params.InputProps.startAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+              </FormControl>
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -1569,76 +1637,6 @@ function AddDealDialog(props) {
                       </option>
                     ))}
                 </Select>
-              </FormControl>
-
-              <FormControl
-                variant="outlined"
-                fullWidth
-                className={classes.inputField}
-                size="small"
-              >
-                <Autocomplete
-                  className={classes.fieldWidth}
-                  options={users}
-                  onChange={(e, user) => {
-                    setOwnerId(user?.value);
-                  }}
-                  value={users.find((user) => user?.value === ownerId) || null}
-                  getOptionLabel={(option) => option.text}
-                  getOptionSelected={(option) => option.value === ownerId}
-                  classes={{
-                    inputRoot: classes.dealOwnerRoot,
-                    focused: classes.dealOwnerRootFocused,
-                    popupIndicator: classes.popupIndicator,
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      margin="dense"
-                      {...params}
-                      variant="outlined"
-                      label="Deal Owner"
-                      InputLabelProps={{
-                        ...params.InputLabelProps,
-                        shrink: true,
-                        classes: {
-                          root: classes.dealOwnerLabel,
-                        },
-                      }}
-                      placeholder="Assign Owner"
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <>
-                            <InputAdornment position="start">
-                              <Avatar className={classes.dealOwnerAvatar}>
-                                {users.find((user) => user?.value === ownerId)
-                                  ? users
-                                      .find((user) => user?.value === ownerId)
-                                      .text.toString()
-                                      .toUpperCase()
-                                      .split(' ').length > 1
-                                    ? users
-                                        .find((user) => user?.value === ownerId)
-                                        .text.toString()
-                                        .toUpperCase()
-                                        .split(' ')[0][0] +
-                                      '' +
-                                      users
-                                        .find((user) => user?.value === ownerId)
-                                        .text.toString()
-                                        .toUpperCase()
-                                        .split(' ')[1][0]
-                                    : 'AO'
-                                  : 'AO'}
-                              </Avatar>
-                            </InputAdornment>
-                            {params.InputProps.startAdornment}
-                          </>
-                        ),
-                      }}
-                    />
-                  )}
-                />
               </FormControl>
 
               <TextField
