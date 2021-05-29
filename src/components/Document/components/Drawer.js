@@ -204,7 +204,6 @@ export default function DocumentDrawer() {
     useMutation(UPDATE_DOCUMENT);
 
   const UpDatefileFN = () => {
-    debugger
     let documentType = ''
     if(typeof newDocument.documentType === 'string'){
       documentType = newDocument.documentType
