@@ -1734,8 +1734,16 @@ function SubTable(props) {
                           : tableMeta.rowData[0];
 
                   return (
-                    <div style={{ marginRight: "10px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ marginRight: "10px", display: 'flex', justifyContent: 'left', alignItems: 'center' }}>
                     
+                    <IconButton    onClick={(e)=>{
+                        e.stopPropagation()
+                        console.log("modell download")
+                        handleViewFile(rows[tableMeta.rowIndex].fileId)
+                      }}>
+                        <GetAppIcon />
+                      </IconButton>
+
 
                        {/* BEGINNING OF SHITTY CODE === this find the file type and if pdf will show the icon */}
                        {rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length-1] 
@@ -1764,13 +1772,6 @@ function SubTable(props) {
                     }
                     {/* END OF THIS PARTICULAR BLOCK OF SHITTY CODE  */}
                      
-                     <IconButton    onClick={(e)=>{
-                        e.stopPropagation()
-                        console.log("modell download")
-                        handleViewFile(rows[tableMeta.rowIndex].fileId)
-                      }}>
-                        <GetAppIcon />
-                      </IconButton>
 
                     </div>
                   );
@@ -2393,9 +2394,13 @@ function SubTable(props) {
                       size="medium"
                       style={{ margin: "0 5px" }}
                       onClick={(e) => {
-                        props.header !== "Active Users"
-                          ? handleExpandClick(null, null, null, "deleteContact")
-                          : handleExpandClick(null, null, null, "deleteUser");
+                        if (props.header === 'Documents') {
+                          handleExpandClick(null, null, null, "deleteDocument")
+                        } else if (props.header !== "Active Users") {
+                          handleExpandClick(null, null, null, "deleteContact")
+                        }else{
+                          handleExpandClick(null, null, null, "deleteUser");
+                        }
                       }}
                       aria-label="delete"
                     >
@@ -3274,6 +3279,7 @@ function SubTable(props) {
                     openDialog === "addOwnerToParcel" ||
                     openDialog === "deleteOwnersFromContact" ||
                     openDialog === "deleteContact" ||
+                    openDialog === "deleteDocument" ||
                     openDialog === "deleteUser"
                     ? "xs"
                     : "sm"
@@ -3406,6 +3412,23 @@ function SubTable(props) {
 
                 {props.header === "Contacts" &&
                   `Do you want to delete the selected contact${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
+                  }?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "deleteDocument" && (
+              <DeleteConfirmationDialogContent
+                header="Delete Document(s)"
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {props.header === "Documents" &&
+                  `Do you want to delete the selected documents${m1nSelectedRowsIds &&
                     m1nSelectedRowsIds.length > 1 &&
                     removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                     ? "s"

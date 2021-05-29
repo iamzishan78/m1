@@ -10,6 +10,10 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import { AppContext } from "AppContext";
 import CloseIcon from "@material-ui/icons/Close";
+import { Typography, Grid } from "@material-ui/core";
+import loadashFilter from "lodash/filter";
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+
 import {
   CircularProgress,
   Dialog,
@@ -18,7 +22,9 @@ import {
   TextField,
   withStyles,
 } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import Autocomplete, {
+  createFilterOptions,
+} from "@material-ui/lab/Autocomplete";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -30,16 +36,20 @@ import {
   faFilePowerpoint,
   faFileWord,
   faFileExcel,
-  faFile
+  faFile,
 } from "@fortawesome/free-solid-svg-icons";
+import joinAddress from "components/Shared/valueformatters/join-address.js";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { DELETEDESCRIPTORFILE } from "graphQL/useMutationDeleteDescriptorFile";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import DeleteDocumentConfirmation from "components/Shared/DeleteDocumentConfirmation";
-import { UPDATEFILE } from "graphQL/useMutationUpdateFile";
+import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
+import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
 import { setStateIfDeepEqual } from "components/Shared/functions";
+
+const filter = createFilterOptions();
+
 const useStyles = makeStyles({
   list: {
     width: 250,
@@ -152,6 +162,16 @@ export default function DocumentDrawer() {
   });
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [recentFiles, setRecentFiles] = useState([]);
+  const [newDocument, setNewDocument] = useState({
+    fileName: "",
+    dateTime: new Date(),
+    documentNumber: "No Number",
+    documentType: "",
+    partyName1: "",
+    partyName2: "",
+    fileId: "",
+  });
+
   const [nameAutValueParty1, setNameAutValueParty1] = useState({
     name: "",
     _id: null,
@@ -164,32 +184,47 @@ export default function DocumentDrawer() {
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
-  const [selectedDate, setSelectedDate] = React.useState(
-    new Date("2014-08-18T21:11:54")
-  );
+
   let [loader, setLoader] = useState(false);
-  let [inputValue, setInputValue] = useState();
   const [viewFile, { data: viewFileResult, loading: viewFileLoading }] =
     useLazyQuery(VIEWFILEQUERY, {
       fetchPolicy: "no-cache",
     });
 
-  const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
-  const [updateFile, { loading: updateFileloading }] = useMutation(UPDATEFILE);
+  const [getDocumentTypes, { data: documentTypes }] = useLazyQuery(
+    DOCUMENT_TYPE,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
+
+  useEffect(() => {
+    getDocumentTypes();
+  }, [getDocumentTypes]);
+
+  const [updateDocument, { loading: updateFileloading }] =
+    useMutation(UPDATE_DOCUMENT);
 
   const UpDatefileFN = () => {
+    let documentType = ''
+    if(typeof newDocument.documentType === 'string'){
+      documentType = newDocument.documentType
+    }else if(newDocument.documentType?.name){
+      documentType = newDocument.documentType.name
+    }
     if (stateApp.selectedDocument.fileId) {
       setLoader(true);
-      updateFile({
+      updateDocument({
         variables: {
-          fileName: stateApp.selectedDocument.fileName,
-          dateTime: String(stateApp.selectedDocument.dateTime),
-          documentNumber: stateApp.selectedDocument.documentNumber,
-          documentType: stateApp.selectedDocument.documentType,
-          partyName1: stateApp.selectedDocument.partyName1,
-          partyName2: stateApp.selectedDocument.partyName2,
-          relatedObjectId: stateApp.selectedDocument.relatedObjectId,
-          fileId: stateApp.selectedDocument.fileId,
+          document: {
+            fileName: newDocument.fileName,
+            dateTime: newDocument.dateTime,
+            documentNumber: newDocument.documentNumber,
+            documentType: documentType,
+            partyName1: nameAutValueParty1._id,
+            partyName2: nameAutValueParty2._id,
+            fileId: newDocument.fileId,
+          },
         },
       }).then(() => {
         setLoader(false);
@@ -206,16 +241,27 @@ export default function DocumentDrawer() {
     setFileIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
   };
+  const handleClose = () => {
+    setStateApp({
+      ...stateApp,
+      DocumentDrawer: false,
+      selectedDocument: {},
+    });
+    UpDatefileFN();
+  };
 
   const handleDeleteAccept = () => {
     // Delete Document Logic goes here
     if (fileIdToDelete) {
       setLoader(true);
-      deleteFile({
+      updateDocument({
         variables: {
-          id: fileIdToDelete,
+          document: {
+            fileId: fileIdToDelete,
+            isDeleted: true,
+          },
         },
-        refetchQueries: ["getFileDescriptors"],
+        refetchQueries: ["getDocuments"],
         awaitRefetchQueries: true,
       }).then(() => {
         setStateApp({
@@ -225,7 +271,6 @@ export default function DocumentDrawer() {
         });
         setFileIdToDelete(null);
         setOpenDeleteConfirmDialog(false);
-
         setLoader(false);
       });
     }
@@ -259,21 +304,37 @@ export default function DocumentDrawer() {
       viewFiles({
         variables: { fileIds: ID },
       });
+      if (stateApp.selectedDocument) {
+        const {
+          fileName,
+          dateTime,
+          documentNumber,
+          documentType,
+          partyName1,
+          partyName2,
+          fileId,
+        } = stateApp.selectedDocument;
+        setNameAutValueParty1({
+          name: partyName1?.entityDetail?.name,
+          _id: partyName1?._id,
+        });
+        setNameAutValueParty2({
+          name: partyName2?.entityDetail?.name,
+          _id: partyName2?._id,
+        });
+
+        setNewDocument({
+          fileName,
+          dateTime,
+          documentNumber,
+          documentType,
+          partyName1,
+          partyName2,
+          fileId,
+        });
+      }
     }
   }, [stateApp.selectedDocument]);
-
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    console.log(date, "Date Change");
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      selectedDocument: {
-        ...stateApp.selectedDocument,
-        dateTime: String(date["_d"]),
-      },
-    }));
-    console.log(stateApp.selectedDocument, "Selected Document");
-  };
 
   const LightTooltip = withStyles((theme) => ({
     tooltip: {
@@ -339,12 +400,12 @@ export default function DocumentDrawer() {
           />
         );
       case "doc":
-        return(
+        return (
           <FontAwesomeIcon
             icon={faFileWord}
             style={{ fontSize: "2rem", color: "#2A5599" }}
           />
-        )
+        );
       case "docx":
         return (
           <FontAwesomeIcon
@@ -376,7 +437,6 @@ export default function DocumentDrawer() {
         );
     }
   };
-
 
   const DocumentDetail = (anchor) => (
     <div
@@ -419,13 +479,7 @@ export default function DocumentDrawer() {
             )}
             <IconButton
               size="small"
-              onClick={() => {
-                setStateApp({
-                  ...stateApp,
-                  DocumentDrawer: false,
-                  selectedDocument: {},
-                });
-              }}
+              onClick={() => handleClose()}
             >
               <CloseIcon></CloseIcon>
             </IconButton>
@@ -442,18 +496,11 @@ export default function DocumentDrawer() {
           <TextField
             className={classes.maxWidth}
             multiline
-            value={
-              stateApp.selectedDocument?.documentNumber
-                ? stateApp.selectedDocument?.documentNumber
-                : "No Number"
-            }
+            value={newDocument?.documentNumber}
             onChange={(e) => {
-              setStateApp({
-                ...stateApp,
-                selectedDocument: {
-                  ...stateApp.selectedDocument,
-                  documentNumber: e.target.value,
-                },
+              setNewDocument({
+                ...newDocument,
+                documentNumber: e.target.value,
               });
             }}
           />
@@ -469,14 +516,11 @@ export default function DocumentDrawer() {
           <TextField
             className={classes.maxWidth}
             multiline
-            value={stateApp.selectedDocument.fileName}
+            value={newDocument?.fileName}
             onChange={(e) => {
-              setStateApp({
-                ...stateApp,
-                selectedDocument: {
-                  ...stateApp.selectedDocument,
-                  fileName: e.target.value,
-                },
+              setNewDocument({
+                ...newDocument,
+                fileName: e.target.value,
               });
             }}
           />
@@ -489,29 +533,16 @@ export default function DocumentDrawer() {
           }}
         >
           <h4>Document Type</h4>
-          <Autocomplete
+          <DocumentType
             className={classes.maxWidth}
-            options={["pdf", "doc", "txt"]}
-            value={stateApp.selectedDocument.documentType}
-            onChange={(e, value) => {
-              console.log(value, "DocumentType");
-              e.preventDefault();
-              setStateApp({
-                ...stateApp,
-                selectedDocument: {
-                  ...stateApp.selectedDocument,
-                  documentType: value,
-                },
-              });
+            documentTypes={documentTypes}
+            setDocumentType={(value) => { 
+              setNewDocument({
+                ...newDocument,
+                documentType: value,
+              })
             }}
-            renderInput={(params) => (
-              <TextField
-                size="small"
-                {...params}
-                className={classes.maxWidth}
-                multiline
-              />
-            )}
+            value={newDocument.documentType? newDocument.documentType : ""}
           />
         </ListItem>
         <ListItem
@@ -526,15 +557,16 @@ export default function DocumentDrawer() {
             className={classes.maxWidth}
             disableToolbar
             variant="inline"
-            format="MM/dd/yyyy"
+            format="MM/DD/YYYY"
             margin="normal"
             id="date-picker-inline"
-            value={
-              stateApp.selectedDocument?.fileId
-                ? stateApp.selectedDocument?.dateTime
-                : selectedDate
-            }
-            onChange={handleDateChange}
+            value={newDocument?.dateTime}
+            onChange={(date) => {
+              setNewDocument({
+                ...newDocument,
+                dateTime: String(date["_d"]),
+              });
+            }}
             KeyboardButtonProps={{
               "aria-label": "change date",
             }}
@@ -552,29 +584,6 @@ export default function DocumentDrawer() {
             nameAutValue={nameAutValueParty1}
             setNameAutValue={setNameAutValueParty1}
           />
-          {/* <Autocomplete
-            className={classes.maxWidth}
-            options={["John Doe", "Mickel Jackson", "Phil Heath"]}
-            value={stateApp.selectedDocument.partyName1}
-            onChange={(e, value) => {
-              e.preventDefault();
-              setStateApp({
-                ...stateApp,
-                selectedDocument: {
-                  ...stateApp.selectedDocument,
-                  partyName1: value,
-                },
-              });
-            }}
-            renderInput={(params) => (
-              <TextField
-                size="small"
-                {...params}
-                className={classes.maxWidth}
-                multiline
-              />
-            )}
-          /> */}
         </ListItem>
         <ListItem
           style={{
@@ -588,28 +597,6 @@ export default function DocumentDrawer() {
             nameAutValue={nameAutValueParty2}
             setNameAutValue={setNameAutValueParty2}
           />
-          {/* <Autocomplete
-            className={classes.maxWidth}
-            options={["John Doe", "Mickel Jackson", "Phil Heath"]}
-            value={stateApp.selectedDocument.partyName2}
-            onChange={(e, value) => {
-              setStateApp({
-                ...stateApp,
-                selectedDocument: {
-                  ...stateApp.selectedDocument,
-                  partyName2: value,
-                },
-              });
-            }}
-            renderInput={(params) => (
-              <TextField
-                size="small"
-                {...params}
-                className={classes.maxWidth}
-                multiline
-              />
-            )}
-          /> */}
         </ListItem>
         {stateApp.selectedDocument?.fileId ? (
           <ListItem>
@@ -772,11 +759,7 @@ export default function DocumentDrawer() {
             margin: "0px 15px 0px 0px",
           }}
           onClick={() => {
-            setStateApp({
-              ...stateApp,
-              DocumentDrawer: false,
-              selectedDocument: {},
-            });
+            handleClose()
           }}
         >
           Cancel
@@ -789,273 +772,10 @@ export default function DocumentDrawer() {
           disableElevation
           onClick={() => {
             setLoader(true);
-            UpDatefileFN();
-          }}
-          className={classes.footerButton}
-        >
-          Save
-        </Button>
-      </div>
-
-      <Divider />
-    </div>
-  );
-  const list = (anchor) => (
-    <div
-      style={{ width: "500px", marginLeft: "15px" }}
-      className={clsx(classes.list, {
-        [classes.fullList]: anchor === "top" || anchor === "bottom",
-      })}
-      role="presentation"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
-    >
-      <List>
-        <ListItem
-          style={{
-            display: "flex",
-            justifyContent: "between",
-            width: "100%",
-            alignItems: "center",
-          }}
-        >
-          <ListItemText>
-            <h3>Add New Document</h3>
-          </ListItemText>
-          <ListItemIcon
-            style={{ cursor: "pointer" }}
-            onClick={() => {
-              console.log(stateApp.refetchDocument, "Refetch documents");
-              setStateApp({
-                ...stateApp,
-                DocumentDrawer: false,
-                selectedDocument: {},
-              });
-            }}
-          >
-            <CloseIcon></CloseIcon>
-          </ListItemIcon>
-        </ListItem>
-        <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Document Number</h4>
-          <TextField className={classes.maxWidth} multiline />
-        </ListItem>
-        <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Document Name</h4>
-          <TextField className={classes.maxWidth} multiline />
-        </ListItem>
-        <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Document Type</h4>
-          <Autocomplete
-            className={classes.maxWidth}
-            options={["pdf", "doc", "txt"]}
-            // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
-            // value={users.find((user) => user?.value === newContact.contactOwner) || null}
-            // getOptionLabel={(option) => option.text}
-            // getOptionSelected={(option) => option.value === newContact.contactOwner}
-            renderInput={(params) => (
-              <TextField
-                size="small"
-                {...params}
-                className={classes.maxWidth}
-                multiline
-              />
-            )}
-          />
-        </ListItem>
-
-        <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Document Type</h4>
-          <KeyboardDatePicker
-            className={classes.maxWidth}
-            disableToolbar
-            variant="inline"
-            format="MM/dd/yyyy"
-            margin="normal"
-            id="date-picker-inline"
-            // label={<h4 style={{paddingBottom:'30px'}}>Document Date</h4>}
-            value={selectedDate}
-            onChange={handleDateChange}
-            KeyboardButtonProps={{
-              "aria-label": "change date",
-            }}
-          />
-        </ListItem>
-        <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Party 1 Name</h4>
-          <Autocomplete
-            className={classes.maxWidth}
-            options={["John Doe", "Mickel Jackson", "Phil Heath"]}
-            // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
-            // value={users.find((user) => user?.value === newContact.contactOwner) || null}
-            // getOptionLabel={(option) => option.text}
-            // getOptionSelected={(option) => option.value === newContact.contactOwner}
-            renderInput={(params) => (
-              <TextField
-                size="small"
-                {...params}
-                className={classes.maxWidth}
-                multiline
-              />
-            )}
-          />
-        </ListItem>
-        <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <h4>Party 2 Name</h4>
-          <Autocomplete
-            className={classes.maxWidth}
-            options={["John Doe", "Mickel Jackson", "Phil Heath"]}
-            // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
-            // value={users.find((user) => user?.value === newContact.contactOwner) || null}
-            // getOptionLabel={(option) => option.text}
-            // getOptionSelected={(option) => option.value === newContact.contactOwner}
-            renderInput={(params) => (
-              <TextField
-                size="small"
-                {...params}
-                className={classes.maxWidth}
-                multiline
-              />
-            )}
-          />
-        </ListItem>
-        <ListItem>
-          <h4>Click or drag and drop file to upload</h4>
-        </ListItem>
-
-        <div style={{ display: "flex", justifyContent: "start" }}>
-          {console.log(recentFiles, "Files data in Adddialog")}
-          {recentFiles?.map((value, key) => {
-            let fileExtension = value?.name
-              ?.slice(value.name.lastIndexOf(".") + 1)
-              ?.toLowerCase();
-            if (key <= 1) {
-              return (
-                <div key={key}>
-                  <LightTooltip
-                    title={
-                      <div className={classes.IconSection}>
-                        <IconButton
-                          size="small"
-                          onClick={() => {
-                            setOpenDeleteConfirmDialog(true);
-                            setFileIdToDelete(value.id);
-                          }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-
-                        <IconButton
-                          disabled={false}
-                          size="small"
-                          // onClick={() =>
-                          //   handleViewFile(
-                          //     files?.getFileDescriptors[key].fileId
-                          //   )
-                          // }
-                        >
-                          <GetAppIcon />
-                        </IconButton>
-                      </div>
-                    }
-                    interactive
-                  >
-                    <div>
-                      {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(
-                        fileExtension
-                      ) ? (
-                        <img
-                          src={value.uri}
-                          alt={value.name}
-                          className={classes.forImage}
-                        ></img>
-                      ) : (
-                        <div className={classes.forImageContainer}>
-                          {/* {fileExtension} */}
-                          {getFileIcon(fileExtension)}
-                        </div>
-                      )}
-                      <div className={classes.imageSubText}>
-                        {value?.name?.length > 12
-                          ? value.name.slice(0, 8) + "..."
-                          : value.name}
-                      </div>
-                    </div>
-                  </LightTooltip>
-                </div>
-              );
+            if (stateApp.selectedDocument.fileId) {
+              UpDatefileFN();
             }
-          })}
-          <div style={{ width: "150px", marginLeft: "20px" }}>
-            <UploadZone style={{ width: "150px", height: "150px" }} />
-          </div>
-        </div>
-      </List>
-
-      <div className={classes.dialogFooter}>
-        <Button
-          variant="contained"
-          color="default"
-          size="medium"
-          disableElevation
-          // disabled={updateDealLoading || addContactLoading}
-          className={classes.footerButton}
-          style={{
-            margin: "0px 15px 0px 0px",
           }}
-          onClick={() => {
-            setStateApp({
-              ...stateApp,
-              DocumentDrawer: false,
-              selectedDocument: {},
-            });
-          }}
-        >
-          Cancel
-        </Button>
-
-        <Button
-          variant="contained"
-          color="secondary"
-          size="medium"
-          disableElevation
-          // onClick={handleUpdate}
           className={classes.footerButton}
         >
           Save
@@ -1065,21 +785,286 @@ export default function DocumentDrawer() {
       <Divider />
     </div>
   );
-  let obj = new Object();
+  // const list = (anchor) => (
+  //   <div
+  //     style={{ width: "500px", marginLeft: "15px" }}
+  //     className={clsx(classes.list, {
+  //       [classes.fullList]: anchor === "top" || anchor === "bottom",
+  //     })}
+  //     role="presentation"
+  //     onClick={toggleDrawer(anchor, false)}
+  //     onKeyDown={toggleDrawer(anchor, false)}
+  //   >
+  //     <List>
+  //       <ListItem
+  //         style={{
+  //           display: "flex",
+  //           justifyContent: "between",
+  //           width: "100%",
+  //           alignItems: "center",
+  //         }}
+  //       >
+  //         <ListItemText>
+  //           <h3>Add New Document</h3>
+  //         </ListItemText>
+  //         <ListItemIcon
+  //           style={{ cursor: "pointer" }}
+  //           onClick={() => {
+  //             console.log(stateApp.refetchDocument, "Refetch documents");
+  //             setStateApp({
+  //               ...stateApp,
+  //               DocumentDrawer: false,
+  //               selectedDocument: {},
+  //             });
+  //           }}
+  //         >
+  //           <CloseIcon></CloseIcon>
+  //         </ListItemIcon>
+  //       </ListItem>
+  //       <ListItem
+  //         style={{
+  //           flexDirection: "column",
+  //           justifyContent: "start",
+  //           alignItems: "start",
+  //         }}
+  //       >
+  //         <h4>Document Number</h4>
+  //         <TextField className={classes.maxWidth} multiline />
+  //       </ListItem>
+  //       <ListItem
+  //         style={{
+  //           flexDirection: "column",
+  //           justifyContent: "start",
+  //           alignItems: "start",
+  //         }}
+  //       >
+  //         <h4>Document Name</h4>
+  //         <TextField className={classes.maxWidth} multiline />
+  //       </ListItem>
+  //       <ListItem
+  //         style={{
+  //           flexDirection: "column",
+  //           justifyContent: "start",
+  //           alignItems: "start",
+  //         }}
+  //       >
+  //         <h4>Document Type</h4>
+  //         <Autocomplete
+  //           className={classes.maxWidth}
+  //           options={["pdf", "doc", "txt"]}
+  //           // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+  //           // value={users.find((user) => user?.value === newContact.contactOwner) || null}
+  //           // getOptionLabel={(option) => option.text}
+  //           // getOptionSelected={(option) => option.value === newContact.contactOwner}
+  //           renderInput={(params) => (
+  //             <TextField
+  //               size="small"
+  //               {...params}
+  //               className={classes.maxWidth}
+  //               multiline
+  //             />
+  //           )}
+  //         />
+  //       </ListItem>
+
+  //       <ListItem
+  //         style={{
+  //           flexDirection: "column",
+  //           justifyContent: "start",
+  //           alignItems: "start",
+  //         }}
+  //       >
+  //         <h4>Document Type</h4>
+  //         <KeyboardDatePicker
+  //           className={classes.maxWidth}
+  //           disableToolbar
+  //           variant="inline"
+  //           format="MM/dd/yyyy"
+  //           margin="normal"
+  //           id="date-picker-inline"
+  //           // label={<h4 style={{paddingBottom:'30px'}}>Document Date</h4>}
+  //           value={selectedDate}
+  //           onChange={handleDateChange}
+  //           KeyboardButtonProps={{
+  //             "aria-label": "change date",
+  //           }}
+  //         />
+  //       </ListItem>
+  //       <ListItem
+  //         style={{
+  //           flexDirection: "column",
+  //           justifyContent: "start",
+  //           alignItems: "start",
+  //         }}
+  //       >
+  //         <h4>Party 1 Name</h4>
+  //         <Autocomplete
+  //           className={classes.maxWidth}
+  //           options={["John Doe", "Mickel Jackson", "Phil Heath"]}
+  //           // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+  //           // value={users.find((user) => user?.value === newContact.contactOwner) || null}
+  //           // getOptionLabel={(option) => option.text}
+  //           // getOptionSelected={(option) => option.value === newContact.contactOwner}
+  //           renderInput={(params) => (
+  //             <TextField
+  //               size="small"
+  //               {...params}
+  //               className={classes.maxWidth}
+  //               multiline
+  //             />
+  //           )}
+  //         />
+  //       </ListItem>
+  //       <ListItem
+  //         style={{
+  //           flexDirection: "column",
+  //           justifyContent: "start",
+  //           alignItems: "start",
+  //         }}
+  //       >
+  //         <h4>Party 2 Name</h4>
+  //         <Autocomplete
+  //           className={classes.maxWidth}
+  //           options={["John Doe", "Mickel Jackson", "Phil Heath"]}
+  //           // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
+  //           // value={users.find((user) => user?.value === newContact.contactOwner) || null}
+  //           // getOptionLabel={(option) => option.text}
+  //           // getOptionSelected={(option) => option.value === newContact.contactOwner}
+  //           renderInput={(params) => (
+  //             <TextField
+  //               size="small"
+  //               {...params}
+  //               className={classes.maxWidth}
+  //               multiline
+  //             />
+  //           )}
+  //         />
+  //       </ListItem>
+  //       <ListItem>
+  //         <h4>Click or drag and drop file to upload</h4>
+  //       </ListItem>
+
+  //       <div style={{ display: "flex", justifyContent: "start" }}>
+  //         {console.log(recentFiles, "Files data in Adddialog")}
+  //         {recentFiles?.map((value, key) => {
+  //           let fileExtension = value?.name
+  //             ?.slice(value.name.lastIndexOf(".") + 1)
+  //             ?.toLowerCase();
+  //           if (key <= 1) {
+  //             return (
+  //               <div key={key}>
+  //                 <LightTooltip
+  //                   title={
+  //                     <div className={classes.IconSection}>
+  //                       <IconButton
+  //                         size="small"
+  //                         onClick={() => {
+  //                           setOpenDeleteConfirmDialog(true);
+  //                           setFileIdToDelete(value.id);
+  //                         }}
+  //                       >
+  //                         <DeleteIcon />
+  //                       </IconButton>
+
+  //                       <IconButton
+  //                         disabled={false}
+  //                         size="small"
+  //                         // onClick={() =>
+  //                         //   handleViewFile(
+  //                         //     files?.getFileDescriptors[key].fileId
+  //                         //   )
+  //                         // }
+  //                       >
+  //                         <GetAppIcon />
+  //                       </IconButton>
+  //                     </div>
+  //                   }
+  //                   interactive
+  //                 >
+  //                   <div>
+  //                     {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(
+  //                       fileExtension
+  //                     ) ? (
+  //                       <img
+  //                         src={value.uri}
+  //                         alt={value.name}
+  //                         className={classes.forImage}
+  //                       ></img>
+  //                     ) : (
+  //                       <div className={classes.forImageContainer}>
+  //                         {/* {fileExtension} */}
+  //                         {getFileIcon(fileExtension)}
+  //                       </div>
+  //                     )}
+  //                     <div className={classes.imageSubText}>
+  //                       {value?.name?.length > 12
+  //                         ? value.name.slice(0, 8) + "..."
+  //                         : value.name}
+  //                     </div>
+  //                   </div>
+  //                 </LightTooltip>
+  //               </div>
+  //             );
+  //           }
+  //         })}
+  //         <div style={{ width: "150px", marginLeft: "20px" }}>
+  //           <UploadZone style={{ width: "150px", height: "150px" }} />
+  //         </div>
+  //       </div>
+  //     </List>
+
+  //     <div className={classes.dialogFooter}>
+  //       <Button
+  //         variant="contained"
+  //         color="default"
+  //         size="medium"
+  //         disableElevation
+  //         // disabled={updateDealLoading || addContactLoading}
+  //         className={classes.footerButton}
+  //         style={{
+  //           margin: "0px 15px 0px 0px",
+  //         }}
+  //         onClick={() => {
+  //           setStateApp({
+  //             ...stateApp,
+  //             DocumentDrawer: false,
+  //             selectedDocument: {},
+  //           });
+  //         }}
+  //       >
+  //         Cancel
+  //       </Button>
+
+  //       <Button
+  //         variant="contained"
+  //         color="secondary"
+  //         size="medium"
+  //         disableElevation
+  //         // onClick={handleUpdate}
+  //         className={classes.footerButton}
+  //       >
+  //         Save
+  //       </Button>
+  //     </div>
+
+  //     <Divider />
+  //   </div>
+  // );
+  // let obj = new Object();
+
   return (
     <div>
+      {/* <ClickAwayListener onClickAway={() => {handleClose()}}> */}
       <Drawer
         anchor={"right"}
         open={
-          stateApp.DocumentDrawer ||
+          stateApp.DocumentDrawer===true ||
           Object.entries(stateApp.selectedDocument).length > 0
         }
-        // onClose={()=>{
-        //   setStateApp({...stateApp, DocumentDrawer:false})
-        // }}
       >
         {console.log(stateApp.selectedDocument, "selecdow")}
         <DeleteDocumentConfirmation
+          document={stateApp.selectedDocument}
           open={openDeleteConfirmDialog}
           handleClose={handleDeleteCancel}
           handleAccept={() => {
@@ -1091,16 +1076,121 @@ export default function DocumentDrawer() {
             <CircularProgress />
           </DialogTitle>
         </Dialog>
-        {/* {list("right")} */}
-        {/* {stateApp.selectedDocument?.fileId ? ( */}
+
         <>{DocumentDetail("right")}</>
-        {/* ) : ( */}
-        {/* <>{list("right")}</> */}
-        {/* )} */}
+
       </Drawer>
+      {/* </ClickAwayListener> */}
     </div>
   );
 }
+
+const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
+  console.log("value", value);
+  const useStyles = makeStyles({
+    inputRoot: {
+          backgroundColor: "#ffffff",
+        },
+    listbox: {
+      boxSizing: "border-box",
+      "& ul": {
+        padding: 0,
+        margin: 0,
+      },
+    },
+  });
+
+  const classes = useStyles();
+
+  const onInputChange = (event , value) => {
+    setDocumentType(value)
+  };
+  return (
+    <Autocomplete
+      defaultValue={value}
+      value={value}
+      disableListWrap
+      classes={classes}
+      options={documentTypes?.getFilesType?.map((type) => {
+        return { _id: type, name: type };
+      })}
+      getOptionLabel={(option) => {
+        // Value selected with enter, right from the input
+        if (typeof option === "string") {
+          return option;
+        }
+        // Add "xxx" option created dynamically
+        if (option.inputValue) {
+          return option.name;
+        }
+
+        if (option?.name) return option.name;
+        else return "";
+      }}
+      getOptionSelected={(option, value) => {
+        return option?._id === value?._id;
+      }}
+      renderOption={(option) => {
+        if (option._id === "newEntity")
+          return (
+            <Typography style={{ color: "midnightblue" }}>
+              Add '{option.name}'
+            </Typography>
+          );
+
+        return (
+          <Grid container spacing={0}>
+            <Grid container item xs={12} alignItems="center">
+              <Grid item xs>
+                <span style={{ fontWeight: 400 }}>{option.name}</span>
+
+                <Typography variant="body2" color="textSecondary">
+                  {joinAddress(option)}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+        );
+      }}
+      onInputChange={onInputChange}
+      filterOptions={(options, params) => {
+        const filtered = filter(options, { ...params, inputValue: value });
+
+        const isExist = loadashFilter(filtered, (filter) => {
+          return filter._id === value
+        })
+        // Suggest the creation of a new value
+        if (value !== "" && (!isExist || isExist.length === 0)) {
+          filtered.unshift({
+            name: value,
+            _id: "newEntity",
+          });
+        }
+        return filtered;
+      }}
+      onChange={(event, newValue) => {
+        if (newValue && newValue._id) {
+          if (newValue._id !== "newEntity")
+          setDocumentType(newValue);
+          else
+          setDocumentType({ _id: "newEntity", name: newValue.name });
+        } else
+        setDocumentType("");
+      }}
+      renderInput={(params) => (
+        <TextField
+          margin="dense"
+          {...params}
+          InputProps={{
+            ...params.InputProps
+          }}
+          size="small"
+        />
+      )}
+      {...other}
+    />
+  );
+};
 
 const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
   const classes = useStyles();

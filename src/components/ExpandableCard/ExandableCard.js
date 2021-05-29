@@ -394,47 +394,38 @@ function ExpandableCard(props) {
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
             <div className={classes.headerIcons}>
-              {targetLabel !== "activity" && targetLabel !== "contact" ? (
-                <>
+              { targetLabel !== "activity" &&
+                targetLabel !== "contact" &&
+                (
+                    <CommentsWithIcon
+                      objectId={targetSourceId.toLowerCase()}
+                      targetLabel={props.targetLabel}
+                      iconZiseSmall={!stateExpandableCard.expanded}
+                    />
+                )}
 
-                  <CommentsWithIcon
-                    objectId={targetSourceId.toLowerCase()}
-                    targetLabel={props.targetLabel}
-                    iconZiseSmall={!stateExpandableCard.expanded}
-                  />
-
+              { targetLabel !== "activity" &&
+                targetLabel !== "contact" &&
+                targetLabel !== "recent_submitted_permits" && (
                   <TaggerWithIcon
                     objectId={targetSourceId.toLowerCase()}
                     targetLabel={props.targetLabel}
                     iconZiseSmall={!stateExpandableCard.expanded}
                   />
-                </>
-              )
+                )}
 
-                : (targetLabel == "contact" && parent != "table") ? (
-                  <>
-                    <LinkWithIcon
-                      objectId={targetSourceId.toLowerCase()}
-                      targetLabel={props.targetLabel}
-                      iconZiseSmall={!stateExpandableCard.expanded}
-                    />
-
-                    {/* <CommentsWithIcon
-                  objectId={targetSourceId.toLowerCase()}
-                  targetLabel={props.targetLabel}
-                  iconZiseSmall={!stateExpandableCard.expanded}
+              { targetLabel == "contact" &&
+                parent !== "table" && (
+                  <LinkWithIcon
+                    objectId={targetSourceId.toLowerCase()}
+                    targetLabel={props.targetLabel}
+                    iconZiseSmall={!stateExpandableCard.expanded}
                 />
+                )}
 
-                <TaggerWithIcon
-                  objectId={targetSourceId.toLowerCase()}
-                  targetLabel={props.targetLabel}
-                  iconZiseSmall={!stateExpandableCard.expanded}
-                /> */}
-                  </>
-                )
-                  : null}
-
-              {!props.noTrackAvailable && (
+              {!props.noTrackAvailable 
+                && targetLabel !== "recent_submitted_permits"
+                && (
                 <TrackToggleButton
                   target={target}
                   targetLabel={targetLabel}
@@ -477,28 +468,12 @@ function ExpandableCard(props) {
                   </Tooltip>
                 )}
 
-              {/* {stateExpandableCard.expanded && targetLabel === "parcel" && (
-                <Tooltip title={"Delete Parcel"} placement="top">
-                  {isDeletingCustomLayer ? (
-                    <CircularProgress size={20} color="secondary" />
-                  ) : (
-                    <IconButton
-                      onClick={openConfirmationDialog}
-                      aria-label="Delete"
-                      className={classes.icons}
-                     
-                    >
-                      <DeleteIcon  />
-                    </IconButton>
-                  )}
-                </Tooltip>
-              )} */}
-
 
               {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact"
                 ? parent !== "table" &&
                   targetLabel !== "well" && targetLabel !== "expandedWell" &&
                   targetLabel !== "parcel" && targetLabel !== "expandedParcel"
+                  && targetLabel !== "recent_submitted_permits"
                   ? (
                     <Tooltip title={"Shrink"} placement="top">
                       <IconButton
@@ -535,7 +510,8 @@ function ExpandableCard(props) {
                   )
                 : (
                   parent !== "table" &&
-                  targetLabel !== "activity" && (
+                  targetLabel !== "activity" && 
+                  targetLabel !== "recent_submitted_permits" && (
                     <Tooltip title={"Expand"} placement="top">
                       <IconButton
                         size="small"
