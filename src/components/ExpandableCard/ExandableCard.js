@@ -394,35 +394,6 @@ function ExpandableCard(props) {
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
             <div className={classes.headerIcons}>
-              {targetLabel !== "activity" && targetLabel !== "contact" ? (
-                <>
-
-                  {/* <CommentsWithIcon
-                    objectId={targetSourceId.toLowerCase()}
-                    targetLabel={props.targetLabel}
-                    iconZiseSmall={!stateExpandableCard.expanded}
-                  />
-
-                  <TaggerWithIcon
-                    objectId={targetSourceId.toLowerCase()}
-                    targetLabel={props.targetLabel}
-                    iconZiseSmall={!stateExpandableCard.expanded}
-                  /> */}
-                </>
-              )
-
-                : (targetLabel == "contact" && parent != "table") ? (
-                  <>
-                    <LinkWithIcon
-                      objectId={targetSourceId.toLowerCase()}
-                      targetLabel={props.targetLabel}
-                      iconZiseSmall={!stateExpandableCard.expanded}
-                    />
-                  </>
-                )
-                  : null}
-
-
               { targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
                 (

@@ -1734,8 +1734,16 @@ function SubTable(props) {
                           : tableMeta.rowData[0];
 
                   return (
-                    <div style={{ marginRight: "10px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ marginRight: "10px", display: 'flex', justifyContent: 'left', alignItems: 'center' }}>
                     
+                    <IconButton    onClick={(e)=>{
+                        e.stopPropagation()
+                        console.log("modell download")
+                        handleViewFile(rows[tableMeta.rowIndex].fileId)
+                      }}>
+                        <GetAppIcon />
+                      </IconButton>
+
 
                        {/* BEGINNING OF SHITTY CODE === this find the file type and if pdf will show the icon */}
                        {rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length-1] 
@@ -1764,13 +1772,6 @@ function SubTable(props) {
                     }
                     {/* END OF THIS PARTICULAR BLOCK OF SHITTY CODE  */}
                      
-                     <IconButton    onClick={(e)=>{
-                        e.stopPropagation()
-                        console.log("modell download")
-                        handleViewFile(rows[tableMeta.rowIndex].fileId)
-                      }}>
-                        <GetAppIcon />
-                      </IconButton>
 
                     </div>
                   );
