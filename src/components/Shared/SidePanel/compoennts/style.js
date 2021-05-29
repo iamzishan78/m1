@@ -25,7 +25,7 @@ export const theme = createMuiTheme({
 
 export const useStyles = makeStyles((theme) => ({
     pulloutBox: {
-        height: "100px",
+        height: "80px",
         color: "white",
         width: "20px",
         background: "#011133",

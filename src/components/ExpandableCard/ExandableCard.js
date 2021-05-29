@@ -275,8 +275,23 @@ function ExpandableCard(props) {
           marginRight: "48px",
         }}
       >
+        {console.log("POOPS",props)}
+
+        {(targetLabel != "contact"
+        ) && 
         <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
-        {targetLabel === "contact" && <ContactSearch />}
+        }
+
+        {(targetLabel === "contact"
+          && parent != 'table'
+        ) && <ContactSearch />}
+
+      {(targetLabel === "contact"
+          && parent != 'table'
+        ) && 
+        <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
+        }
+
       </div>
     );
   };
@@ -344,6 +359,8 @@ function ExpandableCard(props) {
 
   return (
     <React.Fragment>
+
+      {/* Dialog for deleting parcel  */}
       {openDialog && (
         <Dialog
           className={classes.dialog}
@@ -363,7 +380,12 @@ function ExpandableCard(props) {
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
+
+
+
       <Card className={classes.card}>
+
+        {/* Modal popup for reporting bugs on expandable card  */}
         <ReportBugModal
           open={openBugModal}
           onClose={() => setOpenBugModal(false)}
@@ -389,7 +411,7 @@ function ExpandableCard(props) {
                 </>
               )
 
-                : targetLabel == "contact" ? (
+                : (targetLabel == "contact" && parent != "table") ? (
                   <>
                     <LinkWithIcon
                       objectId={targetSourceId.toLowerCase()}
@@ -540,7 +562,11 @@ function ExpandableCard(props) {
               </Tooltip>
             </div>
           }
+
+          // Expandable Card Title 
           title={getTitle()}
+
+          // Expandable Card Secondary Header 
           subheader={
             subTitle
               ? subTitle.length > 35

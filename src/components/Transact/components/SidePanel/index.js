@@ -21,7 +21,7 @@ import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
 import { DUPLICATE_PIPELINES } from "graphQL/useMutationDuplicatePipelines";
 import { UPDATE_PIPELINE_DESCRIPTORS, CREATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
 import { setFlowState, showWarningMessage } from "actions";
-import PipelinePopup from "components/Transact/components/PipelinePopup";
+// import PipelinePopup from "components/Transact/components/PipelinePopup";
 import PipelinesList from "components/Transact/components/SidePanel/PipelinesList";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { DEALSCOUNTINAPIPE } from "graphQL/useQueryNonDeletedDealsCountInAPipeline";
@@ -148,22 +148,24 @@ const SidePanel = ({}) => {
   useEffect(() => {
     const projectIncludedPipelines = [],
       projects = {};
-    pipelines.forEach((pipe) => {
+    pipelines.forEach((pipe, index) => {
       if (pipe.projectName && !projects[pipe.projectName]) {
         projects[pipe.projectName] = true;
         projectIncludedPipelines.push({
           projectName: pipe.projectName,
           projectId: pipe.projectId,
           type: "Project",
-          index: projectIncludedPipelines.length,
+          index,
           depth: 0,
+          id: pipe.projectId,
         });
       }
       projectIncludedPipelines.push({
         ...pipe,
+        id: pipe._id,
         type: "Pipeline",
         depth: pipe.projectName ? 1 : 0,
-        index: projectIncludedPipelines.length,
+        index,
       });
     });
     setPipelines(projectIncludedPipelines);
@@ -332,6 +334,7 @@ const SidePanel = ({}) => {
             <PipelinesList
               selectedPipe={selectedPipe}
               filteredPipelines={filteredPipelines}
+              setPipelines={setPipelines}
               selectedPipelines={selectedPipelines}
               setMultiSelection={setMultiSelection}
             />
@@ -350,7 +353,7 @@ const SidePanel = ({}) => {
       {/**
        * Pipeline Popup for New Pipeline or Edit Pipeline
        */}
-      <PipelinePopup />
+      {/* <PipelinePopup /> */}
       <Dialog className={classes.dialog} open={deleteDialogOpen} onClose={() => setModal(false)} fullWidth={false} maxWidth="sm">
         <DeleteConfirmationDialogContent
           header={selectedPipelines.length > 1 ? `Delete Flowline` : `Delete Flowlines`}
