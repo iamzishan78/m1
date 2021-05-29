@@ -10,6 +10,8 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import { AppContext } from "AppContext";
 import CloseIcon from "@material-ui/icons/Close";
+import { Typography, Grid } from "@material-ui/core";
+import loadashFilter from "lodash/filter";
 import {
   CircularProgress,
   Dialog,
@@ -18,7 +20,9 @@ import {
   TextField,
   withStyles,
 } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import Autocomplete, {
+  createFilterOptions,
+} from "@material-ui/lab/Autocomplete";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -32,13 +36,18 @@ import {
   faFileExcel,
   faFile,
 } from "@fortawesome/free-solid-svg-icons";
+import joinAddress from "components/Shared/valueformatters/join-address.js";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import DeleteDocumentConfirmation from "components/Shared/DeleteDocumentConfirmation";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
+import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
 import { setStateIfDeepEqual } from "components/Shared/functions";
+
+const filter = createFilterOptions();
+
 const useStyles = makeStyles({
   list: {
     width: 250,
@@ -180,10 +189,28 @@ export default function DocumentDrawer() {
       fetchPolicy: "no-cache",
     });
 
+  const [getDocumentTypes, { data: documentTypes }] = useLazyQuery(
+    DOCUMENT_TYPE,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
+
+  useEffect(() => {
+    getDocumentTypes();
+  }, [getDocumentTypes]);
+
   const [updateDocument, { loading: updateFileloading }] =
     useMutation(UPDATE_DOCUMENT);
 
   const UpDatefileFN = () => {
+    debugger
+    let documentType = ''
+    if(typeof newDocument.documentType === 'string'){
+      documentType = newDocument.documentType
+    }else if(newDocument.documentType?.name){
+      documentType = newDocument.documentType.name
+    }
     if (stateApp.selectedDocument.fileId) {
       setLoader(true);
       updateDocument({
@@ -192,7 +219,7 @@ export default function DocumentDrawer() {
             fileName: newDocument.fileName,
             dateTime: newDocument.dateTime,
             documentNumber: newDocument.documentNumber,
-            documentType: newDocument.documentType,
+            documentType: documentType,
             partyName1: nameAutValueParty1._id,
             partyName2: nameAutValueParty2._id,
             fileId: newDocument.fileId,
@@ -220,14 +247,12 @@ export default function DocumentDrawer() {
       setLoader(true);
       updateDocument({
         variables: {
-          document:{
+          document: {
             fileId: fileIdToDelete,
             isDeleted: true,
-          }
+          },
         },
-        refetchQueries: [
-          "getDocuments",
-        ],
+        refetchQueries: ["getDocuments"],
         awaitRefetchQueries: true,
       }).then(() => {
         setStateApp({
@@ -505,25 +530,16 @@ export default function DocumentDrawer() {
           }}
         >
           <h4>Document Type</h4>
-          <Autocomplete
+          <DocumentType
             className={classes.maxWidth}
-            options={["pdf", "doc", "txt"]}
-            value={newDocument?.documentType}
-            onChange={(e, value) => {
-              e.preventDefault();
+            documentTypes={documentTypes}
+            setDocumentType={(value) => { 
               setNewDocument({
                 ...newDocument,
                 documentType: value,
-              });
+              })
             }}
-            renderInput={(params) => (
-              <TextField
-                size="small"
-                {...params}
-                className={classes.maxWidth}
-                multiline
-              />
-            )}
+            value={newDocument.documentType? newDocument.documentType : ""}
           />
         </ListItem>
         <ListItem
@@ -1072,6 +1088,113 @@ export default function DocumentDrawer() {
     </div>
   );
 }
+
+const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
+  console.log("value", value);
+  const useStyles = makeStyles({
+    inputRoot: {
+          backgroundColor: "#ffffff",
+        },
+    listbox: {
+      boxSizing: "border-box",
+      "& ul": {
+        padding: 0,
+        margin: 0,
+      },
+    },
+  });
+
+  const classes = useStyles();
+
+  const onInputChange = (event , value) => {
+    setDocumentType(value)
+  };
+  return (
+    <Autocomplete
+      defaultValue={value}
+      value={value}
+      disableListWrap
+      classes={classes}
+      options={documentTypes?.getFilesType?.map((type) => {
+        return { _id: type, name: type };
+      })}
+      getOptionLabel={(option) => {
+        // Value selected with enter, right from the input
+        if (typeof option === "string") {
+          return option;
+        }
+        // Add "xxx" option created dynamically
+        if (option.inputValue) {
+          return option.name;
+        }
+
+        if (option?.name) return option.name;
+        else return "";
+      }}
+      getOptionSelected={(option, value) => {
+        return option?._id === value?._id;
+      }}
+      renderOption={(option) => {
+        if (option._id === "newEntity")
+          return (
+            <Typography style={{ color: "midnightblue" }}>
+              Add '{option.name}'
+            </Typography>
+          );
+
+        return (
+          <Grid container spacing={0}>
+            <Grid container item xs={12} alignItems="center">
+              <Grid item xs>
+                <span style={{ fontWeight: 400 }}>{option.name}</span>
+
+                <Typography variant="body2" color="textSecondary">
+                  {joinAddress(option)}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+        );
+      }}
+      onInputChange={onInputChange}
+      filterOptions={(options, params) => {
+        const filtered = filter(options, { ...params, inputValue: value });
+
+        const isExist = loadashFilter(filtered, (filter) => {
+          return filter._id.includes(value)
+        })
+        // Suggest the creation of a new value
+        if (value !== "" && (!isExist || isExist.length === 0)) {
+          filtered.unshift({
+            name: value,
+            _id: "newEntity",
+          });
+        }
+        return filtered;
+      }}
+      onChange={(event, newValue) => {
+        if (newValue && newValue._id) {
+          if (newValue._id !== "newEntity")
+          setDocumentType(newValue);
+          else
+          setDocumentType({ _id: "newEntity", name: newValue.name });
+        } else
+        setDocumentType("");
+      }}
+      renderInput={(params) => (
+        <TextField
+          margin="dense"
+          {...params}
+          InputProps={{
+            ...params.InputProps
+          }}
+          size="small"
+        />
+      )}
+      {...other}
+    />
+  );
+};
 
 const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
   const classes = useStyles();
