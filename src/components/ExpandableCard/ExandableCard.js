@@ -275,8 +275,23 @@ function ExpandableCard(props) {
           marginRight: "48px",
         }}
       >
+        {console.log("POOPS",props)}
+
+        {(targetLabel != "contact"
+        ) && 
         <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
-        {targetLabel === "contact" && <ContactSearch />}
+        }
+
+        {(targetLabel === "contact"
+          && parent != 'table'
+        ) && <ContactSearch />}
+
+      {(targetLabel === "contact"
+          && parent != 'table'
+        ) && 
+        <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
+        }
+
       </div>
     );
   };
