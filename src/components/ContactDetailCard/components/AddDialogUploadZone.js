@@ -345,14 +345,14 @@ export default function Documents(props) {
         return (
           <FontAwesomeIcon
             icon={faFilePowerpoint}
-            style={{ fontSize: "5.5rem", color: "#D04424" }}
+            style={{ fontSize: "2rem", color: "#D04424" }}
           />
         );
       case "pptx":
         return (
           <FontAwesomeIcon
             icon={faFilePowerpoint}
-            style={{ fontSize: "5.5rem", color: "#D04424" }}
+            style={{ fontSize: "2rem", color: "#D04424" }}
           />
         );
       default:
@@ -360,7 +360,7 @@ export default function Documents(props) {
         return (
           <FontAwesomeIcon
             icon={faFile}
-            style={{ fontSize: "5.5rem", color: "#D04424" }}
+            style={{ fontSize: "2rem", color: "grey" }}
           />
         );
     }

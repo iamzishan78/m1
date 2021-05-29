@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useMutation } from "@apollo/client";
 import AddIcon from "@material-ui/icons/Add";
+import AddLayerIcon from "@material-ui/icons/Queue";
 import { MapControlsContext } from "../../MapControls/MapControlsContext";
 import { AppContext } from "../../../AppContext";
 import Panel from "./compoennts/Panel";
@@ -100,7 +101,7 @@ export default function SidePanel() {
 		layer: {
 			text: "Add Layer",
 			fn: openAddLayer,
-			icon: <AddIcon />,
+			icon: <AddLayerIcon />,
 		},
 	};
 
