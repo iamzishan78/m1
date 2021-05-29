@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   headingGrid: {
-    width: "auto",
+    width: (props) => (props.mode ? "90%" : "auto"),
     marginRight: 5,
     height: (props) => (props.mode ? "30px" : "20px"),
   },
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PipelineProject = ({ children, project, containingPipelines }) => {
+const PipelineProject = ({ key, children, project, containingPipelines }) => {
   const [isExpanded, setExpansion] = useState(false);
   const [isEdit, setEdit] = useState({});
   const classes = useStyles(isEdit);

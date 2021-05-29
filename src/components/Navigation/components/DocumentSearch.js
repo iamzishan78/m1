@@ -207,7 +207,7 @@ const DocumentSearch = () => {
                     <ClearIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Add Document">
+                {/* <Tooltip title="Add Document">
                   <Button
                     className={classes.gridOnIcon}
                     onClick={() => {
@@ -216,7 +216,7 @@ const DocumentSearch = () => {
                   >
                     <PostAddOutlinedIcon />
                   </Button>
-                </Tooltip>
+                </Tooltip> */}
               </ButtonGroup>
             </>
           ),

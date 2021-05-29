@@ -42,6 +42,7 @@ import { WELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryWellInteres
 import { SHAPEWELLS } from "../../../graphQL/useQueryPaginatedShapeWells";
 import { SHAPEWELLSCOUNT } from "../../../graphQL/useQueryShapeWellsCount";
 import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
+import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -87,8 +88,8 @@ function M1nTable(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateGrid, setStateGrid] = useContext(MapGridContext);
-//  console.log(reFetchDocuments(), 'reFetchDocuments')
- 
+  //  console.log(reFetchDocuments(), 'reFetchDocuments')
+
   // function states 
   const [addDealOpen, setAddDealOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState();
@@ -147,7 +148,7 @@ function M1nTable(props) {
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, { onError: () => { setLoading(false) }, fetchPolicy: "cache-and-network" });
-  const [getDocuments,  {data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS);
+  const [getDocuments, { data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS);
   const [removeUser] = useMutation(REMOVEUSER);
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, { fetchPolicy: "no-cache", });
   const [getContactsFilterOptions, { data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
@@ -165,6 +166,7 @@ function M1nTable(props) {
   const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(ABSTRACTWELLGEOQUERY);
   const [getPaginatedWellInterests, { data: constDataWellInterests },] = useLazyQuery(PAGINATEDWELLINTERESTSQUERY, { fetchPolicy: "cache-and-network", });
   const [getWellInterestsFilterOptions, { data: dataWellInterestsFilterOptions },] = useLazyQuery(WELLINTERESTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
+  const [updateDocument, { loading: updateFileloading }] = useMutation(UPDATE_DOCUMENT);
 
 
   ////////////General begin///////////////////////////////////////////////
@@ -206,15 +208,15 @@ function M1nTable(props) {
 
   ////////////General end///////////////////////////////////////////////
 
-  useEffect(()=>{    
-    if(props.parent && props.parent === 'Documents'){
+  useEffect(() => {
+    if (props.parent && props.parent === 'Documents') {
       getDocuments({
         variables: {
           search: stateApp.contactSearchQuery
         }
       })
     }
-  },[getDocuments, props.parent, stateApp.contactSearchQuery])
+  }, [getDocuments, props.parent, stateApp.contactSearchQuery])
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners") {
@@ -236,8 +238,7 @@ function M1nTable(props) {
       dataTracks
     ) {
       if (dataTracks.length !== 0) {
-        // setLoading(true);
-
+        // setLoading(true);        
         getOwners({
           variables: {
             ownerIdArray: dataTracks,
@@ -1042,6 +1043,9 @@ function M1nTable(props) {
         const objectsIdsArray = dataWellOwners.wellOwners.map(
           (wellOwner) => wellOwner.globalOwnerId
         );
+        const gLodIdsArray = dataWellOwners.wellOwners.map(
+          (wellOwner) => wellOwner.id
+        );
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
@@ -1049,7 +1053,7 @@ function M1nTable(props) {
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
         checkIfOwnersAreContacts({
-          variables: { idsArray: objectsIdsArray },
+          variables: { idsArray: objectsIdsArray, gLodIdsArray },
         });
       } else {
         setLoading(false);
@@ -1222,39 +1226,40 @@ function M1nTable(props) {
       setColumnsBase(ContactsHeadCells);
     }
 
-      else  if (    
-          props.parent  
-          && (props.parent ==='search' && props.targetLabel === "contacts")  // for parent of contact screen              
-      ) {
-        setLoading(true);
-        setTargetLabel("contact");
-        setHeader("Contacts");
-        setOrderByTracks(false);
-        setAddAble({ parent: false, type: "contact" });
-        getPaginatedContacts({variables: { search: stateGrid.gridSearchTarget }});
-        getContactsFilterOptions();
-        updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
-        setUploadIcon(false);
-        setStartPaginationAt(25);
-        setColumnsBase(ContactsHeadCells);
+    else if (
+      props.parent
+      && (props.parent === 'search' && props.targetLabel === "contacts")  // for parent of contact screen              
+    ) {
+      setLoading(true);
+      setTargetLabel("contact");
+      setHeader("Contacts");
+      setOrderByTracks(false);
+      setAddAble({ parent: false, type: "contact" });
+      getPaginatedContacts({ variables: { search: stateGrid.gridSearchTarget } });
+      getContactsFilterOptions();
+      updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
+      setUploadIcon(false);
+      setStartPaginationAt(25);
+      setColumnsBase(ContactsHeadCells);
 
-      } 
-      else if (    
-        props.parent  
-        && (props.parent === "Documents")  // for parent of contact screen 
+    }
+    else if (
+      props.parent
+      && (props.parent === "Documents")  // for parent of contact screen 
     ) {
       setLoading(true);
       setTargetLabel("documents");
       setHeader("Documents");
       setOrderByTracks(false);
       setAddAble({ parent: false, type: "document" });
-      getPaginatedContacts({variables: { search: stateGrid.gridSearchTarget }});
+      getPaginatedContacts({ variables: { search: stateGrid.gridSearchTarget } });
       getContactsFilterOptions();
       updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
       setUploadIcon(true);
       setStartPaginationAt(25);
-      setColumnsBase(DocumentsHeadCells);}
-    
+      setColumnsBase(DocumentsHeadCells);
+    }
+
 
   }, [props.parent,
   stateGrid.gridSearchTarget]);
@@ -1584,6 +1589,35 @@ function M1nTable(props) {
     }
   }, [props.parent, stateApp.user]);
 
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Documents" &&
+      stateApp.user &&
+      stateApp.user.mongoId
+    ) {
+      setDeleteFunc(() => (documentIdsToDelete) => {
+        if (documentIdsToDelete) {
+          for (let i = 0; i < documentIdsToDelete.length; i++) {
+            updateDocument({
+              variables: {
+                document:{
+                  fileId: documentIdsToDelete[i],
+                  isDeleted: true,
+                }
+              },
+              refetchQueries: [
+                "getDocuments",
+              ],
+              awaitRefetchQueries: true,
+            });
+          }
+        }
+      });
+    }
+  }, [props.parent, stateApp.user]);
+
   ////////////Contacts end///////////////////////////////////////////////
 
 
@@ -1894,7 +1928,6 @@ function M1nTable(props) {
         const objectsIdsArray = dataParcelOwners.parcelOwners.map(
           (owner) => owner.ownerEntity
         );
-
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
@@ -2525,7 +2558,7 @@ function M1nTable(props) {
     if (
       props.parent &&
       props.parent === "Documents" &&
-      DocumentsData?.getFiles 
+      DocumentsData?.getFiles
     ) {
       setTargetLabel("documents");
       setRows([...DocumentsData.getFiles]);
