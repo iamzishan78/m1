@@ -30,12 +30,11 @@ import {
   faFilePowerpoint,
   faFileWord,
   faFileExcel,
-  faFile
+  faFile,
 } from "@fortawesome/free-solid-svg-icons";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { DELETEDESCRIPTORFILE } from "graphQL/useMutationDeleteDescriptorFile";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import DeleteDocumentConfirmation from "components/Shared/DeleteDocumentConfirmation";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
@@ -181,7 +180,6 @@ export default function DocumentDrawer() {
       fetchPolicy: "no-cache",
     });
 
-  const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
   const [updateDocument, { loading: updateFileloading }] =
     useMutation(UPDATE_DOCUMENT);
 
@@ -190,13 +188,15 @@ export default function DocumentDrawer() {
       setLoader(true);
       updateDocument({
         variables: {
-          fileName: newDocument.fileName,
-          dateTime: newDocument.dateTime,
-          documentNumber: newDocument.documentNumber,
-          documentType: newDocument.documentType,
-          partyName1: nameAutValueParty1._id,
-          partyName2: nameAutValueParty2._id,
-          fileId: newDocument.fileId,
+          document: {
+            fileName: newDocument.fileName,
+            dateTime: newDocument.dateTime,
+            documentNumber: newDocument.documentNumber,
+            documentType: newDocument.documentType,
+            partyName1: nameAutValueParty1._id,
+            partyName2: nameAutValueParty2._id,
+            fileId: newDocument.fileId,
+          },
         },
       }).then(() => {
         setLoader(false);
@@ -218,11 +218,16 @@ export default function DocumentDrawer() {
     // Delete Document Logic goes here
     if (fileIdToDelete) {
       setLoader(true);
-      deleteFile({
+      updateDocument({
         variables: {
-          id: fileIdToDelete,
+          document:{
+            fileId: fileIdToDelete,
+            isDeleted: true,
+          }
         },
-        refetchQueries: ["getFileDescriptors"],
+        refetchQueries: [
+          "getDocuments",
+        ],
         awaitRefetchQueries: true,
       }).then(() => {
         setStateApp({
@@ -232,7 +237,6 @@ export default function DocumentDrawer() {
         });
         setFileIdToDelete(null);
         setOpenDeleteConfirmDialog(false);
-
         setLoader(false);
       });
     }
@@ -362,12 +366,12 @@ export default function DocumentDrawer() {
           />
         );
       case "doc":
-        return(
+        return (
           <FontAwesomeIcon
             icon={faFileWord}
             style={{ fontSize: "2rem", color: "#2A5599" }}
           />
-        )
+        );
       case "docx":
         return (
           <FontAwesomeIcon
@@ -399,7 +403,6 @@ export default function DocumentDrawer() {
         );
     }
   };
-
 
   const DocumentDetail = (anchor) => (
     <div
@@ -754,8 +757,8 @@ export default function DocumentDrawer() {
           disableElevation
           onClick={() => {
             setLoader(true);
-            if(stateApp.selectedDocument.fileId){
-              UpDatefileFN()
+            if (stateApp.selectedDocument.fileId) {
+              UpDatefileFN();
             }
           }}
           className={classes.footerButton}
@@ -1047,6 +1050,7 @@ export default function DocumentDrawer() {
       >
         {console.log(stateApp.selectedDocument, "selecdow")}
         <DeleteDocumentConfirmation
+          document={stateApp.selectedDocument}
           open={openDeleteConfirmDialog}
           handleClose={handleDeleteCancel}
           handleAccept={() => {

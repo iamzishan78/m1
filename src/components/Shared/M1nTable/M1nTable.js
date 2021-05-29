@@ -42,6 +42,7 @@ import { WELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryWellInteres
 import { SHAPEWELLS } from "../../../graphQL/useQueryPaginatedShapeWells";
 import { SHAPEWELLSCOUNT } from "../../../graphQL/useQueryShapeWellsCount";
 import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
+import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
@@ -165,6 +166,7 @@ function M1nTable(props) {
   const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(ABSTRACTWELLGEOQUERY);
   const [getPaginatedWellInterests, { data: constDataWellInterests },] = useLazyQuery(PAGINATEDWELLINTERESTSQUERY, { fetchPolicy: "cache-and-network", });
   const [getWellInterestsFilterOptions, { data: dataWellInterestsFilterOptions },] = useLazyQuery(WELLINTERESTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
+  const [updateDocument, { loading: updateFileloading }] = useMutation(UPDATE_DOCUMENT);
 
 
   ////////////General begin///////////////////////////////////////////////
@@ -1578,6 +1580,35 @@ function M1nTable(props) {
                 "getPaginatedContacts",
                 "getContact",
                 "checkIfOwnersAreContacts",
+              ],
+              awaitRefetchQueries: true,
+            });
+          }
+        }
+      });
+    }
+  }, [props.parent, stateApp.user]);
+
+
+  useEffect(() => {
+    if (
+      props.parent &&
+      props.parent === "Documents" &&
+      stateApp.user &&
+      stateApp.user.mongoId
+    ) {
+      setDeleteFunc(() => (documentIdsToDelete) => {
+        if (documentIdsToDelete) {
+          for (let i = 0; i < documentIdsToDelete.length; i++) {
+            updateDocument({
+              variables: {
+                document:{
+                  fileId: documentIdsToDelete[i],
+                  isDeleted: true,
+                }
+              },
+              refetchQueries: [
+                "getDocuments",
               ],
               awaitRefetchQueries: true,
             });
