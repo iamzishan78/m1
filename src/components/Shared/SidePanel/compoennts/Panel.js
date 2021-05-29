@@ -282,6 +282,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 
 		</DragDropContext>
 	);
+	debugger;
 	return (
 		// <ClickAwayListener onClickAway={handleClose}>
 		<div>
@@ -427,15 +428,15 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 				}}
 			>
 				{
-				// console.log('===============')
-				// console.log('type',type)
-				console.log('&&& panelExpanded',stateMapControls.panelExpanded)
-				// console.log('===============')
+					// console.log('===============')
+					// console.log('type',type)
+					console.log('&&& panelExpanded', stateMapControls.panelExpanded)
+					// console.log('===============')
 				}
 				<StyledMenu
 					id="checklist-menu"
 					// anchorEl={stateMapControls.anchorEl}
-					style={!stateMapControls.panelExpanded && type === 'layer' ? { display: 'none' } : {}}
+					style={!stateMapControls.panelExpanded ? { display: 'none' } : {}}
 					keepMounted
 					open={Boolean(stateMapControls.selectedControl)}
 
@@ -507,7 +508,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					{type === "base" && getBasemapImageBox()}
 
 					{
-						type === "layer" ? <SortableLayer layerMap={layerMap} /> : type === "base" ? (
+						type === "layer" && layerMap && layerMap[0]?.type ? <SortableLayer layerMap={layerMap} /> : type === "base" ? (
 							<Collapse in={open} timeout="auto" unmountOnExit>
 								{displayList}
 							</Collapse>
