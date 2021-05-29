@@ -1352,27 +1352,40 @@ function AddDealDialog(props) {
 
               <Grid container spacing={2} className={classes.gridStyle}>
 
-              <Grid item xs={12} style={{ minHeight: '35px' }}>
+              <Grid item xs={6} style={{ minHeight: '35px' }}>
 
-              <h4
+              {/* <h4
                 style={{
-                  margin: '0 0 15px 0',
+                  margin: '0 0 0 0',
                   float: 'left',
                   fontSize: '1.1rem',
                 }}
               >
                 Deal Information
-              </h4>
+              </h4> */}
+
+              <Typography variant="h5" style={{
+                  margin: '0 0 0 0',
+                  float: 'left',
+                  fontSize: '1.3rem',
+                }}>
+
+              Deal Information
+
+              </Typography>
               </Grid>
 
-              <Grid item xs={12} style={{ minHeight: '35px' }}>
+
+
+              <Grid item xs={6} style={{ minHeight: '35px' }}>
 
               {!titleFocus && (
-                <Grid item xs style={{ flexGrow: 0, padding: 0, marginTop: 2 }}>
+                <Grid item xs style={{ flexGrow: 0, padding: 2, marginTop: 2 }}>
                   <div
                     style={{
                       display: 'flex',
                       alignItems: 'center',
+                      float: 'right',
                     }}
                   >
                     {(dealState === null || dealState === 'open') && (
