@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Accordion, AccordionSummary, AccordionDetails, Typography, Grid, TextField } from "@material-ui/core";
+import { Accordion, AccordionSummary, Typography, Grid, TextField } from "@material-ui/core";
 import { ExpandMore, ExpandLess, Edit } from "@material-ui/icons";
+import { useDrag, useDrop, useIsClosestDragging } from "react-sortly";
+import { Flipped } from "react-flip-toolkit";
 import { UPDATE_PROJECT } from "graphQL/useMutationUpdateProject";
 import { useMutation } from "@apollo/client";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  root: (props) => ({
     width: "95%",
-    margin: "5px 5px 10px 5px",
-  },
+    margin: "10px 5px 5px 5px",
+    zIndex: props.muted ? 1 : 0,
+    color: props.muted ? theme.palette.primary.dark : "inherit",
+  }),
   accordionRoot: {
     borderRadius: "5px",
     backgroundColor: "#111c35",
@@ -20,18 +24,14 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   headingGrid: {
-    width: (props) => (props.mode ? "90%" : "auto"),
+    width: (props) => (props.isEdit.mode ? "90%" : "auto"),
     marginRight: 5,
-    height: (props) => (props.mode ? "30px" : "20px"),
+    height: (props) => (props.isEdit.mode ? "30px" : "20px"),
   },
   heading: {
     fontSize: theme.typography.pxToRem(13),
     fontWeight: 500,
     textAlign: "left",
-  },
-  detailRoot: {
-    padding: 0,
-    display: "contents",
   },
   textField: {
     color: "#fff",
@@ -50,10 +50,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PipelineProject = ({ key, children, project, containingPipelines }) => {
-  const [isExpanded, setExpansion] = useState(false);
+const PipelineProject = (props) => {
   const [isEdit, setEdit] = useState({});
-  const classes = useStyles(isEdit);
+  const { project, containingPipelines, handleToggleCollapse, data, handleDragBegin, handleDragEnd } = props;
 
   // MUTATIONS
   const [updateProject] = useMutation(UPDATE_PROJECT);
@@ -73,58 +72,86 @@ const PipelineProject = ({ key, children, project, containingPipelines }) => {
     setEdit({});
   };
 
+  const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
+  // const { type, collapsed, name } = data;
+
+  const [{ isDragging }, drag, preview] = useDrag({
+    collect: (monitor) => {
+      return {
+        isDragging: monitor.isDragging(),
+      };
+    },
+    begin(f) {
+      itemRef.current = data;
+      handleDragBegin(data);
+      console.log("begin drag");
+    },
+    end(f) {
+      handleDragEnd(itemRef.current, data);
+      console.log("end drag");
+    },
+  });
+
+  const [, drop] = useDrop();
+
+  const classes = useStyles({ ...props, isEdit, muted: useIsClosestDragging() || isDragging });
+
   return (
-    <div className={classes.root}>
-      <Accordion className={classes.accordionRoot}>
-        <AccordionSummary aria-controls="panel1a-content" id="panel1a-header">
-          <Grid
-            container
-            direction="row"
-            justify="flex-start"
-            alignItems="center"
-            onClick={() => setExpansion(!isExpanded)}
-            onMouseOver={() => !isEdit.mode && setEdit({ ...isEdit, able: true })}
-            onMouseLeave={() => setEdit({ ...isEdit, able: false })}
-          >
-            <Grid item style={{ height: "24px", marginLeft: "-4px" }}>
-              {!isExpanded ? <ExpandMore /> : <ExpandLess />}
+    <Flipped flipId={data._id}>
+      <div className={classes.root} ref={(ref) => drop(preview(ref))}>
+        <Accordion className={classes.accordionRoot} ref={drag}>
+          <AccordionSummary aria-controls="panel1a-content" id="panel1a-header">
+            <Grid
+              container
+              direction="row"
+              justify="flex-start"
+              alignItems="center"
+              onClick={() => {
+                handleToggleCollapse(project.id);
+              }}
+              onMouseOver={() => !isEdit.mode && setEdit({ ...isEdit, able: true })}
+              onMouseLeave={() => setEdit({ ...isEdit, able: false })}
+            >
+              <Grid item style={{ height: "24px", marginLeft: "-4px" }}>
+                {project.collapsed ? <ExpandLess /> : <ExpandMore />}
+              </Grid>
+              <Grid item className={classes.headingGrid}>
+                {!isEdit.mode ? (
+                  <Typography className={classes.heading}>{`${project.projectName} (${containingPipelines.length})`}</Typography>
+                ) : (
+                  <TextField
+                    placeholder="Project Name..."
+                    className={classes.textField}
+                    variant="filled"
+                    id="reddit-input"
+                    defaultValue={project.projectName}
+                    autoFocus
+                    required
+                    // helperText={showError ? "Name is required!" : ""}
+                    InputProps={{
+                      className: classes.textFieldInput,
+                      disableUnderline: true,
+                    }}
+                    InputLabelProps={{ className: classes.textFieldLabel }}
+                    onKeyDown={(e) => {
+                      if (e.keyCode === 13) {
+                        e.preventDefault();
+                        onUpdateProjectNameHandler(e.target.value);
+                      }
+                    }}
+                    onBlur={() => setEdit({ able: false, mode: false })}
+                  />
+                )}
+              </Grid>
+              <Grid item style={{ height: "24px" }}>
+                {isEdit.able && <Edit fontSize="small" onClick={() => setEdit({ able: false, mode: true })} />}
+              </Grid>
             </Grid>
-            <Grid item className={classes.headingGrid}>
-              {!isEdit.mode ? (
-                <Typography className={classes.heading}>{`${project.projectName} (${containingPipelines.length})`}</Typography>
-              ) : (
-                <TextField
-                  placeholder="Project Name..."
-                  className={classes.textField}
-                  variant="filled"
-                  id="reddit-input"
-                  defaultValue={project.projectName}
-                  autoFocus
-                  required
-                  // helperText={showError ? "Name is required!" : ""}
-                  InputProps={{
-                    className: classes.textFieldInput,
-                    disableUnderline: true,
-                  }}
-                  InputLabelProps={{ className: classes.textFieldLabel }}
-                  onKeyDown={(e) => {
-                    if (e.keyCode === 13) {
-                      e.preventDefault();
-                      onUpdateProjectNameHandler(e.target.value);
-                    }
-                  }}
-                  onBlur={() => setEdit({ able: false, mode: false })}
-                />
-              )}
-            </Grid>
-            <Grid item style={{ height: "24px" }}>
-              {isEdit.able && <Edit fontSize="small" onClick={() => setEdit({ able: false, mode: true })} />}
-            </Grid>
-          </Grid>
-        </AccordionSummary>
-        <AccordionDetails className={classes.detailRoot}>{children}</AccordionDetails>
-      </Accordion>
-    </div>
+          </AccordionSummary>
+          {/* <AccordionDetails className={classes.detailRoot}>{children}</AccordionDetails> */}
+        </Accordion>
+      </div>
+    </Flipped>
   );
 };
 
