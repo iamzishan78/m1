@@ -1350,6 +1350,7 @@ function AddDealDialog(props) {
                 /> */}
               </Grid>
 
+              <Grid container spacing={2} className={classes.gridStyle}>
 
               <Grid item xs={12} style={{ minHeight: '35px' }}>
 
@@ -1363,6 +1364,8 @@ function AddDealDialog(props) {
                 Deal Information
               </h4>
               </Grid>
+
+              <Grid item xs={12} style={{ minHeight: '35px' }}>
 
               {!titleFocus && (
                 <Grid item xs style={{ flexGrow: 0, padding: 0, marginTop: 2 }}>
@@ -1484,6 +1487,8 @@ function AddDealDialog(props) {
                   </div>
                 </Grid>
               )}
+            </Grid>
+            </Grid>
             </Grid>
 
             <div className={classes.inputFieldDateRoot}>
