@@ -1735,7 +1735,14 @@ function SubTable(props) {
 
                   return (
                     <div style={{ marginRight: "10px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      <IconButton
+                    
+
+                       {/* BEGINNING OF SHITTY CODE === this find the file type and if pdf will show the icon */}
+                       {rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length-1] 
+                       === "pdf" 
+                       && 
+                                           
+                     <IconButton
                         onClick={(e) => {
                           e.stopPropagation()
                           const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length - 1]
@@ -1748,9 +1755,16 @@ function SubTable(props) {
                         }}
                       >
                         {/* // this is the search icon in the grid on documents */}
+
                         <PageviewIcon />
+                       
+
                       </IconButton>
-                      <IconButton onClick={(e) => {
+
+                    }
+                    {/* END OF THIS PARTICULAR BLOCK OF SHITTY CODE  */}
+                     
+                     <IconButton    onClick={(e)=>{
                         e.stopPropagation()
                         console.log("modell download")
                         handleViewFile(rows[tableMeta.rowIndex].fileId)

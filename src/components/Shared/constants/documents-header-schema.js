@@ -34,7 +34,6 @@ const DocumentsHeadCells = [
     name: "DOCUMENT TYPE",
     label: "Document Type",
   },
-
   {
     name: "DOCUMENT DATE",
     label: "Document Date",
@@ -43,6 +42,15 @@ const DocumentsHeadCells = [
   //   name: "RELATED PARTY NAME",
   //   label: "RELATED PARTY NAME",
   // },
+
+  {
+    name: "PARTY 1 NAME",
+    label: "Party 1 Name",
+  },
+  {
+    name: "PARTY 2 NAME",
+    label: "Party 2 Name",
+  },
   {
     name: "RECORDING INFO",
     label: "Recording Info",
