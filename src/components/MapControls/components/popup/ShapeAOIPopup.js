@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     background: "rgba(1, 17, 51, 1.0)",
     color: "#fff",
     minWidth: "220px",
-    width: '420px !important',
+    width: "420px !important",
     opacity: "0.9",
     borderColor: "rgba(1, 17, 51, 1.0)",
   },
@@ -27,31 +27,26 @@ const useStyles = makeStyles((theme) => ({
     //borderColor: "#fff",
     background: "rgba(1, 17, 51, 1.0)",
     color: "#fff",
-
   },
-
 
   TextFieldInput: {
     color: "#fff",
     //fontWeight: "bold"
-
   },
   TextFieldLabel: {
     color: "#fff",
     //fontWeight: "bold"
-
   },
   enterLabel: {
-    height: '3px',
-    margin: '0px 15px 15px 0',
-    textAlign: 'right',
+    height: "3px",
+    margin: "0px 15px 15px 0",
+    textAlign: "right",
     color: "fff",
-    fontSize: "11px"
-
-  }
+    fontSize: "11px",
+  },
 }));
 
-export default function DrawShapes(props) {
+export default function ShapeAOIPopup(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const { shapeLabel } = stateApp.currentFeature.properties;
@@ -63,37 +58,34 @@ export default function DrawShapes(props) {
 
   const updateSourceAndAoiLayer = (currentFeature) => {
     const { map, draw } = stateApp;
-    stateApp.map.getSource('aoi_label_source').setData({
-      'type': 'FeatureCollection',
-      'features': [currentFeature]
+    stateApp.map.getSource("aoi_label_source").setData({
+      type: "FeatureCollection",
+      features: [currentFeature],
     });
 
     // Add a symbol layer
     map.addLayer({
-      'id': 'aoi_label_layer',
-      'type': 'symbol',
-      'source': 'aoi_label_source',
-      'layout': {
-        'text-field': ['get', 'shapeLabel'],
-        'text-font': [
-          'Open Sans Semibold',
-          'Arial Unicode MS Bold'
-        ],
-        'text-size': 40,
-        'text-anchor': 'center',
-        'text-justify': 'center'
-      }
+      id: "aoi_label_layer",
+      type: "symbol",
+      source: "aoi_label_source",
+      layout: {
+        "text-field": ["get", "shapeLabel"],
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        "text-size": 40,
+        "text-anchor": "center",
+        "text-justify": "center",
+      },
     });
 
-    setStateApp(state => ({
+    setStateApp((state) => ({
       ...state,
-      currentFeature
+      currentFeature,
     }));
     const drewShapeOnMap = draw.get(currentFeature.id);
     if (drewShapeOnMap) {
-      draw.setFeatureProperty(currentFeature.id, 'shapeLabel', currentFeature.properties.shapeLabel);
+      draw.setFeatureProperty(currentFeature.id, "shapeLabel", currentFeature.properties.shapeLabel);
     }
-  }
+  };
 
   const handleSaveSpatialDataToShape = (dataName, dataType = "interest") => {
     if (!dataName) {
@@ -106,15 +98,8 @@ export default function DrawShapes(props) {
         sdGrossAcres: "",
       };
       spatialDataAttributes.forEach((attribute) => {
-        stateApp.draw.setFeatureProperty(
-          stateApp.currentFeature.id,
-          attribute,
-          spatialData[attribute]
-        );
-        if (
-          spatialData[attribute] != null ||
-          typeof spatialData[attribute] !== "undefined"
-        ) {
+        stateApp.draw.setFeatureProperty(stateApp.currentFeature.id, attribute, spatialData[attribute]);
+        if (spatialData[attribute] != null || typeof spatialData[attribute] !== "undefined") {
           stateApp.currentFeature.properties[attribute] = spatialData[attribute];
         }
       });
@@ -140,7 +125,7 @@ export default function DrawShapes(props) {
     }
   };
 
-  const handleEditSpatialDataToShape = (dataName, dataType = 'interest') => {
+  const handleEditSpatialDataToShape = (dataName, dataType = "interest") => {
     // save data onto geoJSON properties fields
 
     const spatialData = {
@@ -154,10 +139,7 @@ export default function DrawShapes(props) {
 
     addCustomShapeProperties(currentFeature, stateApp.draw);
     spatialDataAttributes.forEach((attribute) => {
-      if (
-        spatialData[attribute] != null ||
-        typeof spatialData[attribute] !== "undefined"
-      ) {
+      if (spatialData[attribute] != null || typeof spatialData[attribute] !== "undefined") {
         currentFeature.properties[attribute] = spatialData[attribute];
       }
     });
@@ -172,7 +154,6 @@ export default function DrawShapes(props) {
         name: spatialData.shapeLabel,
         user: stateApp.user.mongoId,
       };
-
       updateCustomLayer({
         variables: {
           customLayerId: customLayerId,
@@ -189,13 +170,10 @@ export default function DrawShapes(props) {
 
   const RedditTextField = (props) => {
     return <TextField InputProps={{ disableUnderline: true }} {...props} />;
-  }
+  };
 
   return (
-    <form
-      className={`${classes.root}`}
-      autoComplete="off"
-    >
+    <form className={`${classes.root}`} autoComplete="off">
       <RedditTextField
         // label="Area of Interest Name"
         placeholder="Area of Interest Name"
@@ -208,7 +186,7 @@ export default function DrawShapes(props) {
         helperText={showError ? "Name is required!" : ""}
         InputProps={{ className: classes.TextFieldInput }}
         InputLabelProps={{ className: classes.TextFieldLabel }}
-        onKeyDown={e => {
+        onKeyDown={(e) => {
           if (e.keyCode === 13) {
             e.preventDefault();
             if (!stateApp.selectedAoi) {

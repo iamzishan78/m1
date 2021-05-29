@@ -115,22 +115,51 @@ export default function UploadZone(props) {
 				}}
 				filesLimit={1}
 				dropzoneText={"Drag a file here or click to select a file to upload"}
-				acceptedFiles={[
-					"image/*",
-					"video/*",
-					"application/*",
-					".*",
-					".geojson",
-					".csv",
-					".pdf",
-					".docx",
-					".doc",
-					".ppt",
-					".pptx",
-					".txt",
-					".xls",
-					".xlsx",
-				]}
+				// acceptedFiles={[
+				// 	"image/*",
+				// 	"video/*",
+				// 	"application/*",
+				// 	".*",
+				// 	".geojson",
+				// 	".csv",
+				// 	".pdf",
+				// 	".docx",
+				// 	".doc",
+				// 	".ppt",
+				// 	".pptx",
+				// 	".txt",
+				// 	".xls",
+				// 	".xlsx",
+				// 	".mdb",
+
+				// 	// shape 
+				// 	".shp",
+				// 	".shx",
+				// 	".sbn",
+				// 	".fbn",
+				// 	".ain",
+				// 	".atx",
+				// 	".ixs",
+
+				// 	// phdwin
+				// 	".phd",
+				// 	".mod",
+				// 	".phb",
+				// 	".phz",
+
+				// 	// IHS
+				// 	".98c",
+
+				// 	// DRILLING INFO 
+				// 	".DRI",
+
+				// 	// LASSER 
+				// 	".PRN",
+
+				// 	// DIVESTCO 
+				// 	".pds",
+
+				// ]}
 				maxFileSize={104857600}
 				dropzoneClass={classes.dropzoneClass}
 				// getFileAddedMessage={(value) => {

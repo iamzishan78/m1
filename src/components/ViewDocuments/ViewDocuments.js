@@ -26,6 +26,16 @@ import moment from "moment";
 import { useLazyQuery } from "@apollo/client";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "../../graphQL/useQueryViewFile";
 import DocViewer from '../Shared/DocViewer'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFilePdf,
+  faFilePowerpoint,
+  faFileWord,
+  faFile,
+  faFileExcel,
+} from "@fortawesome/free-solid-svg-icons";
+
+
 const useStyles = makeStyles((theme) => ({
 	viewAllCard: {
 		backgroundColor: "#ffffff",
@@ -70,18 +80,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 	documentRight: {
 		alignSelf: "center",
-	},
-	greySquare: {
-		cursor: "pointer",
-		borderRadius: "12px",
+		minHeight: "35px",
 		display: "flex",
 		justifyContent: "center",
-		alignItems: "center",
-		color: "#999",
-		fontSize: "30px",
-		height: "80px",
-		width: "80px",
-		backgroundColor: "#cecece",
+		flexDirection: "column",
+		width: "fit-content",
 	},
 	disabledDownload: {
 		cursor: "auto !important",
@@ -92,6 +95,22 @@ const useStyles = makeStyles((theme) => ({
 		marginLeft: "20px",
 		alignSelf: "center",
 	},
+	greySquare: {
+		cursor: "pointer",
+		borderRadius: "12px",
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+		fontSize: "30px",
+		height: "100px",
+		width: "100px",
+		backgroundColor: "#cecece",
+		marginRight: "10px",
+	
+		"& svg": {
+		  fill: "#999 !important",
+		},
+	  },
 	uploadTitle: {
 		margin: "0",
 		color: "#757575",
@@ -128,6 +147,90 @@ export default function ViewDocuments(props) {
 	const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
 		fetchPolicy: "no-cache",
 	});
+
+
+	const getFileIcon = (fileExtension) => {
+		switch (fileExtension) {
+		  case "pdf":
+			return (
+			  <FontAwesomeIcon
+				icon={faFilePdf}
+				style={{ fontSize: "2rem", color: "#F15642" }}
+			  />
+			);
+		  case "csv":
+			return (
+			  <FontAwesomeIcon
+				icon={faFileExcel}
+				style={{ fontSize: "2rem", color: "#207244" }}
+			  />
+			);
+		  case "xlsx":
+			return (
+			  <FontAwesomeIcon
+				icon={faFileExcel}
+				style={{ fontSize: "2rem", color: "#207244" }}
+			  />
+			);
+		  case "xlsb":
+			return (
+			  <FontAwesomeIcon
+				icon={faFileExcel}
+				style={{ fontSize: "2rem", color: "#207244" }}
+			  />
+			);
+		  case "xlsm":
+			return (
+			  <FontAwesomeIcon
+				icon={faFileExcel}
+				style={{ fontSize: "2rem", color: "#207244" }}
+			  />
+			);
+		  case "xltx":
+			return (
+			  <FontAwesomeIcon
+				icon={faFileExcel}
+				style={{ fontSize: "2rem", color: "#207244" }}
+			  />
+			);
+		  case "doc":
+			return(
+			  <FontAwesomeIcon
+				icon={faFileWord}
+				style={{ fontSize: "2rem", color: "#2A5599" }}
+			  />
+			)
+		  case "docx":
+			return (
+			  <FontAwesomeIcon
+				icon={faFileWord}
+				style={{ fontSize: "2rem", color: "#2A5599" }}
+			  />
+			);
+		  case "ppt":
+			return (
+			  <FontAwesomeIcon
+				icon={faFilePowerpoint}
+				style={{ fontSize: "2rem", color: "#D04424" }}
+			  />
+			);
+		  case "pptx":
+			return (
+			  <FontAwesomeIcon
+				icon={faFilePowerpoint}
+				style={{ fontSize: "2rem", color: "#D04424" }}
+			  />
+			);
+		  default:
+			// return <span>{fileExtension}</span>;
+			return (
+			  <FontAwesomeIcon
+				icon={faFile}
+				style={{ fontSize: "2rem", color: "grey" }}
+			  />
+			);
+		}
+	  };
 
 	useEffect(() => {
 
@@ -190,13 +293,16 @@ export default function ViewDocuments(props) {
 
 		console.log("DOCS:", documentSearch, allDocuments);
 	}, [documentSearch, allDocuments]);
-	const ExtenstionGetter = (name) => {
-    let fileExtension = name
-  ?.slice(name.lastIndexOf(".") + 1)
-  ?.toLowerCase();
 
-  return fileExtension
-  }
+	const ExtenstionGetter = (name) => {
+		let fileExtension = name
+		?.slice(name.lastIndexOf(".") + 1)
+		?.toLowerCase();
+
+		return fileExtension
+		}
+
+
 	return (
 		<div className={classes.viewAllCard}>
       <DocViewer  divCondition={false} DocStyle={ {top: '56% ', left: '40% ',width:'98vw ' ,  transform: `translate(1%, -101%)`} } ></DocViewer>
@@ -228,28 +334,65 @@ export default function ViewDocuments(props) {
 					return (
 						<li className={classes.document} key={doc.fileUrl}>
 							<div className={classes.documentLeft}>
-								<div
-									className={`${classes.greySquare} ${
-										doc.fileState !== "active" ? classes.disabledDownload : ""
-									}`}
-									onClick={() => handleViewFile(doc.fileId)}
-								>
-									<GetAppIcon fontSize="large" />
+
+							<div
+								className={`${classes.greySquare} ${
+									doc.fileState !== "active"
+									? classes.disabledDownload
+									: ""
+								}`}
+
+								onClick={() => {
+									
+								viewFileResultt?.viewFiles.map((value) => {
+
+									// console.log("=============")
+									// console.log("VALUE", value)
+									// console.log("=============")
+
+
+
+								if(value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf')
+								{
+									setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:doc.fileName,}})
+
+								}
+								else {
+									handleViewFile(doc.fileId)
+								}
+
+								})  
+							}}
+							>
+								{new RegExp(
+								["jpg", "jpeg", "png", "bmp"].join("|")
+								).test(ExtenstionGetter(doc.fileName)) ? (
+								<img
+									src={doc.uri}
+									alt={doc.name}
+									className={classes.forImage}
+								></img>
+								) : (
+								<div className={classes.forImageContainer}  onClick={() => {
+									if(doc.state !== "active") return;
+
+									if(ExtenstionGetter(doc.fileName) === 'pdf')
+									{
+									setStateApp({ ...stateApp, viewDoc: {uri:doc.uri, name:doc.fileName}})
+									}
+								}}>
+									{getFileIcon(ExtenstionGetter(doc.fileName))}
 								</div>
+								)}
+								
+							</div>
+
+
 								<div className={classes.fileText.concat(' DocumentTitle')} style={{cursor:'pointer'}} 
 								onClick={() => {
-
-										
-										console.log(viewFileResultt, 'StateApp')
-										console.log(doc.fileId, 'StateApp')
-
 									 viewFileResultt?.viewFiles.map((value) => {
 										 if(value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf')
-										 {
-											 console.log("teste")
-										setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:doc.fileName,}})
-
-										 }
+										 {setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:doc.fileName,}})}
 									 })      
 								}}>
 									<h4 className={classes.uploadTitle}>{doc.fileName}</h4>
@@ -261,13 +404,19 @@ export default function ViewDocuments(props) {
 							</div>
 							<div className={classes.documentRight}>
 								<IconButton
-									style={{ marginBottom: "8px" }}
 									onClick={() => {
 										props.setOpenDeleteConfirmDialog(true);
 										props.setFileIdToDelete(doc.descriptorId);
 									}}
 								>
 									<DeleteIcon />
+								</IconButton>
+
+								<IconButton
+									disabled={doc.fileState !== "active" ? classes.disabledDownload : ""}
+									onClick={() => handleViewFile(doc.fileId)}
+								>
+									<GetAppIcon />
 								</IconButton>
 							</div>
 						</li>
