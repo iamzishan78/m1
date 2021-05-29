@@ -235,10 +235,6 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       border: '1px solid black',
     },
-    '&:active': {
-      border: '1px solid black',
-      backgroundColor: '#fff',
-    },
   },
   notchedOutline: {
     border: 0,
