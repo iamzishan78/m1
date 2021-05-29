@@ -16,35 +16,36 @@ const DocumentsHeadCells = [
   },
   {
     name: "fileName",
-    label: "FILE NAME",
+    label: "File Name",
   },
+  // {
+  //   name: "fileState",
+  //   label: "FILE STATE",
+  // },
+  // {
+  //   name: "dateTime",
+  //   label: "DATE & TIME",
+  // },
   {
-    name: "fileState",
-    label: "FILE STATE",
-  },
-  {
-    name: "dateTime",
-    label: "DATE & TIME",
+    name: "DOCUMENT NAME",
+    label: "Document Name",
   },
   {
     name: "DOCUMENT TYPE",
-    label: "DOCUMENT TYPE",
+    label: "Document Type",
   },
-  {
-    name: "DOCUMENT NAME",
-    label: "DOCUMENT NAME",
-  },
+
   {
     name: "DOCUMENT DATE",
-    label: "DOCUMENT DATE",
+    label: "Document Date",
   },
-  {
-    name: "RELATED PARTY NAME",
-    label: "RELATED PARTY NAME",
-  },
+  // {
+  //   name: "RELATED PARTY NAME",
+  //   label: "RELATED PARTY NAME",
+  // },
   {
     name: "RECORDING INFO",
-    label: "RECORDING INFO",
+    label: "Recording Info",
   },
   {
     name: " ",

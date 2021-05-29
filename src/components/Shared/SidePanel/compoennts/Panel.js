@@ -426,6 +426,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					zIndex: "99999"
 				}}
 			>
+				{
+				// console.log('===============')
+				// console.log('type',type)
+				console.log('&&& panelExpanded',stateMapControls.panelExpanded)
+				// console.log('===============')
+				}
 				<StyledMenu
 					id="checklist-menu"
 					// anchorEl={stateMapControls.anchorEl}
@@ -510,13 +516,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 						)
 					}
 
-					{/* </Collapse> */}
 				</StyledMenu>
 				<div
 					className={classes.pulloutBox}
-					// style={{
-					// 	left: stateMapControls.panelExpanded ? "530px !important" : "0px",
-					// }}
+
 					onClick={togglePullout}
 				>
 					{stateMapControls.panelExpanded ? (
