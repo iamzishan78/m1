@@ -1160,7 +1160,7 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
         const filtered = filter(options, { ...params, inputValue: value });
 
         const isExist = loadashFilter(filtered, (filter) => {
-          return filter._id.includes(value)
+          return filter._id === value
         })
         // Suggest the creation of a new value
         if (value !== "" && (!isExist || isExist.length === 0)) {
