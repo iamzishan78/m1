@@ -4,20 +4,21 @@ import Sortly, { ContextProvider, useDrag, useDrop, useIsClosestDragging } from 
 import { Flipped } from "react-flip-toolkit";
 import { ListItem, ListItemText } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { Box } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
-    // overflowY: "hidden",
+    //    overflowY: "hidden",
     alignItems: "center",
     // cursor: "move",
     position: "relative",
-    padding: props.pipeline.collapsed && props.pipeline.type === "layer" ? 0 : theme.spacing(0.5, 0),
+    padding: props.pipeline.collapsed && props.pipeline.type === "Pipeline" ? 0 : theme.spacing(0.5, 0),
     zIndex: props.muted ? 1 : 0,
     // overflow: "hidden",
     color: props.muted ? theme.palette.primary.dark : "inherit",
-    // "&:hover": {
-    //   background: props.muted ? "#4B618F" : "#263451",
-    // },
+    "&:hover": {
+      background: props.muted ? "#4B618F" : "#263451",
+    },
   }),
   listItem: {
     color: "#fff",
@@ -35,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
   listItemIcon: {
     color: "#fff",
-    float: "right",
+    "float": "right",
   },
 }));
 
@@ -67,16 +68,16 @@ const PipelineCard = (props) => {
 
   return (
     <Flipped flipId={data._id}>
-      <div /*ref={(ref) => drop(preview(ref))}*/ className={classes.root}>
+      <div className={classes.root} ref={(ref) => drop(preview(ref))}>
         <ListItem
-          button
+          ref={drag}
           className={classes.listItem}
           style={{
             backgroundColor: `${selectedPipelines.includes(pipeline._id) ? "#506187" : ""}`,
           }}
           onClick={() => onFlowlineSelect(pipeline)}
         >
-          <ListItemText /*ref={drag*/ primary={get(pipeline, "name", pipeline)} />
+          <ListItemText primary={get(pipeline, "name", pipeline)} />
         </ListItem>
       </div>
     </Flipped>
