@@ -91,7 +91,7 @@ NumberFormatCustom.propTypes = {
 const useStyles = makeStyles((theme) => ({
   root: {
     '&  .MuiPaper-root': {
-      maxWidth: '400px',
+      // maxWidth: '400px',
       padding: '25px',
     },
   },
@@ -107,6 +107,10 @@ const useStyles = makeStyles((theme) => ({
   inputFieldCommonInfo: {
     marginBottom: '7px',
   },
+  inputFieldDealName: {
+    marginBottom: '7px',
+    width: '405px'
+  },
     dateLabel: {
     transform: 'translate(10px, 2px) scale(0.75) !important',
     backgroundColor: '#fff !important',
@@ -118,7 +122,6 @@ const useStyles = makeStyles((theme) => ({
   },
   inputFieldDateRoot: {
     '& .MuiDialog-root': {
-      // zIndex: 99999,
     },
   },
   inputFieldDate: {
@@ -132,17 +135,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: '30px',
     verticalAlign: 'middle',
   },
-  // dialogFooter: {
-  // 	display: "flex",
-  // 	justifyContent: "flex-end",
-  // 	paddingTop: "10px",
-  // },
-  // footerButton: {
-  // 	letterSpacing: "1px",
-  // 	textTransform: "capitalize",
-  // 	fontWeight: "bold",
-  // 	padding: "8px 20px",
-  // },
 
   label: {
     backgroundColor: 'white',
@@ -224,7 +216,9 @@ const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
     zIndex: '9999999999999999999 !important',
   },
-  root: {
+  dateRoot: {
+    border: '1px solid #EBEBEB',
+
     '&.Mui-focused fieldset': {
       border: '1px solid black',
       backgroundColor: 'transparent',
@@ -239,6 +233,8 @@ const useStyles = makeStyles((theme) => ({
   },
   dealNameRoot: {
     fontWeight: 'bold',
+    paddingLeft: 0,
+    textAlign: 'left',
     fontSize: '1.2rem',
     '&.Mui-focused fieldset': {
       border: '1px solid black',
@@ -248,10 +244,24 @@ const useStyles = makeStyles((theme) => ({
       border: '1px solid black',
     },
   },
+  customDataTextInputRoot: {
+    border: '1px solid #EBEBEB',
+    '&.Mui-focused fieldset': {
+      border: '1px solid black',
+      backgroundColor: 'transparent',
+    },
+    '&:hover': {
+      backgroundColor: '#EBEBEB',
+    },
+
+  },
   notchedOutline: {
     border: 0,
   },
   dealOwnerRoot: {
+
+    border: '1px solid #EBEBEB',
+
     // This matches the specificity of the default styles at https://github.com/mui-org/material-ui/blob/v4.11.3/packages/material-ui-lab/src/Autocomplete/Autocomplete.js#L90
     '&[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input:first-child': {
       // Default left padding is 6px
@@ -1340,6 +1350,8 @@ function AddDealDialog(props) {
                 /> */}
               </Grid>
 
+              
+
               {!titleFocus && (
                 <Grid item xs style={{ flexGrow: 0, padding: 0, marginTop: 2 }}>
                   <div
@@ -1432,22 +1444,22 @@ function AddDealDialog(props) {
                       dark={true}
                     /> */}
 
-                          <IconButton
-                            disabled={updateDealLoading || addContactLoading}
-                            onClick={openConfirmationDialog}
-                            size="small"
-                            component="span"
-                            style={{
-                              background: 'transparent',
-                              alignSelf: 'flex-end',
-                            }}
-                          >
-                            <DeleteIcon
-                              size="medium"
-                              className={classes.closeIcon}
-                            />
-                          </IconButton>
-                        </>
+                    <IconButton
+                      disabled={updateDealLoading || addContactLoading}
+                      onClick={openConfirmationDialog}
+                      size="small"
+                      component="span"
+                      style={{
+                        background: 'transparent',
+                        alignSelf: 'flex-end',
+                      }}
+                    >
+                      <DeleteIcon
+                        size="medium"
+                        className={classes.closeIcon}
+                      />
+                    </IconButton>
+                    </>
                       )}
 
                     {/* <IconButton
@@ -1501,29 +1513,12 @@ function AddDealDialog(props) {
                 // </div>
                 <></>
               )}
-{/* 
-              <TextField
-                margin="dense"
-                variant="outlined"
-                value={label}
-                error={isNaN(label)}
-                helperText={
-                  isNaN(label) ? 'Offer Price must be a valid number' : ''
-                }
-                label="Offer Price"
-                fullWidth
-                onChange={(e) => {
-                  setLabel(e.target.value);
-                }}
-                className={classes.inputField}
-                InputProps={{
-                  inputComponent: NumberFormatCustom,
-                }}
-              /> */}
+
               <FormControl
                 variant="outlined"
+                className={classes.inputFieldDealName}
+                style={{ marginLeft: "-15px"}}
                 fullWidth
-                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
                 <TextField
@@ -1552,15 +1547,15 @@ function AddDealDialog(props) {
                     },
                   }}
                   onBlur={() => setTitleFocus(false)}
-                  onFocus={() => setTitleFocus(true)}
+                  // onFocus={() => setTitleFocus(true)}
                 />    
 
-</FormControl>
+              </FormControl>
 
               <FormControl
                 variant="outlined"
                 fullWidth
-                // className={classes.inputFieldCommonInfo}
+                className={classes.inputFieldCommonInfo}
                 size="small"
               >
 
@@ -1582,7 +1577,6 @@ function AddDealDialog(props) {
                     focused: classes.dealOwnerRootFocused,
                     popupIndicator: classes.popupIndicator,
                   }}
-                  // className={classes.inputFieldCommonInfo}
 
                   renderInput={(params) => (
                     <TextField
@@ -1668,7 +1662,7 @@ function AddDealDialog(props) {
                   }}
                   InputProps={{
                     classes: {
-                      root: classes.root,
+                      root: classes.dateRoot,
                       focused: classes.focused,
                       notchedOutline: classes.notchedOutline,
                     },
@@ -1685,41 +1679,36 @@ function AddDealDialog(props) {
                 size="small"
               >
                 <Grid container spacing={2} className={classes.gridStyle}>
-                <Grid item xs={3}>
-                <div>Flowline</div>
-                </Grid>
-                <Grid item xs={9}>
-                {/* <InputLabel shrink className={classes.shrinkLabel}>
-                  Flowline
-                </InputLabel> */}
-                <Select
-                  // disabled={stateApp.activeDeal?.cardId ? true : false}
-                  native
-                  value={pipelineId}
-                  onChange={(e) => {
-                    // setPipelineId(e.target.value);
-                    settingNewPipeWithDefaultStage(e.target.value, true);
-                  }}
-                  fullWidth
-                  label="Pipeline"
-                  className={classes.inputFieldCommonInfo}
 
-                >
-                  {selectedPipe && (
-                    <option value={selectedPipe._id}>
-                      {selectedPipe.name}
-                    </option>
-                  )}
-                  {sortedPipelines?.map((pipeline, i) => {
-                    if (selectedPipe && selectedPipe._id === pipeline._id)
-                      return;
-                    return (
-                      <option value={pipeline._id} key={i}>
-                        {pipeline.name}
+                <Grid item xs={3}>
+                  <div>Flowline</div>
+                </Grid>
+
+                <Grid item xs={9}>
+                  <Select
+                    native
+                    value={pipelineId}
+                    onChange={(e) => {
+                      settingNewPipeWithDefaultStage(e.target.value, true);
+                    }}
+                    fullWidth
+
+                  >
+                    {selectedPipe && (
+                      <option value={selectedPipe._id}>
+                        {selectedPipe.name}
                       </option>
-                    );
-                  })}
-                </Select>
+                    )}
+                    {sortedPipelines?.map((pipeline, i) => {
+                      if (selectedPipe && selectedPipe._id === pipeline._id)
+                        return;
+                      return (
+                        <option value={pipeline._id} key={i}>
+                          {pipeline.name}
+                        </option>
+                      );
+                    })}
+                  </Select>
                 </Grid>
                 </Grid>
               </FormControl>
@@ -1727,7 +1716,7 @@ function AddDealDialog(props) {
               <FormControl
                 variant="outlined"
                 fullWidth
-                // className={classes.inputFieldCommonInfo}
+                className={classes.inputFieldCommonInfo}
                 size="small"
               >
                 <Grid container spacing={2} className={classes.gridStyle}>
@@ -1736,13 +1725,15 @@ function AddDealDialog(props) {
                 </Grid>
 
                 <Grid item xs={9}>
-                {/* <InputLabel shrink className={classes.shrinkLabel}>
-                  Flow Stage
-                </InputLabel> */}
                 <Select
                   native
                   value={stageId}
                   className={classes.inputFieldCommonInfo}
+                  // classes={{
+                  //   inputRoot: classes.dealOwnerRoot,
+                  //   focused: classes.dealOwnerRootFocused,
+                  //   popupIndicator: classes.popupIndicator,
+                  // }}
                   onChange={(e) => {
                     // setStageId(e.target.value);
                     settingNewStageAndFindNextAvailablePosition(
@@ -1751,7 +1742,7 @@ function AddDealDialog(props) {
                     );
                   }}
                   fullWidth
-                  label="Deal Stage"
+                  // label="Deal Stage"
                 >
                   {stagesToChoose &&
                     stagesToChoose.map((stage, i) => (
@@ -1793,6 +1784,11 @@ function AddDealDialog(props) {
                 }}
                 InputProps={{
                   inputComponent: NumberFormatCustom,
+                  classes: {
+                    root: classes.customDataTextInputRoot,
+                    focused: classes.focused,
+                    notchedOutline: classes.notchedOutline,
+                  },
                 }}
               />
               </Grid>
