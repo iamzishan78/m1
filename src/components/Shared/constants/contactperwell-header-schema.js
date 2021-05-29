@@ -12,31 +12,93 @@ const ContactWellHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "wellName", label: "Well" },
-  { name: "api", label: "API" },
-  { name: "leaseId", label: "Lease Id", options: { display: false } },
-  { name: "lease", label: "Lease Name", options: { display: false } },
-  { name: "leaseDescription", label: "Lease" },
-  { name: "leaseAcres", label: "Lease Acres" },
-  { name: "interestOwner", label: "Interest Owner" },
-  {
-    name: "entity",
-    label: "Entity",
-    options: {
-      display: false
-    }
-  },
-  { name: "type", label: "Type" },
-  { name: "amount", label: "Amount" },
-  { name: "taxValue", label: "Tax Value" },
-  { name: "nra", label: "NRA" },
-  { name: "year", label: "Year", options: { display: false } },
-  { name: "globalLod", label: "Global LOD", options: { display: false } },
+  { name: "wellName", label: "Well", options: {
+    sort: false,
+    filter: false,
+  } },
+  { name: "api", label: "API", options: {
+    sort: false,
+    filter: false,
+  } },
+  { name: "leaseId", label: "Lease Id", options: {
+    display: false,
+    filter: false,
+    searchable: false,
+    sort: false,
+    download: false,
+    print: false,
+    viewColumns: false,
+  } },
+  { name: "lease", label: "Lease Name", options: {
+    display: false,
+    filter: false,
+    searchable: false,
+    sort: false,
+    download: false,
+    print: false,
+    viewColumns: false,
+  } },
+  { name: "leaseDescription", label: "Lease", options: {
+    sort: false,
+    filter: false,
+  } },
+  { name: "leaseAcres", label: "Lease Acres", options: {
+    sort: false,
+    filter: false,
+  } },
+  { name: "interestOwner", label: "Interest Owner", options: {
+    sort: false,
+    filter: false,
+  } },
+  { name: "entity", label: "Entity", options: {
+    display: false,
+    filter: false,
+    searchable: false,
+    sort: false,
+    download: false,
+    print: false,
+    viewColumns: false,
+  } },
+  { name: "type", label: "Type", options: {
+    sort: false,
+    filter: false,
+  } },
+  { name: "amount", label: "Amount", options: {
+    sort: false,
+    filter: false,
+  } },
+  { name: "taxValue", label: "Tax Value", options: {
+    sort: false,
+    filter: false,
+  } },
+  { name: "nra", label: "NRA", options: {
+    sort: false,
+    filter: false,
+  } },
+  { name: "year", label: "Year", options: {
+    display: false,
+    filter: false,
+    searchable: false,
+    sort: false,
+    download: false,
+    print: false,
+    viewColumns: false,
+  } },
+  { name: "globalLod", label: "Global LOD", options: {
+    display: false,
+    filter: false,
+    searchable: false,
+    sort: false,
+    download: false,
+    print: false,
+    viewColumns: false,
+  } },
   {
     name: "tags",
     label: "Tags ",
     options: {
       sort: false,
+      filter: false,
       download: false,
       print: false,
       filterOptions: {
@@ -69,6 +131,8 @@ const ContactWellHeadCells = [
     name: "isTracked",
     label: "Track",
     options: {
+      sort: false,
+      filter: false,
       searchable: false,
       download: false,
       print: false,
@@ -96,7 +160,15 @@ const ContactWellHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "isOverridden", label: "is Overridden", options: { display: false } },
+  { name: "isOverridden", label: "is Overridden", options: {
+    display: false,
+    filter: false,
+    searchable: false,
+    sort: false,
+    download: false,
+    print: false,
+    viewColumns: false,
+  } },
 ];
 
 export default ContactWellHeadCells;
