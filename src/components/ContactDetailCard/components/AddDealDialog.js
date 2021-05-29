@@ -1310,7 +1310,7 @@ function AddDealDialog(props) {
                   marginRight: titleFocus ? 0 : '5px',
                 }}
               >
-                <TextField
+                {/* <TextField
                   margin="dense"
                   value={title}
                   variant="outlined"
@@ -1337,7 +1337,7 @@ function AddDealDialog(props) {
                   }}
                   onBlur={() => setTitleFocus(false)}
                   onFocus={() => setTitleFocus(true)}
-                />
+                /> */}
               </Grid>
 
               {!titleFocus && (
@@ -1501,7 +1501,7 @@ function AddDealDialog(props) {
                 // </div>
                 <></>
               )}
-
+{/* 
               <TextField
                 margin="dense"
                 variant="outlined"
@@ -1519,7 +1519,44 @@ function AddDealDialog(props) {
                 InputProps={{
                   inputComponent: NumberFormatCustom,
                 }}
-              />
+              /> */}
+              <FormControl
+                variant="outlined"
+                fullWidth
+                // className={classes.inputFieldCommonInfo}
+                size="small"
+              >
+                <TextField
+                  margin="dense"
+                  value={title}
+                  variant="outlined"
+                  required
+                  error={valid['title']}
+                  helperText={
+                    valid['title'] ? 'Enter a deal name to get started' : ''
+                  }
+                  fullWidth
+                  //   required
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    setValid({
+                      ...valid,
+                      title: false,
+                    });
+                  }}
+                  InputProps={{
+                    classes: {
+                      root: classes.dealNameRoot,
+                      focused: classes.focused,
+                      notchedOutline: classes.notchedOutline,
+                    },
+                  }}
+                  onBlur={() => setTitleFocus(false)}
+                  onFocus={() => setTitleFocus(true)}
+                />    
+
+</FormControl>
+
               <FormControl
                 variant="outlined"
                 fullWidth
