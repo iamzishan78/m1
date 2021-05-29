@@ -296,6 +296,7 @@ function AddDealDialog(props) {
   const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [title, setTitle] = useState(''); // title change from contact.name to dealName
+  const [titleFocus, setTitleFocus] = useState(false);
   const [label, setLabel] = useState('');
   const [stageId, setStageId] = useState(null);
   const [dealPosition, setDealPosition] = useState(null);
@@ -1252,22 +1253,124 @@ function AddDealDialog(props) {
             {/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
         Recent Activities
       </h4> */}
-            <Grid item xs={12} style={{ minHeight: '35px' }}>
-              <h4
+            <Grid
+              item
+              container
+              xs={12}
+              style={{ margin: 0, padding: 0, marginBottom: '1em' }}
+              alignItems="center"
+            >
+              <Grid
+                item
+                xs
                 style={{
-                  margin: '0 0 15px 0',
-                  float: 'left',
-                  fontSize: '1.1rem',
+                  flexGrow: 1,
+                  padding: 0,
+                  marginRight: titleFocus ? 0 : '5px',
                 }}
               >
-                Deal Information
-              </h4>
+                <TextField
+                  margin="dense"
+                  value={title}
+                  label="Deal Name"
+                  variant="outlined"
+                  required
+                  error={valid['title']}
+                  helperText={
+                    valid['title'] ? 'Enter a deal name to get started' : ''
+                  }
+                  fullWidth
+                  //   required
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    setValid({
+                      ...valid,
+                      title: false,
+                    });
+                  }}
+                  style={{
+                    fontSize: '2rem',
+                  }}
+                  onBlur={() => setTitleFocus(false)}
+                  onFocus={() => setTitleFocus(true)}
+                />
+              </Grid>
 
-              <div style={{ float: 'right' }}>
-                {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
-                  stateApp.activeDeal?.laneId && (
-                    <>
-                      {/* <CommentsWithIcon
+              {!titleFocus && (
+                <Grid item xs style={{ flexGrow: 0, padding: 0, marginTop: 2 }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    {(dealState === null || dealState === 'open') && (
+                      <>
+                        <div
+                          className={classes.dealStateOpenWon}
+                          onClick={() => setDealState('won')}
+                          style={{
+                            marginRight: 8,
+                          }}
+                        >
+                          Won
+                        </div>
+
+                        <div
+                          className={classes.dealStateOpenLost}
+                          onClick={() => setDealState('lost')}
+                        >
+                          Lost
+                        </div>
+                      </>
+                    )}
+                    {dealState === 'won' && (
+                      <>
+                        <div
+                          className={classes.dealStateClosed}
+                          style={{
+                            backgroundColor: '#a6e5c3',
+                            fontWeight: 'bold',
+                            color: '#54a83c',
+                            marginRight: 8,
+                          }}
+                        >
+                          Won
+                        </div>
+                        <div
+                          className={classes.dealStateReopen}
+                          onClick={() => setDealState(null)}
+                        >
+                          Re-open
+                        </div>
+                      </>
+                    )}
+                    {dealState === 'lost' && (
+                      <>
+                        <div
+                          className={classes.dealStateClosed}
+                          style={{
+                            backgroundColor: '#ffa8a8',
+                            // borderStyle: "solid",
+                            fontWeight: 'bold',
+                            color: '#f96060',
+                            marginRight: 8,
+                          }}
+                        >
+                          Lost
+                        </div>
+                        <div
+                          className={classes.dealStateReopen}
+                          onClick={() => setDealState(null)}
+                        >
+                          Re-open
+                        </div>
+                      </>
+                    )}
+                    {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
+                      stateApp.activeDeal?.laneId && (
+                        <>
+                          {/* <CommentsWithIcon
                       objectId={stateApp.activeDeal?.cardId}
                       targetLabel={"deal"}
                       iconZiseSmall={true}
@@ -1285,133 +1388,37 @@ function AddDealDialog(props) {
                       dark={true}
                     /> */}
 
-                      <IconButton
-                        disabled={updateDealLoading || addContactLoading}
-                        onClick={openConfirmationDialog}
-                        size="small"
-                        component="span"
-                        style={{
-                          margin: '3px 8px 0 8px',
-                          background: 'transparent',
-                        }}
-                      >
-                        <DeleteIcon
-                          size="medium"
-                          className={classes.closeIcon}
-                        />
-                      </IconButton>
-                    </>
-                  )}
+                          <IconButton
+                            disabled={updateDealLoading || addContactLoading}
+                            onClick={openConfirmationDialog}
+                            size="small"
+                            component="span"
+                            style={{
+                              background: 'transparent',
+                              alignSelf: 'flex-end',
+                            }}
+                          >
+                            <DeleteIcon
+                              size="medium"
+                              className={classes.closeIcon}
+                            />
+                          </IconButton>
+                        </>
+                      )}
 
-                {/* <IconButton
+                    {/* <IconButton
 									disabled={updateDealLoading || addContactLoading}
 									onClick={handleClose}
 									size="small"
 								>
 									<CloseIcon className={classes.closeIcon} fontSize="small" />
 								</IconButton> */}
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'flex-end',
-                  margin: '8px 0',
-                }}
-              >
-                {(dealState === null || dealState === 'open') && (
-                  <>
-                    <div
-                      className={classes.dealStateOpenWon}
-                      onClick={() => setDealState('won')}
-                      style={{
-                        marginRight: 8,
-                        marginBottom: 10,
-                      }}
-                    >
-                      Won
-                    </div>
-
-                    <div
-                      className={classes.dealStateOpenLost}
-                      onClick={() => setDealState('lost')}
-                      style={{
-                        marginBottom: 10,
-                      }}
-                    >
-                      Lost
-                    </div>
-                  </>
-                )}
-                {dealState === 'won' && (
-                  <>
-                    <div
-                      className={classes.dealStateClosed}
-                      style={{
-                        backgroundColor: '#a6e5c3',
-                        fontWeight: 'bold',
-                        color: '#54a83c',
-                        marginRight: 8,
-                      }}
-                    >
-                      Won
-                    </div>
-                    <div
-                      className={classes.dealStateReopen}
-                      onClick={() => setDealState(null)}
-                    >
-                      Re-open
-                    </div>
-                  </>
-                )}
-                {dealState === 'lost' && (
-                  <>
-                    <div
-                      className={classes.dealStateClosed}
-                      style={{
-                        backgroundColor: '#ffa8a8',
-                        // borderStyle: "solid",
-                        fontWeight: 'bold',
-                        color: '#f96060',
-                        marginRight: 8,
-                      }}
-                    >
-                      Lost
-                    </div>
-                    <div
-                      className={classes.dealStateReopen}
-                      onClick={() => setDealState(null)}
-                    >
-                      Re-open
-                    </div>
-                  </>
-                )}
-              </div>
+                  </div>
+                </Grid>
+              )}
             </Grid>
 
             <div className={classes.inputFieldDateRoot}>
-              <TextField
-                margin="dense"
-                value={title}
-                label="Deal Name"
-                variant="outlined"
-                required
-                error={valid['title']}
-                helperText={
-                  valid['title'] ? 'Enter a deal name to get started' : ''
-                }
-                fullWidth
-                //   required
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                  setValid({
-                    ...valid,
-                    title: false,
-                  });
-                }}
-                className={classes.inputField}
-              />
-
               {!(
                 (Object.keys(contact).length === 0 &&
                   contact.constructor === Object) ||
