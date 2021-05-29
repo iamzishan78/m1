@@ -411,7 +411,7 @@ function ExpandableCard(props) {
                 </>
               )
 
-                : targetLabel == "contact" ? (
+                : (targetLabel == "contact" && parent != "table") ? (
                   <>
                     <LinkWithIcon
                       objectId={targetSourceId.toLowerCase()}
