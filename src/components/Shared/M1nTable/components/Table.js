@@ -1747,7 +1747,12 @@ function SubTable(props) {
                       }}
                     >
                       {/* // this is the search icon in the grid on documents */}
-                       <PageviewIcon/>
+                       {/* BEGINNING OF SHITTY CODE === this find the file type and if pdf will show the icon */}
+                       {rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length-1] 
+                       === "pdf" 
+                       && <PageviewIcon/>}
+                       {/* END OF THIS PARTICULAR BLOCK OF SHITTY CODE  */}
+                       
                      </IconButton>
                      <IconButton    onClick={(e)=>{
                        e.stopPropagation()
