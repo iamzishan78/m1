@@ -1480,6 +1480,7 @@ function AddDealDialog(props) {
                       style={{
                         background: 'transparent',
                         alignSelf: 'flex-end',
+                        paddingLeft: '20px',
                       }}
                     >
                       <DeleteIcon
