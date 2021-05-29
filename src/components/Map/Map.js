@@ -4857,6 +4857,29 @@ function Map() {
        )
       }
 
+      {stateApp.selectedParcel !== null &&
+        stateApp.expandedCard && (
+          <div className={classes.draggable}>
+            <ExpandableCardProvider
+              expanded={true}
+              handleCloseExpandableCard={handleCloseExpandableCard}
+              component={<ParcelCardProvider></ParcelCardProvider>}
+              title={stateApp.selectedParcel.shapeLabel}
+              subTitle=""
+              parent="map"
+              position="relative"
+              cardTop={20}
+              cardLeft={20}
+              zIndex={99}
+              cardWidthExpanded="50vw"
+              cardHeightExpanded="90vh"
+              targetSourceId={stateApp.selectedParcel.id}
+              targetLabel="parcel"
+              deleteParcel={deleteParcel}
+            ></ExpandableCardProvider>
+          </div>
+        )
+      }
     {stateApp.selectedPermit !== null && showExpandableCard &&
      stateApp.expandedCard && (
        <div className={classes.draggable}>
