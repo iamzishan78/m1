@@ -1350,7 +1350,15 @@ function AddDealDialog(props) {
                 /> */}
               </Grid>
 
-              
+              <h4
+                style={{
+                  margin: '0 0 15px 0',
+                  float: 'left',
+                  fontSize: '1.1rem',
+                }}
+              >
+                Deal Information
+              </h4>
 
               {!titleFocus && (
                 <Grid item xs style={{ flexGrow: 0, padding: 0, marginTop: 2 }}>
