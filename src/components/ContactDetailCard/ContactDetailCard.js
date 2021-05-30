@@ -432,7 +432,20 @@ export default function ContactDetailCard(props) {
       <div className={classes.header}>
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left', paddingLeft: '10px'}}>
           
+      {/* {checkModuleHistory() && } */}
+
+
       <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+
+         <Link style={{ marginLeft: '10px', 
+                          fontSize: '16px', 
+                          cursor: 'pointer',
+                          }}  
+                          color="inherit"
+                          onClick={()=> history.push('/')}>
+          Map
+        </Link>       
+        
         <Link style={{ marginLeft: '10px', 
                           fontSize: '16px', 
                           cursor: 'pointer',
@@ -441,7 +454,9 @@ export default function ContactDetailCard(props) {
                           onClick={()=> history.push('/contacts')}>
           Contacts
         </Link>
+
         <Typography style={{ color: '#18AADD', fontSize: '16px' }}>{contactData.name}</Typography>
+      
       </Breadcrumbs>
 
         </div>
