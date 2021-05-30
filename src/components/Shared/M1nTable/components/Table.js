@@ -2320,7 +2320,7 @@ function SubTable(props) {
                     display: "flex",
                   }}
                 >
-                  {props.header !== "Active Users" && (
+                  {props.header !== "Active Users" && props.header !== "Documents" && (
                     <>
                       {/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
                       <Button
