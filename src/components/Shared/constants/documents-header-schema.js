@@ -27,6 +27,10 @@ const DocumentsHeadCells = [
   //   label: "DATE & TIME",
   // },
   {
+    name: "DOCUMENT NUMBER",
+    label: "Document Number",
+  },
+  {
     name: "DOCUMENT NAME",
     label: "Document Name",
   },
