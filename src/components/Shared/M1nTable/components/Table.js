@@ -92,6 +92,7 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
 import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
+
 import RightDialog from "../../../ContactDetailCard/components/RightDialog"
 
 // queries 

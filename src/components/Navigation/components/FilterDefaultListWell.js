@@ -6,8 +6,11 @@ import ListItem from "@material-ui/core/ListItem";
 import Divider from "@material-ui/core/Divider";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { makeStyles } from "@material-ui/core/styles";
-import moment from "moment";
 import Button from "@material-ui/core/Button";
+
+// value formatters 
+import convert_date from "../../Shared/valueformatters/convert_date.js";
+
 
 const useStyles = makeStyles((theme) => ({
   paparMain: {
@@ -94,10 +97,6 @@ export default function FilterDedaultListWell(props) {
     }
   };
 
-  const convertDate = (unixStamp) => {
-    const date = moment.utc(unixStamp).format("MM/DD/YYYY");
-    return date;
-  };
 
   const removeChip = (e, name) => () => {
     const { deleteChip } = props;
@@ -157,7 +156,7 @@ export default function FilterDedaultListWell(props) {
                                       {el[0] === ">=" ? "From" : "To"}
                                     </div>
                                     <div className={classes.chipRow}>
-                                      {convertDate(el[2])}
+                                      {convert_date(el[2])}
                                     </div>
                                   </section>
                                 }
