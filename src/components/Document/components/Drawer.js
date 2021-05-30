@@ -12,6 +12,8 @@ import { AppContext } from "AppContext";
 import CloseIcon from "@material-ui/icons/Close";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+
 import {
   CircularProgress,
   Dialog,
@@ -163,7 +165,7 @@ export default function DocumentDrawer() {
   const [newDocument, setNewDocument] = useState({
     fileName: "",
     dateTime: new Date(),
-    documentNumber: "No Number",
+    documentNumber: "",
     documentType: "",
     partyName1: "",
     partyName2: "",
@@ -245,6 +247,14 @@ export default function DocumentDrawer() {
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
+  };
+  const handleClose = () => {
+    setStateApp({
+      ...stateApp,
+      DocumentDrawer: false,
+      selectedDocument: {},
+    });
+    UpDatefileFN();
   };
 
   const handleDeleteAccept = () => {
@@ -477,13 +487,7 @@ export default function DocumentDrawer() {
             )}
             <IconButton
               size="small"
-              onClick={() => {
-                setStateApp({
-                  ...stateApp,
-                  DocumentDrawer: false,
-                  selectedDocument: {},
-                });
-              }}
+              onClick={() => handleClose()}
             >
               <CloseIcon></CloseIcon>
             </IconButton>
@@ -763,11 +767,7 @@ export default function DocumentDrawer() {
             margin: "0px 15px 0px 0px",
           }}
           onClick={() => {
-            setStateApp({
-              ...stateApp,
-              DocumentDrawer: false,
-              selectedDocument: {},
-            });
+            handleClose()
           }}
         >
           Cancel
@@ -1059,17 +1059,16 @@ export default function DocumentDrawer() {
   //   </div>
   // );
   // let obj = new Object();
+
   return (
     <div>
+      {/* <ClickAwayListener onClickAway={() => {handleClose()}}> */}
       <Drawer
         anchor={"right"}
         open={
-          stateApp.DocumentDrawer ||
+          stateApp.DocumentDrawer===true ||
           Object.entries(stateApp.selectedDocument).length > 0
         }
-        // onClose={()=>{
-        //   setStateApp({...stateApp, DocumentDrawer:false})
-        // }}
       >
         {console.log(stateApp.selectedDocument, "selecdow")}
         <DeleteDocumentConfirmation
@@ -1085,13 +1084,11 @@ export default function DocumentDrawer() {
             <CircularProgress />
           </DialogTitle>
         </Dialog>
-        {/* {list("right")} */}
-        {/* {stateApp.selectedDocument?.fileId ? ( */}
+
         <>{DocumentDetail("right")}</>
-        {/* ) : ( */}
-        {/* <>{list("right")}</> */}
-        {/* )} */}
+
       </Drawer>
+      {/* </ClickAwayListener> */}
     </div>
   );
 }
