@@ -282,7 +282,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 
 		</DragDropContext>
 	);
-	debugger;
 	return (
 		// <ClickAwayListener onClickAway={handleClose}>
 		<div>

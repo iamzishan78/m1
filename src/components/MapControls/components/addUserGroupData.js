@@ -21,6 +21,7 @@ import { ADDLAYER } from "../../../graphQL/useMutationAddLayer";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { useDispatch } from "react-redux";
 import { showErrorMessage } from "../../../actions";
+import Loader from "components/Loaders";
 
 const random_rgb = () => {
   var o = Math.round,
@@ -98,6 +99,7 @@ export default function AddUserGroupData(props) {
       ...stateMapControls,
       selectedControl: null,
       fileUploadedContent: null,
+      selectedControl: 'layer'
     }));
     setNotReturn(false);
   };
@@ -112,6 +114,7 @@ export default function AddUserGroupData(props) {
       ...stateMapControls,
       selectedControl: null,
       fileUploadedContent: null,
+      selectedControl: 'layer',
       addLayer: false,
     }));
     setNotReturn(false);
@@ -243,12 +246,20 @@ export default function AddUserGroupData(props) {
             });
 
             if (index === fileContent.featureTypes.length - 1) {
+              Loader.createToast('group-creation', 'Group layer creation in progress')
+              const interval = setInterval(() => {
+                if (stateApp.map.isSourceLoaded(layerPaintProps[0].sourceProps)) {
+                  Loader.successToast('group-creation', 'Group layer created')
+                  clearInterval(interval);
+                }
+              }, 1000);
               handleClose();
             }
           })
         })
         .catch((error) => {
           console.log(error);
+          Loader.successToast('errorToast', error)
           setStateApp((stateApp) => ({
             ...stateApp,
             universalCircularLoaderAct: false,
