@@ -15,8 +15,8 @@ export default function DeleteDocumentConfirmation({
           header="Delete Document"
           onClose={handleClose}
           deleteFunc={handleAccept}
-          m1nSelectedRowsIds={[document._id]}
-          setM1nSelectedRowsIndexes={()=> {}}
+          // m1nSelectedRowsIds={[document._id]}
+          // setM1nSelectedRowsIndexes={[document._id]}
         >
           Do you want to delete the selected documents?
         </DeleteConfirmationDialogContent>
