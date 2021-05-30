@@ -46,7 +46,6 @@ export default function PermitDateCard() {
         //className={classes.text2}
         variant="caption"
       >
-      {console.log('PERMIT DATE',stateApp.selectedWell.permitApprovedDate)}
       {convert_date(stateApp.selectedWell.permitApprovedDate)}
 
       </Typography>
