@@ -1025,7 +1025,11 @@ function Map() {
     const wellPointClick = (feature) => {
       // this function is intended to organize the data 
       // when a well point is clicked 
-      // and initiate the mapbox popup 
+      // and initiate the mapbox popup
+      setStateApp((state) => ({
+	...state,
+	selectedPermit: null
+      }));
 
       if (feature && feature.properties) {
 
