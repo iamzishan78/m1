@@ -450,7 +450,7 @@ export default function ContactDetailCard(props) {
   return contactData ? (
     <>
       <div className={classes.header}>
-        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left', paddingLeft: '10px'}}>
+        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left', paddingLeft: '25px'}}>
           
       {/* {checkModuleHistory() && } */}
 
@@ -458,7 +458,7 @@ export default function ContactDetailCard(props) {
       <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
 
         {checkModuleHistory() && 
-         <Link style={{ marginLeft: '10px', 
+         <Link style={{ marginLeft: '5px',
                           fontSize: '16px', 
                           cursor: 'pointer',
                           }}  
@@ -474,7 +474,7 @@ export default function ContactDetailCard(props) {
         </Link>       
         }
         
-        <Link style={{ marginLeft: '10px', 
+        <Link style={{ marginLeft: '5px', 
                           fontSize: '16px', 
                           cursor: 'pointer',
                           }}  
@@ -483,7 +483,7 @@ export default function ContactDetailCard(props) {
           Contacts
         </Link>
 
-        <Typography style={{ color: '#18AADD', fontSize: '16px' }}>{contactData.name}</Typography>
+        <Typography style={{ color: '#18AADD', fontSize: '16px', marginLeft: '5px' }}>{contactData.name}</Typography>
       
       </Breadcrumbs>
 
