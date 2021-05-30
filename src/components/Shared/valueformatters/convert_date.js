@@ -8,16 +8,21 @@ export default function convert_date(value) {
 
         const date = moment.utc(unixStamp).format("MM/DD/YYYY");
       
+        // console.log('UNIXSTAMP',unixStamp)
         if (unixStamp === 'null') {return '--'}
         else if(unixStamp === null) {return '--'}
         else if(unixStamp === undefined) {return '--'}
+
         else {return date}
       }
 
     const valueFormatter = (v) => {
-      if (v) return convertDate(v);
+        // console.log('VEE',v)
+        return convertDate(v);
     };
   
+
+    // console.log('VALUE', value)
     return valueFormatter(value)
   }
   
