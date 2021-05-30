@@ -190,6 +190,7 @@ export default function PermitCard() {
   useEffect(() => {
     if(dataPermitSummary) {
       Object.assign(stateApp.selectedPermit, dataPermitSummary.recentPermitDetail[0])
+      console.log('SELECTED PERMIT', stateApp.selectedPermit)
       setStateApp((state) => ({
 	...state,
 	selectedPermitDetails: stateApp.selectedPermit
@@ -280,7 +281,7 @@ export default function PermitCard() {
       </TableCell>
 	</TableRow>
 
-	<TableRow className={classes.rowWhite}>
+	<TableRow className={classes.rowGrey}>
 	<TableCell className={classes.cell1} align="left">
 	Permit #
   </TableCell>
@@ -291,7 +292,7 @@ export default function PermitCard() {
       </TableCell>
 	</TableRow>
 
-	<TableRow className={classes.rowGray}>
+	<TableRow className={classes.rowWhite}>
 	<TableCell className={classes.cell1} align="left">
 	Operator
       </TableCell>
@@ -302,7 +303,7 @@ export default function PermitCard() {
       </TableCell>
 	</TableRow>
 
-	<TableRow className={classes.rowWhite}>
+	<TableRow className={classes.rowGrey}>
 	<TableCell className={classes.cell1} align="left">
 	Well Type
       </TableCell>
@@ -313,7 +314,7 @@ export default function PermitCard() {
       </TableCell>
 	</TableRow>
 
-	<TableRow className={classes.rowGray}>
+	<TableRow className={classes.rowWhite}>
 	<TableCell className={classes.cell1} align="left">
 	Submitted Date
       </TableCell>
@@ -349,7 +350,11 @@ export default function PermitCard() {
       </TableBody>
 	</Table>
 	<div>
-	<Link href="http://webapps2.rrc.texas.gov/EWA/drillingPermitsQueryAction.do" 
+	<Link href=
+  
+  {"http://webapps2.rrc.texas.gov/EWA/drillingPermitDetailAction.do?methodToCall=searchByUniversalDocNo&universalDocNo="+stateApp.selectedPermit.UniversalDocNumber+"&rrcActionMan=H4sIAAAAAAAAAL1Qu27DMAz8mnQUJPkBLxyMop37CJrByKDYhCNAtgxK7gPQx5d2USB1OmfS8Y4ij5eUlKCTkgrUHVFbt9H68aWlrpFHWPkPPJlpClqwLCJ-miB6_77L6kqyrmGnHx8ONcNsgR1Z5-zYPyENNobnGenrZ6joPDflMGA8-27v741zTBRAGGca9_4VDbVnpiqQV16asKo19UFMhszwZtyMq0X2WJVZLqsFF3DC3o7hYOMyimf9qZXe1Jf9m6XqVgGE38NLmEyPdHHgv2moY7PtW6yCShqUTBmDHGQq-C2ZuP59gyy_AXdh05tZAgAA"}
+
+
       onClick={() => {
 	console.info("I'm a button.");
       }}                
