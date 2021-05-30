@@ -165,7 +165,7 @@ export default function DocumentDrawer() {
   const [newDocument, setNewDocument] = useState({
     fileName: "",
     dateTime: new Date(),
-    documentNumber: "No Number",
+    documentNumber: "",
     documentType: "",
     partyName1: "",
     partyName2: "",
