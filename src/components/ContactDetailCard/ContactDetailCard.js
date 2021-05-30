@@ -1,9 +1,17 @@
+
+
+// react core 
 import React, { useContext, useState, useEffect } from "react";
+
+// mui styling 
 import { makeStyles, withStyles } from "@material-ui/core/styles";
+
+// mui core components 
 import { Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import { useHistory } from "react-router-dom";
 
+// internal components 
 import Comments from "../Shared/Comments";
 import Tags from "../Shared/Tagger";
 import Avatar from "react-avatar";
@@ -22,7 +30,6 @@ import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubCompo
 import Documents from "../Shared/Documents";
 import ParcelsCard from "./components/ParcelsCard";
 import LeadStage from "../Shared/LeadStage";
-import { AppContext } from "../../AppContext";
 import RecentConversations from "../Shared/RecentConversations";
 import Divider from "@material-ui/core/Divider";
 import RightDialog from "./components/RightDialog";
@@ -52,6 +59,10 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import Link from '@material-ui/core/Link';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Typography from '@material-ui/core/Typography';
+
+// contexts 
+import { AppContext } from "../../AppContext";
+import { NavigationContext } from "../Navigation/NavigationContext";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -274,6 +285,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ContactDetailCard(props) {
+
+  // contexts 
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
+
+
   const dispatch = useDispatch();
   let history = useHistory();
   const contactId = history.location.pathname.split('/')[history.location.pathname.split('/').length-1]
@@ -282,7 +299,6 @@ export default function ContactDetailCard(props) {
   );
   const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
-  const [stateApp, setStateApp] = useContext(AppContext);
   const [transactData, setTransactData] = useState();
   const [transactId, setTransactId] = useState();
   const [contactData, setContactData] = useState(null);
@@ -420,6 +436,10 @@ export default function ContactDetailCard(props) {
     }
   }, [tData, tLoading]);
 
+  const checkModuleHistory = () => {
+    return !!stateNav.contactFromMap;
+  }
+
   const ExtenstionGetter = (name) => {
     let fileExtension = name
   ?.slice(name.lastIndexOf(".") + 1)
@@ -437,14 +457,22 @@ export default function ContactDetailCard(props) {
 
       <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
 
+        {checkModuleHistory() && 
          <Link style={{ marginLeft: '10px', 
                           fontSize: '16px', 
                           cursor: 'pointer',
                           }}  
                           color="inherit"
-                          onClick={()=> history.push('/')}>
+                          onClick={()=> 
+                          { history.push('/');
+                              setStateNav((stateApp) => ({
+                                ...stateApp,
+                                contactFromMap: false,
+                              }));
+                          }}>
           Map
         </Link>       
+        }
         
         <Link style={{ marginLeft: '10px', 
                           fontSize: '16px', 
