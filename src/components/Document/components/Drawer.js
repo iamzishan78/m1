@@ -37,6 +37,7 @@ import {
   faFile,
 } from "@fortawesome/free-solid-svg-icons";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
@@ -204,11 +205,11 @@ export default function DocumentDrawer() {
     useMutation(UPDATE_DOCUMENT);
 
   const UpDatefileFN = () => {
-    let documentType = ''
-    if(typeof newDocument.documentType === 'string'){
-      documentType = newDocument.documentType
-    }else if(newDocument.documentType?.name){
-      documentType = newDocument.documentType.name
+    let documentType = "";
+    if (typeof newDocument.documentType === "string") {
+      documentType = newDocument.documentType;
+    } else if (newDocument.documentType?.name) {
+      documentType = newDocument.documentType.name;
     }
     if (stateApp.selectedDocument.fileId) {
       setLoader(true);
@@ -249,7 +250,7 @@ export default function DocumentDrawer() {
 
   const handleDeleteAccept = () => {
     // Delete Document Logic goes here
-    debugger
+    debugger;
     if (fileIdToDelete) {
       setLoader(true);
       updateDocument({
@@ -540,13 +541,13 @@ export default function DocumentDrawer() {
           <DocumentType
             className={classes.maxWidth}
             documentTypes={documentTypes}
-            setDocumentType={(value) => { 
+            setDocumentType={(value) => {
               setNewDocument({
                 ...newDocument,
                 documentType: value,
-              })
+              });
             }}
-            value={newDocument.documentType? newDocument.documentType : ""}
+            value={newDocument.documentType ? newDocument.documentType : ""}
           />
         </ListItem>
         <ListItem
@@ -1072,14 +1073,21 @@ export default function DocumentDrawer() {
         // }}
       >
         {console.log(stateApp.selectedDocument, "selecdow")}
-        <DeleteDocumentConfirmation
-          document={stateApp.selectedDocument}
+        <Dialog
           open={openDeleteConfirmDialog}
-          handleClose={handleDeleteCancel}
-          handleAccept={() => {
-            handleDeleteAccept();
-          }}
-        />
+          onClose={handleDeleteCancel}
+          style={{ zIndex: 99999999999 }}
+        >
+          <DeleteConfirmationDialogContent
+            header="Delete Document"
+            onClose={handleDeleteCancel}
+            deleteFunc={handleDeleteAccept}
+            m1nSelectedRowsIds={[document._id]}
+            setM1nSelectedRowsIndexes={() => {}}
+          >
+            Do you want to delete the selected documents?
+          </DeleteConfirmationDialogContent>
+        </Dialog>
         <Dialog open={loader} style={{ zIndex: 99999999999 }}>
           <DialogTitle id="alert-dialog-title">
             <CircularProgress />
@@ -1100,8 +1108,8 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
   console.log("value", value);
   const useStyles = makeStyles({
     inputRoot: {
-          backgroundColor: "#ffffff",
-        },
+      backgroundColor: "#ffffff",
+    },
     listbox: {
       boxSizing: "border-box",
       "& ul": {
@@ -1113,8 +1121,8 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 
   const classes = useStyles();
 
-  const onInputChange = (event , value) => {
-    setDocumentType(value)
+  const onInputChange = (event, value) => {
+    setDocumentType(value);
   };
   return (
     <Autocomplete
@@ -1168,8 +1176,8 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
         const filtered = filter(options, { ...params, inputValue: value });
 
         const isExist = loadashFilter(filtered, (filter) => {
-          return filter._id === value
-        })
+          return filter._id === value;
+        });
         // Suggest the creation of a new value
         if (value !== "" && (!isExist || isExist.length === 0)) {
           filtered.unshift({
@@ -1181,19 +1189,16 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
       }}
       onChange={(event, newValue) => {
         if (newValue && newValue._id) {
-          if (newValue._id !== "newEntity")
-          setDocumentType(newValue);
-          else
-          setDocumentType({ _id: "newEntity", name: newValue.name });
-        } else
-        setDocumentType("");
+          if (newValue._id !== "newEntity") setDocumentType(newValue);
+          else setDocumentType({ _id: "newEntity", name: newValue.name });
+        } else setDocumentType("");
       }}
       renderInput={(params) => (
         <TextField
           margin="dense"
           {...params}
           InputProps={{
-            ...params.InputProps
+            ...params.InputProps,
           }}
           size="small"
         />
