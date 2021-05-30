@@ -1025,7 +1025,11 @@ function Map() {
     const wellPointClick = (feature) => {
       // this function is intended to organize the data 
       // when a well point is clicked 
-      // and initiate the mapbox popup 
+      // and initiate the mapbox popup
+      setStateApp((state) => ({
+	...state,
+	selectedPermit: null
+      }));
 
       if (feature && feature.properties) {
 
@@ -4807,6 +4811,7 @@ function Map() {
     }
   }, [stateApp.selectedParcel]);
 
+
   return (
     <div className={classes.mapWrapper}>
       <div className={classes.map} ref={mapEl} id="map">
@@ -4880,38 +4885,17 @@ function Map() {
           </div>
         )
       }
-    {stateApp.selectedPermit !== null && showExpandableCard &&
-     stateApp.expandedCard && (
-       <div className={classes.draggable}>
-	 <ExpandableCardProvider
-	   expanded
-	   handleCloseExpandableCard={handleCloseExpandableCard}
-	   component={<PermitCardProvider />}
-	   title={stateApp.selectedPermit.OperatorName}
-	   subTitle={stateApp.selectedPermit.ApiNumber}
-	   parent="map"
-	   cardTop={20}
-	   cardLeft={20}
-	   position="relative"
-	   zIndex={99}
-	   cardWidthExpanded="50vw"
-	   cardHeightExpanded="90vh"
-	   targetSourceId={stateApp.selectedPermit.Id}
-	   targetLabel="recent_submitted_permits"
-	 />
-       </div>
-     )
-    }
-
     {stateApp.selectedPermit !== null &&
      // && stateApp.popupOpen==true
      showExpandableCard && (
        <PortalD id="popupContainer">
+         {console.log('PERMITS INFO', stateApp.selectedPermit)}
+
 	 {!stateApp.expandedCard && (
 	   <ExpandableCardProvider
 	     handleCloseExpandableCard={handleCloseExpandableCard}
 	     component={<PermitCardProvider />}
-	     title={stateApp.selectedPermit.OperatorName}
+	     title={stateApp.selectedPermit.Lease}
 	     subTitle={stateApp.selectedPermit.ApiNumber}
 	     parent="map"
 	     mouseX={0}
@@ -4920,11 +4904,11 @@ function Map() {
 	     cardLeft={0}
 	     cardTop={0}
 	     zIndex={3000}
-	     cardWidth="350px"
+	     cardWidth="375px"
 	     cardWidthExpanded="50vw"
 	     cardHeightExpanded="95vh"
 	     targetSourceId={stateApp.selectedPermit.Id}
-	     targetLabel="well"
+	     targetLabel="recent_submitted_permits"
 	   ></ExpandableCardProvider>
 	 )}
        </PortalD>
