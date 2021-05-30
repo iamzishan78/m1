@@ -3,7 +3,9 @@ import { makeStyles,useTheme } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography'
 import { AppContext } from '../../AppContext'
 import WellIcon from './components/svgIcons/WellIcon'
-import moment from 'moment'
+
+// value formatters 
+import convert_date from "../Shared/valueformatters/convert_date.js";
 
 
 const useStyles = makeStyles(theme => ({
@@ -18,21 +20,6 @@ const useStyles = makeStyles(theme => ({
     }
   }))
 
-const formatDateString = dateString => {
-    if (!dateString) return '--'
-    return new Date(dateString).toLocaleDateString()
-  }
-  
-
-const convertDate = unixStamp => {
-  const date = moment.utc(unixStamp).format("MM/DD/YYYY");
-
-  if (unixStamp === 'null') {return '--'}
-  else if(unixStamp === null) {return '--'}
-  else if(unixStamp === undefined) {return '--'}
-  else {return date}
-}
-  
   
 export default function FirstProdDateCard() {
     let classes = useStyles();
@@ -55,7 +42,7 @@ export default function FirstProdDateCard() {
         //className={classes.text2}
         variant="caption"
       >
-      {convertDate(stateApp.selectedWell.firstProductionDate)}
+      {convert_date(stateApp.selectedWell.firstProductionDate)}
       </Typography>
       </div>
 

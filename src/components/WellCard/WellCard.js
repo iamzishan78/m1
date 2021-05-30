@@ -34,6 +34,7 @@ import { WELLSUMMARYDETAILQUERY } from "../../graphQL/useQueryWellSummaryDetail"
 
 // value formatters 
 import formatBOE from "../Shared/valueformatters/format_boe.js"
+import convert_date from "../Shared/valueformatters/convert_date.js";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -213,20 +214,6 @@ function WellCard() {
   };
 
 
-  /// can be abstracted 
-  const convertDate = (unixStamp) => {
-    const date = moment.utc(unixStamp).format("MM/DD/YYYY");
-
-    if (unixStamp === "null") {
-      return "--";
-    } else if (unixStamp === null) {
-      return "--";
-    } else if (unixStamp === undefined) {
-      return "--";
-    } else {
-      return date;
-    }
-  };
   
   if (stateApp.selectedWell 
     && stateApp.selectedWell.wellStatus !== "PERMIT" 
@@ -393,7 +380,7 @@ function WellCard() {
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
                       {" "}
-                      {convertDate(stateApp.selectedWell.permitApprovedDate)}
+                      {convert_date(stateApp.selectedWell.permitApprovedDate)}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowWhite}>
@@ -402,7 +389,7 @@ function WellCard() {
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
                       {" "}
-                      {convertDate(stateApp.selectedWell.spudDate)}
+                      {convert_date(stateApp.selectedWell.spudDate)}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowGrey}>
@@ -411,7 +398,7 @@ function WellCard() {
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
                       {" "}
-                      {convertDate(stateApp.selectedWell.completionDate)}
+                      {convert_date(stateApp.selectedWell.completionDate)}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowWhite}>
@@ -419,7 +406,7 @@ function WellCard() {
                       First Prod Date
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {convertDate(stateApp.selectedWell.firstProductionDate)}
+                      {convert_date(stateApp.selectedWell.firstProductionDate)}
                     </TableCell>
                   </TableRow>
 
@@ -429,7 +416,7 @@ function WellCard() {
                         Plug Date
                       </TableCell>
                       <TableCell className={classes.cell2} align="right">
-                        {convertDate(stateApp.selectedWell.plugDate)}
+                        {convert_date(stateApp.selectedWell.plugDate)}
                       </TableCell>
                     </TableRow>
                   : null}
@@ -546,7 +533,7 @@ function WellCard() {
                         Approved Date
                       </TableCell>
                       <TableCell className={classes.cell2} align="right">
-                        {convertDate(stateApp.selectedWell.permitApprovedDate)}
+                        {convert_date(stateApp.selectedWell.permitApprovedDate)}
                       </TableCell>
                     </TableRow>
                     <TableRow className={classes.rowGrey}>

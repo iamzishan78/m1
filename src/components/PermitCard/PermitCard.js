@@ -32,6 +32,7 @@ import { PERMITDETAILQUERY } from "../../graphQL/useQueryRecentPermitDetails";
 
 // value formatters 
 import formatBOE from "../Shared/valueformatters/format_boe.js"
+import convert_date from "../Shared/valueformatters/convert_date.js";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -199,20 +200,6 @@ export default function PermitCard() {
   }, [dataPermitSummary])
 
 
-  /// can be abstracted 
-  const convertDate = (unixStamp) => {
-    const date = moment.utc(unixStamp).format("MM/DD/YYYY");
-
-    if (unixStamp === "null") {
-      return "--";
-    } else if (unixStamp === null) {
-      return "--";
-    } else if (unixStamp === undefined) {
-      return "--";
-    } else {
-      return date;
-    }
-  };
   return stateApp.selectedPermit ? (
     !stateApp.expandedCard ? (
 	<div>
@@ -319,7 +306,7 @@ export default function PermitCard() {
 	Submitted Date
       </TableCell>
 	<TableCell className={classes.cell2} align="right">
-	{convertDate(stateApp.selectedPermit.SubmittedDate)}
+	{convert_date(stateApp.selectedPermit.SubmittedDate)}
       </TableCell>
 	</TableRow>
 

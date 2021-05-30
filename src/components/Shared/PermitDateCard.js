@@ -5,6 +5,9 @@ import { AppContext } from '../../AppContext'
 import PermitIcon from './components/svgIcons/PermitIcon'
 import moment from 'moment'
 
+// value formatters 
+import convert_date from "../Shared/valueformatters/convert_date.js";
+
 
 const useStyles = makeStyles(theme => ({
     iconContainer: {
@@ -18,23 +21,8 @@ const useStyles = makeStyles(theme => ({
     }
   }))
 
-const formatDateString = dateString => {
-    if (!dateString) return '--'
-    return new Date(dateString).toLocaleDateString()
-  }
-  
 
-const convertDate = unixStamp => {
-
-  const date = moment.utc(unixStamp).format("MM/DD/YYYY");
-
-  if (unixStamp === 'null') {return '--'}
-  else if(unixStamp === null) {return '--'}
-  else if(unixStamp === undefined) {return '--'}
-  else {return date}
-}
-  
-  
+    
 export default function PermitDateCard() {
     let classes = useStyles();
     const [stateApp, setStateApp] = useContext(AppContext)
@@ -58,7 +46,7 @@ export default function PermitDateCard() {
         //className={classes.text2}
         variant="caption"
       >
-      {convertDate(stateApp.selectedWell.permitApprovedDate)}
+      {convert_date(stateApp.selectedWell.permitApprovedDate)}
 
       </Typography>
       </div>
