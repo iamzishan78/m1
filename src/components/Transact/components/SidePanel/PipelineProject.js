@@ -40,7 +40,6 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 3,
     border: "1px #67696c solid",
   },
-
   textFieldInput: {
     color: "#fff",
     height: "10px",
