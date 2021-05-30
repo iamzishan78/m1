@@ -231,6 +231,28 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: '#fff',
     },
   },
+
+  flowlineRoot: {
+    border: '1px solid #EBEBEB',
+
+    '&.Mui-focused fieldset': {
+      border: '1px solid #EBEBEB',
+      backgroundColor: 'transparent',
+    },
+    '&.Mui-focused fieldset': {
+      border: '1px solid black',
+      backgroundColor: 'transparent',
+    },
+    '&:hover': {
+      backgroundColor: '#EBEBEB',
+    },
+    '&:active': {
+      border: '1px solid black',
+      backgroundColor: '#fff',
+    },
+  },
+
+
   dealNameRoot: {
     fontWeight: 'bold',
     paddingLeft: 0,
@@ -1662,6 +1684,8 @@ function AddDealDialog(props) {
                 </Grid>
                 </Grid>
               </FormControl>
+
+
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -1722,6 +1746,21 @@ function AddDealDialog(props) {
                     onChange={(e) => {
                       settingNewPipeWithDefaultStage(e.target.value, true);
                     }}
+                    // inputProps={{
+                    //   classes: {
+                    //     root: classes.flowLineRoot,
+                    //     focused: classes.focused,
+                    //     notchedOutline: classes.notchedOutline,
+                    //   },
+                    // }}
+                    // classes =  {{
+                    //   root: classes.flowLineRoot,
+                    //   focused: classes.focused,
+                    //   notchedOutline: classes.notchedOutline,
+                    //   }},
+                    classes={classes.flowLineRoot}
+
+
                     fullWidth
 
                   >
@@ -1743,6 +1782,88 @@ function AddDealDialog(props) {
                 </Grid>
                 </Grid>
               </FormControl>
+
+
+{/* 
+              <FormControl
+                variant="outlined"
+                fullWidth
+                size="small"
+                className={classes.inputFieldCommonInfo}
+              >
+              <Grid container spacing={2} className={classes.gridStyle}>
+                <Grid item xs={3}>
+                <div>Flowline</div>
+                </Grid>
+                <Grid item xs={9}>
+                <Autocomplete
+                  // options={users}
+                  onChange={(e) => {
+                    settingNewPipeWithDefaultStage(e.target.value, true);
+                  }}
+                  options={pipelineId}
+                  getOptionLabel={(option) => option.text}
+                  getOptionSelected={(option) => option.value === ownerId}
+                  classes={{
+                    inputRoot: classes.dealOwnerRoot,
+                    focused: classes.dealOwnerRootFocused,
+                    popupIndicator: classes.popupIndicator,
+                  }}
+
+                  renderInput={(params) => (
+                    <TextField
+                      margin="dense"
+                      {...params}
+                      variant="outlined"
+                      className={classes.inputFieldCommonInfo}
+
+                      // label="Deal Owner"
+                      InputLabelProps={{
+                        ...params.InputLabelProps,
+                        shrink: true,
+                        classes: {
+                          root: classes.dealOwnerLabel,
+                        },
+                      }}
+                      placeholder="Assign Owner"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <>
+                            <InputAdornment position="start">
+                              <Avatar className={classes.dealOwnerAvatar}>
+                                {users.find((user) => user?.value === ownerId)
+                                  ? users
+                                      .find((user) => user?.value === ownerId)
+                                      .text.toString()
+                                      .toUpperCase()
+                                      .split(' ').length > 1
+                                    ? users
+                                        .find((user) => user?.value === ownerId)
+                                        .text.toString()
+                                        .toUpperCase()
+                                        .split(' ')[0][0] +
+                                      '' +
+                                      users
+                                        .find((user) => user?.value === ownerId)
+                                        .text.toString()
+                                        .toUpperCase()
+                                        .split(' ')[1][0]
+                                    : 'AO'
+                                  : 'AO'}
+                              </Avatar>
+                            </InputAdornment>
+                            {params.InputProps.startAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+                </Grid>
+                </Grid>
+              </FormControl> */}
+
 
               <FormControl
                 variant="outlined"
