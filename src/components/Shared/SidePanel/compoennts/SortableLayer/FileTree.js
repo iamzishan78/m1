@@ -19,7 +19,7 @@ const FileTree = ({ layerMap }) => {
   const currentItem = React.useRef();
 
   useEffect(() => {
-    if (items.length === 0) {
+    if (items.length !== layerMap.length) {
       setItems(layerMap);
     }
   }, [layerMap]);
