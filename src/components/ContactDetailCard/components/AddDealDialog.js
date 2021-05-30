@@ -350,7 +350,7 @@ function AddDealDialog(props) {
   );
   const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [title, setTitle] = useState('GSC PROJECT 1'); // title change from contact.name to dealName
+  const [title, setTitle] = useState(''); // title change from contact.name to dealName
   const [titleFocus, setTitleFocus] = useState(false);
   const [label, setLabel] = useState('');
   const [stageId, setStageId] = useState(null);
