@@ -939,8 +939,6 @@ function AddDealDialog(props) {
           awaitRefetchQueries: true,
         });
       }
-
-      // if (closeAfterUpdate) handleClose();
     }
   };
 
@@ -1043,7 +1041,6 @@ function AddDealDialog(props) {
       }));
     }
 
-    // 	let metadata = { ...stateApp.activeDeal, contacts: [ upsertDealDescriptor.descriptor[0], ...stateApp.activeDeal.contacts ] };
   }, [getDealResult]);
 
   const getView = () => {
@@ -1084,11 +1081,6 @@ function AddDealDialog(props) {
           }, 1000);
         } else {
           setFileRequestCounter(1);
-          // dispatch(
-          //   showWarningMessage(
-          //     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
-          //   )
-          // );
         }
       } else setFileRequestCounter(1);
     },
