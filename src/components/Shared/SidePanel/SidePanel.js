@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useMutation } from "@apollo/client";
 import AddIcon from "@material-ui/icons/Add";
+import AddLayerIcon from "@material-ui/icons/Queue";
 import { MapControlsContext } from "../../MapControls/MapControlsContext";
 import { AppContext } from "../../../AppContext";
 import Panel from "./compoennts/Panel";
@@ -9,7 +10,7 @@ import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyL
 import { makeStyles } from "@material-ui/core/styles";
 
 
-  
+
 const reorder = (list, startIndex, endIndex) => {
 	const result = Array.from(list);
 	const [removed] = result.splice(startIndex, 1);
@@ -100,7 +101,7 @@ export default function SidePanel() {
 		layer: {
 			text: "Add Layer",
 			fn: openAddLayer,
-			icon: <AddIcon />,
+			icon: <AddLayerIcon />,
 		},
 	};
 
@@ -179,29 +180,31 @@ export default function SidePanel() {
 			const groupHandled = []
 			const layerAndGroups = []
 			stateApp.layers && stateApp.layers.forEach((item) => {
-				if (item.groupId && !groupHandled.includes(item.groupId)) {
-					groupHandled.push(item.groupId);
-					const groups = stateApp.layers.filter((i) => i.groupId === item.groupId)
-					layerAndGroups.push({
-						depth: 0,
-						type: 'group',
-						collapsed: true,
-						name: item.groupName
-						, id: item.groupId
-					})
-					groups.forEach((item) => {
+				if (item.layerSettings && item.layerSettings.showable && item.identifier != "Tracked Owners") {
+					if (item.groupId && !groupHandled.includes(item.groupId)) {
+						groupHandled.push(item.groupId);
+						const groups = stateApp.layers.filter((i) => i.groupId === item.groupId && i.layerSettings.showable)
 						layerAndGroups.push({
-							...item,
+							depth: 0,
+							type: 'group',
 							collapsed: true,
-							name: item.layerName,
-							depth: 1,
-							type: 'layer',
-							id: item._id
+							name: item.groupName
+							, id: item.groupId
 						})
-					})
-				}
-				if (!item.groupId) {
-					layerAndGroups.push({ ...item, name: item.layerName, depth: 0, type: 'layer', id: item._id })
+						groups.forEach((item) => {
+							layerAndGroups.push({
+								...item,
+								collapsed: true,
+								name: item.layerName,
+								depth: 1,
+								type: 'layer',
+								id: item._id
+							})
+						})
+					}
+					if (!item.groupId) {
+						layerAndGroups.push({ ...item, name: item.layerName, depth: 0, type: 'layer', id: item._id })
+					}
 				}
 			})
 

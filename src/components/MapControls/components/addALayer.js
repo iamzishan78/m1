@@ -27,6 +27,11 @@ import Tooltip from "@material-ui/core/Tooltip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
+import Box from '@material-ui/core/Box';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const random_rgb = () => {
   var o = Math.round,
@@ -282,6 +287,7 @@ export default function AddLayer(props) {
 
     setStateMapControls({
       ...stateMapControls,
+
       selectedControl: featureTypes.length > 0 ? "addGroup" : "add",
       fileUploadedContent: fileContent,
     });
@@ -290,9 +296,24 @@ export default function AddLayer(props) {
   const M1Layers = currentLayers.filter(
     (layer) => layer.layerCategory == "M1 Layer"
   );
-  const UdLayers = currentLayers.filter(
+  let UdLayers = currentLayers.filter(
     (layer) => layer.layerCategory == "UD layer"
   );
+  const groupHandled = []
+  UdLayers.forEach((UdLayer, index) => {
+    if (UdLayer.groupId && !groupHandled.includes(UdLayer.groupId)) {
+      groupHandled.push(UdLayer.groupId);
+      UdLayers.splice(index, 0, {
+        type: 'group',
+        collapsed: true,
+        name: UdLayer.groupName,
+        id: UdLayer.groupId,
+        layers: UdLayers.filter((ul) => ul.groupId === UdLayer.groupId)
+      })
+    }
+  })
+
+  UdLayers = UdLayers.filter((UdLayer) => !(UdLayer.layerType === 'file layer' && UdLayer.groupId))
   return (
     <>
       <Dialog open={isOpen} onClose={windowClose}>
@@ -312,7 +333,10 @@ export default function AddLayer(props) {
             dropzoneText={
               <span className={classes.uploaderText}>
                 To add a new user-defined layer, drag and drop a GeoJSON or
-                Shapefile or click{" "}
+                Shapefile or click to select file.
+
+                {/* //hiding for now as this functionality does not work currently
+                {" "}
                 <span
                   onClick={(e) => {
                     e.preventDefault();
@@ -323,10 +347,10 @@ export default function AddLayer(props) {
                 >
                   here
                 </span>{" "}
-                to enter an URL.
+                to enter an URL. */}
               </span>
             }
-            acceptedFiles={[".geojson", ".zip"]}
+            // acceptedFiles={[".geojson", ".zip", ".shp",]}
             maxFileSize={10000000}
             dropzoneClass={classes.dropzoneClass}
           >
@@ -362,7 +386,47 @@ export default function AddLayer(props) {
             <List className={classes.list}>
               {UdLayers.map((layer, index) => {
                 const labelId = `udlayer-list-label-${index}`;
-
+                if (layer.type === "group") {
+                  return <Accordion>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel1a-content"
+                      id="panel1a-header"
+                    >
+                      <Typography >{layer.name}</Typography>
+                    </AccordionSummary>
+                    <Box paddingLeft={2} paddingRight={2}>
+                      <List className={classes.list}>
+                        {
+                          layer.layers.map((groupLayer, index) =>
+                            <StyledListItem key={index} ContainerComponent="li">
+                              <Checkbox
+                                checked={groupLayer.layerSettings.showable}
+                                color="dark gray"
+                                onChange={() => changeShowAble(groupLayer)}
+                                inputProps={{ "aria-label": "primary checkbox" }}
+                              />
+                              <ListItemText id={labelId} primary={groupLayer.layerName} />
+                              <ListItemSecondaryAction>
+                                <Tooltip title="Delete" placement="top">
+                                  <IconButton
+                                    edge="end"
+                                    size="small"
+                                    onClick={() => {
+                                      setOpenDeleteDialog(groupLayer);
+                                    }}
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </ListItemSecondaryAction>
+                            </StyledListItem>
+                          )
+                        }
+                      </List>
+                    </Box>
+                  </Accordion>
+                }
                 //// remove the (layer.identifier!="Tracked Owners") if statement to show the tracked owers layer
                 if (layer.identifier != "Tracked Owners") {
                   return (

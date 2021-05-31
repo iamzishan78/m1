@@ -5,6 +5,10 @@ import { AppContext } from '../../AppContext'
 import RigIcon from './components/svgIcons/RigIcon'
 import moment from 'moment'
 
+// value formatters 
+import convert_date from "../Shared/valueformatters/convert_date.js";
+
+
 
 const useStyles = makeStyles(theme => ({
     iconContainer: {
@@ -17,24 +21,6 @@ const useStyles = makeStyles(theme => ({
       colorPrimary: 'white'
     }
   }))
-
-
-const formatDateString = dateString => {
-    if (!dateString) return '--'
-    return new Date(dateString).toLocaleDateString()
-  }
-
-
-const convertDate = unixStamp => {
-  const date = moment.utc(unixStamp).format("MM/DD/YYYY");
-
-  if (unixStamp === 'null') {return '--'}
-  else if(unixStamp === null) {return '--'}
-  else if(unixStamp === undefined) {return '--'}
-  else {return date}
-}
-
-
 
   
 export default function SpudDateCard() {
@@ -58,7 +44,7 @@ export default function SpudDateCard() {
         //className={classes.text2}
         variant="caption"
       >
-      {convertDate(stateApp.selectedWell.spudDate)}
+      {convert_date(stateApp.selectedWell.spudDate)}
 
       </Typography>
       </div>

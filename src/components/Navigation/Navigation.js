@@ -1561,6 +1561,10 @@ export default function Navigation(props) {
                 selectedContact: null,
                 contactSearchQuery: null,
               }));
+              setStateNav((stateApp) => ({
+                ...stateApp,
+                contactFromMap: false,
+              }));
               handleListItemClick(event, 0, "/contacts");
             }}
             key="contacts"
@@ -1673,7 +1677,8 @@ export default function Navigation(props) {
             </div>
           </ListItem>
 
-          <ListItem
+            {/* TEMP REMOVAL */}
+          {/* <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -1702,7 +1707,8 @@ export default function Navigation(props) {
                 </Button>
               </ListItemSecondaryAction>
             </div>
-          </ListItem>
+          </ListItem> */}
+
         </List>
 
         <List className={classes.menuListBottom}>

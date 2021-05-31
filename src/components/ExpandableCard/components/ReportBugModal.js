@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
     "&  .MuiPaper-root": {
       maxWidth: "400px",
       padding: "25px",
+      zIndex: '99999 !important',
     },
   },
   dialogTitle: {

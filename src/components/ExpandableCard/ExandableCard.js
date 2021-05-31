@@ -93,11 +93,15 @@ function ExpandableCard(props) {
 
 
   const useStyles = makeStyles((theme) => ({
+    root: {
+        zIndex: 88888,
+    },
+
     card: {
       position: position,
       left: cardLeft,
       top: cardTop,
-      zIndex: 9999,
+      // zIndex: 8888,
       webkitTransform: "translateZ(0)",
       transition: "width 0.1s, height 0.1s, left 0.1s, top 0.1s",
       width: width,
@@ -275,8 +279,23 @@ function ExpandableCard(props) {
           marginRight: "48px",
         }}
       >
+        {console.log("POOPS",props)}
+
+        {(targetLabel != "contact"
+        ) && 
         <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
-        {targetLabel === "contact" && <ContactSearch />}
+        }
+
+        {(targetLabel === "contact"
+          && parent != 'table'
+        ) && <ContactSearch />}
+
+      {(targetLabel === "contact"
+          && parent != 'table'
+        ) && 
+        <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
+        }
+
       </div>
     );
   };
@@ -344,6 +363,8 @@ function ExpandableCard(props) {
 
   return (
     <React.Fragment>
+
+      {/* Dialog for deleting parcel  */}
       {openDialog && (
         <Dialog
           className={classes.dialog}
@@ -363,7 +384,12 @@ function ExpandableCard(props) {
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
+
+
+
       <Card className={classes.card}>
+
+        {/* Modal popup for reporting bugs on expandable card  */}
         <ReportBugModal
           open={openBugModal}
           onClose={() => setOpenBugModal(false)}
@@ -372,47 +398,38 @@ function ExpandableCard(props) {
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
             <div className={classes.headerIcons}>
-              {targetLabel !== "activity" && targetLabel !== "contact" ? (
-                <>
+              { targetLabel !== "activity" &&
+                targetLabel !== "contact" &&
+                (
+                    <CommentsWithIcon
+                      objectId={targetSourceId.toLowerCase()}
+                      targetLabel={props.targetLabel}
+                      iconZiseSmall={!stateExpandableCard.expanded}
+                    />
+                )}
 
-                  <CommentsWithIcon
-                    objectId={targetSourceId.toLowerCase()}
-                    targetLabel={props.targetLabel}
-                    iconZiseSmall={!stateExpandableCard.expanded}
-                  />
-
+              { targetLabel !== "activity" &&
+                targetLabel !== "contact" &&
+                targetLabel !== "recent_submitted_permits" && (
                   <TaggerWithIcon
                     objectId={targetSourceId.toLowerCase()}
                     targetLabel={props.targetLabel}
                     iconZiseSmall={!stateExpandableCard.expanded}
                   />
-                </>
-              )
+                )}
 
-                : targetLabel == "contact" ? (
-                  <>
-                    <LinkWithIcon
-                      objectId={targetSourceId.toLowerCase()}
-                      targetLabel={props.targetLabel}
-                      iconZiseSmall={!stateExpandableCard.expanded}
-                    />
-
-                    {/* <CommentsWithIcon
-                  objectId={targetSourceId.toLowerCase()}
-                  targetLabel={props.targetLabel}
-                  iconZiseSmall={!stateExpandableCard.expanded}
+              { targetLabel == "contact" &&
+                parent !== "table" && (
+                  <LinkWithIcon
+                    objectId={targetSourceId.toLowerCase()}
+                    targetLabel={props.targetLabel}
+                    iconZiseSmall={!stateExpandableCard.expanded}
                 />
+                )}
 
-                <TaggerWithIcon
-                  objectId={targetSourceId.toLowerCase()}
-                  targetLabel={props.targetLabel}
-                  iconZiseSmall={!stateExpandableCard.expanded}
-                /> */}
-                  </>
-                )
-                  : null}
-
-              {!props.noTrackAvailable && (
+              {!props.noTrackAvailable 
+                && targetLabel !== "recent_submitted_permits"
+                && (
                 <TrackToggleButton
                   target={target}
                   targetLabel={targetLabel}
@@ -455,28 +472,12 @@ function ExpandableCard(props) {
                   </Tooltip>
                 )}
 
-              {/* {stateExpandableCard.expanded && targetLabel === "parcel" && (
-                <Tooltip title={"Delete Parcel"} placement="top">
-                  {isDeletingCustomLayer ? (
-                    <CircularProgress size={20} color="secondary" />
-                  ) : (
-                    <IconButton
-                      onClick={openConfirmationDialog}
-                      aria-label="Delete"
-                      className={classes.icons}
-                     
-                    >
-                      <DeleteIcon  />
-                    </IconButton>
-                  )}
-                </Tooltip>
-              )} */}
-
 
               {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact"
                 ? parent !== "table" &&
                   targetLabel !== "well" && targetLabel !== "expandedWell" &&
                   targetLabel !== "parcel" && targetLabel !== "expandedParcel"
+                  && targetLabel !== "recent_submitted_permits"
                   ? (
                     <Tooltip title={"Shrink"} placement="top">
                       <IconButton
@@ -513,7 +514,8 @@ function ExpandableCard(props) {
                   )
                 : (
                   parent !== "table" &&
-                  targetLabel !== "activity" && (
+                  targetLabel !== "activity" && 
+                  targetLabel !== "recent_submitted_permits" && (
                     <Tooltip title={"Expand"} placement="top">
                       <IconButton
                         size="small"
@@ -540,7 +542,11 @@ function ExpandableCard(props) {
               </Tooltip>
             </div>
           }
+
+          // Expandable Card Title 
           title={getTitle()}
+
+          // Expandable Card Secondary Header 
           subheader={
             subTitle
               ? subTitle.length > 35
