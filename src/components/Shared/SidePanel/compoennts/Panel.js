@@ -427,7 +427,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 				<StyledMenu
 					id="checklist-menu"
 					// anchorEl={stateMapControls.anchorEl}
-					style={!stateMapControls.panelExpanded ? { display: 'none' } : {}}
+					style={!stateMapControls.panelExpanded ? { display: 'none' } : { minWidth: '500px' }}
 					keepMounted
 					open={Boolean(stateMapControls.selectedControl)}
 				>
