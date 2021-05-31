@@ -86,7 +86,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
           : "",
       }}
     >
-      <ListItemIcon onClick={() => handleColorPicker(layer)}>
+      <ListItemIcon onClick={() => handleColorPicker(layer)} style={{ verticalAlign: "bottom" }}>
         <Tooltip title="Layer Styling">
           <ColorControl />
         </Tooltip>

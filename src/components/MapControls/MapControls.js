@@ -73,6 +73,14 @@ const useStyles = makeStyles((theme) => ({
       background: "rgba(1, 17, 51, 1.0)",
     },
   },
+  fabActivated: {
+    backgroundColor: "rgba(1, 17, 51, 0.97)",
+    color: "#fff",
+    "&:hover": {
+      color: "#fff",
+      background: "rgba(1, 17, 51, 1.0)",
+    }
+  },
   toggleButton: {
     backgroundColor: "rgba(1, 17, 51, 0)",
     border: "0px",
@@ -217,7 +225,7 @@ export default function MapControls(props) {
     return actions.map((action) => (
       <SpeedDialAction
         classes={{
-          fab: classes.fab,
+          fab: action.action === 'layer' && stateMapControls.panelExpanded ? classes.fabActivated : classes.fab,
         }}
         id={action.name}
         key={action.name}

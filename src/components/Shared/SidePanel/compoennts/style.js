@@ -28,6 +28,7 @@ export const useStyles = makeStyles((theme) => ({
         height: "80px",
         color: "white",
         width: "20px",
+        marginTop: "38px",
         background: "#011133",
         cursor: "pointer",
         display: "flex",
@@ -39,10 +40,24 @@ export const useStyles = makeStyles((theme) => ({
     },
     subHeaderItem: {
         backgroundColor: "#011133 !important",
+        opacity: "0.94",
         minWidth: "400px",
     },
     list: {
         padding: 0,
+        minWidth: "500px",
+        overflowY: "auto",
+        backgroundColor: "#263451",
+        "&::-webkit-scrollbar": {
+            width: "0.5em",
+        },
+        "&::-webkit-scrollbar-track": {
+            "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+        },
+        "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#506187",
+            borderRadius: 5,
+        },
     },
     nested: {
         paddingLeft: theme.spacing(6),
@@ -79,6 +94,23 @@ export const useStyles = makeStyles((theme) => ({
             "float": "left",
         },
     },
+    fileTree: {
+        backgroundColor: "#263451",
+        overflow: "auto",
+        maxHeight: 845,
+        paddingTop: 10,
+        paddingBottom: 10,
+        "&::-webkit-scrollbar": {
+            width: "0.5em",
+        },
+        "&::-webkit-scrollbar-track": {
+            "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+        },
+        "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#506187",
+            borderRadius: 5,
+        },
+    }
 }));
 
 

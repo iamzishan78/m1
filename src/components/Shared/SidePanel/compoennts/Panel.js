@@ -178,14 +178,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			<Droppable droppableId="droppableM1">
 				{(provided, snapshot) => (
 					<RootRef rootRef={provided.innerRef}>
-						<List
-							style={{
-								maxHeight: "775px",
-								minWidth: "500px",
-								overflowY: type === "marketplace" ? "scroll" : "scroll",
-							}}
-							className={classes.list}
-						>
+						<List className={classes.list}>
 							{type === "marketplace" &&
 								MarketPlaceData.map((layer, index) => {
 									return view === "All" ? (
@@ -415,31 +408,21 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					flexDirection: "row",
 					width: "50px",
 					maxWidth: "500px",
-					top: "130px",
 					left: stateMapControls.panelExpanded
-						? "30px"
+						? "0px"
 						: type === "marketplace"
 							? "-567px"
 							: "0px",
-					transition: "left 0.5s ease-in-out",
 					listStyleType: "none",
 					zIndex: "99999"
 				}}
 			>
-				{
-					// console.log('===============')
-					// console.log('type',type)
-					console.log('&&& panelExpanded', stateMapControls.panelExpanded)
-					// console.log('===============')
-				}
 				<StyledMenu
 					id="checklist-menu"
 					// anchorEl={stateMapControls.anchorEl}
-					style={!stateMapControls.panelExpanded ? { display: 'none' } : {}}
+					style={!stateMapControls.panelExpanded ? { display: 'none' } : { minWidth: '500px' }}
 					keepMounted
 					open={Boolean(stateMapControls.selectedControl)}
-
-				//onClose={handleClose}
 				>
 					<StyledMenuHeaderItem
 						disableRipple
