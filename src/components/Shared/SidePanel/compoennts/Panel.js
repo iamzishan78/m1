@@ -178,14 +178,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			<Droppable droppableId="droppableM1">
 				{(provided, snapshot) => (
 					<RootRef rootRef={provided.innerRef}>
-						<List
-							style={{
-								maxHeight: "775px",
-								minWidth: "500px",
-								overflowY: "auto",
-							}}
-							className={classes.list}
-						>
+						<List className={classes.list}>
 							{type === "marketplace" &&
 								MarketPlaceData.map((layer, index) => {
 									return view === "All" ? (

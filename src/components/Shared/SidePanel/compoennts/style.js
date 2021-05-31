@@ -43,6 +43,20 @@ export const useStyles = makeStyles((theme) => ({
     },
     list: {
         padding: 0,
+        maxHeight: "150px",
+        minWidth: "500px",
+        overflowY: "auto",
+        backgroundColor: "#263451",
+        "&::-webkit-scrollbar": {
+            width: "0.5em",
+        },
+        "&::-webkit-scrollbar-track": {
+            "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+        },
+        "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#506187",
+            borderRadius: 5,
+        },
     },
     nested: {
         paddingLeft: theme.spacing(6),
@@ -79,6 +93,23 @@ export const useStyles = makeStyles((theme) => ({
             "float": "left",
         },
     },
+    fileTree: {
+        backgroundColor: "#263451",
+        overflow: "auto",
+        maxHeight: 845,
+        paddingTop: 10,
+        paddingBottom: 10,
+        "&::-webkit-scrollbar": {
+            width: "0.5em",
+        },
+        "&::-webkit-scrollbar-track": {
+            "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+        },
+        "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#506187",
+            borderRadius: 5,
+        },
+    }
 }));
 
 
