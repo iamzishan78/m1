@@ -328,7 +328,7 @@ export default function Documents(props) {
           />
         );
       case "doc":
-        return(
+        return (
           <FontAwesomeIcon
             icon={faFileWord}
             style={{ fontSize: "2rem", color: "#2A5599" }}
@@ -371,7 +371,7 @@ export default function Documents(props) {
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
         {props.isTransactPage && (
           <Grid item xs={12} style={{ minHeight: "35px" }}>
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents ({recentFiles.length})</h4>
             <h4
               className={classes.viewAll}
 
@@ -451,14 +451,13 @@ export default function Documents(props) {
                             className={classes.forImage}
                           ></img>
                         ) : (
-                          <div className={classes.forImageContainer}  onClick={() => {
+                          <div className={classes.forImageContainer} onClick={() => {
                             // if(fileExtension === 'pdf')
                             // {
                             //   setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name, downloadFn:handleViewFile, downloadData: files?.getFileDescriptors[key].fileId}})
                             // }
-                            if(fileExtension === 'pdf')
-                            {
-                                setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name}})
+                            if (fileExtension === 'pdf') {
+                              setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } })
                             }
                             else {
                               handleViewFile(
