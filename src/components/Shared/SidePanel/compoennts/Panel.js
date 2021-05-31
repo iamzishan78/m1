@@ -498,7 +498,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 									{headerButton.text}
 								</Button>
 							</StyledListItemSecondaryAction>
-						)}P
+						)}
 					</StyledMenuHeaderItem>
 
 					{/* base Stuff */}
