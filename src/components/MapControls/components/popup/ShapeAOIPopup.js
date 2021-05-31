@@ -197,7 +197,7 @@ export default function ShapeAOIPopup(props) {
           }
         }}
       />
-      <p className={classes.enterLabel}>Return to save</p>
+      <p className={classes.enterLabel}>Press enter to save</p>
     </form>
   );
 }
