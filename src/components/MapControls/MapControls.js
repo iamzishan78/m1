@@ -132,13 +132,32 @@ export default function MapControls(props) {
       });
     }
 
-    if (action === "draw" && !stateApp.editDraw) {
-      setStateApp((state) => ({
-        ...state,
-        showDrawShapesPopup: !state.showDrawShapesPopup,
-        showShapeActionsPopup: false,
-      }));
+    if (action === "draw") {
+
+      if(!stateApp.editDraw){
+        setStateApp((state) => ({
+          ...state,
+          showDrawShapesPopup: !state.showDrawShapesPopup,
+          editDraw: true,
+        }));
+        }
+
+      if(stateApp.editDraw){
+        setStateApp((state) => ({
+          ...state,
+          editDraw: false,
+          currentFeature: undefined,
+          isAbstractedLayersPolygon: false,
+          multiSelectLandGrids: false,
+          selectedAbstracts: [],
+          showShapeActionsPopup: false,
+          showDrawShapesPopup: false,
+        }));
+        }
+
     }
+
+
 
     setStateApp((stateApp) => ({
       ...stateApp,

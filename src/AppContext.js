@@ -38,7 +38,12 @@ const AppProvider = (props) => {
     selectedAoi: null,
 
     customLayers: [],
-    editDraw: false,
+
+    // should be in a draw context 
+    editDraw: false,  
+    showDrawShapesPopup: false,
+    showShapeActionsPopup: false,
+
     editLayer: true,
     selectedOwner: null,
     owners: null,
@@ -49,7 +54,7 @@ const AppProvider = (props) => {
     selectedTitleOpinionId: null,
     selectedUserDefinedLayer: null,
     featureOrMapShape: {},
-    filters: [],
+    filters: [],    // map filter context 
     filtersMockDb: null,
     filtersAdd: null,
     filtersOnOff: null,
@@ -57,7 +62,10 @@ const AppProvider = (props) => {
     filterSelectAllAbstract: false,
     selectedContact: null,
     trackedWellArray: [],
-    userSnap: false,
+    // userSnap: false,
+
+
+    // MAP CONTEXT vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
     mapVars: {
       zoom: 4.88,
       center: { lng: -98.8, lat: 38 },
@@ -132,8 +140,7 @@ const AppProvider = (props) => {
     isContactSearching: false,
     viewDoc: null,
     pdfView: null,
-    showDrawShapesPopup: false,
-    showShapeActionsPopup: false,
+
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
         let res;
