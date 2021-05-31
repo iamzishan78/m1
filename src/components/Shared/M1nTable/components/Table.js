@@ -14,7 +14,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
 import WellCardProvider from "../../../WellCard/WellCardProvider";
 import ContactDetailCard from "../../../ContactDetailCard/ContactDetailCard";
-import { AppContext } from "../../../../AppContext";
 import Tags from "../../Tagger";
 import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
@@ -84,14 +83,23 @@ import Chip from '@material-ui/core/Chip';
 import ButtonDropDown from "./ButtonGroup"
 
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import Link from '@material-ui/core/Link';
+
+// contexts 
+import { AppContext } from "../../../../AppContext";
+import { NavigationContext } from "../../../Navigation/NavigationContext";
+
+
+
+// mui components 
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Link from '@material-ui/core/Link';
 
 
 // import value formatters 
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
 import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
+
 import RightDialog from "../../../ContactDetailCard/components/RightDialog"
 
 // queries 
@@ -451,6 +459,7 @@ function SubTable(props) {
 
   // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
 
 
   // function state 
@@ -1488,25 +1497,45 @@ function SubTable(props) {
                           }
 
                           if (value && value !== "false") {
-                            setTargetLabelToExpand("contact");
+
                             setStateApp((stateApp) => ({
                               ...stateApp,
                               selectedContact: value,
                             }));
-                            setSelectedRow({ _id: value });
+                            setStateNav((stateNav) => ({
+                              ...stateNav,
+                              defaultOn: false,
+                              selectedMenuIndexContacts: 1,
+                              selectedMenuIndexFind: 0,
+                              contactFromMap: true, 
+                            }));
 
-                            setSubComponent(
-                              <ContactDetailCard
-                                selectRowOpenContact={selectRowOpenContact}
-                                handleCloseExpandableCard={
-                                  handleCloseExpandableCard
-                                }
-                              />
-                            );
+                            routeChange(`/contact/details/${value}`)
                             setTitle("Contact Details");
-                            setMultipleExpandableCard(true);
                             setSubTitle(" ");
                             handleOpenExpandableCard();
+
+                            // setTargetLabelToExpand("contact");
+                            // setStateApp((stateApp) => ({
+                            //   ...stateApp,
+                            //   selectedContact: value,
+                            // }));
+                            // setSelectedRow({ _id: value });
+
+                            // setSubComponent(
+                            //   <ContactDetailCard
+                            //     selectRowOpenContact={selectRowOpenContact}
+                            //     handleCloseExpandableCard={
+                            //       handleCloseExpandableCard
+                            //     }
+                            //   />
+                            // );
+                            // setTitle("Contact Details");
+                            // setMultipleExpandableCard(true);
+                            // setSubTitle(" ");
+                            // handleOpenExpandableCard();
+
+
                           } else {
                             // Code is not used as we are opening different model from above
                             if (props.targetLabel == "owner") {
@@ -2320,7 +2349,7 @@ function SubTable(props) {
                     display: "flex",
                   }}
                 >
-                  {props.header !== "Active Users" && (
+                  {props.header !== "Active Users" && props.header !== "Documents" && (
                     <>
                       {/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
                       <Button
@@ -2660,12 +2689,6 @@ function SubTable(props) {
           selectedContact: rows[dataIndex]._id,
         }));
         routeChange(`/contact/details/${rows[dataIndex]._id}`)
-        // setSubComponent(
-        //   <ContactDetailCard
-        //     selectRowOpenContact={selectRowOpenContact}
-        //     handleCloseExpandableCard={handleCloseExpandableCard}
-        //   />
-        // );
         setTitle("Contact Details");
         setSubTitle(" ");
         handleOpenExpandableCard();

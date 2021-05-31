@@ -146,6 +146,7 @@ const NavigationContextProvider = (props) => {
     selectedTags: [],
     wellsIdsFromTags: [],
     isUserManagementOpen: true,
+    contactFromMap: false, 
   });
 
   return (

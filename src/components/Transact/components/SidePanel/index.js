@@ -133,7 +133,7 @@ const SidePanel = ({}) => {
   const { selectedPipe, pipelines } = useSelector(({ Flow }) => Flow);
   const [selectedPipelines, setMultiSelection] = useState([]);
   const [isSearchActive, setSearchState] = useState(false);
-  const [filteredPipelines, setPipelines] = useState(pipelines);
+  const [filteredPipelines, setPipelines] = useState([]);
   const [deleteDialogOpen, setModal] = useState(false);
 
   const [stateApp] = useContext(AppContext);
@@ -158,6 +158,7 @@ const SidePanel = ({}) => {
           index,
           depth: 0,
           id: pipe.projectId,
+          collapsed: false,
         });
       }
       projectIncludedPipelines.push({
@@ -166,6 +167,7 @@ const SidePanel = ({}) => {
         type: "Pipeline",
         depth: pipe.projectName ? 1 : 0,
         index,
+        collapsed: !pipe.projectName,
       });
     });
     setPipelines(projectIncludedPipelines);
