@@ -1,9 +1,10 @@
-import React, { useEffect, Fragment } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import { useDispatch } from "react-redux";
 import { List } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Flipper } from "react-flip-toolkit";
-import Sortly, { findDescendants, findParent, useDrag, useDrop, useIsClosestDragging } from "react-sortly";
+import update from "immutability-helper";
+import Sortly, { findDescendants, findParent } from "react-sortly";
 import PipelineProject from "./PipelineProject";
 import PipelineCard from "./PipelineCard";
 import { setFlowState } from "actions";
@@ -26,11 +27,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function PipelinesList({ filteredPipelines, setPipelines, selectedPipe, selectedPipelines, setMultiSelection }) {
+function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, setMultiSelection }) {
   const dispatch = useDispatch();
   const classes = useStyles();
+  const [items, setItems] = useState([]);
   const itemsRef = React.useRef([]);
   const currentItem = React.useRef();
+
+  useEffect(() => {
+    setItems(filteredPipelines);
+  }, [filteredPipelines]);
 
   useEffect(() => {
     if (selectedPipe) {
@@ -97,7 +103,7 @@ function PipelinesList({ filteredPipelines, setPipelines, selectedPipe, selected
       }
     }
     currentItem.current = newItems[index];
-    setPipelines(newItems);
+    setItems(newItems);
     console.log("in handle change");
   };
 
@@ -113,62 +119,69 @@ function PipelinesList({ filteredPipelines, setPipelines, selectedPipe, selected
 
   const handleDragEnd = (oldItem, newItem) => {
     console.log("in drag end");
+    // Implement the api for position update
   };
 
-  const PipelineCardWrapper = ({ pipelines }) => (
-    <Flipper flipKey={pipelines.map(({ _id }) => _id).join(".")}>
-      <Sortly items={pipelines} maxDepth={1} onChange={handleChange}>
-        {(props) => (
-          <PipelineCard
-            {...props}
-            pipeline={props.data}
-            selectedPipe={selectedPipe}
-            selectedPipelines={selectedPipelines}
-            onFlowlineSelect={onFlowlineSelect}
-            handleDragBegin={handleDragBegin}
-            handleDragEnd={handleDragEnd}
-          />
-        )}
-      </Sortly>
-    </Flipper>
-  );
+  const handleToggleCollapse = (id) => {
+    // const index = items.findIndex((item) => item.id === id);
+    // const item = items[index];
+    // const { collapsed } = item;
+    // const descendants = findDescendants(items, index);
+    // const updateFn = {
+    //   [index]: { collapsed: { $set: !collapsed } },
+    // };
 
-  // const [{ isDragging }, drag, preview] = useDrag({
-  //   collect: (monitor) => {
-  //     return {
-  //       isDragging: monitor.isDragging(),
-  //     };
-  //   },
-  //   begin(f) {
-  //     // itemRef.current = pipeline;
-  //     // onDragBegin(pipeline);
-  //     console.log("drag begin");
-  //   },
-  //   end(f) {
-  //     // onDragEnd(itemRef.current, pipeline);
-  //     console.log("drag end");
-  //   },
-  // });
-  // const [, drop] = useDrop();
+    // descendants.forEach((descendant) => {
+    //   const descendantIndex = items.indexOf(descendant);
+    //   updateFn[descendantIndex] = { collapsed: { $set: !collapsed } };
+    // });
+
+    // setItems(update(items, updateFn));
+
+    // ---------New Implementation
+    const newItems = items.map((item) => {
+      if (item.projectId === id || item.id === id) {
+        return { ...item, collapsed: !item.collapsed };
+      }
+      return item;
+    });
+    setItems(newItems);
+  };
 
   return (
     <Fragment>
       <List className={classes.flowlinesList}>
-        <PipelineCardWrapper pipelines={filteredPipelines.filter((p) => p.type === "Pipeline" && !p.projectId)} />
-        {filteredPipelines
-          .filter((pipe) => pipe.type === "Project")
-          .map((pipe, index) => {
-            const projectPipelines = filteredPipelines.filter((p) => p.type === "Pipeline" && p.projectId === pipe.projectId);
-            const project = {
-              projectName: pipe.projectName,
-              projectId: pipe.projectId,
-            };
-            return (
-              <PipelineProject project={project} containingPipelines={projectPipelines}>
-                <PipelineCardWrapper pipelines={projectPipelines} />
-              </PipelineProject>
-            );
-          })}
+        <Flipper flipKey={items.map(({ id }) => id).join(".")}>
+          <Sortly items={items} maxDepth={1} onChange={handleChange}>
+            {(props) => {
+              if (props.data.type === "Pipeline" && props.data.collapsed) {
+                return (
+                  <PipelineCard
+                    {...props}
+                    pipeline={props.data}
+                    selectedPipe={selectedPipe}
+                    selectedPipelines={selectedPipelines}
+                    onFlowlineSelect={onFlowlineSelect}
+                    handleDragBegin={handleDragBegin}
+                    handleDragEnd={handleDragEnd}
+                  />
+                );
+              } else if (props.data.type === "Project") {
+                const projectPipelines = items.filter((p) => p.type === "Pipeline" && p.projectId === props.data.projectId);
+                return (
+                  <PipelineProject
+                    {...props}
+                    project={props.data}
+                    containingPipelines={projectPipelines}
+                    handleToggleCollapse={handleToggleCollapse}
+                    handleDragBegin={handleDragBegin}
+                    handleDragEnd={handleDragEnd}
+                  />
+                );
+              } else return <></>;
+            }}
+          </Sortly>
+        </Flipper>
       </List>
     </Fragment>
   );

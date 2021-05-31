@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useContext,
-  Fragment,
-} from "react";
+import React, { useState, useEffect, useMemo, useContext, Fragment } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -27,10 +21,7 @@ const DrawShapesPopup = (props) => {
   const [user, setUser] = useState({ _id: "" });
   const [stateApp, setStateApp] = useContext(AppContext);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [
-    upsertCustomLayer,
-    { data: customLayerInsertedData, loading: isSavingParcel },
-  ] = useMutation(UPSERTCUSTOMLAYER, {
+  const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel }] = useMutation(UPSERTCUSTOMLAYER, {
     update(
       cache,
       {
@@ -61,11 +52,7 @@ const DrawShapesPopup = (props) => {
 
             // Quick safety check - if the new comment is already
             // present in the cache, we don't need to add it again.
-            if (
-              existingCustomLayers.some(
-                (ref) => readField("id", ref) === customLayer._id
-              )
-            ) {
+            if (existingCustomLayers.some((ref) => readField("id", ref) === customLayer._id)) {
               return existingCustomLayers;
             }
 
@@ -80,7 +67,7 @@ const DrawShapesPopup = (props) => {
     () => [
       {
         title: "Multiple Select",
-        mode: "multiple_select",
+        mode: "simple_select",
         icon: <MouseClicked />,
         disable: stateApp.mapVars.zoom <= 12,
       },
@@ -110,10 +97,7 @@ const DrawShapesPopup = (props) => {
     if (!customLayerInsertedData) {
       return;
     }
-    if (
-      customLayerInsertedData.upsertCustomLayer &&
-      customLayerInsertedData.upsertCustomLayer.customLayer
-    ) {
+    if (customLayerInsertedData.upsertCustomLayer && customLayerInsertedData.upsertCustomLayer.customLayer) {
       setStateApp((state) => ({
         ...state,
         popupOpen: false,
@@ -162,12 +146,13 @@ const DrawShapesPopup = (props) => {
       setStateApp((state) => ({
         ...state,
         multiSelectLandGrids: !state.multiSelectLandGrids,
+        editDraw: false,
       }));
     } else {
-      stateApp.draw.changeMode(shape.mode);
       setStateApp((state) => ({ ...state, editDraw: true }));
       props.handleClose();
     }
+    stateApp.draw.changeMode(shape.mode);
   };
 
   const handleCloseAbstractSelection = () => {
@@ -177,10 +162,7 @@ const DrawShapesPopup = (props) => {
 
     for (let i = 0; i < stateApp.selectedAbstracts.length; i++) {
       const id = stateApp.selectedAbstracts[i].properties.Id;
-      map.setFeatureState(
-        { source: "abstract_geo_source", id },
-        { click: false }
-      );
+      map.setFeatureState({ source: "abstract_geo_source", id }, { click: false });
     }
 
     setStateApp((state) => ({
@@ -190,14 +172,12 @@ const DrawShapesPopup = (props) => {
   };
 
   const createMultiSelectedFeature = () => {
-    let { draw, selectedAbstracts } = stateApp, newFeature,
+    let { draw, selectedAbstracts } = stateApp,
+      newFeature,
       featureId = hat();
     selectedAbstracts.forEach((abstractFeature, index) => {
       if (index < selectedAbstracts.length - 1 && !newFeature) {
-        newFeature = union(
-          abstractFeature,
-          selectedAbstracts[index + 1]
-        );
+        newFeature = union(abstractFeature, selectedAbstracts[index + 1]);
       } else if (index < selectedAbstracts.length - 1 && newFeature) {
         newFeature = union(newFeature, selectedAbstracts[index + 1]);
       } else if (selectedAbstracts.length === 1) {
@@ -214,7 +194,7 @@ const DrawShapesPopup = (props) => {
       ...state,
       currentFeature: newFeature,
       multiSelectLandGrids: false,
-      isAbstractedLayersPolygon: true
+      isAbstractedLayersPolygon: true,
     }));
     addCustomShapeProperties(newFeature, draw);
     stateApp.draw.changeMode("direct_select", {
@@ -227,17 +207,12 @@ const DrawShapesPopup = (props) => {
   return (
     <Fragment>
       <span class={classes.label}>
-        {stateApp.selectedAbstracts.length > 0
-          ? `${`${stateApp.selectedAbstracts.length} ${parcelLabel}`} selected`
-          : "Tooltip"}
+        {stateApp.selectedAbstracts.length > 0 ? `${`${stateApp.selectedAbstracts.length} ${parcelLabel}`} selected` : "Tooltip"}
       </span>
       <span className={classes.actions}>
         {availableShapes.map((shape, index) => (
           <Fragment key={index}>
-            <Tooltip
-              title={shape.title}
-              className={shape.disable ? classes.disableAction : ""}
-            >
+            <Tooltip title={shape.title} className={shape.disable ? classes.disableAction : ""}>
               <IconButton
                 size="small"
                 onClick={() => {
@@ -254,11 +229,7 @@ const DrawShapesPopup = (props) => {
       <span className={classes.multiSelectCheck}>
         {(stateApp.multiSelectLandGrids || stateApp.selectedAbstracts.length > 0) && (
           <Tooltip title="Set Boundary">
-            <IconButton
-              size="small"
-              aria-label="Set Boundary"
-              onClick={createMultiSelectedFeature}
-            >
+            <IconButton size="small" aria-label="Set Boundary" onClick={createMultiSelectedFeature}>
               <CheckCircle />
             </IconButton>
           </Tooltip>

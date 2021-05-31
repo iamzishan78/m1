@@ -12,32 +12,17 @@ import { AppContext } from "AppContext";
 import CloseIcon from "@material-ui/icons/Close";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 
-import {
-  CircularProgress,
-  Dialog,
-  DialogTitle,
-  IconButton,
-  TextField,
-  withStyles,
-} from "@material-ui/core";
-import Autocomplete, {
-  createFilterOptions,
-} from "@material-ui/lab/Autocomplete";
+import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
+import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFilePdf,
-  faFilePowerpoint,
-  faFileWord,
-  faFileExcel,
-  faFile,
-} from "@fortawesome/free-solid-svg-icons";
+import { faFilePdf, faFilePowerpoint, faFileWord, faFileExcel, faFile } from "@fortawesome/free-solid-svg-icons";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
@@ -187,24 +172,19 @@ export default function DocumentDrawer() {
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
 
   let [loader, setLoader] = useState(false);
-  const [viewFile, { data: viewFileResult, loading: viewFileLoading }] =
-    useLazyQuery(VIEWFILEQUERY, {
-      fetchPolicy: "no-cache",
-    });
+  const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "no-cache",
+  });
 
-  const [getDocumentTypes, { data: documentTypes }] = useLazyQuery(
-    DOCUMENT_TYPE,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
+  const [getDocumentTypes, { data: documentTypes }] = useLazyQuery(DOCUMENT_TYPE, {
+    fetchPolicy: "no-cache",
+  });
 
   useEffect(() => {
     getDocumentTypes();
   }, [getDocumentTypes]);
 
-  const [updateDocument, { loading: updateFileloading }] =
-    useMutation(UPDATE_DOCUMENT);
+  const [updateDocument, { loading: updateFileloading }] = useMutation(UPDATE_DOCUMENT);
 
   const UpDatefileFN = () => {
     let documentType = "";
@@ -260,7 +240,6 @@ export default function DocumentDrawer() {
 
   const handleDeleteAccept = () => {
     // Delete Document Logic goes here
-    debugger;
     if (fileIdToDelete) {
       setLoader(true);
       updateDocument({
@@ -300,10 +279,9 @@ export default function DocumentDrawer() {
     }
   }, [viewFileResult]);
 
-  const [viewFiles, { data: viewFileSResult, loading: viewFileSLoading }] =
-    useLazyQuery(VIEWFILESQUERY, {
-      fetchPolicy: "no-cache",
-    });
+  const [viewFiles, { data: viewFileSResult, loading: viewFileSLoading }] = useLazyQuery(VIEWFILESQUERY, {
+    fetchPolicy: "no-cache",
+  });
 
   useEffect(() => {
     let ID = [];
@@ -314,15 +292,7 @@ export default function DocumentDrawer() {
         variables: { fileIds: ID },
       });
       if (stateApp.selectedDocument) {
-        const {
-          fileName,
-          dateTime,
-          documentNumber,
-          documentType,
-          partyName1,
-          partyName2,
-          fileId,
-        } = stateApp.selectedDocument;
+        const { fileName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId } = stateApp.selectedDocument;
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
           _id: partyName1?._id,
@@ -355,10 +325,7 @@ export default function DocumentDrawer() {
   }))(Tooltip);
   console.log(stateApp.user.mongoId, "user Id");
   const toggleDrawer = (anchor, open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
 
@@ -367,83 +334,28 @@ export default function DocumentDrawer() {
   const getFileIcon = (fileExtension) => {
     switch (fileExtension) {
       case "pdf":
-        return (
-          <FontAwesomeIcon
-            icon={faFilePdf}
-            style={{ fontSize: "2rem", color: "#F15642" }}
-          />
-        );
+        return <FontAwesomeIcon icon={faFilePdf} style={{ fontSize: "2rem", color: "#F15642" }} />;
       case "csv":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
+        return <FontAwesomeIcon icon={faFileExcel} style={{ fontSize: "2rem", color: "#207244" }} />;
       case "xlsx":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
+        return <FontAwesomeIcon icon={faFileExcel} style={{ fontSize: "2rem", color: "#207244" }} />;
       case "xlsb":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
+        return <FontAwesomeIcon icon={faFileExcel} style={{ fontSize: "2rem", color: "#207244" }} />;
       case "xlsm":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
+        return <FontAwesomeIcon icon={faFileExcel} style={{ fontSize: "2rem", color: "#207244" }} />;
       case "xltx":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
+        return <FontAwesomeIcon icon={faFileExcel} style={{ fontSize: "2rem", color: "#207244" }} />;
       case "doc":
-        return (
-          <FontAwesomeIcon
-            icon={faFileWord}
-            style={{ fontSize: "2rem", color: "#2A5599" }}
-          />
-        );
+        return <FontAwesomeIcon icon={faFileWord} style={{ fontSize: "2rem", color: "#2A5599" }} />;
       case "docx":
-        return (
-          <FontAwesomeIcon
-            icon={faFileWord}
-            style={{ fontSize: "2rem", color: "#2A5599" }}
-          />
-        );
+        return <FontAwesomeIcon icon={faFileWord} style={{ fontSize: "2rem", color: "#2A5599" }} />;
       case "ppt":
-        return (
-          <FontAwesomeIcon
-            icon={faFilePowerpoint}
-            style={{ fontSize: "2rem", color: "#D04424" }}
-          />
-        );
+        return <FontAwesomeIcon icon={faFilePowerpoint} style={{ fontSize: "2rem", color: "#D04424" }} />;
       case "pptx":
-        return (
-          <FontAwesomeIcon
-            icon={faFilePowerpoint}
-            style={{ fontSize: "2rem", color: "#D04424" }}
-          />
-        );
+        return <FontAwesomeIcon icon={faFilePowerpoint} style={{ fontSize: "2rem", color: "#D04424" }} />;
       default:
         // return <span>{fileExtension}</span>;
-        return (
-          <FontAwesomeIcon
-            icon={faFile}
-            style={{ fontSize: "2rem", color: "grey" }}
-          />
-        );
+        return <FontAwesomeIcon icon={faFile} style={{ fontSize: "2rem", color: "grey" }} />;
     }
   };
 
@@ -466,13 +378,7 @@ export default function DocumentDrawer() {
             alignItems: "center",
           }}
         >
-          <ListItemText>
-            {stateApp.selectedDocument?.fileId ? (
-              <h3>Document Detail</h3>
-            ) : (
-              <h3>Add New Document</h3>
-            )}
-          </ListItemText>
+          <ListItemText>{stateApp.selectedDocument?.fileId ? <h3>Document Detail</h3> : <h3>Add New Document</h3>}</ListItemText>
           <ListItemIcon style={{ cursor: "pointer" }}>
             {stateApp.selectedDocument?.fileId && (
               <IconButton
@@ -486,10 +392,7 @@ export default function DocumentDrawer() {
                 <DeleteIcon />
               </IconButton>
             )}
-            <IconButton
-              size="small"
-              onClick={() => handleClose()}
-            >
+            <IconButton size="small" onClick={() => handleClose()}>
               <CloseIcon></CloseIcon>
             </IconButton>
           </ListItemIcon>
@@ -589,10 +492,7 @@ export default function DocumentDrawer() {
           }}
         >
           <h4>Party 1 Name</h4>
-          <ContactPaginatedDropdown
-            nameAutValue={nameAutValueParty1}
-            setNameAutValue={setNameAutValueParty1}
-          />
+          <ContactPaginatedDropdown nameAutValue={nameAutValueParty1} setNameAutValue={setNameAutValueParty1} />
         </ListItem>
         <ListItem
           style={{
@@ -602,19 +502,14 @@ export default function DocumentDrawer() {
           }}
         >
           <h4>Party 2 Name</h4>
-          <ContactPaginatedDropdown
-            nameAutValue={nameAutValueParty2}
-            setNameAutValue={setNameAutValueParty2}
-          />
+          <ContactPaginatedDropdown nameAutValue={nameAutValueParty2} setNameAutValue={setNameAutValueParty2} />
         </ListItem>
         {stateApp.selectedDocument?.fileId ? (
           <ListItem>
             <div style={{ display: "flex", justifyContent: "start" }}>
               {console.log(recentFiles, "Files data in Adddialog")}
               {viewFileSResult?.viewFiles?.map((value, key) => {
-                let fileExtension = value?.name
-                  ?.slice(value.name.lastIndexOf(".") + 1)
-                  ?.toLowerCase();
+                let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
                 if (key <= 1) {
                   return (
                     <div key={key}>
@@ -625,9 +520,7 @@ export default function DocumentDrawer() {
                               size="small"
                               onClick={() => {
                                 setOpenDeleteConfirmDialog(true);
-                                setFileIdToDelete(
-                                  stateApp.selectedDocument.fileId
-                                );
+                                setFileIdToDelete(stateApp.selectedDocument.fileId);
                               }}
                             >
                               <DeleteIcon />
@@ -648,14 +541,8 @@ export default function DocumentDrawer() {
                         interactive
                       >
                         <div>
-                          {new RegExp(
-                            ["jpg", "jpeg", "png", "bmp"].join("|")
-                          ).test(fileExtension) ? (
-                            <img
-                              src={value.uri}
-                              alt={value.name}
-                              className={classes.forImage}
-                            ></img>
+                          {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
+                            <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                           ) : (
                             <div className={classes.forImageContainer}>
                               {/* {fileExtension} */}
@@ -663,9 +550,7 @@ export default function DocumentDrawer() {
                             </div>
                           )}
                           <div className={classes.imageSubText}>
-                            {value?.name?.length > 12
-                              ? value.name.slice(0, 8) + "..."
-                              : value.name}
+                            {value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}
                           </div>
                         </div>
                       </LightTooltip>
@@ -688,9 +573,7 @@ export default function DocumentDrawer() {
             <div style={{ display: "flex", justifyContent: "start" }}>
               {console.log(recentFiles, "Files data in Adddialog")}
               {recentFiles?.map((value, key) => {
-                let fileExtension = value?.name
-                  ?.slice(value.name.lastIndexOf(".") + 1)
-                  ?.toLowerCase();
+                let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
                 if (key <= 1) {
                   return (
                     <div key={key}>
@@ -723,14 +606,8 @@ export default function DocumentDrawer() {
                         interactive
                       >
                         <div>
-                          {new RegExp(
-                            ["jpg", "jpeg", "png", "bmp"].join("|")
-                          ).test(fileExtension) ? (
-                            <img
-                              src={value.uri}
-                              alt={value.name}
-                              className={classes.forImage}
-                            ></img>
+                          {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
+                            <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                           ) : (
                             <div className={classes.forImageContainer}>
                               {/* {fileExtension} */}
@@ -738,9 +615,7 @@ export default function DocumentDrawer() {
                             </div>
                           )}
                           <div className={classes.imageSubText}>
-                            {value?.name?.length > 12
-                              ? value.name.slice(0, 8) + "..."
-                              : value.name}
+                            {value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}
                           </div>
                         </div>
                       </LightTooltip>
@@ -768,7 +643,7 @@ export default function DocumentDrawer() {
             margin: "0px 15px 0px 0px",
           }}
           onClick={() => {
-            handleClose()
+            handleClose();
           }}
         >
           Cancel
@@ -1064,13 +939,7 @@ export default function DocumentDrawer() {
   return (
     <div>
       {/* <ClickAwayListener onClickAway={() => {handleClose()}}> */}
-      <Drawer
-        anchor={"right"}
-        open={
-          stateApp.DocumentDrawer===true ||
-          Object.entries(stateApp.selectedDocument).length > 0
-        }
-      >
+      <Drawer anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
         {console.log(stateApp.selectedDocument, "selecdow")}
         <Dialog
           open={openDeleteConfirmDialog}
@@ -1094,7 +963,6 @@ export default function DocumentDrawer() {
         </Dialog>
 
         <>{DocumentDetail("right")}</>
-
       </Drawer>
       {/* </ClickAwayListener> */}
     </div>
@@ -1147,12 +1015,7 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
         return option?._id === value?._id;
       }}
       renderOption={(option) => {
-        if (option._id === "newEntity")
-          return (
-            <Typography style={{ color: "midnightblue" }}>
-              Add '{option.name}'
-            </Typography>
-          );
+        if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
 
         return (
           <Grid container spacing={0}>
@@ -1215,23 +1078,17 @@ const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
     setStateIfDeepEqual(NameAutInputValue, newState);
   };
 
-  const [
-    getPaginatedContacts,
+  const [getPaginatedContacts, { data: allContacts, loading: contactsLoading, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
     {
-      data: allContacts,
-      loading: contactsLoading,
-      fetchMore: fetchMorePaginatedContacts,
-    },
-  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-  });
+      fetchPolicy: "cache-and-network",
+      nextFetchPolicy: "cache-first",
+    }
+  );
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([
-        ...allContacts?.paginatedContacts?.edges?.map((el) => el.node),
-      ]);
+      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
     }
     setIsNextPageLoading(false);

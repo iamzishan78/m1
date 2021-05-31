@@ -28,26 +28,15 @@ import { gql } from "@apollo/client";
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
-  const {
-    classes,
-    children,
-    toggleSpatialDataCard,
-    showSpatialDataCard,
-    popupCloseAction
-  } = props;
+  const { classes, children, toggleSpatialDataCard, showSpatialDataCard, popupCloseAction } = props;
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [isDeleteModal, setDeleteModal] = useState(false);
   const [error, setError] = useState(false);
   const [user, setUser] = useState({ _id: "" });
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(
-    ABSTRACTGEOCONTAINSQUERY
-  );
-  const [
-    upsertCustomLayer,
-    { data: customLayerInsertedData, loading: isSavingParcel },
-  ] = useMutation(UPSERTCUSTOMLAYER, {
+  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
+  const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel }] = useMutation(UPSERTCUSTOMLAYER, {
     update(
       cache,
       {
@@ -79,11 +68,7 @@ const ShapeActionsPopup = (props) => {
 
             // Quick safety check - if the new comment is already
             // present in the cache, we don't need to add it again.
-            if (
-              existingCustomLayers.some(
-                (ref) => readField("id", ref) === customLayer._id
-              )
-            ) {
+            if (existingCustomLayers.some((ref) => readField("id", ref) === customLayer._id)) {
               return existingCustomLayers;
             }
 
@@ -91,35 +76,29 @@ const ShapeActionsPopup = (props) => {
           },
         },
       });
-      updateSelectedParcel(customLayer)
+      updateSelectedParcel(customLayer);
     },
   });
 
-  const [updateCustomLayer, { loading: isDeletingCustomLayer }] = useMutation(
-    UPDATECUSTOMLAYER,
-    {
-      update(
-        cache,
-        {
-          data: {
-            updateCustomLayer: { customLayer },
+  const [updateCustomLayer, { loading: isDeletingCustomLayer }] = useMutation(UPDATECUSTOMLAYER, {
+    update(
+      cache,
+      {
+        data: {
+          updateCustomLayer: { customLayer },
+        },
+      }
+    ) {
+      cache.modify({
+        _id: cache.identify(customLayer),
+        fields: {
+          allCustomLayers(existingCustomLayerRefs, { readField }) {
+            return existingCustomLayerRefs.filter((customLayerRef) => customLayer._id !== readField("_id", customLayerRef));
           },
-        }
-      ) {
-        cache.modify({
-          _id: cache.identify(customLayer),
-          fields: {
-            allCustomLayers(existingCustomLayerRefs, { readField }) {
-              return existingCustomLayerRefs.filter(
-                (customLayerRef) =>
-                  customLayer._id !== readField("_id", customLayerRef)
-              );
-            },
-          },
-        });
-      },
-    }
-  );
+        },
+      });
+    },
+  });
 
   const updateSelectedParcel = (customLayer) => {
     setStateApp((state) => ({
@@ -138,7 +117,7 @@ const ShapeActionsPopup = (props) => {
       popupOpen: true,
       expandedCard: true,
     }));
-  }
+  };
 
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.email) {
@@ -158,12 +137,9 @@ const ShapeActionsPopup = (props) => {
 
   useEffect(() => {
     if (get(customLayerInsertedData, "upsertCustomLayer.customLayer")) {
-      updateSelectedParcel(customLayerInsertedData.upsertCustomLayer.customLayer)
+      updateSelectedParcel(customLayerInsertedData.upsertCustomLayer.customLayer);
     }
-    if (
-      get(customLayerInsertedData, "upsertCustomLayer.customLayer") &&
-      !customLayerInsertedData.upsertCustomLayer.success
-    ) {
+    if (get(customLayerInsertedData, "upsertCustomLayer.customLayer") && !customLayerInsertedData.upsertCustomLayer.success) {
       setError(true);
     }
   }, [customLayerInsertedData]);
@@ -182,12 +158,12 @@ const ShapeActionsPopup = (props) => {
     if (stateApp.shapeActionsFilterSelected) {
       applyFilter();
     }
-    if (stateApp.currentFeature.properties.shapeLabel && stateApp.map.getLayer('aoi_label_layer')) {
+    if (stateApp.currentFeature.properties.shapeLabel && stateApp.map.getLayer("aoi_label_layer")) {
       const { map, currentFeature } = stateApp;
       // Changing the AOI source
-      map.getSource('aoi_label_source').setData({
-        'type': 'FeatureCollection',
-        'features': [currentFeature]
+      map.getSource("aoi_label_source").setData({
+        type: "FeatureCollection",
+        features: [currentFeature],
       });
     }
   }, [stateApp.currentFeature]);
@@ -304,13 +280,10 @@ const ShapeActionsPopup = (props) => {
   };
 
   const isLine = () => {
-    return stateApp.currentFeature.geometry?.type === "LineString"
-      ? true
-      : false;
+    return stateApp.currentFeature.geometry?.type === "LineString" ? true : false;
   };
 
-  const calculateShapeCenter = (shapeCoordinates) =>
-    polylabel(shapeCoordinates);
+  const calculateShapeCenter = (shapeCoordinates) => polylabel(shapeCoordinates);
 
   const saveAndOpenParcelDetail = () => {
     if (!user._id) {
@@ -326,10 +299,7 @@ const ShapeActionsPopup = (props) => {
 
     let parcelName, originalProperties;
     if (abstractShape.properties.State === "TX") {
-      parcelName =
-        abstractShape.properties.Survey +
-        " " +
-        abstractShape.properties.AbstractName;
+      parcelName = abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
     } else if (township && range && section) {
       parcelName = `T${township} R${range} — Section ${section}`;
     } else {
@@ -373,10 +343,7 @@ const ShapeActionsPopup = (props) => {
     setStateApp((state) => ({
       ...state,
       selectedParcel: {
-        originalProperties:
-          abstractShape.properties.State === "TX"
-            ? JSON.stringify(abstractShape.properties)
-            : [],
+        originalProperties: abstractShape.properties.State === "TX" ? JSON.stringify(abstractShape.properties) : [],
         sdType: "parcel",
         shapeLabel: parcelName,
         projectName: "",
@@ -384,9 +351,7 @@ const ShapeActionsPopup = (props) => {
         sdGrossAcres: "",
         shapeArea: calculateLandArea(abstractShape),
         // needs to be a string to be consistent with queried data
-        shapeCenter: JSON.stringify(
-          calculateShapeCenter(abstractShape.geometry.coordinates)
-        ),
+        shapeCenter: JSON.stringify(calculateShapeCenter(abstractShape.geometry.coordinates)),
         shapeLabelLayer: "",
         id: featureId,
       },
@@ -424,51 +389,27 @@ const ShapeActionsPopup = (props) => {
 
   const checkForEdit = () => {
     return !!stateApp.draw.get(stateApp.currentFeature.id);
-  }
+  };
 
   return (
     <Fragment>
-      {/* {showSpatialDataCard && (
-        <SpatialDataCard
-          closeSpatialDataCard={() => toggleSpatialDataCard(false)}
-          saveSpatialData={handleSaveSpatialDataToShape}
-          selectedFeature={stateApp.currentFeature}
-        />
-      )} */}
       <Fragment>
-        <span class={classes.label}>
-          {isLine() ? "Calc. Dist" : "Calc. Area"}
-        </span>{" "}
-        {calculateLandArea()}
+        <span class={classes.label}>{isLine() ? "Calc. Dist" : "Calc. Area"}</span> {calculateLandArea()}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
-          {/* //temporarily hide until map search grid shape/viewport filter gets built */}
           <Tooltip title="Grid">
-            <IconButton
-              size="small"
-              onClick={actionShowWellsAndOwners}
-              aria-label="Grid"
-
-            >
+            <IconButton size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
               <GridOnIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Filter">
             <IconButton size="small" onClick={actionFilter} aria-label="Filter">
-              <FilterAltIcon
-                className={
-                  stateApp.shapeActionsFilterSelected ? "selected" : ""
-                }
-              />
+              <FilterAltIcon className={stateApp.shapeActionsFilterSelected ? "selected" : ""} />
             </IconButton>
           </Tooltip>
 
           {stateApp.isAbstractedLayersPolygon && (
             <Tooltip title="Create Parcel">
-              <IconButton
-                size="small"
-                aria-label="Parcel"
-                onClick={saveAndOpenParcelDetail}
-              >
+              <IconButton size="small" aria-label="Parcel" onClick={saveAndOpenParcelDetail}>
                 <LayerIcon color="secondary" />
               </IconButton>
             </Tooltip>
@@ -481,27 +422,15 @@ const ShapeActionsPopup = (props) => {
           </Tooltip>
 
           <span className={classes.divider}></span>
-          {checkForEdit() &&
+          {checkForEdit() && (
             <Tooltip title="Edit Active Shape">
-              <IconButton
-                size="small"
-                aria-label="Edit Active Shape"
-                onClick={actionEdit}
-              >
+              <IconButton size="small" aria-label="Edit Active Shape" onClick={actionEdit}>
                 <EditIcon />
               </IconButton>
             </Tooltip>
-          }
+          )}
 
-
-          <Tooltip
-            title="Delete Active Shape"
-            className={
-              !stateApp.currentFeature.properties.shapeLabel
-                ? classes.disableAction
-                : ""
-            }
-          >
+          <Tooltip title="Delete Active Shape" className={!stateApp.currentFeature.properties.shapeLabel ? classes.disableAction : ""}>
             <IconButton
               size="small"
               aria-label="Delete Active Shape"
@@ -530,22 +459,12 @@ const ShapeActionsPopup = (props) => {
       >
         <div className={classes.modalContainer}>
           <h2 id="delete-modal-title">Are you sure?</h2>
-          <p id="delete-modal-description">
-            Are you sure want to remove this shape?
-          </p>
+          <p id="delete-modal-description">Are you sure want to remove this shape?</p>
           <div className={classes.buttonContainer}>
-            <Button
-              variant="contained"
-              className={classes.button}
-              onClick={handleDeleteAoiModal}
-            >
+            <Button variant="contained" className={classes.button} onClick={handleDeleteAoiModal}>
               Back
             </Button>
-            <Button
-              variant="contained"
-              className={classes.button}
-              onClick={deleteAOI}
-            >
+            <Button variant="contained" className={classes.button} onClick={deleteAOI}>
               Delete
             </Button>
           </div>
