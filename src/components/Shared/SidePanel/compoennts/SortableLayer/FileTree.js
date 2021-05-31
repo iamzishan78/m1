@@ -143,8 +143,8 @@ const FileTree = ({ layerMap }) => {
         <Box
           style={{
             backgroundColor: "#263451",
-            overflow: "scroll",
-            maxHeight: 775,
+            overflow: "auto",
+            maxHeight: "100%",
             paddingTop: 10,
             paddingBottom: 10,
           }}

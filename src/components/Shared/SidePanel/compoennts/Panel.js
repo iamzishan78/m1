@@ -415,13 +415,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					flexDirection: "row",
 					width: "50px",
 					maxWidth: "500px",
-					top: "130px",
 					left: stateMapControls.panelExpanded
-						? "30px"
+						? "0px"
 						: type === "marketplace"
 							? "-567px"
 							: "0px",
-					transition: "left 0.5s ease-in-out",
 					listStyleType: "none",
 					zIndex: "99999"
 				}}
@@ -500,7 +498,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 									{headerButton.text}
 								</Button>
 							</StyledListItemSecondaryAction>
-						)}
+						)}P
 					</StyledMenuHeaderItem>
 
 					{/* base Stuff */}
