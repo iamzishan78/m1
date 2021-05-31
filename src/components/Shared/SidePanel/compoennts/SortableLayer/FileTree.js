@@ -9,6 +9,7 @@ import { AppContext } from "AppContext";
 import { UPDATELAYERSETTINGS } from "graphQL/useMutationUpdateLayerSettings";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
+import { deepEqual } from "components/Shared/functions";
 
 const FileTree = ({ layerMap }) => {
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -19,7 +20,7 @@ const FileTree = ({ layerMap }) => {
   const currentItem = React.useRef();
 
   useEffect(() => {
-    if (items.length !== layerMap.length) {
+    if (!deepEqual(items, layerMap)) {
       setItems(layerMap);
     }
   }, [layerMap]);

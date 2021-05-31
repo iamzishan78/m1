@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+} from 'react';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -39,7 +46,7 @@ import { ADDDEAL } from 'graphQL/useMutationAddDeal';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { UPDATEDEAL } from 'graphQL/useMutationUpdateDeal';
 import { UPSERTDEALDESCRIPTOR } from 'graphQL/useMutationUpsertDealDescriptor';
-import { REMOVEDEALDESCRIPTOR } from "../../../graphQL/useMutationRemoveDealDescriptor";
+import { REMOVEDEALDESCRIPTOR } from '../../../graphQL/useMutationRemoveDealDescriptor';
 import { UPDATESTAGEDEALDESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
 import {
   setFlowState,
@@ -96,87 +103,86 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   dialogTitle: {
-    textAlign: 'center',
+    textAlign: "center",
   },
   dialogContentText: {
-    textAlign: 'center',
+    textAlign: "center",
   },
   inputField: {
-    marginBottom: '10px',
+    marginBottom: "10px",
   },
   inputFieldCommonInfo: {
     marginBottom: '7px',
   },
   inputFieldDealName: {
     marginBottom: '7px',
-    width: '405px'
+    width: '405px',
   },
-    dateLabel: {
+  dateLabel: {
     transform: 'translate(10px, 2px) scale(0.75) !important',
     backgroundColor: '#fff !important',
     padding: '0 6px',
   },
   shrinkLabel: {
-    backgroundColor: '#fff !important',
-    padding: '0 6px',
+    backgroundColor: "#fff !important",
+    padding: "0 6px",
   },
   inputFieldDateRoot: {
-    '& .MuiDialog-root': {
-    },
+    '& .MuiDialog-root': {},
   },
   inputFieldDate: {
-    marginBottom: '30px',
-    '& .MuiInputBase-input': {
-      paddingTop: '10.5px',
-      paddingBottom: '10.5px',
+    marginBottom: "30px",
+    "& .MuiInputBase-input": {
+      paddingTop: "10.5px",
+      paddingBottom: "10.5px",
     },
   },
   progress: {
-    marginLeft: '30px',
-    verticalAlign: 'middle',
+    marginLeft: "30px",
+    verticalAlign: "middle",
   },
 
   label: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
 
   closeIcon: {
     fill: theme.palette.secondary.main,
-    '&:hover': {
-      fill: 'red',
+    "&:hover": {
+      fill: "red",
     },
   },
   topBtnGroup: {},
   inputField: {
-    marginBottom: '30px',
-    outline: 'none',
+    marginBottom: "30px",
+    outline: "none",
   },
   dealStateOpenWon: {
-    padding: '8px 16px',
+    padding: "8px 16px",
     borderRadius: 5,
-    cursor: 'pointer',
-    backgroundColor: '#d9d9d9',
-    '&:hover': {
-      backgroundColor: '#a6e5c3',
+    cursor: "pointer",
+    backgroundColor: "#d9d9d9",
+    "&:hover": {
+      backgroundColor: "#a6e5c3",
       // borderStyle: "solid",
-      fontWeight: 'bold',
-      color: '#54a83c',
+      fontWeight: "bold",
+      color: "#54a83c",
     },
   },
   dealStateOpenLost: {
-    padding: '8px 16px',
+    padding: "8px 16px",
     borderRadius: 5,
-    cursor: 'pointer',
-    backgroundColor: '#d9d9d9',
-    '&:hover': {
-      backgroundColor: '#ffa8a8',
+    cursor: "pointer",
+    backgroundColor: "#d9d9d9",
+    "&:hover": {
+      backgroundColor: "#ffa8a8",
       // borderStyle: "solid",
-      fontWeight: 'bold',
-      color: '#f96060',
+      fontWeight: "bold",
+      color: "#f96060",
     },
   },
   dealStateClosed: {
-    padding: '8px 16px',
+    padding: "8px 16px",
     borderRadius: 18,
 
     // color: "#fff",
@@ -187,24 +193,24 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   dealStateReopen: {
-    padding: '2px 10px',
-    cursor: 'pointer',
+    padding: "2px 10px",
+    cursor: "pointer",
     borderRadius: 5,
-    border: '1px solid gray',
+    border: "1px solid gray",
   },
   originationDate: {
-    paddingBottom: '12px',
+    paddingBottom: "12px",
     fontSize: 12,
     letterSpacing: 2,
     textAlign: 'right',
   },
   dialog: {
-    zIndex: '9999999999 !important',
+    zIndex: "9999999999 !important",
   },
   notes: {
-    backgroundColor: '#FFFCDC',
-    display: 'block',
-    width: '100%',
+    backgroundColor: "#FFFCDC",
+    display: "block",
+    width: "100%",
 
     '& .MuiOutlinedInput-root': {
       width: '100%',
@@ -214,7 +220,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   dialogExpCard: {
-    zIndex: '9999999999999999999 !important',
+    zIndex: "9999999999999999999 !important",
   },
   dateRoot: {
     border: '1px solid #EBEBEB',
@@ -233,26 +239,31 @@ const useStyles = makeStyles((theme) => ({
   },
 
   flowlineRoot: {
-    border: '1px solid #EBEBEB',
-
-    '&.Mui-focused fieldset': {
-      border: '1px solid #EBEBEB',
-      backgroundColor: 'transparent',
-    },
-    '&.Mui-focused fieldset': {
-      border: '1px solid black',
-      backgroundColor: 'transparent',
-    },
     '&:hover': {
       backgroundColor: '#EBEBEB',
+      '& .MuiOutlinedInput-notchedOutline': {
+        border: 0,
+      },
+      '& .MuiSelect-icon': {
+        display: 'inline-block',
+      },
     },
     '&:active': {
       border: '1px solid black',
-      backgroundColor: '#fff',
+      backgroundColor: '#EBEBEB',
     },
   },
-
-
+  notchedOutlineFlow: {
+    border: '0.2px solid #EBEBEB',
+  },
+  notchedOutlineFlowFocused: {
+    '& .MuiOutlinedInput-notchedOutline': {
+      border: '1px solid black',
+    },
+  },
+  icon: {
+    display: 'none',
+  },
   dealNameRoot: {
     fontWeight: 'bold',
     paddingLeft: 0,
@@ -275,13 +286,12 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       backgroundColor: '#EBEBEB',
     },
-
   },
   notchedOutline: {
     border: 0,
   },
-  dealOwnerRoot: {
 
+  dealOwnerRoot: {
     border: '1px solid #EBEBEB',
 
     // This matches the specificity of the default styles at https://github.com/mui-org/material-ui/blob/v4.11.3/packages/material-ui-lab/src/Autocomplete/Autocomplete.js#L90
@@ -330,24 +340,22 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const newContact = {
-  name: '',
-  mobilePhone: '',
-  homePhone: '',
-  primaryEmail: '',
-  address1: '',
-  address2: '',
-  city: '',
-  country: '',
-  state: '',
-  zip: '',
+  name: "",
+  mobilePhone: "",
+  homePhone: "",
+  primaryEmail: "",
+  address1: "",
+  address2: "",
+  city: "",
+  country: "",
+  state: "",
+  zip: "",
 };
 
 function AddDealDialog(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const { selectedPipe, pipelines, pipeToShow } = useSelector(
-    ({ Flow }) => Flow
-  );
+  const { selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
   const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [title, setTitle] = useState(''); // title change from contact.name to dealName
@@ -356,7 +364,7 @@ function AddDealDialog(props) {
   const [stageId, setStageId] = useState(null);
   const [dealPosition, setDealPosition] = useState(null);
   const [dealState, setDealState] = useState(null);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
   const [pipelineId, setPipelineId] = useState(selectedPipe?._id);
   const [stagesToChoose, setStagesToChoose] = useState([]);
   const [ownerId, setOwnerId] = useState('');
@@ -366,9 +374,9 @@ function AddDealDialog(props) {
   const [colaborators, setColaborators] = useState([]);
   const [originationDate, setOriginationDate] = useState(null);
 
-  const [nameAutValue, setNameAutValue] = useState({ name: '', id: 0, _id: 0 });
+  const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-  const [nameAutInputValue, NameAutInputValue] = useState('');
+  const [nameAutInputValue, NameAutInputValue] = useState("");
   const setNameAutInputValue = (newState) => {
     setStateIfDeepEqual(NameAutInputValue, newState);
   };
@@ -379,26 +387,16 @@ function AddDealDialog(props) {
   const [pageVariables, setPageVariables] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-  let [transactData, setTransactData] = useState(
-    props.transactData ? { ...props.transactData } : null
-  );
+  let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
 
   const [valid, setValid] = useState({});
 
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
-  const [
-    addContact,
-    {
-      data: addContactData,
-      called: addContactCalled,
-      loading: addContactLoading,
-    },
-  ] = useMutation(ADDCONTACT);
+  const [addContact, { data: addContactData, called: addContactCalled, loading: addContactLoading }] = useMutation(ADDCONTACT);
 
-
-	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-		fetchPolicy: 'no-cache',
+  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
+    fetchPolicy: "no-cache",
   });
 
   const [addDeal, { data: dealData }] = useMutation(ADDDEAL);
@@ -408,18 +406,18 @@ function AddDealDialog(props) {
   const [updateStageDealDescriptor] = useMutation(UPDATESTAGEDEALDESCRIPTOR);
 
   const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: "cache-and-network",
   });
 
   // CONTACT
 
-  const [
-    getPaginatedContacts,
-    { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts },
-  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: 'cache-and-network',
-    nextFetchPolicy: 'cache-first',
-  });
+  const [getPaginatedContacts, { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+      nextFetchPolicy: "cache-first",
+    }
+  );
 
   const [contact, setContact] = useState({});
 
@@ -428,8 +426,8 @@ function AddDealDialog(props) {
   }, []);
 
   useEffect(() => {
-    if (stateApp.transactBarView !== '') {
-      console.log('stateApp.transactBarView', stateApp.transactBarView);
+    if (stateApp.transactBarView !== "") {
+      console.log("stateApp.transactBarView", stateApp.transactBarView);
       handleValidate();
 
       if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
@@ -440,7 +438,7 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (dealData) {
-      console.log('dealData', dealData);
+      console.log("dealData", dealData);
 
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -452,14 +450,18 @@ function AddDealDialog(props) {
   useEffect(() => {
     if (pipelinesData) {
       //// select first one as default
-      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0)
+      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
+        let activePipeline = {};
+        if (selectedPipe) {
+          activePipeline = pipelinesData.pipelines.find((p) => p._id === selectedPipe._id);
+        } else activePipeline = pipelinesData.pipelines[0];
         dispatch(
           setFlowState({
-            selectedPipe: pipelinesData.pipelines[0],
+            selectedPipe: activePipeline,
             pipelines: pipelinesData.pipelines,
           })
         );
-      else
+      } else
         dispatch(
           setFlowState({
             selectedPipe: null,
@@ -470,19 +472,11 @@ function AddDealDialog(props) {
     }
   }, [pipelinesData]);
 
-  const settingNewStageAndFindNextAvailablePosition = (
-    stageId,
-    findPosition,
-    localPipelineId = pipelineId
-  ) => {
+  const settingNewStageAndFindNextAvailablePosition = (stageId, findPosition, localPipelineId = pipelineId) => {
     setStageId(stageId);
 
     if (findPosition) {
-      if (
-        stateApp.activeDeal?.laneId &&
-        stateApp.activeDeal?.descriptorId === localPipelineId &&
-        stateApp.activeDeal?.laneId === stageId
-      )
+      if (stateApp.activeDeal?.laneId && stateApp.activeDeal?.descriptorId === localPipelineId && stateApp.activeDeal?.laneId === stageId)
         setDealPosition(stateApp.activeDeal?.position);
       else {
         if (pipeToShow?._id === localPipelineId) {
@@ -493,8 +487,7 @@ function AddDealDialog(props) {
               const lane = pipeToShow.lanes[i];
               if (lane.id === stageId && lane.cards) {
                 lane.cards.map((card) => {
-                  if (card.metadata?.position > position)
-                    position = card.metadata.position;
+                  if (card.metadata?.position > position) position = card.metadata.position;
                 });
 
                 break;
@@ -519,34 +512,22 @@ function AddDealDialog(props) {
       if (i >= 0 && pipelines[i] && pipelines[i].stages) {
         setStagesToChoose(pipelines[i].stages);
 
-        if (defaultStage)
-          settingNewStageAndFindNextAvailablePosition(
-            pipelines[i].stages[0]?._id,
-            true,
-            pipelineId
-          );
+        if (defaultStage) settingNewStageAndFindNextAvailablePosition(pipelines[i].stages[0]?._id, true, pipelineId);
       }
     }
   };
 
   useEffect(() => {
-    if (
-      stateApp.dealDialog &&
-      !stateApp.activeDeal?.cardId &&
-      selectedPipe?._id
-    )
-      settingNewPipeWithDefaultStage(selectedPipe._id, true);
+    if (stateApp.dealDialog && !stateApp.activeDeal?.cardId && selectedPipe?._id) settingNewPipeWithDefaultStage(selectedPipe._id, true);
   }, [selectedPipe, stateApp.dealDialog, stateApp.activeDeal]);
 
   useEffect(() => {
-		getAllMongoUsers();
+    getAllMongoUsers();
   }, []);
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray(
-        allContacts?.paginatedContacts?.edges?.map((el) => el.node)
-      );
+      setMongoEntitiesArray(allContacts?.paginatedContacts?.edges?.map((el) => el.node));
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
       setIsNextPageLoading(false);
     }
@@ -571,11 +552,7 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (cData?.contact) {
-      setNameAutValue(
-        cData?.contact
-          ? { name: cData.contact.name, _id: cData.contact._id }
-          : {}
-      );
+      setNameAutValue(cData?.contact ? { name: cData.contact.name, _id: cData.contact._id } : {});
     }
   }, [cData]);
 
@@ -588,8 +565,7 @@ function AddDealDialog(props) {
   // CONTACT END
 
   // TRACK
-  const [trackByObjectId, { loading: loadingTrack, data: dataTrack }] =
-    useLazyQuery(TRACKBYOBJECTID);
+  const [trackByObjectId, { loading: loadingTrack, data: dataTrack }] = useLazyQuery(TRACKBYOBJECTID);
 
   const [target, setTarget] = useState({});
 
@@ -603,9 +579,9 @@ function AddDealDialog(props) {
   // TRACK END
 
   useEffect(() => {
-		if (userLists && userLists.allMongoUsers) {
+    if (userLists && userLists.allMongoUsers) {
       setUsers(
-				userLists.allMongoUsers.map((user) => ({
+        userLists.allMongoUsers.map((user) => ({
           value: user._id,
           text: user.name,
         }))
@@ -640,22 +616,15 @@ function AddDealDialog(props) {
       });
 
       const card = stateApp.activeDeal;
-      setTitle(card.name ? card.name : '');
+      setTitle(card.name ? card.name : "");
       setDealState(card.status ? card.status : null);
-      setLabel(card.offerPrice ? card.offerPrice : '');
-      setDescription(card.notes ? card.notes : '');
+      setLabel(card.offerPrice ? card.offerPrice : "");
+      setDescription(card.notes ? card.notes : "");
       // setPipelineId
-      settingNewPipeWithDefaultStage(
-        card.pipeline ? card.pipeline : null,
-        false
-      );
+      settingNewPipeWithDefaultStage(card.pipeline ? card.pipeline : null, false);
       // setStageId
       settingNewStageAndFindNextAvailablePosition(laneId, false);
-      setCloseDate(
-        card.closeDate
-          ? moment.parseZone(card.closeDate).format('yyyy-MM-DD')
-          : ''
-      );
+      setCloseDate(card.closeDate ? moment.parseZone(card.closeDate).format("yyyy-MM-DD") : "");
       setDealPosition(card.position ? card.position : null);
       // setColaborators(card.colaborators ? card.colaborators : []);
       setOriginationDate(card.ts ? card.ts : null);
@@ -693,20 +662,20 @@ function AddDealDialog(props) {
   const handleClose = () => {
     handleValidate();
     handleUpdate();
-    setTitle('');
-    setLabel('');
-    setDescription('');
+    setTitle("");
+    setLabel("");
+    setDescription("");
     setStageId(null);
     setDealState(null);
     if (props.isTransactPage) setNameAutValue(null);
-    setNameAutInputValue('');
+    setNameAutInputValue("");
     setPipelineId(null);
     setOwnerId(null);
-    setCloseDate('');
+    setCloseDate("");
     setColaborators([]);
     setOriginationDate(null);
     setTarget({});
-    setCardId('');
+    setCardId("");
     setDealPosition(null);
     if (props.isTransactPage) setContact({});
     setStateApp((stateApp) => ({
@@ -714,7 +683,7 @@ function AddDealDialog(props) {
       dealDialog: false, // some genius level coding here.
       addDealDialog: false, // not sure why different flags were used here
       activeDeal: { cardId: null, laneId: null },
-      transactBarView: '',
+      transactBarView: "",
       viewDoc: null,
     }));
     setValid({});
@@ -738,16 +707,16 @@ function AddDealDialog(props) {
         variables: {
           deal: { _id: cardId, IsDeleted: true },
         },
-        refetchQueries: ['getPipeline', 'getContactDeals'],
+        refetchQueries: ["getPipeline", "getContactDeals"],
         awaitRefetchQueries: true,
       }).then((result) => {
         const {
           data: { updateDeal },
         } = result;
         if (updateDeal?.success === true) {
-          dispatch(showSuccessMessage('The Deal was successfully deleted.'));
+          dispatch(showSuccessMessage("The Deal was successfully deleted."));
           handleClose();
-        } else dispatch(showErrorMessage('An error occurred.'));
+        } else dispatch(showErrorMessage("An error occurred."));
       });
   };
 
@@ -758,18 +727,15 @@ function AddDealDialog(props) {
     //// foreing deal ids:
     //// stageId, pipelineId, ownerId, contactId
 
-    if (pipelineId && stageId && title && title.trim() !== '') {
+    if (pipelineId && stageId && title && title.trim() !== "") {
       const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
 
       const deal = {
         name: title ? title.trim() : null,
         offerPrice: label,
         notes: description ? description.trim() : null,
-        status: dealState ? dealState : 'open',
-        closeDate:
-          closeDate && closeDate !== ''
-            ? new Date(`${closeDate}T08:00`).toUTCString()
-            : null,
+        status: dealState ? dealState : "open",
+        closeDate: closeDate && closeDate !== "" ? new Date(`${closeDate}T08:00`).toUTCString() : null,
       };
 
       if (cardId) {
@@ -780,9 +746,7 @@ function AddDealDialog(props) {
         //// checking where it change
         if (
           contactId &&
-          ((stateApp.activeDeal?.contacts?.length > 0 &&
-            stateApp.activeDeal?.contacts[0]?.relatedObject?._id !==
-              contactId) ||
+          ((stateApp.activeDeal?.contacts?.length > 0 && stateApp.activeDeal?.contacts[0]?.relatedObject?._id !== contactId) ||
             !stateApp.activeDeal.contacts ||
             stateApp.activeDeal.contacts.length <= 0)
         ) {
@@ -793,10 +757,10 @@ function AddDealDialog(props) {
                 variables: {
                   dealId: cardId,
                   relatedObject: [contactId], // HERE
-                  relatedObjectType: 'Contact',
+                  relatedObjectType: "Contact",
                   userId: stateApp.user.mongoId,
                 },
-                refetchQueries: ['getPipeline', 'getContactDeals'],
+                refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -809,61 +773,64 @@ function AddDealDialog(props) {
           );
         }
 
-		if ((stateApp.activeDeal?.owners?.length > 0 &&
-			stateApp.activeDeal?.owners[0]?.relatedObject?._id !== ownerId) ||
-			!stateApp.activeDeal.owners ||
-			stateApp.activeDeal.owners.length <= 0) {
-			//// updating the owner
-			if (ownerId) {
-				allPromises.push(
-					new Promise((resolve, reject) => {
-						upsertDealDescriptor({
-							variables: {
-								dealId: cardId,
-								relatedObject: [ownerId],
-								relatedObjectType: 'User',
-								userId: stateApp.user.mongoId,
-							},
-							refetchQueries: ['getPipeline', 'getContactDeals'],
-							awaitRefetchQueries: true,
-						}).then((result) => {
-							const {
-								data: { upsertDealDescriptor },
-							} = result;
-							if (upsertDealDescriptor?.success === false) success = false;
-							resolve();
-						});
-					})
-				);
-			}
-			// removing the owner
-			else if (!ownerId &&
-				stateApp.activeDeal?.owners?.length > 0) {
-				allPromises.push(
-					new Promise((resolve, reject) => {
-						removeDealDescriptor({
-							variables: {
-								id: stateApp.activeDeal?.owners[0]?._id,
-								relatedObjectType: "User",
-							},
-							refetchQueries: ["getPipeline", "getContactDeals"],
-							awaitRefetchQueries: true,
-						}).then((result) => {
-							const {
-								data: { removeDealDescriptor },
-							} = result;
-							if (removeDealDescriptor?.success === false) success = false;
-							resolve();
-						});
-					})
-				);
-			}
-		}
+        if (
+          (stateApp.activeDeal?.owners?.length > 0 && stateApp.activeDeal?.owners[0]?.relatedObject?._id !== ownerId) ||
+
+          !stateApp.activeDeal.owners ||
+          stateApp.activeDeal.owners.length <= 0
+        ) {
+          //// updating the owner
+          if (ownerId) {
+            allPromises.push(
+              new Promise((resolve, reject) => {
+                upsertDealDescriptor({
+                  variables: {
+                    dealId: cardId,
+                    relatedObject: [ownerId],
+                    relatedObjectType: "User",
+                    userId: stateApp.user.mongoId,
+                  },
+                  refetchQueries: ["getPipeline", "getContactDeals"],
+
+                  awaitRefetchQueries: true,
+                }).then((result) => {
+                  const {
+                    data: { upsertDealDescriptor },
+                  } = result;
+                  if (upsertDealDescriptor?.success === false) success = false;
+                  resolve();
+                });
+              })
+            );
+          }
+          // removing the owner
+          else if (!ownerId && stateApp.activeDeal?.owners?.length > 0) {
+            allPromises.push(
+              new Promise((resolve, reject) => {
+                removeDealDescriptor({
+                  variables: {
+                    id: stateApp.activeDeal?.owners[0]?._id,
+                    relatedObjectType: "User",
+
+                  },
+                  refetchQueries: ["getPipeline", "getContactDeals"],
+
+                  awaitRefetchQueries: true,
+                }).then((result) => {
+                  const {
+                    data: { removeDealDescriptor },
+                  } = result;
+                  if (removeDealDescriptor?.success === false) success = false;
+                  resolve();
+                });
+              })
+            );
+          }
+        }
 
         //// checking if stage or pipe changed
         if (
-          (stateApp.activeDeal?.laneId !== stageId ||
-            stateApp.activeDeal?.pipeline !== pipelineId) &&
+          (stateApp.activeDeal?.laneId !== stageId || stateApp.activeDeal?.pipeline !== pipelineId) &&
           stateApp.activeDeal?.descriptorId
         ) {
           //// updating the stageDealDescriptor
@@ -874,19 +841,15 @@ function AddDealDialog(props) {
                   descriptorId: stateApp.activeDeal.descriptorId,
                   relatedObject: stageId,
                   position: dealPosition ? dealPosition : 0,
-                  pipeline:
-                    stateApp.activeDeal?.pipeline !== pipelineId
-                      ? pipelineId
-                      : null,
+                  pipeline: stateApp.activeDeal?.pipeline !== pipelineId ? pipelineId : null,
                 },
-                refetchQueries: ['getPipeline', 'getContactDeals'],
+                refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
                   data: { updateStageDealDescriptor },
                 } = result;
-                if (updateStageDealDescriptor?.success === false)
-                  success = false;
+                if (updateStageDealDescriptor?.success === false) success = false;
                 resolve();
               });
             })
@@ -910,7 +873,7 @@ function AddDealDialog(props) {
                 variables: {
                   deal,
                 },
-                refetchQueries: ['getPipeline', 'getContactDeals'],
+                refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -955,38 +918,32 @@ function AddDealDialog(props) {
 
         if (ownerId) {
           let user = users.find((user) => user.value === ownerId);
-          variables = user?.text
-            ? { ...variables, ownerId, ownerName: user.text }
-            : { ...variables, ownerId };
+          variables = user?.text ? { ...variables, ownerId, ownerName: user.text } : { ...variables, ownerId };
         }
 
         if (contactId) {
-          variables = tempContact?.name
-            ? { ...variables, contactId, contactName: tempContact.name }
-            : { ...variables, contactId };
+          variables = tempContact?.name ? { ...variables, contactId, contactName: tempContact.name } : { ...variables, contactId };
         }
 
         addDeal({
           variables,
           refetchQueries: [
-            'getPipeline',
-            'getContactDeals',
-            'getContact',
-            'getAllActivities',
-            'getAllActivitiesForSearch',
-            'getOpenDeals',
-            'openDeals',
+            "getPipeline",
+            "getContactDeals",
+            "getContact",
+            "getAllActivities",
+            "getAllActivitiesForSearch",
+            "getOpenDeals",
+            "openDeals",
           ],
           awaitRefetchQueries: true,
         });
       }
-
-      // if (closeAfterUpdate) handleClose();
     }
   };
 
   const handleUpdate = async () => {
-    if (transactData && contact && contact._id === 'newEntity') {
+    if (transactData && contact && contact._id === "newEntity") {
       await addContact({
         variables: {
           contact: {
@@ -996,11 +953,7 @@ function AddDealDialog(props) {
             lastUpdateBy: stateApp.user.mongoId,
           },
         },
-        refetchQueries: [
-          'getPaginatedContacts',
-          'getContact',
-          'getCustomLayer',
-        ],
+        refetchQueries: ["getPaginatedContacts", "getContact", "getCustomLayer"],
         awaitRefetchQueries: true,
       });
     } else {
@@ -1038,10 +991,9 @@ function AddDealDialog(props) {
     return comparison;
   });
 
-  const [getDeal, { data: getDealResult, loading: getDealLoading }] =
-    useLazyQuery(GETDEAL, {
-      fetchPolicy: 'no-cache',
-    });
+  const [getDeal, { data: getDealResult, loading: getDealLoading }] = useLazyQuery(GETDEAL, {
+    fetchPolicy: "no-cache",
+  });
 
   const refetchDeal = () => {
     getDeal({
@@ -1055,10 +1007,10 @@ function AddDealDialog(props) {
       variables: {
         dealId: cardId,
         relatedObject: [contact._id],
-        relatedObjectType: 'Contact',
+        relatedObjectType: "Contact",
         userId: stateApp.user.mongoId,
       },
-      refetchQueries: ['getPipeline', 'getContactDeals'],
+      refetchQueries: ["getPipeline", "getContactDeals"],
       awaitRefetchQueries: true,
     }).then((result) => {
       const {
@@ -1089,81 +1041,59 @@ function AddDealDialog(props) {
       }));
     }
 
-    // 	let metadata = { ...stateApp.activeDeal, contacts: [ upsertDealDescriptor.descriptor[0], ...stateApp.activeDeal.contacts ] };
   }, [getDealResult]);
 
   const getView = () => {
-    if (stateApp.transactBarView === 'Documents') {
-      return (
-        <Documents
-          id={stateApp.activeDeal?.cardId}
-          user_id={stateApp.user.email}
-          isTransactPage={true}
-        />
-      );
+    if (stateApp.transactBarView === "Documents") {
+      return <Documents id={stateApp.activeDeal?.cardId} user_id={stateApp.user.email} isTransactPage={true} />;
     }
-    if (stateApp.transactBarView === 'Contacts') {
-      return (
-        <Contacts
-          addSelectedContact={addSelectedContactToDeal}
-          loading={getDealLoading}
-          getDeal={refetchDeal}
-        />
-      );
+    if (stateApp.transactBarView === "Contacts") {
+      return <Contacts addSelectedContact={addSelectedContactToDeal} loading={getDealLoading} getDeal={refetchDeal} />;
     }
   };
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
 
-  const [getRecentFiles, { data: files }] = useLazyQuery(
-    GETRECENTCONTACTFILES,
-    {
-      fetchPolicy: 'cache-and-network',
-      onCompleted: ({ getFileDescriptors }) => {
-        let allActive = true;
+  const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
+    fetchPolicy: "cache-and-network",
+    onCompleted: ({ getFileDescriptors }) => {
+      let allActive = true;
 
-        if (getFileDescriptors)
-          for (let i = 0; i < getFileDescriptors.length; i++) {
-            if (getFileDescriptors[i].fileState !== 'active') {
-              allActive = false;
-              break;
-            }
+      if (getFileDescriptors)
+        for (let i = 0; i < getFileDescriptors.length; i++) {
+          if (getFileDescriptors[i].fileState !== "active") {
+            allActive = false;
+            break;
           }
+        }
 
-        if (!allActive) {
-          if (fileRequestCounter <= 40) {
-            let waitBeforeRequestAgain = setTimeout(() => {
-              setFileRequestCounter(fileRequestCounter + 1);
-              getRecentFiles({
-                variables: {
-                  relatedObjectId: stateApp.activeDeal?.cardId,
-                  relatedObjectType: 'Deal',
-                  limit: 2,
-                },
-              });
-              clearTimeout(waitBeforeRequestAgain);
-            }, 1000);
-          } else {
-            setFileRequestCounter(1);
-            // dispatch(
-            //   showWarningMessage(
-            //     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
-            //   )
-            // );
-          }
-        } else setFileRequestCounter(1);
-      },
-    }
-  );
-  const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] =
-    useLazyQuery(VIEWFILESQUERY, {
-      fetchPolicy: 'no-cache',
-    });
+      if (!allActive) {
+        if (fileRequestCounter <= 40) {
+          let waitBeforeRequestAgain = setTimeout(() => {
+            setFileRequestCounter(fileRequestCounter + 1);
+            getRecentFiles({
+              variables: {
+                relatedObjectId: stateApp.activeDeal?.cardId,
+                relatedObjectType: "Deal",
+                limit: 2,
+              },
+            });
+            clearTimeout(waitBeforeRequestAgain);
+          }, 1000);
+        } else {
+          setFileRequestCounter(1);
+        }
+      } else setFileRequestCounter(1);
+    },
+  });
+  const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
+    fetchPolicy: "no-cache",
+  });
 
   useEffect(() => {
     getRecentFiles({
       variables: {
         relatedObjectId: stateApp.activeDeal?.cardId,
-        relatedObjectType: 'Deal',
+        relatedObjectType: "Deal",
         limit: 2,
       },
     });
@@ -1180,8 +1110,7 @@ function AddDealDialog(props) {
   }, [files]);
 
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
-  const [expCardSubComponentTitle, setExpCardSubComponentTitle] =
-    useState(null);
+  const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const handleOpenExpandableCard = (subComponent, subComponentTitle) => {
     setExpCardSubComponent(subComponent);
@@ -1198,36 +1127,30 @@ function AddDealDialog(props) {
   return (
     <>
       {showExpandableCard && (
-        <Dialog
-          className={classes.dialogExpCard}
-          fullWidth
-          maxWidth="xl"
-          open={showExpandableCard}
-          onClose={handleCloseDialog}
-        >
+        <Dialog className={classes.dialogExpCard} fullWidth maxWidth="xl" open={showExpandableCard} onClose={handleCloseDialog}>
           <ExpandableCardProvider
             expanded={true}
             handleCloseExpandableCard={handleCloseExpandableCard}
-            title={'Documents'}
-            subTitle={' '}
+            title={"Documents"}
+            subTitle={" "}
             parent="table"
             mouseX={0}
             mouseY={0}
             position="relative"
-            cardLeft={'0'}
-            cardTop={'0'}
+            cardLeft={"0"}
+            cardTop={"0"}
             zIndex={1201}
             cardWidthExpanded="100%"
             cardHeightExpanded="100%"
             targetSourceId={stateApp?.activeDeal?.cardId}
-            targetLabel={'deals'}
+            targetLabel={"deals"}
             noTrackAvailable={true}
             component={
               <div
                 style={{
-                  width: '100%',
-                  backgroundColor: '#fff',
-                  minHeight: '100%',
+                  width: "100%",
+                  backgroundColor: "#fff",
+                  minHeight: "100%",
                 }}
               >
                 {/* //// ViewAll card top bar //// */}
@@ -1251,47 +1174,45 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
 
-      {props.isTransactPage &&
-      stateApp.transactBarView !== '' &&
-      (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
+      {props.isTransactPage && stateApp.transactBarView !== "" && (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
         <RightDialog
           open={props.open}
           width={props.width}
           onClose={() =>
             setStateApp((stateApp) => ({
               ...stateApp,
-              transactBarView: '',
+              transactBarView: "",
               viewDoc: null,
             }))
           }
           isTransactPage={props.isTransactPage}
         >
-          <div style={{ padding: '30px' }}>
-            <Grid item xs={12} style={{ minHeight: '35px' }}>
+          <div style={{ padding: "30px" }}>
+            <Grid item xs={12} style={{ minHeight: "35px" }}>
               <h4
                 style={{
-                  margin: '0 0 15px 0',
-                  float: 'left',
-                  fontSize: '1.1rem',
+                  margin: "0 0 15px 0",
+                  float: "left",
+                  fontSize: "1.1rem",
                 }}
               >
                 {stateApp.transactBarView}
               </h4>
 
-              <div style={{ float: 'right' }}>
+              <div style={{ float: "right" }}>
                 <IconButton
                   disabled={updateDealLoading || addContactLoading}
                   onClick={() =>
                     setStateApp((stateApp) => ({
                       ...stateApp,
-                      transactBarView: '',
+                      transactBarView: "",
                       viewDoc: null,
                     }))
                   }
@@ -1322,10 +1243,8 @@ function AddDealDialog(props) {
           width={props.width}
           isTransactPage={props.isTransactPage}
         >
-          <div style={{ padding: '30px' }}>
-            {/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
-        Recent Activities
-      </h4> */}
+          <div style={{ padding: "30px" }}>
+
             <Grid
               item
               container
@@ -1333,7 +1252,7 @@ function AddDealDialog(props) {
               style={{ margin: 0, padding: 0, marginBottom: '1em' }}
               alignItems="center"
             >
-              <Grid
+              {/* <Grid
                 item
                 xs
                 style={{
@@ -1342,189 +1261,127 @@ function AddDealDialog(props) {
                   marginRight: titleFocus ? 0 : '5px',
                 }}
               >
-                {/* <TextField
-                  margin="dense"
-                  value={title}
-                  variant="outlined"
-                  required
-                  error={valid['title']}
-                  helperText={
-                    valid['title'] ? 'Enter a deal name to get started' : ''
-                  }
-                  fullWidth
-                  //   required
-                  onChange={(e) => {
-                    setTitle(e.target.value);
-                    setValid({
-                      ...valid,
-                      title: false,
-                    });
-                  }}
-                  InputProps={{
-                    classes: {
-                      root: classes.dealNameRoot,
-                      focused: classes.focused,
-                      notchedOutline: classes.notchedOutline,
-                    },
-                  }}
-                  onBlur={() => setTitleFocus(false)}
-                  onFocus={() => setTitleFocus(true)}
-                /> */}
-              </Grid>
+              </Grid> */}
 
               <Grid container spacing={2} className={classes.gridStyle}>
+                <Grid item xs={6} style={{ minHeight: '35px' }}>
 
-              <Grid item xs={6} style={{ minHeight: '35px' }}>
+                  <Typography variant="h5" style={{
 
-              {/* <h4
-                style={{
-                  margin: '0 0 0 0',
-                  float: 'left',
-                  fontSize: '1.1rem',
-                }}
-              >
-                Deal Information
-              </h4> */}
+                    margin: '0 0 0 0',
 
-              <Typography variant="h5" style={{
-                  margin: '0 0 0 0',
-                  float: 'left',
-                  fontSize: '1.3rem',
-                }}>
+                    float: 'left',
 
-              Deal Information
+                    fontSize: '1.3rem',
 
-              </Typography>
-              </Grid>
+                  }}>
 
-
-
-              <Grid item xs={6} style={{ minHeight: '35px' }}>
-
-              {!titleFocus && (
-                <Grid item xs style={{ flexGrow: 0, padding: 2, marginTop: 2 }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      float: 'right',
-                    }}
-                  >
-                    {(dealState === null || dealState === 'open') && (
-                      <>
-                        <div
-                          className={classes.dealStateOpenWon}
-                          onClick={() => setDealState('won')}
-                          style={{
-                            marginRight: 8,
-                          }}
-                        >
-                          Won
-                        </div>
-
-                        <div
-                          className={classes.dealStateOpenLost}
-                          onClick={() => setDealState('lost')}
-                        >
-                          Lost
-                        </div>
-                      </>
-                    )}
-                    {dealState === 'won' && (
-                      <>
-                        <div
-                          className={classes.dealStateClosed}
-                          style={{
-                            backgroundColor: '#a6e5c3',
-                            fontWeight: 'bold',
-                            color: '#54a83c',
-                            marginRight: 8,
-                          }}
-                        >
-                          Won
-                        </div>
-                        <div
-                          className={classes.dealStateReopen}
-                          onClick={() => setDealState(null)}
-                        >
-                          Re-open
-                        </div>
-                      </>
-                    )}
-                    {dealState === 'lost' && (
-                      <>
-                        <div
-                          className={classes.dealStateClosed}
-                          style={{
-                            backgroundColor: '#ffa8a8',
-                            // borderStyle: "solid",
-                            fontWeight: 'bold',
-                            color: '#f96060',
-                            marginRight: 8,
-                          }}
-                        >
-                          Lost
-                        </div>
-                        <div
-                          className={classes.dealStateReopen}
-                          onClick={() => setDealState(null)}
-                        >
-                          Re-open
-                        </div>
-                      </>
-                    )}
-                    {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
-                      stateApp.activeDeal?.laneId && (
-                        <>
-                          {/* <CommentsWithIcon
-                      objectId={stateApp.activeDeal?.cardId}
-                      targetLabel={"deal"}
-                      iconZiseSmall={true}
-                    />
-                    <TaggerWithIcon
-                      objectId={stateApp.activeDeal?.cardId}
-                      targetLabel={"deal"}
-                      iconZiseSmall={true}
-                    />
-                    <TrackToggleButton
-                      target={target}
-                      targetLabel={"deal"}
-                      targetSourceId={stateApp.activeDeal?.cardId}
-                      iconZiseSmall={true}
-                      dark={true}
-                    /> */}
-
-                    <IconButton
-                      disabled={updateDealLoading || addContactLoading}
-                      onClick={openConfirmationDialog}
-                      size="small"
-                      component="span"
-                      style={{
-                        background: 'transparent',
-                        alignSelf: 'flex-end',
-                        paddingLeft: '20px',
-                      }}
-                    >
-                      <DeleteIcon
-                        size="medium"
-                        className={classes.closeIcon}
-                      />
-                    </IconButton>
-                    </>
-                      )}
-
-                    {/* <IconButton
-									disabled={updateDealLoading || addContactLoading}
-									onClick={handleClose}
-									size="small"
-								>
-									<CloseIcon className={classes.closeIcon} fontSize="small" />
-								</IconButton> */}
-                  </div>
+                    Deal Information
+                  </Typography>
                 </Grid>
-              )}
-            </Grid>
-            </Grid>
+
+                <Grid item xs={6} style={{ minHeight: '35px' }}>
+                  {!titleFocus && (
+                    <Grid item xs style={{ flexGrow: 0, padding: 2, marginTop: 2 }}>
+
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          float: 'right',
+                        }}
+                      >
+                        {(dealState === null || dealState === 'open') && (
+                          <>
+                            <div
+                              className={classes.dealStateOpenWon}
+                              onClick={() => setDealState('won')}
+                              style={{
+                                marginRight: 8,
+                              }}
+                            >
+                              Won
+                            </div>
+
+                            <div
+                              className={classes.dealStateOpenLost}
+                              onClick={() => setDealState('lost')}
+                            >
+                              Lost
+                            </div>
+                          </>
+                        )}
+                        {dealState === 'won' && (
+                          <>
+                            <div
+                              className={classes.dealStateClosed}
+                              style={{
+                                backgroundColor: '#a6e5c3',
+                                fontWeight: 'bold',
+                                color: '#54a83c',
+                                marginRight: 8,
+                              }}
+                            >
+                              Won
+                            </div>
+                            <div
+                              className={classes.dealStateReopen}
+                              onClick={() => setDealState(null)}
+                            >
+                              Re-open
+                            </div>
+                          </>
+                        )}
+                        {dealState === 'lost' && (
+                          <>
+                            <div
+                              className={classes.dealStateClosed}
+                              style={{
+                                backgroundColor: '#ffa8a8',
+                                // borderStyle: "solid",
+                                fontWeight: 'bold',
+                                color: '#f96060',
+                                marginRight: 8,
+                              }}
+                            >
+                              Lost
+                            </div>
+                            <div
+                              className={classes.dealStateReopen}
+                              onClick={() => setDealState(null)}
+                            >
+                              Re-open
+                            </div>
+                          </>
+                        )}
+                        {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
+
+                          stateApp.activeDeal?.laneId && (
+                            <>
+                              <IconButton
+                                disabled={updateDealLoading || addContactLoading}
+
+                                onClick={openConfirmationDialog}
+                                size="small"
+                                component="span"
+                                style={{
+                                  background: 'transparent',
+                                  alignSelf: 'flex-end',
+                                  paddingLeft: '20px',
+                                }}
+                              >
+                                <DeleteIcon
+                                  size="medium"
+                                  className={classes.closeIcon}
+                                />
+                              </IconButton>
+                            </>
+                          )}
+                      </div>
+                    </Grid>
+                  )}
+                </Grid>
+              </Grid>
             </Grid>
 
             <div className={classes.inputFieldDateRoot}>
@@ -1545,32 +1402,14 @@ function AddDealDialog(props) {
                   />
                 </div>
               ) : (
-                // <div className={classes.inputField}>
-                //   <Grid container>
-                //     <Grid item xs={12}>
-                //       <AutocompEntityNamesVirtualizeList
-                //         mongoEntitiesArray={mongoEntitiesArray}
-                //         setMongoEntitiesArray={setMongoEntitiesArray}
-                //         nameAutValue={nameAutValue}
-                //         setNameAutValue={setNameAutValue}
-                //         nameAutInputValue={nameAutInputValue}
-                //         setNameAutInputValue={setNameAutInputValue}
-                //         variant="outlined"
-                //         label="Contact Name"
-                //         hasNextPage={hasNextPage}
-                //         isNextPageLoading={isNextPageLoading}
-                //         loadNextPage={loadNextPage}
-                //       />
-                //     </Grid>
-                //   </Grid>
-                // </div>
                 <></>
               )}
 
               <FormControl
                 variant="outlined"
                 className={classes.inputFieldDealName}
-                style={{ marginLeft: "-15px"}}
+                style={{ marginLeft: "-15px" }}
+
                 fullWidth
                 size="small"
               >
@@ -1600,357 +1439,268 @@ function AddDealDialog(props) {
                     },
                   }}
                   onBlur={() => setTitleFocus(false)}
-                  // onFocus={() => setTitleFocus(true)}
-                />    
-
+                />
               </FormControl>
 
               <FormControl
                 variant="outlined"
                 fullWidth
-                className={classes.inputFieldCommonInfo}
+                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
-
                 <Grid container spacing={2} className={classes.gridStyle}>
-                <Grid item xs={3}>
-                <div>Owner</div>
+                  <Grid item xs={3}>
+                    <div>Owner</div>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Autocomplete
+                      options={users}
+                      onChange={(e, user) => {
+                        setOwnerId(user?.value);
+                      }}
+                      value={users.find((user) => user?.value === ownerId) || null}
+                      getOptionLabel={(option) => option.text}
+                      getOptionSelected={(option) => option.value === ownerId}
+                      classes={{
+                        inputRoot: classes.dealOwnerRoot,
+                        focused: classes.dealOwnerRootFocused,
+                        popupIndicator: classes.popupIndicator,
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          margin="dense"
+                          {...params}
+                          variant="outlined"
+                          // className={classes.inputFieldCommonInfo}
+                          InputLabelProps={{
+                            ...params.InputLabelProps,
+                            shrink: true,
+                            classes: {
+                              root: classes.dealOwnerLabel,
+                            },
+                          }}
+                          placeholder="Assign Owner"
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <>
+                                <InputAdornment position="start">
+                                  <Avatar className={classes.dealOwnerAvatar}>
+                                    {users.find((user) => user?.value === ownerId)
+                                      ? users
+                                        .find((user) => user?.value === ownerId)
+                                        .text.toString()
+                                        .toUpperCase()
+                                        .split(' ').length > 1
+                                        ? users
+                                          .find((user) => user?.value === ownerId)
+                                          .text.toString()
+                                          .toUpperCase()
+                                          .split(' ')[0][0] +
+                                        '' +
+                                        users
+                                          .find((user) => user?.value === ownerId)
+                                          .text.toString()
+                                          .toUpperCase()
+                                          .split(' ')[1][0]
+                                        : 'AO'
+                                      : 'AO'}
+                                  </Avatar>
+                                </InputAdornment>
+                                {params.InputProps.startAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={9}>
-                <Autocomplete
-                  options={users}
-                  onChange={(e, user) => {
-                    setOwnerId(user?.value);
-                  }}
-                  value={users.find((user) => user?.value === ownerId) || null}
-                  getOptionLabel={(option) => option.text}
-                  getOptionSelected={(option) => option.value === ownerId}
-                  classes={{
-                    inputRoot: classes.dealOwnerRoot,
-                    focused: classes.dealOwnerRootFocused,
-                    popupIndicator: classes.popupIndicator,
-                  }}
+              </FormControl>
 
-                  renderInput={(params) => (
+              <FormControl
+                variant="outlined"
+                fullWidth
+                size="small"
+                // className={classes.inputFieldCommonInfo}
+              >
+                <Grid container spacing={2} className={classes.gridStyle}>
+                  <Grid item xs={3}>
+                    <div>Close Date</div>
+                  </Grid>
+                  <Grid item xs={9}>
                     <TextField
                       margin="dense"
-                      {...params}
+                      type="date"
                       variant="outlined"
-                      className={classes.inputFieldCommonInfo}
-
-                      // label="Deal Owner"
+                      value={closeDate}
+                      placeholder=""
+                      fullWidth
+                      style={{ paddingLeft: 0 }}
+                      onChange={(e) => {
+                        setCloseDate(e.target.value);
+                      }}
                       InputLabelProps={{
-                        ...params.InputLabelProps,
                         shrink: true,
+                      }}
+                      InputProps={{
                         classes: {
-                          root: classes.dealOwnerLabel,
+                          root: classes.dateRoot,
+                          focused: classes.focused,
+                          notchedOutline: classes.notchedOutline,
                         },
                       }}
-                      placeholder="Assign Owner"
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <>
-                            <InputAdornment position="start">
-                              <Avatar className={classes.dealOwnerAvatar}>
-                                {users.find((user) => user?.value === ownerId)
-                                  ? users
-                                      .find((user) => user?.value === ownerId)
-                                      .text.toString()
-                                      .toUpperCase()
-                                      .split(' ').length > 1
-                                    ? users
-                                        .find((user) => user?.value === ownerId)
-                                        .text.toString()
-                                        .toUpperCase()
-                                        .split(' ')[0][0] +
-                                      '' +
-                                      users
-                                        .find((user) => user?.value === ownerId)
-                                        .text.toString()
-                                        .toUpperCase()
-                                        .split(' ')[1][0]
-                                    : 'AO'
-                                  : 'AO'}
-                              </Avatar>
-                            </InputAdornment>
-                            {params.InputProps.startAdornment}
-                          </>
-                        ),
-                      }}
                     />
-                  )}
-                />
-                </Grid>
+                  </Grid>
                 </Grid>
               </FormControl>
-
 
               <FormControl
                 variant="outlined"
                 fullWidth
-                size="small"
-                className={classes.inputFieldCommonInfo}
-              >
-                <Grid container spacing={2} className={classes.gridStyle}>
-                <Grid item xs={3}>
-                <div>Close Date</div>
-                </Grid>
-                <Grid item xs={9}>
-
-                {/* <InputLabel shrink className={classes.dateLabel}>
-                  Expected Close Date
-                </InputLabel> */}
-                <TextField
-                  margin="dense"
-                  type="date"
-                  variant="outlined"
-                  value={closeDate}
-                  placeholder=""
-                  fullWidth
-                  style={{ paddingLeft: 0 }}
-                  onChange={(e) => {
-                    setCloseDate(e.target.value);
-                  }}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  InputProps={{
-                    classes: {
-                      root: classes.dateRoot,
-                      focused: classes.focused,
-                      notchedOutline: classes.notchedOutline,
-                    },
-                  }}
-                />
-              </Grid>
-              </Grid>
-              </FormControl>
-              
-              <FormControl
-                variant="outlined"
-                fullWidth
-                className={classes.inputFieldCommonInfo}
+                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
                 <Grid container spacing={2} className={classes.gridStyle}>
+                  <Grid item xs={3}>
+                    <div>Flowline</div>
+                  </Grid>
 
-                <Grid item xs={3}>
-                  <div>Flowline</div>
-                </Grid>
-
-                <Grid item xs={9}>
-                  <Select
-                    native
-                    value={pipelineId}
-                    onChange={(e) => {
-                      settingNewPipeWithDefaultStage(e.target.value, true);
-                    }}
-                    // inputProps={{
-                    //   classes: {
-                    //     root: classes.flowLineRoot,
-                    //     focused: classes.focused,
-                    //     notchedOutline: classes.notchedOutline,
-                    //   },
-                    // }}
-                    // classes =  {{
-                    //   root: classes.flowLineRoot,
-                    //   focused: classes.focused,
-                    //   notchedOutline: classes.notchedOutline,
-                    //   }},
-                    classes={classes.flowLineRoot}
-
-
-                    fullWidth
-
-                  >
-                    {selectedPipe && (
-                      <option value={selectedPipe._id}>
-                        {selectedPipe.name}
-                      </option>
-                    )}
-                    {sortedPipelines?.map((pipeline, i) => {
-                      if (selectedPipe && selectedPipe._id === pipeline._id)
-                        return;
-                      return (
-                        <option value={pipeline._id} key={i}>
-                          {pipeline.name}
+                  <Grid item xs={9}>
+                    <TextField
+                      variant="outlined"
+                      select
+                      SelectProps={{
+                        native: true,
+                        classes: {
+                          icon: classes.icon,
+                        },
+                      }}
+                      size="small"
+                      value={pipelineId}
+                      onChange={(e) => {
+                        settingNewPipeWithDefaultStage(e.target.value, true);
+                      }}
+                      InputProps={{
+                        classes: {
+                          root: classes.flowlineRoot,
+                          notchedOutline: classes.notchedOutlineFlow,
+                          focused: classes.notchedOutlineFlowFocused,
+                        },
+                      }}
+                      fullWidth
+                    >
+                      {selectedPipe && (
+                        <option value={selectedPipe._id}>
+                          {selectedPipe.name}
                         </option>
-                      );
-                    })}
-                  </Select>
-                </Grid>
+                      )}
+                      {sortedPipelines?.map((pipeline, i) => {
+                        if (selectedPipe && selectedPipe._id === pipeline._id)
+                          return;
+                        return (
+                          <option value={pipeline._id} key={i}>
+                            {pipeline.name}
+                          </option>
+                        );
+                      })}
+                    </TextField>
+
+                  </Grid>
                 </Grid>
               </FormControl>
 
-
-{/* 
               <FormControl
                 variant="outlined"
                 fullWidth
-                size="small"
-                className={classes.inputFieldCommonInfo}
-              >
-              <Grid container spacing={2} className={classes.gridStyle}>
-                <Grid item xs={3}>
-                <div>Flowline</div>
-                </Grid>
-                <Grid item xs={9}>
-                <Autocomplete
-                  // options={users}
-                  onChange={(e) => {
-                    settingNewPipeWithDefaultStage(e.target.value, true);
-                  }}
-                  options={pipelineId}
-                  getOptionLabel={(option) => option.text}
-                  getOptionSelected={(option) => option.value === ownerId}
-                  classes={{
-                    inputRoot: classes.dealOwnerRoot,
-                    focused: classes.dealOwnerRootFocused,
-                    popupIndicator: classes.popupIndicator,
-                  }}
-
-                  renderInput={(params) => (
-                    <TextField
-                      margin="dense"
-                      {...params}
-                      variant="outlined"
-                      className={classes.inputFieldCommonInfo}
-
-                      // label="Deal Owner"
-                      InputLabelProps={{
-                        ...params.InputLabelProps,
-                        shrink: true,
-                        classes: {
-                          root: classes.dealOwnerLabel,
-                        },
-                      }}
-                      placeholder="Assign Owner"
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <>
-                            <InputAdornment position="start">
-                              <Avatar className={classes.dealOwnerAvatar}>
-                                {users.find((user) => user?.value === ownerId)
-                                  ? users
-                                      .find((user) => user?.value === ownerId)
-                                      .text.toString()
-                                      .toUpperCase()
-                                      .split(' ').length > 1
-                                    ? users
-                                        .find((user) => user?.value === ownerId)
-                                        .text.toString()
-                                        .toUpperCase()
-                                        .split(' ')[0][0] +
-                                      '' +
-                                      users
-                                        .find((user) => user?.value === ownerId)
-                                        .text.toString()
-                                        .toUpperCase()
-                                        .split(' ')[1][0]
-                                    : 'AO'
-                                  : 'AO'}
-                              </Avatar>
-                            </InputAdornment>
-                            {params.InputProps.startAdornment}
-                          </>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-                </Grid>
-                </Grid>
-              </FormControl> */}
-
-
-              <FormControl
-                variant="outlined"
-                fullWidth
-                className={classes.inputFieldCommonInfo}
+                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
                 <Grid container spacing={2} className={classes.gridStyle}>
-                <Grid item xs={3}>
-                <div>Flow Stage</div>
-                </Grid>
+                  <Grid item xs={3}>
+                    <div>Flow Stage</div>
+                  </Grid>
 
-                <Grid item xs={9}>
-                <Select
-                  native
-                  value={stageId}
-                  className={classes.inputFieldCommonInfo}
-                  // classes={{
-                  //   inputRoot: classes.dealOwnerRoot,
-                  //   focused: classes.dealOwnerRootFocused,
-                  //   popupIndicator: classes.popupIndicator,
-                  // }}
-                  onChange={(e) => {
-                    // setStageId(e.target.value);
-                    settingNewStageAndFindNextAvailablePosition(
-                      e.target.value,
-                      true
-                    );
-                  }}
-                  fullWidth
-                  // label="Deal Stage"
-                >
-                  {stagesToChoose &&
-                    stagesToChoose.map((stage, i) => (
-                      <option value={stage._id} key={i}>
-                        {stage.name}
-                      </option>
-                    ))}
-                </Select>
-                </Grid>
+                  <Grid item xs={9}>
+
+                    <TextField
+                      variant="outlined"
+                      select
+                      SelectProps={{
+                        native: true,
+                        classes: {
+                          icon: classes.icon,
+                        },
+                      }}
+                      size="small"
+                      value={stageId}
+
+                      onChange={(e) => {
+                        // setStageId(e.target.value);
+
+                        settingNewStageAndFindNextAvailablePosition(
+                          e.target.value,
+                          true
+                        );
+                      }}
+                      InputProps={{
+                        classes: {
+                          root: classes.flowlineRoot,
+                          notchedOutline: classes.notchedOutlineFlow,
+                          focused: classes.notchedOutlineFlowFocused,
+                        },
+                      }}
+                      fullWidth
+
+                    >
+                      {stagesToChoose &&
+                        stagesToChoose.map((stage, i) => (
+                          <option value={stage._id} key={i}>
+                            {stage.name}
+                          </option>
+                        ))}
+
+                    </TextField>
+                  </Grid>
                 </Grid>
               </FormControl>
-
 
               <FormControl
                 variant="outlined"
                 fullWidth
-                className={classes.inputFieldCommonInfo}
+                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
-
-
-              <Grid container spacing={2} className={classes.gridStyle}>
-                <Grid item xs={3}>
-                <div>Offer Price</div>
+                <Grid container spacing={2} className={classes.gridStyle}>
+                  <Grid item xs={3}>
+                    <div>Offer Price</div>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <TextField
+                      margin="dense"
+                      variant="outlined"
+                      value={label}
+                      error={isNaN(label)}
+                      helperText={
+                        isNaN(label) ? 'Offer Price must be a valid number' : ''
+                      }
+                      // label="Offer Price"
+                      fullWidth
+                      onChange={(e) => {
+                        setLabel(e.target.value);
+                      }}
+                      InputProps={{
+                        inputComponent: NumberFormatCustom,
+                        classes: {
+                          root: classes.customDataTextInputRoot,
+                          focused: classes.focused,
+                          notchedOutline: classes.notchedOutline,
+                        },
+                      }}
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={9}>
-              <TextField
-                margin="dense"
-                variant="outlined"
-                value={label}
-                error={isNaN(label)}
-                helperText={
-                  isNaN(label) ? 'Offer Price must be a valid number' : ''
-                }
-                // label="Offer Price"
-                fullWidth
-                onChange={(e) => {
-                  setLabel(e.target.value);
-                }}
-                InputProps={{
-                  inputComponent: NumberFormatCustom,
-                  classes: {
-                    root: classes.customDataTextInputRoot,
-                    focused: classes.focused,
-                    notchedOutline: classes.notchedOutline,
-                  },
-                }}
-              />
-              </Grid>
-              </Grid>
               </FormControl>
-
-
-
-
-
               <TextField
                 //   autoFocus
                 margin="dense"
@@ -1969,10 +1719,7 @@ function AddDealDialog(props) {
               />
 
               {originationDate && (
-                <div className={classes.originationDate}>
-                  Origination Date:{' '}
-                  {moment(originationDate).format('M/DD/YYYY, hh:mmA')}
-                </div>
+                <div className={classes.originationDate}>Origination Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
               )}
               <div>
                 {/* AddDailogeUploadZone */}
@@ -1985,48 +1732,6 @@ function AddDealDialog(props) {
                   handleOpenExpandableCard={handleOpenExpandableCard}
                 ></AddDialogeUploadZone>
               </div>
-              {/* <div className={classes.dialogFooter}>
-								<Button
-									variant="contained"
-									color="default"
-									size="medium"
-									disableElevation
-									onClick={() => {
-										if (!updateDealLoading && !addContactLoading) {
-											handleClose();
-										}
-									}}
-									disabled={updateDealLoading || addContactLoading}
-									className={classes.footerButton}
-									style={{
-										margin: "0px 15px 0px 0px",
-									}}
-								>
-									Cancel
-								</Button>
-
-								<Button
-									variant="contained"
-									color="secondary"
-									size="medium"
-									disableElevation
-									onClick={() => {
-										handleValidate() && handleUpdate()
-									}}
-									className={classes.footerButton}
-									disabled={
-										updateDealLoading || addContactLoading || isNaN(label) || !valid
-									}
-								>
-									{updateDealLoading || addContactLoading ? (
-										<CircularProgress size={14} />
-									) : (
-
-										"Save"
-
-									)}
-								</Button>
-							</div> */}
             </div>
           </div>
         </RightDialog>
