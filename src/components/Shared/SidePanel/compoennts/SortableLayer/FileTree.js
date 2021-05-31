@@ -144,7 +144,7 @@ const FileTree = ({ layerMap }) => {
           style={{
             backgroundColor: "#263451",
             overflow: "auto",
-            maxHeight: "100%",
+            maxHeight: 845,
             paddingTop: 10,
             paddingBottom: 10,
           }}
