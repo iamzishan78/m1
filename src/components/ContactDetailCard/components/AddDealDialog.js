@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+} from 'react';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -39,7 +46,7 @@ import { ADDDEAL } from 'graphQL/useMutationAddDeal';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { UPDATEDEAL } from 'graphQL/useMutationUpdateDeal';
 import { UPSERTDEALDESCRIPTOR } from 'graphQL/useMutationUpsertDealDescriptor';
-import { REMOVEDEALDESCRIPTOR } from "../../../graphQL/useMutationRemoveDealDescriptor";
+import { REMOVEDEALDESCRIPTOR } from '../../../graphQL/useMutationRemoveDealDescriptor';
 import { UPDATESTAGEDEALDESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
 import {
   setFlowState,
@@ -109,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputFieldDealName: {
     marginBottom: '7px',
-    width: '405px'
+    width: '405px',
   },
   dateLabel: {
     transform: 'translate(10px, 2px) scale(0.75) !important',
@@ -121,8 +128,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 6px",
   },
   inputFieldDateRoot: {
-    '& .MuiDialog-root': {
-    },
+    '& .MuiDialog-root': {},
   },
   inputFieldDate: {
     marginBottom: "30px",
@@ -233,26 +239,31 @@ const useStyles = makeStyles((theme) => ({
   },
 
   flowlineRoot: {
-    border: '1px solid #EBEBEB',
-
-    '&.Mui-focused fieldset': {
-      border: '1px solid #EBEBEB',
-      backgroundColor: 'transparent',
-    },
-    '&.Mui-focused fieldset': {
-      border: '1px solid black',
-      backgroundColor: 'transparent',
-    },
     '&:hover': {
       backgroundColor: '#EBEBEB',
+      '& .MuiOutlinedInput-notchedOutline': {
+        border: 0,
+      },
+      '& .MuiSelect-icon': {
+        display: 'inline-block',
+      },
     },
     '&:active': {
       border: '1px solid black',
-      backgroundColor: '#fff',
+      backgroundColor: '#EBEBEB',
     },
   },
-
-
+  notchedOutlineFlow: {
+    border: '0.2px solid #EBEBEB',
+  },
+  notchedOutlineFlowFocused: {
+    '& .MuiOutlinedInput-notchedOutline': {
+      border: '1px solid black',
+    },
+  },
+  icon: {
+    display: 'none',
+  },
   dealNameRoot: {
     fontWeight: 'bold',
     paddingLeft: 0,
@@ -275,13 +286,12 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       backgroundColor: '#EBEBEB',
     },
-
   },
   notchedOutline: {
     border: 0,
   },
-  dealOwnerRoot: {
 
+  dealOwnerRoot: {
     border: '1px solid #EBEBEB',
 
     // This matches the specificity of the default styles at https://github.com/mui-org/material-ui/blob/v4.11.3/packages/material-ui-lab/src/Autocomplete/Autocomplete.js#L90
@@ -765,6 +775,7 @@ function AddDealDialog(props) {
 
         if (
           (stateApp.activeDeal?.owners?.length > 0 && stateApp.activeDeal?.owners[0]?.relatedObject?._id !== ownerId) ||
+
           !stateApp.activeDeal.owners ||
           stateApp.activeDeal.owners.length <= 0
         ) {
@@ -780,6 +791,7 @@ function AddDealDialog(props) {
                     userId: stateApp.user.mongoId,
                   },
                   refetchQueries: ["getPipeline", "getContactDeals"],
+
                   awaitRefetchQueries: true,
                 }).then((result) => {
                   const {
@@ -799,8 +811,10 @@ function AddDealDialog(props) {
                   variables: {
                     id: stateApp.activeDeal?.owners[0]?._id,
                     relatedObjectType: "User",
+
                   },
                   refetchQueries: ["getPipeline", "getContactDeals"],
+
                   awaitRefetchQueries: true,
                 }).then((result) => {
                   const {
@@ -1288,9 +1302,7 @@ function AddDealDialog(props) {
               </Grid>
 
               <Grid container spacing={2} className={classes.gridStyle}>
-
                 <Grid item xs={6} style={{ minHeight: '35px' }}>
-
                   {/* <h4
                 style={{
                   margin: '0 0 0 0',
@@ -1301,23 +1313,25 @@ function AddDealDialog(props) {
                 Deal Information
               </h4> */}
 
+
                   <Typography variant="h5" style={{
+
                     margin: '0 0 0 0',
+
                     float: 'left',
+
                     fontSize: '1.3rem',
+
                   }}>
 
                     Deal Information
-
-              </Typography>
+                  </Typography>
                 </Grid>
 
-
-
                 <Grid item xs={6} style={{ minHeight: '35px' }}>
-
                   {!titleFocus && (
                     <Grid item xs style={{ flexGrow: 0, padding: 2, marginTop: 2 }}>
+
                       <div
                         style={{
                           display: 'flex',
@@ -1335,14 +1349,14 @@ function AddDealDialog(props) {
                               }}
                             >
                               Won
-                        </div>
+                            </div>
 
                             <div
                               className={classes.dealStateOpenLost}
                               onClick={() => setDealState('lost')}
                             >
                               Lost
-                        </div>
+                            </div>
                           </>
                         )}
                         {dealState === 'won' && (
@@ -1357,13 +1371,13 @@ function AddDealDialog(props) {
                               }}
                             >
                               Won
-                        </div>
+                            </div>
                             <div
                               className={classes.dealStateReopen}
                               onClick={() => setDealState(null)}
                             >
                               Re-open
-                        </div>
+                            </div>
                           </>
                         )}
                         {dealState === 'lost' && (
@@ -1379,16 +1393,17 @@ function AddDealDialog(props) {
                               }}
                             >
                               Lost
-                        </div>
+                            </div>
                             <div
                               className={classes.dealStateReopen}
                               onClick={() => setDealState(null)}
                             >
                               Re-open
-                        </div>
+                            </div>
                           </>
                         )}
                         {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
+
                           stateApp.activeDeal?.laneId && (
                             <>
                               {/* <CommentsWithIcon
@@ -1411,6 +1426,7 @@ function AddDealDialog(props) {
 
                               <IconButton
                                 disabled={updateDealLoading || addContactLoading}
+
                                 onClick={openConfirmationDialog}
                                 size="small"
                                 component="span"
@@ -1486,6 +1502,7 @@ function AddDealDialog(props) {
                 variant="outlined"
                 className={classes.inputFieldDealName}
                 style={{ marginLeft: "-15px" }}
+
                 fullWidth
                 size="small"
               >
@@ -1517,7 +1534,6 @@ function AddDealDialog(props) {
                   onBlur={() => setTitleFocus(false)}
                 // onFocus={() => setTitleFocus(true)}
                 />
-
               </FormControl>
 
               <FormControl
@@ -1526,7 +1542,6 @@ function AddDealDialog(props) {
                 className={classes.inputFieldCommonInfo}
                 size="small"
               >
-
                 <Grid container spacing={2} className={classes.gridStyle}>
                   <Grid item xs={3}>
                     <div>Owner</div>
@@ -1538,6 +1553,7 @@ function AddDealDialog(props) {
                         setOwnerId(user?.value);
                       }}
                       value={users.find((user) => user?.value === ownerId) || null}
+
                       getOptionLabel={(option) => option.text}
                       getOptionSelected={(option) => option.value === ownerId}
                       classes={{
@@ -1545,14 +1561,12 @@ function AddDealDialog(props) {
                         focused: classes.dealOwnerRootFocused,
                         popupIndicator: classes.popupIndicator,
                       }}
-
                       renderInput={(params) => (
                         <TextField
                           margin="dense"
                           {...params}
                           variant="outlined"
                           className={classes.inputFieldCommonInfo}
-
                           // label="Deal Owner"
                           InputLabelProps={{
                             ...params.InputLabelProps,
@@ -1569,22 +1583,37 @@ function AddDealDialog(props) {
                                 <InputAdornment position="start">
                                   <Avatar className={classes.dealOwnerAvatar}>
                                     {users.find((user) => user?.value === ownerId)
+
                                       ? users
                                         .find((user) => user?.value === ownerId)
+
                                         .text.toString()
+
                                         .toUpperCase()
+
                                         .split(' ').length > 1
+
                                         ? users
                                           .find((user) => user?.value === ownerId)
+
                                           .text.toString()
+
                                           .toUpperCase()
+
                                           .split(' ')[0][0] +
+
                                         '' +
+
                                         users
+
                                           .find((user) => user?.value === ownerId)
+
                                           .text.toString()
+
                                           .toUpperCase()
+
                                           .split(' ')[1][0]
+
                                         : 'AO'
                                       : 'AO'}
                                   </Avatar>
@@ -1600,7 +1629,6 @@ function AddDealDialog(props) {
                 </Grid>
               </FormControl>
 
-
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -1612,7 +1640,6 @@ function AddDealDialog(props) {
                     <div>Close Date</div>
                   </Grid>
                   <Grid item xs={9}>
-
                     {/* <InputLabel shrink className={classes.dateLabel}>
                   Expected Close Date
                 </InputLabel> */}
@@ -1649,35 +1676,33 @@ function AddDealDialog(props) {
                 size="small"
               >
                 <Grid container spacing={2} className={classes.gridStyle}>
-
                   <Grid item xs={3}>
                     <div>Flowline</div>
                   </Grid>
 
-                <Grid item xs={9}>
-                  <Select
-                    native
-                    value={pipelineId}
-                    onChange={(e) => {
-                      settingNewPipeWithDefaultStage(e.target.value, true);
-                    }}
-                    // inputProps={{
-                    //   classes: {
-                    //     root: classes.flowLineRoot,
-                    //     focused: classes.focused,
-                    //     notchedOutline: classes.notchedOutline,
-                    //   },
-                    // }}
-                    // classes =  {{
-                    //   root: classes.flowLineRoot,
-                    //   focused: classes.focused,
-                    //   notchedOutline: classes.notchedOutline,
-                    //   }},
-                    classes={classes.flowLineRoot}
-
-
-                    fullWidth
-
+                  <Grid item xs={9}>
+                    <TextField
+                      variant="outlined"
+                      select
+                      SelectProps={{
+                        native: true,
+                        classes: {
+                          icon: classes.icon,
+                        },
+                      }}
+                      size="small"
+                      value={pipelineId}
+                      onChange={(e) => {
+                        settingNewPipeWithDefaultStage(e.target.value, true);
+                      }}
+                      InputProps={{
+                        classes: {
+                          root: classes.flowlineRoot,
+                          notchedOutline: classes.notchedOutlineFlow,
+                          focused: classes.notchedOutlineFlowFocused,
+                        },
+                      }}
+                      fullWidth
                     >
                       {selectedPipe && (
                         <option value={selectedPipe._id}>
@@ -1694,12 +1719,12 @@ function AddDealDialog(props) {
                         );
                       })}
                     </Select>
+
                   </Grid>
                 </Grid>
               </FormControl>
 
-
-{/* 
+              {/* 
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -1779,7 +1804,6 @@ function AddDealDialog(props) {
                 </Grid>
               </FormControl> */}
 
-
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -1792,21 +1816,36 @@ function AddDealDialog(props) {
                   </Grid>
 
                   <Grid item xs={9}>
-                    <Select
-                      native
+
+                    <TextField
+                      variant="outlined"
+                      select
+                      SelectProps={{
+                        native: true,
+                        classes: {
+                          icon: classes.icon,
+                        },
+                      }}
+                      size="small"
                       value={stageId}
-                      className={classes.inputFieldCommonInfo}
-                      // classes={{
-                      //   inputRoot: classes.dealOwnerRoot,
-                      //   focused: classes.dealOwnerRootFocused,
-                      //   popupIndicator: classes.popupIndicator,
-                      // }}
+
                       onChange={(e) => {
                         // setStageId(e.target.value);
-                        settingNewStageAndFindNextAvailablePosition(e.target.value, true);
+
+                        settingNewStageAndFindNextAvailablePosition(
+                          e.target.value,
+                          true
+                        );
+                      }}
+                      InputProps={{
+                        classes: {
+                          root: classes.flowlineRoot,
+                          notchedOutline: classes.notchedOutlineFlow,
+                          focused: classes.notchedOutlineFlowFocused,
+                        },
                       }}
                       fullWidth
-                    // label="Deal Stage"
+
                     >
                       {stagesToChoose &&
                         stagesToChoose.map((stage, i) => (
@@ -1814,11 +1853,11 @@ function AddDealDialog(props) {
                             {stage.name}
                           </option>
                         ))}
-                    </Select>
+
+                    </TextField>
                   </Grid>
                 </Grid>
               </FormControl>
-
 
               <FormControl
                 variant="outlined"
@@ -1826,8 +1865,6 @@ function AddDealDialog(props) {
                 className={classes.inputFieldCommonInfo}
                 size="small"
               >
-
-
                 <Grid container spacing={2} className={classes.gridStyle}>
                   <Grid item xs={3}>
                     <div>Offer Price</div>
