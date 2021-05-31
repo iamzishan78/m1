@@ -3150,8 +3150,6 @@ function SubTable(props) {
     if (props.header === 'Contacts') {
       return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
         {props.header === 'Documents' ? (<DescriptionOutlinedIcon />) : (<Contact />)}
-
-
         <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
           <Typography style={{ marginLeft: '10px', 
                             fontSize: '16px', 
@@ -3161,11 +3159,8 @@ function SubTable(props) {
           </Typography>
           <Typography style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</Typography>
       </Breadcrumbs>
-
-
       </div>
     }
-
     else if (props.header === 'Documents') {
       return <div style={{ display: 'flex', justifyContent: 'left' }}>
         {props.header === 'Documents' ? (
