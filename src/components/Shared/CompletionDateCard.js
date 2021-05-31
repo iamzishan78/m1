@@ -23,7 +23,7 @@ const formatDateString = dateString => {
     return new Date(dateString).toLocaleDateString()
   }
 
-const convertDate = unixStamp => {
+const convert_date = unixStamp => {
   const date = moment.utc(unixStamp).format("MM/DD/YYYY");
 
   if (unixStamp === 'null') {return '--'}
@@ -56,7 +56,7 @@ export default function CompletionDateCard() {
         //className={classes.text2}
         variant="caption"
       >
-      {convertDate(stateApp.selectedWell.completionDate)}
+      {convert_date(stateApp.selectedWell.completionDate)}
       </Typography>
       </div>
 

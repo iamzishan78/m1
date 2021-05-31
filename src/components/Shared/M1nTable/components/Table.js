@@ -14,7 +14,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
 import WellCardProvider from "../../../WellCard/WellCardProvider";
 import ContactDetailCard from "../../../ContactDetailCard/ContactDetailCard";
-import { AppContext } from "../../../../AppContext";
 import Tags from "../../Tagger";
 import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
@@ -83,10 +82,24 @@ import Chip from '@material-ui/core/Chip';
 
 import ButtonDropDown from "./ButtonGroup"
 
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+
+// contexts 
+import { AppContext } from "../../../../AppContext";
+import { NavigationContext } from "../../../Navigation/NavigationContext";
+
+
+
+// mui components 
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Link from '@material-ui/core/Link';
+
+
 // import value formatters 
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
 import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
+
 import RightDialog from "../../../ContactDetailCard/components/RightDialog"
 
 // queries 
@@ -446,6 +459,7 @@ function SubTable(props) {
 
   // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
 
 
   // function state 
@@ -1483,25 +1497,45 @@ function SubTable(props) {
                           }
 
                           if (value && value !== "false") {
-                            setTargetLabelToExpand("contact");
+
                             setStateApp((stateApp) => ({
                               ...stateApp,
                               selectedContact: value,
                             }));
-                            setSelectedRow({ _id: value });
+                            setStateNav((stateNav) => ({
+                              ...stateNav,
+                              defaultOn: false,
+                              selectedMenuIndexContacts: 1,
+                              selectedMenuIndexFind: 0,
+                              contactFromMap: true, 
+                            }));
 
-                            setSubComponent(
-                              <ContactDetailCard
-                                selectRowOpenContact={selectRowOpenContact}
-                                handleCloseExpandableCard={
-                                  handleCloseExpandableCard
-                                }
-                              />
-                            );
+                            routeChange(`/contact/details/${value}`)
                             setTitle("Contact Details");
-                            setMultipleExpandableCard(true);
                             setSubTitle(" ");
                             handleOpenExpandableCard();
+
+                            // setTargetLabelToExpand("contact");
+                            // setStateApp((stateApp) => ({
+                            //   ...stateApp,
+                            //   selectedContact: value,
+                            // }));
+                            // setSelectedRow({ _id: value });
+
+                            // setSubComponent(
+                            //   <ContactDetailCard
+                            //     selectRowOpenContact={selectRowOpenContact}
+                            //     handleCloseExpandableCard={
+                            //       handleCloseExpandableCard
+                            //     }
+                            //   />
+                            // );
+                            // setTitle("Contact Details");
+                            // setMultipleExpandableCard(true);
+                            // setSubTitle(" ");
+                            // handleOpenExpandableCard();
+
+
                           } else {
                             // Code is not used as we are opening different model from above
                             if (props.targetLabel == "owner") {
@@ -2315,7 +2349,7 @@ function SubTable(props) {
                     display: "flex",
                   }}
                 >
-                  {props.header !== "Active Users" && (
+                  {props.header !== "Active Users" && props.header !== "Documents" && (
                     <>
                       {/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
                       <Button
@@ -2655,12 +2689,6 @@ function SubTable(props) {
           selectedContact: rows[dataIndex]._id,
         }));
         routeChange(`/contact/details/${rows[dataIndex]._id}`)
-        // setSubComponent(
-        //   <ContactDetailCard
-        //     selectRowOpenContact={selectRowOpenContact}
-        //     handleCloseExpandableCard={handleCloseExpandableCard}
-        //   />
-        // );
         setTitle("Contact Details");
         setSubTitle(" ");
         handleOpenExpandableCard();
@@ -3105,54 +3133,47 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    // return  props.header === 'Contacts' || props.header === 'Documents' ? (
-    //   <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left'}}>
-    //    {props.header === 'Documents' ? ( <DescriptionOutlinedIcon />) : ( <Contact />)}
-    //     <label style={{ marginLeft: '10px', fontSize: '16px'}}>{props.header}</label>
-    //     <ArrowRight/>
-    //     <label style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</label>
-    //   </div>
-    //   ) : props.header
+
     if (props.header === 'Contacts') {
       return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
         {props.header === 'Documents' ? (<DescriptionOutlinedIcon />) : (<Contact />)}
-        <label style={{ marginLeft: '10px', fontSize: '16px' }}>{props.header}</label>
-        <ArrowRight />
-        <label style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</label>
+
+
+        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+          <Typography style={{ marginLeft: '10px', 
+                            fontSize: '16px', 
+                            }}  
+                            color="inherit">
+            {props.header}
+          </Typography>
+          <Typography style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</Typography>
+      </Breadcrumbs>
+
+
       </div>
     }
+
     else if (props.header === 'Documents') {
       return <div style={{ display: 'flex', justifyContent: 'left' }}>
         {props.header === 'Documents' ? (
-          //   <Accordion style={{width:'40px',backgroundColor:'transparent',display:'flex',flexDirection:'column',padding:'0px',}}>
-          //   <AccordionSummary
-          //     // expandIcon={<SearchIcon style={{color:'white',backgroundColor:'transparent'}}></SearchIcon>}
-
-          //      style={{ maxHeight:'43px',backgroundColor:'transparent',marginTop:'0px !important'}}
-          //   >
-          //     <DescriptionOutlinedIcon style={{backgroundColor:'transparent',padding:'0px'}}></DescriptionOutlinedIcon>
-          //   </AccordionSummary>
-          //   <AccordionDetails style={{width:'300px',backgroundColor:'white',display:'flex',flexDirection:'column',padding:'0px',border:'2px solid #d1cfcf',    marginTop: '-11px'}}>
-
-          //     <Typography style={{padding:'9px',color:'rgb(24, 170, 221)', cursor:'pointer'}} variant='subtitle2'>
-          //         All Documents
-          //     </Typography>
-
-          //     <Typography style={{padding:'6px',paddingLeft:'9px',backgroundColor:'#f2f2f2',width:'100%',borderTop:'1px solid #d1cfcf'}} variant='caption'>
-          //         Agreements
-          //     </Typography>
-          //     <Typography style={{padding:'9px',cursor:'pointer'}} variant='subtitle2'>
-          //        ShapFiles
-          //     </Typography>
-          //   </AccordionDetails>
-          // </Accordion>
           <DescriptionOutlinedIcon ></DescriptionOutlinedIcon>
         ) : (<Contact />)}
-        <label style={{ marginLeft: '10px', fontSize: '16px' }}>{props.header}</label>
-        <ArrowRight />
-        <label style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</label>
+
+        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+          <Typography style={{ marginLeft: '10px', 
+                            fontSize: '16px', 
+                            }}  
+                            color="inherit">
+            {props.header}
+          </Typography>
+          <Typography style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</Typography>
+      </Breadcrumbs>
+      
       </div>
     }
+
+
+
     else {
       return props.header
     }

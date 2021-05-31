@@ -226,7 +226,14 @@ export default function DocumentDrawer() {
             fileId: newDocument.fileId,
           },
         },
+        refetchQueries: ["getDocuments"],
+        awaitRefetchQueries: true,
       }).then(() => {
+        setStateApp({
+          ...stateApp,
+          DocumentDrawer: false,
+          selectedDocument: {},
+        });
         setLoader(false);
       });
     }
@@ -252,6 +259,7 @@ export default function DocumentDrawer() {
 
   const handleDeleteAccept = () => {
     // Delete Document Logic goes here
+    debugger
     if (fileIdToDelete) {
       setLoader(true);
       updateDocument({
