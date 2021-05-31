@@ -98,8 +98,6 @@ NumberFormatCustom.propTypes = {
 const useStyles = makeStyles((theme) => ({
   root: {
     '&  .MuiPaper-root': {
-      // maxWidth: '400px',
-      padding: '25px',
     },
   },
   dialogTitle: {
@@ -108,14 +106,23 @@ const useStyles = makeStyles((theme) => ({
   dialogContentText: {
     textAlign: "center",
   },
-  inputField: {
-    marginBottom: "10px",
+  inputFieldOwner: {
+    marginBottom: '7px',
   },
-  inputFieldCommonInfo: {
+  inputFieldDate: {
+    marginBottom: '7px',
+  },
+  inputFieldFlowline: {
+    marginBottom: '7px',
+  },
+  inputFieldFlowStage: {
+    marginBottom: '7px',
+  },
+  inputFieldCustomTextInput: {
     marginBottom: '7px',
   },
   inputFieldDealName: {
-    marginBottom: '7px',
+    marginBottom: '10px',
     width: '405px',
   },
   dateLabel: {
@@ -129,13 +136,6 @@ const useStyles = makeStyles((theme) => ({
   },
   inputFieldDateRoot: {
     '& .MuiDialog-root': {},
-  },
-  inputFieldDate: {
-    marginBottom: "30px",
-    "& .MuiInputBase-input": {
-      paddingTop: "10.5px",
-      paddingBottom: "10.5px",
-    },
   },
   progress: {
     marginLeft: "30px",
@@ -154,7 +154,7 @@ const useStyles = makeStyles((theme) => ({
   },
   topBtnGroup: {},
   inputField: {
-    marginBottom: "30px",
+    // marginBottom: "30px",  
     outline: "none",
   },
   dealStateOpenWon: {
@@ -211,6 +211,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#FFFCDC",
     display: "block",
     width: "100%",
+    marginTop: 25,
 
     '& .MuiOutlinedInput-root': {
       width: '100%',
@@ -327,7 +328,7 @@ const useStyles = makeStyles((theme) => ({
   },
   dealOwnerLabel: {
     marginLeft: 4,
-    marginTOP: -2,
+    // marginTOP: -2,
   },
   popupIndicator: {
     visibility: 'hidden',
@@ -1198,7 +1199,7 @@ function AddDealDialog(props) {
             <Grid item xs={12} style={{ minHeight: "35px" }}>
               <h4
                 style={{
-                  margin: "0 0 15px 0",
+                  // margin: "0 0 15px 0",
                   float: "left",
                   fontSize: "1.1rem",
                 }}
@@ -1249,7 +1250,10 @@ function AddDealDialog(props) {
               item
               container
               xs={12}
-              style={{ margin: 0, padding: 0, marginBottom: '1em' }}
+              style={{ margin: 0, padding: 0, 
+                
+                marginBottom: '1em' 
+              }}
               alignItems="center"
             >
               {/* <Grid
@@ -1268,7 +1272,7 @@ function AddDealDialog(props) {
 
                   <Typography variant="h5" style={{
 
-                    margin: '0 0 0 0',
+                    // margin: '0 0 0 0',
 
                     float: 'left',
 
@@ -1282,7 +1286,9 @@ function AddDealDialog(props) {
 
                 <Grid item xs={6} style={{ minHeight: '35px' }}>
                   {!titleFocus && (
-                    <Grid item xs style={{ flexGrow: 0, padding: 2, marginTop: 2 }}>
+                    <Grid item xs style={{ flexGrow: 0, padding: 2, 
+                    // marginTop: 2 
+                    }}>
 
                       <div
                         style={{
@@ -1366,8 +1372,8 @@ function AddDealDialog(props) {
                                 component="span"
                                 style={{
                                   background: 'transparent',
-                                  alignSelf: 'flex-end',
-                                  paddingLeft: '20px',
+                                  paddingLeft: '10px',
+                                  align: 'center'
                                 }}
                               >
                                 <DeleteIcon
@@ -1445,10 +1451,11 @@ function AddDealDialog(props) {
               <FormControl
                 variant="outlined"
                 fullWidth
-                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
-                <Grid container spacing={2} className={classes.gridStyle}>
+                <Grid container 
+                  className={classes.gridStyle}
+                >
                   <Grid item xs={3}>
                     <div>Owner</div>
                   </Grid>
@@ -1471,7 +1478,7 @@ function AddDealDialog(props) {
                           margin="dense"
                           {...params}
                           variant="outlined"
-                          // className={classes.inputFieldCommonInfo}
+                          className={classes.inputFieldOwner}
                           InputLabelProps={{
                             ...params.InputLabelProps,
                             shrink: true,
@@ -1522,9 +1529,10 @@ function AddDealDialog(props) {
                 variant="outlined"
                 fullWidth
                 size="small"
-                // className={classes.inputFieldCommonInfo}
               >
-                <Grid container spacing={2} className={classes.gridStyle}>
+                <Grid container 
+                    className={classes.gridStyle}
+                    >
                   <Grid item xs={3}>
                     <div>Close Date</div>
                   </Grid>
@@ -1536,7 +1544,7 @@ function AddDealDialog(props) {
                       value={closeDate}
                       placeholder=""
                       fullWidth
-                      style={{ paddingLeft: 0 }}
+                      className={classes.inputFieldDate}
                       onChange={(e) => {
                         setCloseDate(e.target.value);
                       }}
@@ -1558,10 +1566,11 @@ function AddDealDialog(props) {
               <FormControl
                 variant="outlined"
                 fullWidth
-                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
-                <Grid container spacing={2} className={classes.gridStyle}>
+                <Grid container 
+                      className={classes.gridStyle}
+                      >
                   <Grid item xs={3}>
                     <div>Flowline</div>
                   </Grid>
@@ -1569,6 +1578,7 @@ function AddDealDialog(props) {
                   <Grid item xs={9}>
                     <TextField
                       variant="outlined"
+                      margin = 'dense'
                       select
                       SelectProps={{
                         native: true,
@@ -1578,6 +1588,7 @@ function AddDealDialog(props) {
                       }}
                       size="small"
                       value={pipelineId}
+                      className={classes.inputFieldFlowline}
                       onChange={(e) => {
                         settingNewPipeWithDefaultStage(e.target.value, true);
                       }}
@@ -1613,10 +1624,11 @@ function AddDealDialog(props) {
               <FormControl
                 variant="outlined"
                 fullWidth
-                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
-                <Grid container spacing={2} className={classes.gridStyle}>
+                <Grid container 
+                      className={classes.gridStyle}
+                      >
                   <Grid item xs={3}>
                     <div>Flow Stage</div>
                   </Grid>
@@ -1624,6 +1636,7 @@ function AddDealDialog(props) {
                   <Grid item xs={9}>
 
                     <TextField
+                      margin = 'dense'
                       variant="outlined"
                       select
                       SelectProps={{
@@ -1634,10 +1647,8 @@ function AddDealDialog(props) {
                       }}
                       size="small"
                       value={stageId}
-
+                      className={classes.inputFieldFlowStage}
                       onChange={(e) => {
-                        // setStageId(e.target.value);
-
                         settingNewStageAndFindNextAvailablePosition(
                           e.target.value,
                           true
@@ -1668,10 +1679,11 @@ function AddDealDialog(props) {
               <FormControl
                 variant="outlined"
                 fullWidth
-                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
-                <Grid container spacing={2} className={classes.gridStyle}>
+                <Grid container 
+                      className={classes.gridStyle}
+                      >
                   <Grid item xs={3}>
                     <div>Offer Price</div>
                   </Grid>
@@ -1684,7 +1696,7 @@ function AddDealDialog(props) {
                       helperText={
                         isNaN(label) ? 'Offer Price must be a valid number' : ''
                       }
-                      // label="Offer Price"
+                      className={classes.inputFieldCustomTextInput}
                       fullWidth
                       onChange={(e) => {
                         setLabel(e.target.value);
@@ -1701,6 +1713,8 @@ function AddDealDialog(props) {
                   </Grid>
                 </Grid>
               </FormControl>
+
+
               <TextField
                 //   autoFocus
                 margin="dense"
