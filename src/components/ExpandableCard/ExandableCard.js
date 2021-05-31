@@ -101,7 +101,6 @@ function ExpandableCard(props) {
       position: position,
       left: cardLeft,
       top: cardTop,
-      // zIndex: 8888,
       webkitTransform: "translateZ(0)",
       transition: "width 0.1s, height 0.1s, left 0.1s, top 0.1s",
       width: width,
@@ -473,10 +472,15 @@ function ExpandableCard(props) {
                 )}
 
 
-              {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact"
-                ? parent !== "table" &&
-                  targetLabel !== "well" && targetLabel !== "expandedWell" &&
-                  targetLabel !== "parcel" && targetLabel !== "expandedParcel"
+              {stateExpandableCard.expanded 
+              
+                && targetLabel !== "activity" 
+                && targetLabel !== "contact"
+                ? parent !== "table" 
+                  && targetLabel !== "well" 
+                  && targetLabel !== "expandedWell" 
+                  && targetLabel !== "parcel" 
+                  && targetLabel !== "expandedParcel"
                   && targetLabel !== "recent_submitted_permits"
                   ? (
                     <Tooltip title={"Shrink"} placement="top">
