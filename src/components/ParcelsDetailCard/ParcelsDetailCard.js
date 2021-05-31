@@ -25,6 +25,7 @@ import AbstractCard from "./components/AbstractCard";
 import AltSurveyCard from "./components/AltSurveyCard";
 import ParcelDetailsMap from "./components/ParcelDetailsMap";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
+import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwnersTable";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 import { AppContext } from "../../AppContext";
@@ -390,7 +391,13 @@ const Header = () => (
                   <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense header={<Header />} />
                 </div>,
                 <div className={classes.subContent}>
-                  <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense header={<Header />} />
+                  <SuggestedTaxOwnersTable
+                    customLayer={parcelObj}
+                    parent="ownersPerParcel"
+                    targetLabel="well"
+                    header={<Header />}
+                    dense
+                  />
                 </div>
               ]}
             />

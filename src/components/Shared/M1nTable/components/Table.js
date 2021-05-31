@@ -2333,6 +2333,24 @@ function SubTable(props) {
         ? false
         : (selectedRows, displayData, setSelectedRow) => {
           //// if contacts set the multi selection top bar: ////
+
+          if(props.addAble.type === "suggestedOwnerToParcel"){
+            return (
+              <div style={{ height: "48px", display: "flex" }} >
+                <div style={{ marginTop: "6px", height: "35px", display: "flex", marginRight: "20px" }} >
+                  <Button
+                    color="secondary"
+                    className={classes.multiSelectionTopBarButtons}
+                    disabled={props.addAble.type === 'suggestedOwnerToParcel' && m1nSelectedRowsIndexes.length === 0}
+                    onClick={()=>{
+                    }}
+                  >
+                    + ADD TO PARCEL
+                  </Button>
+                </div>
+              </div>
+            );
+          }
           if (
             props.header === "Owner's Contacts" ||
             props.header === "Contacts" ||
@@ -2524,6 +2542,7 @@ function SubTable(props) {
       if (props.addAble.type === "deals") { buttonLabel = '+ ADD DEAL' }
       if (props.addAble && props.parent === "UserManagement") { buttonLabel = "+ ADD USER" }
       if (props.addAble.type === "ownerToParcel") { buttonLabel = '+ ADD INTEREST OWNER' }
+      if (props.addAble.type === "suggestedOwnerToParcel") { buttonLabel = '+ ADD TO PARCEL' }
 
 
       const addAction = (e) => {
@@ -2593,12 +2612,14 @@ function SubTable(props) {
             {(props.addAble.type === "wellInterest"
               || props.addAble.type === "deals"
               || props.addAble.type === "ownerToParcel"
+              || props.addAble.type === "suggestedOwnerToParcel"
               || (props.addAble && props.parent === "UserManagement"))
 
               && (
                 <Button
                   color="secondary"
                   className={classes.multiSelectionTopBarButtons}
+                  disabled={props.addAble.type === 'suggestedOwnerToParcel' && m1nSelectedRowsIndexes.length === 0}
                   onClick={addAction}
                 >
                   {buttonLabel}
