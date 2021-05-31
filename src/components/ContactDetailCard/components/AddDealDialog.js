@@ -1718,7 +1718,7 @@ function AddDealDialog(props) {
                           </option>
                         );
                       })}
-                    </Select>
+                    </TextField>
 
                   </Grid>
                 </Grid>

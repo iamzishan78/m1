@@ -43,7 +43,6 @@ export const useStyles = makeStyles((theme) => ({
     },
     list: {
         padding: 0,
-        maxHeight: "150px",
         minWidth: "500px",
         overflowY: "auto",
         backgroundColor: "#263451",
