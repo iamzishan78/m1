@@ -129,6 +129,7 @@ const AppProvider = (props) => {
     multiSelectLandGrids: false,
     isAbstractedLayersPolygon: false,
     contactSearchQuery: "",
+    documentSearchQuery: "",
     isContactSearching: false,
     viewDoc: null,
     pdfView: null,
