@@ -374,7 +374,6 @@ export default function Documents(props) {
             <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents ({recentFiles.length})</h4>
             <h4
               className={classes.viewAll}
-
               onClick={() => {
                 setStateApp((stateApp) => ({
                   ...stateApp,

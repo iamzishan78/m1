@@ -182,7 +182,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 							style={{
 								maxHeight: "775px",
 								minWidth: "500px",
-								overflowY: type === "marketplace" ? "scroll" : "scroll",
+								overflowY: "auto",
 							}}
 							className={classes.list}
 						>
@@ -424,20 +424,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					zIndex: "99999"
 				}}
 			>
-				{
-					// console.log('===============')
-					// console.log('type',type)
-					console.log('&&& panelExpanded', stateMapControls.panelExpanded)
-					// console.log('===============')
-				}
 				<StyledMenu
 					id="checklist-menu"
 					// anchorEl={stateMapControls.anchorEl}
 					style={!stateMapControls.panelExpanded ? { display: 'none' } : {}}
 					keepMounted
 					open={Boolean(stateMapControls.selectedControl)}
-
-				//onClose={handleClose}
 				>
 					<StyledMenuHeaderItem
 						disableRipple
