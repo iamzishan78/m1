@@ -939,8 +939,6 @@ function AddDealDialog(props) {
           awaitRefetchQueries: true,
         });
       }
-
-      // if (closeAfterUpdate) handleClose();
     }
   };
 
@@ -1043,7 +1041,6 @@ function AddDealDialog(props) {
       }));
     }
 
-    // 	let metadata = { ...stateApp.activeDeal, contacts: [ upsertDealDescriptor.descriptor[0], ...stateApp.activeDeal.contacts ] };
   }, [getDealResult]);
 
   const getView = () => {
@@ -1084,11 +1081,6 @@ function AddDealDialog(props) {
           }, 1000);
         } else {
           setFileRequestCounter(1);
-          // dispatch(
-          //   showWarningMessage(
-          //     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
-          //   )
-          // );
         }
       } else setFileRequestCounter(1);
     },
@@ -1252,9 +1244,7 @@ function AddDealDialog(props) {
           isTransactPage={props.isTransactPage}
         >
           <div style={{ padding: "30px" }}>
-            {/* <h4 style={{ margin: "0 0 30px 0", fontSize: "16px" }}>
-        Recent Activities
-      </h4> */}
+
             <Grid
               item
               container
@@ -1262,7 +1252,7 @@ function AddDealDialog(props) {
               style={{ margin: 0, padding: 0, marginBottom: '1em' }}
               alignItems="center"
             >
-              <Grid
+              {/* <Grid
                 item
                 xs
                 style={{
@@ -1271,48 +1261,10 @@ function AddDealDialog(props) {
                   marginRight: titleFocus ? 0 : '5px',
                 }}
               >
-                {/* <TextField
-                  margin="dense"
-                  value={title}
-                  variant="outlined"
-                  required
-                  error={valid['title']}
-                  helperText={
-                    valid['title'] ? 'Enter a deal name to get started' : ''
-                  }
-                  fullWidth
-                  //   required
-                  onChange={(e) => {
-                    setTitle(e.target.value);
-                    setValid({
-                      ...valid,
-                      title: false,
-                    });
-                  }}
-                  InputProps={{
-                    classes: {
-                      root: classes.dealNameRoot,
-                      focused: classes.focused,
-                      notchedOutline: classes.notchedOutline,
-                    },
-                  }}
-                  onBlur={() => setTitleFocus(false)}
-                  onFocus={() => setTitleFocus(true)}
-                /> */}
-              </Grid>
+              </Grid> */}
 
               <Grid container spacing={2} className={classes.gridStyle}>
                 <Grid item xs={6} style={{ minHeight: '35px' }}>
-                  {/* <h4
-                style={{
-                  margin: '0 0 0 0',
-                  float: 'left',
-                  fontSize: '1.1rem',
-                }}
-              >
-                Deal Information
-              </h4> */}
-
 
                   <Typography variant="h5" style={{
 
@@ -1406,24 +1358,6 @@ function AddDealDialog(props) {
 
                           stateApp.activeDeal?.laneId && (
                             <>
-                              {/* <CommentsWithIcon
-                      objectId={stateApp.activeDeal?.cardId}
-                      targetLabel={"deal"}
-                      iconZiseSmall={true}
-                    />
-                    <TaggerWithIcon
-                      objectId={stateApp.activeDeal?.cardId}
-                      targetLabel={"deal"}
-                      iconZiseSmall={true}
-                    />
-                    <TrackToggleButton
-                      target={target}
-                      targetLabel={"deal"}
-                      targetSourceId={stateApp.activeDeal?.cardId}
-                      iconZiseSmall={true}
-                      dark={true}
-                    /> */}
-
                               <IconButton
                                 disabled={updateDealLoading || addContactLoading}
 
@@ -1443,14 +1377,6 @@ function AddDealDialog(props) {
                               </IconButton>
                             </>
                           )}
-
-                        {/* <IconButton
-									disabled={updateDealLoading || addContactLoading}
-									onClick={handleClose}
-									size="small"
-								>
-									<CloseIcon className={classes.closeIcon} fontSize="small" />
-								</IconButton> */}
                       </div>
                     </Grid>
                   )}
@@ -1476,25 +1402,6 @@ function AddDealDialog(props) {
                   />
                 </div>
               ) : (
-                // <div className={classes.inputField}>
-                //   <Grid container>
-                //     <Grid item xs={12}>
-                //       <AutocompEntityNamesVirtualizeList
-                //         mongoEntitiesArray={mongoEntitiesArray}
-                //         setMongoEntitiesArray={setMongoEntitiesArray}
-                //         nameAutValue={nameAutValue}
-                //         setNameAutValue={setNameAutValue}
-                //         nameAutInputValue={nameAutInputValue}
-                //         setNameAutInputValue={setNameAutInputValue}
-                //         variant="outlined"
-                //         label="Contact Name"
-                //         hasNextPage={hasNextPage}
-                //         isNextPageLoading={isNextPageLoading}
-                //         loadNextPage={loadNextPage}
-                //       />
-                //     </Grid>
-                //   </Grid>
-                // </div>
                 <></>
               )}
 
@@ -1532,14 +1439,13 @@ function AddDealDialog(props) {
                     },
                   }}
                   onBlur={() => setTitleFocus(false)}
-                // onFocus={() => setTitleFocus(true)}
                 />
               </FormControl>
 
               <FormControl
                 variant="outlined"
                 fullWidth
-                className={classes.inputFieldCommonInfo}
+                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
                 <Grid container spacing={2} className={classes.gridStyle}>
@@ -1553,7 +1459,6 @@ function AddDealDialog(props) {
                         setOwnerId(user?.value);
                       }}
                       value={users.find((user) => user?.value === ownerId) || null}
-
                       getOptionLabel={(option) => option.text}
                       getOptionSelected={(option) => option.value === ownerId}
                       classes={{
@@ -1566,8 +1471,7 @@ function AddDealDialog(props) {
                           margin="dense"
                           {...params}
                           variant="outlined"
-                          className={classes.inputFieldCommonInfo}
-                          // label="Deal Owner"
+                          // className={classes.inputFieldCommonInfo}
                           InputLabelProps={{
                             ...params.InputLabelProps,
                             shrink: true,
@@ -1583,37 +1487,22 @@ function AddDealDialog(props) {
                                 <InputAdornment position="start">
                                   <Avatar className={classes.dealOwnerAvatar}>
                                     {users.find((user) => user?.value === ownerId)
-
                                       ? users
                                         .find((user) => user?.value === ownerId)
-
                                         .text.toString()
-
                                         .toUpperCase()
-
                                         .split(' ').length > 1
-
                                         ? users
                                           .find((user) => user?.value === ownerId)
-
                                           .text.toString()
-
                                           .toUpperCase()
-
                                           .split(' ')[0][0] +
-
                                         '' +
-
                                         users
-
                                           .find((user) => user?.value === ownerId)
-
                                           .text.toString()
-
                                           .toUpperCase()
-
                                           .split(' ')[1][0]
-
                                         : 'AO'
                                       : 'AO'}
                                   </Avatar>
@@ -1633,16 +1522,13 @@ function AddDealDialog(props) {
                 variant="outlined"
                 fullWidth
                 size="small"
-                className={classes.inputFieldCommonInfo}
+                // className={classes.inputFieldCommonInfo}
               >
                 <Grid container spacing={2} className={classes.gridStyle}>
                   <Grid item xs={3}>
                     <div>Close Date</div>
                   </Grid>
                   <Grid item xs={9}>
-                    {/* <InputLabel shrink className={classes.dateLabel}>
-                  Expected Close Date
-                </InputLabel> */}
                     <TextField
                       margin="dense"
                       type="date"
@@ -1672,7 +1558,7 @@ function AddDealDialog(props) {
               <FormControl
                 variant="outlined"
                 fullWidth
-                className={classes.inputFieldCommonInfo}
+                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
                 <Grid container spacing={2} className={classes.gridStyle}>
@@ -1718,96 +1604,16 @@ function AddDealDialog(props) {
                           </option>
                         );
                       })}
-                    </Select>
+                    </TextField>
 
                   </Grid>
                 </Grid>
               </FormControl>
 
-              {/* 
               <FormControl
                 variant="outlined"
                 fullWidth
-                size="small"
-                className={classes.inputFieldCommonInfo}
-              >
-              <Grid container spacing={2} className={classes.gridStyle}>
-                <Grid item xs={3}>
-                <div>Flowline</div>
-                </Grid>
-                <Grid item xs={9}>
-                <Autocomplete
-                  // options={users}
-                  onChange={(e) => {
-                    settingNewPipeWithDefaultStage(e.target.value, true);
-                  }}
-                  options={pipelineId}
-                  getOptionLabel={(option) => option.text}
-                  getOptionSelected={(option) => option.value === ownerId}
-                  classes={{
-                    inputRoot: classes.dealOwnerRoot,
-                    focused: classes.dealOwnerRootFocused,
-                    popupIndicator: classes.popupIndicator,
-                  }}
-
-                  renderInput={(params) => (
-                    <TextField
-                      margin="dense"
-                      {...params}
-                      variant="outlined"
-                      className={classes.inputFieldCommonInfo}
-
-                      // label="Deal Owner"
-                      InputLabelProps={{
-                        ...params.InputLabelProps,
-                        shrink: true,
-                        classes: {
-                          root: classes.dealOwnerLabel,
-                        },
-                      }}
-                      placeholder="Assign Owner"
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <>
-                            <InputAdornment position="start">
-                              <Avatar className={classes.dealOwnerAvatar}>
-                                {users.find((user) => user?.value === ownerId)
-                                  ? users
-                                      .find((user) => user?.value === ownerId)
-                                      .text.toString()
-                                      .toUpperCase()
-                                      .split(' ').length > 1
-                                    ? users
-                                        .find((user) => user?.value === ownerId)
-                                        .text.toString()
-                                        .toUpperCase()
-                                        .split(' ')[0][0] +
-                                      '' +
-                                      users
-                                        .find((user) => user?.value === ownerId)
-                                        .text.toString()
-                                        .toUpperCase()
-                                        .split(' ')[1][0]
-                                    : 'AO'
-                                  : 'AO'}
-                              </Avatar>
-                            </InputAdornment>
-                            {params.InputProps.startAdornment}
-                          </>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-                </Grid>
-                </Grid>
-              </FormControl> */}
-
-              <FormControl
-                variant="outlined"
-                fullWidth
-                className={classes.inputFieldCommonInfo}
+                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
                 <Grid container spacing={2} className={classes.gridStyle}>
@@ -1862,7 +1668,7 @@ function AddDealDialog(props) {
               <FormControl
                 variant="outlined"
                 fullWidth
-                className={classes.inputFieldCommonInfo}
+                // className={classes.inputFieldCommonInfo}
                 size="small"
               >
                 <Grid container spacing={2} className={classes.gridStyle}>
@@ -1926,48 +1732,6 @@ function AddDealDialog(props) {
                   handleOpenExpandableCard={handleOpenExpandableCard}
                 ></AddDialogeUploadZone>
               </div>
-              {/* <div className={classes.dialogFooter}>
-								<Button
-									variant="contained"
-									color="default"
-									size="medium"
-									disableElevation
-									onClick={() => {
-										if (!updateDealLoading && !addContactLoading) {
-											handleClose();
-										}
-									}}
-									disabled={updateDealLoading || addContactLoading}
-									className={classes.footerButton}
-									style={{
-										margin: "0px 15px 0px 0px",
-									}}
-								>
-									Cancel
-								</Button>
-
-								<Button
-									variant="contained"
-									color="secondary"
-									size="medium"
-									disableElevation
-									onClick={() => {
-										handleValidate() && handleUpdate()
-									}}
-									className={classes.footerButton}
-									disabled={
-										updateDealLoading || addContactLoading || isNaN(label) || !valid
-									}
-								>
-									{updateDealLoading || addContactLoading ? (
-										<CircularProgress size={14} />
-									) : (
-
-										"Save"
-
-									)}
-								</Button>
-							</div> */}
             </div>
           </div>
         </RightDialog>
