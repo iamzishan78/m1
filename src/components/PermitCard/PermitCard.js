@@ -191,7 +191,6 @@ export default function PermitCard() {
   useEffect(() => {
     if(dataPermitSummary) {
       Object.assign(stateApp.selectedPermit, dataPermitSummary.recentPermitDetail[0])
-      console.log('SELECTED PERMIT', stateApp.selectedPermit)
       setStateApp((state) => ({
 	...state,
 	selectedPermitDetails: stateApp.selectedPermit

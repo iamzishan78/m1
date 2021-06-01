@@ -162,10 +162,6 @@ const handleCloseDetailedCards = () => {
 
   const handleFabClick = (e, action) => {
 
-    console.log('FAB CLICK ACTION E', e)
-    console.log('FAB CLICK ACTION A', action)
-    console.log('FAB CLICK ACTION EP', stateMapControls.expandedPanel)
-
     if(stateApp.expandedCard===true){
       handleCloseLeftSidePanel()
       handleCloseShapeDrawer()
@@ -333,8 +329,9 @@ const handleCloseDetailedCards = () => {
   useEffect(() => {
 
     if(stateApp.expandedCard){
-      console.log('FAB CLICK',stateApp.expandedCard)
-    handleFabClick()
+
+      handleFabClick()
+      
     }
   }, [stateApp.expandedCard]);
 

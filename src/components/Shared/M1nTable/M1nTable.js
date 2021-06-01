@@ -256,6 +256,7 @@ function M1nTable(props) {
             userId: stateApp.user.mongoId,
           },
         });
+
         checkIfOwnersAreContacts({
           variables: { idsArray: dataTracks },
         });
@@ -1020,6 +1021,7 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell") {
+
       setLoading(true);
       setTargetLabel("owner");
       setHeader("Tax Roll Ownership");
@@ -1037,9 +1039,8 @@ function M1nTable(props) {
     if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
 
-        console.log('data wells owners', dataWellOwners)
 
-        setLoading(true);
+        // setLoading(true);
         const objectsIdsArray = dataWellOwners.wellOwners.map(
           (wellOwner) => wellOwner.globalOwnerId
         );
@@ -1055,14 +1056,24 @@ function M1nTable(props) {
         checkIfOwnersAreContacts({
           variables: { idsArray: objectsIdsArray, gLodIdsArray },
         });
+
+        // let wellOwners = dataWellOwners.wellOwners;
+        // setRows(wellOwners);
+        // setLoading(false);
+
       } else {
-        setLoading(false);
         setRows([]);
+        setLoading(false);
       }
+
+
+
     }
   }, [dataWellOwners]);
 
   useEffect(() => {
+
+
     if (
       props.parent &&
       props.parent === "OwnersPerWell" &&
@@ -1073,10 +1084,11 @@ function M1nTable(props) {
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
-      dataTracks &&
-      checkIfOwnersAreContactsData &&
+      dataTracks 
+      && checkIfOwnersAreContactsData &&
       checkIfOwnersAreContactsData.ifAreContacts
     ) {
+
       const wellOwners = dataWellOwners.wellOwners.map((o) => {
         let wellOwner = { ...o };
         wellOwner.commentsCounter = 0;

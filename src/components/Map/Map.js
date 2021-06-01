@@ -432,7 +432,6 @@ function Map() {
 
   useEffect(() => {
     if (layerStates && layerStates.allLayerSettingsByUser) {
-      console.log("layer states", layerStates);
 
       setStateApp({
 	...stateApp,
@@ -970,7 +969,6 @@ function Map() {
   };
 
   useEffect(() => {
-    console.log("PERMIT DATA ====", permitData);
     if (permitData && permitData.permits && permitData.permits.length > 0) {
       const nextOffset = permits.length + permitData.permits.length;
       setPermitData([...permits, ...permitData.permits]);
@@ -978,7 +976,6 @@ function Map() {
   }, [permitData]);
 
   useEffect(() => {
-    console.log("RECENT PERMIT DATA ====", permitRecentSubmittedData);
     if (
       permitRecentSubmittedData &&
       permitRecentSubmittedData.recent_submitted_permits &&
@@ -1060,7 +1057,6 @@ function Map() {
 
         }));
 
-        console.log('SELECTED WELL', properties)
         setStateApp((state) => ({
           ...state,
           selectedWellId: properties.id.toLowerCase(),
@@ -2944,23 +2940,30 @@ function Map() {
   const createPopUp = useCallback(
     (currentFeature) => {
 
-      console.log('CURRENT FEATURE', currentFeature)
-
       let coordinates = [currentFeature.longitude, currentFeature.latitude];
+
       let popUps = document.getElementsByClassName("mapboxgl-popup");
+
       if (popUps[0]) {
 	popUps[0].remove();
       }
+
+
       new mapboxgl.Popup({ offset: 0, closeOnClick: false })
 	.setLngLat(coordinates)
 	.setMaxWidth("none")
 	.setHTML(`<div id="popupContainer"></div>`)
 	.addTo(map);
+
+
+
       setStateApp((state) => ({
 	...state,
 	popupOpen: true,
 	expandedCard: stateApp.activateWellDetailsFromTable ? true : false,
       }));
+
+
       handleOpenExpandableCard();
     },
     [map, stateApp]
@@ -3141,16 +3144,14 @@ function Map() {
   useEffect(() => {
     (async () => {
 
-      console.log('CURRENT FEATURE 4', stateApp.selectedWellId)
       if (
 	map &&
 	  stateApp.selectedWellId &&
 	  stateApp.wellSelectedCoordinates &&
-	  stateApp.wellSelectedCoordinates.length > 0 &&
-	  !stateApp.selectedWell
+	  stateApp.wellSelectedCoordinates.length > 0 
+    // && !stateApp.selectedWell
       ) {
 
-        console.log('CURRENT FEATURE 3',stateApp)
 
         let point = map.project(stateApp.wellSelectedCoordinates);
 
@@ -3206,7 +3207,6 @@ function Map() {
             });
         }
 
-        console.log('CURRENT FEATURE 2', currentFeature)
         if (currentFeature) {
           setStateApp((state) => ({
             ...state,
@@ -4926,7 +4926,6 @@ function Map() {
      // && stateApp.popupOpen==true
      showExpandableCard && (
        <PortalD id="popupContainer">
-         {console.log('PERMITS INFO', stateApp.selectedPermit)}
 
 	 {!stateApp.expandedCard && (
 	   <ExpandableCardProvider
