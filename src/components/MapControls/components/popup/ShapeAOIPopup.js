@@ -175,7 +175,6 @@ export default function ShapeAOIPopup(props) {
   return (
     <form className={`${classes.root}`} autoComplete="off">
       <RedditTextField
-        // label="Area of Interest Name"
         placeholder="Area of Interest Name"
         className={classes.TextField}
         variant="filled"
