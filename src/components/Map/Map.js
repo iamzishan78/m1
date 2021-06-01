@@ -4798,6 +4798,10 @@ function Map() {
     ) {
       // set and remove map marker
 
+
+      console.log('PARCEL DETAIL IS OPEN', )
+      console.log('CURRENT SELECTED PARCEL 1',stateApp.selectedParcel)
+
       let coordinates = stateApp.selectedParcel.shapeCenter;
       if (typeof stateApp.selectedParcel.shapeCenter === "string") {
 	coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter);
@@ -4805,20 +4809,22 @@ function Map() {
       const longitude = coordinates[0];
       const latitude = coordinates[1];
 
-      const mapBounds = map.getBounds();
-      const screenLeftLng = mapBounds._sw.lng;
-      const screenRightLng = mapBounds._ne.lng;
-      const alpha = (screenRightLng - screenLeftLng) / 2;
+      console.log('CURRENT SELECTED PARCEL',stateApp.selectedParcel)
 
-      const bbox = [
-        [longitude - 1.5 * alpha, latitude],
-        [longitude + 0.5 * alpha, latitude],
-      ];
+  //     const mapBounds = map.getBounds();
+  //     const screenLeftLng = mapBounds._sw.lng;
+  //     const screenRightLng = mapBounds._ne.lng;
+  //     const alpha = (screenRightLng - screenLeftLng) / 2;
 
-      map.fitBounds(bbox, {
-	speed: 0.75,
-	linear: true,
-      });
+  //     const bbox = [
+  //       [longitude - 1.5 * alpha, latitude],
+  //       [longitude + 0.5 * alpha, latitude],
+  //     ];
+
+  //     map.fitBounds(bbox, {
+	// speed: 0.75,
+	// linear: true,
+  //     });
 
       setStateApp({
 	...stateApp,
