@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
+import { get } from 'lodash';
 import gql from "graphql-tag";
 import moment from "moment";
 import Card from "@material-ui/core/Card";
@@ -173,7 +174,7 @@ export default function Documents(props) {
     if (props.isTransactPage) return ["Deal", 99];
     else return ["Contact", 2];
   }, [props.isTransactPage]);
-  console.log(relatedObjectType, 'relatedObjectType')
+
   const [getRecentFiles, { data: files }] = useLazyQuery(
     GETRECENTCONTACTFILES,
     {
@@ -244,6 +245,10 @@ export default function Documents(props) {
       a.click();
     }
   }, [viewFileResult]);
+
+  useEffect(() => {
+    setStateApp((state) => ({ ...state, filesDescriptors: files?.getFileDescriptors }))
+  }, [files]);
 
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
@@ -370,7 +375,7 @@ export default function Documents(props) {
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
         {props.isTransactPage && (
           <Grid item xs={12} style={{ minHeight: "35px" }}>
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents ({recentFiles.length})</h4>
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents ({get(files, 'getFileDescriptors.length', 0)})</h4>
             <h4
               className={classes.viewAll}
               onClick={() => {

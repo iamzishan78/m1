@@ -52,13 +52,23 @@ export default function Drawer() {
 
   const drawerIcons = {
     // Comments: (props) => <MessageIcon {...props} />,
-    Documents: (props) => <DescriptionIcon {...props} />,
+    Documents: (props) => (
+      <Badge
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        color="primary"
+        badgeContent={stateApp?.filesDescriptors?.length}
+      >
+        <DescriptionIcon {...props} />
+      </Badge>
+    ),
     // "Lane Progress": (props) => <CheckmarkIcon {...props} />,
     // History: (props) => <ShareIcon {...props} />,
     // Groups: (props) => <FolderIcon {...props} />,
     Contacts: (props) => (
       <Badge
-        // overlap="circle"
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
