@@ -207,7 +207,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					display: "flex",
 					flexDirection: "row",
 					width: "50px",
-					maxWidth: "500px",
+					maxWidth: "425px",
 					left: stateMapControls.panelExpanded
 						? "0px"
 						: type === "marketplace"
@@ -220,7 +220,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 				<StyledMenu
 					id="checklist-menu"
 					// anchorEl={stateMapControls.anchorEl}
-					style={!stateMapControls.panelExpanded ? { display: 'none' } : { minWidth: '500px' }}
+					style={!stateMapControls.panelExpanded ? { display: 'none' } : { minWidth: '425px' }}
 					keepMounted
 					open={Boolean(stateMapControls.selectedControl)}
 				>
