@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { MapControlsContext } from "./MapControlsContext";
 import { AppContext } from "../../AppContext";
 import SpeedDial from "@material-ui/lab/SpeedDial";
@@ -22,6 +22,7 @@ import AspectRatioOutlinedIcon from "@material-ui/icons/AspectRatioOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../actions";
 import SidePanel from "../Shared/SidePanel/SidePanel";
+import { isNullishCoalesce } from "typescript";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -110,72 +111,135 @@ export default function MapControls(props) {
     setStateMapControls({ ...stateMapControls, openSpeedDial: true });
   };
 
-  const handleFabClick = (e, action) => {
-    let anchorEl = e.currentTarget;
+  const handleCloseLeftSidePanel = () => {
 
-    if (action === "track") {
-      anchorEl = null;
-      setStateMapControls({
-        ...stateMapControls,
-        selectedControl: "layer",
-        expandedPanel: false,
-        anchorEl: anchorEl,
-      });
-      if (mapGridCardActiveTap === 1 && mapGridCardActivated) {
-        dispatch(toggleMapGridCardAtived());
-      } else {
-        dispatch(
-          setMapGridCardState({
-            mapGridCardActivated: true,
-            mapGridCardActiveTap: 1,
-          })
-        );
-      }
-    }
+                // close layer manager  
+                setStateMapControls({
+                  ...stateMapControls,
+                  expandedPanel: false,
+                  anchorEl: null,
+                });  
+              
+  };
 
-    if (action !== "track" && action !== "threed" && action !== "zoomout" && action !== 'draw') {
-      setStateMapControls({
-        ...stateMapControls,
-        selectedControl: action,
-        expandedPanel:
-          action === stateMapControls.selectedControl &&
-            stateMapControls.expandedPanel
-            ? false
-            : true,
-        anchorEl: anchorEl,
-      });
-    }
-
-    // 
+  const handleCloseShapeDrawer = () => {
     
-    if (action === "draw") {
+                // close shape drawer 
+                setStateApp((state) => ({
+                  ...state,
+                  editDraw: false,
+                  currentFeature: undefined,
+                  isAbstractedLayersPolygon: false,
+                  multiSelectLandGrids: false,
+                  selectedAbstracts: [],
+                  showShapeActionsPopup: false,
+                  showDrawShapesPopup: false,
+                }));
+  
+};
 
-      setStateMapControls({
-        ...stateMapControls,
-        selectedMapControl: action,
-        selectedControl: 'layer',
-      });
 
-      if(!stateApp.editDraw){
-        setStateApp((state) => ({
-          ...state,
-          showDrawShapesPopup: !state.showDrawShapesPopup,
-          editDraw: true,
-        }));
+const handleCloseDetailedCards = () => {
+    
+                // close detailed cards 
+                setStateApp((state) => ({
+                  ...state,
+                  popupOpen: false,
+                  selectedWell: null,
+                  selectedParcel: null,
+                  expandedCard: false,
+                  activateWellDetailsFromTable: false,
+                }));
+
+              // close doc viewer 
+              setStateApp((state) => ({
+                ...state,
+                viewDoc: null
+              }));
+
+};
+
+
+  const handleFabClick = (e, action) => {
+
+    console.log('FAB CLICK ACTION E', e)
+    console.log('FAB CLICK ACTION A', action)
+    console.log('FAB CLICK ACTION EP', stateMapControls.expandedPanel)
+
+    if(stateApp.expandedCard===true){
+      handleCloseLeftSidePanel()
+      handleCloseShapeDrawer()
+    }
+
+
+    if(e && action){
+        let anchorEl = e.currentTarget;
+
+        if (action === "track") {
+          anchorEl = null;
+          handleCloseLeftSidePanel()
+          handleCloseShapeDrawer()
+          handleCloseDetailedCards()
+
+          if (mapGridCardActiveTap === 1 && mapGridCardActivated) {
+            dispatch(toggleMapGridCardAtived());
+          } else {
+            dispatch(
+              setMapGridCardState({
+                mapGridCardActivated: true,
+                mapGridCardActiveTap: 1,
+              })
+            );
+          }
         }
 
-      if(stateApp.editDraw){
-        setStateApp((state) => ({
-          ...state,
-          editDraw: false,
-          currentFeature: undefined,
-          isAbstractedLayersPolygon: false,
-          multiSelectLandGrids: false,
-          selectedAbstracts: [],
-          showShapeActionsPopup: false,
-          showDrawShapesPopup: false,
-        }));
+
+        if (action === "base" || action === "heatMaps" || action === "layer" ) {
+
+          setStateMapControls({
+            ...stateMapControls,
+            selectedControl: action,
+            expandedPanel:
+              action === stateMapControls.selectedControl &&
+                stateMapControls.expandedPanel
+                ? false
+                : true,
+            anchorEl: anchorEl,
+          });
+          handleCloseDetailedCards()
         }
+
+
+
+        if (action === "draw") {
+          setStateMapControls({
+            ...stateMapControls,
+            selectedMapControl: action,
+            // selectedControl: 'layer',
+          });
+
+          if(!stateApp.editDraw){
+            setStateApp((state) => ({
+              ...state,
+              showDrawShapesPopup: !state.showDrawShapesPopup,
+              editDraw: true,
+            }));
+            }
+
+          if(stateApp.editDraw){
+            setStateApp((state) => ({
+              ...state,
+              editDraw: false,
+              currentFeature: undefined,
+              isAbstractedLayersPolygon: false,
+              multiSelectLandGrids: false,
+              selectedAbstracts: [],
+              showShapeActionsPopup: false,
+              showDrawShapesPopup: false,
+            }));
+            }
+          }
+
 
     }
 
@@ -265,6 +329,14 @@ export default function MapControls(props) {
       return <AddALayer />;
     }
   };
+
+  useEffect(() => {
+
+    if(stateApp.expandedCard){
+      console.log('FAB CLICK',stateApp.expandedCard)
+    handleFabClick()
+    }
+  }, [stateApp.expandedCard]);
 
   return (
     <div>
