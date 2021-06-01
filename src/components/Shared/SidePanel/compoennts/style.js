@@ -45,7 +45,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     list: {
         padding: 0,
-        minWidth: "500px",
+        minWidth: "425px",
         overflowY: "auto",
         height: 'calc(100vh - 306px - 64px)',
         maxHeight: 'calc(100vh - 40px - 64px)',
@@ -66,7 +66,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     heatmapList: {
         padding: 0,
-        minWidth: "500px",
+        minWidth: "425px",
         overflowY: "auto",
         height: 'calc(100vh - 40px - 64px)',
         maxHeight: 'calc(100vh - 40px - 64px)',
