@@ -1139,12 +1139,13 @@ function SubTable(props) {
                           id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                           size={props.dense ? "small" : "medium"}
                           onClick={(e) => {
+                            const unsortedIndex = rows.findIndex(row => row.id === tableMeta.rowData[0])
                             openMenu(
                               e,
                               tableMeta.rowIndex,
-                              typeof rows[tableMeta.rowIndex] !== "undefined"
-                                ? rows[tableMeta.rowIndex]
-                                : props.rows[tableMeta.rowIndex]
+                              typeof rows[unsortedIndex] !== "undefined"
+                                ? rows[unsortedIndex]
+                                : props.rows[unsortedIndex]
                             );
                           }}
                         >
