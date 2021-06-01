@@ -457,23 +457,34 @@ export default function ContactDetailCard(props) {
 
       <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
 
-        {checkModuleHistory() && 
+        {checkModuleHistory() &&
          <Link style={{ marginLeft: '5px',
                           fontSize: '16px', 
                           cursor: 'pointer',
                           }}  
                           color="inherit"
                           onClick={()=> 
-                          { history.push('/');
-                              setStateNav((stateApp) => ({
-                                ...stateApp,
-                                contactFromMap: false,
-                              }));
+                          { 
+                            setStateApp((stateApp) => ({
+                              ...stateApp,
+                              // parcelDetailCardOpen: false,
+                            }));
+
+                            history.push('/');
+
+                            setStateNav((stateApp) => ({
+                              ...stateApp,
+                              contactFromMap: false,
+                            }));
+
                           }}>
           Map
         </Link>       
         }
         
+        { console.log('CURRENT MAP BREADCRUMB') }
+
+
         <Link style={{ marginLeft: '5px', 
                           fontSize: '16px', 
                           cursor: 'pointer',
