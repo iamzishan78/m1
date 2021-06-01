@@ -330,7 +330,7 @@ export default function SidePanel() {
 				});
 			});
 		}
-	}, [panelType, stateApp.layers,stateMapControls.expandedPanel]);
+	}, [panelType, stateApp.layers,]);
 
 	//   for HeatMap Panel
 	useEffect(() => {
