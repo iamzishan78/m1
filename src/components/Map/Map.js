@@ -1097,12 +1097,44 @@ function Map() {
           }));
               }
               if (feature.source === "interests_source") {
+
+                console.log('CURRENT INTEREST SOURCE')
                 setStateApp((state) => ({
                   ...state,
                   showShapeActionsPopup: true,
                   selectedUserDefinedLayer: feature,
                   selectedParcel: null,
                 }));
+                setStateMapControls((state) => ({
+                  ...state,
+                  // showShapeActionsPopup: true,
+                  selectedMapControl: 'draw',
+                  // selectedUserDefinedLayer: feature,
+                  // selectedParcel: null,
+                }));
+
+                if(!stateApp.editDraw){
+                  setStateApp((state) => ({
+                    ...state,
+                    showDrawShapesPopup: !state.showDrawShapesPopup,
+                    editDraw: true,
+                  }));
+                  }
+      
+                if(stateApp.editDraw){
+                  setStateApp((state) => ({
+                    ...state,
+                    editDraw: false,
+                    currentFeature: undefined,
+                    isAbstractedLayersPolygon: false,
+                    multiSelectLandGrids: false,
+                    selectedAbstracts: [],
+                    showShapeActionsPopup: false,
+                    showDrawShapesPopup: false,
+                  }));
+                  }
+
+
               }
 
               createUDPopUp(feature.properties);

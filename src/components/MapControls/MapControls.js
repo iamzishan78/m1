@@ -124,17 +124,49 @@ export default function MapControls(props) {
 
   const handleCloseShapeDrawer = () => {
     
-                // close shape drawer 
-                setStateApp((state) => ({
-                  ...state,
-                  editDraw: false,
-                  currentFeature: undefined,
-                  isAbstractedLayersPolygon: false,
-                  multiSelectLandGrids: false,
-                  selectedAbstracts: [],
-                  showShapeActionsPopup: false,
-                  showDrawShapesPopup: false,
-                }));
+    // const { draw, map, currentFeature } = stateApp;
+    // draw.delete(currentFeature?.id);
+    // setStateApp((state) => ({
+    //   ...state,
+    //   editDraw: false,
+    //   currentFeature: undefined,
+    //   isAbstractedLayersPolygon: false,
+    //   multiSelectLandGrids: false,
+    //   selectedAbstracts: [],
+    //   showShapeActionsPopup: false,
+    //   showDrawShapesPopup: false,
+    // }));
+
+    const { draw, map, currentFeature } = stateApp;
+    draw.delete(currentFeature?.id);
+    setStateApp((state) => ({
+      ...state,
+      editDraw: false,
+      currentFeature: undefined,
+      isAbstractedLayersPolygon: false,
+      multiSelectLandGrids: false,
+      selectedAbstracts: [],
+      showShapeActionsPopup: false,
+      showDrawShapesPopup: false,
+    }));
+
+    // unselecting the grids
+    const featuresList = map.getSource("abstract_geo_source")._data.features;
+    for (let i = 0; i < featuresList.length; i++) {
+      const id = featuresList[i].properties.Id;
+      map.setFeatureState({ source: "abstract_geo_source", id: id }, { click: false });
+    }
+
+    // Removing layer of AOI Label
+    if (stateApp.map.getLayer("aoi_label_layer")) {
+      stateApp.map.removeLayer("aoi_label_layer");
+    }
+    setStateApp((state) => ({
+      ...state,
+      selectedAoi: null,
+      featureOrMapShape: null, 
+    }));
+
   
 };
 
