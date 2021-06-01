@@ -112,7 +112,6 @@ export default function MapControls(props) {
 
   const handleFabClick = (e, action) => {
     let anchorEl = e.currentTarget;
-
     if (action === "track") {
       anchorEl = null;
       setStateMapControls({
@@ -147,24 +146,25 @@ export default function MapControls(props) {
     }
 
     // 
-    
+
     if (action === "draw") {
 
       setStateMapControls({
         ...stateMapControls,
         selectedMapControl: action,
         selectedControl: 'layer',
+        expandedPanel: false
       });
 
-      if(!stateApp.editDraw){
+      if (!stateApp.editDraw) {
         setStateApp((state) => ({
           ...state,
           showDrawShapesPopup: !state.showDrawShapesPopup,
           editDraw: true,
         }));
-        }
+      }
 
-      if(stateApp.editDraw){
+      if (stateApp.editDraw) {
         setStateApp((state) => ({
           ...state,
           editDraw: false,
@@ -175,11 +175,9 @@ export default function MapControls(props) {
           showShapeActionsPopup: false,
           showDrawShapesPopup: false,
         }));
-        }
+      }
 
     }
-
-
 
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -239,7 +237,7 @@ export default function MapControls(props) {
     return actions.map((action) => (
       <SpeedDialAction
         classes={{
-          fab: action.action === 'layer' && stateMapControls.expandedPanel ? classes.fabActivated : classes.fab,
+          fab: action.action === stateMapControls.selectedControl && stateMapControls.expandedPanel ? classes.fabActivated : classes.fab,
         }}
         id={action.name}
         key={action.name}
@@ -286,7 +284,7 @@ export default function MapControls(props) {
       >
         {createSpeedDialActions()}
       </SpeedDial>
-      <SidePanel/>
+      <SidePanel />
       {stateMapControls.selectedMapControl === 'draw' ? <DrawShapes /> : null}
       {stateMapControls.selectedControl === 'add' ? <AddUserData /> : null}
       {stateMapControls.selectedControl === 'addGroup' ? <AddUserGroupData /> : null}
