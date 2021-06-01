@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
   },
   fabActivated: {
     backgroundColor: "rgba(1, 17, 51, 0.97)",
-    color: "#fff",
+    color: "rgba(23, 170, 221, 1)",
     "&:hover": {
       color: "#fff",
       background: "rgba(1, 17, 51, 1.0)",

@@ -21,7 +21,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 // import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import ViewDocuments from "../../ViewDocuments/ViewDocuments";
 import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "../../Shared/DeleteDocumentConfirmation";
 import { ADDFILE } from "../../../graphQL/useMutationAddFile";
