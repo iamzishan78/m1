@@ -124,7 +124,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	const togglePullout = () => {
 		setStateMapControls((stateMapControls) => ({
 			...stateMapControls,
-			panelExpanded: !stateMapControls.panelExpanded,
+			expandedPanel: !stateMapControls.expandedPanel,
 		}));
 	};
 
@@ -208,7 +208,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					flexDirection: "row",
 					width: "50px",
 					maxWidth: "425px",
-					left: stateMapControls.panelExpanded
+					left: stateMapControls.expandedPanel
 						? "0px"
 						: type === "marketplace"
 							? "-567px"
@@ -220,7 +220,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 				<StyledMenu
 					id="checklist-menu"
 					// anchorEl={stateMapControls.anchorEl}
-					style={!stateMapControls.panelExpanded ? { display: 'none' } : { minWidth: '425px' }}
+					style={!stateMapControls.expandedPanel ? { display: 'none' } : { minWidth: '425px' }}
 					keepMounted
 					open={Boolean(stateMapControls.selectedControl)}
 				>
@@ -274,7 +274,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 
 					onClick={togglePullout}
 				>
-					{stateMapControls.panelExpanded ? (
+					{stateMapControls.expandedPanel ? (
 						<ArrowBackIosIcon />
 					) : (
 						<ArrowForwardIosIcon />

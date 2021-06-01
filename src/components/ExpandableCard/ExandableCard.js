@@ -13,7 +13,6 @@ import Dialog from "@material-ui/core/Dialog";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import $ from "jquery";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "./ExpandableCardContext";
 import ReportBugModal from "./components/ReportBugModal";
 import { TRACKBYOBJECTID } from "../../graphQL/useQueryTrackByObjectId";
@@ -26,8 +25,19 @@ import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubCo
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import ContactSearch from "./components/ContactSearch";
 
+// contexts 
+import { AppContext } from "../../AppContext";
+import { MapControlsContext } from "../MapControls/MapControlsContext";
+
+
+
 function ExpandableCard(props) {
+
+  // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stataMapControls, setStateMapControls] = useContext(MapControlsContext);
+
+
   const [stateExpandableCard, setStateExpandableCard] = useContext(
     ExpandableCardContext
   );
@@ -206,11 +216,20 @@ function ExpandableCard(props) {
         wellDetailCardOpen: true,
         popupOpen: false,
       }));
+      setStateMapControls((state) => ({
+        ...state,
+        expandedPanel: false,
+      }));
+
     } else if (props.targetLabel == "parcel" || props.targetLabel == "expandedParcel") {
       setStateApp((state) => ({
         ...state,
         parcelDetailCardOpen: true,
         popupOpen: false,
+      }));
+      setStateMapControls((state) => ({
+        ...state,
+        expandedPanel: false,
       }));
     }
 

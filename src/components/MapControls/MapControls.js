@@ -131,9 +131,9 @@ export default function MapControls(props) {
       setStateMapControls({
         ...stateMapControls,
         selectedControl: action,
-        panelExpanded:
+        expandedPanel:
           action === stateMapControls.selectedControl &&
-            stateMapControls.panelExpanded
+            stateMapControls.expandedPanel
             ? false
             : true,
         anchorEl: anchorEl,
@@ -231,7 +231,7 @@ export default function MapControls(props) {
     return actions.map((action) => (
       <SpeedDialAction
         classes={{
-          fab: action.action === 'layer' && stateMapControls.panelExpanded ? classes.fabActivated : classes.fab,
+          fab: action.action === 'layer' && stateMapControls.expandedPanel ? classes.fabActivated : classes.fab,
         }}
         id={action.name}
         key={action.name}
