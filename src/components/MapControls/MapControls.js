@@ -115,6 +115,12 @@ export default function MapControls(props) {
 
     if (action === "track") {
       anchorEl = null;
+      setStateMapControls({
+        ...stateMapControls,
+        selectedControl: "layer",
+        expandedPanel: false,
+        anchorEl: anchorEl,
+      });
       if (mapGridCardActiveTap === 1 && mapGridCardActivated) {
         dispatch(toggleMapGridCardAtived());
       } else {
@@ -127,20 +133,28 @@ export default function MapControls(props) {
       }
     }
 
-    if (action !== "track" && action !== "threed" && action !== "zoomout") {
+    if (action !== "track" && action !== "threed" && action !== "zoomout" && action !== 'draw') {
       setStateMapControls({
         ...stateMapControls,
         selectedControl: action,
-        panelExpanded:
+        expandedPanel:
           action === stateMapControls.selectedControl &&
-            stateMapControls.panelExpanded
+            stateMapControls.expandedPanel
             ? false
             : true,
         anchorEl: anchorEl,
       });
     }
 
+    // 
+    
     if (action === "draw") {
+
+      setStateMapControls({
+        ...stateMapControls,
+        selectedMapControl: action,
+        selectedControl: 'layer',
+      });
 
       if(!stateApp.editDraw){
         setStateApp((state) => ({
@@ -225,7 +239,7 @@ export default function MapControls(props) {
     return actions.map((action) => (
       <SpeedDialAction
         classes={{
-          fab: action.action === 'layer' && stateMapControls.panelExpanded ? classes.fabActivated : classes.fab,
+          fab: action.action === 'layer' && stateMapControls.expandedPanel ? classes.fabActivated : classes.fab,
         }}
         id={action.name}
         key={action.name}
@@ -238,30 +252,6 @@ export default function MapControls(props) {
     ));
   };
 
-  const openSelectedControl = () => {
-    const { selectedControl } = stateMapControls;
-    switch (selectedControl) {
-      case "base":
-      case "layer":
-      case "marketplace":
-      case "heatMaps":
-        if (
-          selectedControl === "layer" &&
-          (stateApp.selectedAbstracts.length > 0 ||
-            stateApp.selectedUserDefinedLayer)
-        )
-          return <DrawShapes />;
-        return <SidePanel />;
-      case "add":
-        return <AddUserData />;
-      case "addGroup":
-        return <AddUserGroupData />;
-      case "draw":
-        return <DrawShapes />;
-      default:
-        return <SidePanel />;
-    }
-  };
 
   const openColorPickerControl = (selectedLayer) => {
     if (selectedLayer) {
@@ -296,7 +286,10 @@ export default function MapControls(props) {
       >
         {createSpeedDialActions()}
       </SpeedDial>
-      {stateMapControls.selectedControl ? openSelectedControl() : null}
+      <SidePanel/>
+      {stateMapControls.selectedMapControl === 'draw' ? <DrawShapes /> : null}
+      {stateMapControls.selectedControl === 'add' ? <AddUserData /> : null}
+      {stateMapControls.selectedControl === 'addGroup' ? <AddUserGroupData /> : null}
       {stateMapControls.selectedLayer
         ? openColorPickerControl(stateMapControls.selectedLayer)
         : null}

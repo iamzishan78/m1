@@ -45,11 +45,37 @@ export const useStyles = makeStyles((theme) => ({
     },
     list: {
         padding: 0,
-        minWidth: "500px",
+        minWidth: "425px",
         overflowY: "auto",
+        height: 'calc(100vh - 306px - 64px)',
+        maxHeight: 'calc(100vh - 40px - 64px)',
         backgroundColor: "#263451",
         "&::-webkit-scrollbar": {
-            width: "0.5em",
+            width: "1em",
+        },
+        "&:hover::-webkit-scrollbar": {
+            width: "1.0em",
+        },
+        "&::-webkit-scrollbar-track": {
+            "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+        },
+        "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#506187",
+            borderRadius: 5,
+        },
+    },
+    heatmapList: {
+        padding: 0,
+        minWidth: "425px",
+        overflowY: "auto",
+        height: 'calc(100vh - 40px - 64px)',
+        maxHeight: 'calc(100vh - 40px - 64px)',
+        backgroundColor: "#263451",
+        "&::-webkit-scrollbar": {
+            width: "1em",
+        },
+        "&:hover::-webkit-scrollbar": {
+            width: "1.0em",
         },
         "&::-webkit-scrollbar-track": {
             "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
@@ -97,11 +123,16 @@ export const useStyles = makeStyles((theme) => ({
     fileTree: {
         backgroundColor: "#263451",
         overflow: "auto",
-        maxHeight: 845,
+        height: 'calc(100vh - 40px - 64px)',
+        maxheight: 'calc(100vh - 40px - 64px)',
         paddingTop: 10,
         paddingBottom: 10,
+
         "&::-webkit-scrollbar": {
-            width: "0.5em",
+            width: "0.75em",
+        },
+        "&:hover::-webkit-scrollbar": {
+            width: "1.0em",
         },
         "&::-webkit-scrollbar-track": {
             "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
