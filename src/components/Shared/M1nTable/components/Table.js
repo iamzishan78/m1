@@ -2035,7 +2035,7 @@ function SubTable(props) {
                   return (
                     <div
                       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
-                      className={props.parent === "assocTaxRollInterests" && (!tableMeta.rowData[14] || tableMeta.rowData[19]) ? [classes.blue] : []}
+                      className={`${props.parent === "assocTaxRollInterests" && (!tableMeta.rowData[14] || tableMeta.rowData[19]) ? [classes.blue] : []} ${props.parent === "ownersPerParcel" && (!tableMeta.rowData[14] || tableMeta.rowData[15]) ? [classes.blue] : []}` }
                     >
 
                       {props.targetLabel === "contact" &&
@@ -2343,6 +2343,7 @@ function SubTable(props) {
                     className={classes.multiSelectionTopBarButtons}
                     disabled={props.addAble.type === 'suggestedOwnerToParcel' && m1nSelectedRowsIndexes.length === 0}
                     onClick={()=>{
+                      props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow)
                     }}
                   >
                     + ADD TO PARCEL

@@ -393,9 +393,10 @@ const Header = () => (
                 <div className={classes.subContent}>
                   <SuggestedTaxOwnersTable
                     customLayer={parcelObj}
-                    parent="ownersPerParcel"
+                    parent="suggestedOwnersPerParcel"
                     targetLabel="well"
                     header={<Header />}
+                    setSelectedTab={setSelectedTab}
                     dense
                   />
                 </div>

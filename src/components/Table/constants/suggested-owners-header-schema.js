@@ -61,6 +61,19 @@ const SuggestedOwnersHeadCells = [
     name: "nra",
     label: "NRA",
   },
+  {
+    name: "isContact",
+    label: " ",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 ];
 
 
