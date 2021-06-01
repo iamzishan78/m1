@@ -49,7 +49,10 @@ export const useStyles = makeStyles((theme) => ({
         overflowY: "auto",
         backgroundColor: "#263451",
         "&::-webkit-scrollbar": {
-            width: "0.5em",
+            width: "1em",
+        },
+        "&:hover::-webkit-scrollbar": {
+            width: "1.0em",
         },
         "&::-webkit-scrollbar-track": {
             "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
@@ -101,7 +104,10 @@ export const useStyles = makeStyles((theme) => ({
         paddingTop: 10,
         paddingBottom: 10,
         "&::-webkit-scrollbar": {
-            width: "0.5em",
+            width: "0.75em",
+        },
+        "&:hover::-webkit-scrollbar": {
+            width: "1.0em",
         },
         "&::-webkit-scrollbar-track": {
             "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
