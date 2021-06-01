@@ -21,7 +21,7 @@ export default function InviteUserDialog(props) {
   const [displayName, setName] = useState("");
   const [emails, setEmailAddress] = useState("");
   const [userType, setUserType] = useState("Member");
-  const [role, setUserRole] = useState("Member");
+  const [role, setUserRole] = useState("USER");
   const [adminAccess, setAdminAccess] = useState(false);
   const [lastLogin, setLastLogin] = useState();
   const [addUser] = useMutation(ADDUSER, { 
@@ -49,7 +49,7 @@ export default function InviteUserDialog(props) {
     if (stateApp.activeUser) {
       setName(stateApp.activeUser.displayName);
       setEmailAddress(stateApp.activeUser.emails);
-      setUserRole(stateApp.activeUser.role);
+      setUserRole(stateApp.activeUser.role?.toUpperCase());
       setLastLogin(stateApp.activeUser.lastLogin);
     }
   }, [stateApp.activeUser]);
@@ -110,7 +110,7 @@ export default function InviteUserDialog(props) {
   const handleClose = () => {
     setName("");
     setEmailAddress("");
-    setUserRole("Member");
+    setUserRole("USER");
     setLastLogin(null);
 
     setStateApp((state) => {
@@ -174,9 +174,9 @@ export default function InviteUserDialog(props) {
                 value={role}
                 onChange={e=> setUserRole(e.target.value)}
             >
-                <MenuItem value="Owner">Owner</MenuItem>
-                <MenuItem value="Admin">Admin</MenuItem>
-                <MenuItem value="User">User</MenuItem>
+                <MenuItem value="OWNER">Owner</MenuItem>
+                <MenuItem value="ADMIN">Admin</MenuItem>
+                <MenuItem value="USER">User</MenuItem>
             </Select>
           </Grid>
         </FormControl>
