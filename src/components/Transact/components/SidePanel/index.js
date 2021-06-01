@@ -127,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SidePanel = ({}) => {
+const SidePanel = ({ }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { selectedPipe, pipelines } = useSelector(({ Flow }) => Flow);
@@ -351,18 +351,13 @@ const SidePanel = ({}) => {
           </Tooltip>
         </div>
       </Drawer>
-
-      {/**
-       * Pipeline Popup for New Pipeline or Edit Pipeline
-       */}
-      {/* <PipelinePopup /> */}
       <Dialog className={classes.dialog} open={deleteDialogOpen} onClose={() => setModal(false)} fullWidth={false} maxWidth="sm">
         <DeleteConfirmationDialogContent
           header={selectedPipelines.length > 1 ? `Delete Flowline` : `Delete Flowlines`}
           onClose={() => setModal(false)}
           deleteFunc={handleDelete}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           {selectedPipelines.length > 1
             ? "Are you sure you want to delete the selected flowlines?"

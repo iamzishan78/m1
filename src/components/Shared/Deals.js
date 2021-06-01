@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
 import Button from "@material-ui/core/Button";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
@@ -13,12 +12,10 @@ import TableRow from "@material-ui/core/TableRow";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { AppContext } from "../../AppContext";
-import { TransactContext } from "../Transact/TransactContext";
 import { UPDATETRANSACTION } from "../../graphQL/useMutationUpdateTransaction";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
-import Dialog from "../Transact/components/dialog";
+import Dialog from "../Transact/components/Dialog";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,7 +59,6 @@ export default function Deals({ contact, ...props }) {
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [getTransactionData, { data, loading }] = useLazyQuery(TRANSACTIONDATA);
-  // const [stateTransact, setStateTransact] = useContext(TransactContext);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -122,7 +118,7 @@ export default function Deals({ contact, ...props }) {
     activeDeals.forEach((card) => {
       if (card.offerPrice && !isNaN(card.offerPrice))
         sum += card.offerPrice
-        // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+      // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     });
     return vf_currency(sum);
   };
@@ -132,7 +128,7 @@ export default function Deals({ contact, ...props }) {
     wonDeals.forEach((card) => {
       if (card.offerPrice && !isNaN(card.offerPrice))
         sum += card.offerPrice
-        // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
+      // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     });
     return vf_currency(sum);
   };
@@ -189,7 +185,7 @@ export default function Deals({ contact, ...props }) {
                 variant="contained"
                 color="secondary"
                 onClick={handleOpenDialog}
-                // gutterBottom
+              // gutterBottom
               >
                 Add Deal
               </Button>

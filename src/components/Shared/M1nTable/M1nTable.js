@@ -148,7 +148,7 @@ function M1nTable(props) {
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, { onError: () => { setLoading(false) }, fetchPolicy: "cache-and-network" });
-  const [getDocuments, { data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS);
+  const [getDocuments, { data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS, { fetchPolicy: "no-cache" });
   const [removeUser] = useMutation(REMOVEUSER);
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, { fetchPolicy: "no-cache", });
   const [getContactsFilterOptions, { data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
@@ -212,11 +212,11 @@ function M1nTable(props) {
     if (props.parent && props.parent === 'Documents') {
       getDocuments({
         variables: {
-          search: stateApp.contactSearchQuery
+          search: stateApp.documentSearchQuery ? stateApp.documentSearchQuery : ""
         }
       })
     }
-  }, [getDocuments, props.parent, stateApp.contactSearchQuery])
+  }, [getDocuments, props.parent, stateApp.documentSearchQuery])
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners") {

@@ -24,6 +24,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf, faFilePowerpoint, faFileWord, faFileExcel, faFile } from "@fortawesome/free-solid-svg-icons";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
@@ -940,14 +941,21 @@ export default function DocumentDrawer() {
       {/* <ClickAwayListener onClickAway={() => {handleClose()}}> */}
       <Drawer anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
         {console.log(stateApp.selectedDocument, "selecdow")}
-        <DeleteDocumentConfirmation
-          document={stateApp.selectedDocument}
+        <Dialog
           open={openDeleteConfirmDialog}
-          handleClose={handleDeleteCancel}
-          handleAccept={() => {
-            handleDeleteAccept();
-          }}
-        />
+          onClose={handleDeleteCancel}
+          style={{ zIndex: 99999999999 }}
+        >
+          <DeleteConfirmationDialogContent
+            header="Delete Document"
+            onClose={handleDeleteCancel}
+            deleteFunc={handleDeleteAccept}
+            m1nSelectedRowsIds={[document._id]}
+            setM1nSelectedRowsIndexes={() => {}}
+          >
+            Do you want to delete the selected documents?
+          </DeleteConfirmationDialogContent>
+        </Dialog>
         <Dialog open={loader} style={{ zIndex: 99999999999 }}>
           <DialogTitle id="alert-dialog-title">
             <CircularProgress />

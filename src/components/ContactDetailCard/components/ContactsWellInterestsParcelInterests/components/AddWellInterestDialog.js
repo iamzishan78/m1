@@ -12,7 +12,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
-import { AppContext } from "../../../../../AppContext";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CircularProgress, Dialog, OutlinedInput, InputAdornment, Typography } from "@material-ui/core";
 import RightDialog from "../../RightDialog";
@@ -29,6 +28,10 @@ import { ADDWELLINTEREST } from "../../../../../graphQL/useMutationAddWellIntere
 import { UPDATEWELLINTEREST } from "../../../../../graphQL/useMutationUpdateWellInterest";
 import { REMOVEWELLINTEREST } from "../../../../../graphQL/useMutationRemoveWellInterest";
 import DeleteConfirmationDialogContent from "../../../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+
+// contexts 
+import { WellCardContext } from "../../../../WellCard/WellCardContext";
+import { AppContext } from "../../../../../AppContext";
 
 
 function NumberFormatCustom(props) {
@@ -113,6 +116,9 @@ function AddWellInterestDialog(props) {
   const classes = useStyles();
 
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
+
+
   const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
   const [foundWells, setFoundWells] = useState([]);

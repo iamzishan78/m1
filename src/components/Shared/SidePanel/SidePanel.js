@@ -180,7 +180,7 @@ export default function SidePanel() {
 			const groupHandled = []
 			const layerAndGroups = []
 			stateApp.layers && stateApp.layers.forEach((item) => {
-				if (item.layerSettings && item.layerSettings.showable && item.identifier != "Tracked Owners") {
+				if (item.layerSettings && item.layerSettings.showable && item.identifier !== "Tracked Owners") {
 					if (item.groupId && !groupHandled.includes(item.groupId)) {
 						groupHandled.push(item.groupId);
 						const groups = stateApp.layers.filter((i) => i.groupId === item.groupId && i.layerSettings.showable)
@@ -330,7 +330,7 @@ export default function SidePanel() {
 				});
 			});
 		}
-	}, [panelType, stateApp.layers]);
+	}, [panelType, stateApp.layers,]);
 
 	//   for HeatMap Panel
 	useEffect(() => {

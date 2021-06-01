@@ -1022,101 +1022,124 @@ function Map() {
   }, [dataWellsForOwnerWellTrackLayer]);
 
   useEffect(() => {
+
+    // WELL POINT CLICK FUNCTION 
     const wellPointClick = (feature) => {
       // this function is intended to organize the data 
       // when a well point is clicked 
       // and initiate the mapbox popup
+
+      handleCloseExpandableCard()
+
       setStateApp((state) => ({
-	...state,
-	selectedPermit: null
-      }));
+        ...state,
+        selectedPermit: null,
+        // popupOpen: false,
+        // selectedUserDefinedLayer: null,
+        // selectedParcel: null,
+        // expandedCard: false,
+            }));
+
 
       if (feature && feature.properties) {
 
-	let properties = feature.properties;
+      let properties = feature.properties;
 
-	// tmp fix because it appears that the data coming back 
-	// from contacts api is slightly different than other apis
-	// need to setup in a standard format
+      // tmp fix because it appears that the data coming back 
+      // from contacts api is slightly different than other apis
+      // need to setup in a standard format
 
-	if (properties.id && feature.layer.id === "wellpoints") {
-	  setStateApp((state) => ({
-	    ...state,
-	    popupOpen: false,
-	    selectedUserDefinedLayer: null,
-	    selectedParcel: null,
-	  }));
-	  setStateApp((state) => ({
-	    ...state,
-	    selectedWellId: properties.id.toLowerCase(),
-	    wellSelectedCoordinates: [properties.longitude, properties.latitude],
-	  }));
-	}
-	else if (properties.Id && feature.layer.id === "recent_submitted_permits") {
-	  setStateApp((state) => ({
-	    ...state,
-	    popupOpen: false,
-	    selectedUserDefinedLayer: null,
-	    selectedParcel: null,
-	  }));
-	  setStateApp((state) => ({
-	    ...state,
-	    selectedPermitId: properties.Id.toLowerCase(),
-	    permitSelectedCoordinates: [properties.longitude, properties.latitude],
-	  }));
-	}
+      if (properties.id && feature.layer.id === "wellpoints") {
+
+        setStateApp((state) => ({
+          ...state,
+          popupOpen: false,
+          selectedUserDefinedLayer: null,
+          selectedParcel: null,
+          expandedCard: false,
+
+        }));
+
+        console.log('SELECTED WELL', properties)
+        setStateApp((state) => ({
+          ...state,
+          selectedWellId: properties.id.toLowerCase(),
+          wellSelectedCoordinates: [properties.longitude, properties.latitude],
+        }));
       }
+      else if (properties.Id && feature.layer.id === "recent_submitted_permits") {
+        setStateApp((state) => ({
+          ...state,
+          popupOpen: false,
+          selectedUserDefinedLayer: null,
+          selectedParcel: null,
+          expandedCard: false,
+        }));
+        setStateApp((state) => ({
+          ...state,
+          selectedPermitId: properties.Id.toLowerCase(),
+          permitSelectedCoordinates: [properties.longitude, properties.latitude],
+          expandedCard: false,
+        }));
+      }
+          }
     };
 
     // AOI/Parcel Click Handler
     const udLayerClickHandler = (feature) => {
-      setStateApp((state) => ({
-	...state,
-	expandedCard: false,
-	popupOpen: false,
-      }));
-
-      if (feature.source === "parcels_source") {
-	setStateApp((state) => ({
-	  ...state,
-	  selectedUserDefinedLayer: null,
-	  selectedParcel: feature.properties,
-	}));
-      }
-      if (feature.source === "interests_source") {
-        setStateApp((state) => ({
+              setStateApp((state) => ({
           ...state,
-          showShapeActionsPopup: true,
-          selectedUserDefinedLayer: feature,
-          selectedParcel: null,
-        }));
-      }
+          expandedCard: false,
+          popupOpen: false,
+              }));
 
-      createUDPopUp(feature.properties);
-      map.resize();
+              if (feature.source === "parcels_source") {
+          setStateApp((state) => ({
+            ...state,
+            selectedUserDefinedLayer: null,
+            selectedParcel: feature.properties,
+          }));
+              }
+              if (feature.source === "interests_source") {
+                setStateApp((state) => ({
+                  ...state,
+                  showShapeActionsPopup: true,
+                  selectedUserDefinedLayer: feature,
+                  selectedParcel: null,
+                }));
+              }
+
+              createUDPopUp(feature.properties);
+              map.resize();
     };
+
+
 
     const clusterClickHandler = (feature, map) => {
-      if (feature && feature.properties && feature.properties.cluster_id) {
-	var clusterId = feature.properties.cluster_id;
-	map
-	  .getSource(feature.source)
-	  .getClusterExpansionZoom(clusterId, function (err, zoom) {
-	    if (err) return;
+              if (feature && feature.properties && feature.properties.cluster_id) {
+          var clusterId = feature.properties.cluster_id;
+          map
+            .getSource(feature.source)
+            .getClusterExpansionZoom(clusterId, function (err, zoom) {
+              if (err) return;
 
-	    map.easeTo({
-	      center: feature.geometry.coordinates,
-	      zoom: zoom,
-	    });
-	  });
-      }
+              map.easeTo({
+                center: feature.geometry.coordinates,
+                zoom: zoom,
+              });
+            });
+              }
     };
 
+
+    /// FUNCTION FOR CTRL KEY PRESSED
     const isCtrlKeyPressed = () => {
       if (window.event.ctrlKey) return true;
       if (window.event.metaKey) return true;
       return false;
     };
+
+
 
     const mapClickHandler = (e) => {
       const map = e.target;
@@ -1247,6 +1270,11 @@ function Map() {
 	}
       }
     };
+
+
+
+
+
     if (map) {
       if (mapClick && mapClick.mapClickHandler) {
 	map.off("click", mapClick.mapClickHandler);
@@ -2915,6 +2943,9 @@ function Map() {
 
   const createPopUp = useCallback(
     (currentFeature) => {
+
+      console.log('CURRENT FEATURE', currentFeature)
+
       let coordinates = [currentFeature.longitude, currentFeature.latitude];
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) {
@@ -3109,6 +3140,8 @@ function Map() {
 
   useEffect(() => {
     (async () => {
+
+      console.log('CURRENT FEATURE 4', stateApp.selectedWellId)
       if (
 	map &&
 	  stateApp.selectedWellId &&
@@ -3116,6 +3149,9 @@ function Map() {
 	  stateApp.wellSelectedCoordinates.length > 0 &&
 	  !stateApp.selectedWell
       ) {
+
+        console.log('CURRENT FEATURE 3',stateApp)
+
         let point = map.project(stateApp.wellSelectedCoordinates);
 
         var bbox = [
@@ -3170,6 +3206,7 @@ function Map() {
             });
         }
 
+        console.log('CURRENT FEATURE 2', currentFeature)
         if (currentFeature) {
           setStateApp((state) => ({
             ...state,
@@ -4147,7 +4184,7 @@ function Map() {
 	  speed: 0.5,
 	});
     }
-  }, [map, stateApp.flyTo]); //createPopUp
+  }, [map, stateApp.flyTo]); 
 
   useEffect(() => {
     ////// USE EFFECT TO MANAGE THE FIT BOUNDS TO FEATURE

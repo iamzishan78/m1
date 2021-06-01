@@ -13,7 +13,6 @@ import Dialog from "@material-ui/core/Dialog";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import $ from "jquery";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "./ExpandableCardContext";
 import ReportBugModal from "./components/ReportBugModal";
 import { TRACKBYOBJECTID } from "../../graphQL/useQueryTrackByObjectId";
@@ -26,8 +25,19 @@ import DeleteConfirmationDialogContent from "../Shared/M1nTable/components/SubCo
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import ContactSearch from "./components/ContactSearch";
 
+// contexts 
+import { AppContext } from "../../AppContext";
+import { MapControlsContext } from "../MapControls/MapControlsContext";
+
+
+
 function ExpandableCard(props) {
+
+  // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
+
+
   const [stateExpandableCard, setStateExpandableCard] = useContext(
     ExpandableCardContext
   );
@@ -101,7 +111,6 @@ function ExpandableCard(props) {
       position: position,
       left: cardLeft,
       top: cardTop,
-      // zIndex: 8888,
       webkitTransform: "translateZ(0)",
       transition: "width 0.1s, height 0.1s, left 0.1s, top 0.1s",
       width: width,
@@ -186,8 +195,9 @@ function ExpandableCard(props) {
   }, [props.zIndex]);
 
   const handleExpand = () => {
-    if (parent === "map" && $("#popupContainer").length) {
-    }
+
+    // if (parent === "map" && $("#popupContainer").length) {
+    // }
 
     if (toggleExpand == false) {
       setToggleExpand(true);
@@ -201,20 +211,25 @@ function ExpandableCard(props) {
     }
     setHeight(cardHeightExpanded);
 
+
     if (props.targetLabel == "well" || props.targetLabel == "expandedWell") {
       setStateApp((state) => ({
         ...state,
         wellDetailCardOpen: true,
         popupOpen: false,
       }));
+
+
     } else if (props.targetLabel == "parcel" || props.targetLabel == "expandedParcel") {
       setStateApp((state) => ({
         ...state,
         parcelDetailCardOpen: true,
         popupOpen: false,
       }));
+
     }
 
+    console.log('EXPAND CARD')
     setStateApp((state) => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
   };
@@ -473,10 +488,15 @@ function ExpandableCard(props) {
                 )}
 
 
-              {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact"
-                ? parent !== "table" &&
-                  targetLabel !== "well" && targetLabel !== "expandedWell" &&
-                  targetLabel !== "parcel" && targetLabel !== "expandedParcel"
+              {stateExpandableCard.expanded 
+              
+                && targetLabel !== "activity" 
+                && targetLabel !== "contact"
+                ? parent !== "table" 
+                  && targetLabel !== "well" 
+                  && targetLabel !== "expandedWell" 
+                  && targetLabel !== "parcel" 
+                  && targetLabel !== "expandedParcel"
                   && targetLabel !== "recent_submitted_permits"
                   ? (
                     <Tooltip title={"Shrink"} placement="top">
