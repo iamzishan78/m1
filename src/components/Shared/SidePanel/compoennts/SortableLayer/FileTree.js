@@ -141,7 +141,9 @@ const FileTree = ({ layerMap }) => {
   };
 
   return (
-    <Box width={{ md: 500 }}>
+    <Box 
+      // width={{ md: 1000 }}
+      >
       <Paper>
         <Box
           className={classes.fileTree}
