@@ -288,7 +288,6 @@ export default function DrawShapes() {
       map.on("draw.selectionchange", ({ features }) => {
         const [feature] = features;
         if (feature && !feature.id.includes("edit_polygon")) {
-          console.log("draw shape check feature", feature);
           setStateApp((stateApp) => {
             return {
               ...stateApp,

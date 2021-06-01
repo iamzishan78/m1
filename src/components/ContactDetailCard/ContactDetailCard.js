@@ -766,7 +766,6 @@ export default function ContactDetailCard(props) {
           
         </Grid>
         )}
-        {console.log(stateApp.viewDoc, "StateApp Doc")}
         {/*/////////// rigth column //////////// */}
         <div className={classes.rightColumnGrid} >
           

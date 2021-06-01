@@ -428,7 +428,6 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (stateApp.transactBarView !== "") {
-      console.log("stateApp.transactBarView", stateApp.transactBarView);
       handleValidate();
 
       if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
@@ -439,7 +438,6 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (dealData) {
-      console.log("dealData", dealData);
 
       setStateApp((stateApp) => ({
         ...stateApp,
