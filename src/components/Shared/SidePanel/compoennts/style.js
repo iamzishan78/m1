@@ -28,6 +28,7 @@ export const useStyles = makeStyles((theme) => ({
         height: "80px",
         color: "white",
         width: "20px",
+        marginTop: "38px",
         background: "#011133",
         cursor: "pointer",
         display: "flex",
@@ -39,6 +40,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     subHeaderItem: {
         backgroundColor: "#011133 !important",
+        opacity: "0.94",
         minWidth: "400px",
     },
     list: {

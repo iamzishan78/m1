@@ -94,8 +94,7 @@ const DocumentSearch = () => {
           setTimeout(() => {
             setStateApp((stateApp) => ({
               ...stateApp,
-              contactSearchQuery: e.target.value,
-              isContactSearching: true,
+              documentSearchQuery: e.target.value
             }));
           }, 500);
         }}
@@ -199,8 +198,7 @@ const DocumentSearch = () => {
                       setSearch("");
                       setStateApp((stateApp) => ({
                         ...stateApp,
-                        contactSearchQuery: "",
-                        isContactSearching: true,
+                        documentSearchQuery: "",
                       }));
                     }}
                   >
