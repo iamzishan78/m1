@@ -347,6 +347,9 @@ export default function DrawShapes() {
       ...state,
       selectedAoi: null,
     }));
+
+    toggleSpatialDataCard(false);
+
   };
 
   const handleClose = () => {
