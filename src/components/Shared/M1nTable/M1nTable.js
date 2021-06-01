@@ -1090,8 +1090,8 @@ function M1nTable(props) {
           i++
         ) {
           if (
-            wellOwner.globalOwnerId ===
-            checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+            wellOwner.globalOwnerId === checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner ||
+            wellOwner.id === checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
           ) {
             wellOwner.isContact =
               checkIfOwnersAreContactsData.ifAreContacts[i].isContact;
