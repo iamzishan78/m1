@@ -467,7 +467,7 @@ export default function ContactDetailCard(props) {
                           { 
                             setStateApp((stateApp) => ({
                               ...stateApp,
-                              parcelDetailCardOpen: false,
+                              // parcelDetailCardOpen: false,
                             }));
 
                             history.push('/');

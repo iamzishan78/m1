@@ -4812,20 +4812,20 @@ function Map() {
 
       console.log('CURRENT SELECTED PARCEL',stateApp.selectedParcel)
 
-  //     const mapBounds = map.getBounds();
-  //     const screenLeftLng = mapBounds._sw.lng;
-  //     const screenRightLng = mapBounds._ne.lng;
-  //     const alpha = (screenRightLng - screenLeftLng) / 2;
+      const mapBounds = map.getBounds();
+      const screenLeftLng = mapBounds._sw.lng;
+      const screenRightLng = mapBounds._ne.lng;
+      const alpha = (screenRightLng - screenLeftLng) / 2;
 
-  //     const bbox = [
-  //       [longitude - 1.5 * alpha, latitude],
-  //       [longitude + 0.5 * alpha, latitude],
-  //     ];
+      const bbox = [
+        [longitude - 1.5 * alpha, latitude],
+        [longitude + 0.5 * alpha, latitude],
+      ];
 
-  //     map.fitBounds(bbox, {
-	// speed: 0.75,
-	// linear: true,
-  //     });
+      map.fitBounds(bbox, {
+	speed: 0.75,
+	linear: true,
+      });
 
       setStateApp({
 	...stateApp,
