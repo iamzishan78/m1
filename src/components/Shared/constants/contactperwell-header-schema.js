@@ -13,11 +13,11 @@ const ContactWellHeadCells = [
     },
   },
   { name: "wellName", label: "Well", options: {
-    sort: false,
+    sort: true,
     filter: false,
   } },
   { name: "api", label: "API", options: {
-    sort: false,
+    sort: true,
     filter: false,
   } },
   { name: "leaseId", label: "Lease Id", options: {
@@ -43,11 +43,11 @@ const ContactWellHeadCells = [
     filter: false,
   } },
   { name: "leaseAcres", label: "Lease Acres", options: {
-    sort: false,
+    sort: true,
     filter: false,
   } },
   { name: "interestOwner", label: "Interest Owner", options: {
-    sort: false,
+    sort: true,
     filter: false,
   } },
   { name: "entity", label: "Entity", options: {
@@ -60,19 +60,19 @@ const ContactWellHeadCells = [
     viewColumns: false,
   } },
   { name: "type", label: "Type", options: {
-    sort: false,
+    sort: true,
     filter: false,
   } },
   { name: "amount", label: "Amount", options: {
-    sort: false,
+    sort: true,
     filter: false,
   } },
   { name: "taxValue", label: "Tax Value", options: {
-    sort: false,
+    sort: true,
     filter: false,
   } },
   { name: "nra", label: "NRA", options: {
-    sort: false,
+    sort: true,
     filter: false,
   } },
   { name: "year", label: "Year", options: {
