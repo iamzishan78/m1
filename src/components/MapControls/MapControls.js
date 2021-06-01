@@ -115,6 +115,12 @@ export default function MapControls(props) {
 
     if (action === "track") {
       anchorEl = null;
+      setStateMapControls({
+        ...stateMapControls,
+        selectedControl: "layer",
+        expandedPanel: false,
+        anchorEl: anchorEl,
+      });
       if (mapGridCardActiveTap === 1 && mapGridCardActivated) {
         dispatch(toggleMapGridCardAtived());
       } else {
@@ -140,6 +146,8 @@ export default function MapControls(props) {
       });
     }
 
+    // 
+    
     if (action === "draw") {
 
       setStateMapControls({
