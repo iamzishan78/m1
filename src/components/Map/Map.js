@@ -4762,7 +4762,8 @@ function Map() {
 
     if (
       stateApp.parcelDetailCardOpen &&
-      stateApp.parcelDetailCardOpen === true
+      stateApp.parcelDetailCardOpen === true &&
+      map
     ) {
       // set and remove map marker
 
