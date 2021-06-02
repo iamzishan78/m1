@@ -491,6 +491,7 @@ function SubTable(props) {
   const [isSearchOpen, openSearch] = useState(false);
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   // const [handleSearchClose, setHandleSearchClose] = useState(() => () => {});
+  const [dataWell, setDataWell] = useState();
 
   // deep state 
   const setFirstMount = (newState) => { setStateIfDeepEqual(FirstMount, newState); };
@@ -517,7 +518,13 @@ function SubTable(props) {
   const setRows = (newState) => { setStateIfDeepEqual(Rows, newState); };
 
   // queries 
-  const [getWell, { data: dataWell }] = useLazyQuery(WELLQUERY);
+  const [getWell, { data: getWellRes }] = useLazyQuery(WELLQUERY, { 
+    onCompleted: (dataWell) => { 
+      setDataWell((state, props) => {
+        return { ...dataWell };
+      });
+    }
+  });
   const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
@@ -1688,8 +1695,10 @@ function SubTable(props) {
             {
               column.options = {
                 ...column.options,
+
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
+                  console.log('TAGS PROPS', props);
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]

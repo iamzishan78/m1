@@ -204,6 +204,11 @@ function App() {
             },
           },
         }),
+        defaultOptions: {
+          watchQuery: {
+            fetchPolicy: "cache-and-network",
+          },
+        },
       });
 
       setApolloClient((state, props) => {
@@ -217,6 +222,7 @@ function App() {
           ...state.link.options,
           uri: endpoint,
           cache: state.cache,
+          defaultOptions: state.defaultOptions
         });
       });
     }

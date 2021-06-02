@@ -25,6 +25,7 @@ const localStyles = makeStyles((theme) => ({
     display: "inline",
     flexDirection: "column",
     justifyContent: "center",
+    // overflowY: 'auto',
   },
   height_100: {
     height: "100vh",
@@ -690,8 +691,11 @@ const Login = (props) => {
           ? `${localClass.height_100} ${localClass.myRoot}`
           : localClass.myRoot
       }
+      
     >
-      <div className={localClass.rootNewUser}>{renderBody}</div>
+      <div className={localClass.rootNewUser} 
+      // style={{ overflowY: "scroll !important"}}
+      >{renderBody}</div>
 
       <div className={localClass.rootNewUser}>
         <RenderSignUpControls />
