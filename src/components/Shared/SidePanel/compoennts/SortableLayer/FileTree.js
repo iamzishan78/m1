@@ -24,10 +24,13 @@ const FileTree = ({ layerMap }) => {
   useEffect(() => {
     if (!deepEqual(items, layerMap)) {
       if (items.length === layerMap.length) {
+        const updateFn = {};
         items.forEach((item, index) => {
-          if (item.layerSettings) item.layerSettings = layerMap[index].layerSettings
+          if (item.layerSettings) {
+            updateFn[index] = { layerSettings: { $set: layerMap[index].layerSettings }, showable: { $set: layerMap[index].showable }, layerPaintProps: { $set: layerMap[index].layerPaintProps } }
+          }
         })
-        setItems(items)
+        setItems(update(items, updateFn))
       } else
         setItems(layerMap);
     }
@@ -147,9 +150,9 @@ const FileTree = ({ layerMap }) => {
   };
 
   return (
-    <Box 
-      // width={{ md: 1000 }}
-      >
+    <Box
+    // width={{ md: 1000 }}
+    >
       <Paper>
         <Box
           className={classes.fileTree}

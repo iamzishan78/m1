@@ -287,7 +287,7 @@ export default function AddLayer(props) {
 
     setStateMapControls({
       ...stateMapControls,
-
+      expandedPanel: false,
       selectedControl: featureTypes.length > 0 ? "addGroup" : "add",
       fileUploadedContent: fileContent,
     });
