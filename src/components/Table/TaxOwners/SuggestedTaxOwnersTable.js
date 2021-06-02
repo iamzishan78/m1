@@ -78,7 +78,7 @@ function SuggestedOwnerTable(props) {
     if (tableData?.edges?.length > 0) {
       let owners = tableData.edges.map((el) => el.node);
       const objectsIdsArray = owners.map((owner) => owner.globalOwnerId);
-      props.initializeGenericData(objectsIdsArray, ["ifAreContacts"]);
+      props.initializeGenericData(objectsIdsArray, ['comments', 'tags', 'ifAreContacts']);
     }
   }, [tableData]);
 
@@ -89,9 +89,7 @@ function SuggestedOwnerTable(props) {
         let owner = { ...o };
         owner.isContact = false;
 
-        owner = props.setGenricData(owner, owner.globalOwnerId, [
-          "ifAreContacts",
-        ]);
+        owner = props.setGenricData(owner, owner.globalOwnerId, ['comments', 'tracks', 'tags', 'ifAreContacts']);
 
         return owner;
       });

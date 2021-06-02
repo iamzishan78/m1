@@ -28,47 +28,90 @@ const SuggestedOwnersHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "wellName", label: "Well" },
+  { name: "name", label: "Name" },
   {
-    name: "apiNumber",
-    label: "API",
+    name: "StreetAddress",
+    label: "Street Address",
   },
   {
-    name: "lease",
-    label: "Lease",
+    name: "City",
+    label: "City",
   },
   {
-    name: "leaseAcres",
-    label: "Lease Acres",
+    name: "State",
+    label: "State",
   },
   {
-    name: "name",
-    label: "Interest Owner",
+    name: "Zip",
+    label: "Zip Code",
   },
   {
-    name: "interestType",
-    label: "Interest Type",
+    name: "tags",
+    label: "Tags ",
+    options: {
+      sort: false,
+      download: false,
+      print: false,
+      filterOptions: {
+        names: [],
+        logic(rowVal, pickedTags) {
+          let containIts = true;
+          pickedTags.map((pickedTag) => {
+            if (rowVal[0].indexOf(pickedTag) === -1) {
+              containIts = false;
+            }
+          });
+          return !containIts;
+        },
+      },
+    },
   },
-  {
-    name: "interest",
-    label: "Interest",
-  },
-  {
-    name: "value",
-    label: "Tax Value",
-  },
-  {
-    name: "nra",
-    label: "NRA",
-  },
+
   {
     name: "isContact",
     label: " ",
     options: {
-      display: false,
       filter: false,
       searchable: false,
       sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+
+
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isTracked",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "coordinates",
+    label: " ",
+    options: {
+      filter: false,
+      sort: false,
+      searchable: false,
       download: false,
       print: false,
       viewColumns: false,
