@@ -297,7 +297,7 @@ function Search() {
       ///remove last add
       removeSearchHistory({
         variables: {
-          searchId: searchHistoryList[0]._id,
+          searchId: searchHistoryList[100]._id,
         },
         refetchQueries: ["getSearchHistory"],
         awaitRefetchQueries: true,
