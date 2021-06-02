@@ -475,7 +475,7 @@ function MapGridCard(props) {
                 <MenuItem value={'Viewport'}>Viewport</MenuItem>
               </Select>
             }
-            
+
             <div style={{ flexGrow: 1 }}></div>
 
             <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
@@ -625,6 +625,11 @@ function MapGridCard(props) {
               style={{ position: "absolute", width: "100vw" }}
             >
               <div style={{ position: "relative" }}>
+{/* 
+              showTags={tab.showTags}
+                        showComments={tab.showComments}
+                        showTracks={tab.showTracks} */}
+
                 <TabPanels
                   value={viewportTapValue}
                   panels={selectedBoundary === 'Shape Filter' ? [
