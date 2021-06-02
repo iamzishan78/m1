@@ -445,10 +445,10 @@ function MapGridCard(props) {
                 >
               </Tab>
 
-
-
             </Tabs>
-            {
+
+
+            {/* {
               mapGridCardActiveTap === 2 && stateApp.gridPolygonString && <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
@@ -460,6 +460,22 @@ function MapGridCard(props) {
                 <MenuItem value={'Viewport'}>Viewport</MenuItem>
               </Select>
             }
+            <div style={{ flexGrow: 1 }}></div> */}
+
+            {
+              mapGridCardActiveTap === 2 && 
+               <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                className={classes.selectBoundary}
+                value={selectedBoundary}
+                onChange={(e) => { setSelectedBoundary(e.target.value) }}
+              >
+                <MenuItem value={'Shape Filter'}>Shape Filter</MenuItem>
+                <MenuItem value={'Viewport'}>Viewport</MenuItem>
+              </Select>
+            }
+
             <div style={{ flexGrow: 1 }}></div>
 
             <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
@@ -609,6 +625,11 @@ function MapGridCard(props) {
               style={{ position: "absolute", width: "100vw" }}
             >
               <div style={{ position: "relative" }}>
+{/* 
+              showTags={tab.showTags}
+                        showComments={tab.showComments}
+                        showTracks={tab.showTracks} */}
+
                 <TabPanels
                   value={viewportTapValue}
                   panels={selectedBoundary === 'Shape Filter' ? [

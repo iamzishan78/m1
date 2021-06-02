@@ -3099,6 +3099,11 @@ function M1nTable(props) {
         />
       )}
 
+        { console.log('SHAPE HEADER', header) }
+        { console.log('SHAPE TARGET LABEL', targetLabel) }
+        { console.log('SHAPE PROPS', props) }
+
+
       <Table
         style={{ backgroundColor: "#fff" }}
         header={header}

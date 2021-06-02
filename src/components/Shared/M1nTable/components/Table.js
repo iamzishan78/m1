@@ -119,6 +119,7 @@ import PostAddIcon from '@material-ui/icons/PostAdd';
 import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
+import { isPropertySignature } from "typescript";
 
 
 // suppress debug console logs
@@ -582,12 +583,32 @@ function SubTable(props) {
   };
 
 
-  const handleOwnerFlyTo = (value) => {
-    getOwnerWells({
-      variables: {
-        ownerId: value.objToPopulateSearchLayer.objectId,
-      },
-    });
+  const handleLocationFlyTo = (newValue) => {
+
+    console.log('NEW VALUE', newValue)
+
+    if (newValue && newValue.center) {
+      let minLong, maxLong, minLat, maxLat;
+      if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
+
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        selectedWell: null,
+        selectedWellId: null,
+        wellSelectedCoordinates: null,
+        wellListFromSearch: [
+          {
+            id: newValue.Id,
+            longitude: newValue.center[0],
+            latitude: newValue.center[1],
+          },
+        ],
+        fitBounds: newValue.bbox
+          ? { maxLat, minLat, maxLong, minLong }
+          : null,
+      }));
+      stateApp.toggleLayersActivity("Search", true);
+    }
   };
 
   const handleOperatorFlyTo = (value) => {
@@ -619,9 +640,19 @@ function SubTable(props) {
   };
 
 
+  const handleOwnerFlyTo = (value) => {
+    getOwnerWells({
+      variables: {
+        ownerId: value.objToPopulateSearchLayer.objectId,
+      },
+    });
+  };
+
+
 
   const handleClickFlyToIcon = (entityType, searchTarget) => {
-    console.log('entity type', entityType)
+    console.log('ENTITY TYPE', entityType)
+
     if (entityType == "well") {
       handleWellFlyTo(searchTarget)
     }
@@ -633,6 +664,9 @@ function SubTable(props) {
     }
     if (entityType == "lease") {
       handleLeaseFlyTo(searchTarget)
+    }
+    if (entityType == "location") {
+      handleLocationFlyTo(searchTarget)
     }
   };
 
@@ -1698,7 +1732,7 @@ function SubTable(props) {
 
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
-                  console.log('TAGS PROPS', props);
+                  // console.log('TAGS PROPS', props);
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -2913,6 +2947,8 @@ function SubTable(props) {
             isContactSearching: false,
           }));
         }
+
+
         switch (action) {
           case "changeRowsPerPage":
             props.contactsPageProps.setLoading(true);
@@ -2986,6 +3022,8 @@ function SubTable(props) {
           default:
         }
       }
+
+      console.log('SHAPE PROPS', props)
 
       if (props.header === "Well Interests"
         && props.parent === "owner_WellInterests") {
@@ -3070,9 +3108,13 @@ function SubTable(props) {
           default:
         }
       }
+
+
       if (props.onTableChange) {
         props.onTableChange(action, tableState, props.rows, { pageInd, setPageInd, setRowsPerPage })
       }
+
+
     },
 
     ...props.options
