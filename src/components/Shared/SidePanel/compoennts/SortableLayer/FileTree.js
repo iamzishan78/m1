@@ -10,6 +10,7 @@ import { UPDATELAYERSETTINGS } from "graphQL/useMutationUpdateLayerSettings";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
 import { deepEqual } from "components/Shared/functions";
+import { useStyles } from '../style';
 
 const FileTree = ({ layerMap }) => {
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -18,6 +19,7 @@ const FileTree = ({ layerMap }) => {
   const [items, setItems] = React.useState(layerMap);
   const itemsRef = React.useRef([]);
   const currentItem = React.useRef();
+  const classes = useStyles();
 
   useEffect(() => {
     if (!deepEqual(items, layerMap)) {
@@ -145,16 +147,12 @@ const FileTree = ({ layerMap }) => {
   };
 
   return (
-    <Box width={{ md: 500 }}>
+    <Box 
+      // width={{ md: 1000 }}
+      >
       <Paper>
         <Box
-          style={{
-            backgroundColor: "#263451",
-            overflow: "scroll",
-            maxHeight: 775,
-            paddingTop: 10,
-            paddingBottom: 10,
-          }}
+          className={classes.fileTree}
         >
           <Flipper flipKey={items.map(({ id }) => id).join(".")}>
             <Sortly items={items} maxDepth={1} onChange={handleChange}>

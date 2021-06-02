@@ -1,6 +1,10 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
+
+// contexts 
 import { AppContext } from "../../AppContext";
 import { WellCardContext } from "./WellCardContext";
+
+// styling 
 import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core/styles";
 
@@ -423,18 +427,15 @@ export default function WellCardDetails(props) {
               ,
               <Paper elevation={3} style={{ padding: "10px"}}>
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
+                
+                {console.log('stateApp.selectedWell',stateApp.selectedWell)}
                 <M1nTable
                   parent="OwnersPerWell"
-                  selectedWell={stateApp.selectedWell}
+                  selectedWell={stateApp.selectedWell}  // MIGRATE TO WELL CARD CONTEXT
                 />
                 </div>
               </Paper>,
-            //   <Paper elevation={3} style={{ padding: "10px" }}>
-            //     <M1nTable
-            //       parent="detail-well-card-contact-ties"
-            //       selectedWell={stateApp.selectedWell}
-            //     />
-            // </Paper>,
+
               <CompletionsContainer showSummary={showSummary}/>,
               <SimulationContainer showSummary={showSummary}/>,
               <FormationContainer showSummary={showSummary}/>,

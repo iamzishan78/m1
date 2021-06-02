@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
+import { get } from 'lodash';
 import gql from "graphql-tag";
 import moment from "moment";
 import Card from "@material-ui/core/Card";
@@ -21,7 +22,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 // import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import ViewDocuments from "../../ViewDocuments/ViewDocuments";
 import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "../../Shared/DeleteDocumentConfirmation";
 import { ADDFILE } from "../../../graphQL/useMutationAddFile";
@@ -174,7 +174,7 @@ export default function Documents(props) {
     if (props.isTransactPage) return ["Deal", 99];
     else return ["Contact", 2];
   }, [props.isTransactPage]);
-  console.log(relatedObjectType, 'relatedObjectType')
+
   const [getRecentFiles, { data: files }] = useLazyQuery(
     GETRECENTCONTACTFILES,
     {
@@ -245,6 +245,10 @@ export default function Documents(props) {
       a.click();
     }
   }, [viewFileResult]);
+
+  useEffect(() => {
+    setStateApp((state) => ({ ...state, filesDescriptors: files?.getFileDescriptors }))
+  }, [files]);
 
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
@@ -328,7 +332,7 @@ export default function Documents(props) {
           />
         );
       case "doc":
-        return(
+        return (
           <FontAwesomeIcon
             icon={faFileWord}
             style={{ fontSize: "2rem", color: "#2A5599" }}
@@ -371,10 +375,9 @@ export default function Documents(props) {
       <CardActions style={{ padding: "23px 23px 8px 23px" }}>
         {props.isTransactPage && (
           <Grid item xs={12} style={{ minHeight: "35px" }}>
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents</h4>
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents ({get(files, 'getFileDescriptors.length', 0)})</h4>
             <h4
               className={classes.viewAll}
-
               onClick={() => {
                 setStateApp((stateApp) => ({
                   ...stateApp,
@@ -451,14 +454,13 @@ export default function Documents(props) {
                             className={classes.forImage}
                           ></img>
                         ) : (
-                          <div className={classes.forImageContainer}  onClick={() => {
+                          <div className={classes.forImageContainer} onClick={() => {
                             // if(fileExtension === 'pdf')
                             // {
                             //   setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name, downloadFn:handleViewFile, downloadData: files?.getFileDescriptors[key].fileId}})
                             // }
-                            if(fileExtension === 'pdf')
-                            {
-                                setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name}})
+                            if (fileExtension === 'pdf') {
+                              setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } })
                             }
                             else {
                               handleViewFile(

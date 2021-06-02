@@ -118,26 +118,26 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     margin: "auto",
   },
-  imageBox: {
-    "& :nth-child(1)": {
-      float: "left",
-      display: "grid",
-    },
-    "& :nth-child(2)": {
-      float: "left",
-      display: "grid",
-    },
-    "& :nth-child(3)": {
-      display: "grid",
-    },
-    "& :nth-child(4)": {
-      float: "left",
-      display: "grid",
-    },
-    "& :nth-child(5)": {
-      display: "grid",
-      float: "left",
-    },
+  // imageBox: {
+  //   "& :nth-child(1)": {
+  //     float: "left",
+  //     display: "grid",
+  //   },
+  //   "& :nth-child(2)": {
+  //     float: "left",
+  //     display: "grid",
+  //   },
+  //   "& :nth-child(3)": {
+  //     display: "grid",
+  //   },
+  //   "& :nth-child(4)": {
+  //     float: "left",
+  //     display: "grid",
+  //   },
+  //   "& :nth-child(5)": {
+  //     display: "grid",
+  //     float: "left",
+  //   },
   },
 }));
 

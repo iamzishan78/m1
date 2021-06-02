@@ -28,11 +28,11 @@ import { VIEWFILEQUERY, VIEWFILESQUERY } from "../../graphQL/useQueryViewFile";
 import DocViewer from '../Shared/DocViewer'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faFilePdf,
-  faFilePowerpoint,
-  faFileWord,
-  faFile,
-  faFileExcel,
+	faFilePdf,
+	faFilePowerpoint,
+	faFileWord,
+	faFile,
+	faFileExcel,
 } from "@fortawesome/free-solid-svg-icons";
 
 
@@ -106,11 +106,11 @@ const useStyles = makeStyles((theme) => ({
 		width: "100px",
 		backgroundColor: "#cecece",
 		marginRight: "10px",
-	
+
 		"& svg": {
-		  fill: "#999 !important",
+			fill: "#999 !important",
 		},
-	  },
+	},
 	uploadTitle: {
 		margin: "0",
 		color: "#757575",
@@ -137,7 +137,7 @@ export default function ViewDocuments(props) {
 	const [documentSearch, setDocumentSearch] = useState("");
 	const [allDocuments, setAllDocuments] = useState([]);
 	const [filteredDocuments, setFilteredDocuments] = useState([]);
-	const [stateApp,setStateApp] = React.useContext(AppContext);
+	const [stateApp, setStateApp] = React.useContext(AppContext);
 	const userId = stateApp.user.mongoId;
 
 	const [getAllFiles, { data: files }] = useLazyQuery(GETCONTACTFILES, {
@@ -151,86 +151,86 @@ export default function ViewDocuments(props) {
 
 	const getFileIcon = (fileExtension) => {
 		switch (fileExtension) {
-		  case "pdf":
-			return (
-			  <FontAwesomeIcon
-				icon={faFilePdf}
-				style={{ fontSize: "2rem", color: "#F15642" }}
-			  />
-			);
-		  case "csv":
-			return (
-			  <FontAwesomeIcon
-				icon={faFileExcel}
-				style={{ fontSize: "2rem", color: "#207244" }}
-			  />
-			);
-		  case "xlsx":
-			return (
-			  <FontAwesomeIcon
-				icon={faFileExcel}
-				style={{ fontSize: "2rem", color: "#207244" }}
-			  />
-			);
-		  case "xlsb":
-			return (
-			  <FontAwesomeIcon
-				icon={faFileExcel}
-				style={{ fontSize: "2rem", color: "#207244" }}
-			  />
-			);
-		  case "xlsm":
-			return (
-			  <FontAwesomeIcon
-				icon={faFileExcel}
-				style={{ fontSize: "2rem", color: "#207244" }}
-			  />
-			);
-		  case "xltx":
-			return (
-			  <FontAwesomeIcon
-				icon={faFileExcel}
-				style={{ fontSize: "2rem", color: "#207244" }}
-			  />
-			);
-		  case "doc":
-			return(
-			  <FontAwesomeIcon
-				icon={faFileWord}
-				style={{ fontSize: "2rem", color: "#2A5599" }}
-			  />
-			)
-		  case "docx":
-			return (
-			  <FontAwesomeIcon
-				icon={faFileWord}
-				style={{ fontSize: "2rem", color: "#2A5599" }}
-			  />
-			);
-		  case "ppt":
-			return (
-			  <FontAwesomeIcon
-				icon={faFilePowerpoint}
-				style={{ fontSize: "2rem", color: "#D04424" }}
-			  />
-			);
-		  case "pptx":
-			return (
-			  <FontAwesomeIcon
-				icon={faFilePowerpoint}
-				style={{ fontSize: "2rem", color: "#D04424" }}
-			  />
-			);
-		  default:
-			// return <span>{fileExtension}</span>;
-			return (
-			  <FontAwesomeIcon
-				icon={faFile}
-				style={{ fontSize: "2rem", color: "grey" }}
-			  />
-			);
+			case "pdf":
+				return (
+					<FontAwesomeIcon
+						icon={faFilePdf}
+						style={{ fontSize: "2rem", color: "#F15642" }}
+					/>
+				);
+			case "csv":
+				return (
+					<FontAwesomeIcon
+						icon={faFileExcel}
+						style={{ fontSize: "2rem", color: "#207244" }}
+					/>
+				);
+			case "xlsx":
+				return (
+					<FontAwesomeIcon
+						icon={faFileExcel}
+						style={{ fontSize: "2rem", color: "#207244" }}
+					/>
+				);
+			case "xlsb":
+				return (
+					<FontAwesomeIcon
+						icon={faFileExcel}
+						style={{ fontSize: "2rem", color: "#207244" }}
+					/>
+				);
+			case "xlsm":
+				return (
+					<FontAwesomeIcon
+						icon={faFileExcel}
+						style={{ fontSize: "2rem", color: "#207244" }}
+					/>
+				);
+			case "xltx":
+				return (
+					<FontAwesomeIcon
+						icon={faFileExcel}
+						style={{ fontSize: "2rem", color: "#207244" }}
+					/>
+				);
+			case "doc":
+				return (
+					<FontAwesomeIcon
+						icon={faFileWord}
+						style={{ fontSize: "2rem", color: "#2A5599" }}
+					/>
+				)
+			case "docx":
+				return (
+					<FontAwesomeIcon
+						icon={faFileWord}
+						style={{ fontSize: "2rem", color: "#2A5599" }}
+					/>
+				);
+			case "ppt":
+				return (
+					<FontAwesomeIcon
+						icon={faFilePowerpoint}
+						style={{ fontSize: "2rem", color: "#D04424" }}
+					/>
+				);
+			case "pptx":
+				return (
+					<FontAwesomeIcon
+						icon={faFilePowerpoint}
+						style={{ fontSize: "2rem", color: "#D04424" }}
+					/>
+				);
+			default:
+				// return <span>{fileExtension}</span>;
+				return (
+					<FontAwesomeIcon
+						icon={faFile}
+						style={{ fontSize: "2rem", color: "grey" }}
+					/>
+				);
 		}
-	  };
+	};
 
 	useEffect(() => {
 
@@ -254,13 +254,15 @@ export default function ViewDocuments(props) {
 	useEffect(() => {
 		let ID = [];
 		for (let i = 0; i < files?.getFileDescriptors.length; i++) {
-      // console.log(files?.getFileDescriptors[i].fileId, 'Kumail Test')
+			// console.log(files?.getFileDescriptors[i].fileId, 'Kumail Test')
 			ID.push(files?.getFileDescriptors[i].fileId);
 		}
-
 		viewFiles({
 			variables: { fileIds: ID },
 		});
+		if (files) {
+			setAllDocuments(files?.getFileDescriptors);
+		}
 	}, [files]);
 	const handleViewFile = async (id) => {
 		viewFile({ variables: { fileId: id } });
@@ -278,13 +280,6 @@ export default function ViewDocuments(props) {
 	}, []);
 
 	useEffect(() => {
-		if (files) {
-			setAllDocuments(files?.getFileDescriptors);
-		}
-		console.log("FILES:", files);
-	}, [files]);
-
-	useEffect(() => {
 		// Search logic (Search on change in search field text)
 		let filtered = allDocuments.filter((doc) =>
 			doc.fileName.toLowerCase().includes(documentSearch.toLowerCase())
@@ -296,16 +291,16 @@ export default function ViewDocuments(props) {
 
 	const ExtenstionGetter = (name) => {
 		let fileExtension = name
-		?.slice(name.lastIndexOf(".") + 1)
-		?.toLowerCase();
+			?.slice(name.lastIndexOf(".") + 1)
+			?.toLowerCase();
 
 		return fileExtension
-		}
+	}
 
 
 	return (
 		<div className={classes.viewAllCard}>
-      <DocViewer  divCondition={false} DocStyle={ {top: '56% ', left: '40% ',width:'98vw ' ,  transform: `translate(1%, -101%)`} } ></DocViewer>
+			<DocViewer divCondition={false} DocStyle={{ top: '56% ', left: '40% ', width: '98vw ', transform: `translate(1%, -101%)` }} ></DocViewer>
 
 			<div className={classes.header}>
 				<div className={classes.headerLeft}>
@@ -335,66 +330,62 @@ export default function ViewDocuments(props) {
 						<li className={classes.document} key={doc.fileUrl}>
 							<div className={classes.documentLeft}>
 
-							<div
-								className={`${classes.greySquare} ${
-									doc.fileState !== "active"
-									? classes.disabledDownload
-									: ""
-								}`}
+								<div
+									className={`${classes.greySquare} ${doc.fileState !== "active"
+											? classes.disabledDownload
+											: ""
+										}`}
 
-								onClick={() => {
-									
-								viewFileResultt?.viewFiles.map((value) => {
+									onClick={() => {
 
-									// console.log("=============")
-									// console.log("VALUE", value)
-									// console.log("=============")
+										viewFileResultt?.viewFiles.map((value) => {
 
+											// console.log("=============")
+											// console.log("VALUE", value)
+											// console.log("=============")
 
 
-								if(value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf')
-								{
-									setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:doc.fileName,}})
 
-								}
-								else {
-									handleViewFile(doc.fileId)
-								}
+											if (value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf') {
+												setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: doc.fileName, } })
 
-								})  
-							}}
-							>
-								{new RegExp(
-								["jpg", "jpeg", "png", "bmp"].join("|")
-								).test(ExtenstionGetter(doc.fileName)) ? (
-								<img
-									src={doc.uri}
-									alt={doc.name}
-									className={classes.forImage}
-								></img>
-								) : (
-								<div className={classes.forImageContainer}  onClick={() => {
-									if(doc.state !== "active") return;
+											}
+											else {
+												handleViewFile(doc.fileId)
+											}
 
-									if(ExtenstionGetter(doc.fileName) === 'pdf')
-									{
-									setStateApp({ ...stateApp, viewDoc: {uri:doc.uri, name:doc.fileName}})
-									}
-								}}>
-									{getFileIcon(ExtenstionGetter(doc.fileName))}
+										})
+									}}
+								>
+									{new RegExp(
+										["jpg", "jpeg", "png", "bmp"].join("|")
+									).test(ExtenstionGetter(doc.fileName)) ? (
+										<img
+											src={doc.uri}
+											alt={doc.name}
+											className={classes.forImage}
+										></img>
+									) : (
+										<div className={classes.forImageContainer} onClick={() => {
+											if (doc.state !== "active") return;
+
+											if (ExtenstionGetter(doc.fileName) === 'pdf') {
+												setStateApp({ ...stateApp, viewDoc: { uri: doc.uri, name: doc.fileName } })
+											}
+										}}>
+											{getFileIcon(ExtenstionGetter(doc.fileName))}
+										</div>
+									)}
+
 								</div>
-								)}
-								
-							</div>
 
 
-								<div className={classes.fileText.concat(' DocumentTitle')} style={{cursor:'pointer'}} 
-								onClick={() => {
-									 viewFileResultt?.viewFiles.map((value) => {
-										 if(value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf')
-										 {setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:doc.fileName,}})}
-									 })      
-								}}>
+								<div className={classes.fileText.concat(' DocumentTitle')} style={{ cursor: 'pointer' }}
+									onClick={() => {
+										viewFileResultt?.viewFiles.map((value) => {
+											if (value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf') { setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: doc.fileName, } }) }
+										})
+									}}>
 									<h4 className={classes.uploadTitle}>{doc.fileName}</h4>
 									{/* <h5 className={classes.uploadSubtext}>{doc.userName}</h5> */}
 									<h5 className={classes.uploadSubtext}>

@@ -148,7 +148,7 @@ function M1nTable(props) {
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, { onError: () => { setLoading(false) }, fetchPolicy: "cache-and-network" });
-  const [getDocuments, { data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS);
+  const [getDocuments, { data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS, { fetchPolicy: "no-cache" });
   const [removeUser] = useMutation(REMOVEUSER);
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, { fetchPolicy: "no-cache", });
   const [getContactsFilterOptions, { data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
@@ -212,11 +212,11 @@ function M1nTable(props) {
     if (props.parent && props.parent === 'Documents') {
       getDocuments({
         variables: {
-          search: stateApp.contactSearchQuery
+          search: stateApp.documentSearchQuery ? stateApp.documentSearchQuery : ""
         }
       })
     }
-  }, [getDocuments, props.parent, stateApp.contactSearchQuery])
+  }, [getDocuments, props.parent, stateApp.documentSearchQuery])
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners") {
@@ -256,6 +256,7 @@ function M1nTable(props) {
             userId: stateApp.user.mongoId,
           },
         });
+
         checkIfOwnersAreContacts({
           variables: { idsArray: dataTracks },
         });
@@ -1020,6 +1021,7 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === "OwnersPerWell") {
+
       setLoading(true);
       setTargetLabel("owner");
       setHeader("Tax Roll Ownership");
@@ -1037,9 +1039,8 @@ function M1nTable(props) {
     if (props.parent && props.parent === "OwnersPerWell" && dataWellOwners) {
       if (dataWellOwners.wellOwners && dataWellOwners.wellOwners.length > 0) {
 
-        console.log('data wells owners', dataWellOwners)
 
-        setLoading(true);
+        // setLoading(true);
         const objectsIdsArray = dataWellOwners.wellOwners.map(
           (wellOwner) => wellOwner.globalOwnerId
         );
@@ -1055,14 +1056,24 @@ function M1nTable(props) {
         checkIfOwnersAreContacts({
           variables: { idsArray: objectsIdsArray, gLodIdsArray },
         });
+
+        // let wellOwners = dataWellOwners.wellOwners;
+        // setRows(wellOwners);
+        // setLoading(false);
+
       } else {
-        setLoading(false);
         setRows([]);
+        setLoading(false);
       }
+
+
+
     }
   }, [dataWellOwners]);
 
   useEffect(() => {
+
+
     if (
       props.parent &&
       props.parent === "OwnersPerWell" &&
@@ -1073,10 +1084,11 @@ function M1nTable(props) {
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
-      dataTracks &&
-      checkIfOwnersAreContactsData &&
+      dataTracks 
+      && checkIfOwnersAreContactsData &&
       checkIfOwnersAreContactsData.ifAreContacts
     ) {
+
       const wellOwners = dataWellOwners.wellOwners.map((o) => {
         let wellOwner = { ...o };
         wellOwner.commentsCounter = 0;
@@ -1090,8 +1102,8 @@ function M1nTable(props) {
           i++
         ) {
           if (
-            wellOwner.globalOwnerId ===
-            checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
+            wellOwner.globalOwnerId === checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner ||
+            wellOwner.id === checkIfOwnersAreContactsData.ifAreContacts[i].globalOwner
           ) {
             wellOwner.isContact =
               checkIfOwnersAreContactsData.ifAreContacts[i].isContact;

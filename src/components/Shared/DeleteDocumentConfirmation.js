@@ -1,20 +1,29 @@
 import React from "react";
+import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
-export default function DeleteDocumentConfirmation({ open, handleClose, handleAccept, document }) {
+export default function DeleteDocumentConfirmation({
+  open,
+  handleClose,
+  handleAccept,
+}) {
   return (
     <div>
       <Dialog open={open} onClose={handleClose} style={{ zIndex: 99999999999 }}>
-        <DeleteConfirmationDialogContent
-          header="Delete Document"
-          onClose={handleClose}
-          deleteFunc={handleAccept}
-          // m1nSelectedRowsIds={[document._id]}
-          // setM1nSelectedRowsIndexes={[document._id]}
-        >
-          Do you want to delete the selected documents?
-        </DeleteConfirmationDialogContent>
+        <DialogTitle id="alert-dialog-title">
+          Are you sure you want to delete the selected document(s)?
+        </DialogTitle>
+
+        <DialogActions>
+          <Button onClick={handleClose} color="primary" autoFocus>
+            Cancel
+          </Button>
+          <Button onClick={handleAccept} color="primary">
+            Delete
+          </Button>
+        </DialogActions>
       </Dialog>
     </div>
   );
