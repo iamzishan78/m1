@@ -271,7 +271,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                 <Button
                   variant="contained"
                   component="span"
-                  disabled={(TAB.NEW && rows.id && rows.id === 0) || (TAB.EXISTING && nameAutValue.id && nameAutValue.id === 0)}                    
+                  disabled={(tab === TAB.NEW && rows.id && rows.id === 0) || (tab === TAB.EXISTING && nameAutValue.id && nameAutValue.id === 0)}                    
                   style={{ backgroundColor: "#00abed", color: "white" }}
                   onClick={onConvert}
                 >
