@@ -4036,47 +4036,53 @@ function Map() {
     // stateApp.checkedLayersInteraction,
   ]);
 
-  // use effect to query the viewport
-  useEffect(() => {
-    if (stateApp.map) {
-      const queryViewportHandler = debounce(() => {
-        if (stateApp.map.getZoom() >= stateApp.minZoomToQueryViewport) {
-          const points = stateApp.map.queryRenderedFeatures({
-            layers: [
-              "wellpoints",
-              // "Tracked Wells",
-              // "Tags Filter",
-              // "Search",
-            ],
-          });
 
-          const featuresArray = [];
-          points.forEach((point) => {
-            if (point && point.properties && point.properties.id) {
-              featuresArray.push({
-                ...point.properties,
-                id: point.properties.id.toLowerCase(),
-              });
-            }
-          });
+  // VIEWPORT REMOVE
+  // // use effect to query the viewport
+  // useEffect(() => {
+  //   if (stateApp.map) {
+  //     const queryViewportHandler = debounce(() => {
+  //       if (stateApp.map.getZoom() >= stateApp.minZoomToQueryViewport) {
+  //         const points = stateApp.map.queryRenderedFeatures({
+  //           layers: [
+  //             "wellpoints",
+  //             // "Tracked Wells",
+  //             // "Tags Filter",
+  //             // "Search",
+  //           ],
+  //         });
 
-          setStateApp((stateApp) => {
-            if (!deepEqual(stateApp.viewportWells, featuresArray))
-              return { ...stateApp, viewportWells: featuresArray };
-            return stateApp;
-          });
-        } else
-          setStateApp((stateApp) => {
-            if (stateApp.viewportWells)
-              return { ...stateApp, viewportWells: null };
-            return stateApp;
-          });
-      }, 300);
+  //         const featuresArray = [];
+  //         points.forEach((point) => {
+  //           if (point && point.properties && point.properties.id) {
+  //             featuresArray.push({
+  //               ...point.properties,
+  //               id: point.properties.id.toLowerCase(),
+  //             });
+  //           }
+  //         });
 
-      // stateApp.map.off("render", queryViewportHandler);
-      stateApp.map.on("render", queryViewportHandler);
-    }
-  }, [stateApp.map]);
+  //         setStateApp((stateApp) => {
+  //           if (!deepEqual(stateApp.viewportWells, featuresArray))
+  //             return { ...stateApp, viewportWells: featuresArray };
+  //           return stateApp;
+  //         });
+  //       } else
+  //         setStateApp((stateApp) => {
+  //           if (stateApp.viewportWells)
+  //             return { ...stateApp, viewportWells: null };
+  //           return stateApp;
+  //         });
+  //     }, 300);
+
+  //     // stateApp.map.off("render", queryViewportHandler);
+  //     stateApp.map.on("render", queryViewportHandler);
+  //   }
+  // }, [stateApp.map]);
+
+
+
+
 
   // Use effect for removing shape filter
   useEffect(() => {

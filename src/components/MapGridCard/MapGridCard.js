@@ -462,7 +462,7 @@ function MapGridCard(props) {
             }
             <div style={{ flexGrow: 1 }}></div> */}
 
-            {
+            {/* {
               mapGridCardActiveTap === 2 && 
                <Select
                 labelId="demo-simple-select-label"
@@ -474,7 +474,7 @@ function MapGridCard(props) {
                 <MenuItem value={'Shape Filter'}>Shape Filter</MenuItem>
                 <MenuItem value={'Viewport'}>Viewport</MenuItem>
               </Select>
-            }
+            } */}
 
             <div style={{ flexGrow: 1 }}></div>
 
@@ -617,7 +617,10 @@ function MapGridCard(props) {
               </div>
             </TabPanel>
 
-            {/* //// viewport panel //// */}
+
+
+
+            {/* //// boundary panel //// */}
             <TabPanel
               value={mapGridCardActiveTap}
               index={2}
@@ -630,7 +633,7 @@ function MapGridCard(props) {
                         showComments={tab.showComments}
                         showTracks={tab.showTracks} */}
 
-                <TabPanels
+                {/* <TabPanels
                   value={viewportTapValue}
                   panels={selectedBoundary === 'Shape Filter' ? [
 
@@ -679,7 +682,44 @@ function MapGridCard(props) {
                     </div>
                   ]
                   }
+                /> */}
+
+
+              <TabPanels
+                  value={viewportTapValue}
+                  panels= {[
+
+                    <ShapeGridWellsTable
+                      parent="wells"
+                      header={<TabLabels
+                        labels={[
+                          `Wells (${stateApp.shapeGridWellsCount || 0})`,
+                          `Tax Owners (${stateApp.shapeGridOwnersCount || 0})`,
+                        ]}
+                        value={viewportTapValue}
+                        setValue={setViewportTapValue}
+                      />}
+                      targetLabel="well"
+                      showTracks
+                    />
+                    ,
+                    <ShapeGridTaxOwnersTable
+                      parent="gridOwners"
+                      header={<TabLabels
+                        labels={[
+                          `Wells (${stateApp.shapeGridWellsCount || 0})`,
+                          `Tax Owners (${stateApp.shapeGridOwnersCount || 0})`,
+                        ]}
+                        value={viewportTapValue}
+                        setValue={setViewportTapValue}
+                      />}
+                      targetLabel="owner"
+                      showTracks
+                    />
+                  ]}
                 />
+
+
               </div>
             </TabPanel>
           </div>
