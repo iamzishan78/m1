@@ -2677,176 +2677,187 @@ function M1nTable(props) {
 
   ////////////Activities end////////////////////////////////////////////////
 
-  ////////////Map Viewport Wells begin///////////////////////////////////////////////
 
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "mapViewportWells" &&
-      stateApp.viewportWells
-    ) {
-      const IdsArray = [];
-      stateApp.viewportWells.forEach((well) => {
-        if (well && well.id) {
-          IdsArray.push(well.id);
-        }
-      });
 
-      if (IdsArray.length > 0) {
-        setLoading(true);
-        getCommentsCounter({
-          variables: {
-            objectsIdsArray: IdsArray,
-            userId: stateApp.user.mongoId,
-          },
-        });
-        getTagSamples({
-          variables: {
-            objectsIdsArray: IdsArray,
-            userId: stateApp.user.mongoId,
-          },
-        });
-        setViewportFeatures(stateApp.viewportWells);
-      } else {
-        setViewportFeatures(null);
-        setRows([]);
-        setLoading(false);
 
-        if (!warningShowed) {
-          dispatch(
-            showWarningMessage(
-              "We didn't find any well in the viewport, please make sure at least one layer with wells it's active, or zoom out untill you visualize some well spots."
-            )
-          );
-          setWarningShowed(true);
-        }
-      }
-    }
-  }, [props.parent, stateApp.viewportWells, stateApp.user]);
 
-  useEffect(() => {
-    if (props.parent && props.parent === "mapViewportWells") {
-      setTargetLabel("well");
+  
+  // ////////////Map Viewport Wells begin///////////////////////////////////////////////
 
-      if (props.header) {
-        setHeader(props.header);
-      } else {
-        setHeader("Wells");
-      }
-      setAddAble(false);
-    }
-  }, [props.parent]);
+  // useEffect(() => {
+  //   if (
+  //     props.parent &&
+  //     props.parent === "mapViewportWells" &&
+  //     stateApp.viewportWells
+  //   ) {
+  //     const IdsArray = [];
+  //     stateApp.viewportWells.forEach((well) => {
+  //       if (well && well.id) {
+  //         IdsArray.push(well.id);
+  //       }
+  //     });
 
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "mapViewportWells" &&
-      viewportFeatures &&
-      viewportFeatures.length > 0 &&
-      dataCommentsCounter &&
-      dataCommentsCounter.commentsCounter &&
-      dataTagSamples &&
-      dataTagSamples.tagSamples &&
-      dataTracks
-    ) {
-      let wells = [...viewportFeatures];
-      wells = wells.map((w) => {
-        let well = { ...w };
+  //     if (IdsArray.length > 0) {
+  //       setLoading(true);
+  //       getCommentsCounter({
+  //         variables: {
+  //           objectsIdsArray: IdsArray,
+  //           userId: stateApp.user.mongoId,
+  //         },
+  //       });
+  //       getTagSamples({
+  //         variables: {
+  //           objectsIdsArray: IdsArray,
+  //           userId: stateApp.user.mongoId,
+  //         },
+  //       });
+  //       setViewportFeatures(stateApp.viewportWells);
+  //     } else {
+  //       setViewportFeatures(null);
+  //       setRows([]);
+  //       setLoading(false);
 
-        well.isTracked = false;
-        well.commentsCounter = 0;
-        well.tags = [[], 0];
+  //       if (!warningShowed) {
+  //         dispatch(
+  //           showWarningMessage(
+  //             "We didn't find any well in the viewport, please make sure at least one layer with wells it's active, or zoom out untill you visualize some well spots."
+  //           )
+  //         );
+  //         setWarningShowed(true);
+  //       }
+  //     }
+  //   }
+  // }, [props.parent, stateApp.viewportWells, stateApp.user]);
 
-        well.coordinates = {};
-        if (well.longitude && well.latitude)
-          well.coordinates.center = [well.longitude, well.latitude];
 
-        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
-            well.commentsCounter = dataCommentsCounter.commentsCounter[i].total;
-            break;
-          }
-        }
-        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (well.id === dataTagSamples.tagSamples[i]._id) {
-            well.tags = [
-              dataTagSamples.tagSamples[i].tags,
-              dataTagSamples.tagSamples[i].total,
-            ];
 
-            break;
-          }
-        }
-        for (let i = 0; i < dataTracks.length; i++) {
-          if (
-            well.id === dataTracks[i].toLowerCase()
-          ) {
-            well.isTracked = true;
-            break;
-          }
-        }
 
-        return well;
-      });
+  // useEffect(() => {
+  //   if (props.parent && props.parent === "mapViewportWells") {
+  //     setTargetLabel("well");
 
-      let availableTags = [];
-      dataTagSamples.tagSamples.map((sample) => {
-        availableTags = [...availableTags, ...sample.tags];
-      });
-      const cleanAvailableTags = [...new Set(availableTags)];
+  //     if (props.header) {
+  //       setHeader(props.header);
+  //     } else {
+  //       setHeader("Wells");
+  //     }
+  //     setAddAble(false);
+  //   }
+  // }, [props.parent]);
 
-      setRows(wells);
+  // useEffect(() => {
+  //   if (
+  //     props.parent &&
+  //     props.parent === "mapViewportWells" &&
+  //     viewportFeatures &&
+  //     viewportFeatures.length > 0 &&
+  //     dataCommentsCounter &&
+  //     dataCommentsCounter.commentsCounter &&
+  //     dataTagSamples &&
+  //     dataTagSamples.tagSamples &&
+  //     dataTracks
+  //   ) {
+  //     let wells = [...viewportFeatures];
+  //     wells = wells.map((w) => {
+  //       let well = { ...w };
 
-      const flyToColumn = {
-        name: "coordinates",
-        label: " ",
-        options: {
-          filter: false,
-          sort: false,
-          searchable: false,
-          download: false,
-          print: false,
-          viewColumns: false,
-        },
-      };
+  //       well.isTracked = false;
+  //       well.commentsCounter = 0;
+  //       well.tags = [[], 0];
 
-      setColumns([
-        ...(cleanAvailableTags.length > 0
-          ? WellsHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filterOptions: {
-                    ...column.options.filterOptions,
-                    names: cleanAvailableTags,
-                  },
-                },
-              };
-            }
-            return column;
-          })
-          : WellsHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filter: false,
-                },
-              };
-            }
-            return column;
-          })),
-        flyToColumn,
-      ]);
+  //       well.coordinates = {};
+  //       if (well.longitude && well.latitude)
+  //         well.coordinates.center = [well.longitude, well.latitude];
 
-      setLoading(false);
-    }
-  }, [viewportFeatures, dataTagSamples, dataCommentsCounter, dataTracks]);
+  //       for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+  //         if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+  //           well.commentsCounter = dataCommentsCounter.commentsCounter[i].total;
+  //           break;
+  //         }
+  //       }
+  //       for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+  //         if (well.id === dataTagSamples.tagSamples[i]._id) {
+  //           well.tags = [
+  //             dataTagSamples.tagSamples[i].tags,
+  //             dataTagSamples.tagSamples[i].total,
+  //           ];
 
-  ////////////Map Viewport Wells end///////////////////////////////////////////////
+  //           break;
+  //         }
+  //       }
+  //       for (let i = 0; i < dataTracks.length; i++) {
+  //         if (
+  //           well.id === dataTracks[i].toLowerCase()
+  //         ) {
+  //           well.isTracked = true;
+  //           break;
+  //         }
+  //       }
+
+  //       return well;
+  //     });
+
+  //     let availableTags = [];
+  //     dataTagSamples.tagSamples.map((sample) => {
+  //       availableTags = [...availableTags, ...sample.tags];
+  //     });
+  //     const cleanAvailableTags = [...new Set(availableTags)];
+
+  //     setRows(wells);
+
+  //     const flyToColumn = {
+  //       name: "coordinates",
+  //       label: " ",
+  //       options: {
+  //         filter: false,
+  //         sort: false,
+  //         searchable: false,
+  //         download: false,
+  //         print: false,
+  //         viewColumns: false,
+  //       },
+  //     };
+
+  //     setColumns([
+  //       ...(cleanAvailableTags.length > 0
+  //         ? WellsHeadCells.map((column) => {
+  //           if (column.name === "tags") {
+  //             return {
+  //               ...column,
+  //               options: {
+  //                 ...column.options,
+  //                 filterOptions: {
+  //                   ...column.options.filterOptions,
+  //                   names: cleanAvailableTags,
+  //                 },
+  //               },
+  //             };
+  //           }
+  //           return column;
+  //         })
+  //         : WellsHeadCells.map((column) => {
+  //           if (column.name === "tags") {
+  //             return {
+  //               ...column,
+  //               options: {
+  //                 ...column.options,
+  //                 filter: false,
+  //               },
+  //             };
+  //           }
+  //           return column;
+  //         })),
+  //       flyToColumn,
+  //     ]);
+
+  //     setLoading(false);
+  //   }
+  // }, [viewportFeatures, dataTagSamples, dataCommentsCounter, dataTracks]);
+
+  // ////////////Map Viewport Wells end///////////////////////////////////////////////
+
+
+
 
   ////////////Owner_WellInterests begin///////////////////////////////////////////
 
