@@ -1421,6 +1421,7 @@ function AddDealDialog(props) {
                   margin="dense"
                   value={title}
                   variant="outlined"
+                  placeholder = "Enter deal name"
                   required
                   error={valid['title']}
                   helperText={
