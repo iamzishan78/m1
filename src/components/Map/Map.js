@@ -1098,10 +1098,10 @@ function Map() {
               }
               if (feature.source === "interests_source") {
 
-                console.log('CURRENT INTEREST SOURCE')
+                console.log('SHAPE INTEREST SOURCE')
                 setStateApp((state) => ({
                   ...state,
-                  showShapeActionsPopup: true,
+                  // showShapeActionsPopup: true,
                   selectedUserDefinedLayer: feature,
                   selectedParcel: null,
                 }));
@@ -1109,6 +1109,8 @@ function Map() {
                   ...state,
                   // showShapeActionsPopup: true,
                   selectedMapControl: 'draw',
+                  // openShapeEditor: 
+                  openDrawShapesControl: true, 
                   // selectedUserDefinedLayer: feature,
                   // selectedParcel: null,
                 }));
@@ -4799,18 +4801,12 @@ function Map() {
     ) {
       // set and remove map marker
 
-
-      console.log('PARCEL DETAIL IS OPEN', )
-      console.log('CURRENT SELECTED PARCEL 1',stateApp.selectedParcel)
-
       let coordinates = stateApp.selectedParcel.shapeCenter;
       if (typeof stateApp.selectedParcel.shapeCenter === "string") {
 	coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter);
       }
       const longitude = coordinates[0];
       const latitude = coordinates[1];
-
-      console.log('CURRENT SELECTED PARCEL',stateApp.selectedParcel)
 
       const mapBounds = map.getBounds();
       const screenLeftLng = mapBounds._sw.lng;
