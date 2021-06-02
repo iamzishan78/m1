@@ -1688,8 +1688,10 @@ function SubTable(props) {
             {
               column.options = {
                 ...column.options,
+
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
+                  console.log('TAGS PROPS', props);
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
