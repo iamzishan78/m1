@@ -27,19 +27,19 @@ const DocumentsHeadCells = [
   //   label: "DATE & TIME",
   // },
   {
-    name: "DOCUMENT NUMBER",
+    name: "documentNumber",
     label: "Document Number",
   },
   {
-    name: "DOCUMENT NAME",
+    name: "documentName",
     label: "Document Name",
   },
   {
-    name: "DOCUMENT TYPE",
+    name: "documentType",
     label: "Document Type",
   },
   {
-    name: "DOCUMENT DATE",
+    name: "dateTime",
     label: "Document Date",
   },
   // {
@@ -48,11 +48,11 @@ const DocumentsHeadCells = [
   // },
 
   {
-    name: "PARTY 1 NAME",
+    name: "partyName1",
     label: "Party 1 Name",
   },
   {
-    name: "PARTY 2 NAME",
+    name: "partyName2",
     label: "Party 2 Name",
   },
   {
