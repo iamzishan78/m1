@@ -132,6 +132,23 @@ const useStyles = makeStyles((theme) => {
       height: "calc(100% - 64px)",
       maxHeight: "calc(100% - 64px)",
       overflow: "auto",
+
+      "&::-webkit-scrollbar": {
+        width: "0.75em",
+        height: "0.75em",
+      },
+      // "&:hover::-webkit-scrollbar": {
+      //     width: "1.0em",
+      // },
+      // "&::-webkit-scrollbar-track": {
+      //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+      // },
+
+      "&::-webkit-scrollbar-thumb": {
+          backgroundColor: "#929292",
+          borderRadius: 10,
+      },
+
       "& div": {
         "&>.MuiPaper-root": {
           "&>:nth-child(3)": {
