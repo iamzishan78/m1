@@ -766,20 +766,20 @@ function Map() {
 
 
 
-      if (map.getSource(`${sourceId}_filter`)) {
-        let mapSourceFilterData = map.getSource(`${sourceId}_filter`)._data;
-        if (
-          mapSourceFilterData &&
-          !deepEqualObjects(geoJson, mapSourceFilterData)
-        )
-          map.getSource(`${sourceId}_filter`).setData(geoJson);
-      } else {
-        map.addSource(`${sourceId}_filter`, {
-          type: "geojson",
-          data: geoJson,
-          // promoteId: "id",
-        });
-      }
+      // if (map.getSource(`${sourceId}_filter`)) {
+      //   let mapSourceFilterData = map.getSource(`${sourceId}_filter`)._data;
+      //   if (
+      //     mapSourceFilterData &&
+      //     !deepEqualObjects(geoJson, mapSourceFilterData)
+      //   )
+      //     map.getSource(`${sourceId}_filter`).setData(geoJson);
+      // } else {
+      //   map.addSource(`${sourceId}_filter`, {
+      //     type: "geojson",
+      //     data: geoJson,
+      //     // promoteId: "id",
+      //   });
+      // }
 
       // -> add layer
       const layerId = prop.id;
