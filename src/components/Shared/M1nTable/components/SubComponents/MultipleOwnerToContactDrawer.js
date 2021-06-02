@@ -263,6 +263,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
               <Grid item>
                 {console.log('ROWS',rows)}
                 {console.log('ROWS NAME',nameAutValue)}
+                {console.log('ROWS TAB',TAB.EXISTING)}
 
                 
                 
@@ -270,7 +271,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                 <Button
                   variant="contained"
                   component="span"
-                  disabled={rows.length === 0 || nameAutValue.id === 0}
+                  disabled={(TAB.NEW && rows.id && rows.id === 0) || (TAB.EXISTING && nameAutValue.id && nameAutValue.id === 0)}                    
                   style={{ backgroundColor: "#00abed", color: "white" }}
                   onClick={onConvert}
                 >
