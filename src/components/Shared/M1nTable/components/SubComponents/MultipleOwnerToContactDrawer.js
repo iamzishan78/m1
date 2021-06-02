@@ -261,10 +261,16 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                 <Button onClick={handleClose}>Cancel</Button>
               </Grid>
               <Grid item>
+                {console.log('ROWS',rows)}
+                {console.log('ROWS NAME',nameAutValue)}
+
+                
+                
+
                 <Button
                   variant="contained"
                   component="span"
-                  disabled={rows.length === 0}
+                  disabled={rows.length === 0 || nameAutValue.id === 0}
                   style={{ backgroundColor: "#00abed", color: "white" }}
                   onClick={onConvert}
                 >

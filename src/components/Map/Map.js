@@ -1099,16 +1099,17 @@ function Map() {
               if (feature.source === "interests_source") {
 
                 console.log('SHAPE INTEREST SOURCE')
-                setStateMapControls((state) => ({
-                  ...state,
-                  selectedMapControl: 'draw',
-                  openDrawShapesControl: true, 
-                }));
+                // setStateMapControls((state) => ({
+                //   ...state,
+                //   selectedMapControl: 'draw',
+                //   openDrawShapesControl: true, 
+                // }));
                 setStateApp((state) => ({
                   ...state,
                   showShapeActionsPopup: true,
                   selectedUserDefinedLayer: feature,
                   selectedParcel: null,
+                  openDrawShapesControl: true, 
                 }));
 
 

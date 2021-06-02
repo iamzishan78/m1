@@ -372,16 +372,26 @@ const handleCloseDetailedCards = () => {
     }
   }, [stateApp.expandedCard]);
 
+
+
   useEffect(() => {
 
-    console.log('SHAPE OPENDRAWS')
+    if(stateApp.openDrawShapesControl){
+    console.log('SHAPE OPENDRAWS',stateMapControls)
+  }
 
-    if(stateMapControls.openDrawShapesControl === true){
+    if(stateApp.openDrawShapesControl === true){
 
-      console.log('SHAPE OPENDRAWS 2')
+      console.log('SHAPE OPENDRAWS 2',stateMapControls)
+      setStateMapControls((state) => ({
+        ...state,
+        selectedMapControl: 'draw',
+        // openDrawShapesControl: true, 
+      }));
+
       handleFabClick()
     }
-  }, [stateMapControls.openDrawShapesControl]);
+  }, [stateApp.openDrawShapesControl]);
 
 
 
