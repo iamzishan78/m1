@@ -578,8 +578,6 @@ function SubTable(props) {
 
   const handleLocationFlyTo = (newValue) => {
 
-    console.log('NEW VALUE', newValue)
-
     if (newValue && newValue.center) {
       let minLong, maxLong, minLat, maxLat;
       if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
