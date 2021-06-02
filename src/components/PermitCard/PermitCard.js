@@ -1,6 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
 import { AppContext } from "../../AppContext";
-import { PermitCardContext } from "./PermitCardContext";
 import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
 
 //material-ui components
@@ -28,11 +27,11 @@ import moment from "moment";
 
 // queries 
 import { useLazyQuery } from "@apollo/client";
-import { PERMITDETAILQUERY } from "../../graphQL/useQueryRecentPermitDetails";
 
 // value formatters 
 import formatBOE from "../Shared/valueformatters/format_boe.js"
 import convert_date from "../Shared/valueformatters/convert_date.js";
+
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -151,22 +150,12 @@ export default function PermitCard() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
 
-
-
-
   // function state
-  const [target, setTarget] = useState(null);
-  const [summary, setSummary] = useState(null);
   const [source, setSource] = useState(null);
 
   // theme / styles 
   const theme = useTheme();
   const classes = useStyles();
-
-  const [
-    getRecentPermitDetail,
-    { loading: loadingPermitSummary, data: dataPermitSummary },
-  ] = useLazyQuery(PERMITDETAILQUERY);
 
 
   useEffect(() => {
@@ -181,24 +170,6 @@ export default function PermitCard() {
     }
   }, [stateApp.user, source]);
   
-
-  useEffect(() => {
-    getRecentPermitDetail({
-      variables: { id: stateApp.selectedPermit.PermitId }
-    });
-  }, [stateApp.selectedPermit]);
-
-  useEffect(() => {
-    if(dataPermitSummary) {
-      Object.assign(stateApp.selectedPermit, dataPermitSummary.recentPermitDetail[0])
-      setStateApp((state) => ({
-	...state,
-	selectedPermitDetails: stateApp.selectedPermit
-      }));
-    } 
-  }, [dataPermitSummary])
-
-
   return stateApp.selectedPermit ? (
     !stateApp.expandedCard ? (
 	<div>
