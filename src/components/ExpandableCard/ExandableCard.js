@@ -35,7 +35,7 @@ function ExpandableCard(props) {
 
   // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stataMapControls, setStateMapControls] = useContext(MapControlsContext);
+  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
 
 
   const [stateExpandableCard, setStateExpandableCard] = useContext(
@@ -195,8 +195,9 @@ function ExpandableCard(props) {
   }, [props.zIndex]);
 
   const handleExpand = () => {
-    if (parent === "map" && $("#popupContainer").length) {
-    }
+
+    // if (parent === "map" && $("#popupContainer").length) {
+    // }
 
     if (toggleExpand == false) {
       setToggleExpand(true);
@@ -210,16 +211,14 @@ function ExpandableCard(props) {
     }
     setHeight(cardHeightExpanded);
 
+
     if (props.targetLabel == "well" || props.targetLabel == "expandedWell") {
       setStateApp((state) => ({
         ...state,
         wellDetailCardOpen: true,
         popupOpen: false,
       }));
-      setStateMapControls((state) => ({
-        ...state,
-        expandedPanel: false,
-      }));
+
 
     } else if (props.targetLabel == "parcel" || props.targetLabel == "expandedParcel") {
       setStateApp((state) => ({
@@ -227,12 +226,8 @@ function ExpandableCard(props) {
         parcelDetailCardOpen: true,
         popupOpen: false,
       }));
-      setStateMapControls((state) => ({
-        ...state,
-        expandedPanel: false,
-      }));
-    }
 
+    }
     setStateApp((state) => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
   };
@@ -297,8 +292,6 @@ function ExpandableCard(props) {
           marginRight: "48px",
         }}
       >
-        {console.log("POOPS",props)}
-
         {(targetLabel != "contact"
         ) && 
         <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>

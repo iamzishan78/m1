@@ -388,12 +388,32 @@ const ShapeActionsPopup = (props) => {
 
     // Deleting Shape from map
     stateApp.draw.delete(stateApp.currentFeature.id);
+    // stateApp.draw.delete(stateApp.selectedFeature.id);
 
     // Popup Close Action
     popupCloseAction();
   };
 
+
+  const deleteShape = () => {
+    // Turning off the confirmation modal
+    setDeleteModal(false);
+
+    // Deleting Shape from map
+    stateApp.draw.delete(stateApp.currentFeature.id);
+    // stateApp.draw.delete(stateApp.selectedFeature.id);
+
+    // Popup Close Action
+    popupCloseAction();
+  };
+
+
+
+
+
   const handleDeleteAoiModal = () => {
+
+    console.log('CURRENT HANDLE', isDeleteModal)
     setDeleteModal(!isDeleteModal);
   };
 
@@ -463,6 +483,9 @@ const ShapeActionsPopup = (props) => {
               size="small"
               aria-label="Delete Active Shape"
               onClick={() => {
+
+                console.log('STATEAPP CURRENT', stateApp.currentFeature)
+
                 if (!!stateApp.currentFeature.properties.shapeLabel) {
                   handleDeleteAoiModal();
                 }
