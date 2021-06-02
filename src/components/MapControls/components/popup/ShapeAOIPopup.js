@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 
 import { useMutation } from "@apollo/client";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Grid } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 
 import { AppContext } from "AppContext";
@@ -39,10 +39,12 @@ const useStyles = makeStyles((theme) => ({
   },
   enterLabel: {
     height: "3px",
-    margin: "0px 15px 15px 0",
+    margin: "0px 12px 15px 12px",
     textAlign: "right",
     color: "fff",
     fontSize: "11px",
+    display: "flex",
+    justifyContent: "space-between"
   },
 }));
 
@@ -127,7 +129,6 @@ export default function ShapeAOIPopup(props) {
 
   const handleEditSpatialDataToShape = (dataName, dataType = "interest") => {
     // save data onto geoJSON properties fields
-
     const spatialData = {
       sdType: dataType,
       shapeLabel: dataName,
@@ -173,30 +174,33 @@ export default function ShapeAOIPopup(props) {
   };
 
   return (
-    <form className={`${classes.root}`} autoComplete="off">
-      <RedditTextField
-        placeholder="Area of Interest Name"
-        className={classes.TextField}
-        variant="filled"
-        id="reddit-input"
-        defaultValue={shapeLabel}
-        autoFocus
-        required
-        helperText={showError ? "Name is required!" : ""}
-        InputProps={{ className: classes.TextFieldInput }}
-        InputLabelProps={{ className: classes.TextFieldLabel }}
-        onKeyDown={(e) => {
-          if (e.keyCode === 13) {
-            e.preventDefault();
-            if (!stateApp.selectedAoi) {
-              handleSaveSpatialDataToShape(e.target.value);
-            } else {
-              handleEditSpatialDataToShape(e.target.value);
+    <div className={`${classes.root}`}>
+      <form autoComplete="off">
+        <RedditTextField
+          placeholder="Area of Interest Name"
+          className={classes.TextField}
+          variant="filled"
+          id="reddit-input"
+          defaultValue={shapeLabel}
+          autoFocus
+          InputProps={{ className: classes.TextFieldInput }}
+          InputLabelProps={{ className: classes.TextFieldLabel }}
+          onKeyDown={(e) => {
+            if (e.keyCode === 13) {
+              e.preventDefault();
+              if (!stateApp.selectedAoi) {
+                handleSaveSpatialDataToShape(e.target.value);
+              } else {
+                handleEditSpatialDataToShape(e.target.value);
+              }
             }
-          }
-        }}
-      />
-      <p className={classes.enterLabel}>Press enter to save</p>
-    </form>
+          }}
+        />
+      </form>
+      <div className={classes.enterLabel}>
+        <span style={{ color: 'red' }}>{showError ? "Name is required!" : ""}</span>
+        <span>Press enter to save</span>
+      </div>
+    </div>
   );
 }

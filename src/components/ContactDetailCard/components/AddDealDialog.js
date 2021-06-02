@@ -56,7 +56,6 @@ import {
 import { GETPIPELINES } from 'graphQL/useQueryPipelines';
 import PropTypes from 'prop-types';
 import NumberFormat from 'react-number-format';
-import Drawer from '../../Transact/components/Drawer';
 import Documents from '../../Shared/Documents';
 import AddDialogeUploadZone from './AddDialogUploadZone';
 import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
@@ -1050,6 +1049,7 @@ function AddDealDialog(props) {
       return <Contacts addSelectedContact={addSelectedContactToDeal} loading={getDealLoading} getDeal={refetchDeal} />;
     }
   };
+
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
 
   const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
@@ -1097,6 +1097,7 @@ function AddDealDialog(props) {
       },
     });
   }, [stateApp.activeDeal?.cardId]);
+
   useEffect(() => {
     let ID = [];
     for (let i = 0; i < files?.getFileDescriptors.length; i++) {
@@ -1248,9 +1249,10 @@ function AddDealDialog(props) {
               item
               container
               xs={12}
-              style={{ margin: 0, padding: 0, 
-                
-                marginBottom: '1em' 
+              style={{
+                margin: 0, padding: 0,
+
+                marginBottom: '1em'
               }}
               alignItems="center"
             >
@@ -1284,8 +1286,9 @@ function AddDealDialog(props) {
 
                 <Grid item xs={6} style={{ minHeight: '35px' }}>
                   {!titleFocus && (
-                    <Grid item xs style={{ flexGrow: 0, padding: 2, 
-                    // marginTop: 2 
+                    <Grid item xs style={{
+                      flexGrow: 0, padding: 2,
+                      // marginTop: 2 
                     }}>
 
                       <div
@@ -1452,7 +1455,7 @@ function AddDealDialog(props) {
                 fullWidth
                 size="small"
               >
-                <Grid container 
+                <Grid container
                   className={classes.gridStyle}
                 >
                   <Grid item xs={3}>
@@ -1529,9 +1532,9 @@ function AddDealDialog(props) {
                 fullWidth
                 size="small"
               >
-                <Grid container 
-                    className={classes.gridStyle}
-                    >
+                <Grid container
+                  className={classes.gridStyle}
+                >
                   <Grid item xs={3}>
                     <div>Close Date</div>
                   </Grid>
@@ -1567,9 +1570,9 @@ function AddDealDialog(props) {
                 fullWidth
                 size="small"
               >
-                <Grid container 
-                      className={classes.gridStyle}
-                      >
+                <Grid container
+                  className={classes.gridStyle}
+                >
                   <Grid item xs={3}>
                     <div>Flowline</div>
                   </Grid>
@@ -1577,7 +1580,7 @@ function AddDealDialog(props) {
                   <Grid item xs={9}>
                     <TextField
                       variant="outlined"
-                      margin = 'dense'
+                      margin='dense'
                       select
                       SelectProps={{
                         native: true,
@@ -1625,9 +1628,9 @@ function AddDealDialog(props) {
                 fullWidth
                 size="small"
               >
-                <Grid container 
-                      className={classes.gridStyle}
-                      >
+                <Grid container
+                  className={classes.gridStyle}
+                >
                   <Grid item xs={3}>
                     <div>Flow Stage</div>
                   </Grid>
@@ -1635,7 +1638,7 @@ function AddDealDialog(props) {
                   <Grid item xs={9}>
 
                     <TextField
-                      margin = 'dense'
+                      margin='dense'
                       variant="outlined"
                       select
                       SelectProps={{
@@ -1680,9 +1683,9 @@ function AddDealDialog(props) {
                 fullWidth
                 size="small"
               >
-                <Grid container 
-                      className={classes.gridStyle}
-                      >
+                <Grid container
+                  className={classes.gridStyle}
+                >
                   <Grid item xs={3}>
                     <div>Offer Price</div>
                   </Grid>

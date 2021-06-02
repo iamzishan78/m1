@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
   },
   fabActivated: {
     backgroundColor: "rgba(1, 17, 51, 0.97)",
-    color: "#fff",
+    color: "rgba(23, 170, 221, 1)",
     "&:hover": {
       color: "#fff",
       background: "rgba(1, 17, 51, 1.0)",
@@ -271,8 +271,6 @@ const handleCloseDetailedCards = () => {
 
     }
 
-
-
     setStateApp((stateApp) => ({
       ...stateApp,
       toggle3d: action === "threed" ? !stateApp.toggle3d : stateApp.toggle3d,
@@ -331,7 +329,7 @@ const handleCloseDetailedCards = () => {
     return actions.map((action) => (
       <SpeedDialAction
         classes={{
-          fab: action.action === 'layer' && stateMapControls.expandedPanel ? classes.fabActivated : classes.fab,
+          fab: action.action === stateMapControls.selectedControl && stateMapControls.expandedPanel ? classes.fabActivated : classes.fab,
         }}
         id={action.name}
         key={action.name}
@@ -387,7 +385,7 @@ const handleCloseDetailedCards = () => {
       >
         {createSpeedDialActions()}
       </SpeedDial>
-      <SidePanel/>
+      <SidePanel />
       {stateMapControls.selectedMapControl === 'draw' ? <DrawShapes /> : null}
       {stateMapControls.selectedControl === 'add' ? <AddUserData /> : null}
       {stateMapControls.selectedControl === 'addGroup' ? <AddUserGroupData /> : null}
