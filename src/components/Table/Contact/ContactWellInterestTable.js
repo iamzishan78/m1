@@ -38,7 +38,7 @@ function ContactWellInterestTable(props) {
   const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
   // queries 
-  const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY);
+  const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY, { fetchPolicy: "no-cache" });
   const tableData = dataContactWells?.paginatedContactWellInterests
 
   const addAble = { type: "wellInterest" }

@@ -222,7 +222,6 @@ export default function DocumentDrawer() {
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
     if (viewFileLoading) {
-      console.log(viewFileResult, "ViewFIle Result");
     }
   };
   const handleDeleteCancel = () => {
@@ -263,7 +262,6 @@ export default function DocumentDrawer() {
       });
     }
   };
-  console.log(stateApp.DocumentLoader, "Document Loader");
 
   useEffect(() => {
     if (viewFileResult?.viewFile?.uri) {
@@ -323,7 +321,6 @@ export default function DocumentDrawer() {
       fontSize: 11,
     },
   }))(Tooltip);
-  console.log(stateApp.user.mongoId, "user Id");
   const toggleDrawer = (anchor, open) => (event) => {
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
@@ -386,7 +383,6 @@ export default function DocumentDrawer() {
                 onClick={() => {
                   setOpenDeleteConfirmDialog(true);
                   setFileIdToDelete(stateApp.selectedDocument.fileId);
-                  console.log(stateApp.selectedDocument, " StateApp");
                 }}
               >
                 <DeleteIcon />
@@ -507,7 +503,6 @@ export default function DocumentDrawer() {
         {stateApp.selectedDocument?.fileId ? (
           <ListItem>
             <div style={{ display: "flex", justifyContent: "start" }}>
-              {console.log(recentFiles, "Files data in Adddialog")}
               {viewFileSResult?.viewFiles?.map((value, key) => {
                 let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
                 if (key <= 1) {
@@ -571,7 +566,6 @@ export default function DocumentDrawer() {
             <h4>Click or drag and drop file to upload</h4>
 
             <div style={{ display: "flex", justifyContent: "start" }}>
-              {console.log(recentFiles, "Files data in Adddialog")}
               {recentFiles?.map((value, key) => {
                 let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
                 if (key <= 1) {
@@ -694,7 +688,6 @@ export default function DocumentDrawer() {
   //         <ListItemIcon
   //           style={{ cursor: "pointer" }}
   //           onClick={() => {
-  //             console.log(stateApp.refetchDocument, "Refetch documents");
   //             setStateApp({
   //               ...stateApp,
   //               DocumentDrawer: false,
@@ -829,7 +822,6 @@ export default function DocumentDrawer() {
   //       </ListItem>
 
   //       <div style={{ display: "flex", justifyContent: "start" }}>
-  //         {console.log(recentFiles, "Files data in Adddialog")}
   //         {recentFiles?.map((value, key) => {
   //           let fileExtension = value?.name
   //             ?.slice(value.name.lastIndexOf(".") + 1)
@@ -940,7 +932,6 @@ export default function DocumentDrawer() {
     <div>
       {/* <ClickAwayListener onClickAway={() => {handleClose()}}> */}
       <Drawer anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
-        {console.log(stateApp.selectedDocument, "selecdow")}
         <Dialog
           open={openDeleteConfirmDialog}
           onClose={handleDeleteCancel}
@@ -970,7 +961,6 @@ export default function DocumentDrawer() {
 }
 
 const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
-  console.log("value", value);
   const useStyles = makeStyles({
     inputRoot: {
       backgroundColor: "#ffffff",

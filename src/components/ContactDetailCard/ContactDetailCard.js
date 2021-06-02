@@ -449,39 +449,48 @@ export default function ContactDetailCard(props) {
   return contactData ? (
     <>
       <div className={classes.header}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left', paddingLeft: '25px' }}>
+        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left', paddingLeft: '25px'}}>
+          
+      {/* {checkModuleHistory() && } */}
 
-          {/* {checkModuleHistory() && } */}
+
+      <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+
+        {checkModuleHistory() &&
+         <Link style={{ marginLeft: '5px',
+                          fontSize: '16px', 
+                          cursor: 'pointer',
+                          }}  
+                          color="inherit"
+                          onClick={()=> 
+                          { 
+                            setStateApp((stateApp) => ({
+                              ...stateApp,
+                              // parcelDetailCardOpen: false,
+                            }));
+
+                            history.push('/');
+
+                            setStateNav((stateApp) => ({
+                              ...stateApp,
+                              contactFromMap: false,
+                            }));
+
+                          }}>
+          Map
+        </Link>       
+        }
+        
+        { console.log('CURRENT MAP BREADCRUMB') }
 
 
-          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-
-            {checkModuleHistory() &&
-              <Link style={{
-                marginLeft: '5px',
-                fontSize: '16px',
-                cursor: 'pointer',
-              }}
-                color="inherit"
-                onClick={() => {
-                  history.push('/');
-                  setStateNav((stateApp) => ({
-                    ...stateApp,
-                    contactFromMap: false,
-                  }));
-                }}>
-                Map
-        </Link>
-            }
-
-            <Link style={{
-              marginLeft: '5px',
-              fontSize: '16px',
-              cursor: 'pointer',
-            }}
-              color="inherit"
-              onClick={() => history.push('/contacts')}>
-              Contacts
+        <Link style={{ marginLeft: '5px', 
+                          fontSize: '16px', 
+                          cursor: 'pointer',
+                          }}  
+                          color="inherit"
+                          onClick={()=> history.push('/contacts')}>
+          Contacts
         </Link>
 
             <Typography style={{ color: '#18AADD', fontSize: '16px', marginLeft: '5px' }}>{contactData.name}</Typography>
@@ -767,7 +776,6 @@ export default function ContactDetailCard(props) {
 
           </Grid>
         )}
-        {console.log(stateApp.viewDoc, "StateApp Doc")}
         {/*/////////// rigth column //////////// */}
         <div className={classes.rightColumnGrid} >
 

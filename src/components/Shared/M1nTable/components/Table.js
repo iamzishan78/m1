@@ -1139,12 +1139,13 @@ function SubTable(props) {
                           id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
                           size={props.dense ? "small" : "medium"}
                           onClick={(e) => {
+                            const unsortedIndex = rows.findIndex(row => row.id === tableMeta.rowData[0])
                             openMenu(
                               e,
                               tableMeta.rowIndex,
-                              typeof rows[tableMeta.rowIndex] !== "undefined"
-                                ? rows[tableMeta.rowIndex]
-                                : props.rows[tableMeta.rowIndex]
+                              typeof rows[unsortedIndex] !== "undefined"
+                                ? rows[unsortedIndex]
+                                : props.rows[unsortedIndex]
                             );
                           }}
                         >
@@ -1498,9 +1499,14 @@ function SubTable(props) {
 
                           if (value && value !== "false") {
 
+                            console.log('CURRENT VALUE', value )
+                            console.log('CURRENT VALUE 2', stateApp.parcelDetailCardOpen )
+
+
                             setStateApp((stateApp) => ({
                               ...stateApp,
                               selectedContact: value,
+                              parcelDetailCardOpen: null, 
                             }));
                             setStateNav((stateNav) => ({
                               ...stateNav,
@@ -1513,7 +1519,8 @@ function SubTable(props) {
                             routeChange(`/contact/details/${value}`)
                             setTitle("Contact Details");
                             setSubTitle(" ");
-                            handleOpenExpandableCard();
+
+                            // handleOpenExpandableCard();
 
                             // setTargetLabelToExpand("contact");
                             // setStateApp((stateApp) => ({
