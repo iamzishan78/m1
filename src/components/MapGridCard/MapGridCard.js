@@ -728,6 +728,9 @@ function MapGridCard(props) {
     );
   };
 
+
+  // black
+  // darken 
   const blackOut = () => (
     <div
       style={{
