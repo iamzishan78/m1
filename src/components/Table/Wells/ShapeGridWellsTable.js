@@ -17,9 +17,10 @@ import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functio
 // Header Schemas 
 import TableHeader from 'components/Table/constants/well-header-schema.js'
 
+// Utilities
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
 import { handleTagColumn } from "../helpers/index.js";
-
+import isEmpty from "lodash/isEmpty";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -133,16 +134,16 @@ function ShapeGridWellsTable(props) {
                     first: tableState.rowsPerPage,
                     after: null,
                 },
-                sort: tableState.activeColumn
-                    ? {
-                        field: tableState.columns[tableState.activeColumn]?.name,
+                ...(!isEmpty(tableState.sortOrder)) && {
+                    sort:
+                    {
+                        field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
                         order:
-                            tableState.columns[tableState.activeColumn]
-                                ?.sortDirection === "asc"
+                            tableState.sortOrder?.direction === "asc"
                                 ? 1
                                 : -1,
                     }
-                    : [],
+                },
 
                 filters: {},
             },
@@ -204,7 +205,8 @@ function ShapeGridWellsTable(props) {
     const options = {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
         count: count,
-        serverSide: true
+        serverSide: true,
+        search: true,
     }
     ////////////-----Add your code section here-----///////////////////////
     const getWellOwnersByYear = (selectedYear) => {
