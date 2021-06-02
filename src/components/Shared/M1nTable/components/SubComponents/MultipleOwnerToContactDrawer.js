@@ -262,7 +262,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
 
           {((tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)) && 
               <Typography style={{ fontWeight: "bold" , color: "red", marginTop: '40px', marginLeft: '25px'}}>
-                ** Please selsect a contact from the dropdown menu **
+                ** Please select a contact from the dropdown menu **
               </Typography>
           }
 
