@@ -21,7 +21,13 @@ const FileTree = ({ layerMap }) => {
 
   useEffect(() => {
     if (!deepEqual(items, layerMap)) {
-      setItems(layerMap);
+      if (items.length === layerMap.length) {
+        items.forEach((item, index) => {
+          if (item.layerSettings) item.layerSettings = layerMap[index].layerSettings
+        })
+        setItems(items)
+      } else
+        setItems(layerMap);
     }
   }, [layerMap]);
 

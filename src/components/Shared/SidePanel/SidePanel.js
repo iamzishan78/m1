@@ -180,14 +180,15 @@ export default function SidePanel() {
 			const groupHandled = []
 			const layerAndGroups = []
 			stateApp.layers && stateApp.layers.forEach((item) => {
-				if (item.layerSettings && item.layerSettings.showable && item.identifier != "Tracked Owners") {
+				if (item.layerSettings && item.identifier != "Tracked Owners") {
 					if (item.groupId && !groupHandled.includes(item.groupId)) {
 						groupHandled.push(item.groupId);
-						const groups = stateApp.layers.filter((i) => i.groupId === item.groupId && i.layerSettings.showable)
+						const groups = stateApp.layers.filter((i) => i.groupId === item.groupId)
 						layerAndGroups.push({
 							depth: 0,
 							type: 'group',
 							collapsed: true,
+							showable: true,
 							name: item.groupName
 							, id: item.groupId
 						})
@@ -196,6 +197,7 @@ export default function SidePanel() {
 								...item,
 								collapsed: true,
 								name: item.layerName,
+								showable: item.layerSettings.showable,
 								depth: 1,
 								type: 'layer',
 								id: item._id
@@ -203,7 +205,7 @@ export default function SidePanel() {
 						})
 					}
 					if (!item.groupId) {
-						layerAndGroups.push({ ...item, name: item.layerName, depth: 0, type: 'layer', id: item._id })
+						layerAndGroups.push({ ...item, showable: item.layerSettings.showable, name: item.layerName, depth: 0, type: 'layer', id: item._id })
 					}
 				}
 			})
