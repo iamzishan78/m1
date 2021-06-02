@@ -2996,20 +2996,16 @@ function SubTable(props) {
               first: tableState.rowsPerPage,
               after: null,
             },
-            sort: tableState.activeColumn
-              ? {
-                field:
-                  tableState.columns[tableState.activeColumn]?.name ===
-                    "fullContactAddress"
-                    ? "address1"
-                    : tableState.columns[tableState.activeColumn]?.name,
+            ...(!isEmpty(tableState.sortOrder)) && {
+              sort:
+              {
+                field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
                 order:
-                  tableState.columns[tableState.activeColumn]
-                    ?.sortDirection === "asc"
+                  tableState.sortOrder?.direction === "asc"
                     ? 1
                     : -1,
               }
-              : [],
+            },
 
             filters: {
               field: "id",
