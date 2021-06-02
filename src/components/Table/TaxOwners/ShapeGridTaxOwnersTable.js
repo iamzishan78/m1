@@ -149,11 +149,11 @@ function ShapeGridTaxOwnersTable(props) {
                             ...pageVariables.variables.pagination,
                             before:
                                 props.rows && tableState.page < meta.pageInd
-                                    ? props.rows[0]?._id
+                                    ? props.rows[0]?.cursor
                                     : null,
                             after:
                                 props.rows && tableState.page > meta.pageInd
-                                    ? props.rows[props.rows.length - 1]?._id
+                                    ? props.rows[props.rows.length - 1]?.cursor
                                     : null,
                         },
                     },
