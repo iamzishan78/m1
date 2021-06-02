@@ -167,7 +167,7 @@ export default function Documents(props) {
   const [documentSearch, setDocumentSearch] = useState("");
   const [filteredDocuments, setFilteredDocuments] = useState([]);
 
-  const [stateApp,setStateApp] = React.useContext(AppContext);
+  const [stateApp, setStateApp] = React.useContext(AppContext);
   const userId = stateApp.user.mongoId;
 
   const [relatedObjectType, limit] = useMemo(() => {
@@ -237,7 +237,7 @@ export default function Documents(props) {
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
-  
+
   // const [viewFile, { data: viewFileData }] = useLazyQuery(VIEWFILEQUERY, {
   //   fetchPolicy: "no-cache",
   // });
@@ -252,13 +252,13 @@ export default function Documents(props) {
   }, [props.id]);
 
   const [
-		viewFiles,
-		{ data: viewFileResultt, loading: viewFileLoading },
-	] = useLazyQuery(VIEWFILESQUERY, {
-		fetchPolicy: "no-cache",
-	});
-	useEffect(() => {
-    if(files && files?.getFileDescriptors?.length > 0){
+    viewFiles,
+    { data: viewFileResultt, loading: viewFileLoading },
+  ] = useLazyQuery(VIEWFILESQUERY, {
+    fetchPolicy: "no-cache",
+  });
+  useEffect(() => {
+    if (files && files?.getFileDescriptors?.length > 0) {
       let ID = [];
       for (let i = 0; i < files?.getFileDescriptors.length; i++) {
         // console.log(files?.getFileDescriptors[i].fileId, 'Kumail Test')
@@ -269,7 +269,7 @@ export default function Documents(props) {
         variables: { fileIds: ID },
       });
     }
-	}, [files]);
+  }, [files]);
 
   useEffect(() => {
     console.log("VIEW FILE RESULT", viewFileResult?.viewFile);
@@ -331,7 +331,7 @@ export default function Documents(props) {
           />
         );
       case "doc":
-        return(
+        return (
           <FontAwesomeIcon
             icon={faFileWord}
             style={{ fontSize: "2rem", color: "#2A5599" }}
@@ -406,11 +406,6 @@ export default function Documents(props) {
     }
   }, [viewFileResult]);
 
-  const HandleShowFile = async (id) => {
-    console.log(id, "ShowFIle");
-    console.log(GETRECENTCONTACTFILES, "Recentdata");
-  };
-
   useEffect(() => {
     let filtered = viewFileResultt?.viewFiles?.filter((doc) =>
       doc.name.toLowerCase().includes(documentSearch.toLowerCase())
@@ -418,7 +413,6 @@ export default function Documents(props) {
 
     let filteredMerged = filtered?.map((doc) => {
       let fileDescriptor = files?.getFileDescriptors?.find((file) => file.fileId === doc.id);
-
       return {
         ...doc,
         descriptorId: fileDescriptor?.descriptorId,
@@ -426,27 +420,27 @@ export default function Documents(props) {
         dateTime: fileDescriptor?.dateTime
       }
     });
-
     setFilteredDocuments(filteredMerged);
   }, [documentSearch, viewFileResultt?.viewFiles]);
+
   const ExtenstionGetter = (name) => {
     let fileExtension = name
-  ?.slice(name.lastIndexOf(".") + 1)
-  ?.toLowerCase();
+      ?.slice(name.lastIndexOf(".") + 1)
+      ?.toLowerCase();
 
-  return fileExtension
+    return fileExtension
   }
   return (
     <div className={classes.root} variant="outlined" >
-      <CardActions style={{ padding: "23px 23px 8px 23px" }}>
-        {!props.isTransactPage && (
+      {!props.isTransactPage && (
+        <CardActions style={{ padding: "23px 23px 8px 23px" }}>
           <Grid item xs={12} style={{ minHeight: "35px" }}>
             <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
               Recent Documents
             </h4>
-            <h4 
+            <h4
               className={classes.viewAll}
-              
+
               // onClick={(e) => {
               //   e.preventDefault();
               //   props.viewAll("comments");
@@ -466,14 +460,14 @@ export default function Documents(props) {
                   />,
                   "Documents"
                 );
-                setStateApp({...stateApp, viewDoc:null})
+                setStateApp({ ...stateApp, viewDoc: null })
               }}
             >
               View All
             </h4>
           </Grid>
-        )}
-      </CardActions>
+        </CardActions>
+      )}
       <CardContent  >
         {props.isTransactPage && (
           <UploadZone
@@ -483,7 +477,7 @@ export default function Documents(props) {
           />
         )}
         {props.isTransactPage && (
-          <div style={{ marginBottom: "20px" }} 
+          <div style={{ marginBottom: "20px" }}
           >
             <TextField
               fullWidth
@@ -505,40 +499,38 @@ export default function Documents(props) {
         <div className={classes.fileUploadSection}>
 
           {/* this is for view all */}
-          {filteredDocuments?.map((file,key) => {
+          {filteredDocuments?.map((file, key) => {
 
             let fileExtension = file?.name
-                ?.slice(file.name.lastIndexOf(".") + 1)
-                ?.toLowerCase();
+              ?.slice(file.name.lastIndexOf(".") + 1)
+              ?.toLowerCase();
 
             return (
-              <div key={file.id} 
-         
-          >
+              <div key={file.id}
+
+              >
                 <div className={classes.fileUploadTopSection}>
                   <div className={classes.flexIcon}>
                     {
                       <div
-                        className={`${classes.greySquare} ${
-                          file.state !== "active"
-                            ? classes.disabledDownload
-                            : ""
-                        }`}
+                        className={`${classes.greySquare} ${file.state !== "active"
+                          ? classes.disabledDownload
+                          : ""
+                          }`}
 
                         onClick={() => {
-                            
-                        viewFileResultt?.viewFiles.map((value) => {
 
-                          if(value.id === file.id && ExtenstionGetter(file.name) === 'pdf')
-                          {
-                              setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:file.name}})
-                          }
-                          else {
+                          viewFileResultt?.viewFiles.forEach((value) => {
+
+                            if (value.id === file.id && ExtenstionGetter(file.name) === 'pdf') {
+                              setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: file.name } })
+                            }
+                            else {
                               handleViewFile(file.id)
-                          }
+                            }
 
-                        })  
-                      }}
+                          })
+                        }}
                       >
                         {new RegExp(
                           ["jpg", "jpeg", "png", "bmp"].join("|")
@@ -549,12 +541,11 @@ export default function Documents(props) {
                             className={classes.forImage}
                           ></img>
                         ) : (
-                          <div className={classes.forImageContainer}  onClick={() => {
-                            if(file.state !== "active") return;
+                          <div className={classes.forImageContainer} onClick={() => {
+                            if (file.state !== "active") return;
 
-                            if(fileExtension === 'pdf')
-                            {
-                              setStateApp({ ...stateApp, viewDoc: {uri:file.uri, name:file.name}})
+                            if (fileExtension === 'pdf') {
+                              setStateApp({ ...stateApp, viewDoc: { uri: file.uri, name: file.name } })
                             }
                           }}>
                             {/* {fileExtension} */}
@@ -564,22 +555,21 @@ export default function Documents(props) {
                         }
                       </div>
                     }
-                    <div  className='DocumentTitle'
+                    <div className='DocumentTitle'
                       onClick={() => {
-                          
-                       viewFileResultt?.viewFiles.map((value) => {
 
-                         if(value.id === file.id && ExtenstionGetter(file.name) === 'pdf')
-                         {
-                            setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:file.name}})
-                         }
-                         else {
+                        viewFileResultt?.viewFiles.map((value) => {
+
+                          if (value.id === file.id && ExtenstionGetter(file.name) === 'pdf') {
+                            setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: file.name } })
+                          }
+                          else {
                             handleViewFile(file.id)
-                         }
+                          }
 
-                       })  
-                    }}>
-                      <h4 className={classes.uploadTitle } >
+                        })
+                      }}>
+                      <h4 className={classes.uploadTitle} >
                         {file?.name?.length > 22
                           ? file?.name?.slice(0, 20) + "..."
                           : file?.name}
@@ -603,13 +593,13 @@ export default function Documents(props) {
                     </IconButton>
 
                     {/* {!props.isTransactPage && ( */}
-                      <IconButton
-                        disabled={file.state !== "active"}
-                        size="small"
-                        onClick={() => handleViewFile(file.id)}
-                      >
-                        <GetAppIcon />
-                      </IconButton>
+                    <IconButton
+                      disabled={file.state !== "active"}
+                      size="small"
+                      onClick={() => handleViewFile(file.id)}
+                    >
+                      <GetAppIcon />
+                    </IconButton>
                     {/* )} */}
                   </div>
                 </div>

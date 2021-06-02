@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
   },
   fabActivated: {
     backgroundColor: "rgba(1, 17, 51, 0.97)",
-    color: "#fff",
+    color: "rgba(23, 170, 221, 1)",
     "&:hover": {
       color: "#fff",
       background: "rgba(1, 17, 51, 1.0)",
@@ -124,17 +124,49 @@ export default function MapControls(props) {
 
   const handleCloseShapeDrawer = () => {
     
-                // close shape drawer 
-                setStateApp((state) => ({
-                  ...state,
-                  editDraw: false,
-                  currentFeature: undefined,
-                  isAbstractedLayersPolygon: false,
-                  multiSelectLandGrids: false,
-                  selectedAbstracts: [],
-                  showShapeActionsPopup: false,
-                  showDrawShapesPopup: false,
-                }));
+    // const { draw, map, currentFeature } = stateApp;
+    // draw.delete(currentFeature?.id);
+    // setStateApp((state) => ({
+    //   ...state,
+    //   editDraw: false,
+    //   currentFeature: undefined,
+    //   isAbstractedLayersPolygon: false,
+    //   multiSelectLandGrids: false,
+    //   selectedAbstracts: [],
+    //   showShapeActionsPopup: false,
+    //   showDrawShapesPopup: false,
+    // }));
+
+    const { draw, map, currentFeature } = stateApp;
+    draw.delete(currentFeature?.id);
+    setStateApp((state) => ({
+      ...state,
+      editDraw: false,
+      currentFeature: undefined,
+      isAbstractedLayersPolygon: false,
+      multiSelectLandGrids: false,
+      selectedAbstracts: [],
+      showShapeActionsPopup: false,
+      showDrawShapesPopup: false,
+    }));
+
+    // unselecting the grids
+    const featuresList = map.getSource("abstract_geo_source")._data.features;
+    for (let i = 0; i < featuresList.length; i++) {
+      const id = featuresList[i].properties.Id;
+      map.setFeatureState({ source: "abstract_geo_source", id: id }, { click: false });
+    }
+
+    // Removing layer of AOI Label
+    if (stateApp.map.getLayer("aoi_label_layer")) {
+      stateApp.map.removeLayer("aoi_label_layer");
+    }
+    setStateApp((state) => ({
+      ...state,
+      selectedAoi: null,
+      featureOrMapShape: null, 
+    }));
+
   
 };
 
@@ -162,15 +194,19 @@ const handleCloseDetailedCards = () => {
 
   const handleFabClick = (e, action) => {
 
-    console.log('FAB CLICK ACTION E', e)
-    console.log('FAB CLICK ACTION A', action)
-    console.log('FAB CLICK ACTION EP', stateMapControls.expandedPanel)
-
     if(stateApp.expandedCard===true){
       handleCloseLeftSidePanel()
       handleCloseShapeDrawer()
     }
 
+    if(stateMapControls.selectedMapControl===true){
+
+      console.log('SHAPE STATE MAP CONTROLS',stateMapControls)
+
+    }
+
+
+    
 
     if(e && action){
         let anchorEl = e.currentTarget;
@@ -243,8 +279,6 @@ const handleCloseDetailedCards = () => {
 
     }
 
-
-
     setStateApp((stateApp) => ({
       ...stateApp,
       toggle3d: action === "threed" ? !stateApp.toggle3d : stateApp.toggle3d,
@@ -303,7 +337,7 @@ const handleCloseDetailedCards = () => {
     return actions.map((action) => (
       <SpeedDialAction
         classes={{
-          fab: action.action === 'layer' && stateMapControls.expandedPanel ? classes.fabActivated : classes.fab,
+          fab: action.action === stateMapControls.selectedControl && stateMapControls.expandedPanel ? classes.fabActivated : classes.fab,
         }}
         id={action.name}
         key={action.name}
@@ -331,12 +365,33 @@ const handleCloseDetailedCards = () => {
   };
 
   useEffect(() => {
-
     if(stateApp.expandedCard){
-      console.log('FAB CLICK',stateApp.expandedCard)
-    handleFabClick()
+      handleFabClick()
     }
   }, [stateApp.expandedCard]);
+
+
+
+  useEffect(() => {
+
+    if(stateApp.openDrawShapesControl){
+    console.log('SHAPE OPENDRAWS',stateMapControls)
+  }
+
+    if(stateApp.openDrawShapesControl === true){
+
+      console.log('SHAPE OPENDRAWS 2',stateMapControls)
+      setStateMapControls((state) => ({
+        ...state,
+        selectedMapControl: 'draw',
+        // openDrawShapesControl: true, 
+      }));
+
+      handleFabClick()
+    }
+  }, [stateApp.openDrawShapesControl]);
+
+
 
   return (
     <div>
@@ -358,7 +413,8 @@ const handleCloseDetailedCards = () => {
       >
         {createSpeedDialActions()}
       </SpeedDial>
-      <SidePanel/>
+      <SidePanel />
+
       {stateMapControls.selectedMapControl === 'draw' ? <DrawShapes /> : null}
       {stateMapControls.selectedControl === 'add' ? <AddUserData /> : null}
       {stateMapControls.selectedControl === 'addGroup' ? <AddUserGroupData /> : null}

@@ -44,6 +44,8 @@ const AppProvider = (props) => {
     showDrawShapesPopup: false,
     showShapeActionsPopup: false,
 
+    openDrawShapesControl: false, 
+
     editLayer: true,
     selectedOwner: null,
     owners: null,

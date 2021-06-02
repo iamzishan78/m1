@@ -427,6 +427,8 @@ export default function WellCardDetails(props) {
               ,
               <Paper elevation={3} style={{ padding: "10px"}}>
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
+                
+                {console.log('stateApp.selectedWell',stateApp.selectedWell)}
                 <M1nTable
                   parent="OwnersPerWell"
                   selectedWell={stateApp.selectedWell}  // MIGRATE TO WELL CARD CONTEXT

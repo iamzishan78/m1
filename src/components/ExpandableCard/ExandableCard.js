@@ -228,8 +228,6 @@ function ExpandableCard(props) {
       }));
 
     }
-
-    console.log('EXPAND CARD')
     setStateApp((state) => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
   };
@@ -294,8 +292,6 @@ function ExpandableCard(props) {
           marginRight: "48px",
         }}
       >
-        {console.log("POOPS",props)}
-
         {(targetLabel != "contact"
         ) && 
         <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
