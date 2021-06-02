@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { MapControlsContext } from "./MapControlsContext";
 import { AppContext } from "../../AppContext";
 import SpeedDial from "@material-ui/lab/SpeedDial";
@@ -98,6 +98,12 @@ export default function MapControls(props) {
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
+
+  useEffect(() => {
+    if (stateApp.selectedUserDefinedLayer) {
+      setStateMapControls(state => ({ ...state, selectedMapControl: 'draw', selectedControl: 'layer' }));
+    }
+  }, [stateApp.selectedUserDefinedLayer]);
 
   const toggleSpeedDial = (event) => {
     setStateMapControls({

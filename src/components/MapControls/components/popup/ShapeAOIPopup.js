@@ -169,14 +169,10 @@ export default function ShapeAOIPopup(props) {
     toggleSpatialDataCard(false);
   };
 
-  const RedditTextField = (props) => {
-    return <TextField InputProps={{ disableUnderline: true }} {...props} />;
-  };
-
   return (
     <div className={`${classes.root}`}>
       <form autoComplete="off">
-        <RedditTextField
+        <TextField
           // label="Area of Interest Name"
           placeholder="Area of Interest Name"
           className={classes.TextField}
@@ -184,7 +180,7 @@ export default function ShapeAOIPopup(props) {
           id="reddit-input"
           defaultValue={shapeLabel}
           autoFocus
-          InputProps={{ className: classes.TextFieldInput }}
+          InputProps={{ className: classes.TextFieldInput, disableUnderline: true }}
           InputLabelProps={{ className: classes.TextFieldLabel }}
           onKeyDown={(e) => {
             if (e.keyCode === 13) {

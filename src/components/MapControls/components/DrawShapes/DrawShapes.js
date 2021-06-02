@@ -202,16 +202,6 @@ export default function DrawShapes() {
   const [user, setUser] = useState({ _id: "" });
 
   useEffect(() => {
-    if (
-      stateApp.selectedUserDefinedLayer?.source === "interests_source" &&
-      stateApp.showShapeActionsPopup === true &&
-      stateApp.selectedParcel == null
-    ) {
-      toggleSpatialDataCard(true);
-    }
-  }, [stateApp.selectedUserDefinedLayer]);
-
-  useEffect(() => {
     const customLayer = get(customLayerInsertedData, "upsertCustomLayer.customLayer");
     if (customLayer) {
       setStateApp((state) => ({
@@ -376,11 +366,11 @@ export default function DrawShapes() {
         </ClickAwayListener>
       )}
       {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
-      stateApp.currentFeature !== undefined &&
-      !stateApp.currentFeature.id.includes("draw_polygon") &&
-      !stateApp.currentFeature.id.includes("drag_circle") &&
-      !stateApp.currentFeature.id.includes("draw_rectangle") &&
-      !stateApp.currentFeature.id.includes("edit_polygon") ? (
+        stateApp.currentFeature !== undefined &&
+        !stateApp.currentFeature.id.includes("draw_polygon") &&
+        !stateApp.currentFeature.id.includes("drag_circle") &&
+        !stateApp.currentFeature.id.includes("draw_rectangle") &&
+        !stateApp.currentFeature.id.includes("edit_polygon") ? (
         <Fragment>
           {showSpatialDataCard && ( // for edit/create AOI
             <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} user={user} toggleSpatialDataCard={toggleSpatialDataCard} />
