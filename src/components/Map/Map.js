@@ -1126,22 +1126,26 @@ function Map() {
       }
       if (feature.source === "interests_source") {
 
-        console.log('CURRENT INTEREST SOURCE')
+
+                console.log('SHAPE INTEREST SOURCE')
+                // setStateMapControls((state) => ({
+                //   ...state,
+                //   selectedMapControl: 'draw',
+                //   openDrawShapesControl: true, 
+                // }));
         setStateApp((state) => ({
           ...state,
           showShapeActionsPopup: true,
           selectedUserDefinedLayer: feature,
           selectedParcel: null,
-        }));
-        setStateMapControls((state) => ({
-          ...state,
-          // showShapeActionsPopup: true,
-          selectedMapControl: 'draw',
-          // selectedUserDefinedLayer: feature,
-          // selectedParcel: null,
+
+                  openDrawShapesControl: true, 
         }));
 
-        if (!stateApp.editDraw) {
+
+
+
+                if(!stateApp.editDraw){
           setStateApp((state) => ({
             ...state,
             showDrawShapesPopup: !state.showDrawShapesPopup,
@@ -4828,8 +4832,7 @@ function Map() {
       // set and remove map marker
 
 
-      console.log('PARCEL DETAIL IS OPEN',)
-      console.log('CURRENT SELECTED PARCEL 1', stateApp.selectedParcel)
+
 
       let coordinates = stateApp.selectedParcel.shapeCenter;
       if (typeof stateApp.selectedParcel.shapeCenter === "string") {
@@ -4838,7 +4841,6 @@ function Map() {
       const longitude = coordinates[0];
       const latitude = coordinates[1];
 
-      console.log('CURRENT SELECTED PARCEL', stateApp.selectedParcel)
 
       const mapBounds = map.getBounds();
       const screenLeftLng = mapBounds._sw.lng;

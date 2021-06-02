@@ -199,6 +199,14 @@ const handleCloseDetailedCards = () => {
       handleCloseShapeDrawer()
     }
 
+    if(stateMapControls.selectedMapControl===true){
+
+      console.log('SHAPE STATE MAP CONTROLS',stateMapControls)
+
+    }
+
+
+    
 
     if(e && action){
         let anchorEl = e.currentTarget;
@@ -357,13 +365,33 @@ const handleCloseDetailedCards = () => {
   };
 
   useEffect(() => {
-
     if(stateApp.expandedCard){
-
       handleFabClick()
-      
     }
   }, [stateApp.expandedCard]);
+
+
+
+  useEffect(() => {
+
+    if(stateApp.openDrawShapesControl){
+    console.log('SHAPE OPENDRAWS',stateMapControls)
+  }
+
+    if(stateApp.openDrawShapesControl === true){
+
+      console.log('SHAPE OPENDRAWS 2',stateMapControls)
+      setStateMapControls((state) => ({
+        ...state,
+        selectedMapControl: 'draw',
+        // openDrawShapesControl: true, 
+      }));
+
+      handleFabClick()
+    }
+  }, [stateApp.openDrawShapesControl]);
+
+
 
   return (
     <div>
@@ -386,6 +414,7 @@ const handleCloseDetailedCards = () => {
         {createSpeedDialActions()}
       </SpeedDial>
       <SidePanel />
+
       {stateMapControls.selectedMapControl === 'draw' ? <DrawShapes /> : null}
       {stateMapControls.selectedControl === 'add' ? <AddUserData /> : null}
       {stateMapControls.selectedControl === 'addGroup' ? <AddUserGroupData /> : null}
