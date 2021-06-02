@@ -26,6 +26,7 @@ import AltSurveyCard from "./components/AltSurveyCard";
 import ParcelDetailsMap from "./components/ParcelDetailsMap";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwnersTable";
+import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 import { AppContext } from "../../AppContext";
@@ -382,7 +383,7 @@ const Header = () => (
       </Grid>
       <Grid item sm={12}>
         <Taps
-          tabLabels={["Interest Owners"]}
+          tabLabels={["Interest Owners", "Wells"]}
           tabPanels={[
             <TabPanels
               value={selectedTab}
@@ -401,6 +402,13 @@ const Header = () => (
                   />
                 </div>
               ]}
+            />,
+            <AssociatedWellsParcelTable
+              customLayer={parcelObj}
+              parent="associatedWellsPerParcel"
+              targetLabel="well"
+              header="Associated Wells"
+              dense
             />
           ]}
         />
