@@ -150,6 +150,7 @@ export default function DocumentDrawer() {
   const [recentFiles, setRecentFiles] = useState([]);
   const documentInitial = {
     documentName: "",
+    recordingInfo: "",
     dateTime: new Date(),
     documentNumber: "",
     documentType: "",
@@ -199,6 +200,7 @@ export default function DocumentDrawer() {
       updateDocument({
         variables: {
           document: {
+            recordingInfo: newDocument.recordingInfo,
             documentName: newDocument.documentName,
             dateTime: newDocument.dateTime,
             documentNumber: newDocument.documentNumber,
@@ -300,7 +302,7 @@ export default function DocumentDrawer() {
         variables: { fileIds: ID },
       });
       if (stateApp.selectedDocument) {
-        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId } = stateApp.selectedDocument;
+        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, recordingInfo } = stateApp.selectedDocument;
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
           _id: partyName1?._id,
@@ -311,6 +313,7 @@ export default function DocumentDrawer() {
         });
 
         setNewDocument({
+          recordingInfo,
           documentName,
           dateTime,
           documentNumber,
@@ -511,6 +514,26 @@ export default function DocumentDrawer() {
         >
           <h4>Party 2 Name</h4>
           <ContactPaginatedDropdown nameAutValue={nameAutValueParty2} setNameAutValue={setNameAutValueParty2} />
+        </ListItem>
+        <ListItem
+          style={{
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
+          }}
+        >
+          <h4>Recording Info</h4>
+          <TextField
+            className={classes.maxWidth}
+            multiline
+            value={newDocument?.recordingInfo}
+            onChange={(e) => {
+              setNewDocument({
+                ...newDocument,
+                recordingInfo: e.target.value,
+              });
+            }}
+          />
         </ListItem>
         {stateApp.selectedDocument?.fileId ? (
           <ListItem>
