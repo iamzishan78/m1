@@ -231,6 +231,14 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiPaper-root > .MuiToolbar-gutters": {
       paddingLeft: '11px !important'
     },
+    // "& .MuiPaper-root": {
+    //   zIndex: 99999,
+    // },
+
+    "& .MUIDataTableToolbar": {
+      zIndex: '999999 !important',
+    },
+
     "& .MuiPaper-elevation1": {
       flexDirection: "row !important",
       height: '65px !important',
