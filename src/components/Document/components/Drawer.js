@@ -148,15 +148,16 @@ export default function DocumentDrawer() {
   });
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [recentFiles, setRecentFiles] = useState([]);
-  const [newDocument, setNewDocument] = useState({
-    fileName: "",
+  const documentInitial = {
+    documentName: "",
     dateTime: new Date(),
     documentNumber: "",
     documentType: "",
     partyName1: "",
     partyName2: "",
     fileId: "",
-  });
+  }
+  const [newDocument, setNewDocument] = useState(documentInitial);
 
   const [nameAutValueParty1, setNameAutValueParty1] = useState({
     name: "",
@@ -198,7 +199,7 @@ export default function DocumentDrawer() {
       updateDocument({
         variables: {
           document: {
-            fileName: newDocument.fileName,
+            documentName: newDocument.documentName,
             dateTime: newDocument.dateTime,
             documentNumber: newDocument.documentNumber,
             documentType: documentType,
@@ -215,6 +216,9 @@ export default function DocumentDrawer() {
           DocumentDrawer: false,
           selectedDocument: {},
         });
+        setNameAutValueParty1({ name: "", _id: null })
+        setNameAutValueParty2({ name: "", _id: null })
+        setNewDocument(documentInitial)
         setLoader(false);
       });
     }
@@ -227,6 +231,7 @@ export default function DocumentDrawer() {
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
+    setNewDocument(documentInitial)
   };
   const handleClose = () => {
     setStateApp({
@@ -234,7 +239,9 @@ export default function DocumentDrawer() {
       DocumentDrawer: false,
       selectedDocument: {},
     });
-    UpDatefileFN();
+    setNameAutValueParty1({ name: "", _id: null })
+    setNameAutValueParty2({ name: "", _id: null })
+    setNewDocument(documentInitial)
   };
 
   const handleDeleteAccept = () => {
@@ -257,6 +264,9 @@ export default function DocumentDrawer() {
           selectedDocument: {},
         });
         setFileIdToDelete(null);
+        setNewDocument(documentInitial)
+        setNameAutValueParty1({ name: "", _id: null })
+        setNameAutValueParty2({ name: "", _id: null })
         setOpenDeleteConfirmDialog(false);
         setLoader(false);
       });
@@ -290,7 +300,7 @@ export default function DocumentDrawer() {
         variables: { fileIds: ID },
       });
       if (stateApp.selectedDocument) {
-        const { fileName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId } = stateApp.selectedDocument;
+        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId } = stateApp.selectedDocument;
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
           _id: partyName1?._id,
@@ -301,7 +311,7 @@ export default function DocumentDrawer() {
         });
 
         setNewDocument({
-          fileName,
+          documentName,
           dateTime,
           documentNumber,
           documentType,
@@ -309,6 +319,8 @@ export default function DocumentDrawer() {
           partyName2,
           fileId,
         });
+      }else{
+        setNewDocument(documentInitial)
       }
     }
   }, [stateApp.selectedDocument]);
@@ -424,11 +436,11 @@ export default function DocumentDrawer() {
           <TextField
             className={classes.maxWidth}
             multiline
-            value={newDocument?.fileName}
+            value={newDocument?.documentName}
             onChange={(e) => {
               setNewDocument({
                 ...newDocument,
-                fileName: e.target.value,
+                documentName: e.target.value,
               });
             }}
           />

@@ -1357,9 +1357,12 @@ function Search() {
         autoComplete
         includeInputInList
         value={value}
+
+        // handle change also acts like onClick here 
         onChange={(event, newValue) => {
           handleChange(newValue);
         }}
+        
         onInputChange={(event, newInputValue, reason) => {
           if (reason == "input") {
 

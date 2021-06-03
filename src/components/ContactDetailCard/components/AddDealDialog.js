@@ -1420,11 +1420,13 @@ function AddDealDialog(props) {
                 fullWidth
                 size="small"
               >
+                {console.log('TITLE', title)}
                 <TextField
                   margin="dense"
                   value={title}
                   variant="outlined"
-                  placeholder = "Enter deal name"
+                  placeholder = "Click to enter deal name"
+                  style={title.trim !== "" ? ({}):({border: '1px solid #EBEBEB',})}
                   required
                   error={valid['title']}
                   helperText={

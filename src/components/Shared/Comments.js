@@ -37,6 +37,7 @@ const AntSwitch = withStyles((theme) => ({
     height: 16,
     padding: 0,
     display: "flex",
+    zIndex: 999999,
   },
   switchBase: {
     padding: 2,
@@ -65,9 +66,13 @@ const AntSwitch = withStyles((theme) => ({
   checked: {},
 }))(Switch);
 
+
+
+
 const useStyles = makeStyles((theme) => ({
   root: {
     // backgroundColor: "#fff",
+    // zIndex: '999999 !important',
   },
   title: {
     fontSize: 10,
@@ -85,7 +90,19 @@ const useStyles = makeStyles((theme) => ({
         ? "0 0 0 8px"
         : "0",
     overflowY: "auto",
+    "&::-webkit-scrollbar": {
+      width: "0.75em",
+      height: "0.75em",
+    },
+    // "&:hover::-webkit-scrollbar": {
+    //     width: "1.0em",
+    // },
+    // "&::-webkit-scrollbar-track": {
+    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    // },
     maxHeight: (props) => (props.handleRightDialogClose ? "none" : "60vh"),
+    zIndex: '999999 !important',
+
   },
   list: {
     width: "100%",
@@ -93,6 +110,16 @@ const useStyles = makeStyles((theme) => ({
     background: "rgba(255,255,255,0)",
     color: "rgba(23, 170, 221, 1)",
     overflowY: "auto",
+    "&::-webkit-scrollbar": {
+      width: "0.75em",
+      height: "0.75em",
+    },
+    // "&:hover::-webkit-scrollbar": {
+    //     width: "1.0em",
+    // },
+    // "&::-webkit-scrollbar-track": {
+    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    // },
     padding: 0,
   },
   listItem: {
@@ -450,8 +477,9 @@ export default function Comments(props) {
       variant="outlined"
       style={
         props.detailCard
-          ? { backgroundColor: "transparent", border: "none" }
+          ? { backgroundColor: "transparent", border: "none", zIndex: 99999 }
           : {}
+        
       }
     >
       {/* <CardHeader className={classes.header} title="Comments" /> */}

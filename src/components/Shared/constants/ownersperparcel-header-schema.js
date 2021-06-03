@@ -131,6 +131,33 @@ const OwnersPerParcelHeadCells = [
       filterType: "dropdown",
     },
   },
+  {
+    name: "isSuggested",
+    label: " ",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  // {
+  //   name: "isOverridden",
+  //   label: " ",
+  //   options: {
+  //     display: false,
+  //     filter: false,
+  //     searchable: false,
+  //     sort: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
+
 ];
 
 export default OwnersPerParcelHeadCells;

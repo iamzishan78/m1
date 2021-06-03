@@ -26,6 +26,20 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
     overflow: 'scroll',
+    "&::-webkit-scrollbar": {
+      width: "0.75em",
+      height: "0.75em",
+    },
+    // "&:hover::-webkit-scrollbar": {
+    //     width: "1.0em",
+    // },
+    // "&::-webkit-scrollbar-track": {
+    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    // },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#929292",
+      borderRadius: 10,
+  },
     border: "0px",
     inset: 'unset',
     backgroundColor: "white !important",
@@ -37,6 +51,20 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
     overflow: 'scroll',
+    "&::-webkit-scrollbar": {
+      width: "0.75em",
+      height: "0.75em",
+    },
+    // "&:hover::-webkit-scrollbar": {
+    //     width: "1.0em",
+    // },
+    // "&::-webkit-scrollbar-track": {
+    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    // },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#929292",
+      borderRadius: 10,
+  },
     border: "0px",
     inset: 'unset',
     backgroundColor: "white !important"

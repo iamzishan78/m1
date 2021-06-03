@@ -130,7 +130,7 @@ export const TableHOC = (Component) => {
             if (actions.includes('ifAreContacts')) {
                 const ifAreContacs = checkIfOwnersAreContactsData?.ifAreContacts || []
                 for (let i = 0; i < ifAreContacs.length; i++) {
-                    if (data.id === ifAreContacs[i].globalOwner) {
+                    if (data.id === ifAreContacs[i].globalOwner || data.globalOwnerId === ifAreContacs[i].globalOwner) {
                         data.isContact = ifAreContacs[i].isContact;
                         data.entity = ifAreContacs[i]._id;
                         break;

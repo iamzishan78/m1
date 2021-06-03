@@ -19,6 +19,9 @@ import AddWellInterestDialog from "components/ContactDetailCard/components/Conta
 import TableHeader from 'components/Shared/constants/contactperwell-header-schema.js'
 import { handleTagColumn } from "../helpers";
 
+// Utilities
+import isEmpty from "lodash/isEmpty";
+
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important"
@@ -104,16 +107,16 @@ function ContactWellInterestTable(props) {
           first: tableState.rowsPerPage,
           after: null,
         },
-        sort: tableState.activeColumn
-          ? {
-            field: tableState.columns[tableState.activeColumn]?.name,
+        ...(!isEmpty(tableState.sortOrder)) && {
+          sort:
+          {
+            field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
             order:
-              tableState.columns[tableState.activeColumn]
-                ?.sortDirection === "asc"
+              tableState.sortOrder?.direction === "asc"
                 ? 1
                 : -1,
           }
-          : [],
+        },
 
         filters: {
           field: "contact._id",

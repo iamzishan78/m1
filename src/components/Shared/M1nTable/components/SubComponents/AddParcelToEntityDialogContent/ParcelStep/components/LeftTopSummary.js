@@ -13,6 +13,20 @@ const useStyles = makeStyles({
   },
   tableContainer: {
     overflowX: "unset",
+    "&::-webkit-scrollbar": {
+      width: "0.75em",
+      height: "0.75em",
+    },
+    // "&:hover::-webkit-scrollbar": {
+    //     width: "1.0em",
+    // },
+    // "&::-webkit-scrollbar-track": {
+    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    // },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#929292",
+      borderRadius: 10,
+  },
   },
   rowName: {
     fontWeight: "bold",
