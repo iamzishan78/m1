@@ -220,6 +220,8 @@ function ShapeGridWellsTable(props) {
             className={classes.container}
             id={props.id ? props.id : props.parent}
         >
+
+                    {console.log('SHAPE ROWS', props.rows)}
             <Table
                 style={{ backgroundColor: "#fff" }}
                 header={props.header}
