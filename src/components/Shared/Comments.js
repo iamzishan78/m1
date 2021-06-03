@@ -37,7 +37,7 @@ const AntSwitch = withStyles((theme) => ({
     height: 16,
     padding: 0,
     display: "flex",
-    zIndex: 99999999,
+    zIndex: 999999,
   },
   switchBase: {
     padding: 2,
@@ -69,6 +69,7 @@ const AntSwitch = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
   root: {
     // backgroundColor: "#fff",
+    zIndex: 999999,
   },
   title: {
     fontSize: 10,
