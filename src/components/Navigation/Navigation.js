@@ -407,6 +407,10 @@ const useStyles = makeStyles((theme) => ({
     // "&::-webkit-scrollbar-track": {
     //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
     // },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#929292",
+      borderRadius: 10,
+  },
     "&:last-child": {
       paddingBottom: "0",
     },

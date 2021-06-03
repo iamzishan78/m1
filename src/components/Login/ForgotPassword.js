@@ -89,9 +89,9 @@ const useStyles = makeStyles(theme => ({
     display: "flex!important",
     backgroundSize: "cover",
     justifyContent: "center",
-    '&::-webkit-scrollbar': {
-      width: '0 !important'
-     },
+    // '&::-webkit-scrollbar': {
+    //   width: '0 !important'
+    //  },
   }
  
 }));

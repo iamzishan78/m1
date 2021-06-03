@@ -36,6 +36,10 @@ const useStyles = makeStyles((theme) => ({
     // "&::-webkit-scrollbar-track": {
     //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
     // },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#929292",
+      borderRadius: 10,
+  },
     border: "0px",
     inset: 'unset',
     backgroundColor: "white !important",
@@ -57,6 +61,10 @@ const useStyles = makeStyles((theme) => ({
     // "&::-webkit-scrollbar-track": {
     //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
     // },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#929292",
+      borderRadius: 10,
+  },
     border: "0px",
     inset: 'unset',
     backgroundColor: "white !important"

@@ -89,6 +89,10 @@ const useStyles = makeStyles((theme) => ({
     // "&::-webkit-scrollbar-track": {
     //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
     // },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#929292",
+      borderRadius: 10,
+  },
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": { minHeight: "calc(100vh - 265px) !important" },

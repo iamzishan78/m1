@@ -59,9 +59,9 @@ const localStyles = makeStyles((theme) => ({
     display: "flex",
     height: "100%",
     flexDirection: "column",
-    "&::-webkit-scrollbar": {
-      width: "0 !important",
-    },
+    // "&::-webkit-scrollbar": {
+    //   width: "0 !important",
+    // },
   },
   cardContainer: {
     display: "flex",

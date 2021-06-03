@@ -50,9 +50,9 @@ const localStyles = makeStyles(theme => ({
     // backgroundImage: `url(${BackgroundURI})`,
     // backgroundRepeat: "no-repeat",
     // backgroundPosition: "center",
-    '&::-webkit-scrollbar': {
-      width: '0 !important'
-     },
+    // '&::-webkit-scrollbar': {
+    //   width: '0 !important'
+    //  },
   },
   displaNone: {
     display: "none"
