@@ -187,7 +187,8 @@ function ShapeGridTaxOwnersTable(props) {
     const options = {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
         count: count,
-        serverSide: true
+        serverSide: true, 
+        filter: false,
     }
     ////////////-----Add your code section here-----///////////////////////
     const getWellOwnersByYear = (selectedYear) => {
