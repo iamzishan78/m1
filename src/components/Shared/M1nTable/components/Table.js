@@ -3385,7 +3385,16 @@ function SubTable(props) {
 
             // resizableColumns: true,
 
-            filter: props.parent === 'ownersPerParcel'       /// will need to build a backend for this search 
+            filter:          props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
+                          || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+                          || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+
+                    ? false : null,
+
+            viewColumns:     props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search 
+                          || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+                          || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+
                     ? false : null,
 
             search:
@@ -3394,8 +3403,12 @@ function SubTable(props) {
                 || props.header === 'Deals'
                 || props.header === 'Activities'
                 || props.header === 'Monthly Production'
-                || props.parent === 'ownersPerParcel'       /// will need to build a backend for this search 
-              )
+                || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
+                || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+
+                )
+
                 ? false : props.parent != "search",
             // have to use props.parent here for initial value
             searchOpen: props.parent === "Contacts" ? true : null,
