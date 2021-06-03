@@ -110,6 +110,23 @@ const useStyles = makeStyles((theme) => {
       height: "calc(100% - 64px)",
       maxHeight: "calc(100% - 64px)",
       overflow: "auto",
+
+      "&::-webkit-scrollbar": {
+        width: "0.75em",
+        height: "0.75em",
+      },
+      // "&:hover::-webkit-scrollbar": {
+      //     width: "1.0em",
+      // },
+      // "&::-webkit-scrollbar-track": {
+      //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+      // },
+
+      "&::-webkit-scrollbar-thumb": {
+          backgroundColor: "#929292",
+          borderRadius: 10,
+      },
+
       "& div": {
         "&>.MuiPaper-root": {
           "&>:nth-child(3)": {
@@ -389,7 +406,7 @@ function MapGridCard(props) {
                 {...a11yProps(1)}
               />
 
-              {
+              {/* {
                 stateApp.gridPolygonString && <Tab
                   className="cancelDraggableEffect"
                   label={`Boundary${stateApp.shapeGridWellsCount
@@ -399,10 +416,22 @@ function MapGridCard(props) {
                   {...a11yProps(1)}
                 >
                 </Tab>
-              }
+              } */}
+
+              <Tab
+                  className="cancelDraggableEffect"
+                  label={`Boundary${stateApp.shapeGridWellsCount
+                    ? " (" + Number((stateApp.shapeGridWellsCount || '') + (stateApp.shapeGridOwnersCount || '')) + ")"
+                    : ""
+                    }`}
+                  {...a11yProps(1)}
+                >
+              </Tab>
 
             </Tabs>
-            {
+
+
+            {/* {
               mapGridCardActiveTap === 2 && stateApp.gridPolygonString && <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
@@ -414,6 +443,22 @@ function MapGridCard(props) {
                 <MenuItem value={'Viewport'}>Viewport</MenuItem>
               </Select>
             }
+            <div style={{ flexGrow: 1 }}></div> */}
+
+            {/* {
+              mapGridCardActiveTap === 2 && 
+               <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                className={classes.selectBoundary}
+                value={selectedBoundary}
+                onChange={(e) => { setSelectedBoundary(e.target.value) }}
+              >
+                <MenuItem value={'Shape Filter'}>Shape Filter</MenuItem>
+                <MenuItem value={'Viewport'}>Viewport</MenuItem>
+              </Select>
+            } */}
+
             <div style={{ flexGrow: 1 }}></div>
 
             <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
@@ -555,7 +600,10 @@ function MapGridCard(props) {
               </div>
             </TabPanel>
 
-            {/* //// viewport panel //// */}
+
+
+
+            {/* //// boundary panel //// */}
             <TabPanel
               value={mapGridCardActiveTap}
               index={2}
@@ -563,7 +611,12 @@ function MapGridCard(props) {
               style={{ position: "absolute", width: "100vw" }}
             >
               <div style={{ position: "relative" }}>
-                <TabPanels
+{/* 
+              showTags={tab.showTags}
+                        showComments={tab.showComments}
+                        showTracks={tab.showTracks} */}
+
+                {/* <TabPanels
                   value={viewportTapValue}
                   panels={selectedBoundary === 'Shape Filter' ? [
 
@@ -612,7 +665,44 @@ function MapGridCard(props) {
                     </div>
                   ]
                   }
+                /> */}
+
+
+              <TabPanels
+                  value={viewportTapValue}
+                  panels= {[
+
+                    <ShapeGridWellsTable
+                      parent="wells"
+                      header={<TabLabels
+                        labels={[
+                          `Wells (${stateApp.shapeGridWellsCount || 0})`,
+                          `Tax Owners (${stateApp.shapeGridOwnersCount || 0})`,
+                        ]}
+                        value={viewportTapValue}
+                        setValue={setViewportTapValue}
+                      />}
+                      targetLabel="well"
+                      showTracks
+                    />
+                    ,
+                    <ShapeGridTaxOwnersTable
+                      parent="gridOwners"
+                      header={<TabLabels
+                        labels={[
+                          `Wells (${stateApp.shapeGridWellsCount || 0})`,
+                          `Tax Owners (${stateApp.shapeGridOwnersCount || 0})`,
+                        ]}
+                        value={viewportTapValue}
+                        setValue={setViewportTapValue}
+                      />}
+                      targetLabel="owner"
+                      showTracks
+                    />
+                  ]}
                 />
+
+
               </div>
             </TabPanel>
           </div>
@@ -621,6 +711,9 @@ function MapGridCard(props) {
     );
   };
 
+
+  // black
+  // darken 
   const blackOut = () => (
     <div
       style={{

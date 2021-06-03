@@ -18,6 +18,8 @@ import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functio
 import TableHeader from 'components/Table/constants/track-owners-header-schema.js'
 import { handleTagColumn } from "../helpers";
 
+// Utilities
+import isEmpty from "lodash/isEmpty";
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -114,16 +116,16 @@ function ShapeGridTaxOwnersTable(props) {
                     first: tableState.rowsPerPage,
                     after: null,
                 },
-                sort: tableState.activeColumn
-                    ? {
-                        field: tableState.columns[tableState.activeColumn]?.name,
+                ...(!isEmpty(tableState.sortOrder)) && {
+                    sort:
+                    {
+                        field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
                         order:
-                            tableState.columns[tableState.activeColumn]
-                                ?.sortDirection === "asc"
+                            tableState.sortOrder?.direction === "asc"
                                 ? 1
                                 : -1,
                     }
-                    : [],
+                },
 
                 filters: {},
             },

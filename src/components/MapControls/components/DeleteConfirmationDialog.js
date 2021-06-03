@@ -40,7 +40,7 @@ export default function DeleteConfirmationDialog(props) {
     setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
-      selectedControl: null,
+      selectedControl: 'layer'
     }));
     updateLayer({
       variables: {

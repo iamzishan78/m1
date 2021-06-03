@@ -576,130 +576,139 @@ function M1nTable(props) {
   }, [dataWells, dataTagSamples, dataCommentsCounter]);
   ////////////Tracked Wells end///////////////////////////////////////////////
 
-  ////////////Grid Wells begin///////////////////////////////////////////////
-  useEffect(() => {
-    if (props.parent && props.parent === "gridWells") {
-      getPaginatedShapeWells({
-        variables: {
-          polygon: stateApp.gridPolygonString,
-          userId: stateApp.user.mongoId,
-        },
-      });
-      getShapeWellsCount({
-        variables: {
-          polygon: stateApp.gridPolygonString,
-        },
-      });
-      setTargetLabel("well");
-      setHeader(props.header);
-      setAddAble(false);
-    }
-  }, [props.parent]);
 
-  useEffect(() => {
-    if (
-      props.parent && props.parent === "gridWells" &&
-      dataShapeWells && dataShapeWells.paginatedShapeWells
-    ) {
-      let wells = [...dataShapeWells.paginatedShapeWells.edges.map(
-        (el) => el.node
-      )];
 
-      const objectsIdsArray = dataShapeWells.paginatedShapeWells.edges.map(
-        (well) => well.node.id
-      );
-      getCommentsCounter({
-        variables: {
-          objectsIdsArray: objectsIdsArray,
-          userId: stateApp.user.mongoId,
-        },
-      });
-      getTagSamples({
-        variables: {
-          objectsIdsArray: objectsIdsArray,
-          userId: stateApp.user.mongoId,
-        },
-      });
 
-      wells = wells.map((w) => {
-        let well = { ...w };
+  // ////////////Grid Wells begin///////////////////////////////////////////////
+  // useEffect(() => {
+  //   if (props.parent && props.parent === "gridWells") {
+  //     getPaginatedShapeWells({
+  //       variables: {
+  //         polygon: stateApp.gridPolygonString,
+  //         userId: stateApp.user.mongoId,
+  //       },
+  //     });
+  //     getShapeWellsCount({
+  //       variables: {
+  //         polygon: stateApp.gridPolygonString,
+  //       },
+  //     });
+  //     setTargetLabel("well");
+  //     setHeader(props.header);
+  //     setAddAble(false);
+  //   }
+  // }, [props.parent]);
 
-        //// temporary to fix the ticks dates fields comming from the rest api
-        if (well.permitApprovedDate && well.permitApprovedDate != "null")
-          well.permitApprovedDate = ticksToDateString(
-            well.permitApprovedDate
-          );
-        if (well.spudDate && well.spudDate != "null")
-          well.spudDate = ticksToDateString(well.spudDate);
-        if (well.completionDate && well.completionDate != "null")
-          well.completionDate = ticksToDateString(well.completionDate);
-        if (well.firstProductionDate && well.firstProductionDate != "null")
-          well.firstProductionDate = ticksToDateString(
-            well.firstProductionDate
-          );
-        //// temporary end
+  // useEffect(() => {
+  //   if (
+  //     props.parent && props.parent === "gridWells" &&
+  //     dataShapeWells && dataShapeWells.paginatedShapeWells
+  //   ) {
+  //     let wells = [...dataShapeWells.paginatedShapeWells.edges.map(
+  //       (el) => el.node
+  //     )];
 
-        well.isTracked = false;
-        well.commentsCounter = 0;
-        well.tags = [[], 0];
-        return well;
-      });
+  //     const objectsIdsArray = dataShapeWells.paginatedShapeWells.edges.map(
+  //       (well) => well.node.id
+  //     );
+  //     getCommentsCounter({
+  //       variables: {
+  //         objectsIdsArray: objectsIdsArray,
+  //         userId: stateApp.user.mongoId,
+  //       },
+  //     });
+  //     getTagSamples({
+  //       variables: {
+  //         objectsIdsArray: objectsIdsArray,
+  //         userId: stateApp.user.mongoId,
+  //       },
+  //     });
 
-      const cleanAvailableTags = []; // get from backend
+  //     wells = wells.map((w) => {
+  //       let well = { ...w };
 
-      setRows(wells);
+  //       //// temporary to fix the ticks dates fields comming from the rest api
+  //       if (well.permitApprovedDate && well.permitApprovedDate != "null")
+  //         well.permitApprovedDate = ticksToDateString(
+  //           well.permitApprovedDate
+  //         );
+  //       if (well.spudDate && well.spudDate != "null")
+  //         well.spudDate = ticksToDateString(well.spudDate);
+  //       if (well.completionDate && well.completionDate != "null")
+  //         well.completionDate = ticksToDateString(well.completionDate);
+  //       if (well.firstProductionDate && well.firstProductionDate != "null")
+  //         well.firstProductionDate = ticksToDateString(
+  //           well.firstProductionDate
+  //         );
+  //       //// temporary end
 
-      const flyToColumn = {
-        name: "coordinates",
-        label: " ",
-        options: {
-          filter: false,
-          sort: false,
-          searchable: false,
-          download: false,
-          print: false,
-          viewColumns: false,
-        },
-      };
-      setColumns([
-        ...(cleanAvailableTags.length > 0
-          ? WellsHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filterOptions: {
-                    ...column.options.filterOptions,
-                    names: cleanAvailableTags,
-                  },
-                },
-              };
-            }
-            return column;
-          })
-          : WellsHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filter: false,
-                },
-              };
-            }
-            return column;
-          })),
-        flyToColumn,
-      ]);
+  //       well.isTracked = false;
+  //       well.commentsCounter = 0;
+  //       well.tags = [[], 0];
+  //       return well;
+  //     });
 
-      setStateApp((state) => ({
-        ...state,
-        gridWellsCount: wells.length,
-      }));
-      setLoading(false);
-    }
-  }, [dataShapeWells]);
+  //     const cleanAvailableTags = []; // get from backend
+
+  //     setRows(wells);
+
+  //     const flyToColumn = {
+  //       name: "coordinates",
+  //       label: " ",
+  //       options: {
+  //         filter: false,
+  //         sort: false,
+  //         searchable: false,
+  //         download: false,
+  //         print: false,
+  //         viewColumns: false,
+  //       },
+  //     };
+  //     setColumns([
+  //       ...(cleanAvailableTags.length > 0
+  //         ? WellsHeadCells.map((column) => {
+  //           if (column.name === "tags") {
+  //             return {
+  //               ...column,
+  //               options: {
+  //                 ...column.options,
+  //                 filterOptions: {
+  //                   ...column.options.filterOptions,
+  //                   names: cleanAvailableTags,
+  //                 },
+  //               },
+  //             };
+  //           }
+  //           return column;
+  //         })
+  //         : WellsHeadCells.map((column) => {
+  //           if (column.name === "tags") {
+  //             return {
+  //               ...column,
+  //               options: {
+  //                 ...column.options,
+  //                 filter: false,
+  //               },
+  //             };
+  //           }
+  //           return column;
+  //         })),
+  //       flyToColumn,
+  //     ]);
+
+  //     setStateApp((state) => ({
+  //       ...state,
+  //       gridWellsCount: wells.length,
+  //     }));
+  //     setLoading(false);
+  //   }
+  // }, [dataShapeWells]);
+
+
+
+
+
+
 
   useEffect(() => {
     if (
@@ -2677,176 +2686,187 @@ function M1nTable(props) {
 
   ////////////Activities end////////////////////////////////////////////////
 
-  ////////////Map Viewport Wells begin///////////////////////////////////////////////
 
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "mapViewportWells" &&
-      stateApp.viewportWells
-    ) {
-      const IdsArray = [];
-      stateApp.viewportWells.forEach((well) => {
-        if (well && well.id) {
-          IdsArray.push(well.id);
-        }
-      });
 
-      if (IdsArray.length > 0) {
-        setLoading(true);
-        getCommentsCounter({
-          variables: {
-            objectsIdsArray: IdsArray,
-            userId: stateApp.user.mongoId,
-          },
-        });
-        getTagSamples({
-          variables: {
-            objectsIdsArray: IdsArray,
-            userId: stateApp.user.mongoId,
-          },
-        });
-        setViewportFeatures(stateApp.viewportWells);
-      } else {
-        setViewportFeatures(null);
-        setRows([]);
-        setLoading(false);
 
-        if (!warningShowed) {
-          dispatch(
-            showWarningMessage(
-              "We didn't find any well in the viewport, please make sure at least one layer with wells it's active, or zoom out untill you visualize some well spots."
-            )
-          );
-          setWarningShowed(true);
-        }
-      }
-    }
-  }, [props.parent, stateApp.viewportWells, stateApp.user]);
 
-  useEffect(() => {
-    if (props.parent && props.parent === "mapViewportWells") {
-      setTargetLabel("well");
 
-      if (props.header) {
-        setHeader(props.header);
-      } else {
-        setHeader("Wells");
-      }
-      setAddAble(false);
-    }
-  }, [props.parent]);
+  // ////////////Map Viewport Wells begin///////////////////////////////////////////////
 
-  useEffect(() => {
-    if (
-      props.parent &&
-      props.parent === "mapViewportWells" &&
-      viewportFeatures &&
-      viewportFeatures.length > 0 &&
-      dataCommentsCounter &&
-      dataCommentsCounter.commentsCounter &&
-      dataTagSamples &&
-      dataTagSamples.tagSamples &&
-      dataTracks
-    ) {
-      let wells = [...viewportFeatures];
-      wells = wells.map((w) => {
-        let well = { ...w };
+  // useEffect(() => {
+  //   if (
+  //     props.parent &&
+  //     props.parent === "mapViewportWells" &&
+  //     stateApp.viewportWells
+  //   ) {
+  //     const IdsArray = [];
+  //     stateApp.viewportWells.forEach((well) => {
+  //       if (well && well.id) {
+  //         IdsArray.push(well.id);
+  //       }
+  //     });
 
-        well.isTracked = false;
-        well.commentsCounter = 0;
-        well.tags = [[], 0];
+  //     if (IdsArray.length > 0) {
+  //       setLoading(true);
+  //       getCommentsCounter({
+  //         variables: {
+  //           objectsIdsArray: IdsArray,
+  //           userId: stateApp.user.mongoId,
+  //         },
+  //       });
+  //       getTagSamples({
+  //         variables: {
+  //           objectsIdsArray: IdsArray,
+  //           userId: stateApp.user.mongoId,
+  //         },
+  //       });
+  //       setViewportFeatures(stateApp.viewportWells);
+  //     } else {
+  //       setViewportFeatures(null);
+  //       setRows([]);
+  //       setLoading(false);
 
-        well.coordinates = {};
-        if (well.longitude && well.latitude)
-          well.coordinates.center = [well.longitude, well.latitude];
+  //       if (!warningShowed) {
+  //         dispatch(
+  //           showWarningMessage(
+  //             "We didn't find any well in the viewport, please make sure at least one layer with wells it's active, or zoom out untill you visualize some well spots."
+  //           )
+  //         );
+  //         setWarningShowed(true);
+  //       }
+  //     }
+  //   }
+  // }, [props.parent, stateApp.viewportWells, stateApp.user]);
 
-        for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
-            well.commentsCounter = dataCommentsCounter.commentsCounter[i].total;
-            break;
-          }
-        }
-        for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (well.id === dataTagSamples.tagSamples[i]._id) {
-            well.tags = [
-              dataTagSamples.tagSamples[i].tags,
-              dataTagSamples.tagSamples[i].total,
-            ];
 
-            break;
-          }
-        }
-        for (let i = 0; i < dataTracks.length; i++) {
-          if (
-            well.id === dataTracks[i].toLowerCase()
-          ) {
-            well.isTracked = true;
-            break;
-          }
-        }
 
-        return well;
-      });
 
-      let availableTags = [];
-      dataTagSamples.tagSamples.map((sample) => {
-        availableTags = [...availableTags, ...sample.tags];
-      });
-      const cleanAvailableTags = [...new Set(availableTags)];
+  // useEffect(() => {
+  //   if (props.parent && props.parent === "mapViewportWells") {
+  //     setTargetLabel("well");
 
-      setRows(wells);
+  //     if (props.header) {
+  //       setHeader(props.header);
+  //     } else {
+  //       setHeader("Wells");
+  //     }
+  //     setAddAble(false);
+  //   }
+  // }, [props.parent]);
 
-      const flyToColumn = {
-        name: "coordinates",
-        label: " ",
-        options: {
-          filter: false,
-          sort: false,
-          searchable: false,
-          download: false,
-          print: false,
-          viewColumns: false,
-        },
-      };
+  // useEffect(() => {
+  //   if (
+  //     props.parent &&
+  //     props.parent === "mapViewportWells" &&
+  //     viewportFeatures &&
+  //     viewportFeatures.length > 0 &&
+  //     dataCommentsCounter &&
+  //     dataCommentsCounter.commentsCounter &&
+  //     dataTagSamples &&
+  //     dataTagSamples.tagSamples &&
+  //     dataTracks
+  //   ) {
+  //     let wells = [...viewportFeatures];
+  //     wells = wells.map((w) => {
+  //       let well = { ...w };
 
-      setColumns([
-        ...(cleanAvailableTags.length > 0
-          ? WellsHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filterOptions: {
-                    ...column.options.filterOptions,
-                    names: cleanAvailableTags,
-                  },
-                },
-              };
-            }
-            return column;
-          })
-          : WellsHeadCells.map((column) => {
-            if (column.name === "tags") {
-              return {
-                ...column,
-                options: {
-                  ...column.options,
-                  filter: false,
-                },
-              };
-            }
-            return column;
-          })),
-        flyToColumn,
-      ]);
+  //       well.isTracked = false;
+  //       well.commentsCounter = 0;
+  //       well.tags = [[], 0];
 
-      setLoading(false);
-    }
-  }, [viewportFeatures, dataTagSamples, dataCommentsCounter, dataTracks]);
+  //       well.coordinates = {};
+  //       if (well.longitude && well.latitude)
+  //         well.coordinates.center = [well.longitude, well.latitude];
 
-  ////////////Map Viewport Wells end///////////////////////////////////////////////
+  //       for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
+  //         if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
+  //           well.commentsCounter = dataCommentsCounter.commentsCounter[i].total;
+  //           break;
+  //         }
+  //       }
+  //       for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
+  //         if (well.id === dataTagSamples.tagSamples[i]._id) {
+  //           well.tags = [
+  //             dataTagSamples.tagSamples[i].tags,
+  //             dataTagSamples.tagSamples[i].total,
+  //           ];
+
+  //           break;
+  //         }
+  //       }
+  //       for (let i = 0; i < dataTracks.length; i++) {
+  //         if (
+  //           well.id === dataTracks[i].toLowerCase()
+  //         ) {
+  //           well.isTracked = true;
+  //           break;
+  //         }
+  //       }
+
+  //       return well;
+  //     });
+
+  //     let availableTags = [];
+  //     dataTagSamples.tagSamples.map((sample) => {
+  //       availableTags = [...availableTags, ...sample.tags];
+  //     });
+  //     const cleanAvailableTags = [...new Set(availableTags)];
+
+  //     setRows(wells);
+
+  //     const flyToColumn = {
+  //       name: "coordinates",
+  //       label: " ",
+  //       options: {
+  //         filter: false,
+  //         sort: false,
+  //         searchable: false,
+  //         download: false,
+  //         print: false,
+  //         viewColumns: false,
+  //       },
+  //     };
+
+  //     setColumns([
+  //       ...(cleanAvailableTags.length > 0
+  //         ? WellsHeadCells.map((column) => {
+  //           if (column.name === "tags") {
+  //             return {
+  //               ...column,
+  //               options: {
+  //                 ...column.options,
+  //                 filterOptions: {
+  //                   ...column.options.filterOptions,
+  //                   names: cleanAvailableTags,
+  //                 },
+  //               },
+  //             };
+  //           }
+  //           return column;
+  //         })
+  //         : WellsHeadCells.map((column) => {
+  //           if (column.name === "tags") {
+  //             return {
+  //               ...column,
+  //               options: {
+  //                 ...column.options,
+  //                 filter: false,
+  //               },
+  //             };
+  //           }
+  //           return column;
+  //         })),
+  //       flyToColumn,
+  //     ]);
+
+  //     setLoading(false);
+  //   }
+  // }, [viewportFeatures, dataTagSamples, dataCommentsCounter, dataTracks]);
+
+  // ////////////Map Viewport Wells end///////////////////////////////////////////////
+
+
+
 
   ////////////Owner_WellInterests begin///////////////////////////////////////////
 
@@ -3098,6 +3118,11 @@ function M1nTable(props) {
           contactId={props.contactId}
         />
       )}
+
+        { console.log('SHAPE HEADER', header) }
+        { console.log('SHAPE TARGET LABEL', targetLabel) }
+        { console.log('SHAPE PROPS', props) }
+
 
       <Table
         style={{ backgroundColor: "#fff" }}

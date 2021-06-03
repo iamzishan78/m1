@@ -15,6 +15,7 @@ import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from "graphQL/useMutationConvertMultitpleOwnerToContact";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import Loader from "components/Loaders";
+// import Typography from '@material-ui/core/Typography';
 
 const styles = () => ({
   topHeading: { fontWeight: "bold" },
@@ -90,7 +91,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   };
 
   const onDelete = (row) => {
-    setRows(rows.filter((r) => r._id !== row._id));
+    setRows(rows.filter((r) => r.id !== row.id));
   };
 
   const handleClose = () => {
@@ -187,6 +188,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                   setNameAutInputValue={setNameAutInputValue}
                   variant="outlined"
                   label="Contact Name"
+                  disableClearable
                   hasNextPage={hasNextPage}
                   isNextPageLoading={isNextPageLoading}
                   loadNextPage={loadNextPage}
@@ -228,10 +230,13 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                 </Grid>
 
                 <Grid item md={1}>
+                {rows.length > 1 && 
                   <IconButton aria-label="delete" onClick={() => onDelete(row)}>
                     <CloseSharp />
                   </IconButton>
+}
                 </Grid>
+                
               </Grid>
 
             ))}
@@ -255,29 +260,33 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             </Box>
           }
 
+          {((tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)) && 
+              <Typography style={{ fontWeight: "bold" , color: "red", marginTop: '40px', marginLeft: '25px'}}>
+                ** Please select a contact from the dropdown menu **
+              </Typography>
+          }
+
+
           <Box pt={6} mt={6}>
             <Grid container direction="row" justify="flex-end" alignItems="flex-end">
               <Grid item>
                 <Button onClick={handleClose}>Cancel</Button>
               </Grid>
               <Grid item>
-                {console.log('ROWS',rows)}
-                {console.log('ROWS NAME',nameAutValue)}
-                {console.log('ROWS TAB',TAB.EXISTING)}
-
                 
-                
-
+              {((tab === TAB.NEW && rows && rows.length > 0) || (tab === TAB.EXISTING && nameAutValue && nameAutValue.id !== 0)) && 
                 <Button
                   variant="contained"
                   component="span"
-                  // disabled={rows.length === 0}
-                  disabled={(tab === TAB.NEW && rows && rows.length === 0) || (tab === TAB.EXISTING && nameAutValue && nameAutValue.length === 0)}                    
+                  disabled={(tab === TAB.NEW && rows && rows.length === 0) || (tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)}                    
                   style={{ backgroundColor: "#00abed", color: "white" }}
                   onClick={onConvert}
                 >
                   Convert
               </Button>
+              }
+
+
               </Grid>
             </Grid>
           </Box>

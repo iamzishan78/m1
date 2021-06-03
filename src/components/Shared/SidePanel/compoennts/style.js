@@ -51,7 +51,7 @@ export const useStyles = makeStyles((theme) => ({
         maxHeight: 'calc(100vh - 40px - 64px)',
         backgroundColor: "#263451",
         "&::-webkit-scrollbar": {
-            width: "1em",
+            width: "0.75em",
         },
         "&:hover::-webkit-scrollbar": {
             width: "1.0em",
