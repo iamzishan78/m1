@@ -28,6 +28,10 @@ const useStyles = makeStyles((theme) => ({
       width: "0.75em",
       height: "0.75em",
     },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#929292",
+      borderRadius: 10,
+  },
     // "&:hover::-webkit-scrollbar": {
     //     width: "1.0em",
     // },

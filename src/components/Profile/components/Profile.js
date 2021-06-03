@@ -93,7 +93,9 @@ const Profile = (props) => {
       // },
       // "&::-webkit-scrollbar-track": {
       //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-      // },}}>
+      // },
+    }
+    }>
                                 <Grid item sm={4}>
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>First Name *</FormLabel>

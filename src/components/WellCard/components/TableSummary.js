@@ -31,6 +31,10 @@ const useStyles = makeStyles({
     // },
     //paddingRight: '20px'
   },
+  "&::-webkit-scrollbar-thumb": {
+    backgroundColor: "#929292",
+    borderRadius: 10,
+},
   rowCell: {
     width:"25%",
   },
