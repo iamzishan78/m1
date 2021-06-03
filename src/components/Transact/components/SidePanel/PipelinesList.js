@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, setMultiSelection }) {
+function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, setMultiSelection, userId }) {
   const dispatch = useDispatch();
   const classes = useStyles();
   const [items, setItems] = useState([]);
@@ -104,6 +104,16 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
       const parent = findParent(newItems, index);
       if (parent.type !== "Project") {
         newItems[index].depth = 0;
+        newItems[index].projectName = parent.name;
+        newItems[index].projectId = parent._id;
+      } else if (parent.type === 'Project' && parent.id !== newItems[index].parentId) {
+        newItems[index].projectName = parent.name;
+        newItems[index].projectId = parent._id;
+      }
+    } else {
+      if (newItems[index].projectId && newItems[index].type === 'Pipeline') {
+        newItems[index].projectName = null;
+        newItems[index].projectId = null;
       }
     }
     currentItem.current = newItems[index];
@@ -114,7 +124,6 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
   const handleDragBegin = (item) => {
     itemsRef.current = filteredPipelines;
     currentItem.current = item;
-    console.log("in drag begin");
   };
 
   const revert = () => {
@@ -123,12 +132,49 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
 
   const handleDragEnd = (oldItem, newItem) => {
     console.log("in drag end");
+    let itemsToUpdate = [];
+    // Pipelines / Projects of same depth
+    const itemIndex = items.findIndex(item => item.id === newItem.id);
+    const parent = findParent(items, itemIndex) || items[itemIndex - 1];
+    const parentIndex = items.findIndex(item => item.id === parent?.id);
+    const successor = items[itemIndex + 1];
+    if (parent?.position && successor?.position && Math.abs(parent.position - successor.position) !== 1) {
+      itemsToUpdate.push({ ...newItem, position: parent?.position + 1 });
+    } else {
+      if (parent?.type === 'Project') {
+        if (!oldItem.projectId) {
+          items[itemIndex].projectId = parent.id;
+          items[itemIndex].projectName = parent.projectName;
+          items[itemIndex].switchType = 'addDescriptor';
+        } else if (oldItem.projectId !== null && oldItem.projectId !== newItem.projectId) {
+          items[itemIndex].projectId = parent.id;
+          items[itemIndex].projectName = parent.projectName;
+          items[itemIndex].switchType = 'updateDescriptor';
+        }
+        const descendants = findDescendants(items, parentIndex);
+        itemsToUpdate = descendants.map((d, index) => ({ ...d, position: index }));
+      } else {
+        if (oldItem.projectId && !newItem.projectId) {
+          items[itemIndex].switchType = 'deleteDescriptor';
+        }
+        let lastPosition;
+        for (let i = itemIndex; i < items.length; i += 1) {
+          if ((!items[i].projectId || items[i].type === 'Project')) {
+            lastPosition = lastPosition ? lastPosition + 1 : parent?.position + 1 || i;
+            itemsToUpdate.push({ ...items[i], position: lastPosition });
+          }
+        }
+      }
+    }
+
     // Implement the api for position update
-    // updatePipelinesPositions({
-    //   variables: {
-    //     data: // new items to update
-    //   }
-    // });
+    updatePipelinesPositions({
+      variables: {
+        data: itemsToUpdate,
+        userId
+      },
+      refetchQueries: ['getPipelines']
+    });
   };
 
   const handleToggleCollapse = (id) => {
