@@ -270,7 +270,7 @@ const ShapeActionsPopup = (props) => {
   const actionEdit = () => {
     const { selectedFeature } = props;
     if (!stateApp.draw.get(stateApp.currentFeature.id)) {
-      stateApp.draw.add(selectedFeature);
+      stateApp.draw.add(stateApp.currentFeature);
     }
     stateApp.draw.changeMode("direct_select", {
       featureId: selectedFeature.id,
@@ -379,7 +379,7 @@ const ShapeActionsPopup = (props) => {
     const { selectedAoi } = stateApp;
     updateCustomLayer({
       variables: {
-        customLayerId: selectedAoi._id,
+        customLayerId: selectedAoi.id,
         customLayer: {
           IsDeleted: true,
         },
@@ -408,12 +408,8 @@ const ShapeActionsPopup = (props) => {
   };
 
 
-
-
-
   const handleDeleteAoiModal = () => {
-
-    console.log('CURRENT HANDLE', isDeleteModal)
+    console.log('CURRENT HANDLE', isDeleteModal);
     setDeleteModal(!isDeleteModal);
   };
 

@@ -186,13 +186,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function DrawShapes() {
-  let history = useHistory();
   const classes = useStyles();
   const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
-
-  const [stateNav, setStateNav] = useContext(NavigationContext);
   const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER);
 
   const eventsConfiguredRef = useRef(false);
@@ -214,15 +211,10 @@ export default function DrawShapes() {
   useEffect(() => {
     const { selectedUserDefinedLayer } = stateApp;
     if (selectedUserDefinedLayer) {
-      const currentFeature = {
-        ...selectedUserDefinedLayer,
-        id: selectedUserDefinedLayer.properties.id,
-        geometry: selectedUserDefinedLayer.geometry,
-      };
       setStateApp((state) => ({
         ...state,
-        currentFeature,
-        selectedAoi: { ...currentFeature, _id: currentFeature.id },
+        currentFeature: selectedUserDefinedLayer,
+        selectedAoi: selectedUserDefinedLayer,
       }));
     }
   }, [stateApp.selectedUserDefinedLayer]);

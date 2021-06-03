@@ -147,7 +147,7 @@ export default function ShapeAOIPopup(props) {
 
     // //////cleaning the selected title opinion and redirecting to title opinion page//
     if (stateApp.user.mongoId !== "") {
-      const customLayerId = stateApp.selectedAoi._id;
+      const customLayerId = stateApp.selectedAoi.id;
 
       const customLayerData = {
         shape: JSON.stringify(currentFeature),
