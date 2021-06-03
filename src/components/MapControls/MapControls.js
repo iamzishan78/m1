@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useContext } from "react";
 import { MapControlsContext } from "./MapControlsContext";
 import { AppContext } from "../../AppContext";
 import SpeedDial from "@material-ui/lab/SpeedDial";
@@ -22,7 +22,6 @@ import AspectRatioOutlinedIcon from "@material-ui/icons/AspectRatioOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../actions";
 import SidePanel from "../Shared/SidePanel/SidePanel";
-import { isNullishCoalesce } from "typescript";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -100,6 +99,12 @@ export default function MapControls(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
 
+  useEffect(() => {
+    if (stateApp.selectedUserDefinedLayer) {
+      setStateMapControls(state => ({ ...state, selectedMapControl: 'draw', selectedControl: 'layer' }));
+    }
+  }, [stateApp.selectedUserDefinedLayer]);
+
   const toggleSpeedDial = (event) => {
     setStateMapControls({
       ...stateMapControls,
@@ -113,17 +118,17 @@ export default function MapControls(props) {
 
   const handleCloseLeftSidePanel = () => {
 
-                // close layer manager  
-                setStateMapControls({
-                  ...stateMapControls,
-                  expandedPanel: false,
-                  anchorEl: null,
-                });  
-              
+    // close layer manager  
+    setStateMapControls({
+      ...stateMapControls,
+      expandedPanel: false,
+      anchorEl: null,
+    });
+
   };
 
   const handleCloseShapeDrawer = () => {
-    
+
     // const { draw, map, currentFeature } = stateApp;
     // draw.delete(currentFeature?.id);
     // setStateApp((state) => ({
@@ -164,117 +169,117 @@ export default function MapControls(props) {
     setStateApp((state) => ({
       ...state,
       selectedAoi: null,
-      featureOrMapShape: null, 
+      featureOrMapShape: null,
     }));
 
-  
-};
+
+  };
 
 
-const handleCloseDetailedCards = () => {
-    
-                // close detailed cards 
-                setStateApp((state) => ({
-                  ...state,
-                  popupOpen: false,
-                  selectedWell: null,
-                  selectedParcel: null,
-                  expandedCard: false,
-                  activateWellDetailsFromTable: false,
-                }));
+  const handleCloseDetailedCards = () => {
 
-              // close doc viewer 
-              setStateApp((state) => ({
-                ...state,
-                viewDoc: null
-              }));
+    // close detailed cards 
+    setStateApp((state) => ({
+      ...state,
+      popupOpen: false,
+      selectedWell: null,
+      selectedParcel: null,
+      expandedCard: false,
+      activateWellDetailsFromTable: false,
+    }));
 
-};
+    // close doc viewer 
+    setStateApp((state) => ({
+      ...state,
+      viewDoc: null
+    }));
+
+  };
 
 
   const handleFabClick = (e, action) => {
 
-    if(stateApp.expandedCard===true){
+    if (stateApp.expandedCard === true) {
       handleCloseLeftSidePanel()
       handleCloseShapeDrawer()
     }
 
-    if(stateMapControls.selectedMapControl===true){
+    if (stateMapControls.selectedMapControl === true) {
 
-      console.log('SHAPE STATE MAP CONTROLS',stateMapControls)
+      console.log('SHAPE STATE MAP CONTROLS', stateMapControls)
 
     }
 
 
-    
 
-    if(e && action){
-        let anchorEl = e.currentTarget;
 
-        if (action === "track") {
-          anchorEl = null;
-          handleCloseLeftSidePanel()
-          handleCloseShapeDrawer()
-          handleCloseDetailedCards()
+    if (e && action) {
+      let anchorEl = e.currentTarget;
 
-          if (mapGridCardActiveTap === 1 && mapGridCardActivated) {
-            dispatch(toggleMapGridCardAtived());
-          } else {
-            dispatch(
-              setMapGridCardState({
-                mapGridCardActivated: true,
-                mapGridCardActiveTap: 1,
-              })
-            );
-          }
+      if (action === "track") {
+        anchorEl = null;
+        handleCloseLeftSidePanel()
+        handleCloseShapeDrawer()
+        handleCloseDetailedCards()
+
+        if (mapGridCardActiveTap === 1 && mapGridCardActivated) {
+          dispatch(toggleMapGridCardAtived());
+        } else {
+          dispatch(
+            setMapGridCardState({
+              mapGridCardActivated: true,
+              mapGridCardActiveTap: 1,
+            })
+          );
+        }
+      }
+
+
+      if (action === "base" || action === "heatMaps" || action === "layer") {
+
+        setStateMapControls({
+          ...stateMapControls,
+          selectedControl: action,
+          expandedPanel:
+            action === stateMapControls.selectedControl &&
+              stateMapControls.expandedPanel
+              ? false
+              : true,
+          anchorEl: anchorEl,
+        });
+        handleCloseDetailedCards()
+      }
+
+
+
+      if (action === "draw") {
+        setStateMapControls({
+          ...stateMapControls,
+          selectedMapControl: action,
+          // selectedControl: 'layer',
+        });
+
+        if (!stateApp.editDraw) {
+          setStateApp((state) => ({
+            ...state,
+            showDrawShapesPopup: !state.showDrawShapesPopup,
+            editDraw: true,
+          }));
         }
 
-
-        if (action === "base" || action === "heatMaps" || action === "layer" ) {
-
-          setStateMapControls({
-            ...stateMapControls,
-            selectedControl: action,
-            expandedPanel:
-              action === stateMapControls.selectedControl &&
-                stateMapControls.expandedPanel
-                ? false
-                : true,
-            anchorEl: anchorEl,
-          });
-          handleCloseDetailedCards()
+        if (stateApp.editDraw) {
+          setStateApp((state) => ({
+            ...state,
+            editDraw: false,
+            currentFeature: undefined,
+            isAbstractedLayersPolygon: false,
+            multiSelectLandGrids: false,
+            selectedAbstracts: [],
+            showShapeActionsPopup: false,
+            showDrawShapesPopup: false,
+          }));
         }
-
-
-
-        if (action === "draw") {
-          setStateMapControls({
-            ...stateMapControls,
-            selectedMapControl: action,
-            // selectedControl: 'layer',
-          });
-
-          if(!stateApp.editDraw){
-            setStateApp((state) => ({
-              ...state,
-              showDrawShapesPopup: !state.showDrawShapesPopup,
-              editDraw: true,
-            }));
-            }
-
-          if(stateApp.editDraw){
-            setStateApp((state) => ({
-              ...state,
-              editDraw: false,
-              currentFeature: undefined,
-              isAbstractedLayersPolygon: false,
-              multiSelectLandGrids: false,
-              selectedAbstracts: [],
-              showShapeActionsPopup: false,
-              showDrawShapesPopup: false,
-            }));
-            }
-          }
+      }
 
 
     }
@@ -365,7 +370,7 @@ const handleCloseDetailedCards = () => {
   };
 
   useEffect(() => {
-    if(stateApp.expandedCard){
+    if (stateApp.expandedCard) {
       handleFabClick()
     }
   }, [stateApp.expandedCard]);
@@ -374,13 +379,13 @@ const handleCloseDetailedCards = () => {
 
   useEffect(() => {
 
-    if(stateApp.openDrawShapesControl){
-    console.log('SHAPE OPENDRAWS',stateMapControls)
-  }
+    if (stateApp.openDrawShapesControl) {
+      console.log('SHAPE OPENDRAWS', stateMapControls)
+    }
 
-    if(stateApp.openDrawShapesControl === true){
+    if (stateApp.openDrawShapesControl === true) {
 
-      console.log('SHAPE OPENDRAWS 2',stateMapControls)
+      console.log('SHAPE OPENDRAWS 2', stateMapControls)
       setStateMapControls((state) => ({
         ...state,
         selectedMapControl: 'draw',
