@@ -7,6 +7,8 @@ import TextField from "@material-ui/core/TextField";
 import { useDispatch } from "react-redux";
 
 import Taps from "../Shared/Taps";
+import TabPanels from "components/Shared/TabPanels"
+import TabButtons from "components/Shared/TabPanels/TabButtons"
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 import QtrQtrSelector from "./components/QtrQtrSelector";
@@ -23,6 +25,8 @@ import AbstractCard from "./components/AbstractCard";
 import AltSurveyCard from "./components/AltSurveyCard";
 import ParcelDetailsMap from "./components/ParcelDetailsMap";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
+import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwnersTable";
+import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 import { AppContext } from "../../AppContext";
@@ -62,6 +66,20 @@ const useStyles = makeStyles((theme) => ({
   gridWidthScroll: {
     maxHeight: "calc(100% - 88px)",
     overflow: "auto",
+    "&::-webkit-scrollbar": {
+      width: "0.75em",
+      height: "0.75em",
+    },
+    // "&:hover::-webkit-scrollbar": {
+    //     width: "1.0em",
+    // },
+    // "&::-webkit-scrollbar-track": {
+    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    // },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#929292",
+      borderRadius: 10,
+  },
   },
   gridItemGrey: {
     flexGrow: 1,
@@ -145,12 +163,31 @@ const useStyles = makeStyles((theme) => ({
      },
     },
   },
+  tapsPanels: {
+    "& .MuiBox-root": { padding: "0" },
+  },
+  tapsPanelsPadding: {
+    "& .MuiBox-root": { padding: "0" },
+  },
+  tapsLabelsButtonsSelected: {
+    boxShadow: "none",
+    color: "#fff",
+    backgroundColor: theme.palette.secondary.main,
+    "&:hover": { color: "#757575", boxShadow: "none !important" },
+  },
+  tapsLabelsButtons: {
+    boxShadow: "none",
+    backgroundColor: "#fff",
+    color: "#757575",
+    "&:hover": { boxShadow: "none !important" },
+  },
 }));
 
 export default function ParcelsDetailCard(props) {
   
   const classes = useStyles();
   const dispatch = useDispatch();
+  const [selectedTab, setSelectedTab] = useState(0);
   const [parcelObj, setParcelObj] = useState();
   const [parcelWells, setParcelWells] = useState();
   const [parcelProperties, setProperties] = useState();
@@ -234,6 +271,19 @@ export default function ParcelsDetailCard(props) {
       });
     }
   };
+
+const Header = () => (
+  <TabButtons
+    labels={[
+      "Parcel Ownership",
+      "Suggested Ownership",
+    ]}
+    value={selectedTab}
+    setValue={(n) => {
+      setSelectedTab(n);
+    }}
+  />
+);
 
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
@@ -347,12 +397,33 @@ export default function ParcelsDetailCard(props) {
       </Grid>
       <Grid item sm={12}>
         <Taps
-          tabLabels={["Interest Owners"]}
+          tabLabels={["Interest Owners", "Wells"]}
           tabPanels={[
-            <div className={classes.subContent}>
-            <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense />
-            </div>,
-            // <M1nTable parent="ownersPerParcelWells" dense />
+            <TabPanels
+              value={selectedTab}
+              panels={[
+                <div className={classes.subContent}>
+                  <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense header={<Header />} />
+                </div>,
+                <div className={classes.subContent}>
+                  <SuggestedTaxOwnersTable
+                    customLayer={parcelObj}
+                    parent="suggestedOwnersPerParcel"
+                    targetLabel="well"
+                    header={<Header />}
+                    setSelectedTab={setSelectedTab}
+                    dense
+                  />
+                </div>
+              ]}
+            />,
+            <AssociatedWellsParcelTable
+              customLayer={parcelObj}
+              parent="associatedWellsPerParcel"
+              targetLabel="well"
+              header="Associated Wells"
+              dense
+            />
           ]}
         />
       </Grid>

@@ -79,6 +79,20 @@ const useStyles = makeStyles((theme) => ({
     borderTop: "solid 1px#E0E0E0",
     maxHeight: "calc(100vh - 147px) !important",
     overflowY: "auto",
+    "&::-webkit-scrollbar": {
+      width: "0.75em",
+      height: "0.75em",
+    },
+    // "&:hover::-webkit-scrollbar": {
+    //     width: "1.0em",
+    // },
+    // "&::-webkit-scrollbar-track": {
+    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    // },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#929292",
+      borderRadius: 10,
+  },
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": { minHeight: "calc(100vh - 265px) !important" },

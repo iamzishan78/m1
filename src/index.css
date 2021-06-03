@@ -50,6 +50,10 @@ body {
   z-index: 9999999999 !important;
 }
 
+.Toastify__toast-container{
+  z-index: 999999 !important;
+}
+
 .Toastify__toast{
   border-top: 6px solid #17aadd  !important;
 }

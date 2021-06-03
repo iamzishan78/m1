@@ -141,11 +141,13 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
                 </Typography>
               </Grid>
 
+              {rows.length >= 2 &&
               <Grid item md={1}>
                 <IconButton aria-label="delete" onClick={() => onDelete(row)}>
                   <CloseSharp />
                 </IconButton>
               </Grid>
+              }
             </Grid>
           ))}
 
@@ -154,6 +156,12 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
               Note: Merging contacts is an irreversible action.
           </Typography>
           </Box>
+
+          {(rows.length < 2) && 
+              <Typography style={{ fontWeight: "bold" , color: "red", marginTop: '40px', marginLeft: '25px'}}>
+                ** Please cancel and reselct two or more contacts to merge **
+              </Typography>
+          }
 
           <Box pt={6} mt={6}>
             <Grid
@@ -166,6 +174,8 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
                 <Button onClick={handleClose}>Cancel</Button>
               </Grid>
               <Grid item>
+
+                {rows.length >= 2 &&
                 <Button
                   variant="contained"
                   component="span"
@@ -175,6 +185,8 @@ export default function MergeContactDrawer({ onClose, rows, setRows, setM1nSelec
                 >
                   Merge
               </Button>
+                }
+
               </Grid>
             </Grid>
           </Box>

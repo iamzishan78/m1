@@ -157,8 +157,8 @@ const PrivateRoute = ({ component, ...options }) => {
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now() && apolloClient?.link?.options?.headers?.["X-ZUMO-AUTH"]
       ? component
       : (() => {
-          return stateApp.myMSALB2CObj ? LoginB2C : Login;
-        })();
+        return stateApp.myMSALB2CObj ? LoginB2C : Login;
+      })();
 
   return (
     <div>
@@ -204,6 +204,11 @@ function App() {
             },
           },
         }),
+        defaultOptions: {
+          watchQuery: {
+            fetchPolicy: "cache-and-network",
+          },
+        },
       });
 
       setApolloClient((state, props) => {
@@ -217,6 +222,7 @@ function App() {
           ...state.link.options,
           uri: endpoint,
           cache: state.cache,
+          defaultOptions: state.defaultOptions
         });
       });
     }

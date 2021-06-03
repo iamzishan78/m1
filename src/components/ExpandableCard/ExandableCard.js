@@ -122,6 +122,7 @@ function ExpandableCard(props) {
       "& .MuiCardHeader-action": {
         alignSelf: "left",
       },
+      zIndex: 9999, // consistent with mapbox popup summary card for map interactions
     },
     title: {
       fontFamily: "Poppins",
@@ -152,6 +153,21 @@ function ExpandableCard(props) {
       background: "#fff",
       padding: "0 !important",
       overflowY: "auto",
+
+      "&::-webkit-scrollbar": {
+        width: "0.75em",
+      },
+      // "&:hover::-webkit-scrollbar": {
+      //     width: "1.0em",
+      // },
+      // "&::-webkit-scrollbar-track": {
+      //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+      // },
+
+      "&::-webkit-scrollbar-thumb": {
+          backgroundColor: "#929292",
+          borderRadius: 10,
+      },
       height: stateExpandableCard.expanded
         ? "calc(100% - 72px)"
         : "fit-content",
@@ -484,10 +500,17 @@ function ExpandableCard(props) {
                 )}
 
 
+              {console.log('EXPANDED', isExpanded)}
+              {console.log('EXPANDED TARGET', targetLabel)}
+              {console.log('EXPANDED PROPS', props)}
+
+
+
               {stateExpandableCard.expanded 
               
                 && targetLabel !== "activity" 
                 && targetLabel !== "contact"
+                && parent !== 'table'
                 ? parent !== "table" 
                   && targetLabel !== "well" 
                   && targetLabel !== "expandedWell" 
@@ -495,6 +518,8 @@ function ExpandableCard(props) {
                   && targetLabel !== "expandedParcel"
                   && targetLabel !== "recent_submitted_permits"
                   ? (
+
+                    
                     <Tooltip title={"Shrink"} placement="top">
                       <IconButton
                         color="secondary"
@@ -505,7 +530,7 @@ function ExpandableCard(props) {
                         <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
                       </IconButton>
                     </Tooltip>
-                  ) : isExpanded == false && targetLabel !== "activity" ? (
+                  ) : (isExpanded == false && targetLabel !== "activity") ? (
                     <Tooltip title={"Expand"} placement="top">
                       <IconButton
                         size="small"
@@ -544,6 +569,7 @@ function ExpandableCard(props) {
                     </Tooltip>
                   )
                 )}
+
 
               <Tooltip title={"Close"} placement="top">
                 <IconButton

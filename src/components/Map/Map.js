@@ -441,7 +441,7 @@ function Map() {
 
 
   useEffect(() => {
-    if(stateApp.selectedPermit !== null && !stateApp.selectedPermit.hasOwnProperty('Lease')){
+    if (stateApp.selectedPermit !== null && !stateApp.selectedPermit.hasOwnProperty('Lease')) {
       getRecentPermitDetail({
         variables: { id: stateApp.selectedPermit.PermitId }
       });
@@ -452,7 +452,7 @@ function Map() {
     if (dataPermitSummary) {
       setStateApp((state) => ({
         ...state,
-        selectedPermit: {...stateApp.selectedPermit, ...dataPermitSummary.recentPermitDetail[0]}
+        selectedPermit: { ...stateApp.selectedPermit, ...dataPermitSummary.recentPermitDetail[0] }
       }));
     }
   }, [dataPermitSummary])
@@ -502,21 +502,18 @@ function Map() {
       // currentLayer.fileContent = response;
       currentLayer.fileUrl = uri;
       layers[layerIndex] = currentLayer;
-      setLayersData(layers);
+      layers.forEach((layer, index) => {
+        if (layer.file === currentLayer.file) {
+          layers[index] = { ...layers[index], fileUrl: uri }
+        }
+      })
+      setLayersData([...layers]);
 
       let nextLayerIndex;
 
       if (layerIndex < layersData.length - 1)
         for (let i = layerIndex + 1; i < layers.length; i++) {
-          const fileFound = layers.find((l) => l.file === layers[i].file && l.fileUrl)
-          if (fileFound) {
-            let currentLayer = { ...layers[i] };
-            // currentLayer.fileContent = fileFound.fileContent
-            currentLayer.fileUrl = fileFound.fileUrl
-            layers[i] = currentLayer;
-            setLayersData(layers);
-          }
-          else if (layers[i].layerType == "file layer") {
+          if (layers[i].layerType == "file layer" && !layers[i].fileUrl) {
             setFileRequestCounter(1);
             viewFile({
               variables: {
@@ -766,20 +763,20 @@ function Map() {
 
 
 
-      if (map.getSource(`${sourceId}_filter`)) {
-        let mapSourceFilterData = map.getSource(`${sourceId}_filter`)._data;
-        if (
-          mapSourceFilterData &&
-          !deepEqualObjects(geoJson, mapSourceFilterData)
-        )
-          map.getSource(`${sourceId}_filter`).setData(geoJson);
-      } else {
-        map.addSource(`${sourceId}_filter`, {
-          type: "geojson",
-          data: geoJson,
-          // promoteId: "id",
-        });
-      }
+      // if (map.getSource(`${sourceId}_filter`)) {
+      //   let mapSourceFilterData = map.getSource(`${sourceId}_filter`)._data;
+      //   if (
+      //     mapSourceFilterData &&
+      //     !deepEqualObjects(geoJson, mapSourceFilterData)
+      //   )
+      //     map.getSource(`${sourceId}_filter`).setData(geoJson);
+      // } else {
+      //   map.addSource(`${sourceId}_filter`, {
+      //     type: "geojson",
+      //     data: geoJson,
+      //     // promoteId: "id",
+      //   });
+      // }
 
       // -> add layer
       const layerId = prop.id;
@@ -795,17 +792,19 @@ function Map() {
       }
 
       if (map.getLayer(layerId)) {
-        map.moveLayer(`${layerId}_point`);
         map.setLayoutProperty(
           layerId,
           "visibility",
           visible ? "visible" : "none"
         );
-        map.setLayoutProperty(
-          `${layerId}_point`,
-          "visibility",
-          visible ? "visible" : "none"
-        );
+        if (map.getLayer(`${layerId}_point`)) {
+          map.moveLayer(`${layerId}_point`);
+          map.setLayoutProperty(
+            `${layerId}_point`,
+            "visibility",
+            visible ? "visible" : "none"
+          );
+        }
         if (prop.paintProps) {
           Object.keys(prop.paintProps).forEach((key) => {
             map.setPaintProperty(layerId, key, prop.paintProps[key]);
@@ -1127,25 +1126,25 @@ function Map() {
       if (feature.source === "interests_source") {
 
 
-                console.log('SHAPE INTEREST SOURCE')
-                // setStateMapControls((state) => ({
-                //   ...state,
-                //   selectedMapControl: 'draw',
-                //   openDrawShapesControl: true, 
-                // }));
+        console.log('SHAPE INTEREST SOURCE')
+        // setStateMapControls((state) => ({
+        //   ...state,
+        //   selectedMapControl: 'draw',
+        //   openDrawShapesControl: true, 
+        // }));
         setStateApp((state) => ({
           ...state,
           showShapeActionsPopup: true,
           selectedUserDefinedLayer: feature,
           selectedParcel: null,
 
-                  openDrawShapesControl: true, 
+          openDrawShapesControl: true,
         }));
 
 
 
 
-                if(!stateApp.editDraw){
+        if (!stateApp.editDraw) {
           setStateApp((state) => ({
             ...state,
             showDrawShapesPopup: !state.showDrawShapesPopup,
@@ -1416,10 +1415,18 @@ function Map() {
               beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
             }
           }
-        } else if (layer.layerType == "file layer" && layersData[i].fileUrl) {
-          let data = layersData[i].fileUrl;
-          if (data) {
-            beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
+        } else if (layer.layerType == "file layer") {
+          let layerData = layersData.find((l) => l.file === layer.file);
+          if (layerData.fileUrl) {
+            if (layerData.layerPaintProps[0].sourceProps) {
+              if (!map.getSource(layerData.layerPaintProps[0].sourceProps)) {
+                map.addSource(layerData.layerPaintProps[0].sourceProps, {
+                  type: "geojson",
+                  data: layerData.fileUrl,
+                });
+              }
+            }
+            beforeLayer = setLayer(layerData.fileUrl, layer.identifier, map, beforeLayer);
           }
         }
       }
@@ -4036,47 +4043,53 @@ function Map() {
     // stateApp.checkedLayersInteraction,
   ]);
 
-  // use effect to query the viewport
-  useEffect(() => {
-    if (stateApp.map) {
-      const queryViewportHandler = debounce(() => {
-        if (stateApp.map.getZoom() >= stateApp.minZoomToQueryViewport) {
-          const points = stateApp.map.queryRenderedFeatures({
-            layers: [
-              "wellpoints",
-              // "Tracked Wells",
-              // "Tags Filter",
-              // "Search",
-            ],
-          });
 
-          const featuresArray = [];
-          points.forEach((point) => {
-            if (point && point.properties && point.properties.id) {
-              featuresArray.push({
-                ...point.properties,
-                id: point.properties.id.toLowerCase(),
-              });
-            }
-          });
+  // VIEWPORT REMOVE
+  // // use effect to query the viewport
+  // useEffect(() => {
+  //   if (stateApp.map) {
+  //     const queryViewportHandler = debounce(() => {
+  //       if (stateApp.map.getZoom() >= stateApp.minZoomToQueryViewport) {
+  //         const points = stateApp.map.queryRenderedFeatures({
+  //           layers: [
+  //             "wellpoints",
+  //             // "Tracked Wells",
+  //             // "Tags Filter",
+  //             // "Search",
+  //           ],
+  //         });
 
-          setStateApp((stateApp) => {
-            if (!deepEqual(stateApp.viewportWells, featuresArray))
-              return { ...stateApp, viewportWells: featuresArray };
-            return stateApp;
-          });
-        } else
-          setStateApp((stateApp) => {
-            if (stateApp.viewportWells)
-              return { ...stateApp, viewportWells: null };
-            return stateApp;
-          });
-      }, 300);
+  //         const featuresArray = [];
+  //         points.forEach((point) => {
+  //           if (point && point.properties && point.properties.id) {
+  //             featuresArray.push({
+  //               ...point.properties,
+  //               id: point.properties.id.toLowerCase(),
+  //             });
+  //           }
+  //         });
 
-      // stateApp.map.off("render", queryViewportHandler);
-      stateApp.map.on("render", queryViewportHandler);
-    }
-  }, [stateApp.map]);
+  //         setStateApp((stateApp) => {
+  //           if (!deepEqual(stateApp.viewportWells, featuresArray))
+  //             return { ...stateApp, viewportWells: featuresArray };
+  //           return stateApp;
+  //         });
+  //       } else
+  //         setStateApp((stateApp) => {
+  //           if (stateApp.viewportWells)
+  //             return { ...stateApp, viewportWells: null };
+  //           return stateApp;
+  //         });
+  //     }, 300);
+
+  //     // stateApp.map.off("render", queryViewportHandler);
+  //     stateApp.map.on("render", queryViewportHandler);
+  //   }
+  // }, [stateApp.map]);
+
+
+
+
 
   // Use effect for removing shape filter
   useEffect(() => {
@@ -4991,7 +5004,7 @@ function Map() {
           </div>
         )
       }
-      {stateApp.selectedPermit !== null && stateApp.selectedPermit.hasOwnProperty('Lease') && 
+      {stateApp.selectedPermit !== null && stateApp.selectedPermit.hasOwnProperty('Lease') &&
         // && stateApp.popupOpen==true
         showExpandableCard && (
           <PortalD id="popupContainer">
