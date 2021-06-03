@@ -273,6 +273,7 @@ export default function AddLayer(props) {
               if (Array.isArray(geojson)) {
                 const merged = geojsonMerge.merge(geojson)
                 merged.fileNames = geojson.map((g) => g.fileName)
+                merged.groupName = fileName.replace('.zip', '')
                 resolve(merged)
               }
               resolve(geojson);
