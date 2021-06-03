@@ -84,7 +84,16 @@ const Profile = (props) => {
                             <Typography className={classes.heading}>Personal Identification</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Grid container style={{overflowY: 'scroll'}}>
+                            <Grid container style={{overflowY: 'scroll',      "&::-webkit-scrollbar": {
+        width: "0.75em",
+        height: "0.75em",
+      },
+      // "&:hover::-webkit-scrollbar": {
+      //     width: "1.0em",
+      // },
+      // "&::-webkit-scrollbar-track": {
+      //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+      // },}}>
                                 <Grid item sm={4}>
                                     <FormControl style={{width: '100%', padding: 10}}>
                                         <FormLabel>First Name *</FormLabel>

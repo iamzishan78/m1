@@ -24,6 +24,16 @@ const useStyles = makeStyles(theme => ({
     background:'rgba(255,255,255,0)',
     color: 'rgba(23, 170, 221, 1)',
     overflowY:'auto',
+    "&::-webkit-scrollbar": {
+      width: "0.75em",
+      height: "0.75em",
+    },
+    // "&:hover::-webkit-scrollbar": {
+    //     width: "1.0em",
+    // },
+    // "&::-webkit-scrollbar-track": {
+    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    // },
     padding: 0,
   },
   wellListItem:{

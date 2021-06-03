@@ -66,6 +66,16 @@ const useStyles = makeStyles((theme) => ({
   gridWidthScroll: {
     maxHeight: "calc(100% - 88px)",
     overflow: "auto",
+    "&::-webkit-scrollbar": {
+      width: "0.75em",
+      height: "0.75em",
+    },
+    // "&:hover::-webkit-scrollbar": {
+    //     width: "1.0em",
+    // },
+    // "&::-webkit-scrollbar-track": {
+    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    // },
   },
   gridItemGrey: {
     flexGrow: 1,
