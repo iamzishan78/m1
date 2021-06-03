@@ -3122,6 +3122,7 @@ function M1nTable(props) {
         { console.log('SHAPE HEADER', header) }
         { console.log('SHAPE TARGET LABEL', targetLabel) }
         { console.log('SHAPE PROPS', props) }
+        { console.log('SHAPE WELLS', dataShapeWellsCount) }
 
 
       <Table
