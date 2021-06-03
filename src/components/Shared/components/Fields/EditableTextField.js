@@ -13,8 +13,13 @@ const useStyles = makeStyles((theme) => ({
     textField: {
         height: "100%",
         width: "100%",
+        paddingTop: "15px",
         '& .MuiFilledInput-input': {
             padding: '12px 12px 10px'
+        },
+        '& .MuiFormHelperText-contained': {
+            justifyContent: "flex-end",
+            display: "flex"
         }
     },
     editIcon: {
@@ -47,7 +52,7 @@ function EditableTextField({ item, onChange, name }) {
                         defaultValue={name}
                         autoFocus
                         required
-                        // helperText={"Press Enter to save"}
+                        helperText={"Return to save"}
                         InputProps={{
                             className: classes.textFieldInput,
                             disableUnderline: true,

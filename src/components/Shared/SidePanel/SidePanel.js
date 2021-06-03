@@ -184,11 +184,12 @@ export default function SidePanel() {
 					if (item.groupId && !groupHandled.includes(item.groupId)) {
 						groupHandled.push(item.groupId);
 						const groups = stateApp.layers.filter((i) => i.groupId === item.groupId)
+						const showable = !!(groups.find((i) => i.layerSettings.showable))
 						layerAndGroups.push({
 							depth: 0,
 							type: 'group',
 							collapsed: true,
-							showable: true,
+							showable: showable,
 							name: item.groupName
 							, id: item.groupId
 						})

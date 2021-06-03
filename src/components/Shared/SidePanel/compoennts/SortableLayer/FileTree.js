@@ -26,8 +26,14 @@ const FileTree = ({ layerMap }) => {
       if (items.length === layerMap.length) {
         const updateFn = {};
         items.forEach((item, index) => {
+          if (layerMap[index].type === 'group') {
+            updateFn[index] = {
+              showable: { $set: layerMap[index].showable },
+            }
+          }
           if (item.name !== layerMap[index].name) {
             updateFn[index] = {
+              ...updateFn[index],
               name: { $set: layerMap[index].name },
             }
           }

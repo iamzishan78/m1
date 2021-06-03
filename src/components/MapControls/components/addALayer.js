@@ -322,7 +322,8 @@ export default function AddLayer(props) {
     (layer) => layer.layerCategory == "UD layer"
   );
   const groupHandled = []
-  UdLayers.forEach((UdLayer, index) => {
+  for (let index = 0; index < UdLayers.length - 1; index++) {
+    const UdLayer = UdLayers[index]
     if (UdLayer.groupId && !groupHandled.includes(UdLayer.groupId)) {
       groupHandled.push(UdLayer.groupId);
       UdLayers.splice(index, 0, {
@@ -332,9 +333,9 @@ export default function AddLayer(props) {
         id: UdLayer.groupId,
         layers: UdLayers.filter((ul) => ul.groupId === UdLayer.groupId)
       })
+      index = 0
     }
-  })
-
+  }
   UdLayers = UdLayers.filter((UdLayer) => !(UdLayer.layerType === 'file layer' && UdLayer.groupId))
   return (
     <>
