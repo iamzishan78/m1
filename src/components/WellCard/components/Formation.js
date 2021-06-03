@@ -18,6 +18,17 @@ const useStyles = makeStyles({
     overflowX: "auto",
     marginBottom: 20,
     background: "white",
+
+    "&::-webkit-scrollbar": {
+      width: "0.75em",
+      height: "0.75em",
+    },
+    // "&:hover::-webkit-scrollbar": {
+    //     width: "1.0em",
+    // },
+    // "&::-webkit-scrollbar-track": {
+    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    // },
   },
   rowName: {
     fontWeight: "bold",
