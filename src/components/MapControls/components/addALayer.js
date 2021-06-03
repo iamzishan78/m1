@@ -212,6 +212,8 @@ export default function AddLayer(props) {
       if (!deepEqualObjects(currentLayers[i], stateApp.layers[i]))
         layersToUpdate.push({
           _id: currentLayers[i]._id,
+          layerName: currentLayers[i].layerName,
+          groupName: currentLayers[i].groupName,
           layerSettings: currentLayers[i].layerSettings,
         });
     }
