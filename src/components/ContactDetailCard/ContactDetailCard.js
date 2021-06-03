@@ -949,67 +949,7 @@ export default function ContactDetailCard(props) {
             </Grid>
           )}
         </RightDialog>
-
-        {/* //// ViewAll in a full screen dialog //// */}
-        {showExpandableCard &&
-          expCardSubComponentTitle !== "Detailed Information" && (
-            <Dialog
-              className={classes.dialogExpCard}
-              fullWidth
-              maxWidth="xl"
-              open={showExpandableCard}
-              onClose={handleCloseDialog}
-            >
-              <ExpandableCardProvider
-                expanded={true}
-                handleCloseExpandableCard={handleCloseExpandableCard}
-                title={"Contact Details"}
-                subTitle={" "}
-                parent="table"
-                mouseX={0}
-                mouseY={0}
-                position="relative"
-                cardLeft={"0"}
-                cardTop={"0"}
-                zIndex={1201}
-                cardWidthExpanded="100%"
-                cardHeightExpanded="100%"
-                targetSourceId={stateApp.selectedContact}
-                targetLabel={"contact"}
-                noTrackAvailable={true}
-                component={
-                  <div
-                    style={{
-                      width: "100%",
-                      backgroundColor: "#fff",
-                      minHeight: "100%",
-                    }}
-                  >
-                    {/* //// ViewAll card top bar //// */}
-                    <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-                      <h3 className={classes.expTardTopBarNav}>
-                        <span>Contacts</span>
-                        {" > "}
-                        <span
-                          className={classes.expTardTopBarNavContName}
-                          onClick={handleCloseExpandableCard}
-                        >
-                          {contactData && contactData.name
-                            ? contactData.name
-                            : ""}
-                        </span>
-                        {" > "}
-                        {expCardSubComponentTitle}
-                      </h3>
-                    </Toolbar>
-                    {expCardSubComponent}
-                  </div>
-                }
-              />
-            </Dialog>
-          )}
-        {showExpandableCard &&
-          expCardSubComponentTitle === "Detailed Information" && (
+        {showExpandableCard &&(
             <Dialog
               className={classes.dialogFullScreen}
               fullWidth
