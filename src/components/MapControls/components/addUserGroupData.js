@@ -84,8 +84,8 @@ export default function AddUserGroupData(props) {
   useEffect(() => {
     if (stateMapControls.fileUploadedContent) {
 
-      stateMapControls.fileUploadedContent.featureTypes.forEach((featureType) => {
-        layerNames.push(featureType + makeid(3))
+      stateMapControls.fileUploadedContent.fileNames.forEach((fileName) => {
+        layerNames.push(fileName)
       })
       setLayerNames([...layerNames])
 

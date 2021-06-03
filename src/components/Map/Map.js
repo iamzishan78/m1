@@ -779,7 +779,7 @@ function Map() {
       // }
 
       // -> add layer
-      const layerId = prop.id;
+      const layerId = config.layerType == "file layer" ? config.identifier : prop.id;
       const visible =
         layerSettings.showable && layerSettings.visiable !== false;
 
