@@ -423,7 +423,7 @@ function Map() {
     if (
       customLayerData &&
       customLayerData.allCustomLayers &&
-      customLayerData.allCustomLayers != stateApp.customLayers
+      customLayerData.allCustomLayers !== stateApp.customLayers
     ) {
       setStateApp((state) => ({
         ...state,
@@ -1126,23 +1126,20 @@ function Map() {
       if (feature.source === "interests_source") {
 
 
-        console.log('SHAPE INTEREST SOURCE')
-        // setStateMapControls((state) => ({
-        //   ...state,
-        //   selectedMapControl: 'draw',
-        //   openDrawShapesControl: true, 
-        // }));
+        console.log('SHAPE INTEREST SOURCE');
+        const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
+        const selectedUserDefinedLayer = {
+          ...feature,
+          ...JSON.parse(filteredLayer.shape),
+          id: filteredLayer._id,
+        }
         setStateApp((state) => ({
           ...state,
           showShapeActionsPopup: true,
-          selectedUserDefinedLayer: feature,
+          selectedUserDefinedLayer,
           selectedParcel: null,
-
           openDrawShapesControl: true,
         }));
-
-
-
 
         if (!stateApp.editDraw) {
           setStateApp((state) => ({

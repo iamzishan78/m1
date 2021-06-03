@@ -10,6 +10,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import GpxFixedIcon from "@material-ui/icons/GpsFixed";
+import { default as CheckCircle } from "../../../Shared/svgIcons/check-circle";
 import LayerIcon from "@material-ui/icons/Layers";
 import FilterAltIcon from "../../../Shared/svgIcons/FilterAltIcon";
 import Typography from "@material-ui/core/Typography";
@@ -20,6 +21,7 @@ import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
 import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
 import { ABSTRACTGEOCONTAINSQUERY } from "graphQL/useQueryAbstractGeoContains";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
+import { addCustomShapeProperties } from "../../components/DrawShapes/drawShapesHelpers";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "actions";
@@ -34,6 +36,7 @@ const ShapeActionsPopup = (props) => {
   const [isDeleteModal, setDeleteModal] = useState(false);
   const [error, setError] = useState(false);
   const [user, setUser] = useState({ _id: "" });
+  const [selectedAction, setSelectedAction] = useState('');
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
   const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel }] = useMutation(UPSERTCUSTOMLAYER, {
@@ -172,8 +175,10 @@ const ShapeActionsPopup = (props) => {
     return number.toLocaleString("en-US", { maximumFractionDigits: 2 });
   };
 
-  const calculateLandArea = () => {
-    const { selectedFeature } = props;
+  const calculateLandArea = (selectedFeature) => {
+    if (!selectedFeature) {
+      selectedFeature = props.selectedFeature;
+    }
     if (selectedFeature) {
       if (selectedFeature.geometry.type === "Polygon") {
         const areaInSqMeters = area(selectedFeature);
@@ -264,7 +269,9 @@ const ShapeActionsPopup = (props) => {
 
   const actionEdit = () => {
     const { selectedFeature } = props;
-    console.log('CURRENT SELECTED FEATURE',selectedFeature)
+    if (!stateApp.draw.get(stateApp.currentFeature.id)) {
+      stateApp.draw.add(stateApp.currentFeature);
+    }
     stateApp.draw.changeMode("direct_select", {
       featureId: selectedFeature.id,
     });
@@ -272,6 +279,8 @@ const ShapeActionsPopup = (props) => {
       ...stateNav,
       drawingMode: DRAWING_MODES.DRAW_CIRCLE,
     }));
+    setStateApp(state => ({ ...state, currentFeature: selectedFeature }));
+    setSelectedAction('edit');
   };
 
   const actionAOI = () => {
@@ -370,7 +379,7 @@ const ShapeActionsPopup = (props) => {
     const { selectedAoi } = stateApp;
     updateCustomLayer({
       variables: {
-        customLayerId: selectedAoi._id,
+        customLayerId: selectedAoi.id,
         customLayer: {
           IsDeleted: true,
         },
@@ -399,18 +408,34 @@ const ShapeActionsPopup = (props) => {
   };
 
 
-
-
-
   const handleDeleteAoiModal = () => {
-
-    console.log('CURRENT HANDLE',isDeleteModal)
+    console.log('CURRENT HANDLE', isDeleteModal);
     setDeleteModal(!isDeleteModal);
   };
 
-  const checkForEdit = () => {
-    return !!stateApp.draw.get(stateApp.currentFeature.id);
-  };
+  const confirmEditing = () => {
+    const { currentFeature } = stateApp;
+    addCustomShapeProperties(currentFeature, stateApp.draw);
+    const customLayerData = {
+      shape: JSON.stringify({
+        ...currentFeature, shapeArea: calculateLandArea(currentFeature),
+        shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates)
+      }),
+      layer: 'interest',
+      name: currentFeature.properties.shapeLabel,
+      user: stateApp.user.mongoId,
+    };
+    updateCustomLayer({
+      variables: {
+        customLayerId: currentFeature.id,
+        customLayer: customLayerData,
+      },
+      refetchQueries: ["getCustomLayers"],
+      awaitRefetchQueries: true,
+    });
+    setSelectedAction('');
+    stateApp.draw.delete(currentFeature.id);
+  }
 
   return (
     <Fragment>
@@ -443,13 +468,11 @@ const ShapeActionsPopup = (props) => {
           </Tooltip>
 
           <span className={classes.divider}></span>
-          {checkForEdit() && (
-            <Tooltip title="Edit Active Shape">
-              <IconButton size="small" aria-label="Edit Active Shape" onClick={actionEdit}>
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-          )}
+          <Tooltip title="Edit Active Shape" className={selectedAction === 'edit' ? classes.disableAction : ""}>
+            <IconButton size="small" aria-label="Edit Active Shape" onClick={!selectedAction && actionEdit}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
 
           <Tooltip title="Delete Active Shape" className={!stateApp.currentFeature.properties.shapeLabel ? classes.disableAction : ""}>
             <IconButton
@@ -457,7 +480,7 @@ const ShapeActionsPopup = (props) => {
               aria-label="Delete Active Shape"
               onClick={() => {
 
-                console.log('STATEAPP CURRENT',stateApp.currentFeature)
+                console.log('STATEAPP CURRENT', stateApp.currentFeature)
 
                 if (!!stateApp.currentFeature.properties.shapeLabel) {
                   handleDeleteAoiModal();
@@ -467,6 +490,15 @@ const ShapeActionsPopup = (props) => {
               <DeleteIcon />
             </IconButton>
           </Tooltip>
+          {selectedAction === 'edit' && (
+            <span className={classes.multiSelectCheck}>
+              <Tooltip title="Confirm Editing">
+                <IconButton size="small" aria-label="Set Boundary" onClick={confirmEditing}>
+                  <CheckCircle />
+                </IconButton>
+              </Tooltip>
+            </span>
+          )}
         </span>
         {children}
         {error && (

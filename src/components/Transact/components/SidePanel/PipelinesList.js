@@ -2,12 +2,14 @@ import React, { useEffect, useState, Fragment } from "react";
 import { useDispatch } from "react-redux";
 import { List } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { useMutation } from "@apollo/client";
 import { Flipper } from "react-flip-toolkit";
 import update from "immutability-helper";
 import Sortly, { findDescendants, findParent } from "react-sortly";
 import PipelineProject from "./PipelineProject";
 import PipelineCard from "./PipelineCard";
 import { setFlowState } from "actions";
+import { UPDATE_PIPELINES_POSITIONS } from "graphQL/useMutationUpdatePipelinesPositions";
 
 const useStyles = makeStyles((theme) => ({
   flowlinesList: {
@@ -33,6 +35,8 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
   const [items, setItems] = useState([]);
   const itemsRef = React.useRef([]);
   const currentItem = React.useRef();
+  // MUTATIONS
+  const [updatePipelinesPositions] = useMutation(UPDATE_PIPELINES_POSITIONS);
 
   useEffect(() => {
     setItems(filteredPipelines);
@@ -120,25 +124,14 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
   const handleDragEnd = (oldItem, newItem) => {
     console.log("in drag end");
     // Implement the api for position update
+    // updatePipelinesPositions({
+    //   variables: {
+    //     data: // new items to update
+    //   }
+    // });
   };
 
   const handleToggleCollapse = (id) => {
-    // const index = items.findIndex((item) => item.id === id);
-    // const item = items[index];
-    // const { collapsed } = item;
-    // const descendants = findDescendants(items, index);
-    // const updateFn = {
-    //   [index]: { collapsed: { $set: !collapsed } },
-    // };
-
-    // descendants.forEach((descendant) => {
-    //   const descendantIndex = items.indexOf(descendant);
-    //   updateFn[descendantIndex] = { collapsed: { $set: !collapsed } };
-    // });
-
-    // setItems(update(items, updateFn));
-
-    // ---------New Implementation
     const newItems = items.map((item) => {
       if (item.projectId === id || item.id === id) {
         return { ...item, collapsed: !item.collapsed };

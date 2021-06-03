@@ -378,7 +378,6 @@ export default function SpatialDataCardEdit(props) {
           ...stateApp,
           customLayers: filteredLayers,
           editingUserDefinedLayers: filteredLayers,
-          // selectedUserDefinedLayer: selectedFeature,
           editLayer: true,
         });
       }
