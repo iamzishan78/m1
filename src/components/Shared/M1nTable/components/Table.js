@@ -2453,6 +2453,37 @@ function SubTable(props) {
               </div>
             );
           }
+          if(props.addAble.type === 'wellInterest'){
+            return (
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    height: "35px",
+                    display: "flex",
+                  }}
+                >
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        handleExpandClick(null, null, null, "deleteWellInterest")
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </div>
+            )
+          }
           if (
             props.header === "Owner's Contacts" ||
             props.header === "Contacts" ||
@@ -3437,6 +3468,7 @@ function SubTable(props) {
                 openDialog === "sendMailers" ||
                 openDialog === "printLabels" ||
                 openDialog === "deleteUser" ||
+                openDialog === "deleteWellInterest" ||
                 openDialog === "addParcelInterestsToEntity"
                 ? true
                 : false
@@ -3565,6 +3597,22 @@ function SubTable(props) {
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to permanently delete the owner${m1nSelectedRowsIds &&
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                  ? "s"
+                  : ""
+                  } from  this contact?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "deleteWellInterest" && (
+              <DeleteConfirmationDialogContent
+                header="Delete Well Interest(s)"
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to permanently delete the well interest${m1nSelectedRowsIds &&
                   m1nSelectedRowsIds.length > 1 &&
                   removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                   ? "s"

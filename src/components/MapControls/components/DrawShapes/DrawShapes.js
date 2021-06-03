@@ -194,8 +194,6 @@ export default function DrawShapes() {
   const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
-
-  const [stateNav, setStateNav] = useContext(NavigationContext);
   const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER);
 
   const eventsConfiguredRef = useRef(false);
@@ -203,16 +201,6 @@ export default function DrawShapes() {
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
 
   const [user, setUser] = useState({ _id: "" });
-
-  useEffect(() => {
-    if (
-      stateApp.selectedUserDefinedLayer?.source === "interests_source" &&
-      stateApp.showShapeActionsPopup === true &&
-      stateApp.selectedParcel == null
-    ) {
-      toggleSpatialDataCard(true);
-    }
-  }, [stateApp.selectedUserDefinedLayer]);
 
   useEffect(() => {
     const customLayer = get(customLayerInsertedData, "upsertCustomLayer.customLayer");
@@ -227,15 +215,10 @@ export default function DrawShapes() {
   useEffect(() => {
     const { selectedUserDefinedLayer } = stateApp;
     if (selectedUserDefinedLayer) {
-      const currentFeature = {
-        ...selectedUserDefinedLayer,
-        id: selectedUserDefinedLayer.properties.id,
-        geometry: selectedUserDefinedLayer.geometry,
-      };
       setStateApp((state) => ({
         ...state,
-        currentFeature,
-        selectedAoi: { ...currentFeature, _id: currentFeature.id },
+        currentFeature: selectedUserDefinedLayer,
+        selectedAoi: selectedUserDefinedLayer,
       }));
     }
   }, [stateApp.selectedUserDefinedLayer]);
