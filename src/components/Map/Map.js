@@ -1327,10 +1327,6 @@ function Map() {
       }
     };
 
-
-
-
-
     if (map) {
       if (mapClick && mapClick.mapClickHandler) {
         map.off("click", mapClick.mapClickHandler);
@@ -3649,7 +3645,6 @@ function Map() {
           window.event.metaKey ||
           stateApp.multiSelectLandGrids
         ) {
-          // this is making trouble
           if (featureState && featureState.click) {
             // Unselect feature
             map.setFeatureState(
