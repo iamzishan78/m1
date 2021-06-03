@@ -123,8 +123,8 @@ const useStyles = makeStyles((theme) => {
       // },
 
       "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "#929292",
-          borderRadius: 10,
+        backgroundColor: "#929292",
+        borderRadius: 10,
       },
 
       "& div": {
@@ -417,19 +417,17 @@ function MapGridCard(props) {
                 >
                 </Tab>
               } */}
-
               <Tab
-                  className="cancelDraggableEffect"
-                  label={`Boundary${stateApp.shapeGridWellsCount
-                    ? " (" + Number((stateApp.shapeGridWellsCount || '') + (stateApp.shapeGridOwnersCount || '')) + ")"
-                    : ""
-                    }`}
-                  {...a11yProps(1)}
-                >
+                className="cancelDraggableEffect"
+                disabled={!stateApp.gridPolygonString}
+                label={`Boundary${stateApp.shapeGridWellsCount
+                  ? " (" + Number((stateApp.shapeGridWellsCount || '') + (stateApp.shapeGridOwnersCount || '')) + ")"
+                  : ""
+                  }`}
+                {...a11yProps(1)}
+              >
               </Tab>
-
             </Tabs>
-
 
             {/* {
               mapGridCardActiveTap === 2 && stateApp.gridPolygonString && <Select
@@ -611,7 +609,7 @@ function MapGridCard(props) {
               style={{ position: "absolute", width: "100vw" }}
             >
               <div style={{ position: "relative" }}>
-{/* 
+                {/* 
               showTags={tab.showTags}
                         showComments={tab.showComments}
                         showTracks={tab.showTracks} */}
@@ -668,9 +666,9 @@ function MapGridCard(props) {
                 /> */}
 
 
-              <TabPanels
+                <TabPanels
                   value={viewportTapValue}
-                  panels= {[
+                  panels={[
 
                     <ShapeGridWellsTable
                       parent="wells"

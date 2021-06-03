@@ -179,16 +179,16 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 				{(provided, snapshot) => (
 					<RootRef rootRef={provided.innerRef}>
 
-						{type === 'base' && 
-						<List className={classes.list}>
-							<Layer layerMap={layerMap} type={type} handleToggle={handleToggle} />
-						</List>
+						{type === 'base' &&
+							<List className={classes.list}>
+								<Layer layerMap={layerMap} type={type} handleToggle={handleToggle} />
+							</List>
 						}
 
-						{type === 'heatMaps' && 
-						<List className={classes.heatmapList}>
-							<Layer layerMap={layerMap} type={type} handleToggle={handleToggle} />
-						</List>
+						{type === 'heatMaps' &&
+							<List className={classes.heatmapList}>
+								<Layer layerMap={layerMap} type={type} handleToggle={handleToggle} />
+							</List>
 						}
 
 
@@ -231,8 +231,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 						dense
 						className={classes.subHeaderItem}
 					>
-							<ListItemText primary={title} />
-						
+						<ListItemText primary={title} />
+
 						{headerButton && (
 							<StyledListItemSecondaryAction>
 								<Button
@@ -250,19 +250,19 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					{type === "base" && getBasemapImageBox()}
 
 					{
-						type === "layer" && layerMap && layerMap[0]?.type ? 
-						
-						(
-						// <div styles={{  height: 'calc(100vh - 40px - 64px)'}}>
-						<SortableLayer layerMap={layerMap}  /> 
-						)
-						: type === "base" ? (
-							<Collapse in={open} timeout="auto" unmountOnExit>
-								{displayList}
-							</Collapse>
-						) : (
-							displayList
-						)
+						type === "layer" && layerMap && layerMap[0]?.type ?
+
+							(
+								// <div styles={{  height: 'calc(100vh - 40px - 64px)'}}>
+								<SortableLayer layerMap={layerMap} />
+							)
+							: type === "base" ? (
+								<Collapse in={open} timeout="auto" unmountOnExit>
+									{displayList}
+								</Collapse>
+							) : (
+								displayList
+							)
 					}
 
 

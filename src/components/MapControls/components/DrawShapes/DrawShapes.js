@@ -43,6 +43,8 @@ import { default as Rect } from "../../../Shared/svgIcons/rectangle";
 import ShowChartIcon from "@material-ui/icons/ShowChart";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import { NavigationContext } from "../../../Navigation/NavigationContext";
+import { useDispatch } from "react-redux";
+import { setMapGridCardState } from "actions";
 
 // const localStyles = makeStyles((theme) => ({
 //   label: {
@@ -186,13 +188,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function DrawShapes() {
+  const dispatch = useDispatch();
   let history = useHistory();
   const classes = useStyles();
   const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
-
-  const [stateNav, setStateNav] = useContext(NavigationContext);
   const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER);
 
   const eventsConfiguredRef = useRef(false);
@@ -200,16 +201,6 @@ export default function DrawShapes() {
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
 
   const [user, setUser] = useState({ _id: "" });
-
-  useEffect(() => {
-    if (
-      stateApp.selectedUserDefinedLayer?.source === "interests_source" &&
-      stateApp.showShapeActionsPopup === true &&
-      stateApp.selectedParcel == null
-    ) {
-      toggleSpatialDataCard(true);
-    }
-  }, [stateApp.selectedUserDefinedLayer]);
 
   useEffect(() => {
     const customLayer = get(customLayerInsertedData, "upsertCustomLayer.customLayer");
@@ -224,15 +215,10 @@ export default function DrawShapes() {
   useEffect(() => {
     const { selectedUserDefinedLayer } = stateApp;
     if (selectedUserDefinedLayer) {
-      const currentFeature = {
-        ...selectedUserDefinedLayer,
-        id: selectedUserDefinedLayer.properties.id,
-        geometry: selectedUserDefinedLayer.geometry,
-      };
       setStateApp((state) => ({
         ...state,
-        currentFeature,
-        selectedAoi: { ...currentFeature, _id: currentFeature.id },
+        currentFeature: selectedUserDefinedLayer,
+        selectedAoi: selectedUserDefinedLayer,
       }));
     }
   }, [stateApp.selectedUserDefinedLayer]);
@@ -345,8 +331,16 @@ export default function DrawShapes() {
     }
     setStateApp((state) => ({
       ...state,
+      gridPolygonString: '',
       selectedAoi: null,
+      shapeGridWellsCount: 0,
+      shapeGridOwnersCount: 0
     }));
+    dispatch(
+      setMapGridCardState({
+        mapGridCardActiveTap: 0,
+      })
+    );
 
     toggleSpatialDataCard(false);
 
@@ -378,11 +372,11 @@ export default function DrawShapes() {
         </ClickAwayListener>
       )}
       {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
-      stateApp.currentFeature !== undefined &&
-      !stateApp.currentFeature.id.includes("draw_polygon") &&
-      !stateApp.currentFeature.id.includes("drag_circle") &&
-      !stateApp.currentFeature.id.includes("draw_rectangle") &&
-      !stateApp.currentFeature.id.includes("edit_polygon") ? (
+        stateApp.currentFeature !== undefined &&
+        !stateApp.currentFeature.id.includes("draw_polygon") &&
+        !stateApp.currentFeature.id.includes("drag_circle") &&
+        !stateApp.currentFeature.id.includes("draw_rectangle") &&
+        !stateApp.currentFeature.id.includes("edit_polygon") ? (
         <Fragment>
           {showSpatialDataCard && ( // for edit/create AOI
             <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} user={user} toggleSpatialDataCard={toggleSpatialDataCard} />
