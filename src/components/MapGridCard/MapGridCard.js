@@ -8,10 +8,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import ExpandIcon from "../Shared/svgIcons/ExpandIcon";
 import ShrinkIcon from "../Shared/svgIcons/ShrinkIcon";
 import IconButton from "@material-ui/core/IconButton";
-import PropTypes from "prop-types";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import Box from "@material-ui/core/Box";
 import MapGridCardSearch from "./components/MapGridCardSearch";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
@@ -20,6 +18,8 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { setMapGridCardState } from "../../actions";
 import OwnersSummaryCard from "../OwnersSummaryCard/OwnersSummaryCard";
+import TabPanels, { TabPanel } from "components/Shared/TabPanels"
+import TabButtons from "components/Shared/TabPanels/TabButtons"
 
 import ContactsHeadCells from "../Shared/constants/contacts-header-schema.js";
 import WellsHeadCells from "../Shared/constants/well-header-schema.js";
@@ -35,28 +35,6 @@ import DockMenu from "./DockMenu";
 import ShapeGridWellsTable from "components/Table/Wells/ShapeGridWellsTable";
 import ShapeGridTaxOwnersTable from "components/Table/TaxOwners/ShapeGridTaxOwnersTable";
 import ViewportGridWellsTable from "components/Table/Wells/ViewportGridWellsTable";
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box p={3}>{children}</Box>}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
-};
 
 function a11yProps(index) {
   return {
@@ -236,18 +214,6 @@ function tabPanelsPropsAreEqual(prevProps, nextProps) {
   return Object.is(prevProps.value, nextProps.value);
 }
 
-const TabPanels = ({ panels, value }) => {
-  const classes = useStyles();
-  return (
-    panels &&
-    panels.length &&
-    panels.map((panel, i) => (
-      <TabPanel key={i} value={value} index={i} className={classes.tapsPanels}>
-        {panel}
-      </TabPanel>
-    ))
-  );
-};
 
 function MapGridCard(props) {
   // contexts
@@ -382,7 +348,7 @@ function MapGridCard(props) {
   );
 
   const SearchTabPanels = () => (
-    <TabLabels
+    <TabButtons
       labels={[
         "Wells",
         "Tax Owners",
@@ -780,4 +746,4 @@ function areEqual(prevProps, nextProps) {
   );
 }
 
-export default React.memo(MapGridCard, areEqual, TabLabels, TabPanels);
+export default React.memo(MapGridCard, areEqual);

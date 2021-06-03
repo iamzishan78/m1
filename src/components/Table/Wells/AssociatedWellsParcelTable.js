@@ -10,16 +10,17 @@ import TableHOC from "components/Table/TableHOC";
 
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
-import { SHAPE_OWNERS } from "graphQL/useQueryPaginatedShapeOwners";
+import { SHAPEWELLS } from "graphQL/useQueryPaginatedShapeWells";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 
 // Header Schemas 
-import TableHeader from 'components/Table/constants/track-owners-header-schema.js'
-import { handleTagColumn } from "../helpers";
+import TableHeader from 'components/Table/constants/well-header-schema.js'
 
-// Utilities
-import isEmpty from "lodash/isEmpty";
+import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
+import { getPolygonString } from "components/Shared/functions";
+import { handleTagColumn } from "../helpers/index.js";
+
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -27,12 +28,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function ShapeGridTaxOwnersTable(props) {
+function ShapeGridWellsTable(props) {
     const classes = useStyles();
 
     // contexts
     const [stateApp, setStateApp] = useContext(AppContext);
-
 
     // function states 
     const [columns, Columns] = useState([]);
@@ -40,8 +40,8 @@ function ShapeGridTaxOwnersTable(props) {
     const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
     // queries 
-    const [getPaginatedShapeOwners, { data: dataShapeOwners }] = useLazyQuery(SHAPE_OWNERS, { fetchPolicy: "cache-and-network", });
-    const tableData = dataShapeOwners?.paginatedShapeOwners
+    const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", });
+    const tableData = dataShapeWells?.paginatedShapeWells
 
     const addAble = false
     const total = false
@@ -49,9 +49,9 @@ function ShapeGridTaxOwnersTable(props) {
 
     ////////////Contact Wells begin///////////////////////////////////////////////
     useEffect(() => {
-        getPaginatedShapeOwners({
+        getPaginatedShapeWells({
             variables: {
-                polygon: stateApp.gridPolygonString,
+                polygon: getPolygonString(props.customLayer?.shape),
                 userId: stateApp.user.mongoId,
             },
         });
@@ -59,43 +59,61 @@ function ShapeGridTaxOwnersTable(props) {
 
     useEffect(() => {
         if (tableData?.edges?.length > 0) {
-            let owners = tableData.edges.map((el) => el.node)
-            const objectsIdsArray = owners.map((owner) => owner.globalOwnerId);
-            props.initializeGenericData(objectsIdsArray, ['comments', 'tags', 'ifAreContacts'])
+            let wells = tableData.edges.map((el) => el.node)
+            const objectsIdsArray = wells.map((well) => well.id);
+            props.initializeGenericData(objectsIdsArray, ['comments', 'tags'])
         }
 
     }, [tableData])
 
     useEffect(() => {
         if (tableData?.edges?.length > 0) {
-            let owners = tableData.edges.map((el) => el.node)
-            owners = owners.map((o) => {
-                let owner = { ...o };
-                owner.isTracked = true;
-                owner.commentsCounter = 0;
-                owner.tags = [[], 0];
-                owner.wellsCounter = [];
-                owner.coordinates = {
-                    objToPopulateSearchLayer: {
-                        objectType: "owner",
-                        objectId: owner.id,
-                    },
-                };
-                owner.isContact = false;
+            let wells = tableData.edges.map((el) => el.node)
 
-                owner = props.setGenricData(owner, owner.globalOwnerId, ['comments', 'tracks', 'tags', 'ifAreContacts'])
+            wells = wells.map((w) => {
+                let well = { ...w };
+                well.wellId = w.id
+                //// temporary to fix the ticks dates fields comming from the rest api
+                if (well.permitApprovedDate && well.permitApprovedDate != "null")
+                    well.permitApprovedDate = ticksToDateString(
+                        well.permitApprovedDate
+                    );
+                if (well.spudDate && well.spudDate != "null")
+                    well.spudDate = ticksToDateString(well.spudDate);
+                if (well.completionDate && well.completionDate != "null")
+                    well.completionDate = ticksToDateString(well.completionDate);
+                if (well.firstProductionDate && well.firstProductionDate != "null")
+                    well.firstProductionDate = ticksToDateString(
+                        well.firstProductionDate
+                    );
+                //// temporary end
 
-                return owner;
+                well.coordinates = {};
+                well.coordinates.wellId = well.wellId
+                if (well.longitude && well.latitude)
+                    well.coordinates.center = [well.longitude, well.latitude];
+
+                well.detailCard = well.id;
+
+                well.isTracked = false;
+                well.commentsCounter = 0;
+                well.tags = [[], 0];
+
+                well = props.setGenricData(well, well.id, ['comments', 'tracks', 'tags'])
+
+                return well;
             });
-            props.setRows(owners);
+            props.setRows(wells);
 
             const cleanAvailableTags = []; // get from backend
+
             const columns = handleTagColumn(TableHeader, cleanAvailableTags);
             setColumns(columns);
             props.setLoading(false);
+
             setStateApp((state) => ({
                 ...state,
-                shapeGridOwnersCount: tableData.totalCount,
+                shapeGridWellsCount: tableData.totalCount,
             }));
         }
         else if (tableData?.edges?.length === 0) {
@@ -110,22 +128,22 @@ function ShapeGridTaxOwnersTable(props) {
 
         const pageVariables = {
             variables: {
-                polygon: stateApp.gridPolygonString,
+                polygon: getPolygonString(props.customLayer?.shape),
                 userId: stateApp.user.mongoId,
                 pagination: {
                     first: tableState.rowsPerPage,
                     after: null,
                 },
-                ...(!isEmpty(tableState.sortOrder)) && {
-                    sort:
-                    {
-                        field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
+                sort: tableState.activeColumn
+                    ? {
+                        field: tableState.columns[tableState.activeColumn]?.name,
                         order:
-                            tableState.sortOrder?.direction === "asc"
+                            tableState.columns[tableState.activeColumn]
+                                ?.sortDirection === "asc"
                                 ? 1
                                 : -1,
                     }
-                },
+                    : [],
 
                 filters: {},
             },
@@ -137,13 +155,13 @@ function ShapeGridTaxOwnersTable(props) {
                 tableState.page = 0;
                 meta.setPageInd(tableState.page);
                 meta.setRowsPerPage(tableState.rowsPerPage);
-                getPaginatedShapeOwners(
+                getPaginatedShapeWells(
                     pageVariables
                 );
                 break;
             case "changePage":
                 props.setLoading(true);
-                getPaginatedShapeOwners({
+                getPaginatedShapeWells({
                     ...pageVariables,
                     variables: {
                         ...pageVariables.variables,
@@ -151,11 +169,11 @@ function ShapeGridTaxOwnersTable(props) {
                             ...pageVariables.variables.pagination,
                             before:
                                 props.rows && tableState.page < meta.pageInd
-                                    ? props.rows[0]?.cursor
+                                    ? props.rows[0]?._id
                                     : null,
                             after:
                                 props.rows && tableState.page > meta.pageInd
-                                    ? props.rows[props.rows.length - 1]?.cursor
+                                    ? props.rows[props.rows.length - 1]?._id
                                     : null,
                         },
                     },
@@ -165,7 +183,7 @@ function ShapeGridTaxOwnersTable(props) {
                 props.setLoading(true);
                 tableState.page = 0;
                 meta.setPageInd(tableState.page);
-                getPaginatedShapeOwners(
+                getPaginatedShapeWells(
                     pageVariables
                 );
                 break;
@@ -223,4 +241,4 @@ function ShapeGridTaxOwnersTable(props) {
     );
 }
 
-export default React.memo(TableHOC(ShapeGridTaxOwnersTable), deepEqualObjects);
+export default React.memo(TableHOC(ShapeGridWellsTable), deepEqualObjects);

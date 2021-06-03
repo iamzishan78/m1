@@ -1927,7 +1927,7 @@ function M1nTable(props) {
     if (props.parent && props.parent === "ownersPerParcel") {
       setLoading(true);
       setTargetLabel("Parcel Ownership");
-      setHeader("Parcel Ownership");
+      props.header ? setHeader(props.header) :  setHeader("Parcel Ownership");
       setAddAble({
         type: "ownerToParcel",
         customLayerId: props.customLayer._id,
@@ -2358,7 +2358,7 @@ function M1nTable(props) {
           for (let i = 0; i < idsToDelete.length; i++) {
             updateParcelOwner({
               variables: {
-                parcelOwner: { _id: idsToDelete[i], IsDeleted: true },
+                parcelOwner: { _id: idsToDelete[i], isDeleted: true },
               },
               refetchQueries: [
                 "getCustomLayer",

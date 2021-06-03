@@ -123,6 +123,7 @@ ListboxComponent.propTypes = {
 export default function AutocompEntityNamesVirtualizeList(props) {
   const {
     addNew,
+    addNewOnClick,
     mongoEntitiesArray,
     setMongoEntitiesArray,
     nameAutValue,
@@ -268,11 +269,16 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       onChange={(event, newValue) => {
         if (newValue && newValue._id) {
           if (newValue._id !== "newEntity") setNameAutValue(newValue);
-          else
-            setNameAutValue({
-              _id: "newEntity",
-              name: newValue.name,
-            });
+          else{
+            if(addNewOnClick){
+              addNewOnClick(newValue.name)
+            }else{
+              setNameAutValue({
+                _id: "newEntity",
+                name: newValue.name,
+              });
+            }
+          }
         } else setNameAutValue(null);
       }}
       renderInput={(params) => (

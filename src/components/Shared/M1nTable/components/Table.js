@@ -411,6 +411,18 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     top: "19px"
   },
+  tapsLabelsButtons: {
+    boxShadow: "none",
+    backgroundColor: "#fff",
+    color: "#757575",
+    "&:hover": { boxShadow: "none !important" },
+  },
+  tapsLabelsButtonsSelected: {
+    boxShadow: "none",
+    color: "#fff",
+    backgroundColor: theme.palette.secondary.main,
+    "&:hover": { color: "#757575", boxShadow: "none !important" },
+  },
   clickableCell: {
     cursor: "pointer",
     padding: "10px 30px 10px 10px",
@@ -490,7 +502,7 @@ function SubTable(props) {
   const [total, Total] = useState(false);
   const [rows, Rows] = useState([]);
   const [isSearchOpen, openSearch] = useState(false);
-  const [handleSearch, setHandleSearch] = useState(() => () => { });
+  const [handleSearch, setHandleSearch] = useState(() => () => {});
   // const [handleSearchClose, setHandleSearchClose] = useState(() => () => {});
   const [dataWell, setDataWell] = useState();
 
@@ -2071,7 +2083,7 @@ function SubTable(props) {
                   return (
                     <div
                       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
-                      className={props.parent === "assocTaxRollInterests" && (!tableMeta.rowData[14] || tableMeta.rowData[19]) ? [classes.blue] : []}
+                      className={`${props.parent === "assocTaxRollInterests" && (!tableMeta.rowData[14] || tableMeta.rowData[19]) ? [classes.blue] : []} ${props.parent === "ownersPerParcel" && (!tableMeta.rowData[14] || tableMeta.rowData[15]) ? [classes.blue] : []}` }
                     >
 
                       {props.targetLabel === "contact" &&
@@ -2369,6 +2381,25 @@ function SubTable(props) {
         ? false
         : (selectedRows, displayData, setSelectedRow) => {
           //// if contacts set the multi selection top bar: ////
+
+          if(props.addAble.type === "suggestedOwnerToParcel"){
+            return (
+              <div style={{ height: "48px", display: "flex" }} >
+                <div style={{ marginTop: "6px", height: "35px", display: "flex", marginRight: "20px" }} >
+                  <Button
+                    color="secondary"
+                    className={classes.multiSelectionTopBarButtons}
+                    disabled={props.addAble.type === 'suggestedOwnerToParcel' && m1nSelectedRowsIndexes.length === 0}
+                    onClick={()=>{
+                      props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow)
+                    }}
+                  >
+                    + ADD TO PARCEL
+                  </Button>
+                </div>
+              </div>
+            );
+          }
           if (
             props.header === "Owner's Contacts" ||
             props.header === "Contacts" ||
@@ -2560,6 +2591,7 @@ function SubTable(props) {
       if (props.addAble.type === "deals") { buttonLabel = '+ ADD DEAL' }
       if (props.addAble && props.parent === "UserManagement") { buttonLabel = "+ ADD USER" }
       if (props.addAble.type === "ownerToParcel") { buttonLabel = '+ ADD INTEREST OWNER' }
+      if (props.addAble.type === "suggestedOwnerToParcel") { buttonLabel = '+ ADD TO PARCEL' }
 
 
       const addAction = (e) => {
@@ -2569,8 +2601,9 @@ function SubTable(props) {
         if (
           props.addAble.type &&
           props.addAble.type === "ownerToParcel"
-        )
+        ){
           handleExpandClick(null, null, null, "addOwnerToParcel");
+        }
 
         if (props.addAble.type && props.addAble.type === "deals")
           setStateApp((stateApp) => ({
@@ -2628,12 +2661,14 @@ function SubTable(props) {
             {(props.addAble.type === "wellInterest"
               || props.addAble.type === "deals"
               || props.addAble.type === "ownerToParcel"
+              || props.addAble.type === "suggestedOwnerToParcel"
               || (props.addAble && props.parent === "UserManagement"))
 
               && (
                 <Button
                   color="secondary"
                   className={classes.multiSelectionTopBarButtons}
+                  disabled={props.addAble.type === 'suggestedOwnerToParcel' && m1nSelectedRowsIndexes.length === 0}
                   onClick={addAction}
                 >
                   {buttonLabel}
@@ -3189,8 +3224,6 @@ function SubTable(props) {
     if (props.header === 'Contacts') {
       return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
         {props.header === 'Documents' ? (<DescriptionOutlinedIcon />) : (<Contact />)}
-
-
         <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
           <Typography style={{ marginLeft: '10px', 
                             fontSize: '16px', 
@@ -3200,11 +3233,8 @@ function SubTable(props) {
           </Typography>
           <Typography style={{ color: '#18AADD', fontSize: '16px' }}>All {props.header}</Typography>
       </Breadcrumbs>
-
-
       </div>
     }
-
     else if (props.header === 'Documents') {
       return <div style={{ display: 'flex', justifyContent: 'left' }}>
         {props.header === 'Documents' ? (
@@ -3315,11 +3345,24 @@ function SubTable(props) {
             />
           </RightDialog>)
         }
-
+        {openDialog && openDialog === 'addOwnerToParcel' && (
+          <AddParcelOwnerDialogContent
+              onClose={() => {
+                setSelectedRow(null);
+                handleCloseDialog();
+              }}
+              handleExpandClick={handleExpandClick}
+              setM1nSelectedRowsIds={setM1nSelectedRowsIds}
+              customLayerId={props.addAble.customLayerId}
+              selectedRow={selectedRow}
+              setSelectedRow={setSelectedRow}
+          />  
+        )}
         {openDialog
           && openDialog !== "addDeals"
           && openDialog !== "sendMailers"
           && openDialog !== "buyContactsInfo"
+          && openDialog !== "addOwnerToParcel"
           && (<Dialog
             className={classes.dialog}
             open={openDialog ? true : false}
@@ -3434,7 +3477,7 @@ function SubTable(props) {
               />
             )}
 
-            {openDialog === "addOwnerToParcel" && (
+            {/* {openDialog === "addOwnerToParcel" && (
               <AddParcelOwnerDialogContent
                 onClose={() => {
                   setSelectedRow(null);
@@ -3444,7 +3487,7 @@ function SubTable(props) {
                 selectedRow={selectedRow}
                 setSelectedRow={setSelectedRow}
               />
-            )}
+            )} */}
             {openDialog === "addParcelInterestsToEntity" && (
               <AddParcelToEntityDialogContent
                 onClose={handleCloseDialog}

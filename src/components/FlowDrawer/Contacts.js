@@ -11,11 +11,14 @@ import {
   ListItem,
   Button,
 } from "@material-ui/core";
+import get from 'lodash/get'
 import Avatar from "react-avatar";
 import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
+
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
+import { ADDCONTACT } from "graphQL/useMutationAddContact";
 import { AppContext } from "../../AppContext";
 import { useLazyQuery,useMutation } from "@apollo/client";
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -56,6 +59,7 @@ export default function Contacts(props) {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
+  const [addNewContact, { data: addContactData} ] = useMutation(ADDCONTACT);
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
   const [removeDealDescriptor, { loading: DealLoading, error: DealError }] = useMutation(REMOVEDEALDESCRIPTOR);
   useEffect(() => {
@@ -67,6 +71,12 @@ export default function Contacts(props) {
       },
     });
   }, [nameAutInputValue]);
+
+  useEffect(() => {
+    if(get(addContactData, 'addContact.contact')){
+      setNameAutValue({ name:addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id })
+    }
+  },[addContactData])
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
@@ -230,6 +240,21 @@ export default function Contacts(props) {
                   isNextPageLoading={isNextPageLoading}
                   loadNextPage={loadNextPage}
                   disabled ={props.loading}
+                  addNew={true}
+                      addNewOnClick={(value) => {
+                        const contact = {name: value};
+                        addNewContact({
+                            variables: {
+                              contact: {
+                                ...contact,
+                                createBy: stateApp.user.mongoId,
+                                lastUpdateBy: stateApp.user.mongoId,
+                              },
+                            },
+                            refetchQueries: ["getPaginatedContacts", "getContact"],
+                            awaitRefetchQueries: true,
+                          });
+                      }}
                 />
                 <Button
                   variant="contained"
