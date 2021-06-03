@@ -1173,6 +1173,51 @@ function SubTable(props) {
               },
             };
             break;
+          case "dateTime":{
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <>
+                    {moment(tableMeta.rowData[5]).format('MM/DD/YYYY')}
+                    </>
+                  );
+                },
+              };
+            }
+            break;
+          }
+          case "partyName1":{
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <>
+                    {tableMeta.rowData[6] && tableMeta.rowData[6].entityDetail ? tableMeta.rowData[6].entityDetail?.name : null}
+                    </>
+                  );
+                },
+              };
+            }
+            break;
+          }
+          case "partyName2":{
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  return (
+                    <>
+                    {tableMeta.rowData[7] && tableMeta.rowData[7].entityDetail ? tableMeta.rowData[7].entityDetail?.name : null}
+                    </>
+                  );
+                },
+              };
+            }
+            break;
+          }
           case "actions":
             {
               column.options = {
