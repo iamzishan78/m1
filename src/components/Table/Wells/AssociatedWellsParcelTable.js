@@ -17,6 +17,8 @@ import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functio
 // Header Schemas 
 import TableHeader from 'components/Table/constants/well-header-schema.js'
 
+// Utilities
+import isEmpty from "lodash/isEmpty";
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
 import { getPolygonString } from "components/Shared/functions";
 import { handleTagColumn } from "../helpers/index.js";
@@ -134,16 +136,16 @@ function ShapeGridWellsTable(props) {
                     first: tableState.rowsPerPage,
                     after: null,
                 },
-                sort: tableState.activeColumn
-                    ? {
-                        field: tableState.columns[tableState.activeColumn]?.name,
+                ...(!isEmpty(tableState.sortOrder)) && {
+                    sort:
+                    {
+                        field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
                         order:
-                            tableState.columns[tableState.activeColumn]
-                                ?.sortDirection === "asc"
+                            tableState.sortOrder?.direction === "asc"
                                 ? 1
                                 : -1,
                     }
-                    : [],
+                },
 
                 filters: {},
             },
