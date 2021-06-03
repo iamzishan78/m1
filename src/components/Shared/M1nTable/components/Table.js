@@ -3385,8 +3385,8 @@ function SubTable(props) {
 
             // resizableColumns: true,
 
-            // filter: props.parent === 'ownersPerParcel'       /// will need to build a backend for this search 
-            //         ? false : null,
+            filter: props.parent === 'ownersPerParcel'       /// will need to build a backend for this search 
+                    ? false : null,
 
             search:
               (
