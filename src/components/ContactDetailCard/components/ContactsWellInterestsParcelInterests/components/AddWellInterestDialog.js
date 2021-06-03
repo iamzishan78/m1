@@ -377,9 +377,12 @@ function AddWellInterestDialog(props) {
   const deleteFunc = async () => {
     try {
       setLoading(true);
-      removeWellInterest({
+      updateWellInterest({
         variables: {
-          id: stateApp.activeWellInterest._id,
+          wellInterest: {
+            id: stateApp.activeWellInterest._id,
+            isDeleted: true
+          },
         },
         refetchQueries: [
           "getContactWells",

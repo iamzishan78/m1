@@ -21,7 +21,7 @@ export const handleTagColumn = (TableHeader, cleanAvailableTags) => {
                     ...column,
                     options: {
                         ...column.options,
-                        filter: false,
+                        filter: true,
                     },
                 };
             }

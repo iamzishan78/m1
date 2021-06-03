@@ -56,7 +56,7 @@ const DocumentsHeadCells = [
     label: "Party 2 Name",
   },
   {
-    name: "RECORDING INFO",
+    name: "recordingInfo",
     label: "Recording Info",
   },
   {

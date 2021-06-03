@@ -9,7 +9,8 @@ import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 
 // QUERIES 
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
 import { PAGINATED_CONTACT_WELLINTERESTS_QUERY } from "graphQL/useQueryPaginatedContactWellInterests";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
@@ -42,6 +43,7 @@ function ContactWellInterestTable(props) {
 
   // queries 
   const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY, { fetchPolicy: "no-cache" });
+  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: [ "getContactWells", "getPaginatedContactWellInterests" ], awaitRefetchQueries: true });
   const tableData = dataContactWells?.paginatedContactWellInterests
 
   const addAble = { type: "wellInterest" }
@@ -187,6 +189,25 @@ function ContactWellInterestTable(props) {
   const getWellOwnersByYear = (selectedYear) => {
     setSelectedYear(selectedYear)
   }
+
+  const deleteFunc = (ids)=> {
+    for(let i=0; i< ids.length;  i++){
+      updateWellInterest({
+        variables: {
+          wellInterest: {
+            id: ids[i],
+            isDeleted: true
+          },
+        },
+        refetchQueries: [
+          "getContactWells",
+          "getPaginatedContactWellInterests"
+        ],
+        awaitRefetchQueries: true,
+      });
+    }
+  }
+  
   return (
     <Container
       maxWidth={false}
@@ -217,7 +238,7 @@ function ContactWellInterestTable(props) {
         loading={props.loading}
         addAble={addAble}
         targetLabel={props.targetLabel}
-        deleteFunc={null}
+        deleteFunc={deleteFunc}
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={orderByTracks}
