@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import update from 'immutability-helper';
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
@@ -30,8 +31,8 @@ import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 import Box from '@material-ui/core/Box';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import EditableTextField from "components/Shared/components/Fields/EditableTextField";
 
 const random_rgb = () => {
   var o = Math.round,
@@ -175,20 +176,34 @@ export default function AddLayer(props) {
   };
 
   const changeShowAble = (layer) => {
-    const layerIndex = currentLayers.findIndex(
-      (clayer) => clayer.identifier == layer.identifier
-    );
-    const cpLayer = {
-      ...layer,
-      layerSettings: {
-        ...layer.layerSettings,
-        showable: !layer.layerSettings.showable,
-      },
-    };
+    const updatefn = {}
+    if (layer.type === 'group') {
+      const value = !!(layer.layers.find((l) => l.layerSettings.showable))
+      layer.layers.forEach((l) => {
+        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier == l.identifier);
+        updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } }
+      })
+    } else {
+      const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier == layer.identifier);
+      updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } }
+    }
 
-    const existCurrentLayers = [...currentLayers];
-    existCurrentLayers[layerIndex] = cpLayer;
-    setCurrentLayers(existCurrentLayers);
+    setCurrentLayers(update(currentLayers, updatefn));
+  };
+
+  const changeLayerName = (layer, name) => {
+    const updatefn = {}
+    if (layer.type === 'group') {
+      layer.layers.forEach((l) => {
+        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier == l.identifier);
+        updatefn[layerIndex] = { groupName: { $set: name } }
+      })
+    } else {
+      const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier == layer.identifier);
+      updatefn[layerIndex] = { layerName: { $set: name } }
+    }
+
+    setCurrentLayers(update(currentLayers, updatefn));
   };
 
   const handleApplyChange = () => {
@@ -253,7 +268,12 @@ export default function AddLayer(props) {
         fetch(inputFile).then((response) => {
           response.arrayBuffer().then((buffer) => {
             shp(buffer).then((geojson) => {
-              resolve(Array.isArray(geojson) ? geojsonMerge.merge(geojson) : geojson);
+              if (Array.isArray(geojson)) {
+                const merged = geojsonMerge.merge(geojson)
+                merged.fileNames = geojson.map((g) => g.fileName)
+                resolve(merged)
+              }
+              resolve(geojson);
             });
           });
         });
@@ -388,12 +408,21 @@ export default function AddLayer(props) {
                 const labelId = `udlayer-list-label-${index}`;
                 if (layer.type === "group") {
                   return <Accordion>
+
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="panel1a-content"
                       id="panel1a-header"
+                      style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
                     >
-                      <Typography >{layer.name}</Typography>
+                      <Checkbox
+                        checked={!!(layer.layers.find((l) => l.layerSettings.showable))}
+                        color="dark gray"
+                        onClick={(event) => event.stopPropagation()}
+                        onChange={(e) => changeShowAble(layer)}
+                        inputProps={{ "aria-label": "primary checkbox" }}
+                      />
+                      <EditableTextField onChange={changeLayerName} item={layer} name={layer.name} />
                     </AccordionSummary>
                     <Box paddingLeft={2} paddingRight={2}>
                       <List className={classes.list}>
@@ -406,7 +435,7 @@ export default function AddLayer(props) {
                                 onChange={() => changeShowAble(groupLayer)}
                                 inputProps={{ "aria-label": "primary checkbox" }}
                               />
-                              <ListItemText id={labelId} primary={groupLayer.layerName} />
+                              <EditableTextField onChange={changeLayerName} item={groupLayer} name={groupLayer.layerName} />
                               <ListItemSecondaryAction>
                                 <Tooltip title="Delete" placement="top">
                                   <IconButton
@@ -437,7 +466,8 @@ export default function AddLayer(props) {
                         onChange={() => changeShowAble(layer)}
                         inputProps={{ "aria-label": "primary checkbox" }}
                       />
-                      <ListItemText id={labelId} primary={layer.layerName} />
+                      {layer.layerType == "file layer" ? <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} /> :
+                        <ListItemText id={labelId} primary={layer.layerName} />}
 
                       {layer.layerType == "file layer" && (
                         <ListItemSecondaryAction>
