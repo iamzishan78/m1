@@ -127,98 +127,98 @@ DndProvider.whyDidYouRender = false
 
 const removeDuplicatesIds = (selectedRowsIds) => [...new Set(selectedRowsIds)];
 
-const customStyles = makeStyles((theme) => ({
-  table: {
-    "& .MuiTableCell-body": {
-      padding: (props) =>
-        props.dense ? "0 !important" : "0px 16px !important",
-    },
-    "& .MuiTableHead-root": {
-      "& th": {
-        backgroundColor: "#F2F2F2",
-        zIndex: "auto",
-        padding: (props) => (props.dense ? "10px" : null),
-      },
-      "& .MuiTableCell-paddingCheckbox": {
-        padding: (props) => (props.dense ? "0 !important" : "16px"),
-      },
-    },
-    "& tr": {
-      paddingRight: (props) => (props.dense ? "12px" : null),
-      "& td": {
-        "& div": {
-          padding: 0,
-        },
-      },
-      "& td:nth-child(3)": {
-        "& div": {
-          width: 300,
-        },
-      },
-      "& td:nth-child(13)": {
-        "& div": {
-          width: 300,
-          "& span": {
-            maxWidth: 300,
-          },
-        },
-      },
-    },
-    "& thead": {
-      opacity: "1",
-      transition: "opacity 1s ease-out",
-      webkitTransition: "opacity 1s ease-out",
-    },
-    "& tbody": {
-      opacity: "1",
-      transition: "opacity 1s ease-out",
-      webkitTransition: "opacity 1s ease-out",
-    },
-  },
-}));
+// const customStyles = makeStyles((theme) => ({
+//   table: {
+//     "& .MuiTableCell-body": {
+//       padding: (props) =>
+//         props.dense ? "0 !important" : "0px 16px !important",
+//     },
+//     "& .MuiTableHead-root": {
+//       "& th": {
+//         backgroundColor: "#F2F2F2",
+//         zIndex: "auto",
+//         padding: (props) => (props.dense ? "10px" : null),
+//       },
+//       "& .MuiTableCell-paddingCheckbox": {
+//         padding: (props) => (props.dense ? "0 !important" : "16px"),
+//       },
+//     },
+//     "& tr": {
+//       paddingRight: (props) => (props.dense ? "12px" : null),
+//       "& td": {
+//         "& div": {
+//           padding: 0,
+//         },
+//       },
+//       "& td:nth-child(3)": {
+//         "& div": {
+//           width: 300,
+//         },
+//       },
+//       "& td:nth-child(13)": {
+//         "& div": {
+//           width: 300,
+//           "& span": {
+//             maxWidth: 300,
+//           },
+//         },
+//       },
+//     },
+//     "& thead": {
+//       opacity: "1",
+//       transition: "opacity 1s ease-out",
+//       webkitTransition: "opacity 1s ease-out",
+//     },
+//     "& tbody": {
+//       opacity: "1",
+//       transition: "opacity 1s ease-out",
+//       webkitTransition: "opacity 1s ease-out",
+//     },
+//   },
+// }));
 
-const productionStyle = makeStyles((theme) => ({
-  table: {
-    "& .MuiTableCell-body": {
-      padding: (props) =>
-        props.dense ? "0 !important" : "0px 16px !important",
-    },
-    "& .MuiTableCell-head": {
-      "& span": {
-        justifyContent: "center",
-      },
-    },
-    "& .MuiTableHead-root": {
-      "& th": {
-        backgroundColor: "#F2F2F2",
-        zIndex: "auto",
-        padding: (props) => (props.dense ? "10px" : null),
-      },
-      "& .MuiTableCell-paddingCheckbox": {
-        padding: (props) => (props.dense ? "0 !important" : "16px"),
-      },
-    },
-    "& tr": {
-      paddingRight: (props) => (props.dense ? "12px" : null),
-      "& td": {
-        textAlign: "center",
-        "& div": {
-          justifyContent: "center",
-        },
-      },
-    },
-    "& thead": {
-      opacity: "1",
-      transition: "opacity 1s ease-out",
-      webkitTransition: "opacity 1s ease-out",
-    },
-    "& tbody": {
-      opacity: "1",
-      transition: "opacity 1s ease-out",
-      webkitTransition: "opacity 1s ease-out",
-    },
-  },
-}));
+// const productionStyle = makeStyles((theme) => ({
+//   table: {
+//     "& .MuiTableCell-body": {
+//       padding: (props) =>
+//         props.dense ? "0 !important" : "0px 16px !important",
+//     },
+//     "& .MuiTableCell-head": {
+//       "& span": {
+//         justifyContent: "center",
+//       },
+//     },
+//     "& .MuiTableHead-root": {
+//       "& th": {
+//         backgroundColor: "#F2F2F2",
+//         zIndex: "auto",
+//         padding: (props) => (props.dense ? "10px" : null),
+//       },
+//       "& .MuiTableCell-paddingCheckbox": {
+//         padding: (props) => (props.dense ? "0 !important" : "16px"),
+//       },
+//     },
+//     "& tr": {
+//       paddingRight: (props) => (props.dense ? "12px" : null),
+//       "& td": {
+//         textAlign: "center",
+//         "& div": {
+//           justifyContent: "center",
+//         },
+//       },
+//     },
+//     "& thead": {
+//       opacity: "1",
+//       transition: "opacity 1s ease-out",
+//       webkitTransition: "opacity 1s ease-out",
+//     },
+//     "& tbody": {
+//       opacity: "1",
+//       transition: "opacity 1s ease-out",
+//       webkitTransition: "opacity 1s ease-out",
+//     },
+//   },
+// }));
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -231,6 +231,14 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiPaper-root > .MuiToolbar-gutters": {
       paddingLeft: '11px !important'
     },
+    // "& .MuiPaper-root": {
+    //   zIndex: 99999,
+    // },
+
+    "& .MUIDataTableToolbar": {
+      zIndex: '999999 !important',
+    },
+
     "& .MuiPaper-elevation1": {
       flexDirection: "row !important",
       height: '65px !important',
@@ -3331,9 +3339,10 @@ function SubTable(props) {
           }}
           options={{
             ...options,
-            // searchText: props.header === 'Contacts' ? stateApp.contactSearchQuery : null,
+
             onSearchOpen: () => openSearch(true),
             onSearchClose: () => openSearch(false),
+
             search:
               (
                 props.header === 'Contacts'
@@ -3403,13 +3412,21 @@ function SubTable(props) {
               setSelectedRow={setSelectedRow}
           />  
         )}
+{/* 
+        // the dialog box listed below controls 
+        // popups that overlay the screen due to actions from the grid 
+        // examples would be grid tags or grid comments  */}
+        
+
         {openDialog
           && openDialog !== "addDeals"
           && openDialog !== "sendMailers"
           && openDialog !== "buyContactsInfo"
           && openDialog !== "addOwnerToParcel"
+          
+          
           && (<Dialog
-            className={classes.dialog}
+            style={{zIndex: 99999}}
             open={openDialog ? true : false}
             onClose={handleCloseDialog}
             fullWidth={

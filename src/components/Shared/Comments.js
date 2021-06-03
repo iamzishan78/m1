@@ -66,10 +66,13 @@ const AntSwitch = withStyles((theme) => ({
   checked: {},
 }))(Switch);
 
+
+
+
 const useStyles = makeStyles((theme) => ({
   root: {
     // backgroundColor: "#fff",
-    zIndex: 999999,
+    // zIndex: '999999 !important',
   },
   title: {
     fontSize: 10,
@@ -98,6 +101,8 @@ const useStyles = makeStyles((theme) => ({
     //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
     // },
     maxHeight: (props) => (props.handleRightDialogClose ? "none" : "60vh"),
+    zIndex: '999999 !important',
+
   },
   list: {
     width: "100%",
@@ -472,8 +477,9 @@ export default function Comments(props) {
       variant="outlined"
       style={
         props.detailCard
-          ? { backgroundColor: "transparent", border: "none" }
+          ? { backgroundColor: "transparent", border: "none", zIndex: 99999 }
           : {}
+        
       }
     >
       {/* <CardHeader className={classes.header} title="Comments" /> */}
