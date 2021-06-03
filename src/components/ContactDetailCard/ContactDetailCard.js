@@ -1,17 +1,15 @@
-
-
-// react core 
+// react core
 import React, { useContext, useState, useEffect } from "react";
 
-// mui styling 
+// mui styling
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
-// mui core components 
+// mui core components
 import { Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import { useHistory } from "react-router-dom";
 
-// internal components 
+// internal components
 import Comments from "../Shared/Comments";
 import Tags from "../Shared/Tagger";
 import Avatar from "react-avatar";
@@ -50,19 +48,18 @@ import RecentActivities from "../RecentActivities/RecentActivities";
 import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
-import DocViewer from '../Shared/DocViewer'
+import DocViewer from "../Shared/DocViewer";
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import ArrowRight from "../Shared/svgIcons/arrow-right";
 
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import Link from '@material-ui/core/Link';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Typography from '@material-ui/core/Typography';
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
+import Link from "@material-ui/core/Link";
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import Typography from "@material-ui/core/Typography";
 
-// contexts 
+// contexts
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
-
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -73,12 +70,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   header: {
-    borderBottom: '1px solid rgba(224, 224, 224, 1)',
-    backgroundColor: '#F2F2F2',
-    minHeight: '64px',
-    display: 'flex',
-    position: 'relative',
-    alignItems: 'center'
+    borderBottom: "1px solid rgba(224, 224, 224, 1)",
+    backgroundColor: "#F2F2F2",
+    minHeight: "64px",
+    display: "flex",
+    position: "relative",
+    alignItems: "center",
   },
   topBar: {
     color: "#12ABE0",
@@ -121,13 +118,13 @@ const useStyles = makeStyles((theme) => ({
   },
   userIcon: {
     marginRight: "15px",
-    "float": "left",
+    float: "left",
   },
   userName: {
     color: "#919191",
     minWidth: "50%",
     maxWidth: "calc( 100% - 400px)",
-    "float": "left",
+    float: "left",
     "& h2": {
       margin: "0",
       color: "#202020",
@@ -195,7 +192,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     zIndex: "600",
     height: "0",
-    "float": "right",
+    float: "right",
     color: "#757575",
     "& a": {
       textDecoration: "none !important",
@@ -232,6 +229,17 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiDialog-paperScrollPaper": {
       height: "100%",
     },
+  },
+  dialogFullScreen: {
+    "& .MuiDialog-paperScrollPaper": {
+      height: "100%",
+      maxHeight: "100%",
+      margin: "0px",
+      width: "100%",
+    },
+  },
+  linkClass:{
+
   },
   expTardTopBarNav: {
     fontWeight: "normal",
@@ -274,7 +282,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     margin: "0 0 8px 0",
-    "float": "right",
+    float: "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -284,15 +292,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ContactDetailCard(props) {
-
-  // contexts 
+  // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
-
   const dispatch = useDispatch();
   let history = useHistory();
-  const contactId = history.location.pathname.split('/')[history.location.pathname.split('/').length - 1]
+  const contactId =
+    history.location.pathname.split("/")[
+      history.location.pathname.split("/").length - 1
+    ];
   const shrinkRightColumn = useSelector(
     ({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn
   );
@@ -307,18 +316,16 @@ export default function ContactDetailCard(props) {
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
 
-  const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(
-    null
-  );
+  const [expCardSubComponentTitle, setExpCardSubComponentTitle] =
+    useState(null);
 
   const [getContact, { loading, data }] = useLazyQuery(CONTACT);
   // const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
   //   TRANSACTIONDATA
   // );
 
-  const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
-    TRANSACTIONDATA
-  );
+  const [getTransactionData, { data: tData, tLoading }] =
+    useLazyQuery(TRANSACTIONDATA);
 
   const [getLastMelissaRecord, { data: mData }] = useLazyQuery(
     LASTMELISSARECORD,
@@ -437,76 +444,88 @@ export default function ContactDetailCard(props) {
 
   const checkModuleHistory = () => {
     return !!stateNav.contactFromMap;
-  }
+  };
 
   const ExtenstionGetter = (name) => {
-    let fileExtension = name
-      ?.slice(name.lastIndexOf(".") + 1)
-      ?.toLowerCase();
+    let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
 
-    return fileExtension
-  }
+    return fileExtension;
+  };
   return contactData ? (
     <>
       <div className={classes.header}>
-        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'left', paddingLeft: '25px'}}>
-          
-      {/* {checkModuleHistory() && } */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "left",
+            paddingLeft: "25px",
+          }}
+        >
+          {/* {checkModuleHistory() && } */}
 
+          <Breadcrumbs
+            separator={<NavigateNextIcon fontSize="small" />}
+            aria-label="breadcrumb"
+          >
+            {checkModuleHistory() && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => {
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    // parcelDetailCardOpen: false,
+                  }));
 
-      <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+                  history.push("/");
 
-        {checkModuleHistory() &&
-         <Link style={{ marginLeft: '5px',
-                          fontSize: '16px', 
-                          cursor: 'pointer',
-                          }}  
-                          color="inherit"
-                          onClick={()=> 
-                          { 
-                            setStateApp((stateApp) => ({
-                              ...stateApp,
-                              // parcelDetailCardOpen: false,
-                            }));
+                  setStateNav((stateApp) => ({
+                    ...stateApp,
+                    contactFromMap: false,
+                  }));
+                }}
+              >
+                Map
+              </Link>
+            )}
 
-                            history.push('/');
+            {console.log("CURRENT MAP BREADCRUMB")}
 
-                            setStateNav((stateApp) => ({
-                              ...stateApp,
-                              contactFromMap: false,
-                            }));
+            <Link
+              style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer" }}
+              color="inherit"
+              onClick={() => history.push("/contacts")}
+            >
+              Contacts
+            </Link>
 
-                          }}>
-          Map
-        </Link>       
-        }
-        
-        { console.log('CURRENT MAP BREADCRUMB') }
-
-
-        <Link style={{ marginLeft: '5px', 
-                          fontSize: '16px', 
-                          cursor: 'pointer',
-                          }}  
-                          color="inherit"
-                          onClick={()=> history.push('/contacts')}>
-          Contacts
-        </Link>
-
-            <Typography style={{ color: '#18AADD', fontSize: '16px', marginLeft: '5px' }}>{contactData.name}</Typography>
-
+            <Typography
+              style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}
+            >
+              {contactData.name}
+            </Typography>
           </Breadcrumbs>
-
         </div>
       </div>
-      <div className={classes.mainGridContainer} >
+      <div className={classes.mainGridContainer}>
         {/*/////////// left column //////////// */}
 
-        {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === 'pdf' ? (
-          <div className={classes.leftColumn}> <DocViewer DocStyle={{ backgroundColor: 'white !important', width: '70vw' }} divCondition={true}></DocViewer></div>
-
+        {stateApp.viewDoc &&
+        ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
+          <div className={classes.leftColumn}>
+            {" "}
+            <DocViewer
+              DocStyle={{ backgroundColor: "white !important", width: "70vw" }}
+              divCondition={true}
+            ></DocViewer>
+          </div>
         ) : (
-          <Grid container className={classes.leftColumn} >
+          <Grid container className={classes.leftColumn}>
             {/*/////////// section 1 //////////// */}
 
             <Grid
@@ -530,11 +549,7 @@ export default function ContactDetailCard(props) {
               </Button> */}
                 {contactData.primaryEmail && (
                   <a href={"mailto:" + contactData.primaryEmail}>
-                    <Button
-                      variant="contained"
-                    >
-                      Email
-                  </Button>
+                    <Button variant="contained">Email</Button>
                   </a>
                 )}
 
@@ -545,12 +560,11 @@ export default function ContactDetailCard(props) {
                   }}
                 >
                   Delete
-              </Button>
+                </Button>
               </div>
               <div>
                 <div className={classes.userIcon}>
-                  <StyleBadge
-                  >
+                  <StyleBadge>
                     <Avatar
                       className={classes.grey}
                       name={contactData.name}
@@ -561,7 +575,6 @@ export default function ContactDetailCard(props) {
                 </div>
                 <div className={classes.userName}>
                   <h2 style={{ width: "max-content" }}>
-
                     <FieldContent
                       noInputFooter
                       noMargin
@@ -572,45 +585,51 @@ export default function ContactDetailCard(props) {
                       {(contactData.facebook ||
                         contactData.twitter ||
                         contactData.linkedIn) && (
-                          <span className={classes.socialMediaSection}>
-                            {contactData.facebook && (
-                              <a
-                                href={`${!contactData.facebook.startsWith("http") &&
-                                  !contactData.facebook.startsWith("//")
+                        <span className={classes.socialMediaSection}>
+                          {contactData.facebook && (
+                            <a
+                              href={`${
+                                !contactData.facebook.startsWith("http") &&
+                                !contactData.facebook.startsWith("//")
                                   ? "//"
                                   : ""
-                                  }${contactData.facebook}`}
-                                target="_blank" rel="noreferrer"
-                              >
-                                <FacebookIcon />
-                              </a>
-                            )}
-                            {contactData.twitter && (
-                              <a
-                                href={`${!contactData.twitter.startsWith("http") &&
-                                  !contactData.twitter.startsWith("//")
+                              }${contactData.facebook}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <FacebookIcon />
+                            </a>
+                          )}
+                          {contactData.twitter && (
+                            <a
+                              href={`${
+                                !contactData.twitter.startsWith("http") &&
+                                !contactData.twitter.startsWith("//")
                                   ? "//"
                                   : ""
-                                  }${contactData.twitter}`}
-                                target="_blank" rel="noreferrer"
-                              >
-                                <TwitterIcon className={classes.twitterIcon} />
-                              </a>
-                            )}
-                            {contactData.linkedIn && (
-                              <a
-                                href={`${!contactData.linkedIn.startsWith("http") &&
-                                  !contactData.linkedIn.startsWith("//")
+                              }${contactData.twitter}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <TwitterIcon className={classes.twitterIcon} />
+                            </a>
+                          )}
+                          {contactData.linkedIn && (
+                            <a
+                              href={`${
+                                !contactData.linkedIn.startsWith("http") &&
+                                !contactData.linkedIn.startsWith("//")
                                   ? "//"
                                   : ""
-                                  }${contactData.linkedIn}`}
-                                target="_blank" rel="noreferrer"
-                              >
-                                <LinkedInIcon />
-                              </a>
-                            )}
-                          </span>
-                        )}
+                              }${contactData.linkedIn}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <LinkedInIcon />
+                            </a>
+                          )}
+                        </span>
+                      )}
                     </FieldContent>
                   </h2>
                   <h4>
@@ -686,7 +705,7 @@ export default function ContactDetailCard(props) {
             <Grid item xs={12} className={`${classes.border}`}>
               <div className={classes.SectMargin}>
                 <Grid item xs={12} style={{ minHeight: "33px" }}>
-                  <h4 style={{ margin: "0 0 13px 0", "float": "left" }}>
+                  <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
                     Lead Stage changed:{" "}
                     <span style={{ fontWeight: "normal" }}>
                       {anyToDate(
@@ -723,9 +742,9 @@ export default function ContactDetailCard(props) {
               spacing={0}
             >
               <Grid item xs={12}>
-                <h4 style={{ margin: "0 0 13px 0", "float": "left" }}>
+                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
                   Associated Interests & Deals
-              </h4>
+                </h4>
               </Grid>
 
               <Grid item xs={12}>
@@ -773,12 +792,10 @@ export default function ContactDetailCard(props) {
                 />
               </div>
             </Grid>
-
           </Grid>
         )}
         {/*/////////// rigth column //////////// */}
-        <div className={classes.rightColumnGrid} >
-
+        <div className={classes.rightColumnGrid}>
           {/* <IconButton
             size="small"
             className={classes.shrinkRightColumn}
@@ -795,7 +812,6 @@ export default function ContactDetailCard(props) {
 
           {shrinkRightColumn || showShrinkColumnContent ? (
             <div style={{ width: "68px" }}>
-
               {/* <IconButton className={classes.shrinkRightColumnIcons}>
                 <MessageRoundedIcon
                   onClick={() => {
@@ -859,10 +875,9 @@ export default function ContactDetailCard(props) {
                 <Divider />
               </Grid>
 
-              <Grid item xs={12} className={classes.Comments} >
+              <Grid item xs={12} className={classes.Comments}>
                 {/* <DocViewer DocStyle={{top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(2.5%, -104.2%)`, width:'1320px',height:'816px'}}></DocViewer> */}
                 <Documents
-
                   handleOpenExpandableCard={handleOpenExpandableCard}
                   id={contactData._id}
                   user_id={stateApp.user.email}
@@ -885,7 +900,7 @@ export default function ContactDetailCard(props) {
               <BuyContactsInfoDialogContent
                 onClose={handleCloseDialog}
                 rows={[contactData]}
-                setRows={() => { }}
+                setRows={() => {}}
                 updateMelissaTable={() => {
                   getLastMelissaRecord({
                     variables: {
@@ -900,10 +915,7 @@ export default function ContactDetailCard(props) {
                       },
                       ignoreResponse: true,
                     },
-                    refetchQueries: [
-                      "getPaginatedContacts",
-                      "getContact",
-                    ],
+                    refetchQueries: ["getPaginatedContacts", "getContact"],
                     awaitRefetchQueries: false,
                   });
                 }}
@@ -939,60 +951,140 @@ export default function ContactDetailCard(props) {
         </RightDialog>
 
         {/* //// ViewAll in a full screen dialog //// */}
-        {showExpandableCard && (
-          <Dialog
-            className={classes.dialogExpCard}
-            fullWidth
-            maxWidth="xl"
-            open={showExpandableCard}
-            onClose={handleCloseDialog}
-          >
-            <ExpandableCardProvider
-              expanded={true}
-              handleCloseExpandableCard={handleCloseExpandableCard}
-              title={"Contact Details"}
-              subTitle={" "}
-              parent="table"
-              mouseX={0}
-              mouseY={0}
-              position="relative"
-              cardLeft={"0"}
-              cardTop={"0"}
-              zIndex={1201}
-              cardWidthExpanded="100%"
-              cardHeightExpanded="100%"
-              targetSourceId={stateApp.selectedContact}
-              targetLabel={"contact"}
-              noTrackAvailable={true}
-              component={
-                <div
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#fff",
-                    minHeight: "100%",
-                  }}
-                >
-                  {/* //// ViewAll card top bar //// */}
-                  <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-                    <h3 className={classes.expTardTopBarNav}>
-                      <span>Contacts</span>
-                      {" > "}
-                      <span
-                        className={classes.expTardTopBarNavContName}
-                        onClick={handleCloseExpandableCard}
+        {showExpandableCard &&
+          expCardSubComponentTitle !== "Detailed Information" && (
+            <Dialog
+              className={classes.dialogExpCard}
+              fullWidth
+              maxWidth="xl"
+              open={showExpandableCard}
+              onClose={handleCloseDialog}
+            >
+              <ExpandableCardProvider
+                expanded={true}
+                handleCloseExpandableCard={handleCloseExpandableCard}
+                title={"Contact Details"}
+                subTitle={" "}
+                parent="table"
+                mouseX={0}
+                mouseY={0}
+                position="relative"
+                cardLeft={"0"}
+                cardTop={"0"}
+                zIndex={1201}
+                cardWidthExpanded="100%"
+                cardHeightExpanded="100%"
+                targetSourceId={stateApp.selectedContact}
+                targetLabel={"contact"}
+                noTrackAvailable={true}
+                component={
+                  <div
+                    style={{
+                      width: "100%",
+                      backgroundColor: "#fff",
+                      minHeight: "100%",
+                    }}
+                  >
+                    {/* //// ViewAll card top bar //// */}
+                    <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
+                      <h3 className={classes.expTardTopBarNav}>
+                        <span>Contacts</span>
+                        {" > "}
+                        <span
+                          className={classes.expTardTopBarNavContName}
+                          onClick={handleCloseExpandableCard}
+                        >
+                          {contactData && contactData.name
+                            ? contactData.name
+                            : ""}
+                        </span>
+                        {" > "}
+                        {expCardSubComponentTitle}
+                      </h3>
+                    </Toolbar>
+                    {expCardSubComponent}
+                  </div>
+                }
+              />
+            </Dialog>
+          )}
+        {showExpandableCard &&
+          expCardSubComponentTitle === "Detailed Information" && (
+            <Dialog
+              className={classes.dialogFullScreen}
+              fullWidth
+              maxWidth="xl"
+              open={showExpandableCard}
+              onClose={handleCloseDialog}
+            >
+              <div
+                style={{
+                  width: "100%",
+                  backgroundColor: "#fff",
+                  minHeight: "100%",
+                }}
+              >
+                <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
+                  <Breadcrumbs
+                    separator={<NavigateNextIcon fontSize="small" />}
+                    aria-label="breadcrumb"
+                  >
+                    {checkModuleHistory() && (
+                      <Link className={classes.linkClass}
+                        style={{
+                          marginLeft: "5px",
+                          fontSize: "16px",
+                          cursor: "pointer",
+                        }}
+                        color="inherit"
+                        onClick={() => {
+                          history.push("/");
+                          setStateNav((stateApp) => ({
+                            ...stateApp,
+                            contactFromMap: false,
+                          }));
+                        }}
                       >
-                        {contactData && contactData.name ? contactData.name : ""}
-                      </span>
-                      {" > "}
+                        Map
+                      </Link>
+                    )}
+                    <Link
+                      style={{
+                        marginLeft: "5px",
+                        fontSize: "16px",
+                        cursor: "pointer",
+                      }}
+                      color="inherit"
+                      onClick={() => history.push("/contacts")}
+                    >
+                      Contacts
+                    </Link>
+                    <Link
+                      style={{
+                        marginLeft: "5px",
+                        fontSize: "16px",
+                        cursor: "pointer",
+                      }}
+                      color="inherit"
+                      onClick={handleCloseExpandableCard}
+                    >
+                      {contactData.name}
+                    </Link>
+                    <Typography
+                      style={{
+                        color: "#18AADD",
+                        fontSize: "16px",
+                        marginLeft: "5px",
+                      }}
+                    >
                       {expCardSubComponentTitle}
-                    </h3>
-                  </Toolbar>
-                  {expCardSubComponent}
-                </div>
-              }
-            />
-          </Dialog>
-        )}
+                    </Typography>
+                  </Breadcrumbs>
+                </Toolbar>
+                {expCardSubComponent}
+              </div>
+            </Dialog>
+          )}
       </div>
     </>
   ) : (
