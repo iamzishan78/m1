@@ -16,6 +16,9 @@ export default function CommentsWithIcon(props) {
   const [openDialog, setOpenDialog] = useState(false);
 
   const useStyles = makeStyles((theme) => ({
+    root: {
+      zIndex: 9999999,
+    },
     icons: {
       color: "#ffffff",
       marginLeft: "auto",

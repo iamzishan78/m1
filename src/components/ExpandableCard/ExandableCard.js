@@ -122,7 +122,7 @@ function ExpandableCard(props) {
       "& .MuiCardHeader-action": {
         alignSelf: "left",
       },
-      zIndex: 9999, // consistent with mapbox popup summary card for map interactions
+      zIndex: 88888, // consistent with mapbox popup summary card for map interactions
     },
     title: {
       fontFamily: "Poppins",

@@ -139,7 +139,7 @@ const useStyles = makeStyles((theme) => ({
   foodText: {
     position: "absolute",
     bottom: "20px",
-    zIndex: "51",
+    // zIndex: "51",
     right: "0px",
     fontSize: "10px",
     color: "#6e6e6e",
@@ -435,7 +435,7 @@ const Header = () => (
         position: "absolute",
         height: "100%",
         width: "100%",
-        zIndex: "50",
+        // zIndex: "50",
       }}
     >
       <CircularProgress size={80} disableShrink color="secondary" />
