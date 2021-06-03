@@ -205,7 +205,10 @@ function ShapeGridWellsTable(props) {
     const options = {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
         count: count,
-        serverSide: true
+        serverSide: true,
+        // search: false, 
+        filter: false,
+        // column: false, 
     }
     ////////////-----Add your code section here-----///////////////////////
     const getWellOwnersByYear = (selectedYear) => {
