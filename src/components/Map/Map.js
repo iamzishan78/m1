@@ -4960,12 +4960,12 @@ function Map() {
               title={stateApp.selectedWell.wellName}
               subTitle={stateApp.selectedWell.api}
               parent="map"
-              cardTop={20}
-              cardLeft={20}
+              cardTop={0}
+              cardLeft={0}
               position="relative"
               zIndex={99}
               cardWidthExpanded="50vw"
-              cardHeightExpanded="90vh"
+              cardHeightExpanded="calc(100vh - 64px)"
               targetSourceId={stateApp.selectedWell.id}
               targetLabel="well"
             />
@@ -4984,11 +4984,11 @@ function Map() {
               subTitle=""
               parent="map"
               position="relative"
-              cardTop={20}
-              cardLeft={20}
+              cardTop={0}
+              cardLeft={0}
               zIndex={99}
               cardWidthExpanded="50vw"
-              cardHeightExpanded="90vh"
+              cardHeightExpanded="calc(100vh - 64px)"
               targetSourceId={stateApp.selectedParcel.id}
               targetLabel="parcel"
               deleteParcel={deleteParcel}
@@ -5016,7 +5016,7 @@ function Map() {
                 zIndex={3000}
                 cardWidth="375px"
                 cardWidthExpanded="50vw"
-                cardHeightExpanded="95vh"
+                cardHeightExpanded="calc(100vh - 64px)"
                 targetSourceId={stateApp.selectedPermit.Id}
                 targetLabel="recent_submitted_permits"
               ></ExpandableCardProvider>
@@ -5026,35 +5026,7 @@ function Map() {
 
       <div id="modalHolder" ref={modalContainer} />
       <Portal container={modalContainer.current}>
-        {/* {stateApp.selectedAbstracts.length > 0 && (
-	  <AbstractSelectionPopup
-	  abstracts={stateApp.selectedAbstracts}
-	  map={map}
-	  onClickExpand={handleAnchorElPopOver}
-	  />
-	  )} */}
 
-        {/* {stateApp.selectedParcel !== null && stateApp.expandedCard && (
-	  <div className={classes.draggable}>
-	  <ExpandableCardProvider
-	  expanded={true}
-	  handleCloseExpandableCard={handleCloseExpandableCard}
-	  component={<ParcelCardProvider></ParcelCardProvider>}
-	  title={stateApp.selectedParcel.shapeLabel}
-	  subTitle=""
-	  parent="map"
-	  position="relative"
-	  cardTop={20}
-	  cardLeft={20}
-	  zIndex={99}
-	  cardWidthExpanded="50vw"
-	  cardHeightExpanded="90vh"
-	  targetSourceId={stateApp.selectedParcel.id}
-	  targetLabel="parcel"
-	  deleteParcel={deleteParcel}
-	  ></ExpandableCardProvider>
-	  </div>
-	  )} */}
       </Portal>
       <Portal container={container.current}>
         {stateApp.popupOpen === true ? (
@@ -5078,7 +5050,7 @@ function Map() {
                       zIndex={3000}
                       cardWidth="350px"
                       cardWidthExpanded="50vw"
-                      cardHeightExpanded="95vh"
+                      cardHeightExpanded="calc(100vh - 64px)"
                       targetSourceId={stateApp.selectedWell.id}
                       targetLabel="well"
                     ></ExpandableCardProvider>
@@ -5098,12 +5070,12 @@ function Map() {
                     mouseX={0}
                     mouseY={0}
                     position="relative"
-                    cardLeft={20}
-                    cardTop={70}
+                    cardLeft={0}
+                    cardTop={0}
                     zIndex={99}
                     cardWidth="350px"
                     cardWidthExpanded="50vw"
-                    cardHeightExpanded="90vh"
+                    cardHeightExpanded="calc(100vh - 64px)"
                     targetSourceId={stateApp.selectedParcel.id}
                     targetLabel="parcel"
                     deleteParcel={deleteParcel}
@@ -5111,18 +5083,6 @@ function Map() {
                 )}
               </PortalD>
             )}
-
-            {/* {stateApp.selectedUserDefinedLayer && (
-	      <PortalD id="popupContainer">
-	      <SpatialDataCardEdit
-	      selectedFeature={stateApp.selectedUserDefinedLayer}
-	      saveSpatialData={handleSaveSpatialDataToShape}
-	      closeSpatialDataCard={handleCloseSpatialDataCard}
-	      deleteSpatialDataAndShape={handleDeleteSpatialDataAndShape}
-	      cardClass={"cardPopup"}
-	      />
-	      </PortalD>
-	      )} */}
             {stateApp.filterFeature && (
               <PortalD id="filterPopupContainer">
                 <FilterControl filterFeature={stateApp.filterFeature} />
