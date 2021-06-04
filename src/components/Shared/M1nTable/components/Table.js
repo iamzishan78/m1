@@ -3044,7 +3044,7 @@ function SubTable(props) {
                     "fullContactAddress"
                     ? "address1"
                     : tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.dbName ||
-                    tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
+                      tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
                 order:
                   tableState.sortOrder?.direction === "asc"
                     ? 1
@@ -3154,7 +3154,8 @@ function SubTable(props) {
             ...(!isEmpty(tableState.sortOrder)) && {
               sort:
               {
-                field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
+                field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.dbName ||
+                  tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
                 order:
                   tableState.sortOrder?.direction === "asc"
                     ? 1
