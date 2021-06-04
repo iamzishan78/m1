@@ -7,21 +7,26 @@ import Typography from '@material-ui/core/Typography';
 
 
 const useStyles = makeStyles((theme) => ({
-    heading: {
-        marginTop: '10px'
-    },
+    heading: ({ type }) => ({
+        marginTop: type === 'group' ? '8px' : '6px'
+    }),
     textField: {
         height: "100%",
         width: "100%",
+        paddingTop: "15px",
         '& .MuiFilledInput-input': {
             padding: '12px 12px 10px'
+        },
+        '& .MuiFormHelperText-contained': {
+            justifyContent: "flex-end",
+            display: "flex"
         }
     },
-    editIcon: {
-        top: "11px",
+    editIcon: (type) => ({
+        top: type === 'group' ? "10px" : '7px',
         left: "7px",
         position: "relative"
-    },
+    }),
     textFieldInput: {
         height: "40px",
     },
@@ -31,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 
 function EditableTextField({ item, onChange, name }) {
     const [isEdit, setEdit] = useState({});
-    const classes = useStyles({ isEdit });
+    const classes = useStyles({ isEdit, type: item.type });
     return (
         <Grid container onMouseOver={() => !isEdit.mode && setEdit({ ...isEdit, able: true })}
             onMouseLeave={() => setEdit({ ...isEdit, able: false })}>
@@ -47,7 +52,7 @@ function EditableTextField({ item, onChange, name }) {
                         defaultValue={name}
                         autoFocus
                         required
-                        // helperText={"Press Enter to save"}
+                        helperText={"Return to save"}
                         InputProps={{
                             className: classes.textFieldInput,
                             disableUnderline: true,
