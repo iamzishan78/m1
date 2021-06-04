@@ -88,6 +88,7 @@ export default function AddUserGroupData(props) {
         layerNames.push(fileName)
       })
       setLayerNames([...layerNames])
+      setGroupName(stateMapControls.fileUploadedContent.groupName)
 
       setInputFiles(stateMapControls.fileUploadedContent);
     }
@@ -337,6 +338,7 @@ export default function AddUserGroupData(props) {
       <DialogContent dividers>
 
         <TextField
+          defaultValue={stateMapControls.fileUploadedContent.groupName}
           focused
           required
           margin="dense"

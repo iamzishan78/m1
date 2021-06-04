@@ -273,6 +273,7 @@ export default function AddLayer(props) {
               if (Array.isArray(geojson)) {
                 const merged = geojsonMerge.merge(geojson)
                 merged.fileNames = geojson.map((g) => g.fileName)
+                merged.groupName = fileName.replace('.zip', '')
                 resolve(merged)
               }
               resolve(geojson);
@@ -315,27 +316,25 @@ export default function AddLayer(props) {
     });
   }
 
-  const M1Layers = currentLayers.filter(
-    (layer) => layer.layerCategory == "M1 Layer"
-  );
-  let UdLayers = currentLayers.filter(
-    (layer) => layer.layerCategory == "UD layer"
-  );
-  const groupHandled = []
-  UdLayers.forEach((UdLayer, index) => {
-    if (UdLayer.groupId && !groupHandled.includes(UdLayer.groupId)) {
-      groupHandled.push(UdLayer.groupId);
-      UdLayers.splice(index, 0, {
-        type: 'group',
-        collapsed: true,
-        name: UdLayer.groupName,
-        id: UdLayer.groupId,
-        layers: UdLayers.filter((ul) => ul.groupId === UdLayer.groupId)
-      })
-    }
-  })
+  const M1Layers = React.useMemo(() => {
+    return currentLayers.filter((layer) => layer.layerCategory == "M1 Layer");
+  }, [currentLayers]);
 
-  UdLayers = UdLayers.filter((UdLayer) => !(UdLayer.layerType === 'file layer' && UdLayer.groupId))
+  const UdLayers = React.useMemo(() => {
+    const layers = currentLayers.filter((layer) => layer.layerCategory == "UD layer");
+    const groupHandled = []
+    for (let index = 0; index < layers.length; index++) {
+      const UdLayer = layers[index]
+      if (UdLayer.groupId && !groupHandled.includes(UdLayer.groupId)) {
+        groupHandled.push(UdLayer.groupId);
+        const groupLayers = layers.filter((ul) => ul.groupId === UdLayer.groupId)
+        layers.splice(index, 0, { type: 'group', collapsed: true, name: UdLayer.groupName, id: UdLayer.groupId, layers: groupLayers })
+        index = 0
+      }
+    }
+    return layers.filter((UdLayer) => !(UdLayer.layerType === 'file layer' && UdLayer.groupId))
+  }, [currentLayers]);
+
   return (
     <>
       <Dialog open={isOpen} onClose={windowClose}>
