@@ -233,9 +233,6 @@ const ShapeActionsPopup = (props) => {
       ...state,
       shapeActionsFilterSelected: false,
     }));
-    stateApp.draw.changeMode("direct_select", {
-      featureId: stateApp.currentFeature.id,
-    });
   };
 
   const applyFilter = () => {
@@ -266,6 +263,10 @@ const ShapeActionsPopup = (props) => {
     if (isLine()) return;
     if (stateApp.shapeActionsFilterSelected) {
       clearFilter();
+      // Changing back to original shape
+      stateApp.draw.changeMode("direct_select", {
+        featureId: stateApp.currentFeature.id,
+      });
     } else {
       applyFilter();
     }

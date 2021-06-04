@@ -1161,8 +1161,6 @@ function Map() {
             showDrawShapesPopup: false,
           }));
         }
-
-
       }
 
       createUDPopUp(feature.properties);

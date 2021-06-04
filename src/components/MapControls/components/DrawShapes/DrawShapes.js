@@ -268,7 +268,7 @@ export default function DrawShapes() {
         if (feature) {
           addCustomShapeProperties(feature, draw);
         }
-        setStateApp((state) => ({ ...state, editDraw: false }));
+        setStateApp((state) => ({ ...state, editDraw: false, showShapeActionsPopup: true }));
       });
 
       map.on("draw.selectionchange", ({ features }) => {
