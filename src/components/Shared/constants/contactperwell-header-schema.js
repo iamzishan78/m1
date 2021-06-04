@@ -168,7 +168,8 @@ const ContactWellHeadCells = [
     download: false,
     print: false,
     viewColumns: false,
-  } },
+  }
+ },
 ];
 
 export default ContactWellHeadCells;
