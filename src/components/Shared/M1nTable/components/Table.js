@@ -3356,11 +3356,18 @@ function SubTable(props) {
           } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
       >
 
+      {console.log('PROPS', props)}
+
         <MUIDataTable
           className={tableStyle}
           title={getHeaders()}
           data={rows ? rows : []}
+          // columns={
+          //   props.parent === "ownersPerParcel" ? false :
+          //   (columns ? columns : [])}
+
           columns={columns ? columns : []}
+          
           components={{
             TableFilterList: props.header == 'Tax Roll Ownership' && !isSearchOpen ? TableFilterList : null,
             icons: {
@@ -3371,8 +3378,24 @@ function SubTable(props) {
           options={{
             ...options,
 
+
+
             onSearchOpen: () => openSearch(true),
             onSearchClose: () => openSearch(false),
+
+            // resizableColumns: true,
+
+            filter:          props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
+                          || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+                          || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+
+                    ? false : null,
+
+            viewColumns:     props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search 
+                          || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+                          || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+
+                    ? false : null,
 
             search:
               (
@@ -3380,7 +3403,12 @@ function SubTable(props) {
                 || props.header === 'Deals'
                 || props.header === 'Activities'
                 || props.header === 'Monthly Production'
-              )
+                || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
+                || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+
+                )
+
                 ? false : props.parent != "search",
             // have to use props.parent here for initial value
             searchOpen: props.parent === "Contacts" ? true : null,

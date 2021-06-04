@@ -26,8 +26,20 @@ const FileTree = ({ layerMap }) => {
       if (items.length === layerMap.length) {
         const updateFn = {};
         items.forEach((item, index) => {
+          if (item.name !== layerMap[index].name) {
+            updateFn[index] = {
+              name: { $set: layerMap[index].name },
+            }
+          }
           if (item.layerSettings) {
-            updateFn[index] = { layerSettings: { $set: layerMap[index].layerSettings }, showable: { $set: layerMap[index].showable }, layerPaintProps: { $set: layerMap[index].layerPaintProps } }
+            updateFn[index] = {
+              ...updateFn[index],
+              layerSettings: { $set: layerMap[index].layerSettings },
+              showable: { $set: layerMap[index].showable },
+              layerPaintProps: { $set: layerMap[index].layerPaintProps },
+              groupName: { $set: layerMap[index].groupName },
+              layerName: { $set: layerMap[index].layerName }
+            }
           }
         })
         setItems(update(items, updateFn))

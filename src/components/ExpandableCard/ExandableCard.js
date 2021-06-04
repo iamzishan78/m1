@@ -110,15 +110,16 @@ function ExpandableCard(props) {
     card: {
       position: position,
       left: cardLeft,
+      borderRadius: 0,
       top: cardTop,
       webkitTransform: "translateZ(0)",
       transition: "width 0.1s, height 0.1s, left 0.1s, top 0.1s",
       width: width,
       height: props.expanded ? height : "inherit",
-      background: "#011133",
+      background: "#112040",
       borderStyle: "solid",
       borderWidth: "thin",
-      borderColor: "#011133",
+      borderColor: "#112040",
       "& .MuiCardHeader-action": {
         alignSelf: "left",
       },
@@ -223,7 +224,7 @@ function ExpandableCard(props) {
       setToggleExpand(false);
       setExpanded(true);
       if (parent === "table" && targetLabel === "well") setWidth("50vw");
-      else setWidth("95vw");
+      else setWidth("100vw");
     }
     setHeight(cardHeightExpanded);
 
@@ -283,13 +284,11 @@ function ExpandableCard(props) {
         popupOpen: false,
         selectedWell: null,
         selectedParcel: null,
+        selectedPermit: null, 
         expandedCard: false,
+        viewDoc: null,
       }));
     }
-    setStateApp((state) => ({
-      ...state,
-      viewDoc: null
-    }));
     props.handleCloseExpandableCard();
     //if EC is inside map popup you need to close it
   };
@@ -376,7 +375,7 @@ function ExpandableCard(props) {
   useEffect(() => {
     ///Set body style overflow hidden when card is fully expanded
     const disableBodyScrollBarIfExpanded = () => {
-      if (width === '95vw') {
+      if (width === '100vw') {
         document.body.style.overflow = 'hidden';
       }
     };
@@ -498,12 +497,6 @@ function ExpandableCard(props) {
                     )}
                   </Tooltip>
                 )}
-
-
-              {console.log('EXPANDED', isExpanded)}
-              {console.log('EXPANDED TARGET', targetLabel)}
-              {console.log('EXPANDED PROPS', props)}
-
 
 
               {stateExpandableCard.expanded 

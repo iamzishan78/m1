@@ -105,6 +105,13 @@ export default function MapControls(props) {
     }
   }, [stateApp.selectedUserDefinedLayer]);
 
+  useEffect(() => {
+    if (stateApp.selectedAbstracts.length > 0) {
+      setStateApp(state => ({ ...state, showDrawShapesPopup: true }));
+      setStateMapControls(state => ({ ...state, selectedMapControl: 'draw', selectedControl: 'layer' }));
+    }
+  }, [stateApp.selectedAbstracts]);
+
   const toggleSpeedDial = (event) => {
     setStateMapControls({
       ...stateMapControls,
@@ -128,19 +135,6 @@ export default function MapControls(props) {
   };
 
   const handleCloseShapeDrawer = () => {
-
-    // const { draw, map, currentFeature } = stateApp;
-    // draw.delete(currentFeature?.id);
-    // setStateApp((state) => ({
-    //   ...state,
-    //   editDraw: false,
-    //   currentFeature: undefined,
-    //   isAbstractedLayersPolygon: false,
-    //   multiSelectLandGrids: false,
-    //   selectedAbstracts: [],
-    //   showShapeActionsPopup: false,
-    //   showDrawShapesPopup: false,
-    // }));
 
     const { draw, map, currentFeature } = stateApp;
     draw.delete(currentFeature?.id);
@@ -205,13 +199,8 @@ export default function MapControls(props) {
     }
 
     if (stateMapControls.selectedMapControl === true) {
-
       console.log('SHAPE STATE MAP CONTROLS', stateMapControls)
-
     }
-
-
-
 
     if (e && action) {
       let anchorEl = e.currentTarget;

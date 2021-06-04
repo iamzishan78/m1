@@ -43,6 +43,8 @@ import { default as Rect } from "../../../Shared/svgIcons/rectangle";
 import ShowChartIcon from "@material-ui/icons/ShowChart";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import { NavigationContext } from "../../../Navigation/NavigationContext";
+import { useDispatch } from "react-redux";
+import { setMapGridCardState } from "actions";
 
 // const localStyles = makeStyles((theme) => ({
 //   label: {
@@ -186,6 +188,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function DrawShapes() {
+  const dispatch = useDispatch();
+  let history = useHistory();
   const classes = useStyles();
   const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
@@ -327,8 +331,16 @@ export default function DrawShapes() {
     }
     setStateApp((state) => ({
       ...state,
+      gridPolygonString: '',
       selectedAoi: null,
+      shapeGridWellsCount: 0,
+      shapeGridOwnersCount: 0
     }));
+    dispatch(
+      setMapGridCardState({
+        mapGridCardActiveTap: 0,
+      })
+    );
 
     toggleSpatialDataCard(false);
 
