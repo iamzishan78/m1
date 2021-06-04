@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ContactDetailedInfoCard(props) {
+export default function ContactDetailedInfoCard() {
   const classes = useStyles();
   let history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -66,7 +66,6 @@ export default function ContactDetailedInfoCard(props) {
 
   useEffect(() => {
     if (contactId) {
-      debugger;
       getContact({
         variables: {
           contactId: contactId,
@@ -82,7 +81,6 @@ export default function ContactDetailedInfoCard(props) {
 
   useEffect(() => {
     if (data && data.contact) {
-      debugger;
       setContactData(data.contact);
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -93,7 +91,6 @@ export default function ContactDetailedInfoCard(props) {
 
   useEffect(() => {
     if (mData && mData.getLastMelissaRecord.success === true) {
-      debugger
       setMelissaData(mData.getLastMelissaRecord);
     }
   }, [mData]);

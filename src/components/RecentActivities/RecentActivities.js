@@ -1,21 +1,11 @@
-import React, { useState, useContext } from "react";
-// import MUIDataTable from "mui-datatables";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  MenuItem,
-  Checkbox,
-  Select,
-  InputLabel,
-  Grid,
-  Button,
-  FormControl,
-  Typography,
-} from "@material-ui/core";
+import { Grid } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 import ActivitiesList from "./components/ActivitiesList";
 import ActivitySummary from "./components/ActivitySummary";
 import RightDialog from "../ContactDetailCard/components/RightDialog";
 import AddActivityDialog from "../ContactDetailCard/components/AddActivityDialog";
-import { AppContext } from "../../AppContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -113,208 +103,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ActivityStats() {
-  const classes = useStyles();
-
-  const getStatsMessage = (primary, secondary) => {
-    return (
-      <div className={classes.statsMessage}>
-        <Typography
-          variant="subtitle1"
-          style={{ fontWeight: "bold", fontSize: "0.9rem" }}
-        >
-          {primary}
-        </Typography>
-        <Typography
-          variant="body2"
-          style={{ fontSize: "0.75rem" }}
-          gutterBottom
-        >
-          {secondary}
-        </Typography>
-      </div>
-    );
-  };
-
-  return (
-    <div className={classes.activityStats}>
-      <div className={classes.activityScore}>99</div>
-      {getStatsMessage("Last contacted", "8 hours ago")}
-      {getStatsMessage("Last modified", "3 months ago")}
-    </div>
-  );
-}
-
-function ActivitiesFilter({ activitiesFilter, setActivitiesFilter }) {
-  const classes = useStyles();
-  const [timePeriod, setTimePeriod] = useState("all");
-
-  const handleChange = (e, type) => {
-    if (activitiesFilter) {
-      let newActivitiesFilter = [...activitiesFilter];
-      if (e.target.checked) {
-        newActivitiesFilter.push(type);
-      } else {
-        const filterIndex = newActivitiesFilter.findIndex(
-          (act) => act === type
-        );
-        if (filterIndex !== -1) {
-          newActivitiesFilter.splice(filterIndex, 1);
-        }
-      }
-      setActivitiesFilter(newActivitiesFilter);
-    }
-  };
-
-  const getCheckboxItem = (type) => {
-    let name = "";
-    switch (type) {
-      case "deadline":
-        name = "Deadlines";
-        break;
-      case "call":
-        name = "Calls";
-        break;
-      case "email":
-        name = "Emails";
-        break;
-      case "meeting":
-        name = "Meetings";
-        break;
-      case "task":
-        name = "Tasks";
-        break;
-      case "mailer":
-        name = "Mailer Campaign";
-        break;
-      default:
-        name = "Calls";
-    }
-
-    return (
-      <Grid item xs={12} className={classes.checkBox}>
-        <h4 style={{ color: "#9A9A9A", margin: 0 }}>{name}</h4>
-        <Checkbox
-          checked={activitiesFilter.includes(type)}
-          onChange={(e) => handleChange(e, type)}
-          color="secondary"
-        />
-      </Grid>
-    );
-  };
-
-  return (
-    <div className={classes.activitiesFilter}>
-      <h4 style={{ margin: "0 0 8px 0" }}>Filter</h4>
-      {/* <FormControl
-        variant="outlined"
-        fullWidth
-        className={classes.inputField}
-        size="small"
-      >
-        <InputLabel
-          id="demo-simple-select-outlined-label"
-          className={classes.label}
-        >
-          Showing activities for
-        </InputLabel>
-        <Select
-          labelId="demo-simple-select-outlined-label"
-          id="demo-simple-select-outlined"
-          value={timePeriod}
-          onChange={(e) => {
-            setTimePeriod(e.target.value);
-          }}
-          fullWidth
-          label="Showing activities for"
-          color="secondary"
-        >
-          <MenuItem value={"all"}>All Time Periods</MenuItem>
-        </Select>
-      </FormControl> */}
-
-      <div className={classes.activityTypeCheckboxes}>
-        <Grid item xs={12} style={{ minHeight: "35px" }}>
-          <h4 style={{ margin: "0 0 20px 0", float: "left" }}>Activity Type</h4>
-
-          <h4
-            className={classes.textBtn}
-            onClick={() => {
-              setActivitiesFilter([]);
-            }}
-          >
-            Clear
-          </h4>
-        </Grid>
-
-        {getCheckboxItem("call")}
-        {getCheckboxItem("meeting")}
-        {getCheckboxItem("task")}
-        {getCheckboxItem("email")}
-        {getCheckboxItem("deadline")}
-        {getCheckboxItem("mailer")}
-      </div>
-    </div>
-  );
-}
-
-function ViewActivities({
-  id,
-  user_id,
-  // activityLog,
-  updateActivity,
-  addActivity,
-}) {
-  const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
-
-  const [activitiesFilter, setActivitiesFilter] = useState([
-    "call",
-    "meeting",
-    "email",
-    "task",
-    "deadline",
-    "mailer"
-  ]);
-
-  const filteredActivities = stateApp.currentContatcAtivities.filter((act) =>
-    activitiesFilter.includes(act.type)
-  );
-
-  return (
-    <div className={classes.viewAllCard}>
-      <div className={classes.activitiesList}>
-        <div className={classes.groupContent}>
-          <h4 style={{ margin: "0px 12px 8px 0px" }}>Recent Activities</h4>
-          <h4 className={classes.addNew} onClick={addActivity}>
-            Add New
-          </h4>
-        </div>
-        <ActivitiesList
-          id={id}
-          user_id={user_id}
-          activityLog={filteredActivities}
-          updateActivity={updateActivity}
-          viewAll={true}
-        />
-      </div>
-      <div className={classes.activityCardRight}>
-        {/* <ActivityStats /> */}
-        <ActivitiesFilter
-          activitiesFilter={activitiesFilter}
-          setActivitiesFilter={setActivitiesFilter}
-        />
-      </div>
-    </div>
-  );
-}
-
 export default ({
   header,
   // dataList,
   ...props
 }) => {
   const classes = useStyles();
+  let history = useHistory();
   const [activityModalOpen, setActivityModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
 
@@ -359,15 +154,8 @@ export default ({
         <h4
           className={classes.viewAll}
           onClick={() => {
-            props.handleOpenExpandableCard(
-              <ViewActivities
-                id={props.id}
-                user_id={props.user_id}
-                // activityLog={props.activityLog}
-                updateActivity={updateActivity}
-                addActivity={addActivity}
-              />,
-              "Activities"
+            history.push(
+              `/contact/details/${props.contactData._id}/recentActivites`
             );
           }}
         >
