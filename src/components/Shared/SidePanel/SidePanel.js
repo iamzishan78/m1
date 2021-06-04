@@ -400,7 +400,7 @@ export default function SidePanel() {
 		}
 	}, [panelType, stateApp.heatLayers, stateApp.checkedHeats]);
 
-	console.log("stateApp", stateApp);
+	// console.log("stateApp", stateApp);
 
 	//   for Marketplace Panel
 	useEffect(() => {

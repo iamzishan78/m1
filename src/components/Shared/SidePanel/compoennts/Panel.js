@@ -95,7 +95,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 
 	useEffect(() => {
 
-		console.log("type and layer", type, items);
+		// console.log("type and layer", type, items);
 		if (
 			(type === "layer" || type === "heatMaps" || type === "marketplace") &&
 			items
