@@ -24,6 +24,8 @@ import {
 import TableHeader from "components/Table/constants/suggested-owners-header-schema";
 import { handleTagColumn } from "../helpers";
 
+// Utilities
+import isEmpty from "lodash/isEmpty";
 import { getPolygonString } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
@@ -115,16 +117,16 @@ function SuggestedOwnerTable(props) {
           first: tableState.rowsPerPage,
           after: null,
         },
-        sort: tableState.activeColumn
-          ? {
-              field: tableState.columns[tableState.activeColumn]?.name,
+        ...(!isEmpty(tableState.sortOrder)) && {
+          sort:
+          {
+              field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
               order:
-                tableState.columns[tableState.activeColumn]?.sortDirection ===
-                "asc"
-                  ? 1
-                  : -1,
-            }
-          : [],
+                  tableState.sortOrder?.direction === "asc"
+                      ? 1
+                      : -1,
+          }
+        },
 
         filters: {},
       },
@@ -184,6 +186,7 @@ function SuggestedOwnerTable(props) {
       count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
     count: count,
     serverSide: true,
+    filter: false,
   };
   ////////////-----Add your code section here-----///////////////////////
   const getWellOwnersByYear = (selectedYear) => {

@@ -161,7 +161,7 @@ export default function ParcelCard(props) {
                 --
               </Typography>
             </div>
-
+{/* 
             <div className={classes.iconContainer}>
               <ProductionIcon
                   htmlColor="black"
@@ -182,7 +182,7 @@ export default function ParcelCard(props) {
                 >
                   --
                 </Typography>
-            </div>
+            </div> */}
 
             <div className={classes.iconContainer}>
               <OwnershipIcon

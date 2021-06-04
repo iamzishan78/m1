@@ -339,6 +339,7 @@ const SidePanel = ({ }) => {
               setPipelines={setPipelines}
               selectedPipelines={selectedPipelines}
               setMultiSelection={setMultiSelection}
+              userId={stateApp.user.mongoId}
             />
           </ContextProvider>
         </DndProvider>

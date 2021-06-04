@@ -306,8 +306,20 @@ const Header = () => (
             )}
           </Grid>
         )}
-        <Grid item sm={6} className={classes.gridPacelDetails}>
-          <Grid item sm={12} container>
+        <Grid item 
+        
+          // sm={6} 
+
+          // temporary code hiding the parcel QQ grid in texas until we can build out the component
+          sm = {originalProperties && originalProperties !== null && originalProperties.state == "TX" ? 12 : 6}
+          
+          className={classes.gridPacelDetails}>
+
+          <Grid item 
+
+          sm={12} 
+          
+          container>
             <div className={classes.calcSummary}>
               <p className={classes.parcelSummmary}>Parcel Name</p>
               <TextField
@@ -391,9 +403,13 @@ const Header = () => (
             </div>
           </Grid>
         </Grid>
+
+        {originalProperties && originalProperties !== null && originalProperties.state == "TX" ? (null) : (
         <Grid item sm={6} className={classes.gridPortion}>
           <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
-        </Grid>
+        </Grid> 
+        )}
+
       </Grid>
       <Grid item sm={12}>
         <Taps
