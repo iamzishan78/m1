@@ -310,7 +310,6 @@ export default function ContactDetailCard(props) {
   const [transactData, setTransactData] = useState();
   const [transactId, setTransactId] = useState();
   const [contactData, setContactData] = useState(null);
-  const [melissaData, setMelissaData] = useState(null);
   const [rightDialogOpen, setRightDialogOpen] = useState(false);
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
@@ -396,22 +395,6 @@ export default function ContactDetailCard(props) {
       }));
     }
   }, [data, stateApp.contactUpdated]);
-
-  useEffect(() => {
-    if (stateApp.selectedContact) {
-      getLastMelissaRecord({
-        variables: {
-          contactId: stateApp.selectedContact,
-        },
-      });
-    }
-  }, [stateApp.selectedContact]);
-
-  useEffect(() => {
-    if (mData && mData.getLastMelissaRecord.success === true) {
-      setMelissaData(mData.getLastMelissaRecord);
-    }
-  }, [mData]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -693,13 +676,7 @@ export default function ContactDetailCard(props) {
               spacing={0}
               style={{ padding: "23px 28px" }}
             >
-              <ContactDetailedInfo
-                header={"Detailed Information"}
-                contactData={contactData}
-                handleOpenExpandableCard={handleOpenExpandableCard}
-                melissaData={melissaData}
-                id={contactData._id}
-              />
+              <ContactDetailedInfo contactData={contactData} />
             </Grid>
             {/*/////////// new section - lead stage //////////// */}
             <Grid item xs={12} className={`${classes.border}`}>
