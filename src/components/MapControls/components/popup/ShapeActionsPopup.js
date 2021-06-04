@@ -32,7 +32,7 @@ const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
   const { classes, children, toggleSpatialDataCard, showSpatialDataCard, popupCloseAction } = props;
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [, setStateNav] = useContext(NavigationContext);
   const [isDeleteModal, setDeleteModal] = useState(false);
   const [error, setError] = useState(false);
   const [user, setUser] = useState({ _id: "" });
@@ -83,7 +83,7 @@ const ShapeActionsPopup = (props) => {
     },
   });
 
-  const [updateCustomLayer, { loading: isDeletingCustomLayer }] = useMutation(UPDATECUSTOMLAYER, {
+  const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER, {
     update(
       cache,
       {
@@ -222,7 +222,6 @@ const ShapeActionsPopup = (props) => {
   };
 
   const clearFilter = () => {
-    // stateApp.draw.changeMode("simple_select");
     setStateNav((stateNav) => ({
       ...stateNav,
       drawingMode: null,
@@ -234,6 +233,9 @@ const ShapeActionsPopup = (props) => {
       ...state,
       shapeActionsFilterSelected: false,
     }));
+    stateApp.draw.changeMode("direct_select", {
+      featureId: stateApp.currentFeature.id,
+    });
   };
 
   const applyFilter = () => {
@@ -256,6 +258,8 @@ const ShapeActionsPopup = (props) => {
       ...state,
       shapeActionsFilterSelected: true,
     }));
+    //Changing shape to Blue
+    stateApp.draw.changeMode("simple_select");
   };
 
   const actionFilter = () => {
