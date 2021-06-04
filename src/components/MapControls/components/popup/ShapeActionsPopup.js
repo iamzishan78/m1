@@ -264,9 +264,10 @@ const ShapeActionsPopup = (props) => {
     if (stateApp.shapeActionsFilterSelected) {
       clearFilter();
       // Changing back to original shape
-      stateApp.draw.changeMode("direct_select", {
-        featureId: stateApp.currentFeature.id,
-      });
+      if (stateApp.draw.get(stateApp.currentFeature.id))
+        stateApp.draw.changeMode("direct_select", {
+          featureId: stateApp.currentFeature.id,
+        });
     } else {
       applyFilter();
     }
