@@ -13,6 +13,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
+import { WellCardContext } from "../WellCard/WellCardContext";
+import { ParcelCardContext } from "../ParcelsDetailCard/ParcelCardContext";
+
 
 // custom components
 import MapControlsProvider from "../MapControls/MapControlsProvider";
@@ -126,12 +129,14 @@ const random_hex_color_code = () => {
 let hoveredAbstractId = null;
 
 function Map() {
+
   // context states
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
+  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
+  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
+  const [stateParcelCard, setStateParcelCard] = useContext(ParcelCardContext);
+
 
   // function states
   const [flyVar1, setFlyVar1] = useState([null]);
@@ -4883,6 +4888,8 @@ function Map() {
           },
         };
 
+
+
         if (map.getSource('parcelBoundarySource')) {
           map.getSource('parcelBoundarySource').setData(geoJson);
           if (map.getLayer('parcelBoundary')) {
@@ -4894,6 +4901,13 @@ function Map() {
             data: geoJson
           });
         }
+
+        console.log('WELLS STATE PARCEL CARD',mapSourceData.features[idx].geometry.coordinates[0])
+        setStateParcelCard({
+          ...stateParcelCard,
+          selectedParcelGeom: mapSourceData.features[idx].geometry.coordinates[0],
+        });
+
 
         map.addLayer({
           id: "parcelBoundary",
