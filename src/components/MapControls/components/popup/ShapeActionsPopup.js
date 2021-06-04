@@ -195,6 +195,7 @@ const ShapeActionsPopup = (props) => {
   const getSelectedFeaturePolygonString = () => {
     let feature = props.selectedFeature;
 
+    console.log('WELL FEATUERS', feature)
     let polygonString = "POLYGON((";
     feature.geometry.coordinates[0].forEach((coordinate, index) => {
       polygonString += coordinate[0] + " " + coordinate[1];

@@ -39,7 +39,7 @@ const ContactWellHeadCells = [
     viewColumns: false,
   } },
   { name: "leaseDescription", label: "Lease", options: {
-    sort: false,
+    sort: true,
     filter: false,
   } },
   { name: "leaseAcres", label: "Lease Acres", options: {
@@ -168,7 +168,8 @@ const ContactWellHeadCells = [
     download: false,
     print: false,
     viewColumns: false,
-  } },
+  }
+ },
 ];
 
 export default ContactWellHeadCells;
