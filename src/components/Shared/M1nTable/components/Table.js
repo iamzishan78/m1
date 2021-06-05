@@ -417,7 +417,14 @@ const useStyles = makeStyles((theme) => ({
     display: "inline",
     left: "223px",
     position: "absolute",
-    top: "19px"
+    top: "19px",
+    zIndex: '88889 !important'
+  },
+  selectPopover: {
+    zIndex: '88890 !important'
+  },
+  selectMenu: {
+    zIndex: '88891 !important'
   },
   tapsLabelsButtons: {
     boxShadow: "none",
@@ -3286,7 +3293,11 @@ function SubTable(props) {
 
   const TableFilterList = (props) => {
     return <Box className={classes.customDropDown} >
-      <Select
+      <Select 
+        MenuProps={{
+          className: classes.selectPopover,
+          classes: { paper: classes.selectMenu } 
+        }}
         labelId="demo-simple-select-label"
         id="demo-simple-select"
         value={year}
