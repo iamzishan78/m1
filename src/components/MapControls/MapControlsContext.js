@@ -12,6 +12,7 @@ const MapControlsContextProvider = (props) => {
   const [stateMapControls, setStateMapControls] = useState({
     fileUploadedContent: null,
     selectedControl: "layer",
+    layerAddControl: null,
     selectedMapControl: null,
     openSpeedDial: true,
     anchorEl: null,

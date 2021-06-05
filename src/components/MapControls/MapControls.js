@@ -401,8 +401,8 @@ export default function MapControls(props) {
       <SidePanel />
 
       {stateMapControls.selectedMapControl === 'draw' ? <DrawShapes /> : null}
-      {stateMapControls.selectedControl === 'add' ? <AddUserData /> : null}
-      {stateMapControls.selectedControl === 'addGroup' ? <AddUserGroupData /> : null}
+      {stateMapControls.layerAddControl === 'add' ? <AddUserData /> : null}
+      {stateMapControls.layerAddControl === 'addGroup' ? <AddUserGroupData /> : null}
       {stateMapControls.selectedLayer
         ? openColorPickerControl(stateMapControls.selectedLayer)
         : null}
