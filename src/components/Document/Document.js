@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   fileTitle: {
     padding: '12px',
     fontWeight: 'bold'
-  }
+  },
 }));
 
 export default function DocumentComponent() {
