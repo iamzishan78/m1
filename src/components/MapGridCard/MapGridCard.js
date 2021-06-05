@@ -671,7 +671,7 @@ function MapGridCard(props) {
                   panels={[
 
                     <ShapeGridWellsTable
-                      parent="wells"
+                      parent="boundary_grid_wells"
                       header={<TabLabels
                         labels={[
                           `Wells (${stateApp.shapeGridWellsCount || 0})`,
@@ -685,7 +685,7 @@ function MapGridCard(props) {
                     />
                     ,
                     <ShapeGridTaxOwnersTable
-                      parent="gridOwners"
+                      parent="boundary_grid_owners"
                       header={<TabLabels
                         labels={[
                           `Wells (${stateApp.shapeGridWellsCount || 0})`,

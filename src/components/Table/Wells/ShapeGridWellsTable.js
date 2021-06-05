@@ -236,6 +236,7 @@ function ShapeGridWellsTable(props) {
                 onTableChange={onTableChange}
                 options={options}
                 parent={props.parent}
+                identifier = {props.identifier}
                 setColumnsBase={[]}
                 getWellOwnersByYear={getWellOwnersByYear}
             />
