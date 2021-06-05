@@ -1447,7 +1447,7 @@ function Map() {
       const prop = paintProps[i];
 
       // -> remove layer
-      const layerId = prop.id;
+      const layerId = layer.layerType == "file layer" ? layer.identifier : prop.id;
       if (map.getLayer(layerId)) map.removeLayer(layerId);
 
       if (prop.clusterProps) {
