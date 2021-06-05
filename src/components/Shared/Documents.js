@@ -272,7 +272,6 @@ export default function Documents(props) {
   }, [files]);
 
   useEffect(() => {
-    console.log("VIEW FILE RESULT", viewFileResult?.viewFile);
     if (viewFileResult?.viewFile?.viewFile?.uri) {
       let a = document.createElement("a");
       a.href = viewFileResult?.viewFile.viewFile.uri;
