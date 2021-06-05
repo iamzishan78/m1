@@ -481,7 +481,6 @@ export default function ContactDetailCard(props) {
         </Link>       
         }
         
-        { console.log('CURRENT MAP BREADCRUMB') }
 
 
         <Link style={{ marginLeft: '5px', 

@@ -1131,7 +1131,6 @@ function Map() {
       if (feature.source === "interests_source") {
 
 
-        console.log('SHAPE INTEREST SOURCE');
         const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
         const selectedUserDefinedLayer = {
           ...feature,
@@ -4902,11 +4901,10 @@ function Map() {
           });
         }
 
-        console.log('WELLS STATE PARCEL CARD',mapSourceData.features[idx].geometry.coordinates[0])
-        setStateParcelCard({
-          ...stateParcelCard,
-          selectedParcelGeom: mapSourceData.features[idx].geometry.coordinates[0],
-        });
+        // setStateParcelCard({
+        //   ...stateParcelCard,
+        //   selectedParcelGeom: mapSourceData.features[idx].geometry.coordinates[0],
+        // });
 
 
         map.addLayer({

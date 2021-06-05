@@ -669,7 +669,6 @@ function SubTable(props) {
 
 
   const handleClickFlyToIcon = (entityType, searchTarget) => {
-    console.log('ENTITY TYPE', entityType)
 
     if (entityType == "well") {
       handleWellFlyTo(searchTarget)
@@ -1603,10 +1602,6 @@ function SubTable(props) {
 
                           if (value && value !== "false") {
 
-                            console.log('CURRENT VALUE', value )
-                            console.log('CURRENT VALUE 2', stateApp.parcelDetailCardOpen )
-
-
                             setStateApp((stateApp) => ({
                               ...stateApp,
                               selectedContact: value,
@@ -1795,7 +1790,7 @@ function SubTable(props) {
 
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
-                  // console.log('TAGS PROPS', props);
+
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -3357,7 +3352,7 @@ function SubTable(props) {
           } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
       >
 
-      {console.log('PROPS', props)}
+      {/* {console.log('PROPS', props)} */}
 
         <MUIDataTable
           className={tableStyle}
@@ -3389,12 +3384,16 @@ function SubTable(props) {
             filter:          props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
                           || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
                           || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                          || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                          || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
                     ? false : null,
 
             viewColumns:     props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search 
                           || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
                           || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                          || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                          || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
                     ? false : null,
 
@@ -3407,6 +3406,8 @@ function SubTable(props) {
                 || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
                 || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
                 )
 

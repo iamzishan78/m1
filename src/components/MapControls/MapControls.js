@@ -198,10 +198,6 @@ export default function MapControls(props) {
       handleCloseShapeDrawer()
     }
 
-    if (stateMapControls.selectedMapControl === true) {
-      console.log('SHAPE STATE MAP CONTROLS', stateMapControls)
-    }
-
     if (e && action) {
       let anchorEl = e.currentTarget;
 
@@ -368,13 +364,8 @@ export default function MapControls(props) {
 
   useEffect(() => {
 
-    if (stateApp.openDrawShapesControl) {
-      console.log('SHAPE OPENDRAWS', stateMapControls)
-    }
-
     if (stateApp.openDrawShapesControl === true) {
 
-      console.log('SHAPE OPENDRAWS 2', stateMapControls)
       setStateMapControls((state) => ({
         ...state,
         selectedMapControl: 'draw',

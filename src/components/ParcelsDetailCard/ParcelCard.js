@@ -205,7 +205,6 @@ export default function ParcelCard(props) {
                 className={classes.text2}
                 variant="caption"
               >
-                {/* console.log('WELL NUMBER',wellNumber) */}
                 {wellNumber}
               </Typography>
             </div>
