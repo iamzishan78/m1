@@ -444,31 +444,25 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
 
   },
-  filenamediv: {
-    color: 'black',
-    cursor: 'pointer',
-    "&:hover": {
-      color: "#18aadd",
-      textDecoration: 'underline'
-    }
-  }
+  // filenamediv: {
+  //   cursor: "pointer",
+  //   padding: "10px 30px 10px 10px",
+  //   position: "relative",
+  //   minWidth: "100px",
+  //   borderRadius: "7px",
+  //   color: "#17aadd",
+  //   "&:hover": {
+  //     // color: "#18aadd",
+  //     textDecoration: 'underline'
+  //   },
+  //   fontWeight: "bold",
+
+  // }
 }));
 
-var formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumSignificantDigits: 21,
-});
 
-const myTheme = createMuiTheme({
-  overrides: {
-    MUIDataTable: {
-      responsiveScroll: {
-        maxHeight: '80px'
-      }
-    }
-  }
-});
+
+
 
 function SubTable(props) {
   const classes = useStyles(props);
@@ -511,8 +505,9 @@ function SubTable(props) {
   const [rows, Rows] = useState([]);
   const [isSearchOpen, openSearch] = useState(false);
   const [handleSearch, setHandleSearch] = useState(() => () => {});
-  // const [handleSearchClose, setHandleSearchClose] = useState(() => () => {});
   const [dataWell, setDataWell] = useState();
+
+
 
   // deep state 
   const setFirstMount = (newState) => { setStateIfDeepEqual(FirstMount, newState); };
@@ -537,6 +532,9 @@ function SubTable(props) {
   const setCumulative = (newState) => { setStateIfDeepEqual(Cumulative, newState); };
   const setViewColumns = (newState) => { setStateIfDeepEqual(ViewColumns, newState); };
   const setRows = (newState) => { setStateIfDeepEqual(Rows, newState); };
+
+
+
 
   // queries 
   const [getWell, { data: getWellRes }] = useLazyQuery(WELLQUERY, { 
@@ -1943,22 +1941,27 @@ function SubTable(props) {
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
                   return (
-                    <div onClick={(e) => {
-                      e.stopPropagation()
-                      //  console.log(,'value Div click')
-                      const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length - 1]
-                      if (type === 'pdf') {
-                        setStateApp((state) => ({
-                          ...state,
-                          pdfView: rows[tableMeta.rowIndex]
-                        }));
-                      } else {
-                        handleViewFile(rows[tableMeta.rowIndex].fileId)
-                      }
-                      console.log(rows[tableMeta.rowIndex].fileId, 'tablemeta FILENAME')
+                    <div 
+                      // className={`${props.parent === "assocTaxRollInterests" && (!tableMeta.rowData[14] || tableMeta.rowData[19]) ? [classes.blue] : []} ${props.parent === "ownersPerParcel" && (!tableMeta.rowData[14] || tableMeta.rowData[15]) ? [classes.blue] : []}` }
+                      style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
+
+                      onClick={(e) => {
+                        
+                        e.stopPropagation()
+                        //  console.log(,'value Div click')
+                        const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length - 1]
+                        if (type === 'pdf') {
+                          setStateApp((state) => ({
+                            ...state,
+                            pdfView: rows[tableMeta.rowIndex]
+                          }));
+                        } else {
+                          handleViewFile(rows[tableMeta.rowIndex].fileId)
+                        }
+                        // console.log(rows[tableMeta.rowIndex].fileId, 'tablemeta FILENAME')
                     }}>
 
-                      <h4 className={classes.filenamediv}>{value}</h4>
+                      <p className={classes.clickableCell}>{value}</p>
                     </div>
                   );
                 },

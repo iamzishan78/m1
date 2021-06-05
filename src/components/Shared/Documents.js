@@ -73,13 +73,7 @@ const useStyles = makeStyles((theme) => ({
   todayDot: {
     fontSize: "8px",
   },
-  dealTitle: {
-    cursor: "pointer",
-    "&:hover": {
-      fontWeight: "bold",
-      textDecoration: "underline",
-    },
-  },
+
   fileUploadSection: {
     minHeight: "50px",
     display: "flex",
