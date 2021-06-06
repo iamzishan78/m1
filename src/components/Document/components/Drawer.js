@@ -559,7 +559,13 @@ export default function DocumentDrawer() {
             }}
           />
         </ListItem>
-        {stateApp.selectedDocument?.fileId ? (
+
+      </List>
+
+
+
+
+      {stateApp.selectedDocument?.fileId ? (
           <ListItem>
             <div style={{ display: "flex", justifyContent: "start" }}>
               {viewFileSResult?.viewFiles?.map((value, key) => {
@@ -678,24 +684,25 @@ export default function DocumentDrawer() {
             </div>
           </ListItem>
         )}
-      </List>
 
 
-      <div className={classes.Uploadcomp}>
-        <UploadZone
-          style={{ 
-            // width: "75px !important", 
-            // height: "50px !important",
-            paddingLeft: "50px"
+        {!stateApp.selectedDocument?.fileId ? (
+          <div className={classes.Uploadcomp}>
+            <UploadZone
+              style={{ 
+                // width: "75px !important", 
+                // height: "50px !important",
+                paddingLeft: "50px"
 
-          }}
-          // relatedObjectId={props.id}
-          // userId={userId}
-          // relatedObjectType={relatedObjectType} //Contact or Deal
-          // loading={props.loading}
-          // disabled={props.disabled}
-        />
-      </div>
+              }}
+              // relatedObjectId={props.id}
+              // userId={userId}
+              // relatedObjectType={relatedObjectType} //Contact or Deal
+              // loading={props.loading}
+              // disabled={props.disabled}
+            />
+          </div>
+        ) : null}
 
 
       <div className={classes.dialogFooter}>
