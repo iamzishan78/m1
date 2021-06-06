@@ -464,11 +464,13 @@ function ExpandableCard(props) {
                 />
               )}
 
+{/* 
               {stateExpandableCard.expanded &&
                 targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
                 targetLabel !== "parcel" &&
                 targetLabel !== "expandedParcel" && (
+
                   <Tooltip title={"Report Bug"} placement="top">
                     <IconButton
                       size="medium"
@@ -478,7 +480,9 @@ function ExpandableCard(props) {
                       <BugsIcon viewBox="0 0 64 64" color="white" />
                     </IconButton>
                   </Tooltip>
-                )}
+
+                )} */}
+
 
               {stateExpandableCard.expanded &&
                 ["activity", "parcel", "expandedParcel"].includes(targetLabel) &&

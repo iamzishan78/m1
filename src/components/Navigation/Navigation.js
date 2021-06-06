@@ -1725,8 +1725,7 @@ export default function Navigation(props) {
 
         </List>
 
-        <List className={classes.menuListBottom}>
-          {/* support menu */}
+        {/* <List className={classes.menuListBottom}>
           <ListItem
             classes={{
               root: classes.menuListItem,
@@ -1748,7 +1747,8 @@ export default function Navigation(props) {
             </div>
           </ListItem>
 
-        </List>
+        </List> */}
+
       </Drawer>
 
       {supportDrawer && (
