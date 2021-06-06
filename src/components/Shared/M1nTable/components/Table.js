@@ -3700,9 +3700,9 @@ function SubTable(props) {
           && openDialog !== "buyContactsInfo"
           && openDialog !== "addOwnerToParcel"
           
-          
+
           && (<Dialog
-            style={{zIndex: 99999}}
+            // style={{zIndex: 99998}}
             open={openDialog ? true : false}
             onClose={handleCloseDialog}
             fullWidth={
