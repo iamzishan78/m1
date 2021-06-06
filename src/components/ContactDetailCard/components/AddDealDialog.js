@@ -679,7 +679,7 @@ function AddDealDialog(props) {
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: false, // some genius level coding here.
-      addDealDialog: false, // not sure why different flags were used here
+      // addDealDialog: false, // not sure why different flags were used here
       activeDeal: { cardId: null, laneId: null },
       transactBarView: "",
       viewDoc: null,
