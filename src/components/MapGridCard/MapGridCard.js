@@ -721,7 +721,9 @@ function MapGridCard(props) {
         width: "100vw",
         height: "100vh",
         backgroundColor: "rgba(0, 0, 0, 0.5)",
-        zIndex: "1299",
+        // zIndex: "1299",
+        zIndex: "1199",
+
       }}
       onClick={() => {
         dispatch(setMapGridCardState({ mapGridCardActivated: true }));
