@@ -10,18 +10,26 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import LayerIcon from "@material-ui/icons/Layers";
-import { useLazyQuery } from "@apollo/client";
 
-import { AppContext } from "../../AppContext";
-import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
+
 import WellIcon from "../WellCard/components/svgIcons/WellIcon";
 import ProductionIcon from "../WellCard/components/svgIcons/ProductionIcon";
 import OwnershipIcon from "../WellCard/components/svgIcons/OwnershipIcon";
 
-import { ParcelCardContext } from "./ParcelCardContext";
 import ParcelsDetailCard from "./ParcelsDetailCard";
 import  { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
+
+// QUERIES 
+import { useLazyQuery } from "@apollo/client";
+import { SHAPEWELLS } from "graphQL/useQueryPaginatedShapeWells";
 import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
+
+// contexts 
+import { WellCardContext } from "../WellCard/WellCardContext";
+import { AppContext } from "../../AppContext";
+import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
+import { ParcelCardContext } from "./ParcelCardContext";
+
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -96,15 +104,42 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ParcelCard(props) {
   const parcelPLSS = useRef(false);
+
+  // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [parcelContext, setParcelContext] = useContext(ParcelCardContext);
   const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
+  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
+  
   const [parcelObj, setParcelObj] = useState();
   const [parcelProperties, setProperties] = useState();
   const classes = useStyles();
-  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
-    CUSTOMLAYER,
-  );
+
+  // queries 
+  const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", });
+  const wellNumber = dataShapeWells?.paginatedShapeWells.totalCount
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER,);
+
+
+  const getSelectedFeaturePolygonString = () => {
+    if(parcelObj.shape.geometry.coordinates){
+
+    let feature = parcelObj.shape;
+
+    let polygonString = "POLYGON((";
+    feature.geometry.coordinates[0].forEach((coordinate, index) => {
+      polygonString += coordinate[0] + " " + coordinate[1];
+      if (index < feature.geometry.coordinates[0].length - 1) {
+        polygonString += ", ";
+      }
+    });
+    polygonString += "))";
+
+    return polygonString;
+
+  }
+  };
+
 
   useEffect(() => {
     if (stateApp.selectedParcel) {
@@ -117,6 +152,17 @@ export default function ParcelCard(props) {
   }, [stateApp.selectedParcel]);
 
   useEffect(() => {
+    if (parcelObj) {
+      getPaginatedShapeWells({
+        variables: {
+            polygon: getSelectedFeaturePolygonString(),
+            userId: stateApp.user.mongoId,
+        },
+    });
+    }
+  }, [parcelObj]);
+
+  useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
       let shape = dataCustomLayer.customLayer.shape;
       if (typeof shape === "string") {
@@ -127,6 +173,7 @@ export default function ParcelCard(props) {
         shape: shape,
       });
       const properties = getParcelOriginalProperties(shape.properties);
+      
       setProperties(properties);
     }
   }, [dataCustomLayer]);
@@ -158,31 +205,9 @@ export default function ParcelCard(props) {
                 className={classes.text2}
                 variant="caption"
               >
-                --
+                {wellNumber}
               </Typography>
             </div>
-{/* 
-            <div className={classes.iconContainer}>
-              <ProductionIcon
-                  htmlColor="black"
-                  viewBox="0 0 39 31"
-                  fontSize="large"
-                />
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
-                  Last 12 Prod
-                </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
-                  --
-                </Typography>
-            </div> */}
 
             <div className={classes.iconContainer}>
               <OwnershipIcon

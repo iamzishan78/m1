@@ -137,7 +137,8 @@ function ShapeGridWellsTable(props) {
                 ...(!isEmpty(tableState.sortOrder)) && {
                     sort:
                     {
-                        field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
+                        field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.dbName ||
+                            tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
                         order:
                             tableState.sortOrder?.direction === "asc"
                                 ? 1
@@ -235,6 +236,7 @@ function ShapeGridWellsTable(props) {
                 onTableChange={onTableChange}
                 options={options}
                 parent={props.parent}
+                identifier = {props.identifier}
                 setColumnsBase={[]}
                 getWellOwnersByYear={getWellOwnersByYear}
             />

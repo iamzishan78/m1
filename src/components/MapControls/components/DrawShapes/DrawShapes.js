@@ -213,13 +213,20 @@ export default function DrawShapes() {
   }, [customLayerInsertedData]);
 
   useEffect(() => {
-    const { selectedUserDefinedLayer } = stateApp;
+    const { selectedUserDefinedLayer, showShapeActionsPopup, selectedParcel } = stateApp;
     if (selectedUserDefinedLayer) {
       setStateApp((state) => ({
         ...state,
         currentFeature: selectedUserDefinedLayer,
         selectedAoi: selectedUserDefinedLayer,
       }));
+      if (
+        selectedUserDefinedLayer.source === "interests_source" &&
+        showShapeActionsPopup === true &&
+        selectedParcel === null
+      ) {
+        toggleSpatialDataCard(true);
+      }
     }
   }, [stateApp.selectedUserDefinedLayer]);
 
@@ -268,7 +275,7 @@ export default function DrawShapes() {
         if (feature) {
           addCustomShapeProperties(feature, draw);
         }
-        setStateApp((state) => ({ ...state, editDraw: false }));
+        setStateApp((state) => ({ ...state, editDraw: false, showShapeActionsPopup: true }));
       });
 
       map.on("draw.selectionchange", ({ features }) => {
@@ -341,9 +348,7 @@ export default function DrawShapes() {
         mapGridCardActiveTap: 0,
       })
     );
-
     toggleSpatialDataCard(false);
-
   };
 
   const handleClose = () => {

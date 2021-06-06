@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     border: "2px dashed rgb(176, 176, 176)",
+    border: "2px dashed #dddddd",
     marginBottom: "30px",
     borderRadius: "10px",
   },

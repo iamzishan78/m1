@@ -20,6 +20,9 @@ import {
   faFileWord,
   faFile,
   faFileExcel,
+  faFileArchive,
+  faFileCode,
+  faFileImage,
 } from "@fortawesome/free-solid-svg-icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
@@ -74,13 +77,7 @@ const useStyles = makeStyles((theme) => ({
   todayDot: {
     fontSize: "8px",
   },
-  dealTitle: {
-    cursor: "pointer",
-    "&:hover": {
-      fontWeight: "bold",
-      textDecoration: "underline",
-    },
-  },
+
   fileUploadSection: {
     minHeight: "50px",
     display: "flex",
@@ -274,7 +271,6 @@ export default function Documents(props) {
   }, [files]);
 
   useEffect(() => {
-    console.log("VIEW FILE RESULT", viewFileResult?.viewFile);
     if (viewFileResult?.viewFile?.viewFile?.uri) {
       let a = document.createElement("a");
       a.href = viewFileResult?.viewFile.viewFile.uri;
@@ -360,6 +356,27 @@ export default function Documents(props) {
             style={{ fontSize: "2rem", color: "#D04424" }}
           />
         );
+        case "jpg"|| "jpeg"|| "png" || "bmp":
+          return (
+            <FontAwesomeIcon
+              icon={faFileImage}
+              style={{ fontSize: "2rem", color: "#4c6ef5" }}
+            />
+          );
+        case "zip":
+          return (
+            <FontAwesomeIcon
+              icon={faFileArchive}
+              style={{ fontSize: "2rem", color: "#15aabf" }}
+            />
+          );
+        case "shp":
+          return (
+            <FontAwesomeIcon
+              icon={faFileCode}
+              style={{ fontSize: "2rem", color: "#82c91e" }}
+            />
+          );
       default:
         // return <span>{fileExtension}</span>;
         return (

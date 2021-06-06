@@ -264,7 +264,8 @@ export default function AddParcelOwnerDialogContent({
       // if (nameAutValue._id === "newEntity") ownerToAdd.name = nameAutValue.name;
       // else ownerToAdd.ownerEntity = nameAutValue._id;
       if (nameAutValue._id && nameAutValue.name) {
-        ownerToAdd.ownerEntity = nameAutValue.entity || nameAutValue._id;
+        // now that we are using descriptors we ONLY want the contact _id
+        ownerToAdd.ownerEntity = nameAutValue._id;
         ownerToAdd.name = nameAutValue.name;
       }
 

@@ -1420,7 +1420,6 @@ function AddDealDialog(props) {
                 fullWidth
                 size="small"
               >
-                {console.log('TITLE', title)}
                 <TextField
                   margin="dense"
                   value={title}
@@ -1740,7 +1739,6 @@ function AddDealDialog(props) {
                 <div className={classes.originationDate}>Origination Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
               )}
               <div>
-                {/* AddDailogeUploadZone */}
                 <AddDialogeUploadZone
                   isTransactPage={true}
                   filesData={viewFileResult}
