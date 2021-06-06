@@ -199,9 +199,10 @@ const useStyles = makeStyles((theme) => ({
   },
   originationDate: {
     paddingBottom: "12px",
+    paddingTop: "4px",
     fontSize: 12,
     letterSpacing: 2,
-    textAlign: 'right',
+    textAlign: 'center',
   },
   dialog: {
     zIndex: "9999999999 !important",
@@ -1736,7 +1737,7 @@ function AddDealDialog(props) {
               />
 
               {originationDate && (
-                <div className={classes.originationDate}>Origination Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
+                <div className={classes.originationDate}>Deal Creation Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
               )}
               <div>
                 <AddDialogeUploadZone
