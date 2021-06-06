@@ -36,7 +36,7 @@ function ShapeGridWellsTable(props) {
 
     const addAble = false
     const total = false
-    const orderByTracks = true
+    const orderByTracks = false
 
     useEffect(() => {
         if (stateApp?.viewportWells?.length > 0) {

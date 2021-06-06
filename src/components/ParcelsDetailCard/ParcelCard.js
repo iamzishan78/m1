@@ -116,7 +116,7 @@ export default function ParcelCard(props) {
   const classes = useStyles();
 
   // queries 
-  const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", });
+  const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true });
   const wellNumber = dataShapeWells?.paginatedShapeWells.totalCount
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER,);
 

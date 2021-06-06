@@ -51,14 +51,14 @@ function ContactWellInterestTable(props) {
   const [tracksByObjectType, { data: constDataTracks }] = useLazyQuery(TRACKSBYOBJECTTYPE, { fetchPolicy: "cache-and-network", });
   const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(COMMENTSCOUNTER, { fetchPolicy: "cache-and-network", });
   const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES, { fetchPolicy: "cache-and-network", });
-  const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY);
+  const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY, { fetchPolicy: "cache-and-network", skip: true });
 
 
   const targetLabel = 'well'
   const addAble = { type: "wellInterest" }
   const total = false
   const showTracks = true
-  const orderByTracks = true
+  const orderByTracks = false
 
   ////////////General begin///////////////////////////////////////////////
 
@@ -177,7 +177,7 @@ function ContactWellInterestTable(props) {
       dataCommentsCounter && dataCommentsCounter.commentsCounter &&
       dataTagSamples && dataTagSamples.tagSamples
     ) {
-      let wells = dataContactWells.paginatedContactWellInterests.edges.map((el) => el.node)
+      let wells = dataContactWells.paginatedContactWellInterests.edges.map((el) => ({ ...el.node, cursor: el.cursor }))
       wells = wells.map((w) => {
         let well = { ...w };
 
@@ -266,11 +266,11 @@ function ContactWellInterestTable(props) {
               ...pageVariables.variables.pagination,
               before:
                 rows && tableState.page < meta.pageInd
-                  ? rows[0]?._id
+                  ? rows[0]?.cursor
                   : null,
               after:
                 rows && tableState.page > meta.pageInd
-                  ? rows[rows.length - 1]?._id
+                  ? rows[rows.length - 1]?.cursor
                   : null,
             },
           },

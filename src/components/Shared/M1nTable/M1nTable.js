@@ -143,14 +143,14 @@ function M1nTable(props) {
   const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES, { fetchPolicy: "cache-and-network", });
   const [getOwners, { data: dataOwners }] = useLazyQuery(OWNERSQUERY, { fetchPolicy: "cache-and-network", });
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
-  const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", });
+  const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true });
   const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", });
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, { onError: () => { setLoading(false) }, fetchPolicy: "cache-and-network" });
   const [getDocuments, { data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS, { fetchPolicy: "no-cache" });
   const [removeUser] = useMutation(REMOVEUSER);
-  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, { fetchPolicy: "no-cache", });
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, { fetchPolicy: "cache-and-network", skip: true });
   const [getContactsFilterOptions, { data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
   const [updateMailerStatuses] = useMutation(UPDATEMAILERSTATUSES);
   const [getContactDeals, { data: dataDeals }] = useLazyQuery(CONTACTDEALS, { fetchPolicy: "cache-and-network", });
@@ -164,7 +164,7 @@ function M1nTable(props) {
   const [getContactParcelInterests, { data: dataContactParcelInterests },] = useLazyQuery(CONTACTPARCELINTERESTS, { fetchPolicy: "cache-and-network", });
   const [checkIfOwnersAreContacts, { data: checkIfOwnersAreContactsData },] = useLazyQuery(IFARECONTACTS, { fetchPolicy: "cache-and-network", });
   const [getAbstractWellGeo, { data: abstractWellData }] = useLazyQuery(ABSTRACTWELLGEOQUERY);
-  const [getPaginatedWellInterests, { data: constDataWellInterests },] = useLazyQuery(PAGINATEDWELLINTERESTSQUERY, { fetchPolicy: "cache-and-network", });
+  const [getPaginatedWellInterests, { data: constDataWellInterests },] = useLazyQuery(PAGINATEDWELLINTERESTSQUERY, { fetchPolicy: "cache-and-network", skip: true });
   const [getWellInterestsFilterOptions, { data: dataWellInterestsFilterOptions },] = useLazyQuery(WELLINTERESTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
   const [updateDocument, { loading: updateFileloading }] = useMutation(UPDATE_DOCUMENT);
 
@@ -1361,7 +1361,7 @@ function M1nTable(props) {
         // the descriptors come in a later use effect 
         setDataContacts(tmpDataContacts);
         setRows([
-          ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
+          ...tmpDataContacts.paginatedContacts.edges.map((el) => ({ ...el.node, cursor: el.cursor })),
         ]);
         setLoading(false);
       } else {
@@ -1566,7 +1566,7 @@ function M1nTable(props) {
       });
 
       setRows([
-        ...tmpDataContacts.paginatedContacts.edges.map((el) => el.node),
+        ...tmpDataContacts.paginatedContacts.edges.map((el) => ({ ...el.node, cursor: el.cursor })),
       ]);
       setLoading(false);
     }
@@ -2880,6 +2880,7 @@ function M1nTable(props) {
     ) {
       setTargetLabel("well");
       setHeader("Well Interests");
+      setOrderByTracks(false);
       setAddAble(false);
       getPaginatedWellInterests({
         variables: {

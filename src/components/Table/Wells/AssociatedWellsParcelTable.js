@@ -42,12 +42,15 @@ function ShapeGridWellsTable(props) {
     const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
     // queries 
-    const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", });
+    // i have no idea why skip works, but if we dont use it, a query variable change during pagination will
+    // rerun the new query but also the "first" query https://github.com/apollographql/apollo-client/issues/5912#issuecomment-803013814
+    // may not have needed for paginatedContacts due to relayStylePagination type policy
+    const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true });
     const tableData = dataShapeWells?.paginatedShapeWells
 
     const addAble = false
     const total = false
-    const orderByTracks = true
+    const orderByTracks = false
 
     ////////////Contact Wells begin///////////////////////////////////////////////
     useEffect(() => {
@@ -70,7 +73,7 @@ function ShapeGridWellsTable(props) {
 
     useEffect(() => {
         if (tableData?.edges?.length > 0) {
-            let wells = tableData.edges.map((el) => el.node)
+            let wells = tableData.edges.map((el) => ({ ...el.node, cursor: el.cursor }))
 
             wells = wells.map((w) => {
                 let well = { ...w };
@@ -172,11 +175,11 @@ function ShapeGridWellsTable(props) {
                             ...pageVariables.variables.pagination,
                             before:
                                 props.rows && tableState.page < meta.pageInd
-                                    ? props.rows[0]?._id
+                                    ? props.rows[0]?.cursor
                                     : null,
                             after:
                                 props.rows && tableState.page > meta.pageInd
-                                    ? props.rows[props.rows.length - 1]?._id
+                                    ? props.rows[props.rows.length - 1]?.cursor
                                     : null,
                         },
                     },

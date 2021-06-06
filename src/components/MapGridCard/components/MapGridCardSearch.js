@@ -68,24 +68,22 @@ function MapGridCardSearch(props) {
 
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
     PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "no-cache",
-    }
+    { fetchPolicy: "cache-and-network", skip: true }
   );
 
-
+ 
   const callContactsSearch = React.useMemo(
     () =>
-    debounce((request, top, callback) => {
+      debounce((request, top, callback) => {
+        
+        /// this function takes the search request and sends it to gql
+        getPaginatedContacts({
+          variables: {
+            search: request.input,
+          },
+        });
 
-      /// this function takes the search request and sends it to gql
-      getPaginatedContacts({
-        variables: {
-          search: request.input,
-        },
-      });
-
-    }, 500),
+      }, 500),
     []
   );
 
@@ -103,7 +101,7 @@ function MapGridCardSearch(props) {
 
         ...constDataContacts.paginatedContacts.edges.map((result) => {
 
-          result = result.node;
+          result = { ...result.node };
           //result.Source = contactIndexName;
           
           if(result.name){
