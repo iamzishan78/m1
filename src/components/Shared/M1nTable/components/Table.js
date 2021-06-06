@@ -1240,12 +1240,16 @@ function SubTable(props) {
       props.columns.forEach((column) => {
         switch (column.name) {
           case "detailCard":
+
             column.options = {
               ...column.options,
               customBodyRender: (value, tableMeta, updateValue) => {
                 let id = props.targetLabel + tableMeta.columnIndex;
 
-                console.log('PROPS2',props)
+                if(props.parent !== 'search' && props.targetLabel !== 'well'){
+
+                  console.log('PROPS 2', props)
+
                 return (
 
                   <Tooltip title={"Detail Card"} placement="top">
@@ -1325,9 +1329,13 @@ function SubTable(props) {
                   </Tooltip>
 
                 );
+                     } else {return null}
+
+
+
               },
             };
-      
+          
             break;
           case "dateTime":{
             {
