@@ -17,8 +17,9 @@ const useStyles = makeStyles((theme) => ({
 			fontWeight: "bold",
 		},
 		"& .MuiDropzoneArea-icon": { display: "none" },
-		minHeight: "125px",
-		width: "100%",
+		// minHeight: "125px",
+		// width: "100%",
+		width: '465px',
 		padding: "10px 40px",
 		color: "#757575",
 		fontWeight: "normal",
@@ -27,8 +28,10 @@ const useStyles = makeStyles((theme) => ({
 		display: "flex",
 		alignItems: "center",
 		justifyContent: "center",
-		border: "2px dashed rgb(176, 176, 176)",
+		// border: "2px dashed rgb(176, 176, 176)",
+		border: "2px dashed #dddddd",
 		marginBottom: "30px",
+		marginLeft: "15px"
 	},
 }));
 
@@ -114,7 +117,7 @@ export default function UploadZone(props) {
 					console.log(`${variant}: ${message}`);
 				}}
 				filesLimit={1}
-				dropzoneText={"Drag a file here or click to select a file to upload"}
+				dropzoneText={"+"}
 				// acceptedFiles={[
 				// 	"image/*",
 				// 	"video/*",

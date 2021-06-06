@@ -103,8 +103,8 @@ const useStyles = makeStyles({
     color: "red",
   },
   Uploadcomp: {
-    width: "200px !important",
-    height: "200px !important",
+    // width: "200px !important",
+    // height: "200px !important",
   },
   forImage: {
     width: "100px !important",
@@ -622,8 +622,6 @@ export default function DocumentDrawer() {
           </ListItem>
         ) : (
           <ListItem>
-            <h4>Click or drag and drop file to upload</h4>
-
             <div style={{ display: "flex", justifyContent: "start" }}>
               {recentFiles?.map((value, key) => {
                 let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
@@ -676,13 +674,29 @@ export default function DocumentDrawer() {
                   );
                 }
               })}
-              <div style={{ width: "150px", marginLeft: "20px" }}>
-                <UploadZone style={{ width: "150px", height: "150px" }} />
-              </div>
+
             </div>
           </ListItem>
         )}
       </List>
+
+
+      <div className={classes.Uploadcomp}>
+        <UploadZone
+          style={{ 
+            // width: "75px !important", 
+            // height: "50px !important",
+            paddingLeft: "50px"
+
+          }}
+          // relatedObjectId={props.id}
+          // userId={userId}
+          // relatedObjectType={relatedObjectType} //Contact or Deal
+          // loading={props.loading}
+          // disabled={props.disabled}
+        />
+      </div>
+
 
       <div className={classes.dialogFooter}>
         <Button
