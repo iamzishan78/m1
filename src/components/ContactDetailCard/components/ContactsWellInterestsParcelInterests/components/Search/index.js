@@ -77,7 +77,7 @@ function Search({ contactId }) {
   }
 
   return (
-    <form className={classes.root}>
+    <form className={classes.root} >
       <Accordion className={classes.accordian}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
