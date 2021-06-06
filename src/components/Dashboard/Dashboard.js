@@ -15,6 +15,7 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor:'#efefef',
+    // overflowY: 'scroll'
   },
   header: {    
     paddingTop: '25px',
@@ -29,17 +30,17 @@ const Dashboard = () => {
 
   return (
     <div className={classes.root}>
-    <Container maxWidth='false'>
-      {/* <Grid container
-            direction="column" 
-            spacing={2}> */}
+    <Container 
+        maxWidth='false' 
+        style={{overflow: 'auto', 
+        height: 'calc(100vh - 64px)'
+    }}>
 
         <div className={classes.header}>
         <DateBar />
         </div>
         <CardGrid />
 
-      {/* </Grid> */}
     </Container>
     </div>
   );
