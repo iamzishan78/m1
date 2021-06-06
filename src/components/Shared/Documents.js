@@ -475,7 +475,19 @@ export default function Documents(props) {
           </Grid>
         </CardActions>
       )}
+
+          {!props.isTransactPage && (
+
+            <UploadZone
+              relatedObjectId={props.id}
+              userId={userId}
+              relatedObjectType={relatedObjectType} //Contact or Deal
+            />
+          )}
+
+
       <CardContent  >
+
         {props.isTransactPage && (
           <UploadZone
             relatedObjectId={props.id}
@@ -483,6 +495,7 @@ export default function Documents(props) {
             relatedObjectType={relatedObjectType} //Contact or Deal
           />
         )}
+
         {props.isTransactPage && (
           <div style={{ marginBottom: "20px" }}
           >
@@ -620,13 +633,7 @@ export default function Documents(props) {
               handleDeleteAccept();
             }}
           />
-          {!props.isTransactPage && (
-            <UploadZone
-              relatedObjectId={props.id}
-              userId={userId}
-              relatedObjectType={relatedObjectType} //Contact or Deal
-            />
-          )}
+
         </div>
       </CardContent>
     </div>
