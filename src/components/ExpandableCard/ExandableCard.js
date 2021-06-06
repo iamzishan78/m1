@@ -464,7 +464,7 @@ function ExpandableCard(props) {
                 />
               )}
 
-{/* 
+              {/* 
               {stateExpandableCard.expanded &&
                 targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
