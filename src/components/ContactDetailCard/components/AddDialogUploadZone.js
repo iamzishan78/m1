@@ -478,7 +478,9 @@ export default function Documents(props) {
                             className={classes.forImage}
                           ></img>
                         ) : (
-                          <div className={classes.forImageContainer} onClick={() => {
+                          <div className={classes.forImageContainer} 
+                          
+                            onClick={() => {
                             // if(fileExtension === 'pdf')
                             // {
                             //   setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name, downloadFn:handleViewFile, downloadData: files?.getFileDescriptors[key].fileId}})

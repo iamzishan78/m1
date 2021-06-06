@@ -604,8 +604,27 @@ export default function DocumentDrawer() {
                           {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
                             <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                           ) : (
-                            <div className={classes.forImageContainer}>
-                              {/* {fileExtension} */}
+                            <div className={classes.forImageContainer}
+
+                            onClick={() => {
+
+                              console.log('STATE', stateApp)
+                              if (fileExtension === 'pdf') {
+
+                                console.log('STATE PDR CLICKED')
+                                // setStateApp({ ...stateApp, viewDoc: { uri: stateApp.selectedDocument.fileUrl, name: stateApp.selectedDocument.fileName } })
+                                setStateApp((state) => ({
+                                  ...state,
+                                  pdfView: stateApp.selectedDocument
+                                }));
+                              }
+                              else {
+                                handleViewFile(
+                                  stateApp.selectedDocument.fileId
+                                )
+                              }
+                            }}>
+
                               {getFileIcon(fileExtension)}
                             </div>
                           )}
@@ -663,11 +682,26 @@ export default function DocumentDrawer() {
                         interactive
                       >
                         <div>
+                        { console.log('STATE', stateApp) }
+
                           {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
                             <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                           ) : (
-                            <div className={classes.forImageContainer}>
-                              {/* {fileExtension} */}
+                            <div className={classes.forImageContainer}
+                            
+                              onClick={() => {
+
+                                console.log('STATE', stateApp)
+                                if (fileExtension === 'pdf') {
+                                  setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } })
+                                }
+                                else {
+                                  handleViewFile(
+                                    // files?.getFileDescriptors[key].fileId
+                                  )
+                                }
+                              }}>
+
                               {getFileIcon(fileExtension)}
                             </div>
                           )}

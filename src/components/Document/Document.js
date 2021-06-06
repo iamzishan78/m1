@@ -12,6 +12,9 @@ import { AppContext } from "AppContext";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import Drawer from "./components/Drawer";
 
+import DocViewer from '../Shared/DocViewer'
+
+
 const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
     "& .MuiDialog-paperScrollPaper": {
@@ -36,10 +39,23 @@ export default function DocumentComponent() {
     setNumPages(numPages);
   }
 
+
+  const ExtenstionGetter = (name) => {
+    let fileExtension = name
+      ?.slice(name.lastIndexOf(".") + 1)
+      ?.toLowerCase();
+
+    return fileExtension
+  }
+  
+
+
   return (
     <div>
       <M1nTable dense parent="Documents"></M1nTable>
       <Drawer data={true}></Drawer>
+
+      
       <Dialog
         className={classes.dialogExpCard}
         fullWidth
@@ -91,7 +107,14 @@ export default function DocumentComponent() {
             <Page key={`page_${index + 1}`} pageNumber={index + 1} />
           ))}
         </Document>
+
+        {/* {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === 'pdf' ? (
+          <div className={classes.leftColumn}> <DocViewer DocStyle={{ backgroundColor: 'white !important', width: '70vw' }} divCondition={true}></DocViewer></div>
+        ): null} */}
+
       </Dialog>
+
+      
     </div>
   );
 }
