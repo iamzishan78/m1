@@ -42,13 +42,13 @@ function ContactWellInterestTable(props) {
   const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
   // queries 
-  const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY, { fetchPolicy: "no-cache" });
+  const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY, { fetchPolicy: "cache-and-network", skip: true });
   const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: [ "getContactWells", "getPaginatedContactWellInterests" ], awaitRefetchQueries: true });
   const tableData = dataContactWells?.paginatedContactWellInterests
 
   const addAble = { type: "wellInterest" }
   const total = false
-  const orderByTracks = true
+  const orderByTracks = false
 
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
@@ -73,7 +73,7 @@ function ContactWellInterestTable(props) {
 
   useEffect(() => {
     if (dataContactWells?.paginatedContactWellInterests?.edges?.length > 0) {
-      let wells = dataContactWells.paginatedContactWellInterests.edges.map((el) => el.node)
+      let wells = dataContactWells.paginatedContactWellInterests.edges.map((el) => ({ ...el.node, cursor: el.cursor }))
 
       wells = wells.map((w) => {
         let well = { ...w };
@@ -148,11 +148,11 @@ function ContactWellInterestTable(props) {
               ...pageVariables.variables.pagination,
               before:
                 props.rows && tableState.page < meta.pageInd
-                  ? props.rows[0]?._id
+                  ? props.rows[0]?.cursor
                   : null,
               after:
                 props.rows && tableState.page > meta.pageInd
-                  ? props.rows[props.rows.length - 1]?._id
+                  ? props.rows[props.rows.length - 1]?.cursor
                   : null,
             },
           },
