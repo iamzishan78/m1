@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
+import { useHistory } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
 import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACTDEALS } from "../../../graphQL/useQueryContactDeals";
@@ -46,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Deals({ contact, ...props }) {
   const classes = useStyles();
+  let history = useHistory();
   const [wonDeals, setWonDeals] = useState([]); // deal closed
   const [lostDeals, setLostDeals] = useState([]); // deal rejected
   const [activeDeals, setActiveDeals] = useState([]); // all other deals
@@ -135,15 +137,16 @@ export default function Deals({ contact, ...props }) {
     //       className={classes.addIcon}
     //       onClick={() => {
     <div className={classes.root} onClick={() => {
-            props.handleOpenExpandableCard(
-              <DealsDetailCard
-                activeDeals={activeDeals}
-                lostDeals={lostDeals}
-                closedDeals={wonDeals}
-                contact={contact}
-              />,
-              "Deals"
-            );
+            history.push(`/contact/details/${contact._id}/deals`)
+            // props.handleOpenExpandableCard(
+            //   <DealsDetailCard
+            //     activeDeals={activeDeals}
+            //     lostDeals={lostDeals}
+            //     closedDeals={wonDeals}
+            //     contact={contact}
+            //   />,
+            //   "Deals"
+            // );
           }}
         >
 
