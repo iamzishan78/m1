@@ -104,7 +104,7 @@ function ExpandableCard(props) {
 
   const useStyles = makeStyles((theme) => ({
     root: {
-        zIndex: 88888,
+        // zIndex: 88888,
     },
 
     card: {
@@ -123,7 +123,7 @@ function ExpandableCard(props) {
       "& .MuiCardHeader-action": {
         alignSelf: "left",
       },
-      zIndex: 88888, // consistent with mapbox popup summary card for map interactions
+      zIndex: 1250, // https://material-ui.com/customization/z-index/
     },
     title: {
       fontFamily: "Poppins",

@@ -6,7 +6,7 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles'
 const useStyles = makeStyles(theme => ({
   dashboardWrapper: {
     width: '100%',
-    height:'100%'
+    height:'100%',
   }
 }))
 
