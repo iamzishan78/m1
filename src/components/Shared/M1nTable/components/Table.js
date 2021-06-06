@@ -2019,31 +2019,33 @@ function SubTable(props) {
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
 
+                  const row_line = Object.assign({}, ...(tableMeta.rowData.map((item, index) => ({ [columns[index]?.name]: item }))));
+
                   return (
                     <div style={{ marginRight: "10px", display: 'flex', justifyContent: 'left', alignItems: 'center' }}>
                     
                     <IconButton    onClick={(e)=>{
                         e.stopPropagation()
                         console.log("modell download")
-                        handleViewFile(rows[tableMeta.rowIndex].fileId)
+                        handleViewFile(row_line?._id)
                       }}>
                         <GetAppIcon />
                       </IconButton>
 
 
                        {/* BEGINNING OF SHITTY CODE === this find the file type and if pdf will show the icon */}
-                       {rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length-1] 
+                       {row_line?.fileName?.split('.')[row_line?.fileName?.split('.').length-1] 
                        === "pdf" 
                        && 
                                            
                      <IconButton
                         onClick={(e) => {
                           e.stopPropagation()
-                          const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length - 1]
+                          const type = row_line?.fileName?.split('.')[row_line?.fileName?.split('.').length - 1]
                           if (type === 'pdf') {
                             setStateApp((state) => ({
                               ...state,
-                              pdfView: rows[tableMeta.rowIndex]
+                              pdfView: rows.find((row) => row._id === row_line._id)
                             }));
                           }
                         }}
@@ -2074,15 +2076,15 @@ function SubTable(props) {
                     (trueTargetLabel ? trueTargetLabel : props.targetLabel) +
                     tableMeta.columnIndex;
 
-                    var row_line = rows[tableMeta.rowIndex]
+                    const row_line = Object.assign({}, ...(tableMeta.rowData.map((item, index) => ({ [columns[index]?.name]: item }))));
                     var dateTime = null;
                     if(row_line && row_line.dateTime){dateTime=row_line.dateTime}
-                    const fileExtension = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length - 1]                  
-                    const file = rows[tableMeta.rowIndex]?.fileName
-                    const uri = rows[tableMeta.rowIndex]?.fileUrl     
+                    const fileExtension = row_line?.fileName?.split('.')[row_line?.fileName?.split('.').length - 1]                  
+                    const file = row_line?.fileName
+                    const uri = row_line?.fileUrl     
      
                     
-                    console.log('DOCS',row_line)
+                    // console.log('DOCS',row_line)
 
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
@@ -2138,16 +2140,16 @@ function SubTable(props) {
                         
                         e.stopPropagation()
                         //  console.log(,'value Div click')
-                        const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length - 1]
+                        const type = row_line?.fileName?.split('.')[row_line?.fileName?.split('.').length - 1]
                         if (type === 'pdf') {
                           setStateApp((state) => ({
                             ...state,
-                            pdfView: rows[tableMeta.rowIndex]
+                            pdfView: rows.find((row) => row._id === row_line._id)
                           }));
                         } else {
-                          handleViewFile(rows[tableMeta.rowIndex].fileId)
+                          handleViewFile(row_line._id)
                         }
-                        console.log(rows[tableMeta.rowIndex], 'DOCS tablemeta FILENAME')
+                        console.log(row_line, 'DOCS tablemeta FILENAME')
                     }}>
 
                       <Grid container direction="column" alignItems="flex-start"> 
