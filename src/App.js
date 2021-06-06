@@ -17,6 +17,7 @@ import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider
 import ContactsProvider from "./components/Contacts/ContactsProvider";
 import ContactDetailsProvider from "./components/ContactDetailCard/ContactDetailsProvider";
 import ContactDealsProvider from "./components/DealsDetailCard/ContactDealsProvider";
+import ContactWellInterestProvider from "./components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/ContactWellInterestProvider";
 import ContactDocumentsProvider from "./components/ViewDocuments/ContactDocumentsProvider";
 import ContactDetailedInfoProvider from "./components/ContactDetailedInfo/ContactDetailedInfoProvider";
 import ContactRecentActivitiesProvider from "./components/RecentActivities/ContactRecentActivitiesProvider";
@@ -269,6 +270,7 @@ function App() {
                       <PrivateRoute exact path="/contact/details/:contactId/detailedInformation" component={ContactDetailedInfoProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/recentActivites" component={ContactRecentActivitiesProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
+                      <PrivateRoute exact path="/contact/details/:contactId/wells" component={ContactWellInterestProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} />
                       <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
                       <PrivateRoute exact path="/studio" component={StudioProvider} />
