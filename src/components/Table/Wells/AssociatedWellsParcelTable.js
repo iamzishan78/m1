@@ -25,8 +25,27 @@ import { handleTagColumn } from "../helpers/index.js";
 
 
 const useStyles = makeStyles((theme) => ({
+    root:{
+        "& div": {
+          "&>.MuiPaper-root": {
+            display: "flex",
+            ["flex-direction"]: "column",
+            height: "calc(100vh - 65px)",
+            ["align-items"]: "stretch",
+            "&>.MuiPaper-root": { 
+              display: "contents",
+            },
+            "&>:nth-child(3)": { 
+              height: "inherit !important",
+            },
+            "&> table": {
+              bottom: 0,
+            }
+          },
+        },
+      },
     container: {
-        padding: "0 !important"
+        padding: "0 !important",
     },
 }));
 
@@ -221,13 +240,13 @@ function ShapeGridWellsTable(props) {
         setSelectedYear(selectedYear)
     }
     return (
+
+        <div className={classes.root}>
         <Container
             maxWidth={false}
             className={classes.container}
             id={props.id ? props.id : props.parent}
         >
-
-                    {console.log('SHAPE ROWS', props.rows)}
             <Table
                 style={{ backgroundColor: "#fff" }}
                 header={props.header}
@@ -249,6 +268,7 @@ function ShapeGridWellsTable(props) {
                 getWellOwnersByYear={getWellOwnersByYear}
             />
         </Container>
+        </div>
     );
 }
 

@@ -1244,7 +1244,10 @@ function SubTable(props) {
               ...column.options,
               customBodyRender: (value, tableMeta, updateValue) => {
                 let id = props.targetLabel + tableMeta.columnIndex;
+
+                console.log('PROPS2',props)
                 return (
+
                   <Tooltip title={"Detail Card"} placement="top">
                     <IconButton
                       id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
@@ -1320,9 +1323,11 @@ function SubTable(props) {
                       <AssessmentIcon />
                     </IconButton>
                   </Tooltip>
+
                 );
               },
             };
+      
             break;
           case "dateTime":{
             {
