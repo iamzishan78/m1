@@ -16,6 +16,7 @@ import DocumentProvider from "./components/Document/DocumentProvider";
 import TitleOpinionProvider from "./components/TitleOpinion/TitleOpinionProvider";
 import ContactsProvider from "./components/Contacts/ContactsProvider";
 import ContactDetailsProvider from "./components/ContactDetailCard/ContactDetailsProvider";
+import ContactDocumentsProvider from "./components/ViewDocuments/ContactDocumentsProvider";
 import ContactDetailedInfoProvider from "./components/ContactDetailedInfo/ContactDetailedInfoProvider";
 import ContactRecentActivitiesProvider from "./components/RecentActivities/ContactRecentActivitiesProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
@@ -266,6 +267,7 @@ function App() {
                       <PrivateRoute exact path="/contact/details/:contactId" component={ContactDetailsProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/detailedInformation" component={ContactDetailedInfoProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/recentActivites" component={ContactRecentActivitiesProvider} />
+                      <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
                       <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
                       <PrivateRoute exact path="/studio" component={StudioProvider} />
                       <PrivateRoute exact path="/bulkupload" component={BulkUpload} />

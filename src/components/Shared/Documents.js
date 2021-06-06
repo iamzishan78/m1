@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import gql from "graphql-tag";
@@ -161,6 +162,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Documents(props) {
   const classes = useStyles();
+  let history = useHistory();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
@@ -447,19 +449,7 @@ export default function Documents(props) {
               // }}
 
               onClick={() => {
-                props.handleOpenExpandableCard(
-                  <ViewDocuments
-                    contactId={props.id}
-                    user_id={props.user_id}
-                    activityLog={props.activityLog}
-                    openDeleteConfirmDialog={openDeleteConfirmDialog}
-                    handleClose={handleDeleteCancel}
-                    handleAccept={handleDeleteAccept}
-                    setOpenDeleteConfirmDialog={setOpenDeleteConfirmDialog}
-                    setFileIdToDelete={setFileIdToDelete}
-                  />,
-                  "Documents"
-                );
+                history.push(`/contact/details/${props.id}/documents`)
                 setStateApp({ ...stateApp, viewDoc: null })
               }}
             >
