@@ -19,6 +19,9 @@ import {
   faFileWord,
   faFileExcel,
   faFile,
+  faFileArchive,
+  faFileCode,
+  faFileImage,
 } from "@fortawesome/free-solid-svg-icons";
 // import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
@@ -359,6 +362,27 @@ export default function Documents(props) {
             style={{ fontSize: "2rem", color: "#D04424" }}
           />
         );
+        case "jpg"|| "jpeg"|| "png" || "bmp":
+          return (
+            <FontAwesomeIcon
+              icon={faFileImage}
+              style={{ fontSize: "2rem", color: "#4c6ef5" }}
+            />
+          );
+        case "zip":
+          return (
+            <FontAwesomeIcon
+              icon={faFileArchive}
+              style={{ fontSize: "2rem", color: "#15aabf" }}
+            />
+          );
+        case "shp":
+          return (
+            <FontAwesomeIcon
+              icon={faFileCode}
+              style={{ fontSize: "2rem", color: "#82c91e" }}
+            />
+          );
       default:
         // return <span>{fileExtension}</span>;
         return (

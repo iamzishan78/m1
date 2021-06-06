@@ -22,7 +22,9 @@ import Tooltip from "@material-ui/core/Tooltip";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilePdf, faFilePowerpoint, faFileWord, faFileExcel, faFile } from "@fortawesome/free-solid-svg-icons";
+import { faFilePdf, faFilePowerpoint, faFileWord, faFileExcel, faFile,  faFileArchive,
+  faFileCode,
+  faFileImage, } from "@fortawesome/free-solid-svg-icons";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
@@ -365,7 +367,29 @@ export default function DocumentDrawer() {
         return <FontAwesomeIcon icon={faFilePowerpoint} style={{ fontSize: "2rem", color: "#D04424" }} />;
       case "pptx":
         return <FontAwesomeIcon icon={faFilePowerpoint} style={{ fontSize: "2rem", color: "#D04424" }} />;
-      default:
+        case "jpg"|| "jpeg"|| "png" || "bmp":
+          return (
+            <FontAwesomeIcon
+              icon={faFileImage}
+              style={{ fontSize: "2rem", color: "#4c6ef5" }}
+            />
+          );
+        case "zip":
+          return (
+            <FontAwesomeIcon
+              icon={faFileArchive}
+              style={{ fontSize: "2rem", color: "#15aabf" }}
+            />
+          );
+        case "shp":
+          return (
+            <FontAwesomeIcon
+              icon={faFileCode}
+              style={{ fontSize: "2rem", color: "#82c91e" }}
+            />
+          );
+      
+        default:
         // return <span>{fileExtension}</span>;
         return <FontAwesomeIcon icon={faFile} style={{ fontSize: "2rem", color: "grey" }} />;
     }
