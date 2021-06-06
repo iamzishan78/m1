@@ -151,12 +151,12 @@ export default function Deals({ contact, ...props }) {
         >
 
         <AddDealDialog
-            open={stateApp.addDealDialog ? true : false}
+            open={stateApp.dealDialog ? true : false}
             width="450px"
             onClose={() =>
               setStateApp((stateApp) => ({
                 ...stateApp,
-                addDealDialog: false,
+                dealDialog: false,
               }))
             }
             contactId={contact._id}
@@ -169,7 +169,7 @@ export default function Deals({ contact, ...props }) {
           onClick={() =>
             setStateApp((stateApp) => ({
               ...stateApp,
-              addDealDialog: true,
+              dealDialog: true,
             }))
           }
         >
