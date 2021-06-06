@@ -2158,7 +2158,7 @@ function SubTable(props) {
                       {/* <p className={classes.docDateText}>{dateTime = moment.utc(row_line.dateTime).format("MM/DD/YYYY")}</p> */}
                       {/* <p className={classes.docDateText}>{convert_date(dateTime)}</p> */}
                       {/* <p className={classes.docDateText}>{dateTime.substring(0,8)}}</p> */}
-                      <p className={classes.docDateText}>{dateTime}</p>
+                      <p className={classes.docDateText}>{convert_date(dateTime)}</p>
                       </Grid>
                       </Grid>
                     </div>
