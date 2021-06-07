@@ -442,9 +442,7 @@ function Search() {
 
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
     PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "no-cache",
-    }
+    { fetchPolicy: "cache-and-network", skip: true }
   );
 
 
@@ -476,7 +474,7 @@ function Search() {
 
         ...constDataContacts.paginatedContacts.edges.map((result) => {
 
-          result = result.node;
+          result = { ...result.node };
           result.Source = contactIndexName;
           
           if(result.name){

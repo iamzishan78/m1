@@ -198,10 +198,6 @@ export default function MapControls(props) {
       handleCloseShapeDrawer()
     }
 
-    if (stateMapControls.selectedMapControl === true) {
-      console.log('SHAPE STATE MAP CONTROLS', stateMapControls)
-    }
-
     if (e && action) {
       let anchorEl = e.currentTarget;
 
@@ -368,13 +364,8 @@ export default function MapControls(props) {
 
   useEffect(() => {
 
-    if (stateApp.openDrawShapesControl) {
-      console.log('SHAPE OPENDRAWS', stateMapControls)
-    }
-
     if (stateApp.openDrawShapesControl === true) {
 
-      console.log('SHAPE OPENDRAWS 2', stateMapControls)
       setStateMapControls((state) => ({
         ...state,
         selectedMapControl: 'draw',
@@ -410,8 +401,8 @@ export default function MapControls(props) {
       <SidePanel />
 
       {stateMapControls.selectedMapControl === 'draw' ? <DrawShapes /> : null}
-      {stateMapControls.selectedControl === 'add' ? <AddUserData /> : null}
-      {stateMapControls.selectedControl === 'addGroup' ? <AddUserGroupData /> : null}
+      {stateMapControls.layerAddControl === 'add' ? <AddUserData /> : null}
+      {stateMapControls.layerAddControl === 'addGroup' ? <AddUserGroupData /> : null}
       {stateMapControls.selectedLayer
         ? openColorPickerControl(stateMapControls.selectedLayer)
         : null}

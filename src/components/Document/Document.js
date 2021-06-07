@@ -11,8 +11,30 @@ import { Document, Page } from "react-pdf";
 import { AppContext } from "AppContext";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import Drawer from "./components/Drawer";
+import { Container } from "@material-ui/core";
+
+
 
 const useStyles = makeStyles((theme) => ({
+  root:{
+    "& div": {
+      "&>.MuiPaper-root": {
+        display: "flex",
+        ["flex-direction"]: "column",
+        height: "calc(100vh - 65px)",
+        ["align-items"]: "stretch",
+        "&>.MuiPaper-root": { 
+          display: "contents",
+        },
+        "&>:nth-child(3)": { 
+          height: "inherit !important",
+        },
+        "&> table": {
+          bottom: 0,
+        }
+      },
+    },
+  },
   dialogExpCard: {
     "& .MuiDialog-paperScrollPaper": {
       height: "100%",
@@ -24,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   fileTitle: {
     padding: '12px',
     fontWeight: 'bold'
-  }
+  },
 }));
 
 export default function DocumentComponent() {
@@ -36,10 +58,19 @@ export default function DocumentComponent() {
     setNumPages(numPages);
   }
 
+
+
   return (
-    <div>
+    <div className={classes.root}>
+    {/* <Container 
+        maxWidth='false' 
+        style={{overflow: 'auto', 
+        height: 'calc(100vh - 64px)'
+    }}> */}
       <M1nTable dense parent="Documents"></M1nTable>
       <Drawer data={true}></Drawer>
+
+      
       <Dialog
         className={classes.dialogExpCard}
         fullWidth
@@ -91,7 +122,15 @@ export default function DocumentComponent() {
             <Page key={`page_${index + 1}`} pageNumber={index + 1} />
           ))}
         </Document>
+
+        {/* {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === 'pdf' ? (
+          <div className={classes.leftColumn}> <DocViewer DocStyle={{ backgroundColor: 'white !important', width: '70vw' }} divCondition={true}></DocViewer></div>
+        ): null} */}
+
       </Dialog>
+      {/* </Container> */}
+
+      
     </div>
   );
 }

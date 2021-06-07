@@ -79,6 +79,20 @@ import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
 import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
 import Chip from '@material-ui/core/Chip';
+import Grid from '@material-ui/core/Grid';
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFilePdf,
+  faFilePowerpoint,
+  faFileWord,
+  faFile,
+  faFileExcel,
+  faFileArchive,
+  faFileCode,
+  faFileImage,
+} from "@fortawesome/free-solid-svg-icons";
+
 
 import ButtonDropDown from "./ButtonGroup"
 
@@ -99,6 +113,9 @@ import Link from '@material-ui/core/Link';
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
 import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
+import convert_date from "../../../Shared/valueformatters/convert_date.js";
+
+
 
 import RightDialog from "../../../ContactDetailCard/components/RightDialog"
 
@@ -417,7 +434,14 @@ const useStyles = makeStyles((theme) => ({
     display: "inline",
     left: "223px",
     position: "absolute",
-    top: "19px"
+    top: "19px",
+    zIndex: '88889 !important'
+  },
+  selectPopover: {
+    zIndex: '88890 !important'
+  },
+  selectMenu: {
+    zIndex: '88891 !important'
   },
   tapsLabelsButtons: {
     boxShadow: "none",
@@ -433,7 +457,7 @@ const useStyles = makeStyles((theme) => ({
   },
   clickableCell: {
     cursor: "pointer",
-    padding: "10px 30px 10px 10px",
+    padding: "10px 30px 0px 10px",
     position: "relative",
     minWidth: "100px",
     borderRadius: "7px",
@@ -444,31 +468,41 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
 
   },
-  filenamediv: {
-    color: 'black',
-    cursor: 'pointer',
-    "&:hover": {
-      color: "#18aadd",
-      textDecoration: 'underline'
-    }
-  }
+  docDateText: {
+    // cursor: "pointer",
+    padding: "0px 30px 10px 10px",
+    marginTop: '-10px',
+    position: "relative",
+    justifyContent: 'flex-end'
+    // minWidth: "100px",
+    // borderRadius: "7px",
+    // color: "#17aadd",
+    // "&:hover": {
+    //   textDecoration: "underline",
+    // },
+    // fontWeight: "bold",
+
+  },
+  // filenamediv: {
+  //   cursor: "pointer",
+  //   padding: "10px 30px 10px 10px",
+  //   position: "relative",
+  //   minWidth: "100px",
+  //   borderRadius: "7px",
+  //   color: "#17aadd",
+  //   "&:hover": {
+  //     // color: "#18aadd",
+  //     textDecoration: 'underline'
+  //   },
+  //   fontWeight: "bold",
+
+  // }
 }));
 
-var formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumSignificantDigits: 21,
-});
 
-const myTheme = createMuiTheme({
-  overrides: {
-    MUIDataTable: {
-      responsiveScroll: {
-        maxHeight: '80px'
-      }
-    }
-  }
-});
+
+
+
 
 function SubTable(props) {
   const classes = useStyles(props);
@@ -511,8 +545,9 @@ function SubTable(props) {
   const [rows, Rows] = useState([]);
   const [isSearchOpen, openSearch] = useState(false);
   const [handleSearch, setHandleSearch] = useState(() => () => {});
-  // const [handleSearchClose, setHandleSearchClose] = useState(() => () => {});
   const [dataWell, setDataWell] = useState();
+
+
 
   // deep state 
   const setFirstMount = (newState) => { setStateIfDeepEqual(FirstMount, newState); };
@@ -537,6 +572,9 @@ function SubTable(props) {
   const setCumulative = (newState) => { setStateIfDeepEqual(Cumulative, newState); };
   const setViewColumns = (newState) => { setStateIfDeepEqual(ViewColumns, newState); };
   const setRows = (newState) => { setStateIfDeepEqual(Rows, newState); };
+
+
+
 
   // queries 
   const [getWell, { data: getWellRes }] = useLazyQuery(WELLQUERY, { 
@@ -629,6 +667,109 @@ function SubTable(props) {
     }
   };
 
+  const getFileIcon = (fileExtension) => {
+    switch (fileExtension) {
+      case "pdf":
+        return (
+          <FontAwesomeIcon
+            icon={faFilePdf}
+            style={{ fontSize: "2rem", color: "#F15642" }}
+          />
+        );
+      case "csv":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
+      case "xlsx":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
+      case "xlsb":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
+      case "xlsm":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
+      case "xltx":
+        return (
+          <FontAwesomeIcon
+            icon={faFileExcel}
+            style={{ fontSize: "2rem", color: "#207244" }}
+          />
+        );
+      case "doc":
+        return (
+          <FontAwesomeIcon
+            icon={faFileWord}
+            style={{ fontSize: "2rem", color: "#2A5599" }}
+          />
+        )
+      case "docx":
+        return (
+          <FontAwesomeIcon
+            icon={faFileWord}
+            style={{ fontSize: "2rem", color: "#2A5599" }}
+          />
+        );
+      case "ppt":
+        return (
+          <FontAwesomeIcon
+            icon={faFilePowerpoint}
+            style={{ fontSize: "2rem", color: "#D04424" }}
+          />
+        );
+      case "pptx":
+        return (
+          <FontAwesomeIcon
+            icon={faFilePowerpoint}
+            style={{ fontSize: "2rem", color: "#D04424" }}
+          />
+        );
+      case "jpg"|| "jpeg"|| "png" || "bmp":
+        return (
+          <FontAwesomeIcon
+            icon={faFileImage}
+            style={{ fontSize: "2rem", color: "#4c6ef5" }}
+          />
+        );
+      case "zip":
+        return (
+          <FontAwesomeIcon
+            icon={faFileArchive}
+            style={{ fontSize: "2rem", color: "#15aabf" }}
+          />
+        );
+      case "shp":
+        return (
+          <FontAwesomeIcon
+            icon={faFileCode}
+            style={{ fontSize: "2rem", color: "#82c91e" }}
+          />
+        );
+      default:
+        // return <span>{fileExtension}</span>;
+        return (
+          <FontAwesomeIcon
+            icon={faFile}
+            style={{ fontSize: "2rem", color: "grey" }}
+          />
+        );
+    }}
+
   const handleOperatorFlyTo = (value) => {
     getOperatorWells({
       variables: {
@@ -669,7 +810,6 @@ function SubTable(props) {
 
 
   const handleClickFlyToIcon = (entityType, searchTarget) => {
-    console.log('ENTITY TYPE', entityType)
 
     if (entityType == "well") {
       handleWellFlyTo(searchTarget)
@@ -687,6 +827,9 @@ function SubTable(props) {
       handleLocationFlyTo(searchTarget)
     }
   };
+
+
+  
 
   const registerSearchHandler = (handleSearch) => {
     setHandleSearch(() => handleSearch);
@@ -1097,11 +1240,18 @@ function SubTable(props) {
       props.columns.forEach((column) => {
         switch (column.name) {
           case "detailCard":
+
             column.options = {
               ...column.options,
               customBodyRender: (value, tableMeta, updateValue) => {
                 let id = props.targetLabel + tableMeta.columnIndex;
+
+                if(props.parent !== 'search' && props.targetLabel !== 'well'){
+
+                  console.log('PROPS 2', props)
+
                 return (
+
                   <Tooltip title={"Detail Card"} placement="top">
                     <IconButton
                       id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
@@ -1177,9 +1327,15 @@ function SubTable(props) {
                       <AssessmentIcon />
                     </IconButton>
                   </Tooltip>
+
                 );
+                     } else {return null}
+
+
+
               },
             };
+          
             break;
           case "dateTime":{
             {
@@ -1603,10 +1759,6 @@ function SubTable(props) {
 
                           if (value && value !== "false") {
 
-                            console.log('CURRENT VALUE', value )
-                            console.log('CURRENT VALUE 2', stateApp.parcelDetailCardOpen )
-
-
                             setStateApp((stateApp) => ({
                               ...stateApp,
                               selectedContact: value,
@@ -1795,7 +1947,7 @@ function SubTable(props) {
 
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
-                  // console.log('TAGS PROPS', props);
+
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -1880,31 +2032,33 @@ function SubTable(props) {
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
 
+                  const row_line = Object.assign({}, ...(tableMeta.rowData.map((item, index) => ({ [columns[index]?.name]: item }))));
+
                   return (
                     <div style={{ marginRight: "10px", display: 'flex', justifyContent: 'left', alignItems: 'center' }}>
                     
                     <IconButton    onClick={(e)=>{
                         e.stopPropagation()
                         console.log("modell download")
-                        handleViewFile(rows[tableMeta.rowIndex].fileId)
+                        handleViewFile(row_line?._id)
                       }}>
                         <GetAppIcon />
                       </IconButton>
 
 
                        {/* BEGINNING OF SHITTY CODE === this find the file type and if pdf will show the icon */}
-                       {rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length-1] 
+                       {row_line?.fileName?.split('.')[row_line?.fileName?.split('.').length-1] 
                        === "pdf" 
                        && 
                                            
                      <IconButton
                         onClick={(e) => {
                           e.stopPropagation()
-                          const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length - 1]
+                          const type = row_line?.fileName?.split('.')[row_line?.fileName?.split('.').length - 1]
                           if (type === 'pdf') {
                             setStateApp((state) => ({
                               ...state,
-                              pdfView: rows[tableMeta.rowIndex]
+                              pdfView: rows.find((row) => row._id === row_line._id)
                             }));
                           }
                         }}
@@ -1934,10 +2088,16 @@ function SubTable(props) {
                   let id =
                     (trueTargetLabel ? trueTargetLabel : props.targetLabel) +
                     tableMeta.columnIndex;
-                  // console.log(value,'Value FILENAME')
 
-                  // console.log(updateValue,'upDatevalue FILENAME')
-
+                    const row_line = Object.assign({}, ...(tableMeta.rowData.map((item, index) => ({ [columns[index]?.name]: item }))));
+                    var dateTime = null;
+                    if(row_line && row_line.dateTime){dateTime=row_line.dateTime}
+                    const fileExtension = row_line?.fileName?.split('.')[row_line?.fileName?.split('.').length - 1]                  
+                    const file = row_line?.fileName
+                    const uri = row_line?.fileUrl     
+     
+                    
+                    // console.log('DOCS',row_line)
 
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
@@ -1947,24 +2107,83 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
+
                   return (
-                    <div onClick={(e) => {
-                      e.stopPropagation()
-                      //  console.log(,'value Div click')
-                      const type = rows[tableMeta.rowIndex]?.fileName?.split('.')[rows[tableMeta.rowIndex]?.fileName?.split('.').length - 1]
-                      if (type === 'pdf') {
-                        setStateApp((state) => ({
-                          ...state,
-                          pdfView: rows[tableMeta.rowIndex]
-                        }));
-                      } else {
-                        handleViewFile(rows[tableMeta.rowIndex].fileId)
-                      }
-                      console.log(rows[tableMeta.rowIndex].fileId, 'tablemeta FILENAME')
+
+                    <div>
+
+                     <Grid container spacing={2} 
+                     direction='row' 
+                     >
+
+                       <Grid item                           
+                          style={{ display: "flex", 
+                          justifyContent: 'center', 
+                          alignItems: "center"}}
+                          >
+
+                        {/* {new RegExp(
+                          ["jpg", "jpeg", "png", "bmp"].join("|")
+                        ).test(fileExtension) ? (
+                          <img
+                            src={uri}
+                            alt={file}
+                          ></img>
+                        ) : ( */}
+                          <div onClick={() => {
+                            if (file.state !== "active") return;
+
+                            if (fileExtension === 'pdf') {
+                              setStateApp({ ...stateApp, viewDoc: { uri: uri, name: file } })
+                            }
+                          }}>
+                            {getFileIcon(fileExtension)}
+                          </div>
+                        {/* )
+                        } */}
+                        {/* </div> */}
+                        </Grid>
+
+
+                    <Grid item>
+                    <div 
+                      style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
+
+                      onClick={(e) => {
+                        
+                        e.stopPropagation()
+                        //  console.log(,'value Div click')
+                        const type = row_line?.fileName?.split('.')[row_line?.fileName?.split('.').length - 1]
+                        if (type === 'pdf') {
+                          setStateApp((state) => ({
+                            ...state,
+                            pdfView: rows.find((row) => row._id === row_line._id)
+                          }));
+                        } else {
+                          handleViewFile(row_line._id)
+                        }
+                        console.log(row_line, 'DOCS tablemeta FILENAME')
                     }}>
 
-                      <h4 className={classes.filenamediv}>{value}</h4>
+                      <Grid container direction="column" alignItems="flex-start"> 
+                      <Grid item>
+                      <p className={classes.clickableCell}>{value}</p>
+                      </Grid>
+                      <Grid item>
+                      {/* <p className={classes.docDateText}>{dateTime = moment.utc(row_line.dateTime).format("MM/DD/YYYY")}</p> */}
+                      {/* <p className={classes.docDateText}>{convert_date(dateTime)}</p> */}
+                      {/* <p className={classes.docDateText}>{dateTime.substring(0,8)}}</p> */}
+                      <p className={classes.docDateText}>{convert_date(dateTime)}</p>
+                      </Grid>
+                      </Grid>
                     </div>
+                    </Grid>
+
+                    </Grid> 
+
+                    </div>
+
+
                   );
                 },
               };
@@ -3084,11 +3303,11 @@ function SubTable(props) {
                   ...pageVariables.variables.pagination,
                   before:
                     props.rows && tableState.page < pageInd
-                      ? props.rows[0]?._id
+                      ? props.rows[0]?.cursor
                       : null,
                   after:
                     props.rows && tableState.page > pageInd
-                      ? props.rows[props.rows.length - 1]?._id
+                      ? props.rows[props.rows.length - 1]?.cursor
                       : null,
                 },
                 pageOverride: tableState.page,
@@ -3291,7 +3510,11 @@ function SubTable(props) {
 
   const TableFilterList = (props) => {
     return <Box className={classes.customDropDown} >
-      <Select
+      <Select 
+        MenuProps={{
+          className: classes.selectPopover,
+          classes: { paper: classes.selectMenu } 
+        }}
         labelId="demo-simple-select-label"
         id="demo-simple-select"
         value={year}
@@ -3357,7 +3580,7 @@ function SubTable(props) {
           } ${columns && columns.length > 0 ? "" : classes.emptyTable}`}
       >
 
-      {console.log('PROPS', props)}
+      {/* {console.log('PROPS', props)} */}
 
         <MUIDataTable
           className={tableStyle}
@@ -3389,12 +3612,16 @@ function SubTable(props) {
             filter:          props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
                           || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
                           || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                          || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                          || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
                     ? false : null,
 
             viewColumns:     props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search 
                           || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
                           || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                          || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                          || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
                     ? false : null,
 
@@ -3407,6 +3634,8 @@ function SubTable(props) {
                 || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
                 || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
                 )
 
@@ -3484,9 +3713,9 @@ function SubTable(props) {
           && openDialog !== "buyContactsInfo"
           && openDialog !== "addOwnerToParcel"
           
-          
+
           && (<Dialog
-            style={{zIndex: 99999}}
+            // style={{zIndex: 99998}}
             open={openDialog ? true : false}
             onClose={handleCloseDialog}
             fullWidth={

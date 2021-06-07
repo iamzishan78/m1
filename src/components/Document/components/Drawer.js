@@ -22,7 +22,9 @@ import Tooltip from "@material-ui/core/Tooltip";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilePdf, faFilePowerpoint, faFileWord, faFileExcel, faFile } from "@fortawesome/free-solid-svg-icons";
+import { faFilePdf, faFilePowerpoint, faFileWord, faFileExcel, faFile,  faFileArchive,
+  faFileCode,
+  faFileImage, } from "@fortawesome/free-solid-svg-icons";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
@@ -101,8 +103,8 @@ const useStyles = makeStyles({
     color: "red",
   },
   Uploadcomp: {
-    width: "200px !important",
-    height: "200px !important",
+    // width: "200px !important",
+    // height: "200px !important",
   },
   forImage: {
     width: "100px !important",
@@ -365,7 +367,29 @@ export default function DocumentDrawer() {
         return <FontAwesomeIcon icon={faFilePowerpoint} style={{ fontSize: "2rem", color: "#D04424" }} />;
       case "pptx":
         return <FontAwesomeIcon icon={faFilePowerpoint} style={{ fontSize: "2rem", color: "#D04424" }} />;
-      default:
+        case "jpg"|| "jpeg"|| "png" || "bmp":
+          return (
+            <FontAwesomeIcon
+              icon={faFileImage}
+              style={{ fontSize: "2rem", color: "#4c6ef5" }}
+            />
+          );
+        case "zip":
+          return (
+            <FontAwesomeIcon
+              icon={faFileArchive}
+              style={{ fontSize: "2rem", color: "#15aabf" }}
+            />
+          );
+        case "shp":
+          return (
+            <FontAwesomeIcon
+              icon={faFileCode}
+              style={{ fontSize: "2rem", color: "#82c91e" }}
+            />
+          );
+      
+        default:
         // return <span>{fileExtension}</span>;
         return <FontAwesomeIcon icon={faFile} style={{ fontSize: "2rem", color: "grey" }} />;
     }
@@ -535,7 +559,13 @@ export default function DocumentDrawer() {
             }}
           />
         </ListItem>
-        {stateApp.selectedDocument?.fileId ? (
+
+      </List>
+
+
+
+
+      {stateApp.selectedDocument?.fileId ? (
           <ListItem>
             <div style={{ display: "flex", justifyContent: "start" }}>
               {viewFileSResult?.viewFiles?.map((value, key) => {
@@ -574,8 +604,27 @@ export default function DocumentDrawer() {
                           {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
                             <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                           ) : (
-                            <div className={classes.forImageContainer}>
-                              {/* {fileExtension} */}
+                            <div className={classes.forImageContainer}
+
+                            onClick={() => {
+
+                              console.log('STATE', stateApp)
+                              if (fileExtension === 'pdf') {
+
+                                console.log('STATE PDR CLICKED')
+                                // setStateApp({ ...stateApp, viewDoc: { uri: stateApp.selectedDocument.fileUrl, name: stateApp.selectedDocument.fileName } })
+                                setStateApp((state) => ({
+                                  ...state,
+                                  pdfView: stateApp.selectedDocument
+                                }));
+                              }
+                              else {
+                                handleViewFile(
+                                  stateApp.selectedDocument.fileId
+                                )
+                              }
+                            }}>
+
                               {getFileIcon(fileExtension)}
                             </div>
                           )}
@@ -598,8 +647,6 @@ export default function DocumentDrawer() {
           </ListItem>
         ) : (
           <ListItem>
-            <h4>Click or drag and drop file to upload</h4>
-
             <div style={{ display: "flex", justifyContent: "start" }}>
               {recentFiles?.map((value, key) => {
                 let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
@@ -635,11 +682,26 @@ export default function DocumentDrawer() {
                         interactive
                       >
                         <div>
+                        { console.log('STATE', stateApp) }
+
                           {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
                             <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                           ) : (
-                            <div className={classes.forImageContainer}>
-                              {/* {fileExtension} */}
+                            <div className={classes.forImageContainer}
+                            
+                              onClick={() => {
+
+                                console.log('STATE', stateApp)
+                                if (fileExtension === 'pdf') {
+                                  setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } })
+                                }
+                                else {
+                                  handleViewFile(
+                                    // files?.getFileDescriptors[key].fileId
+                                  )
+                                }
+                              }}>
+
                               {getFileIcon(fileExtension)}
                             </div>
                           )}
@@ -652,13 +714,30 @@ export default function DocumentDrawer() {
                   );
                 }
               })}
-              <div style={{ width: "150px", marginLeft: "20px" }}>
-                <UploadZone style={{ width: "150px", height: "150px" }} />
-              </div>
+
             </div>
           </ListItem>
         )}
-      </List>
+
+
+        {!stateApp.selectedDocument?.fileId ? (
+          <div className={classes.Uploadcomp}>
+            <UploadZone
+              style={{ 
+                // width: "75px !important", 
+                // height: "50px !important",
+                paddingLeft: "50px"
+
+              }}
+              // relatedObjectId={props.id}
+              // userId={userId}
+              // relatedObjectType={relatedObjectType} //Contact or Deal
+              // loading={props.loading}
+              // disabled={props.disabled}
+            />
+          </div>
+        ) : null}
+
 
       <div className={classes.dialogFooter}>
         <Button
@@ -695,274 +774,9 @@ export default function DocumentDrawer() {
         </Button>
       </div>
 
-      <Divider />
     </div>
   );
-  // const list = (anchor) => (
-  //   <div
-  //     style={{ width: "500px", marginLeft: "15px" }}
-  //     className={clsx(classes.list, {
-  //       [classes.fullList]: anchor === "top" || anchor === "bottom",
-  //     })}
-  //     role="presentation"
-  //     onClick={toggleDrawer(anchor, false)}
-  //     onKeyDown={toggleDrawer(anchor, false)}
-  //   >
-  //     <List>
-  //       <ListItem
-  //         style={{
-  //           display: "flex",
-  //           justifyContent: "between",
-  //           width: "100%",
-  //           alignItems: "center",
-  //         }}
-  //       >
-  //         <ListItemText>
-  //           <h3>Add New Document</h3>
-  //         </ListItemText>
-  //         <ListItemIcon
-  //           style={{ cursor: "pointer" }}
-  //           onClick={() => {
-  //             setStateApp({
-  //               ...stateApp,
-  //               DocumentDrawer: false,
-  //               selectedDocument: {},
-  //             });
-  //           }}
-  //         >
-  //           <CloseIcon></CloseIcon>
-  //         </ListItemIcon>
-  //       </ListItem>
-  //       <ListItem
-  //         style={{
-  //           flexDirection: "column",
-  //           justifyContent: "start",
-  //           alignItems: "start",
-  //         }}
-  //       >
-  //         <h4>Document Number</h4>
-  //         <TextField className={classes.maxWidth} multiline />
-  //       </ListItem>
-  //       <ListItem
-  //         style={{
-  //           flexDirection: "column",
-  //           justifyContent: "start",
-  //           alignItems: "start",
-  //         }}
-  //       >
-  //         <h4>Document Name</h4>
-  //         <TextField className={classes.maxWidth} multiline />
-  //       </ListItem>
-  //       <ListItem
-  //         style={{
-  //           flexDirection: "column",
-  //           justifyContent: "start",
-  //           alignItems: "start",
-  //         }}
-  //       >
-  //         <h4>Document Type</h4>
-  //         <Autocomplete
-  //           className={classes.maxWidth}
-  //           options={["pdf", "doc", "txt"]}
-  //           // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
-  //           // value={users.find((user) => user?.value === newContact.contactOwner) || null}
-  //           // getOptionLabel={(option) => option.text}
-  //           // getOptionSelected={(option) => option.value === newContact.contactOwner}
-  //           renderInput={(params) => (
-  //             <TextField
-  //               size="small"
-  //               {...params}
-  //               className={classes.maxWidth}
-  //               multiline
-  //             />
-  //           )}
-  //         />
-  //       </ListItem>
-
-  //       <ListItem
-  //         style={{
-  //           flexDirection: "column",
-  //           justifyContent: "start",
-  //           alignItems: "start",
-  //         }}
-  //       >
-  //         <h4>Document Type</h4>
-  //         <KeyboardDatePicker
-  //           className={classes.maxWidth}
-  //           disableToolbar
-  //           variant="inline"
-  //           format="MM/dd/yyyy"
-  //           margin="normal"
-  //           id="date-picker-inline"
-  //           // label={<h4 style={{paddingBottom:'30px'}}>Document Date</h4>}
-  //           value={selectedDate}
-  //           onChange={handleDateChange}
-  //           KeyboardButtonProps={{
-  //             "aria-label": "change date",
-  //           }}
-  //         />
-  //       </ListItem>
-  //       <ListItem
-  //         style={{
-  //           flexDirection: "column",
-  //           justifyContent: "start",
-  //           alignItems: "start",
-  //         }}
-  //       >
-  //         <h4>Party 1 Name</h4>
-  //         <Autocomplete
-  //           className={classes.maxWidth}
-  //           options={["John Doe", "Mickel Jackson", "Phil Heath"]}
-  //           // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
-  //           // value={users.find((user) => user?.value === newContact.contactOwner) || null}
-  //           // getOptionLabel={(option) => option.text}
-  //           // getOptionSelected={(option) => option.value === newContact.contactOwner}
-  //           renderInput={(params) => (
-  //             <TextField
-  //               size="small"
-  //               {...params}
-  //               className={classes.maxWidth}
-  //               multiline
-  //             />
-  //           )}
-  //         />
-  //       </ListItem>
-  //       <ListItem
-  //         style={{
-  //           flexDirection: "column",
-  //           justifyContent: "start",
-  //           alignItems: "start",
-  //         }}
-  //       >
-  //         <h4>Party 2 Name</h4>
-  //         <Autocomplete
-  //           className={classes.maxWidth}
-  //           options={["John Doe", "Mickel Jackson", "Phil Heath"]}
-  //           // onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
-  //           // value={users.find((user) => user?.value === newContact.contactOwner) || null}
-  //           // getOptionLabel={(option) => option.text}
-  //           // getOptionSelected={(option) => option.value === newContact.contactOwner}
-  //           renderInput={(params) => (
-  //             <TextField
-  //               size="small"
-  //               {...params}
-  //               className={classes.maxWidth}
-  //               multiline
-  //             />
-  //           )}
-  //         />
-  //       </ListItem>
-  //       <ListItem>
-  //         <h4>Click or drag and drop file to upload</h4>
-  //       </ListItem>
-
-  //       <div style={{ display: "flex", justifyContent: "start" }}>
-  //         {recentFiles?.map((value, key) => {
-  //           let fileExtension = value?.name
-  //             ?.slice(value.name.lastIndexOf(".") + 1)
-  //             ?.toLowerCase();
-  //           if (key <= 1) {
-  //             return (
-  //               <div key={key}>
-  //                 <LightTooltip
-  //                   title={
-  //                     <div className={classes.IconSection}>
-  //                       <IconButton
-  //                         size="small"
-  //                         onClick={() => {
-  //                           setOpenDeleteConfirmDialog(true);
-  //                           setFileIdToDelete(value.id);
-  //                         }}
-  //                       >
-  //                         <DeleteIcon />
-  //                       </IconButton>
-
-  //                       <IconButton
-  //                         disabled={false}
-  //                         size="small"
-  //                         // onClick={() =>
-  //                         //   handleViewFile(
-  //                         //     files?.getFileDescriptors[key].fileId
-  //                         //   )
-  //                         // }
-  //                       >
-  //                         <GetAppIcon />
-  //                       </IconButton>
-  //                     </div>
-  //                   }
-  //                   interactive
-  //                 >
-  //                   <div>
-  //                     {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(
-  //                       fileExtension
-  //                     ) ? (
-  //                       <img
-  //                         src={value.uri}
-  //                         alt={value.name}
-  //                         className={classes.forImage}
-  //                       ></img>
-  //                     ) : (
-  //                       <div className={classes.forImageContainer}>
-  //                         {/* {fileExtension} */}
-  //                         {getFileIcon(fileExtension)}
-  //                       </div>
-  //                     )}
-  //                     <div className={classes.imageSubText}>
-  //                       {value?.name?.length > 12
-  //                         ? value.name.slice(0, 8) + "..."
-  //                         : value.name}
-  //                     </div>
-  //                   </div>
-  //                 </LightTooltip>
-  //               </div>
-  //             );
-  //           }
-  //         })}
-  //         <div style={{ width: "150px", marginLeft: "20px" }}>
-  //           <UploadZone style={{ width: "150px", height: "150px" }} />
-  //         </div>
-  //       </div>
-  //     </List>
-
-  //     <div className={classes.dialogFooter}>
-  //       <Button
-  //         variant="contained"
-  //         color="default"
-  //         size="medium"
-  //         disableElevation
-  //         // disabled={updateDealLoading || addContactLoading}
-  //         className={classes.footerButton}
-  //         style={{
-  //           margin: "0px 15px 0px 0px",
-  //         }}
-  //         onClick={() => {
-  //           setStateApp({
-  //             ...stateApp,
-  //             DocumentDrawer: false,
-  //             selectedDocument: {},
-  //           });
-  //         }}
-  //       >
-  //         Cancel
-  //       </Button>
-
-  //       <Button
-  //         variant="contained"
-  //         color="secondary"
-  //         size="medium"
-  //         disableElevation
-  //         // onClick={handleUpdate}
-  //         className={classes.footerButton}
-  //       >
-  //         Save
-  //       </Button>
-  //     </div>
-
-  //     <Divider />
-  //   </div>
-  // );
-  // let obj = new Object();
-
+  
   return (
     <div>
       {/* <ClickAwayListener onClickAway={() => {handleClose()}}> */}

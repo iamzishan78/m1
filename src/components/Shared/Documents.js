@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import gql from "graphql-tag";
@@ -19,6 +20,9 @@ import {
   faFileWord,
   faFile,
   faFileExcel,
+  faFileArchive,
+  faFileCode,
+  faFileImage,
 } from "@fortawesome/free-solid-svg-icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
@@ -73,13 +77,7 @@ const useStyles = makeStyles((theme) => ({
   todayDot: {
     fontSize: "8px",
   },
-  dealTitle: {
-    cursor: "pointer",
-    "&:hover": {
-      fontWeight: "bold",
-      textDecoration: "underline",
-    },
-  },
+
   fileUploadSection: {
     minHeight: "50px",
     display: "flex",
@@ -161,6 +159,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Documents(props) {
   const classes = useStyles();
+  let history = useHistory();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
@@ -272,7 +271,6 @@ export default function Documents(props) {
   }, [files]);
 
   useEffect(() => {
-    console.log("VIEW FILE RESULT", viewFileResult?.viewFile);
     if (viewFileResult?.viewFile?.viewFile?.uri) {
       let a = document.createElement("a");
       a.href = viewFileResult?.viewFile.viewFile.uri;
@@ -358,6 +356,27 @@ export default function Documents(props) {
             style={{ fontSize: "2rem", color: "#D04424" }}
           />
         );
+        case "jpg"|| "jpeg"|| "png" || "bmp":
+          return (
+            <FontAwesomeIcon
+              icon={faFileImage}
+              style={{ fontSize: "2rem", color: "#4c6ef5" }}
+            />
+          );
+        case "zip":
+          return (
+            <FontAwesomeIcon
+              icon={faFileArchive}
+              style={{ fontSize: "2rem", color: "#15aabf" }}
+            />
+          );
+        case "shp":
+          return (
+            <FontAwesomeIcon
+              icon={faFileCode}
+              style={{ fontSize: "2rem", color: "#82c91e" }}
+            />
+          );
       default:
         // return <span>{fileExtension}</span>;
         return (
@@ -447,19 +466,7 @@ export default function Documents(props) {
               // }}
 
               onClick={() => {
-                props.handleOpenExpandableCard(
-                  <ViewDocuments
-                    contactId={props.id}
-                    user_id={props.user_id}
-                    activityLog={props.activityLog}
-                    openDeleteConfirmDialog={openDeleteConfirmDialog}
-                    handleClose={handleDeleteCancel}
-                    handleAccept={handleDeleteAccept}
-                    setOpenDeleteConfirmDialog={setOpenDeleteConfirmDialog}
-                    setFileIdToDelete={setFileIdToDelete}
-                  />,
-                  "Documents"
-                );
+                history.push(`/contact/details/${props.id}/documents`)
                 setStateApp({ ...stateApp, viewDoc: null })
               }}
             >
@@ -468,7 +475,19 @@ export default function Documents(props) {
           </Grid>
         </CardActions>
       )}
+
+          {!props.isTransactPage && (
+
+            <UploadZone
+              relatedObjectId={props.id}
+              userId={userId}
+              relatedObjectType={relatedObjectType} //Contact or Deal
+            />
+          )}
+
+
       <CardContent  >
+
         {props.isTransactPage && (
           <UploadZone
             relatedObjectId={props.id}
@@ -476,6 +495,7 @@ export default function Documents(props) {
             relatedObjectType={relatedObjectType} //Contact or Deal
           />
         )}
+
         {props.isTransactPage && (
           <div style={{ marginBottom: "20px" }}
           >
@@ -613,13 +633,7 @@ export default function Documents(props) {
               handleDeleteAccept();
             }}
           />
-          {!props.isTransactPage && (
-            <UploadZone
-              relatedObjectId={props.id}
-              userId={userId}
-              relatedObjectType={relatedObjectType} //Contact or Deal
-            />
-          )}
+
         </div>
       </CardContent>
     </div>

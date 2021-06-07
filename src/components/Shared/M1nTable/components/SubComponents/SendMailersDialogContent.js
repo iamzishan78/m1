@@ -25,7 +25,8 @@ import joinAddress from "../../../../Shared/valueformatters/join-address.js";
 
 const styles = (theme) => ({
 	root: {
-		margin: 0,
+		marginLeft: 20,
+		marginTop: 5,
 		padding: theme.spacing(2),
 	},
 	closeButton: {
@@ -40,7 +41,7 @@ const DialogTitle = withStyles(styles)((props) => {
 	const { children, classes, onClose, ...other } = props;
 	return (
 		<MuiDialogTitle disableTypography className={classes.root} {...other}>
-			<Typography variant="h4" style={{ fontWeight: 'bold' }}>
+			<Typography variant="h5" style={{ fontWeight: 'bold' }}>
 				{children}
 			</Typography>
 			{onClose ? (
@@ -111,7 +112,7 @@ export default function SendMailersDialogContent(props) {
 			<DialogContent>
 				<Grid container spacing={1}>
 					<Grid item xs={12}>
-						<h3 style={{ padding: 0, marginTop: '40px', marginBottom: 0 }}>
+						<h3 style={{ padding: 0, marginTop: '40px', marginBottom: 0, marginLeft: 15, }}>
 							Campaign Name
 						</h3>
 					</Grid>
@@ -119,7 +120,7 @@ export default function SendMailersDialogContent(props) {
 						<TextField
 							margin="none"
 							placeholder="Enter a campaign name"
-							style={{ width: '100%', marginBottom: '10px' }}
+							style={{ width: '100%', marginBottom: '10px',marginLeft: 15, }}
 							value={campaign}
 							onChange={(e) => {
 								setCampaign(e.target.value);
@@ -127,9 +128,9 @@ export default function SendMailersDialogContent(props) {
 						/>
 					</Grid>
 					<Grid item xs={12} style={{  marginTop: '40px' }}>
-						<h3 style={{ margin: '0' }}>Mailing List</h3>
+						<h3 style={{ margin: '0', marginLeft: 15,}}>Mailing List</h3>
 					</Grid>
-					<Grid item xs={12} style={{ margin: 0, paddingTop: 0 }}>
+					<Grid item xs={12} style={{ margin: 0, paddingTop: 0, marginLeft: 15, }}>
 						<FormLabel>
 							{props.rows && props.rows.length ? props.rows.length : ''}{' '}
 							selected

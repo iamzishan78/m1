@@ -6,9 +6,10 @@ import { useDispatch } from "react-redux";
 import { CircularProgress } from "@material-ui/core";
 import { showErrorMessage, showWarningMessage } from "../../actions";
 import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
+import { Container } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
-	dropzoneClass: {
+	dropzoneClassDocs: {
 		"&:hover": { backgroundColor: "#dddddd" },
 		"& .MuiDropzoneArea-text": {
 			fontSize: "0.83em",
@@ -17,8 +18,9 @@ const useStyles = makeStyles((theme) => ({
 			fontWeight: "bold",
 		},
 		"& .MuiDropzoneArea-icon": { display: "none" },
-		minHeight: "125px",
-		width: "100%",
+		// minHeight: "125px",
+		// width: "100%",
+		width: '465px',
 		padding: "10px 40px",
 		color: "#757575",
 		fontWeight: "normal",
@@ -27,8 +29,31 @@ const useStyles = makeStyles((theme) => ({
 		display: "flex",
 		alignItems: "center",
 		justifyContent: "center",
-		border: "2px dashed rgb(176, 176, 176)",
+		// border: "2px dashed rgb(176, 176, 176)",
+		border: "2px dashed #dddddd",
 		marginBottom: "30px",
+		marginLeft: "15px"
+	},
+	dropzoneClassCRM: {
+		"&:hover": { backgroundColor: "#dddddd" },
+		"& .MuiDropzoneArea-text": {
+			fontSize: "0.83em",
+			marginBlockStart: "1.67em",
+			marginBlockEnd: "1.67em",
+			fontWeight: "bold",
+		},
+		"& .MuiDropzoneArea-icon": { display: "none" },
+		color: "#757575",
+		fontWeight: "normal",
+		backgroundColor: "#eee",
+		textAlign: "center",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		border: "2px dashed #dddddd",
+		marginBottom: "30px",
+
+
 	},
 }));
 
@@ -104,8 +129,14 @@ export default function UploadZone(props) {
 
 	const classes = useStyles();
 
+	console.log('PROPS UPLOAD', props)
+
 	return (
 		<>
+
+		{/* <div style={{width: '100px', height: '100px'}}> */}
+
+		<Container>
 			<DropzoneAreaBase
 				onAdd={handleFileInput}
 				// onDelete={(fileObj) => console.log("Removed File:", fileObj)}
@@ -114,7 +145,7 @@ export default function UploadZone(props) {
 					console.log(`${variant}: ${message}`);
 				}}
 				filesLimit={1}
-				dropzoneText={"Drag a file here or click to select a file to upload"}
+				dropzoneText={"+"}
 				// acceptedFiles={[
 				// 	"image/*",
 				// 	"video/*",
@@ -161,11 +192,14 @@ export default function UploadZone(props) {
 
 				// ]}
 				maxFileSize={104857600}
-				dropzoneClass={classes.dropzoneClass}
+				dropzoneClass={classes.dropzoneClassCRM}
 				// getFileAddedMessage={(value) => {
 				// 	alert("File is been added", value);
 				// }}
 			></DropzoneAreaBase>
+			</Container>
+			{/* </div> */}
+
 			{addFileLoading && (
 				<div style={{ display: "flex", justifyContent: "center" }}>
 					<CircularProgress size="20px" />

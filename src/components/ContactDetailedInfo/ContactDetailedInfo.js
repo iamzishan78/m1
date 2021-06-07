@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import MelissaTable from "./components/MelissaTable";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import FieldContent from "../ContactDetailCard/components/FieldContent";
 import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
@@ -7,15 +6,9 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import { useHistory } from "react-router-dom";
 import {
-  MenuItem,
-  Checkbox,
-  Select,
-  InputLabel,
   Grid,
-  Button,
-  FormControl,
-  Typography,
   Box,
   FormControlLabel,
   FormGroup,
@@ -182,6 +175,7 @@ export default function DetailInfo(props) {
   const [basicInfExp, setBasicInfExp] = useState(false);
   const [showEmpty, setShowEmpty] = useState(true);
   const classes = useStyles();
+  let history = useHistory();
   const [loading, setLoading] = useState(false);
   const basicInfoContent = {
     // "Full Name": {
@@ -480,18 +474,7 @@ export default function DetailInfo(props) {
           <ToggleEmptyFieldButton />
           <h4
             className={classes.viewAll}
-            onClick={() => {
-              props.handleOpenExpandableCard(
-                <MelissaTable
-                  id={props.contactData._id}
-                  entity={props.contactData.entity}
-                  rows={{ ...basicInfoContent, ...basicInfoExpContent }}
-                  wrapperClass={classes.dataSect}
-                  melissaData={props.melissaData}
-                />,
-                "Detailed Information"
-              );
-            }}
+            onClick={() => { history.push(`/contact/details/${props.contactData._id}/detailedInformation`) }}
           >
             View All
         </h4>

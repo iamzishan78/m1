@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
 import WellIcon from "../../Shared/svgIcons/well";
-import ContactsWellInterestsParcelInterests from "./ContactsWellInterestsParcelInterests/ContactsWellInterestsParcelInterests";
+import { useHistory } from "react-router-dom";
 import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 import { AppContext } from "../../../AppContext";
@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function WellsCard(props) {
   const classes = useStyles();
+  let history = useHistory();
   const [interestTypes, setInterestTypes] = useState("");
   const [count, setCount] = useState("-");
   const [avgTaxValues, setAvgTaxValues] = useState(0);
@@ -72,13 +73,14 @@ export default function WellsCard(props) {
 
   return (
     <div className={classes.root} onClick={() => {
-      props.handleOpenExpandableCard(
-        <ContactsWellInterestsParcelInterests
-          activeTap={0}
-          contactData={props.contactData}
-        />,
-        "Associated Interests"
-      );
+      history.push(`/contact/details/${props.contactData._id}/wells`)
+    //   props.handleOpenExpandableCard(
+    //     <ContactsWellInterestsParcelInterests
+    //       activeTap={0}
+    //       contactData={props.contactData}
+    //     />,
+    //     "Associated Interests"
+    //   );
      }}
     >
      <AddWellInterestDialog

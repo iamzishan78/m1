@@ -75,7 +75,7 @@ export default function AddUserData(props) {
     setIsOpen(false);
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
-      selectedControl: null,
+      layerAddControl: null,
       fileUploadedContent: null,
     }));
     setNotReturn(false);

@@ -199,9 +199,10 @@ const useStyles = makeStyles((theme) => ({
   },
   originationDate: {
     paddingBottom: "12px",
+    paddingTop: "4px",
     fontSize: 12,
     letterSpacing: 2,
-    textAlign: 'right',
+    textAlign: 'center',
   },
   dialog: {
     zIndex: "9999999999 !important",
@@ -679,7 +680,7 @@ function AddDealDialog(props) {
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: false, // some genius level coding here.
-      addDealDialog: false, // not sure why different flags were used here
+      // addDealDialog: false, // not sure why different flags were used here
       activeDeal: { cardId: null, laneId: null },
       transactBarView: "",
       viewDoc: null,
@@ -1420,7 +1421,6 @@ function AddDealDialog(props) {
                 fullWidth
                 size="small"
               >
-                {console.log('TITLE', title)}
                 <TextField
                   margin="dense"
                   value={title}
@@ -1737,10 +1737,9 @@ function AddDealDialog(props) {
               />
 
               {originationDate && (
-                <div className={classes.originationDate}>Origination Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
+                <div className={classes.originationDate}>Deal Creation Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
               )}
               <div>
-                {/* AddDailogeUploadZone */}
                 <AddDialogeUploadZone
                   isTransactPage={true}
                   filesData={viewFileResult}

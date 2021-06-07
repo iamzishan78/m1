@@ -671,7 +671,7 @@ function MapGridCard(props) {
                   panels={[
 
                     <ShapeGridWellsTable
-                      parent="wells"
+                      parent="boundary_grid_wells"
                       header={<TabLabels
                         labels={[
                           `Wells (${stateApp.shapeGridWellsCount || 0})`,
@@ -685,7 +685,7 @@ function MapGridCard(props) {
                     />
                     ,
                     <ShapeGridTaxOwnersTable
-                      parent="gridOwners"
+                      parent="boundary_grid_owners"
                       header={<TabLabels
                         labels={[
                           `Wells (${stateApp.shapeGridWellsCount || 0})`,
@@ -721,7 +721,9 @@ function MapGridCard(props) {
         width: "100vw",
         height: "100vh",
         backgroundColor: "rgba(0, 0, 0, 0.5)",
-        zIndex: "1299",
+        // zIndex: "1299",
+        zIndex: "1199",
+
       }}
       onClick={() => {
         dispatch(setMapGridCardState({ mapGridCardActivated: true }));

@@ -98,9 +98,9 @@ export default function AddUserGroupData(props) {
     setIsOpen(false);
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
-      selectedControl: null,
+      layerAddControl: null,
       fileUploadedContent: null,
-      selectedControl: 'layer'
+      // selectedControl: 'layer'
     }));
     setNotReturn(false);
   };
@@ -113,9 +113,9 @@ export default function AddUserGroupData(props) {
     }));
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
-      selectedControl: null,
+      layerAddControl: null,
       fileUploadedContent: null,
-      selectedControl: 'layer',
+      // selectedControl: 'layer',
       addLayer: false,
     }));
     setNotReturn(false);

@@ -37,7 +37,7 @@ const ActivitiesCalendar = ({
   return (
     <div>
       <Calendar
-        drilldownView="week"
+        drilldownView="month"
         popup={true}
         localizer={localizer}
         events={events}

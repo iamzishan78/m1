@@ -52,7 +52,7 @@ function SuggestedOwnerTable(props) {
   // queries
   const [getPaginatedShapeOwners, { data: dataShapeOwners }] = useLazyQuery(
     SHAPE_OWNERS,
-    { fetchPolicy: "cache-and-network" }
+    { fetchPolicy: "cache-and-network", skip: true }
   );
   const [addOwnerToAParcel, { data: mutationData }] =
     useMutation(ADDOWNERTOAPARCEL);
@@ -64,7 +64,7 @@ function SuggestedOwnerTable(props) {
 
   const addAble = { type: "suggestedOwnerToParcel" };
   const total = false;
-  const orderByTracks = true;
+  const orderByTracks = false;
 
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
@@ -86,7 +86,7 @@ function SuggestedOwnerTable(props) {
 
   useEffect(() => {
     if (tableData?.edges?.length > 0) {
-      let owners = tableData.edges.map((el) => el.node);
+      let owners = tableData.edges.map((el) => ({ ...el.node, cursor: el.cursor }));
       owners = owners.map((o) => {
         let owner = { ...o };
         owner.isContact = false;

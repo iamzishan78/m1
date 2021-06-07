@@ -40,12 +40,12 @@ function ShapeGridTaxOwnersTable(props) {
     const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
     // queries 
-    const [getPaginatedShapeOwners, { data: dataShapeOwners }] = useLazyQuery(SHAPE_OWNERS, { fetchPolicy: "cache-and-network", });
+    const [getPaginatedShapeOwners, { data: dataShapeOwners }] = useLazyQuery(SHAPE_OWNERS, { fetchPolicy: "cache-and-network", skip: true });
     const tableData = dataShapeOwners?.paginatedShapeOwners
 
     const addAble = false
     const total = false
-    const orderByTracks = true
+    const orderByTracks = false
 
     ////////////Contact Wells begin///////////////////////////////////////////////
     useEffect(() => {
@@ -68,7 +68,7 @@ function ShapeGridTaxOwnersTable(props) {
 
     useEffect(() => {
         if (tableData?.edges?.length > 0) {
-            let owners = tableData.edges.map((el) => el.node)
+            let owners = tableData.edges.map((el) => ({ ...el.node, cursor: el.cursor }))
             owners = owners.map((o) => {
                 let owner = { ...o };
                 owner.isTracked = true;

@@ -104,7 +104,7 @@ function ExpandableCard(props) {
 
   const useStyles = makeStyles((theme) => ({
     root: {
-        zIndex: 88888,
+        // zIndex: 88888,
     },
 
     card: {
@@ -123,7 +123,7 @@ function ExpandableCard(props) {
       "& .MuiCardHeader-action": {
         alignSelf: "left",
       },
-      zIndex: 88888, // consistent with mapbox popup summary card for map interactions
+      zIndex: 1250, // https://material-ui.com/customization/z-index/
     },
     title: {
       fontFamily: "Poppins",
@@ -464,11 +464,13 @@ function ExpandableCard(props) {
                 />
               )}
 
+              {/* 
               {stateExpandableCard.expanded &&
                 targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
                 targetLabel !== "parcel" &&
                 targetLabel !== "expandedParcel" && (
+
                   <Tooltip title={"Report Bug"} placement="top">
                     <IconButton
                       size="medium"
@@ -478,7 +480,9 @@ function ExpandableCard(props) {
                       <BugsIcon viewBox="0 0 64 64" color="white" />
                     </IconButton>
                   </Tooltip>
-                )}
+
+                )} */}
+
 
               {stateExpandableCard.expanded &&
                 ["activity", "parcel", "expandedParcel"].includes(targetLabel) &&

@@ -214,7 +214,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 							? "-567px"
 							: "0px",
 					listStyleType: "none",
-					zIndex: "77777"
+					zIndex: "1240"
 				}}
 			>
 				<StyledMenu
