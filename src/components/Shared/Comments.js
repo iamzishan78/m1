@@ -37,7 +37,7 @@ const AntSwitch = withStyles((theme) => ({
     height: 16,
     padding: 0,
     display: "flex",
-    zIndex: 1300,
+    zIndex: 1200,
   },
   switchBase: {
     padding: 2,
