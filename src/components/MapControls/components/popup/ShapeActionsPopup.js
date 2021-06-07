@@ -398,7 +398,6 @@ const ShapeActionsPopup = (props) => {
 
     // Deleting Shape from map
     stateApp.draw.delete(stateApp.currentFeature.id);
-    // stateApp.draw.delete(stateApp.selectedFeature.id);
 
     // Popup Close Action
     popupCloseAction();
@@ -411,7 +410,6 @@ const ShapeActionsPopup = (props) => {
 
     // Deleting Shape from map
     stateApp.draw.delete(stateApp.currentFeature.id);
-    // stateApp.draw.delete(stateApp.selectedFeature.id);
 
     // Popup Close Action
     popupCloseAction();

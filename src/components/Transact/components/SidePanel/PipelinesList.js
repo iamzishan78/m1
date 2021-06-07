@@ -135,13 +135,23 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
     let itemsToUpdate = [];
     // Pipelines / Projects of same depth
     const itemIndex = items.findIndex(item => item.id === newItem.id);
-    const parent = findParent(items, itemIndex) || items[itemIndex - 1];
-    const parentIndex = items.findIndex(item => item.id === parent?.id);
+    let parent = findParent(items, itemIndex) || items[itemIndex - 1];
+    let parentIndex = items.findIndex(item => item.id === parent?.id);
     const successor = items[itemIndex + 1];
+    if (newItem.type === 'Project') {
+      let projectPassed = false;
+      items.forEach((item, index) => {
+        if (!projectPassed && item.type === 'Project' && item.projectId !== newItem.projectId) {
+          parent = item;
+          parentIndex = index
+        }
+        if (item.projectId === newItem.projectId) projectPassed = true;
+      })
+    }
     if (parent?.position && successor?.position && Math.abs(parent.position - successor.position) !== 1) {
       itemsToUpdate.push({ ...newItem, position: parent?.position + 1 });
     } else {
-      if (parent?.type === 'Project') {
+      if (parent?.type === 'Project' && newItem.type === 'Pipeline') {
         if (!oldItem.projectId) {
           items[itemIndex].projectId = parent.id;
           items[itemIndex].projectName = parent.projectName;

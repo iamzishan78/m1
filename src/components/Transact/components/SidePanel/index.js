@@ -146,29 +146,40 @@ const SidePanel = ({ }) => {
   });
 
   useEffect(() => {
-    const projectIncludedPipelines = [],
+    let projectIncludedPipelines = [],
       projects = {};
     pipelines.forEach((pipe, index) => {
-      if (pipe.projectName && !projects[pipe.projectName]) {
-        projects[pipe.projectName] = true;
+      if (pipe.projectId && !projects[pipe.projectId]) {
+        projects[pipe.projectId] = true;
         projectIncludedPipelines.push({
           projectName: pipe.projectName,
           projectId: pipe.projectId,
           type: "Project",
-          index,
+          index: pipe.projectId,
           depth: 0,
           id: pipe.projectId,
           collapsed: false,
+          position: pipe.projectPosition
+        });
+        const projectPipelines = pipelines.filter(p => p.projectId === pipe.projectId).map(p => ({
+          ...p,
+          id: p._id,
+          type: "Pipeline",
+          depth: 1,
+          index: p._id,
+          collapsed: false,
+        }));
+        projectIncludedPipelines = projectIncludedPipelines.concat(projectPipelines);
+      } else if (!pipe.projectId) {
+        projectIncludedPipelines.push({
+          ...pipe,
+          id: pipe._id,
+          type: "Pipeline",
+          depth: 0,
+          index: pipe._id,
+          collapsed: true,
         });
       }
-      projectIncludedPipelines.push({
-        ...pipe,
-        id: pipe._id,
-        type: "Pipeline",
-        depth: pipe.projectName ? 1 : 0,
-        index,
-        collapsed: !pipe.projectName,
-      });
     });
     setPipelines(projectIncludedPipelines);
   }, [pipelines]);
