@@ -1,9 +1,10 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import ParcelIcon from "../../Shared/svgIcons/ParcelIcon";
 import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
-import ContactsWellInterestsParcelInterests from "./ContactsWellInterestsParcelInterests/ContactsWellInterestsParcelInterests";
+import { useHistory } from "react-router-dom";
+
+import ParcelIcon from "../../Shared/svgIcons/ParcelIcon";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,26 +37,29 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ParcelsCard(props) {
   const classes = useStyles();
+  let history = useHistory();
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} onClick={() => {
+      history.push(`/contact/details/${props.contactData._id}/parcels`)
+    }}>
       <div>
         <h4 style={{ marginTop: "0", float: "left" }}>Parcels (0)</h4>
-        {/* <IconButton
+        <IconButton
           size="small"
           className={classes.addIcon}
           onClick={() => {
-            props.handleOpenExpandableCard(
-              <ContactsWellInterestsParcelInterests
-                activeTap={1}
-                contactData={props.contactData}
-              />,
-              "Associated Interests"
-            );
+            // props.handleOpenExpandableCard(
+            //   <ContactsWellInterestsParcelInterests
+            //     activeTap={1}
+            //     contactData={props.contactData}
+            //   />,
+            //   "Associated Interests"
+            // );
           }}
         >
           <AddIcon htmlColor="rgb(28 173 225 / 81%)" />
-        </IconButton> */}
+        </IconButton>
       </div>
       <div className={classes.cardContent}>
         <div className={classes.leftColumn}>
