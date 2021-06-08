@@ -42,9 +42,11 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
   useEffect(() => {
     if (!deepEqual(items, filteredPipelines)) {
       let updateFn = {};
-      items.forEach((item) => {
-        const index = filteredPipelines.findIndex(pipe => pipe.id === item.id);
-        if (index !== -1) {
+      filteredPipelines.forEach((item, index) => {
+        const i = items.findIndex(pipe => pipe.id === item.id);
+        if (i !== -1) {
+          updateFn[index] = { collapsed: { $set: items[i].collapsed } }
+        } else {
           updateFn[index] = { collapsed: { $set: item.collapsed } }
         }
       });

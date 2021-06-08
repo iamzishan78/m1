@@ -20,9 +20,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { UPDATE_PIPELINES_POSITIONS } from "graphQL/useMutationUpdatePipelinesPositions";
 import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
 import { DUPLICATE_PIPELINES } from "graphQL/useMutationDuplicatePipelines";
-import { UPDATE_PIPELINE_DESCRIPTORS, CREATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
+import { CREATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
 import { setFlowState, showWarningMessage } from "actions";
-// import PipelinePopup from "components/Transact/components/PipelinePopup";
 import PipelinesList from "components/Transact/components/SidePanel/PipelinesList";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { DEALSCOUNTINAPIPE } from "graphQL/useQueryNonDeletedDealsCountInAPipeline";
@@ -140,7 +139,6 @@ const SidePanel = ({ }) => {
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES);
   const [updatePipelinesPositions] = useMutation(UPDATE_PIPELINES_POSITIONS);
-  const [updatePipelineDescriptors] = useMutation(UPDATE_PIPELINE_DESCRIPTORS);
   const [createPipelineDescriptors] = useMutation(CREATE_PIPELINE_DESCRIPTORS);
   const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
     fetchPolicy: "network-only",
@@ -171,7 +169,7 @@ const SidePanel = ({ }) => {
           index: pipe.projectId,
           depth: 0,
           id: pipe.projectId,
-          collapsed: false,
+          collapsed: true,
           position: pipe.position,
         });
         const projectPipelines = pipelines
@@ -182,7 +180,7 @@ const SidePanel = ({ }) => {
             type: "Pipeline",
             depth: 1,
             index: p._id,
-            collapsed: false,
+            collapsed: true,
           }));
         projectIncludedPipelines = projectIncludedPipelines.concat(projectPipelines);
       } else if (!pipe.projectId) {
@@ -270,16 +268,16 @@ const SidePanel = ({ }) => {
         });
         break;
       case "Duplicate":
+        const pipelinesToDuplicate = selectedPipelines.map((pipe) => ({
+          _id: pipe,
+          name: filteredPipelines.find((p) => p._id === pipe).name,
+        }));
         duplicatePipelines({
           variables: {
-            pipelines: selectedPipelines.map((pipe) => ({
-              _id: pipe,
-              name: pipelines.find((p) => p._id === pipe).name,
-            })),
+            pipelines: pipelinesToDuplicate,
             userId: stateApp.user.mongoId,
           },
           refetchQueries: ["getPipelines"],
-          awaitRefetchQueries: true,
         });
         break;
       default:
