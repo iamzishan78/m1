@@ -50,7 +50,6 @@ const useStyles = makeStyles((theme) => ({
     padding: "0px 16px",
     color: "#fff",
     borderBottom: "1px solid rgba(84, 83, 83, 0.85)",
-    // maxHeight: "8%",
   },
   toolbarHeader: {
     display: "flow-root",
@@ -146,9 +145,21 @@ const SidePanel = ({ }) => {
   });
 
   useEffect(() => {
+    setPipelines(mapFLowlinesToProject(pipelines));
+  }, [pipelines]);
+
+  useEffect(() => {
+    if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
+      if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
+        dispatch(showWarningMessage("There are deals associated to the pipelines, please remove them first."));
+      else setModal(true);
+    }
+  }, [dataDealsCountByPipeline]);
+
+  const mapFLowlinesToProject = (pipelines) => {
     let projectIncludedPipelines = [],
       projects = {};
-    pipelines.forEach((pipe, index) => {
+    pipelines.forEach(pipe => {
       if (pipe.projectId && !projects[pipe.projectId]) {
         projects[pipe.projectId] = true;
         projectIncludedPipelines.push({
@@ -159,7 +170,7 @@ const SidePanel = ({ }) => {
           depth: 0,
           id: pipe.projectId,
           collapsed: false,
-          position: pipe.projectPosition
+          position: pipe.position
         });
         const projectPipelines = pipelines.filter(p => p.projectId === pipe.projectId).map(p => ({
           ...p,
@@ -181,16 +192,8 @@ const SidePanel = ({ }) => {
         });
       }
     });
-    setPipelines(projectIncludedPipelines);
-  }, [pipelines]);
-
-  useEffect(() => {
-    if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
-      if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
-        dispatch(showWarningMessage("There are deals associated to the pipelines, please remove them first."));
-      else setModal(true);
-    }
-  }, [dataDealsCountByPipeline]);
+    return projectIncludedPipelines;
+  }
 
   const flowlineActions = React.useMemo(
     () => [
@@ -216,7 +219,7 @@ const SidePanel = ({ }) => {
 
   const filterSearch = (value) => {
     const newPipelines = pipelines.filter((pipeline) => pipeline.name?.toLowerCase()?.includes(value.toLowerCase()));
-    setPipelines(newPipelines);
+    setPipelines(mapFLowlinesToProject(newPipelines));
   };
 
   const handleAction = (action) => {
@@ -347,7 +350,6 @@ const SidePanel = ({ }) => {
             <PipelinesList
               selectedPipe={selectedPipe}
               filteredPipelines={filteredPipelines}
-              setPipelines={setPipelines}
               selectedPipelines={selectedPipelines}
               setMultiSelection={setMultiSelection}
               userId={stateApp.user.mongoId}

@@ -4,6 +4,7 @@ import { List } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useMutation } from "@apollo/client";
 import { Flipper } from "react-flip-toolkit";
+import { deepEqual } from "components/Shared/functions";
 import update from "immutability-helper";
 import Sortly, { findDescendants, findParent } from "react-sortly";
 import PipelineProject from "./PipelineProject";
@@ -39,7 +40,16 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
   const [updatePipelinesPositions] = useMutation(UPDATE_PIPELINES_POSITIONS);
 
   useEffect(() => {
-    setItems(filteredPipelines);
+    if (!deepEqual(items, filteredPipelines)) {
+      let updateFn = {};
+      items.forEach((item) => {
+        const index = filteredPipelines.findIndex(pipe => pipe.id === item.id);
+        if (index !== -1) {
+          updateFn[index] = { collapsed: { $set: item.collapsed } }
+        }
+      });
+      setItems(update(filteredPipelines, updateFn));
+    }
   }, [filteredPipelines]);
 
   useEffect(() => {
@@ -107,8 +117,8 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
         newItems[index].projectName = parent.name;
         newItems[index].projectId = parent._id;
       } else if (parent.type === 'Project' && parent.id !== newItems[index].parentId) {
-        newItems[index].projectName = parent.name;
-        newItems[index].projectId = parent._id;
+        newItems[index].projectName = parent.projectName;
+        newItems[index].projectId = parent.projectId;
       }
     } else {
       if (newItems[index].projectId && newItems[index].type === 'Pipeline') {
@@ -127,56 +137,63 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
   };
 
   const revert = () => {
-    // setItems(itemsRef.current);
+    setItems(itemsRef.current);
   };
 
   const handleDragEnd = (oldItem, newItem) => {
-    console.log("in drag end");
     let itemsToUpdate = [];
-    // Pipelines / Projects of same depth
     const itemIndex = items.findIndex(item => item.id === newItem.id);
     let parent = findParent(items, itemIndex) || items[itemIndex - 1];
     let parentIndex = items.findIndex(item => item.id === parent?.id);
-    const successor = items[itemIndex + 1];
-    if (newItem.type === 'Project') {
-      let projectPassed = false;
-      items.forEach((item, index) => {
-        if (!projectPassed && item.type === 'Project' && item.projectId !== newItem.projectId) {
+    let isPassed = false;
+    items.forEach((item, index) => {
+      if (item.id === newItem.id) isPassed = true;
+      if (!isPassed) {
+        if (newItem.depth === 0 && (item.type === 'Project' || (item.type === 'Pipeline' && !item.projectId))) {
           parent = item;
-          parentIndex = index
-        }
-        if (item.projectId === newItem.projectId) projectPassed = true;
-      })
-    }
-    if (parent?.position && successor?.position && Math.abs(parent.position - successor.position) !== 1) {
-      itemsToUpdate.push({ ...newItem, position: parent?.position + 1 });
-    } else {
-      if (parent?.type === 'Project' && newItem.type === 'Pipeline') {
-        if (!oldItem.projectId) {
-          items[itemIndex].projectId = parent.id;
-          items[itemIndex].projectName = parent.projectName;
-          items[itemIndex].switchType = 'addDescriptor';
-        } else if (oldItem.projectId !== null && oldItem.projectId !== newItem.projectId) {
-          items[itemIndex].projectId = parent.id;
-          items[itemIndex].projectName = parent.projectName;
-          items[itemIndex].switchType = 'updateDescriptor';
-        }
-        const descendants = findDescendants(items, parentIndex);
-        itemsToUpdate = descendants.map((d, index) => ({ ...d, position: index }));
-      } else {
-        if (oldItem.projectId && !newItem.projectId) {
-          items[itemIndex].switchType = 'deleteDescriptor';
-        }
-        let lastPosition;
-        for (let i = itemIndex; i < items.length; i += 1) {
-          if ((!items[i].projectId || items[i].type === 'Project')) {
-            lastPosition = lastPosition ? lastPosition + 1 : parent?.position + 1 || i;
-            itemsToUpdate.push({ ...items[i], position: lastPosition });
-          }
+          parentIndex = index;
         }
       }
-    }
+    })
 
+    function getSuccessorItems(type) {
+      let newItems = [];
+      switch (type) {
+        case 'ALL':
+          const initialIndex = itemIndex;
+          let newPosition = parent?.position || itemIndex - 1;
+          for (let i = initialIndex; i < items.length; i = i + 1) {
+            if (items[i].depth === 0) {
+              newPosition += 1;
+              newItems.push({ ...items[i], position: newPosition });
+            }
+          }
+          return newItems;
+        case 'PROJECT_CHILDS':
+          const descendants = findDescendants(items, parentIndex);
+          newItems = descendants.map((d, index) => ({ ...d, position: index }));
+          return newItems;
+        default:
+      }
+    }
+    // we have parent and we have current item
+    if (newItem.depth === 0) {
+      itemsToUpdate = getSuccessorItems('ALL');
+      if (oldItem.depth === 1) {
+        itemsToUpdate[0].switchType = 'deleteDescriptor';
+      }
+    } else if (newItem.depth === 1) {
+      if (newItem.type === 'Project') revert();
+      itemsToUpdate = getSuccessorItems('PROJECT_CHILDS');
+      const itemIndex = itemsToUpdate.findIndex(i => i.id === newItem.id);
+      if (oldItem.depth === 0) {
+        itemsToUpdate[itemIndex].switchType = 'addDescriptor';
+      } else if (oldItem.depth === newItem.depth && oldItem.projectId !== newItem.projectId) {
+        itemsToUpdate[itemIndex].projectId = parent.id;
+        itemsToUpdate[itemIndex].projectName = parent.projectName;
+        itemsToUpdate[itemIndex].switchType = 'updateDescriptor';
+      }
+    }
     // Implement the api for position update
     updatePipelinesPositions({
       variables: {
