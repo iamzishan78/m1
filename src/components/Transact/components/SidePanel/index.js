@@ -17,6 +17,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircleOutline";
 import { makeStyles } from "@material-ui/core/styles";
+import { UPDATE_PIPELINES_POSITIONS } from "graphQL/useMutationUpdatePipelinesPositions";
 import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
 import { DUPLICATE_PIPELINES } from "graphQL/useMutationDuplicatePipelines";
 import { UPDATE_PIPELINE_DESCRIPTORS, CREATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
@@ -138,6 +139,7 @@ const SidePanel = ({ }) => {
   const [stateApp] = useContext(AppContext);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES);
+  const [updatePipelinesPositions] = useMutation(UPDATE_PIPELINES_POSITIONS);
   const [updatePipelineDescriptors] = useMutation(UPDATE_PIPELINE_DESCRIPTORS);
   const [createPipelineDescriptors] = useMutation(CREATE_PIPELINE_DESCRIPTORS);
   const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
@@ -159,7 +161,7 @@ const SidePanel = ({ }) => {
   const mapFLowlinesToProject = (pipelines) => {
     let projectIncludedPipelines = [],
       projects = {};
-    pipelines.forEach(pipe => {
+    pipelines.forEach((pipe) => {
       if (pipe.projectId && !projects[pipe.projectId]) {
         projects[pipe.projectId] = true;
         projectIncludedPipelines.push({
@@ -170,16 +172,18 @@ const SidePanel = ({ }) => {
           depth: 0,
           id: pipe.projectId,
           collapsed: false,
-          position: pipe.position
+          position: pipe.position,
         });
-        const projectPipelines = pipelines.filter(p => p.projectId === pipe.projectId).map(p => ({
-          ...p,
-          id: p._id,
-          type: "Pipeline",
-          depth: 1,
-          index: p._id,
-          collapsed: false,
-        }));
+        const projectPipelines = pipelines
+          .filter((p) => p.projectId === pipe.projectId)
+          .map((p) => ({
+            ...p,
+            id: p._id,
+            type: "Pipeline",
+            depth: 1,
+            index: p._id,
+            collapsed: false,
+          }));
         projectIncludedPipelines = projectIncludedPipelines.concat(projectPipelines);
       } else if (!pipe.projectId) {
         projectIncludedPipelines.push({
@@ -193,7 +197,7 @@ const SidePanel = ({ }) => {
       }
     });
     return projectIncludedPipelines;
-  }
+  };
 
   const flowlineActions = React.useMemo(
     () => [
@@ -241,15 +245,21 @@ const SidePanel = ({ }) => {
         });
         break;
       case "Remove Pipeline From Group":
-        const descriptors = filteredPipelines
-          .filter((pipe) => selectedPipelines.includes(pipe._id) && pipe.projectId)
-          .map((pipe) => ({ descriptorObject: pipe._id, relatedObject: pipe.projectId, isDeleted: true }));
-        updatePipelineDescriptors({
+        let pipelines = [];
+        pipelines = filteredPipelines
+          .filter((pipe) => selectedPipelines.includes(pipe._id))
+          .map((pipe, index) => ({ ...pipe, position: index, switchType: "deleteDescriptor" }));
+        pipelines = pipelines.concat(
+          filteredPipelines
+            .filter((pipe) => !selectedPipelines.includes(pipe._id) && pipe.depth === 0)
+            .map((pipe, index) => ({ ...pipe, position: index + pipelines.length }))
+        );
+        updatePipelinesPositions({
           variables: {
-            descriptors,
+            data: pipelines,
+            userId: stateApp.user.mongoId,
           },
           refetchQueries: ["getPipelines"],
-          awaitRefetchQueries: true,
         });
         break;
       case "Delete Flowline(s)":
