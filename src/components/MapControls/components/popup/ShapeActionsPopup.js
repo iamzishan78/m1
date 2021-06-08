@@ -239,11 +239,16 @@ const ShapeActionsPopup = (props) => {
     let feature = props.selectedFeature;
     let polygonString = getSelectedFeaturePolygonString();
 
+    console.log('polygonString:', polygonString, feature)
     getAbstractGeoContains({
       variables: {
         polygon: polygonString,
       },
     });
+    setStateApp((state) => ({
+      ...state,
+      shapeActionsFilterSelected: true,
+    }));
 
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -251,10 +256,6 @@ const ShapeActionsPopup = (props) => {
       filterDrawing: ["within", feature],
     }));
 
-    setStateApp((state) => ({
-      ...state,
-      shapeActionsFilterSelected: true,
-    }));
     //Changing shape to Blue
     stateApp.draw.changeMode("simple_select");
   };
@@ -482,20 +483,24 @@ const ShapeActionsPopup = (props) => {
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Delete Active Shape" className={!stateApp.currentFeature.properties.shapeLabel ? classes.disableAction : ""}>
-            <IconButton
-              size="small"
-              aria-label="Delete Active Shape"
-              onClick={() => {
+          {
+            stateApp.currentFeature.properties.shapeLabel &&
+            <Tooltip title="Delete Active Shape" className={!stateApp.currentFeature.properties.shapeLabel ? classes.disableAction : ""}>
+              <IconButton
+                size="small"
+                aria-label="Delete Active Shape"
+                onClick={() => {
 
-                if (!!stateApp.currentFeature.properties.shapeLabel) {
-                  handleDeleteAoiModal();
-                }
-              }}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+                  if (!!stateApp.currentFeature.properties.shapeLabel) {
+                    handleDeleteAoiModal();
+                  }
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          }
+
           {selectedAction === 'edit' && (
             <span className={classes.multiSelectCheck}>
               <Tooltip title="Confirm Editing">
