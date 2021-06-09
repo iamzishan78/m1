@@ -138,6 +138,7 @@ const PipelineProject = (props) => {
                         onUpdateProjectNameHandler(e.target.value);
                       }
                     }}
+                    onClick={event => event.stopPropagation()}
                     onBlur={() => setEdit({ able: false, mode: false })}
                   />
                 )}
