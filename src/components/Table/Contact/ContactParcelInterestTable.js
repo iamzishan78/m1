@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { useHistory } from "react-router-dom";
 
 // context
 import { AppContext } from "AppContext";
@@ -11,17 +12,15 @@ import TableHOC from "components/Table/TableHOC";
 // QUERIES 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
-import { PAGINATED_CONTACT_WELLINTERESTS_QUERY } from "graphQL/useQueryPaginatedContactWellInterests";
+import { CONTACT_PARCEL_INTERESTS } from "graphQL/useQueryContactParcelInterest";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 import AddWellInterestDialog from "components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 
 // Header Schemas 
-import TableHeader from 'components/Shared/constants/contactperwell-header-schema.js'
+import TableHeader from 'components/Shared/constants/associate-contact-parcel-header-schema.js'
 import { handleTagColumn } from "../helpers";
 
-// Utilities
-import isEmpty from "lodash/isEmpty";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -31,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 
 function ContactParcelInterestTable(props) {
   const classes = useStyles();
-
+  let history = useHistory();
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
 
@@ -42,29 +41,28 @@ function ContactParcelInterestTable(props) {
   const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
   // queries 
-  const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY, { fetchPolicy: "cache-and-network", skip: true });
-  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: [ "getContactWells", "getPaginatedContactWellInterests" ], awaitRefetchQueries: true });
-  const tableData = dataContactWells?.paginatedContactWellInterests
+  const [getContactParcelInterests, { data: dataContactParcels }] = useLazyQuery(CONTACT_PARCEL_INTERESTS, { fetchPolicy: "cache-and-network", skip: true });
+  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: [ "getContactWells", "getContactParcelInterests" ], awaitRefetchQueries: true });
+  const tableData = dataContactParcels?.contactParcelInterest
 
-  const addAble = { type: "wellInterest" }
+  const addAble = { type: "parcelInterest" }
   const total = false
   const orderByTracks = false
 
-  ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "assocTaxRollInterests") {
-      getPaginatedContactWellInterests({
+      getContactParcelInterests({
         variables: {
           contactId: props.contactId,
           filters: [{ field: 'contact._id', value: props.contactId }]
         },
       });
     }
-  }, [props.parent]);
+  }, [getContactParcelInterests, props.contactId, props.parent]);
 
   useEffect(() => {
-    if (tableData?.edges?.length > 0) {
-      let wells = tableData.edges.map((el) => el.node)
+    if (tableData?.length > 0) {
+      let wells = tableData
       const objectsIdsArray = wells.map((well) => well.wellId);
       props.initializeGenericData(objectsIdsArray, ['comments', 'tags'])
     }
@@ -72,12 +70,20 @@ function ContactParcelInterestTable(props) {
   }, [tableData])
 
   useEffect(() => {
-    if (dataContactWells?.paginatedContactWellInterests?.edges?.length > 0) {
-      let wells = dataContactWells.paginatedContactWellInterests.edges.map((el) => ({ ...el.node, cursor: el.cursor }))
+    if (dataContactParcels?.contactParcelInterest?.length > 0) {
+      let wells = dataContactParcels.contactParcelInterest
 
       wells = wells.map((w) => {
-        let well = { ...w };
-
+        let well = { ...w }; 
+        const parcel = JSON.parse(well.parcel.shape).properties
+        well.parcelName = well.parcel.name
+        well.state = parcel.originalProperties[0].State
+        well.country = parcel.originalProperties[0].County
+        well.survey = parcel.originalProperties[0].Survey
+        well.block = parcel.originalProperties[0].Block
+        well.section = parcel.originalProperties[0].Section
+        well.abstract = parcel.originalProperties[0].AbstractName
+        well.grantee = parcel.originalProperties[0].Grantee
         well.detailCard = well.wellId;
         well.isTracked = false;
         well.commentsCounter = 0;
@@ -98,89 +104,7 @@ function ContactParcelInterestTable(props) {
     }
   }, [tableData, props.dependencyUpdate]);
 
-  ////////////Contact Wells end///////////////////////////////////////////////
-
-
-  const onTableChange = (action, tableState, rows, meta) => {
-
-    const pageVariables = {
-      variables: {
-        pagination: {
-          first: tableState.rowsPerPage,
-          after: null,
-        },
-        ...(!isEmpty(tableState.sortOrder)) && {
-          sort:
-          {
-            field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.dbName ||
-              tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
-            order:
-              tableState.sortOrder?.direction === "asc"
-                ? 1
-                : -1,
-          }
-        },
-
-        filters: {
-          field: "contact._id",
-          value: props.contactId,
-        },
-      },
-    };
-
-    switch (action) {
-      case "changeRowsPerPage":
-        props.setLoading(true);
-        tableState.page = 0;
-        meta.setPageInd(tableState.page);
-        meta.setRowsPerPage(tableState.rowsPerPage);
-        getPaginatedContactWellInterests(
-          pageVariables
-        );
-        break;
-      case "changePage":
-        props.setLoading(true);
-        getPaginatedContactWellInterests({
-          ...pageVariables,
-          variables: {
-            ...pageVariables.variables,
-            pagination: {
-              ...pageVariables.variables.pagination,
-              before:
-                props.rows && tableState.page < meta.pageInd
-                  ? props.rows[0]?.cursor
-                  : null,
-              after:
-                props.rows && tableState.page > meta.pageInd
-                  ? props.rows[props.rows.length - 1]?.cursor
-                  : null,
-            },
-          },
-        });
-        break;
-      case "sort":
-        props.setLoading(true);
-        tableState.page = 0;
-        meta.setPageInd(tableState.page);
-        getPaginatedContactWellInterests(
-          pageVariables
-        );
-        break;
-      case "search":
-        break;
-      case "onSearchClose":
-        break;
-      case "propsUpdate":
-        break;
-      case "filterChange":
-        break;
-      case "resetFilters":
-        break;
-      default:
-    }
-  }
-
-  const count = dataContactWells?.paginatedContactWellInterests?.totalCount || 0
+  const count = dataContactParcels?.paginatedContactWellInterests?.totalCount || 0
   const options = {
     rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
     count: count,
@@ -202,11 +126,15 @@ function ContactParcelInterestTable(props) {
         },
         refetchQueries: [
           "getContactWells",
-          "getPaginatedContactWellInterests"
+          "getContactParcelInterests"
         ],
         awaitRefetchQueries: true,
       });
     }
+  }
+
+  const showParcelDetails = (parcel) => {
+    history.push(`/contact/details/${props.contactId}/parcels/${parcel.descriptorObject}`)
   }
   
   return (
@@ -241,11 +169,11 @@ function ContactParcelInterestTable(props) {
         targetLabel={props.targetLabel}
         deleteFunc={deleteFunc}
         uploadIcon={null}
+        showParcelDetails={showParcelDetails}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={orderByTracks}
         startPaginationAt={null}
         contactId={props.contactId}
-        onTableChange={onTableChange}
         options={options}
         parent={props.parent}
         setColumnsBase={[]}

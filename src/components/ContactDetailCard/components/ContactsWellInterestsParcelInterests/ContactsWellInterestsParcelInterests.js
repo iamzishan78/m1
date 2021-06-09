@@ -18,7 +18,7 @@ function ContactsWellInterestsParcelInterests(props) {
 
   const Header = () => (
     <TabButtons
-      labels={["Well Interests", "Suggested Ownership"]}
+      labels={["Well Interests", "Parcel Interests"]}
       value={selectedTab}
       setValue={(n) => {
         setSelectedTab(n);
@@ -33,7 +33,7 @@ function ContactsWellInterestsParcelInterests(props) {
 
       <div style={{ position: "relative" }}>
         <TabPanels
-          value={0}
+          value={selectedTab}
           panels={[
             <ContactWellInterestTable
               parent="assocTaxRollInterests"
