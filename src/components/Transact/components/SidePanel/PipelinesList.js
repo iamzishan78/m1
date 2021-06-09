@@ -42,7 +42,7 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
   useEffect(() => {
     document.addEventListener("keydown", (event) => {
       if (event.keyCode === 27) {
-        // Deselecting all flowwlines
+        // Deselecting all flowwlines on ESC
         setMultiSelection([selectedPipe._id]);
       }
     });
