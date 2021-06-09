@@ -102,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
 		width: "100px !important",
 		height: "100px !important",
 		backgroundColor: "transparent !important",
-		border: "1px solid #999",
+		// border: "1px solid #999",
 		borderRadius: "10px !important",
 	  },
 	forImageContainer: {
@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
 		height: "100px !important",
 		borderRadius: "10px !important",
 		backgroundColor: "#eeeeee !important",
-		border: "1px solid #999",
+		// border: "1px solid #999",
 		textAlign: "center",
 		fontSize: "1.5rem",
 		fontWeight: "bold",
@@ -383,9 +383,12 @@ export default function ViewDocuments(props) {
 							>
 
 								<div
-									// className={`${classes.greySquare} ${doc.fileState !== "active"
+									// className={`${classes.greySquare} 
+									
+									// ${doc.fileState !== "active"
 									// 		? classes.disabledDownload
 									// 		: ""
+
 									// 	}`}
 
 									// onClick={() => {
@@ -418,7 +421,7 @@ export default function ViewDocuments(props) {
 
 
 									{new RegExp(
-										["jpg", "jpeg", "png", "PNG", "bmp"].join("|")
+										["jpg", "jpeg", "png", "bmp"].join("|")
 									).test(ExtenstionGetter(doc.fileName)) ? (
 										<img
 											src={doc.fileUrl}
@@ -430,10 +433,8 @@ export default function ViewDocuments(props) {
 										
 											onClick={() => {
 
-											if (doc.state !== "active") return;
-
 											if (ExtenstionGetter(doc.fileName) === 'pdf') {
-												setStateApp({ ...stateApp, viewDoc: { uri: doc.uri, name: doc.fileName } })
+												setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
 											}
 											else {
 												handleViewFile(doc.fileId)
@@ -448,13 +449,16 @@ export default function ViewDocuments(props) {
 
 								<div className={classes.fileText.concat(' DocumentTitle')} style={{ cursor: 'pointer' }}
 									onClick={() => {
-										viewFileResultt?.viewFiles.map((value) => {
-											if (value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf') { setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: doc.fileName, } }) }
-											else {
-												handleViewFile(doc.fileId)
-											}
-										})
+
+										if (ExtenstionGetter(doc.fileName) === 'pdf') {
+											setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
+										}
+										else {
+											handleViewFile(doc.fileId)
+										}
+
 									}}>
+
 									<h4 className={classes.uploadTitle}>{doc.fileName}</h4>
 									{/* <h5 className={classes.uploadSubtext}>{doc.userName}</h5> */}
 									<h5 className={classes.uploadSubtext}>

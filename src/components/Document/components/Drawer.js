@@ -110,7 +110,7 @@ const useStyles = makeStyles({
     width: "100px !important",
     height: "100px !important",
     backgroundColor: "transparent !important",
-    border: "1px solid #999",
+    // border: "1px solid #999",
     borderRadius: "10px !important",
   },
   forImageContainer: {
@@ -118,7 +118,7 @@ const useStyles = makeStyles({
     height: "100px !important",
     borderRadius: "10px !important",
     backgroundColor: "#eeeeee !important",
-    border: "1px solid #999",
+    // border: "1px solid #999",
     textAlign: "center",
     fontSize: "1.5rem",
     fontWeight: "bold",
