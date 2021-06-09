@@ -138,7 +138,7 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
 
   const handleChange = (newItems) => {
     const index = newItems.findIndex((item) => item.id === currentItem.current.id);
-    if (newItems[index].depth === 1) {
+    if (newItems[index].depth === 1 && newItems[index].type === 'Pipeline') {
       const parent = findParent(newItems, index);
       if (parent.type !== "Project") {
         newItems[index].depth = 0;
@@ -152,6 +152,7 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
       if (newItems[index].projectId && newItems[index].type === 'Pipeline') {
         newItems[index].projectName = null;
         newItems[index].projectId = null;
+        newItems[index].depth = 1;
       }
     }
     currentItem.current = newItems[index];
