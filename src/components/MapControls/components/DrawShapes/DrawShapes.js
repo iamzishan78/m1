@@ -45,6 +45,7 @@ import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import { NavigationContext } from "../../../Navigation/NavigationContext";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "actions";
+import { clearMapAndCloseShapeActionsPopup } from "components/MapControls/commonHelper";
 
 // const localStyles = makeStyles((theme) => ({
 //   label: {
@@ -307,30 +308,8 @@ export default function DrawShapes() {
     setStateApp((state) => ({ ...state, editDraw: !!stateApp.currentFeature }));
   }, [setStateApp, stateApp.currentFeature]);
 
-  const clearMapAndCloseShapeActionsPopup = () => {
-    const { draw, map, currentFeature } = stateApp;
-    draw.delete(currentFeature?.id);
-    setStateApp((state) => ({
-      ...state,
-      editDraw: false,
-      currentFeature: undefined,
-      isAbstractedLayersPolygon: false,
-      multiSelectLandGrids: false,
-      selectedAbstracts: [],
-      showShapeActionsPopup: false,
-      showDrawShapesPopup: false,
-    }));
-
-    // unselecting the grids
-    const featuresList = map.getSource("abstract_geo_source")._data.features;
-    for (let i = 0; i < featuresList.length; i++) {
-      const id = featuresList[i].properties.Id;
-      map.setFeatureState({ source: "abstract_geo_source", id: id }, { click: false });
-    }
-  };
-
   const actionClose = () => {
-    clearMapAndCloseShapeActionsPopup();
+    clearMapAndCloseShapeActionsPopup(stateApp, setStateApp)
 
     // Removing layer of AOI Label
     if (stateApp.map.getLayer("aoi_label_layer")) {
