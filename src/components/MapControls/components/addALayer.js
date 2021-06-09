@@ -276,6 +276,8 @@ export default function AddLayer(props) {
                 merged.groupName = fileName.replace('.zip', '')
                 resolve(merged)
               }
+              geojson.fileNames = [geojson.fileName]
+              geojson.groupName = fileName.replace('.zip', '')
               resolve(geojson);
             });
           });
