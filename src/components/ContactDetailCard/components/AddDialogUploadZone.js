@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100px !important",
     height: "100px !important",
     backgroundColor: "transparent !important",
-    border: "1px solid #999",
+    // border: "1px solid #999",
     borderRadius: "10px !important",
   },
   forImageContainer: {
@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100px !important",
     borderRadius: "10px !important",
     backgroundColor: "#eeeeee !important",
-    border: "1px solid #999",
+    // border: "1px solid #999",
     textAlign: "center",
     fontSize: "1.5rem",
     fontWeight: "bold",
@@ -481,10 +481,7 @@ export default function Documents(props) {
                           <div className={classes.forImageContainer} 
                           
                             onClick={() => {
-                            // if(fileExtension === 'pdf')
-                            // {
-                            //   setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name, downloadFn:handleViewFile, downloadData: files?.getFileDescriptors[key].fileId}})
-                            // }
+
                             if (fileExtension === 'pdf') {
                               setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } })
                             }
@@ -494,7 +491,7 @@ export default function Documents(props) {
                               )
                             }
                           }}>
-                            {/* {fileExtension} */}
+
                             {getFileIcon(fileExtension)}
                           </div>
                         )}

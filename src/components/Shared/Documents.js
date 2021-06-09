@@ -131,7 +131,28 @@ const useStyles = makeStyles((theme) => ({
   fileDropError: {
     color: "red",
   },
-
+  forImage: {
+    width: "80px !important",
+    height: "80px !important",
+    backgroundColor: "transparent !important",
+    // border: "1px solid #999",
+    borderRadius: "10px !important",
+  },
+  forImageContainer: {
+    // width: "100px !important",
+    // height: "100px !important",
+    // borderRadius: "10px !important",
+    // backgroundColor: "#eeeeee !important",
+    // border: "1px solid #999",
+    // textAlign: "center",
+    // fontSize: "1.5rem",
+    // fontWeight: "bold",
+    // color: "#555",
+    // textTransform: "uppercase",
+    // paddingTop: "30px",
+    // cursor: "pointer",
+    // marginBottom: "5px",
+  },
   greySquare: {
     cursor: "pointer",
     borderRadius: "12px",
@@ -141,7 +162,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "30px",
     height: "80px",
     width: "80px",
-    backgroundColor: "#cecece",
+    backgroundColor: "#eeeeee",
     marginRight: "10px",
 
     "& svg": {
@@ -533,24 +554,26 @@ export default function Documents(props) {
                   <div className={classes.flexIcon}>
                     {
                       <div
-                        className={`${classes.greySquare} ${file.state !== "active"
-                          ? classes.disabledDownload
-                          : ""
-                          }`}
+                        className={`${classes.greySquare} 
+                        // ${file.state !== "active"
+                        //   ? classes.disabledDownload
+                        //   : ""
+                          }`
+                        }
 
-                        onClick={() => {
+                        // onClick={() => {
 
-                          viewFileResultt?.viewFiles.forEach((value) => {
+                        //   viewFileResultt?.viewFiles.forEach((value) => {
 
-                            if (value.id === file.id && ExtenstionGetter(file.name) === 'pdf') {
-                              setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: file.name } })
-                            }
-                            else {
-                              handleViewFile(file.id)
-                            }
+                        //     if (value.id === file.id && ExtenstionGetter(file.name) === 'pdf') {
+                        //       setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: file.name } })
+                        //     }
+                        //     else {
+                        //       handleViewFile(file.id)
+                        //     }
 
-                          })
-                        }}
+                        //   })
+                        // }}
                       >
                         {new RegExp(
                           ["jpg", "jpeg", "png", "bmp"].join("|")
@@ -561,12 +584,20 @@ export default function Documents(props) {
                             className={classes.forImage}
                           ></img>
                         ) : (
-                          <div className={classes.forImageContainer} onClick={() => {
+                          <div className={classes.forImageContainer} 
+                          
+                          onClick={() => {
+
                             if (file.state !== "active") return;
 
                             if (fileExtension === 'pdf') {
                               setStateApp({ ...stateApp, viewDoc: { uri: file.uri, name: file.name } })
                             }
+                            else {
+                              handleViewFile(file.id)
+                            }
+  
+
                           }}>
                             {/* {fileExtension} */}
                             {getFileIcon(fileExtension)}
@@ -576,19 +607,36 @@ export default function Documents(props) {
                       </div>
                     }
                     <div className='DocumentTitle'
-                      onClick={() => {
+                      // onClick={() => {
 
-                        viewFileResultt?.viewFiles.map((value) => {
+                      //   viewFileResultt?.viewFiles.map((value) => {
 
-                          if (value.id === file.id && ExtenstionGetter(file.name) === 'pdf') {
-                            setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: file.name } })
+                      //     if (value.id === file.id && ExtenstionGetter(file.name) === 'pdf') {
+                      //       setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: file.name } })
+                      //     }
+                      //     else {
+                      //       handleViewFile(file.id)
+                      //     }
+
+                      //   })
+
+                        onClick={() => {
+
+                          if (file.state !== "active") return;
+
+                          if (fileExtension === 'pdf') {
+                            setStateApp({ ...stateApp, viewDoc: { uri: file.uri, name: file.name } })
                           }
                           else {
                             handleViewFile(file.id)
                           }
 
-                        })
-                      }}>
+
+                        }}>
+
+                      {/* }}> */}
+
+                      
                       <h4 className={classes.uploadTitle} >
                         {file?.name?.length > 22
                           ? file?.name?.slice(0, 20) + "..."

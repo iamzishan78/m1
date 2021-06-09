@@ -98,6 +98,29 @@ const useStyles = makeStyles((theme) => ({
 		marginLeft: "20px",
 		alignSelf: "center",
 	},
+	forImage: {
+		width: "100px !important",
+		height: "100px !important",
+		backgroundColor: "transparent !important",
+		border: "1px solid #999",
+		borderRadius: "10px !important",
+	  },
+	forImageContainer: {
+		width: "100px !important",
+		height: "100px !important",
+		borderRadius: "10px !important",
+		backgroundColor: "#eeeeee !important",
+		border: "1px solid #999",
+		textAlign: "center",
+		fontSize: "1.5rem",
+		fontWeight: "bold",
+		color: "#555",
+		textTransform: "uppercase",
+		paddingTop: "30px",
+		cursor: "pointer",
+		marginBottom: "5px",
+	  },
+
 	greySquare: {
 		cursor: "pointer",
 		borderRadius: "12px",
@@ -352,50 +375,68 @@ export default function ViewDocuments(props) {
 				{filteredDocuments.map((doc) => {
 					console.log("FILE", doc);
 					return (
-						<li className={classes.document} key={doc.fileUrl}>
-							<div className={classes.documentLeft}>
+						<li 
+						className={classes.document} 
+						key={doc.fileUrl}>
+							<div 
+							className={classes.documentLeft}
+							>
 
 								<div
-									className={`${classes.greySquare} ${doc.fileState !== "active"
-											? classes.disabledDownload
-											: ""
-										}`}
+									// className={`${classes.greySquare} ${doc.fileState !== "active"
+									// 		? classes.disabledDownload
+									// 		: ""
+									// 	}`}
 
-									onClick={() => {
+									// onClick={() => {
 
-										viewFileResultt?.viewFiles.map((value) => {
+									// 	viewFileResultt?.viewFiles.map((value) => {
 
-											// console.log("=============")
-											// console.log("VALUE", value)
-											// console.log("=============")
+									// 		console.log("=============")
+									// 		console.log("VALUE", value)
+									// 		console.log("VALUE DOC", doc)
+									// 		console.log("=============")
 
 
 
-											if (value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf') {
-												setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: doc.fileName, } })
+									// 		if (value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf') {
+									// 			setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName, } })
 
-											}
-											else {
-												handleViewFile(doc.fileId)
-											}
+									// 		}
+									// 		else {
+									// 			handleViewFile(doc.fileId)
+									// 		}
 
-										})
-									}}
+									// 	})
+									// }}
 								>
+
+									{console.log('VALUE DOC', doc)}
+									{console.log('VALUE DOC TEST', new RegExp(
+										["jpg", "jpeg", "png", "PNG", "bmp"].join("|")
+									).test(ExtenstionGetter(doc.fileName)) )}
+
+
 									{new RegExp(
-										["jpg", "jpeg", "png", "bmp"].join("|")
+										["jpg", "jpeg", "png", "PNG", "bmp"].join("|")
 									).test(ExtenstionGetter(doc.fileName)) ? (
 										<img
-											src={doc.uri}
-											alt={doc.name}
+											src={doc.fileUrl}
+											// alt={doc.fileName}
 											className={classes.forImage}
 										></img>
 									) : (
-										<div className={classes.forImageContainer} onClick={() => {
+										<div className={classes.forImageContainer} 
+										
+											onClick={() => {
+
 											if (doc.state !== "active") return;
 
 											if (ExtenstionGetter(doc.fileName) === 'pdf') {
 												setStateApp({ ...stateApp, viewDoc: { uri: doc.uri, name: doc.fileName } })
+											}
+											else {
+												handleViewFile(doc.fileId)
 											}
 										}}>
 											{getFileIcon(ExtenstionGetter(doc.fileName))}
@@ -409,6 +450,9 @@ export default function ViewDocuments(props) {
 									onClick={() => {
 										viewFileResultt?.viewFiles.map((value) => {
 											if (value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf') { setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: doc.fileName, } }) }
+											else {
+												handleViewFile(doc.fileId)
+											}
 										})
 									}}>
 									<h4 className={classes.uploadTitle}>{doc.fileName}</h4>
