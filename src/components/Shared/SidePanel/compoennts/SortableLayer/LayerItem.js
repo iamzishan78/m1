@@ -9,6 +9,7 @@ import { getLayerColor, ifLayerHaveData } from "../common";
 import { useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import { DragIndicator } from "@material-ui/icons";
 import LayerControls from "./LayerControls";
+import { truncate } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -86,7 +87,7 @@ const LayerItem = React.memo((props) => {
                   {" "}
                   <DragIndicator style={{ cursor: "move" }} />
                 </ListItemIcon>
-                <ListItemText id={id} primary={name} className={!ifLayerHaveData(data, stateApp) ? classes.disabledLayerTitle : ""} />
+                <ListItemText id={id} primary={truncate(name, depth ? 20 : 25)} className={!ifLayerHaveData(data, stateApp) ? classes.disabledLayerTitle : ""} />
               </Box>
             </Grid>
 

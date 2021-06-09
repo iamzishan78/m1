@@ -33,6 +33,7 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
+import { truncate } from "components/Shared/functions";
 
 const random_rgb = () => {
   var o = Math.round,
@@ -392,7 +393,7 @@ export default function AddLayer(props) {
                       onChange={() => changeShowAble(layer)}
                       inputProps={{ "aria-label": "primary checkbox" }}
                     />
-                    <ListItemText id={labelId} primary={layer.layerName} />
+                    <ListItemText id={labelId} primary={truncate(layer.layerName, 45)} />
                   </StyledListItem>
                 );
               })}

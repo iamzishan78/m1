@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { TextField, Grid } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import Typography from '@material-ui/core/Typography';
+import { truncate } from "components/Shared/functions";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +43,7 @@ function EditableTextField({ item, onChange, name }) {
             onMouseLeave={() => setEdit({ ...isEdit, able: false })}>
             <Grid item >
                 {!isEdit.mode ? (
-                    <Typography className={classes.heading}>{`${name}`}</Typography>
+                    <Typography className={classes.heading}>{`${truncate(name, 45)}`}</Typography>
                 ) : (
                     <TextField
                         placeholder="Project Name..."
