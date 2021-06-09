@@ -363,6 +363,7 @@ export default function AddUserData(props) {
       <DialogTitle>Create a new Layer</DialogTitle>
       <DialogContent dividers>
         <TextField
+          defaultValue={stateMapControls.fileUploadedContent.groupName}
           focused
           required
           margin="dense"

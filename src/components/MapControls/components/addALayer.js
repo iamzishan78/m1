@@ -318,7 +318,7 @@ export default function AddLayer(props) {
 
     setStateMapControls({
       ...stateMapControls,
-      layerAddControl: featureTypes.length > 0 ? "addGroup" : "add",
+      layerAddControl: featureTypes.length > 1 ? "addGroup" : "add",
       fileUploadedContent: fileContent,
     });
   }
