@@ -312,12 +312,17 @@ export default function ViewDocuments(props) {
 										
 											onClick={() => {
 
-											if (ExtenstionGetter(doc.fileName) === 'pdf') {
-												setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
-											}
-											else {
-												handleViewFile(doc.fileId)
-											}
+
+											// TEMP COMMENT OUT UNTIL QUERY URI IS FIXED
+											// if (ExtenstionGetter(doc.fileName) === 'pdf') {
+											// 	setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
+											// }
+											// else {
+											// 	handleViewFile(doc.fileId)
+											// }
+
+											handleViewFile(doc.fileId)
+
 										}}>
 											{get_file_icon(ExtenstionGetter(doc.fileName))}
 										</div>
@@ -330,12 +335,17 @@ export default function ViewDocuments(props) {
 								<div className={classes.fileText.concat(' DocumentTitle')} style={{ cursor: 'pointer' }}
 									onClick={() => {
 
-										if (ExtenstionGetter(doc.fileName) === 'pdf') {
-											setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
-										}
-										else {
-											handleViewFile(doc.fileId)
-										}
+
+										// TEMP COMMENT OUT UNTI QUERY URI IS FIXED
+										// if (ExtenstionGetter(doc.fileName) === 'pdf') {
+										// 	setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
+										// }
+										// else {
+										// 	handleViewFile(doc.fileId)
+										// }
+
+										handleViewFile(doc.fileId)
+
 
 									}}>
 
