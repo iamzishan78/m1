@@ -276,10 +276,12 @@ export default function AddLayer(props) {
                 merged.fileNames = geojson.map((g) => g.fileName)
                 merged.groupName = fileName.replace('.zip', '')
                 resolve(merged)
+              } else {
+                geojson.fileNames = [geojson.fileName]
+                geojson.groupName = fileName.replace('.zip', '')
+                resolve(geojson);
               }
-              geojson.fileNames = [geojson.fileName]
-              geojson.groupName = fileName.replace('.zip', '')
-              resolve(geojson);
+
             });
           });
         });
@@ -295,13 +297,16 @@ export default function AddLayer(props) {
     }));
     let fileContent = await handleFileAsync(fileObj);
     const featureTypes = []
-    fileContent.features.forEach((feature) => {
+    fileContent.features.forEach((feature, index) => {
       if (!feature.properties) {
         feature.properties = {}
       }
       feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type }
       if (!featureTypes.includes(feature.geometry.type)) {
         featureTypes.push(feature.geometry.type)
+        if (!fileContent.fileNames[index]) {
+          fileContent.fileNames[index] = fileContent.groupName + ` - ${feature.geometry.type}`
+        }
       }
     })
     fileContent.featureTypes = featureTypes
