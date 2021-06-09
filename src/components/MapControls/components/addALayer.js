@@ -417,7 +417,7 @@ export default function AddLayer(props) {
                       onChange={() => changeShowAble(layer)}
                       inputProps={{ "aria-label": "primary checkbox" }}
                     />
-                    <ListItemText id={labelId} primary={truncate(layer.layerName, 45)} />
+                    <ListItemText id={labelId} primary={truncate(layer.layerName, 30)} />
                   </StyledListItem>
                 );
               })}

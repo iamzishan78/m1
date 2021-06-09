@@ -43,7 +43,7 @@ function EditableTextField({ item, onChange, name }) {
             onMouseLeave={() => setEdit({ ...isEdit, able: false })}>
             <Grid item >
                 {!isEdit.mode ? (
-                    <Typography className={classes.heading}>{`${truncate(name, 45)}`}</Typography>
+                    <Typography className={classes.heading}>{`${truncate(name, 35)}`}</Typography>
                 ) : (
                     <TextField
                         placeholder="Project Name..."
