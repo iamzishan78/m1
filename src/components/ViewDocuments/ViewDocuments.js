@@ -311,7 +311,8 @@ export default function ViewDocuments(props) {
 									).test(ExtenstionGetter(doc.fileName)) )}
 
 
-									{new RegExp(
+									{/* TEMP COMMENT OUT UNTIL WE GET THE CORRECT URI IN THE QUERY	 */}
+									{/* {new RegExp(
 										["jpg", "jpeg", "png", "bmp"].join("|")
 									).test(ExtenstionGetter(doc.fileName)) ? (
 										<img
@@ -333,7 +334,25 @@ export default function ViewDocuments(props) {
 										}}>
 											{get_file_icon(ExtenstionGetter(doc.fileName))}
 										</div>
-									)}
+									)} */}
+
+								
+								{
+										<div className={classes.forImageContainer} 
+										
+											onClick={() => {
+
+											if (ExtenstionGetter(doc.fileName) === 'pdf') {
+												setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
+											}
+											else {
+												handleViewFile(doc.fileId)
+											}
+										}}>
+											{get_file_icon(ExtenstionGetter(doc.fileName))}
+										</div>
+									}
+
 
 								</div>
 
