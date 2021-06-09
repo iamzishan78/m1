@@ -20,23 +20,17 @@ import SearchIcon from "@material-ui/icons/Search";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteDocumentConfirmation from "../Shared/DeleteDocumentConfirmation";
+
 import { GETCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { AppContext } from "../../AppContext";
 import moment from "moment";
 import { useLazyQuery } from "@apollo/client";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "../../graphQL/useQueryViewFile";
 import DocViewer from '../Shared/DocViewer'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-	faFilePdf,
-	faFilePowerpoint,
-	faFileWord,
-	faFile,
-	faFileExcel,
-	faFileArchive,
-	faFileCode,
-	faFileImage,
-} from "@fortawesome/free-solid-svg-icons";
+
+// functions / value formatters 
+import get_file_icon from "../Shared/functions/get_file_icon.js";
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -166,6 +160,8 @@ export default function ViewDocuments(props) {
 	const [stateApp, setStateApp] = React.useContext(AppContext);
 	const userId = stateApp.user.mongoId;
 
+
+	// queries 
 	const [getAllFiles, { data: files }] = useLazyQuery(GETCONTACTFILES, {
 		fetchPolicy: "cache-and-network",
 	});
@@ -174,111 +170,6 @@ export default function ViewDocuments(props) {
 		fetchPolicy: "no-cache",
 	});
 
-
-	const getFileIcon = (fileExtension) => {
-		switch (fileExtension) {
-			case "pdf":
-				return (
-					<FontAwesomeIcon
-						icon={faFilePdf}
-						style={{ fontSize: "2rem", color: "#F15642" }}
-					/>
-				);
-			case "csv":
-				return (
-					<FontAwesomeIcon
-						icon={faFileExcel}
-						style={{ fontSize: "2rem", color: "#207244" }}
-					/>
-				);
-			case "xlsx":
-				return (
-					<FontAwesomeIcon
-						icon={faFileExcel}
-						style={{ fontSize: "2rem", color: "#207244" }}
-					/>
-				);
-			case "xlsb":
-				return (
-					<FontAwesomeIcon
-						icon={faFileExcel}
-						style={{ fontSize: "2rem", color: "#207244" }}
-					/>
-				);
-			case "xlsm":
-				return (
-					<FontAwesomeIcon
-						icon={faFileExcel}
-						style={{ fontSize: "2rem", color: "#207244" }}
-					/>
-				);
-			case "xltx":
-				return (
-					<FontAwesomeIcon
-						icon={faFileExcel}
-						style={{ fontSize: "2rem", color: "#207244" }}
-					/>
-				);
-			case "doc":
-				return (
-					<FontAwesomeIcon
-						icon={faFileWord}
-						style={{ fontSize: "2rem", color: "#2A5599" }}
-					/>
-				)
-			case "docx":
-				return (
-					<FontAwesomeIcon
-						icon={faFileWord}
-						style={{ fontSize: "2rem", color: "#2A5599" }}
-					/>
-				);
-			case "ppt":
-				return (
-					<FontAwesomeIcon
-						icon={faFilePowerpoint}
-						style={{ fontSize: "2rem", color: "#D04424" }}
-					/>
-				);
-			case "pptx":
-				return (
-					<FontAwesomeIcon
-						icon={faFilePowerpoint}
-						style={{ fontSize: "2rem", color: "#D04424" }}
-					/>
-				);
-
-				case "jpg"|| "jpeg"|| "png" || "bmp":
-					return (
-					  <FontAwesomeIcon
-						icon={faFileImage}
-						style={{ fontSize: "2rem", color: "#4c6ef5" }}
-					  />
-					);
-				  case "zip":
-					return (
-					  <FontAwesomeIcon
-						icon={faFileArchive}
-						style={{ fontSize: "2rem", color: "#15aabf" }}
-					  />
-					);
-				  case "shp":
-					return (
-					  <FontAwesomeIcon
-						icon={faFileCode}
-						style={{ fontSize: "2rem", color: "#82c91e" }}
-					  />
-					);
-			default:
-				// return <span>{fileExtension}</span>;
-				return (
-					<FontAwesomeIcon
-						icon={faFile}
-						style={{ fontSize: "2rem", color: "grey" }}
-					/>
-				);
-		}
-	};
 
 	useEffect(() => {
 
@@ -425,7 +316,7 @@ export default function ViewDocuments(props) {
 									).test(ExtenstionGetter(doc.fileName)) ? (
 										<img
 											src={doc.fileUrl}
-											// alt={doc.fileName}
+											alt={doc.fileName}
 											className={classes.forImage}
 										></img>
 									) : (
@@ -440,7 +331,7 @@ export default function ViewDocuments(props) {
 												handleViewFile(doc.fileId)
 											}
 										}}>
-											{getFileIcon(ExtenstionGetter(doc.fileName))}
+											{get_file_icon(ExtenstionGetter(doc.fileName))}
 										</div>
 									)}
 
