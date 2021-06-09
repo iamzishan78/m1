@@ -451,7 +451,8 @@ function AddDealDialog(props) {
       //// select first one as default
       if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
         let activePipeline = {};
-        if (selectedPipe) {
+        const isExist = !!pipelinesData.pipelines.find(p => p._id === selectedPipe?._id);
+        if (selectedPipe && isExist) {
           activePipeline = pipelinesData.pipelines.find((p) => p._id === selectedPipe._id);
         } else activePipeline = pipelinesData.pipelines[0];
         dispatch(
@@ -1425,8 +1426,8 @@ function AddDealDialog(props) {
                   margin="dense"
                   value={title}
                   variant="outlined"
-                  placeholder = "Click to enter deal name"
-                  style={title.trim !== "" ? ({}):({border: '1px solid #EBEBEB',})}
+                  placeholder="Click to enter deal name"
+                  style={title.trim !== "" ? ({}) : ({ border: '1px solid #EBEBEB', })}
                   required
                   error={valid['title']}
                   helperText={

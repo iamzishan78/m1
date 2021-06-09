@@ -17,11 +17,11 @@ import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircleOutline";
 import { makeStyles } from "@material-ui/core/styles";
+import { UPDATE_PIPELINES_POSITIONS } from "graphQL/useMutationUpdatePipelinesPositions";
 import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
 import { DUPLICATE_PIPELINES } from "graphQL/useMutationDuplicatePipelines";
-import { UPDATE_PIPELINE_DESCRIPTORS, CREATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
+import { CREATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
 import { setFlowState, showWarningMessage } from "actions";
-// import PipelinePopup from "components/Transact/components/PipelinePopup";
 import PipelinesList from "components/Transact/components/SidePanel/PipelinesList";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { DEALSCOUNTINAPIPE } from "graphQL/useQueryNonDeletedDealsCountInAPipeline";
@@ -50,7 +50,6 @@ const useStyles = makeStyles((theme) => ({
     padding: "0px 16px",
     color: "#fff",
     borderBottom: "1px solid rgba(84, 83, 83, 0.85)",
-    // maxHeight: "8%",
   },
   toolbarHeader: {
     display: "flow-root",
@@ -139,38 +138,14 @@ const SidePanel = ({ }) => {
   const [stateApp] = useContext(AppContext);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES);
-  const [updatePipelineDescriptors] = useMutation(UPDATE_PIPELINE_DESCRIPTORS);
+  const [updatePipelinesPositions] = useMutation(UPDATE_PIPELINES_POSITIONS);
   const [createPipelineDescriptors] = useMutation(CREATE_PIPELINE_DESCRIPTORS);
   const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
     fetchPolicy: "network-only",
   });
 
   useEffect(() => {
-    const projectIncludedPipelines = [],
-      projects = {};
-    pipelines.forEach((pipe, index) => {
-      if (pipe.projectName && !projects[pipe.projectName]) {
-        projects[pipe.projectName] = true;
-        projectIncludedPipelines.push({
-          projectName: pipe.projectName,
-          projectId: pipe.projectId,
-          type: "Project",
-          index,
-          depth: 0,
-          id: pipe.projectId,
-          collapsed: false,
-        });
-      }
-      projectIncludedPipelines.push({
-        ...pipe,
-        id: pipe._id,
-        type: "Pipeline",
-        depth: pipe.projectName ? 1 : 0,
-        index,
-        collapsed: !pipe.projectName,
-      });
-    });
-    setPipelines(projectIncludedPipelines);
+    setPipelines(mapFLowlinesToProject(pipelines));
   }, [pipelines]);
 
   useEffect(() => {
@@ -180,6 +155,47 @@ const SidePanel = ({ }) => {
       else setModal(true);
     }
   }, [dataDealsCountByPipeline]);
+
+  const mapFLowlinesToProject = (pipelines) => {
+    let projectIncludedPipelines = [],
+      projects = {};
+    pipelines.forEach((pipe) => {
+      if (pipe.projectId && !projects[pipe.projectId]) {
+        projects[pipe.projectId] = true;
+        projectIncludedPipelines.push({
+          projectName: pipe.projectName,
+          projectId: pipe.projectId,
+          type: "Project",
+          index: pipe.projectId,
+          depth: 0,
+          id: pipe.projectId,
+          collapsed: true,
+          position: pipe.position,
+        });
+        const projectPipelines = pipelines
+          .filter((p) => p.projectId === pipe.projectId)
+          .map((p) => ({
+            ...p,
+            id: p._id,
+            type: "Pipeline",
+            depth: 1,
+            index: p._id,
+            collapsed: true,
+          }));
+        projectIncludedPipelines = projectIncludedPipelines.concat(projectPipelines);
+      } else if (!pipe.projectId) {
+        projectIncludedPipelines.push({
+          ...pipe,
+          id: pipe._id,
+          type: "Pipeline",
+          depth: 0,
+          index: pipe._id,
+          collapsed: true,
+        });
+      }
+    });
+    return projectIncludedPipelines;
+  };
 
   const flowlineActions = React.useMemo(
     () => [
@@ -205,7 +221,7 @@ const SidePanel = ({ }) => {
 
   const filterSearch = (value) => {
     const newPipelines = pipelines.filter((pipeline) => pipeline.name?.toLowerCase()?.includes(value.toLowerCase()));
-    setPipelines(newPipelines);
+    setPipelines(mapFLowlinesToProject(newPipelines));
   };
 
   const handleAction = (action) => {
@@ -227,15 +243,21 @@ const SidePanel = ({ }) => {
         });
         break;
       case "Remove Pipeline From Group":
-        const descriptors = filteredPipelines
-          .filter((pipe) => selectedPipelines.includes(pipe._id) && pipe.projectId)
-          .map((pipe) => ({ descriptorObject: pipe._id, relatedObject: pipe.projectId, isDeleted: true }));
-        updatePipelineDescriptors({
+        let pipelines = [];
+        pipelines = filteredPipelines
+          .filter((pipe) => selectedPipelines.includes(pipe._id))
+          .map((pipe, index) => ({ ...pipe, position: index, switchType: "deleteDescriptor" }));
+        pipelines = pipelines.concat(
+          filteredPipelines
+            .filter((pipe) => !selectedPipelines.includes(pipe._id) && pipe.depth === 0)
+            .map((pipe, index) => ({ ...pipe, position: index + pipelines.length }))
+        );
+        updatePipelinesPositions({
           variables: {
-            descriptors,
+            data: pipelines,
+            userId: stateApp.user.mongoId,
           },
           refetchQueries: ["getPipelines"],
-          awaitRefetchQueries: true,
         });
         break;
       case "Delete Flowline(s)":
@@ -246,16 +268,16 @@ const SidePanel = ({ }) => {
         });
         break;
       case "Duplicate":
+        const pipelinesToDuplicate = selectedPipelines.map((pipe) => ({
+          _id: pipe,
+          name: filteredPipelines.find((p) => p._id === pipe).name,
+        }));
         duplicatePipelines({
           variables: {
-            pipelines: selectedPipelines.map((pipe) => ({
-              _id: pipe,
-              name: pipelines.find((p) => p._id === pipe).name,
-            })),
+            pipelines: pipelinesToDuplicate,
             userId: stateApp.user.mongoId,
           },
           refetchQueries: ["getPipelines"],
-          awaitRefetchQueries: true,
         });
         break;
       default:
@@ -336,7 +358,6 @@ const SidePanel = ({ }) => {
             <PipelinesList
               selectedPipe={selectedPipe}
               filteredPipelines={filteredPipelines}
-              setPipelines={setPipelines}
               selectedPipelines={selectedPipelines}
               setMultiSelection={setMultiSelection}
               userId={stateApp.user.mongoId}
