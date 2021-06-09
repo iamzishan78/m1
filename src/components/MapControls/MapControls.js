@@ -22,6 +22,7 @@ import AspectRatioOutlinedIcon from "@material-ui/icons/AspectRatioOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../actions";
 import SidePanel from "../Shared/SidePanel/SidePanel";
+import { clearMapAndCloseShapeActionsPopup } from "./commonHelper";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -238,6 +239,7 @@ export default function MapControls(props) {
 
 
       if (action === "draw") {
+
         setStateMapControls({
           ...stateMapControls,
           selectedMapControl: action,
@@ -253,16 +255,7 @@ export default function MapControls(props) {
         }
 
         if (stateApp.editDraw) {
-          setStateApp((state) => ({
-            ...state,
-            editDraw: false,
-            currentFeature: undefined,
-            isAbstractedLayersPolygon: false,
-            multiSelectLandGrids: false,
-            selectedAbstracts: [],
-            showShapeActionsPopup: false,
-            showDrawShapesPopup: false,
-          }));
+          clearMapAndCloseShapeActionsPopup(stateApp, setStateApp)
         }
       }
 
