@@ -462,20 +462,6 @@ export default function Documents(props) {
                         //   : ""
                           }`
                         }
-
-                        // onClick={() => {
-
-                        //   viewFileResultt?.viewFiles.forEach((value) => {
-
-                        //     if (value.id === file.id && ExtenstionGetter(file.name) === 'pdf') {
-                        //       setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: file.name } })
-                        //     }
-                        //     else {
-                        //       handleViewFile(file.id)
-                        //     }
-
-                        //   })
-                        // }}
                       >
                         {new RegExp(
                           ["jpg", "jpeg", "png", "bmp"].join("|")

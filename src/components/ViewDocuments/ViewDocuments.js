@@ -273,37 +273,7 @@ export default function ViewDocuments(props) {
 							className={classes.documentLeft}
 							>
 
-								<div
-									// className={`${classes.greySquare} 
-									
-									// ${doc.fileState !== "active"
-									// 		? classes.disabledDownload
-									// 		: ""
-
-									// 	}`}
-
-									// onClick={() => {
-
-									// 	viewFileResultt?.viewFiles.map((value) => {
-
-									// 		console.log("=============")
-									// 		console.log("VALUE", value)
-									// 		console.log("VALUE DOC", doc)
-									// 		console.log("=============")
-
-
-
-									// 		if (value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf') {
-									// 			setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName, } })
-
-									// 		}
-									// 		else {
-									// 			handleViewFile(doc.fileId)
-									// 		}
-
-									// 	})
-									// }}
-								>
+								<div>
 
 									{console.log('VALUE DOC', doc)}
 									{console.log('VALUE DOC TEST', new RegExp(
