@@ -45,9 +45,23 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
       filteredPipelines.forEach((item, index) => {
         const i = items.findIndex(pipe => pipe.id === item.id);
         if (i !== -1) {
-          updateFn[index] = { collapsed: { $set: items[i].collapsed } }
+          const parent = findParent(items, i);
+          if (parent) {
+            updateFn[index] = { collapsed: { $set: parent.collapsed } }
+          } else {
+            updateFn[index] = { collapsed: { $set: items[i].collapsed } }
+          }
         } else {
-          updateFn[index] = { collapsed: { $set: item.collapsed } }
+          if (item.projectId && item.type === 'Pipeline') {
+            const parent = items.find(i => i.type === 'Project' && i.projectId === item.projectId);
+            if (parent) {
+              updateFn[index] = { collapsed: { $set: parent.collapsed } }
+            } else {
+              updateFn[index] = { collapsed: { $set: item.collapsed } }
+            }
+          } else {
+            updateFn[index] = { collapsed: { $set: item.collapsed } }
+          }
         }
       });
       setItems(update(filteredPipelines, updateFn));
