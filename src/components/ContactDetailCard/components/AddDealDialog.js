@@ -359,7 +359,7 @@ function AddDealDialog(props) {
   const { selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
   const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [title, setTitle] = useState(''); // title change from contact.name to dealName
+  const [title, setTitle] = useState(null); // title change from contact.name to dealName
   const [titleFocus, setTitleFocus] = useState(false);
   const [label, setLabel] = useState('');
   const [stageId, setStageId] = useState(null);
@@ -650,10 +650,14 @@ function AddDealDialog(props) {
   }, [stateApp.activeDeal, props.contact, stateApp.dealDialog, stateApp.user]);
 
   const handleValidate = () => {
+
+
     const tempValid = {
       ...valid,
       title: !title,
     };
+
+    console.log('TITLE TMP VALID', tempValid)
     setValid(tempValid);
 
     return !Object.values(tempValid).reduce((acc, cur) => acc + cur);
@@ -1422,12 +1426,13 @@ function AddDealDialog(props) {
                 fullWidth
                 size="small"
               >
+
                 <TextField
                   margin="dense"
                   value={title}
                   variant="outlined"
                   placeholder="Click to enter deal name"
-                  style={title.trim !== "" ? ({}) : ({ border: '1px solid #EBEBEB', })}
+                  // style={title.trim !== "" ? ({}) : ({ border: '1px solid #EBEBEB', })}
                   required
                   error={valid['title']}
                   helperText={
