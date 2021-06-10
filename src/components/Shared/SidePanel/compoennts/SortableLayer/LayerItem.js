@@ -10,6 +10,8 @@ import { useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import { DragIndicator } from "@material-ui/icons";
 import LayerControls from "./LayerControls";
 import { truncate } from "components/Shared/functions";
+import { FormControlLabel } from "@material-ui/core";
+import { Switch } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -44,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
 const LayerItem = React.memo((props) => {
   const colors = useSelector(({ MainMap }) => MainMap);
 
-  const { id, depth, data, onToggleCollapse, updateLayer, onDragEnd, onDragBegin, stateApp } = props;
+  const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin, stateApp } = props;
   const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
   const { type, collapsed, name } = data;
 
@@ -70,6 +72,7 @@ const LayerItem = React.memo((props) => {
     }
     onToggleCollapse(id);
   };
+
   const classes = useStyles({
     ...props,
     depth,
@@ -94,13 +97,24 @@ const LayerItem = React.memo((props) => {
             <Grid item>
               <Box display="inline-flex">
                 {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} />}
+                {type === "group" && (
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={data.visiable}
+                        onChange={() => onToggleGroup(id)}
+                      />
+                    }
+                  />
+                )}
+
                 {type === "group" && !collapsed && (
-                  <ListItemIcon onClick={handleClick}>
+                  <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }}>
                     <ExpandLessIcon />
                   </ListItemIcon>
                 )}
                 {type === "group" && collapsed && (
-                  <ListItemIcon onClick={handleClick}>
+                  <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }} >
                     <ExpandMoreIcon />
                   </ListItemIcon>
                 )}

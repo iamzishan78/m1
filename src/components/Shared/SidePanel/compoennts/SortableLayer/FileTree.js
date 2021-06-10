@@ -81,6 +81,33 @@ const FileTree = ({ layerMap }) => {
 
     setItems(update(items, updateFn));
   };
+  const handleToggleGroup = (id) => {
+    const index = items.findIndex((item) => item.id === id);
+    const item = items[index];
+    const { visiable } = item;
+    const descendants = findDescendants(items, index);
+    const updateFn = {
+      [index]: { visiable: { $set: !visiable } },
+    };
+    const layersToUpdate = []
+    descendants.forEach((descendant) => {
+      const descendantIndex = items.indexOf(descendant);
+      updateFn[descendantIndex] = { layerSettings: { visiable: { $set: !visiable } } };
+      layersToUpdate.push({
+        ...descendant,
+        layerSettings: {
+          ...descendant.layerSettings,
+          visiable: !visiable,
+        },
+      })
+    });
+
+    setItems(update(items, updateFn));
+
+    updateManyUserLayerSettings({
+      variables: { manySettings: layersToUpdate.map((layer) => ({ _id: layer._id, layerSettings: layer.layerSettings })) },
+    });
+  };
 
   const handleDragBegin = (item) => {
     itemsRef.current = items;
@@ -181,6 +208,7 @@ const FileTree = ({ layerMap }) => {
                 <LayerItem
                   {...props}
                   onToggleCollapse={handleToggleCollapse}
+                  onToggleGroup={handleToggleGroup}
                   onDragEnd={handleDragEnd}
                   onDragBegin={handleDragBegin}
                   updateLayer={updateLayer}
