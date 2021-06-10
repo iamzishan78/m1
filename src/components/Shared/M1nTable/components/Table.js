@@ -1542,6 +1542,10 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
+                          
+                  if(props.parent === 'assocTaxRollInterests' && props.targetLabel === 'parcel'){
+                    targetSourceId = tableMeta.rowData[15];
+                  }
                   return (
                     <TrackToggleButton
                       id={id + targetSourceId + tableMeta.rowIndex}
@@ -1592,6 +1596,9 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
+                  if(props.parent === 'assocTaxRollInterests' && props.targetLabel === 'parcel'){
+                    targetSourceId = tableMeta.rowData[15];
+                  }
 
                   return (
                     //add download and search icons here
@@ -1960,7 +1967,10 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
-
+                  
+                  if(props.parent === 'assocTaxRollInterests' && props.targetLabel === 'parcel'){
+                    targetSourceId = tableMeta.rowData[15];
+                  }
                   return (
                     <div style={{ marginRight: "10px" }}>
                       <Tooltip

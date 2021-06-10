@@ -27,6 +27,19 @@ const AssociateContactWellHeadCells = [
   { name: "nma", label: "NMA" },
   { name: "nra", label: "NRA" },
   {
+    name: "parcelId",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      empty: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "tags",
     label: "Tags ",
     options: {

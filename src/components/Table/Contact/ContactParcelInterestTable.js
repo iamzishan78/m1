@@ -43,7 +43,7 @@ function ContactParcelInterestTable(props) {
   const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
   // queries 
-  const [getContactParcelInterests, { data: dataContactParcels }] = useLazyQuery(CONTACT_PARCEL_INTERESTS, { fetchPolicy: "cache-and-network", skip: true });
+  const [getContactParcelInterests, { data: dataContactParcels, loading }] = useLazyQuery(CONTACT_PARCEL_INTERESTS, { fetchPolicy: "cache-and-network", skip: true });
   const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: [ "getContactWells", "getContactParcelInterests" ], awaitRefetchQueries: true });
   const tableData = dataContactParcels?.contactParcelInterest
 
@@ -95,6 +95,7 @@ function ContactParcelInterestTable(props) {
         well.isTracked = false;
         well.commentsCounter = 0;
         well.tags = [[], 0];
+        well.parcelId = well.parcel._id;
 
         well = props.setGenricData(well, well.parcel._id, ['comments', 'tracks', 'tags'])
 
@@ -206,7 +207,7 @@ function ContactParcelInterestTable(props) {
         columns={columns}
         rows={searchedRows}
         total={total}
-        loading={props.loading}
+        loading={loading}
         addAble={addAble}
         targetLabel={props.targetLabel}
         deleteFunc={deleteFunc}
