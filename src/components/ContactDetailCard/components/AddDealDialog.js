@@ -67,6 +67,10 @@ import EventIcon from '@material-ui/icons/Event';
 import './style/dialog.css';
 import { faCloudShowersHeavy } from '@fortawesome/free-solid-svg-icons';
 
+// mui icons 
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+
+
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
 
@@ -1191,6 +1195,7 @@ function AddDealDialog(props) {
                   }
                   size="small"
                 >
+                  <ArrowBackIcon />
                 </IconButton>
               </div>
             </Grid>
