@@ -150,7 +150,13 @@ function M1nTable(props) {
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, { onError: () => { setLoading(false) }, fetchPolicy: "cache-and-network" });
   const [getDocuments, { data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS, { fetchPolicy: "no-cache" });
   const [removeUser] = useMutation(REMOVEUSER);
-  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, { fetchPolicy: "cache-and-network", skip: true });
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, { fetchPolicy: "cache-and-network", skip: true,
+    // with a cache fetch policy, if network request returns same result we can end up in an infinite loading sitch.
+    // have only seen when searching / researching same string - so same result
+    onCompleted: () => {
+      setLoading(false);
+    }
+  });
   const [getContactsFilterOptions, { data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
   const [updateMailerStatuses] = useMutation(UPDATEMAILERSTATUSES);
   const [getContactDeals, { data: dataDeals }] = useLazyQuery(CONTACTDEALS, { fetchPolicy: "cache-and-network", });
