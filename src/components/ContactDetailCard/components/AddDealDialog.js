@@ -1175,9 +1175,9 @@ function AddDealDialog(props) {
             <Grid item xs={12} style={{ minHeight: "35px" }}>
               <h4
                 style={{
-                  // margin: "0 0 15px 0",
                   float: "left",
                   fontSize: "1.1rem",
+                  marginTop: '0px'
                 }}
               >
                 {stateApp.transactBarView}
