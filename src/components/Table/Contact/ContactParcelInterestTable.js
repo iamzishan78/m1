@@ -10,6 +10,7 @@ import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 
 // QUERIES 
+import { getParcelOriginalProperties } from "components/ParcelsDetailCard/utils/GetParcelOriginalProps";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
 import { CONTACT_PARCEL_INTERESTS } from "graphQL/useQueryContactParcelInterest";
@@ -63,7 +64,7 @@ function ContactParcelInterestTable(props) {
   useEffect(() => {
     if (tableData?.length > 0) {
       let wells = tableData
-      const objectsIdsArray = wells.map((well) => well.wellId);
+      const objectsIdsArray = wells.map((well) => well._id);
       props.initializeGenericData(objectsIdsArray, ['comments', 'tags'])
     }
 
@@ -76,20 +77,21 @@ function ContactParcelInterestTable(props) {
       wells = wells.map((w) => {
         let well = { ...w }; 
         const parcel = JSON.parse(well.parcel.shape).properties
+        const original_properties = getParcelOriginalProperties(parcel);
         well.parcelName = well.parcel.name
-        well.state = parcel.originalProperties[0].State
-        well.county = parcel.originalProperties[0].County
-        well.survey = parcel.originalProperties[0].Survey
-        well.block = parcel.originalProperties[0].Block
-        well.section = parcel.originalProperties[0].Section
-        well.abstract = parcel.originalProperties[0].AbstractName
-        well.grantee = parcel.originalProperties[0].Grantee
+        well.state = original_properties.state
+        well.county = original_properties.county
+        well.survey = original_properties.state === 'TX' ? original_properties.survey : original_properties.meridian
+        well.block = original_properties.state === 'TX' ? original_properties.block : original_properties.township
+        well.section = original_properties.state === 'TX' ? original_properties.section : original_properties.range
+        well.abstract = original_properties.state === 'TX' ? original_properties.abstract : original_properties.section
+        well.grantee = original_properties.altSurvey
         well.detailCard = well.wellId;
         well.isTracked = false;
         well.commentsCounter = 0;
         well.tags = [[], 0];
 
-        well = props.setGenricData(well, well.wellId, ['comments', 'tracks', 'tags'])
+        well = props.setGenricData(well, well._id, ['comments', 'tracks', 'tags'])
 
         return well;
       });
