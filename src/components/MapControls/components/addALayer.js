@@ -261,6 +261,8 @@ export default function AddLayer(props) {
             return response.json();
           })
           .then((response) => {
+            response.fileNames = [fileName.replace('.geojson', '')]
+            response.groupName = response.fileNames[0]
             resolve(response);
           })
           .catch((error) => reject(error));
