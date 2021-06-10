@@ -30,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
     }),
     textFieldInput: {
         height: "40px"
-        // width: '100%'
     },
     textFieldLabel: {
     },
@@ -43,7 +42,7 @@ function EditableTextField({ item, onChange, name }) {
         <Grid container onMouseOver={() => !isEdit.mode && setEdit({ ...isEdit, able: true })}
             onMouseLeave={() => setEdit({ ...isEdit, able: false })}
         >
-            <Grid item md={10} style={isEdit.mode ? { width: '100%' } : {}}>
+            <Grid item md={10} style={isEdit.mode ? { width: '89%' } : {}}>
                 {!isEdit.mode ? (
                     <Typography className={classes.heading}>{`${truncate(name, 35)}`}</Typography>
                 ) : (

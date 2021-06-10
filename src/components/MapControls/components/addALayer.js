@@ -454,6 +454,19 @@ export default function AddLayer(props) {
                         inputProps={{ "aria-label": "primary checkbox" }}
                       />
                       <EditableTextField onChange={changeLayerName} item={layer} name={layer.name} />
+                      <ListItemSecondaryAction style={{ marginRight: '30px' }}>
+                        <Tooltip title="Delete" placement="top">
+                          <IconButton
+                            edge="end"
+                            size="small"
+                            onClick={() => {
+                              setOpenDeleteDialog(layer);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </ListItemSecondaryAction>
                     </AccordionSummary>
                     <Box paddingLeft={2} paddingRight={2}>
                       <List className={classes.list}>

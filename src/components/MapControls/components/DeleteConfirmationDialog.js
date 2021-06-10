@@ -13,12 +13,14 @@ import {
   showSuccessMessage,
 } from "../../../actions";
 import { MapControlsContext } from "../MapControlsContext";
+import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 
 export default function DeleteConfirmationDialog(props) {
   const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
   const [, setStateMapControls] = useContext(MapControlsContext);
   const [updateLayer, { data: layerDeleted }] = useMutation(UPDATELAYER);
+  const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
   useEffect(() => {
     if (layerDeleted && layerDeleted.updateLayer) {
@@ -42,16 +44,25 @@ export default function DeleteConfirmationDialog(props) {
       ...stateMapControls,
       // selectedControl: 'layer'
     }));
-    updateLayer({
-      variables: {
-        layer: {
-          _id: props.layer.layerId,
-          IsDeleted: true,
+
+    if (props.layer.type === "group") {
+      updateManyUserLayerSettings({
+        variables: {
+          manySettings: props.layer.layers.map((layer) => ({ _id: layer.layerId, IsDeleted: true })),
         },
-      },
-      refetchQueries: ["getAllLayerSettingsByUser"],
-      // awaitRefetchQueries: true,
-    });
+        refetchQueries: ["getAllLayerSettingsByUser"],
+      });
+    } else
+      updateLayer({
+        variables: {
+          layer: {
+            _id: props.layer.layerId,
+            IsDeleted: true,
+          },
+        },
+        refetchQueries: ["getAllLayerSettingsByUser"],
+        // awaitRefetchQueries: true,
+      });
   };
 
   return (
