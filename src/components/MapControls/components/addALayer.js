@@ -35,7 +35,17 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
 
 import proj4 from 'proj4';
-proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD83 +no_defs");
+import conus from '../../../constants/nadgrids/us_noaa_conus.tif'
+
+fetch('../../../constants/nadgrids/ntv2_0.gsb')
+  .then((response) => {
+    response.arrayBuffer()
+      .then((buffer) => {
+        proj4.nadgrid('ntv2_0.gsb', buffer);
+      })
+  })
+
+proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@ntv2_0.gsb +no_defs");
 const GCS_North_American_1927 = 'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]'
 proj4.defs(GCS_North_American_1927, proj4.defs("EPSG:4267"));
 
