@@ -395,8 +395,6 @@ function AddDealDialog(props) {
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
 
-  const [valid, setValid] = useState({title: false});
-
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
   const [addContact, { data: addContactData, called: addContactCalled, loading: addContactLoading }] = useMutation(ADDCONTACT);
@@ -438,7 +436,7 @@ function AddDealDialog(props) {
 
     
     if (stateApp.transactBarView !== "") {
-      handleValidate();
+      // handleValidate();
 
 
       if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
@@ -660,24 +658,9 @@ function AddDealDialog(props) {
     }
   }, [stateApp.activeDeal, props.contact, stateApp.dealDialog, stateApp.user]);
 
-  const handleValidate = () => {
-
-
-    const tempValid = {
-      ...valid,
-      title: !title,
-    };
-
-    console.log('FLOW TITLE', title)
-    console.log('FLOW VALID', valid)
-    console.log('FLOW TMP VALID', tempValid)
-    setValid(tempValid);
-
-    return !Object.values(tempValid).reduce((acc, cur) => acc + cur);
-  };
 
   const handleClose = () => {
-    handleValidate();
+    // handleValidate();
     handleUpdate();
     setTitle("");
     setLabel("");
@@ -697,13 +680,12 @@ function AddDealDialog(props) {
     if (props.isTransactPage) setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
-      dealDialog: false, // some genius level coding here.
-      // addDealDialog: false, // not sure why different flags were used here
+      dealDialog: false, 
       activeDeal: { cardId: null, laneId: null },
       transactBarView: "",
       viewDoc: null,
     }));
-    setValid({title: false});
+    // setValid({title: false});
   };
 
   const handleCloseContactDialog = () => {
@@ -1432,10 +1414,6 @@ function AddDealDialog(props) {
                   //   required
                   onChange={(e) => {
                     setTitle(e.target.value);
-                    setValid({
-                      ...valid,
-                      title: true,
-                    });
                   }}
                   InputProps={{
                     classes: {
