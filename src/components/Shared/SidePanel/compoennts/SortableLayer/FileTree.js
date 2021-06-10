@@ -95,15 +95,15 @@ const FileTree = ({ layerMap }) => {
     descendants.forEach((descendant) => {
       const descendantIndex = items.indexOf(descendant);
       updateFn[descendantIndex] = { layerSettings: { visiable: { $set: !visiable } } };
-      descendant.layerSettings.visiable = !visiable
-      currentLayers[descendantIndex] = descendant
-      layersToUpdate.push({
+      const layer = {
         ...descendant,
         layerSettings: {
           ...descendant.layerSettings,
           visiable: !visiable,
         },
-      })
+      };
+      currentLayers[descendantIndex] = layer
+      layersToUpdate.push(layer)
     });
 
     setItems(update(items, updateFn));
