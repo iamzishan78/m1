@@ -206,21 +206,34 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
       }
     }
     // we have parent and we have current item
-    if (newItem.depth === 0) {
+    if (newItem.depth === 1) {
+      if (newItem.type === 'Project' && parent.type === 'Pipeline') {
+        revert();
+        return;
+      } else if (newItem.type === 'Project' && parent.type === 'Project') {
+        let perentDescendants = findDescendants(items, parentIndex);
+        const selfDescendants = findDescendants(items, itemIndex).map(item => item._id);
+        perentDescendants = perentDescendants.filter(d => !selfDescendants.includes(d._id));
+        if (perentDescendants.findIndex(d => d.projectId === newItem.projectId) !== perentDescendants.length - 1) {
+          revert();
+          return;
+        }
+        newItem.depth = 0;
+      } else {
+        itemsToUpdate = getSuccessorItems('PROJECT_CHILDS');
+        const itemIndex = itemsToUpdate.findIndex(i => i.id === newItem.id);
+        if (oldItem.depth === 0) {
+          itemsToUpdate[itemIndex].switchType = 'addDescriptor';
+        } else if (oldItem.depth === newItem.depth && oldItem.projectId !== newItem.projectId) {
+          itemsToUpdate[itemIndex].projectId = parent.id;
+          itemsToUpdate[itemIndex].projectName = parent.projectName;
+          itemsToUpdate[itemIndex].switchType = 'updateDescriptor';
+        }
+      }
+    } if (newItem.depth === 0) {
       itemsToUpdate = getSuccessorItems('ALL');
       if (oldItem.depth === 1) {
         itemsToUpdate[0].switchType = 'deleteDescriptor';
-      }
-    } else if (newItem.depth === 1) {
-      if (newItem.type === 'Project') revert();
-      itemsToUpdate = getSuccessorItems('PROJECT_CHILDS');
-      const itemIndex = itemsToUpdate.findIndex(i => i.id === newItem.id);
-      if (oldItem.depth === 0) {
-        itemsToUpdate[itemIndex].switchType = 'addDescriptor';
-      } else if (oldItem.depth === newItem.depth && oldItem.projectId !== newItem.projectId) {
-        itemsToUpdate[itemIndex].projectId = parent.id;
-        itemsToUpdate[itemIndex].projectName = parent.projectName;
-        itemsToUpdate[itemIndex].switchType = 'updateDescriptor';
       }
     }
     // Implement the api for position update
