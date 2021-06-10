@@ -39,7 +39,7 @@ function ContactParcelInterestTable(props) {
   // function states 
   const [columns, Columns] = useState([]);
   const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
-  // const [searchedRows, setSearchedRows] = useState([])
+  const [searchedRows, setSearchedRows] = useState([])
   const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
   // queries 
@@ -51,9 +51,9 @@ function ContactParcelInterestTable(props) {
   const total = false
   const orderByTracks = false
 
-  // useEffect(()=>{
-  //   setSearchedRows(props.rows)
-  // },[props.rows])
+  useEffect(()=>{
+    setSearchedRows(props.rows)
+  },[props.rows])
 
   useEffect(() => {
     if (props.parent && props.parent === "assocTaxRollInterests") {
@@ -144,30 +144,40 @@ function ContactParcelInterestTable(props) {
     history.push(`/contact/details/${props.contactId}/parcels/${parcel.descriptorObject}`)
   }
   
-  // const searchData = (searchText) => {
-  //   for(let i=0; i< props.rows.length; i++){
-  //     Object.keys(props.rows[i]).forEach(key => {
-  //       debugger
-  //       const col = columns.find(column => column.name === key)
-  //       if(col && (!col.option || col.option.searchable !== false)) {
-  //         debugger
-  //       }
-  //     })
-  //   }
-  //   console.log(columns, props.rows)
-  //   // setSearchedRows()
-  // }
+  const searchData = (searchText) => {
+    const rows = []
+    if(searchText){ 
+      for(let i=0; i< props.rows.length; i++){
+        for( const key of Object.keys(props.rows[i])){
+          const col = columns.find(column => column.name === key)
+          if(col && (!col.options || col.options.searchable !== false)) {
+            if(typeof props.rows[i][key] === 'string'){
+              console.log(props.rows[i][key], key)
+              const value = props.rows[i][key].toLowerCase()
+              if(value.includes(searchText.toLowerCase())){
+                rows.push(props.rows[i])
+                break
+              }
+            }
+          }
+        }
+      }
+      setSearchedRows(rows)
+    }else{
+      setSearchedRows(props.rows)
+    }
+  }
 
-  // const onTableChange = (action, tableState, rows, meta) => {
-  //   switch (action) {
-  //     case "search":
-  //       searchData(tableState.searchText)
-  //       break;
-  //     case "onSearchClose":
-  //       break;
-  //     default:
-  //   }
-  // }
+  const onTableChange = (action, tableState, rows, meta) => {
+    switch (action) {
+      case "search":
+        searchData(tableState.searchText)
+        break;
+      case "onSearchClose":
+        break;
+      default:
+    }
+  }
 
   return (
     <Container
@@ -194,7 +204,7 @@ function ContactParcelInterestTable(props) {
         style={{ backgroundColor: "#fff" }}
         header={props.header}
         columns={columns}
-        rows={props.rows}
+        rows={searchedRows}
         total={total}
         loading={props.loading}
         addAble={addAble}
@@ -209,7 +219,7 @@ function ContactParcelInterestTable(props) {
         options={options}
         parent={props.parent}
         setColumnsBase={[]}
-        // onTableChange={onTableChange}
+        onTableChange={onTableChange}
         getWellOwnersByYear={getWellOwnersByYear}
       />
     </Container>
