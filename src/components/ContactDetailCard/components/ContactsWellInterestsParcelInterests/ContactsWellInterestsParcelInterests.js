@@ -45,7 +45,7 @@ function ContactsWellInterestsParcelInterests(props) {
             <ContactParcelInterestTable
               parent="assocTaxRollInterests"
               header={<Header />}
-              targetLabel="Parcel Ownership"
+              targetLabel="parcel"
               contactId={props.contactData._id}
               showTracks
             />,

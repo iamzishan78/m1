@@ -1947,7 +1947,7 @@ function M1nTable(props) {
       if (dataParcelOwners.parcelOwners && dataParcelOwners.parcelOwners.length > 0) {
         setLoading(true);
         const objectsIdsArray = dataParcelOwners.parcelOwners.map(
-          (owner) => owner._id
+          (owner) => owner.ownerEntity
         );
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
@@ -1990,7 +1990,7 @@ function M1nTable(props) {
           i++
         ) {
           if (
-            parcelOwner._id ===
+            parcelOwner.ownerEntity ===
             checkIfOwnersAreContactsData.ifAreContacts[i]._id
           ) {
             parcelOwner.isContact =
@@ -2001,7 +2001,7 @@ function M1nTable(props) {
         }
 
         for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-          if (parcelOwner._id === dataCommentsCounter.commentsCounter[i]._id) {
+          if (parcelOwner.ownerEntity === dataCommentsCounter.commentsCounter[i]._id) {
             parcelOwner.commentsCounter =
               dataCommentsCounter.commentsCounter[i].total;
             break;
@@ -2009,7 +2009,7 @@ function M1nTable(props) {
         }
 
         for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-          if (parcelOwner._id === dataTagSamples.tagSamples[i]._id) {
+          if (parcelOwner.ownerEntity === dataTagSamples.tagSamples[i]._id) {
             parcelOwner.tags = [
               dataTagSamples.tagSamples[i].tags,
               dataTagSamples.tagSamples[i].total,
@@ -2020,7 +2020,7 @@ function M1nTable(props) {
         }
 
         for (let i = 0; i < dataTracks.length; i++) {
-          if (parcelOwner._id === dataTracks[i]) {
+          if (parcelOwner.ownerEntity === dataTracks[i]) {
             parcelOwner.isTracked = true;
             break;
           }

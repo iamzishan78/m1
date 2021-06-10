@@ -39,6 +39,7 @@ function ContactParcelInterestTable(props) {
   // function states 
   const [columns, Columns] = useState([]);
   const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
+  // const [searchedRows, setSearchedRows] = useState([])
   const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
   // queries 
@@ -49,6 +50,10 @@ function ContactParcelInterestTable(props) {
   const addAble = { type: "parcelInterest" }
   const total = false
   const orderByTracks = false
+
+  // useEffect(()=>{
+  //   setSearchedRows(props.rows)
+  // },[props.rows])
 
   useEffect(() => {
     if (props.parent && props.parent === "assocTaxRollInterests") {
@@ -64,7 +69,7 @@ function ContactParcelInterestTable(props) {
   useEffect(() => {
     if (tableData?.length > 0) {
       let wells = tableData
-      const objectsIdsArray = wells.map((well) => well._id);
+      const objectsIdsArray = wells.map((well) => well.parcel._id);
       props.initializeGenericData(objectsIdsArray, ['comments', 'tags'])
     }
 
@@ -91,7 +96,7 @@ function ContactParcelInterestTable(props) {
         well.commentsCounter = 0;
         well.tags = [[], 0];
 
-        well = props.setGenricData(well, well._id, ['comments', 'tracks', 'tags'])
+        well = props.setGenricData(well, well.parcel._id, ['comments', 'tracks', 'tags'])
 
         return well;
       });
@@ -139,6 +144,31 @@ function ContactParcelInterestTable(props) {
     history.push(`/contact/details/${props.contactId}/parcels/${parcel.descriptorObject}`)
   }
   
+  // const searchData = (searchText) => {
+  //   for(let i=0; i< props.rows.length; i++){
+  //     Object.keys(props.rows[i]).forEach(key => {
+  //       debugger
+  //       const col = columns.find(column => column.name === key)
+  //       if(col && (!col.option || col.option.searchable !== false)) {
+  //         debugger
+  //       }
+  //     })
+  //   }
+  //   console.log(columns, props.rows)
+  //   // setSearchedRows()
+  // }
+
+  // const onTableChange = (action, tableState, rows, meta) => {
+  //   switch (action) {
+  //     case "search":
+  //       searchData(tableState.searchText)
+  //       break;
+  //     case "onSearchClose":
+  //       break;
+  //     default:
+  //   }
+  // }
+
   return (
     <Container
       maxWidth={false}
@@ -179,6 +209,7 @@ function ContactParcelInterestTable(props) {
         options={options}
         parent={props.parent}
         setColumnsBase={[]}
+        // onTableChange={onTableChange}
         getWellOwnersByYear={getWellOwnersByYear}
       />
     </Container>
