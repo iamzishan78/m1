@@ -78,7 +78,7 @@ function ContactParcelInterestTable(props) {
         const parcel = JSON.parse(well.parcel.shape).properties
         well.parcelName = well.parcel.name
         well.state = parcel.originalProperties[0].State
-        well.country = parcel.originalProperties[0].County
+        well.county = parcel.originalProperties[0].County
         well.survey = parcel.originalProperties[0].Survey
         well.block = parcel.originalProperties[0].Block
         well.section = parcel.originalProperties[0].Section

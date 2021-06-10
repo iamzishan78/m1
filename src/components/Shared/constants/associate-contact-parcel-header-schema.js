@@ -14,7 +14,7 @@ const AssociateContactWellHeadCells = [
   },
   { name: "parcelName", label: "Parcel Name" },
   { name: "state", label: "State" },
-  { name: "country", label: "Country" },
+  { name: "county", label: "County" },
   { name: "survey", label: "Survey / Meridian" },
   { name: "block", label: "Block / Township" },
   { name: "section", label: "Section / Range" },

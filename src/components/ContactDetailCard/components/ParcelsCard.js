@@ -69,12 +69,12 @@ export default function ParcelsCard(props) {
     }}>
       <div>
         <h4 style={{ marginTop: "0", float: "left" }}>Parcels ({count})</h4>
-        <IconButton
+        {/* <IconButton
           size="small"
           className={classes.addIcon}
         >
           <AddIcon htmlColor="rgb(28 173 225 / 81%)" />
-        </IconButton>
+        </IconButton> */}
       </div>
       <div className={classes.cardContent}>
         <div className={classes.leftColumn}>
