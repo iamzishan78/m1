@@ -236,8 +236,11 @@ const ShapeActionsPopup = (props) => {
   };
 
   const applyFilter = () => {
-    let feature = props.selectedFeature;
+    let { selectedFeature } = props;
     let polygonString = getSelectedFeaturePolygonString();
+
+    //Changing shape to Blue
+    stateApp.draw.changeMode("simple_select");
 
     getAbstractGeoContains({
       variables: {
@@ -248,15 +251,13 @@ const ShapeActionsPopup = (props) => {
     setStateNav((stateNav) => ({
       ...stateNav,
       drawingMode: null,
-      filterDrawing: ["within", feature],
+      filterDrawing: ["within", selectedFeature],
     }));
 
     setStateApp((state) => ({
       ...state,
       shapeActionsFilterSelected: true,
     }));
-    //Changing shape to Blue
-    stateApp.draw.changeMode("simple_select");
   };
 
   const actionFilter = () => {
