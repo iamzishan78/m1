@@ -65,6 +65,7 @@ import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider'
 import Contacts from 'components/FlowDrawer/Contacts';
 import EventIcon from '@material-ui/icons/Event';
 import './style/dialog.css';
+import { faCloudShowersHeavy } from '@fortawesome/free-solid-svg-icons';
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -363,7 +364,7 @@ function AddDealDialog(props) {
   const { selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
   const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [title, setTitle] = useState(null); // title change from contact.name to dealName
+  const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [titleFocus, setTitleFocus] = useState(false);
   const [label, setLabel] = useState('');
   const [stageId, setStageId] = useState(null);
@@ -394,7 +395,7 @@ function AddDealDialog(props) {
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
 
-  const [valid, setValid] = useState({});
+  const [valid, setValid] = useState({title: false});
 
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
@@ -431,8 +432,14 @@ function AddDealDialog(props) {
   }, []);
 
   useEffect(() => {
+
+    console.log('===========')
+    console.log('FLOW TRANSACT BAR VIEW', stateApp.transactBarView)
+
+    
     if (stateApp.transactBarView !== "") {
       handleValidate();
+
 
       if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
         addUpdateDeal(null, false);
@@ -661,7 +668,9 @@ function AddDealDialog(props) {
       title: !title,
     };
 
-    console.log('TITLE TMP VALID', tempValid)
+    console.log('FLOW TITLE', title)
+    console.log('FLOW VALID', valid)
+    console.log('FLOW TMP VALID', tempValid)
     setValid(tempValid);
 
     return !Object.values(tempValid).reduce((acc, cur) => acc + cur);
@@ -694,7 +703,7 @@ function AddDealDialog(props) {
       transactBarView: "",
       viewDoc: null,
     }));
-    setValid({});
+    setValid({title: false});
   };
 
   const handleCloseContactDialog = () => {
@@ -1411,19 +1420,21 @@ function AddDealDialog(props) {
                   value={title}
                   variant="outlined"
                   placeholder="Click to enter deal name"
-                  // style={title.trim !== "" ? ({}) : ({ border: '1px solid #EBEBEB', })}
                   required
-                  error={valid['title']}
-                  helperText={
-                    valid['title'] ? 'Enter a deal name to get started' : ''
-                  }
                   fullWidth
+
+                  // error text that will prevent things 
+                  error={(title && title !== '') ? false : true}
+                  helperText={
+                    (title && title !== '') ? '' : 'Enter a deal name to get started' 
+                  }
+
                   //   required
                   onChange={(e) => {
                     setTitle(e.target.value);
                     setValid({
                       ...valid,
-                      title: false,
+                      title: true,
                     });
                   }}
                   InputProps={{
