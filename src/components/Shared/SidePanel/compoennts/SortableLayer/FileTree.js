@@ -90,9 +90,13 @@ const FileTree = ({ layerMap }) => {
       [index]: { visiable: { $set: !visiable } },
     };
     const layersToUpdate = []
+    const currentLayers = [...items];
+
     descendants.forEach((descendant) => {
       const descendantIndex = items.indexOf(descendant);
       updateFn[descendantIndex] = { layerSettings: { visiable: { $set: !visiable } } };
+      descendant.layerSettings.visiable = !visiable
+      currentLayers[descendantIndex] = descendant
       layersToUpdate.push({
         ...descendant,
         layerSettings: {
@@ -103,6 +107,11 @@ const FileTree = ({ layerMap }) => {
     });
 
     setItems(update(items, updateFn));
+
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      layers: currentLayers.filter((l) => l.type !== "group"),
+    }));
 
     updateManyUserLayerSettings({
       variables: { manySettings: layersToUpdate.map((layer) => ({ _id: layer._id, layerSettings: layer.layerSettings })) },
