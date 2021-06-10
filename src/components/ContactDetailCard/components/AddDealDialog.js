@@ -1192,14 +1192,6 @@ function AddDealDialog(props) {
         <RightDialog
           open={props.open}
           width={props.width}
-          // onClose={() =>
-          //   setStateApp((stateApp) => ({
-          //     ...stateApp,
-          //     transactBarView: "",
-          //     viewDoc: null,
-          //   }))
-          // }
-
           handleClickDialogClose={() => {
             if (!updateDealLoading && !addContactLoading) {
               setStateApp((stateApp) => ({
@@ -1239,8 +1231,6 @@ function AddDealDialog(props) {
                   }
                   size="small"
                 >
-                  {/* // this is the close icon "x" button for sub panels\ */}
-                  {/* <CloseIcon fontSize="small" /> */}
                 </IconButton>
               </div>
             </Grid>
