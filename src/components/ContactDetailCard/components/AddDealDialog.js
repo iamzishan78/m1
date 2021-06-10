@@ -1167,6 +1167,7 @@ function AddDealDialog(props) {
           />
         </Dialog>
       )}
+
       {deleteDialogOpen && (
         <Dialog
           className={classes.dialog}
@@ -1191,13 +1192,27 @@ function AddDealDialog(props) {
         <RightDialog
           open={props.open}
           width={props.width}
-          onClose={() =>
-            setStateApp((stateApp) => ({
-              ...stateApp,
-              transactBarView: "",
-              viewDoc: null,
-            }))
-          }
+          // onClose={() =>
+          //   setStateApp((stateApp) => ({
+          //     ...stateApp,
+          //     transactBarView: "",
+          //     viewDoc: null,
+          //   }))
+          // }
+
+          handleClickDialogClose={() => {
+            if (!updateDealLoading && !addContactLoading) {
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                dealDialog: false,
+                activeDeal: { cardId: null, laneId: null },
+                transactBarView: "",
+                viewDoc: null,
+              }));
+              handleClose();
+            }
+          }}
+
           isTransactPage={props.isTransactPage}
         >
           <div style={{ padding: "30px" }}>
@@ -1225,7 +1240,7 @@ function AddDealDialog(props) {
                   size="small"
                 >
                   {/* // this is the close icon "x" button for sub panels\ */}
-                  <CloseIcon fontSize="small" />
+                  {/* <CloseIcon fontSize="small" /> */}
                 </IconButton>
               </div>
             </Grid>
