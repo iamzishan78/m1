@@ -59,7 +59,7 @@ const FileTree = ({ layerMap }) => {
     const index = newItems.findIndex((item) => item.id === currentItem.current.id);
     if (newItems[index].depth === 1) {
       const parent = findParent(newItems, index);
-      if (parent.type !== "group") {
+      if (parent.type !== "group" || parent.collapsed) {
         newItems[index].depth = 0;
       }
     }
@@ -137,7 +137,7 @@ const FileTree = ({ layerMap }) => {
     const layersToUpdate = [];
     let groupIndex;
 
-    if (oldItem.depth === 0 && newItem.depth === 1) {
+    if (newItem.depth === 1) {
       // if layer into group
       groupIndex = items.findIndex((item) => item.id === newItem.id);
       const parent = findParent(items, groupIndex);

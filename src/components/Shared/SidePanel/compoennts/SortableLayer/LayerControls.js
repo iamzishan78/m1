@@ -78,7 +78,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
     }
   };
 
-  const control1 = layer.layerSettings.colorable && (
+  const control1 = layer.layerSettings?.colorable && (
     <div
       style={{
         paddingRight: !layer.layerSettings.interaction.interactionAble
@@ -94,7 +94,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
     </div>
   );
 
-  const control2 = layer.layerSettings.interaction.interactionAble && (
+  const control2 = layer.layerSettings?.interaction?.interactionAble && (
     <div
       style={{
         paddingRight: 20,
@@ -122,7 +122,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
           />
         }
         edge="start"
-        checked={layer.layerSettings.interaction.interactionDetail.click}
+        checked={layer.layerSettings?.interaction?.interactionDetail?.click}
         tabIndex={-1}
         disableRipple
         inputProps={{
