@@ -276,8 +276,15 @@ const ShapeActionsPopup = (props) => {
 
   const actionEdit = () => {
     const { selectedFeature } = props;
+
+    // If shape doesn't exist! AOI case
     if (!stateApp.draw.get(stateApp.currentFeature.id)) {
       stateApp.draw.add(stateApp.currentFeature);
+    }
+
+    // If filter is allied, then remove it
+    if (stateApp.shapeActionsFilterSelected) {
+      clearFilter();
     }
     stateApp.draw.changeMode("direct_select", {
       featureId: selectedFeature.id,

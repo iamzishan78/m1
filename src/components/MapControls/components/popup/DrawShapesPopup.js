@@ -5,7 +5,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import hat from "hat";
 import union from "@turf/union";
 import { AppContext } from "AppContext";
-import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
+// import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
 import { default as MouseClicked } from "../../../Shared/svgIcons/MouseClicked";
 import { default as DrawPoly } from "../../../Shared/svgIcons/polygon";
 import { default as Rect } from "../../../Shared/svgIcons/rectangle";
