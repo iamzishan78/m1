@@ -13,12 +13,14 @@ import {
   showSuccessMessage,
 } from "../../../actions";
 import { MapControlsContext } from "../MapControlsContext";
+import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 
 export default function DeleteConfirmationDialog(props) {
   const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
   const [, setStateMapControls] = useContext(MapControlsContext);
   const [updateLayer, { data: layerDeleted }] = useMutation(UPDATELAYER);
+  const [updateManyLayer, { data: layersDeleted }] = useMutation(UPDATE_MANY_LAYER);
 
   useEffect(() => {
     if (layerDeleted && layerDeleted.updateLayer) {
@@ -31,10 +33,36 @@ export default function DeleteConfirmationDialog(props) {
         }));
         props.handleDialogClose(false);
       } else {
+        setStateApp((state) => ({
+          ...state,
+          universalCircularLoaderAct: false,
+        }));
         dispatch(showErrorMessage("Error occurred"));
       }
     }
   }, [layerDeleted]);
+
+  useEffect(() => {
+    if (layersDeleted && layersDeleted.updateManyLayer) {
+      if (layersDeleted.updateManyLayer.success) {
+        dispatch(showSuccessMessage("The Group was successfully removed"));
+        props.layer.layers.forEach((layer) => {
+          dispatch(setMainMapState({ removeLayerFromMap: layer }));
+        })
+        setStateApp((state) => ({
+          ...state,
+          universalCircularLoaderAct: false,
+        }));
+        props.handleDialogClose(false);
+      } else {
+        setStateApp((state) => ({
+          ...state,
+          universalCircularLoaderAct: false,
+        }));
+        dispatch(showErrorMessage("Error occurred"));
+      }
+    }
+  }, [layersDeleted]);
 
   const handleAccept = () => {
     setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
@@ -42,16 +70,25 @@ export default function DeleteConfirmationDialog(props) {
       ...stateMapControls,
       // selectedControl: 'layer'
     }));
-    updateLayer({
-      variables: {
-        layer: {
-          _id: props.layer.layerId,
-          IsDeleted: true,
+
+    if (props.layer.type === "group") {
+      updateManyLayer({
+        variables: {
+          layers: props.layer.layers.map((layer) => ({ _id: layer.layerId, IsDeleted: true })),
         },
-      },
-      refetchQueries: ["getAllLayerSettingsByUser"],
-      // awaitRefetchQueries: true,
-    });
+        refetchQueries: ["getAllLayerSettingsByUser"],
+      });
+    } else
+      updateLayer({
+        variables: {
+          layer: {
+            _id: props.layer.layerId,
+            IsDeleted: true,
+          },
+        },
+        refetchQueries: ["getAllLayerSettingsByUser"],
+        // awaitRefetchQueries: true,
+      });
   };
 
   return (

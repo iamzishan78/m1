@@ -726,7 +726,7 @@ export default function ContactDetailCard(props) {
 
               <Grid item xs={12}>
                 <Grid container spacing={2}>
-                  <Grid item xs={6}>
+                  <Grid item xs={4}>
                     <Card raised style={{ minHeight: "165px", height: "100%" }}>
                       <WellsCard
                         handleOpenExpandableCard={handleOpenExpandableCard}
@@ -735,15 +735,15 @@ export default function ContactDetailCard(props) {
                     </Card>
                   </Grid>
                   {/* TEMP DELETION UNTIL CODE COMES */}
-                  {/* <Grid item xs={4}>
+                  <Grid item xs={4}>
                     <Card raised style={{ minHeight: "35px", height: "100%" }}>
                       <ParcelsCard
                         handleOpenExpandableCard={handleOpenExpandableCard}
                         contactData={contactData}
                       />
                     </Card>
-                  </Grid> */}
-                  <Grid item xs={6}>
+                  </Grid>
+                  <Grid item xs={4}>
                     <Card raised style={{ minHeight: "165px", height: "100%" }}>
                       <DealsNew
                         handleOpenExpandableCard={handleOpenExpandableCard}

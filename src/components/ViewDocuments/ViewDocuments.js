@@ -20,23 +20,17 @@ import SearchIcon from "@material-ui/icons/Search";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteDocumentConfirmation from "../Shared/DeleteDocumentConfirmation";
+
 import { GETCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { AppContext } from "../../AppContext";
 import moment from "moment";
 import { useLazyQuery } from "@apollo/client";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "../../graphQL/useQueryViewFile";
 import DocViewer from '../Shared/DocViewer'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-	faFilePdf,
-	faFilePowerpoint,
-	faFileWord,
-	faFile,
-	faFileExcel,
-	faFileArchive,
-	faFileCode,
-	faFileImage,
-} from "@fortawesome/free-solid-svg-icons";
+
+// functions / value formatters 
+import get_file_icon from "../Shared/functions/get_file_icon.js";
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -98,6 +92,29 @@ const useStyles = makeStyles((theme) => ({
 		marginLeft: "20px",
 		alignSelf: "center",
 	},
+	forImage: {
+		width: "100px !important",
+		height: "100px !important",
+		backgroundColor: "transparent !important",
+		// border: "1px solid #999",
+		borderRadius: "10px !important",
+	  },
+	forImageContainer: {
+		width: "100px !important",
+		height: "100px !important",
+		borderRadius: "10px !important",
+		backgroundColor: "#eeeeee !important",
+		// border: "1px solid #999",
+		textAlign: "center",
+		fontSize: "1.5rem",
+		fontWeight: "bold",
+		color: "#555",
+		textTransform: "uppercase",
+		paddingTop: "30px",
+		cursor: "pointer",
+		marginBottom: "5px",
+	  },
+
 	greySquare: {
 		cursor: "pointer",
 		borderRadius: "12px",
@@ -143,6 +160,8 @@ export default function ViewDocuments(props) {
 	const [stateApp, setStateApp] = React.useContext(AppContext);
 	const userId = stateApp.user.mongoId;
 
+
+	// queries 
 	const [getAllFiles, { data: files }] = useLazyQuery(GETCONTACTFILES, {
 		fetchPolicy: "cache-and-network",
 	});
@@ -151,111 +170,6 @@ export default function ViewDocuments(props) {
 		fetchPolicy: "no-cache",
 	});
 
-
-	const getFileIcon = (fileExtension) => {
-		switch (fileExtension) {
-			case "pdf":
-				return (
-					<FontAwesomeIcon
-						icon={faFilePdf}
-						style={{ fontSize: "2rem", color: "#F15642" }}
-					/>
-				);
-			case "csv":
-				return (
-					<FontAwesomeIcon
-						icon={faFileExcel}
-						style={{ fontSize: "2rem", color: "#207244" }}
-					/>
-				);
-			case "xlsx":
-				return (
-					<FontAwesomeIcon
-						icon={faFileExcel}
-						style={{ fontSize: "2rem", color: "#207244" }}
-					/>
-				);
-			case "xlsb":
-				return (
-					<FontAwesomeIcon
-						icon={faFileExcel}
-						style={{ fontSize: "2rem", color: "#207244" }}
-					/>
-				);
-			case "xlsm":
-				return (
-					<FontAwesomeIcon
-						icon={faFileExcel}
-						style={{ fontSize: "2rem", color: "#207244" }}
-					/>
-				);
-			case "xltx":
-				return (
-					<FontAwesomeIcon
-						icon={faFileExcel}
-						style={{ fontSize: "2rem", color: "#207244" }}
-					/>
-				);
-			case "doc":
-				return (
-					<FontAwesomeIcon
-						icon={faFileWord}
-						style={{ fontSize: "2rem", color: "#2A5599" }}
-					/>
-				)
-			case "docx":
-				return (
-					<FontAwesomeIcon
-						icon={faFileWord}
-						style={{ fontSize: "2rem", color: "#2A5599" }}
-					/>
-				);
-			case "ppt":
-				return (
-					<FontAwesomeIcon
-						icon={faFilePowerpoint}
-						style={{ fontSize: "2rem", color: "#D04424" }}
-					/>
-				);
-			case "pptx":
-				return (
-					<FontAwesomeIcon
-						icon={faFilePowerpoint}
-						style={{ fontSize: "2rem", color: "#D04424" }}
-					/>
-				);
-
-				case "jpg"|| "jpeg"|| "png" || "bmp":
-					return (
-					  <FontAwesomeIcon
-						icon={faFileImage}
-						style={{ fontSize: "2rem", color: "#4c6ef5" }}
-					  />
-					);
-				  case "zip":
-					return (
-					  <FontAwesomeIcon
-						icon={faFileArchive}
-						style={{ fontSize: "2rem", color: "#15aabf" }}
-					  />
-					);
-				  case "shp":
-					return (
-					  <FontAwesomeIcon
-						icon={faFileCode}
-						style={{ fontSize: "2rem", color: "#82c91e" }}
-					  />
-					);
-			default:
-				// return <span>{fileExtension}</span>;
-				return (
-					<FontAwesomeIcon
-						icon={faFile}
-						style={{ fontSize: "2rem", color: "grey" }}
-					/>
-				);
-		}
-	};
 
 	useEffect(() => {
 
@@ -352,65 +266,89 @@ export default function ViewDocuments(props) {
 				{filteredDocuments.map((doc) => {
 					console.log("FILE", doc);
 					return (
-						<li className={classes.document} key={doc.fileUrl}>
-							<div className={classes.documentLeft}>
+						<li 
+						className={classes.document} 
+						key={doc.fileUrl}>
+							<div 
+							className={classes.documentLeft}
+							>
 
-								<div
-									className={`${classes.greySquare} ${doc.fileState !== "active"
-											? classes.disabledDownload
-											: ""
-										}`}
+								<div>
 
-									onClick={() => {
-
-										viewFileResultt?.viewFiles.map((value) => {
-
-											// console.log("=============")
-											// console.log("VALUE", value)
-											// console.log("=============")
+									{console.log('VALUE DOC', doc)}
+									{console.log('VALUE DOC TEST', new RegExp(
+										["jpg", "jpeg", "png", "PNG", "bmp"].join("|")
+									).test(ExtenstionGetter(doc.fileName)) )}
 
 
+									{/* TEMP COMMENT OUT UNTIL WE GET THE CORRECT URI IN THE QUERY	 */}
+									{/* {new RegExp(
+										["jpg", "jpeg", "png", "bmp"].join("|")
+									).test(ExtenstionGetter(doc.fileName)) ? (
+										<img
+											src={doc.fileUrl}
+											alt={doc.fileName}
+											className={classes.forImage}
+										></img>
+									) : (
+										<div className={classes.forImageContainer} 
+										
+											onClick={() => {
 
-											if (value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf') {
-												setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: doc.fileName, } })
-
+											if (ExtenstionGetter(doc.fileName) === 'pdf') {
+												setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
 											}
 											else {
 												handleViewFile(doc.fileId)
 											}
-
-										})
-									}}
-								>
-									{new RegExp(
-										["jpg", "jpeg", "png", "bmp"].join("|")
-									).test(ExtenstionGetter(doc.fileName)) ? (
-										<img
-											src={doc.uri}
-											alt={doc.name}
-											className={classes.forImage}
-										></img>
-									) : (
-										<div className={classes.forImageContainer} onClick={() => {
-											if (doc.state !== "active") return;
-
-											if (ExtenstionGetter(doc.fileName) === 'pdf') {
-												setStateApp({ ...stateApp, viewDoc: { uri: doc.uri, name: doc.fileName } })
-											}
 										}}>
-											{getFileIcon(ExtenstionGetter(doc.fileName))}
+											{get_file_icon(ExtenstionGetter(doc.fileName))}
 										</div>
-									)}
+									)} */}
+
+								
+								{
+										<div className={classes.forImageContainer} 
+										
+											onClick={() => {
+
+
+											// TEMP COMMENT OUT UNTIL QUERY URI IS FIXED
+											// if (ExtenstionGetter(doc.fileName) === 'pdf') {
+											// 	setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
+											// }
+											// else {
+											// 	handleViewFile(doc.fileId)
+											// }
+
+											handleViewFile(doc.fileId)
+
+										}}>
+											{get_file_icon(ExtenstionGetter(doc.fileName))}
+										</div>
+									}
+
 
 								</div>
 
 
 								<div className={classes.fileText.concat(' DocumentTitle')} style={{ cursor: 'pointer' }}
 									onClick={() => {
-										viewFileResultt?.viewFiles.map((value) => {
-											if (value.id === doc.fileId && ExtenstionGetter(doc.fileName) === 'pdf') { setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: doc.fileName, } }) }
-										})
+
+
+										// TEMP COMMENT OUT UNTI QUERY URI IS FIXED
+										// if (ExtenstionGetter(doc.fileName) === 'pdf') {
+										// 	setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
+										// }
+										// else {
+										// 	handleViewFile(doc.fileId)
+										// }
+
+										handleViewFile(doc.fileId)
+
+
 									}}>
+
 									<h4 className={classes.uploadTitle}>{doc.fileName}</h4>
 									{/* <h5 className={classes.uploadSubtext}>{doc.userName}</h5> */}
 									<h5 className={classes.uploadSubtext}>
