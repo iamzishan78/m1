@@ -23,7 +23,8 @@ export default function AlertDialogSlide(props) {
         maxWidth: "100% !important",
         minHeight: "100vh !important",
         margin: "0 !important",
-        borderTopRightRadius: "0 !important"
+        borderTopRightRadius: "0 !important",
+        overflowX: 'hidden',
       },
       "& .MuiListItem-container": {
         borderBottom: "1px solid #c7c7c7",

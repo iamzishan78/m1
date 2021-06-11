@@ -184,12 +184,14 @@ export default function SidePanel() {
 					if (item.groupId && !groupHandled.includes(item.groupId)) {
 						groupHandled.push(item.groupId);
 						const groups = stateApp.layers.filter((i) => i.groupId === item.groupId)
+						const visiable = !!(groups.find((i) => i.layerSettings.visiable))
 						const showable = !!(groups.find((i) => i.layerSettings.showable))
 						layerAndGroups.push({
 							depth: 0,
 							type: 'group',
 							collapsed: true,
-							showable: showable,
+							showable,
+							visiable,
 							name: item.groupName
 							, id: item.groupId
 						})
@@ -199,6 +201,7 @@ export default function SidePanel() {
 								collapsed: true,
 								name: item.layerName,
 								showable: item.layerSettings.showable,
+								visiable: item.layerSettings.visiable,
 								depth: 1,
 								type: 'layer',
 								id: item._id
@@ -206,7 +209,7 @@ export default function SidePanel() {
 						})
 					}
 					if (!item.groupId) {
-						layerAndGroups.push({ ...item, showable: item.layerSettings.showable, name: item.layerName, depth: 0, type: 'layer', id: item._id })
+						layerAndGroups.push({ ...item, visiable: item.layerSettings.visiable, showable: item.layerSettings.showable, name: item.layerName, depth: 0, type: 'layer', id: item._id })
 					}
 				}
 			})
