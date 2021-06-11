@@ -40,7 +40,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     subHeaderItem: {
         backgroundColor: "#011133 !important",
-        opacity: "0.94",
+        opacity: "0.94", 
         minWidth: "400px",
     },
 
