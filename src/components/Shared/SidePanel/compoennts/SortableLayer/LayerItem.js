@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
       color: theme.palette.common.white,
     },
     overflowX: "hidden",
-    alignItems: "center",
+    // alignItems: "center",
     fontSize: props.data.type === "group" ? 20 : 18,
     position: "relative",
     // cursor: "move",
@@ -105,39 +105,52 @@ const LayerItem = React.memo((props) => {
 
             <Grid item>
 
+              <Grid container>
 
-              <Box display="inline-flex">
-                {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} />}
-              </Box>
+              <Grid item>
+                <Box display="inline-flex" float='right' justify='flex-end' alignContent='flex-end'>
+                  {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} />}
+                </Box>
 
-              <Box display="inline-flex">
-                {type === "group" && (
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={data.visiable}
-                        onChange={() => onToggleGroup(id)}
-                        size = 'small'
-                      />
-                    }
-                  />
-                )}
-              </Box>
+                <Box display="inline-flex" float='right' justify='flex-end' alignContent='flex-end'>
+                  {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} />}
+                </Box>
+              </Grid>
 
-              <Box display="inline-flex">
-                {type === "group" && !collapsed && (
-                  <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }}>
-                    <ExpandLessIcon />
-                  </ListItemIcon>
-                )}
-                {type === "group" && collapsed && (
-                  <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }} >
-                    <ChevronRightIcon fontsize='normal'/>
-                  </ListItemIcon>
-                )}
-              </Box>
 
-              
+              <Grid item>
+                <Box display="inline-flex" justifyContent='flex-end'>
+                  {type === "group" && (
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={data.visiable}
+                          onChange={() => onToggleGroup(id)}
+                          size = 'small'
+                        />
+                      }
+                    />
+                  )}
+                </Box>
+              </Grid>
+
+
+              <Grid item>
+                <Box display="inline-flex" justifyContent='flex-end'>
+                  {type === "group" && !collapsed && (
+                    <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }}>
+                      <ExpandLessIcon />
+                    </ListItemIcon>
+                  )}
+                  {type === "group" && collapsed && (
+                    <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }} >
+                      <ChevronRightIcon fontsize='normal'/>
+                    </ListItemIcon>
+                  )}
+                </Box>
+              </Grid>
+
+              </Grid>
             </Grid>
           </Grid>
         </Box>
