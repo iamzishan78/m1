@@ -251,8 +251,8 @@ function Map() {
   const [rigs, RigData] = useState([]);
   const setRigData = (state) => { if (rigs != state) { RigData(state); } };
 
- // const [permits, PermitData] = useState([]);
- // const setPermitData = (state) => { if (permits != state) { PermitData(state); } };
+  // const [permits, PermitData] = useState([]);
+  // const setPermitData = (state) => { if (permits != state) { PermitData(state); } };
 
   const [recent_submitted_permits, RecentSubmittedPermitData] = useState([]);
   const setRecentSubmittedPermitData = (state) => { if (recent_submitted_permits != state) { RecentSubmittedPermitData(state); } };
@@ -1319,8 +1319,8 @@ function Map() {
             layerId === "Tracked Owners" ||
             layerId === "Tags Filter" ||
             layerId === "Search" ||
-            layerId === "recent_submitted_permits" :
-           // layerId === "permits":
+            layerId === "recent_submitted_permits":
+            // layerId === "permits":
             wellPointClick(feature);
             break;
           default:
@@ -4088,7 +4088,6 @@ function Map() {
 
   // Use effect for removing shape filter
   useEffect(() => {
-
     if (!loading && stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
       if (draw) draw.delete(drawingFilterFeatureId);
       setStateNav((stateNav) => ({

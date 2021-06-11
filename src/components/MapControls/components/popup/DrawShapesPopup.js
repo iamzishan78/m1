@@ -5,7 +5,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import hat from "hat";
 import union from "@turf/union";
 import { AppContext } from "AppContext";
-import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
+// import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
 import { default as MouseClicked } from "../../../Shared/svgIcons/MouseClicked";
 import { default as DrawPoly } from "../../../Shared/svgIcons/polygon";
 import { default as Rect } from "../../../Shared/svgIcons/rectangle";
@@ -18,50 +18,50 @@ import { gql } from "@apollo/client";
 
 const DrawShapesPopup = (props) => {
   const { classes, children } = props;
-  const [user, setUser] = useState({ _id: "" });
+  const [, setUser] = useState({ _id: "" });
   const [stateApp, setStateApp] = useContext(AppContext);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel }] = useMutation(UPSERTCUSTOMLAYER, {
-    update(
-      cache,
-      {
-        data: {
-          upsertCustomLayer: { customLayer },
-        },
-      }
-    ) {
-      cache.modify({
-        fields: {
-          allCustomLayers(existingCustomLayers = [], { readField }) {
-            const newCustomLayerRef = cache.writeFragment({
-              data: customLayer,
-              fragment: gql`
-                fragment NewCustomLayer on CustomLayer {
-                  _id
-                  shape
-                  name
-                  layer
-                  user {
-                    _id
-                    name
-                    email
-                  }
-                }
-              `,
-            });
+  // const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel }] = useMutation(UPSERTCUSTOMLAYER, {
+  //   update(
+  //     cache,
+  //     {
+  //       data: {
+  //         upsertCustomLayer: { customLayer },
+  //       },
+  //     }
+  //   ) {
+  //     cache.modify({
+  //       fields: {
+  //         allCustomLayers(existingCustomLayers = [], { readField }) {
+  //           const newCustomLayerRef = cache.writeFragment({
+  //             data: customLayer,
+  //             fragment: gql`
+  //               fragment NewCustomLayer on CustomLayer {
+  //                 _id
+  //                 shape
+  //                 name
+  //                 layer
+  //                 user {
+  //                   _id
+  //                   name
+  //                   email
+  //                 }
+  //               }
+  //             `,
+  //           });
 
-            // Quick safety check - if the new comment is already
-            // present in the cache, we don't need to add it again.
-            if (existingCustomLayers.some((ref) => readField("id", ref) === customLayer._id)) {
-              return existingCustomLayers;
-            }
+  //           // Quick safety check - if the new comment is already
+  //           // present in the cache, we don't need to add it again.
+  //           if (existingCustomLayers.some((ref) => readField("id", ref) === customLayer._id)) {
+  //             return existingCustomLayers;
+  //           }
 
-            return [...existingCustomLayers, newCustomLayerRef];
-          },
-        },
-      });
-    },
-  });
+  //           return [...existingCustomLayers, newCustomLayerRef];
+  //         },
+  //       },
+  //     });
+  //   },
+  // });
 
   const availableShapes = useMemo(
     () => [
@@ -93,31 +93,31 @@ const DrawShapesPopup = (props) => {
     [stateApp.mapVars.zoom, stateApp.multiSelectLandGrids]
   );
 
-  useEffect(() => {
-    if (!customLayerInsertedData) {
-      return;
-    }
-    if (customLayerInsertedData.upsertCustomLayer && customLayerInsertedData.upsertCustomLayer.customLayer) {
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-      }));
+  // useEffect(() => {
+  //   if (!customLayerInsertedData) {
+  //     return;
+  //   }
+  //   if (customLayerInsertedData.upsertCustomLayer && customLayerInsertedData.upsertCustomLayer.customLayer) {
+  //     setStateApp((state) => ({
+  //       ...state,
+  //       popupOpen: false,
+  //     }));
 
-      const customLayer = customLayerInsertedData.upsertCustomLayer.customLayer;
-      const feature = JSON.parse(customLayer.shape);
-      feature.id = customLayer._id;
-      feature.properties.id = customLayer._id;
-      setStateApp((state) => ({
-        ...state,
-        selectedParcel: feature.properties,
-      }));
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: true,
-        expandedCard: true,
-      }));
-    }
-  }, [customLayerInsertedData]);
+  //     const customLayer = customLayerInsertedData.upsertCustomLayer.customLayer;
+  //     const feature = JSON.parse(customLayer.shape);
+  //     feature.id = customLayer._id;
+  //     feature.properties.id = customLayer._id;
+  //     setStateApp((state) => ({
+  //       ...state,
+  //       selectedParcel: feature.properties,
+  //     }));
+  //     setStateApp((state) => ({
+  //       ...state,
+  //       popupOpen: true,
+  //       expandedCard: true,
+  //     }));
+  //   }
+  // }, [customLayerInsertedData]);
 
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.email) {
@@ -195,6 +195,7 @@ const DrawShapesPopup = (props) => {
       currentFeature: newFeature,
       multiSelectLandGrids: false,
       isAbstractedLayersPolygon: true,
+      showShapeActionsPopup: true
     }));
     addCustomShapeProperties(newFeature, draw);
     stateApp.draw.changeMode("direct_select", {
