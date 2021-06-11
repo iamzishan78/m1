@@ -65,6 +65,11 @@ import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider'
 import Contacts from 'components/FlowDrawer/Contacts';
 import EventIcon from '@material-ui/icons/Event';
 import './style/dialog.css';
+import { faCloudShowersHeavy } from '@fortawesome/free-solid-svg-icons';
+
+// mui icons 
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -363,7 +368,7 @@ function AddDealDialog(props) {
   const { selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
   const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [title, setTitle] = useState(null); // title change from contact.name to dealName
+  const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [titleFocus, setTitleFocus] = useState(false);
   const [label, setLabel] = useState('');
   const [stageId, setStageId] = useState(null);
@@ -393,8 +398,6 @@ function AddDealDialog(props) {
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
-
-  const [valid, setValid] = useState({});
 
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
@@ -431,8 +434,14 @@ function AddDealDialog(props) {
   }, []);
 
   useEffect(() => {
+
+    console.log('===========')
+    console.log('FLOW TRANSACT BAR VIEW', stateApp.transactBarView)
+
+    
     if (stateApp.transactBarView !== "") {
-      handleValidate();
+      // handleValidate();
+
 
       if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
         addUpdateDeal(null, false);
@@ -653,22 +662,9 @@ function AddDealDialog(props) {
     }
   }, [stateApp.activeDeal, props.contact, stateApp.dealDialog, stateApp.user]);
 
-  const handleValidate = () => {
-
-
-    const tempValid = {
-      ...valid,
-      title: !title,
-    };
-
-    console.log('TITLE TMP VALID', tempValid)
-    setValid(tempValid);
-
-    return !Object.values(tempValid).reduce((acc, cur) => acc + cur);
-  };
 
   const handleClose = () => {
-    handleValidate();
+    // handleValidate();
     handleUpdate();
     setTitle("");
     setLabel("");
@@ -688,13 +684,12 @@ function AddDealDialog(props) {
     if (props.isTransactPage) setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
-      dealDialog: false, // some genius level coding here.
-      // addDealDialog: false, // not sure why different flags were used here
+      dealDialog: false, 
       activeDeal: { cardId: null, laneId: null },
       transactBarView: "",
       viewDoc: null,
     }));
-    setValid({});
+    // setValid({title: false});
   };
 
   const handleCloseContactDialog = () => {
@@ -1180,9 +1175,9 @@ function AddDealDialog(props) {
             <Grid item xs={12} style={{ minHeight: "35px" }}>
               <h4
                 style={{
-                  // margin: "0 0 15px 0",
                   float: "left",
                   fontSize: "1.1rem",
+                  marginTop: '0px'
                 }}
               >
                 {stateApp.transactBarView}
@@ -1200,6 +1195,7 @@ function AddDealDialog(props) {
                   }
                   size="small"
                 >
+                  <ArrowBackIcon />
                 </IconButton>
               </div>
             </Grid>
@@ -1411,20 +1407,18 @@ function AddDealDialog(props) {
                   value={title}
                   variant="outlined"
                   placeholder="Click to enter deal name"
-                  // style={title.trim !== "" ? ({}) : ({ border: '1px solid #EBEBEB', })}
                   required
-                  error={valid['title']}
-                  helperText={
-                    valid['title'] ? 'Enter a deal name to get started' : ''
-                  }
                   fullWidth
+
+                  // error text that will prevent things 
+                  error={(title && title !== '') ? false : true}
+                  helperText={
+                    (title && title !== '') ? '' : 'Enter a deal name to get started' 
+                  }
+
                   //   required
                   onChange={(e) => {
                     setTitle(e.target.value);
-                    setValid({
-                      ...valid,
-                      title: false,
-                    });
                   }}
                   InputProps={{
                     classes: {
