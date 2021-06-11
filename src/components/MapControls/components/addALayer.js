@@ -364,6 +364,8 @@ export default function AddLayer(props) {
     return layers.filter((UdLayer) => !(UdLayer.layerType === 'file layer' && UdLayer.groupId))
   }, [currentLayers]);
 
+  console.log("UdLayers", UdLayers)
+
   return (
     <>
       <Dialog open={isOpen} onClose={windowClose}>
