@@ -274,7 +274,6 @@ export default function AddLayer(props) {
   }
 
   async function handleFileAsync(file) {
-    debugger;
     let inputFile = null;
     let fileName = null;
     if (Array.isArray(file)) {
