@@ -29,7 +29,7 @@ export const useStyles = makeStyles((theme) => ({
         color: "white",
         width: "20px",
         marginTop: "38px",
-        background: "#040e24",
+        background: "#011133",
         cursor: "pointer",
         display: "flex",
         alignItems: "center",
@@ -51,13 +51,13 @@ export const useStyles = makeStyles((theme) => ({
         overflowY: "auto",
         height: 'calc(100vh - 506px - 64px)',
         // maxHeight: 'calc(100vh - 40px - 64px)',
-        backgroundColor: "#263451",
+        backgroundColor: "#040e24",
         "&::-webkit-scrollbar": {
             width: "0.75em",
         },
-        "&:hover::-webkit-scrollbar": {
-            width: "1.0em",
-        },
+        // "&:hover::-webkit-scrollbar": {
+        //     width: "1.0em",
+        // },
         "&::-webkit-scrollbar-track": {
             "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
         },
@@ -72,13 +72,13 @@ export const useStyles = makeStyles((theme) => ({
         overflowY: "auto",
         height: 'calc(100vh - 40px - 64px)',
         maxHeight: 'calc(100vh - 40px - 64px)',
-        backgroundColor: "#263451",
+        backgroundColor: "#040e24",
         "&::-webkit-scrollbar": {
-            width: "1em",
+            width: "0.75em",
         },
-        "&:hover::-webkit-scrollbar": {
-            width: "1.0em",
-        },
+        // "&:hover::-webkit-scrollbar": {
+        //     width: "1.0em",
+        // },
         "&::-webkit-scrollbar-track": {
             "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
         },
@@ -123,7 +123,7 @@ export const useStyles = makeStyles((theme) => ({
         },
     },
     fileTree: {
-        backgroundColor: "#263451",
+        backgroundColor: "#040e24",
         overflow: "auto",
         height: 'calc(100vh - 40px - 64px)',
         maxheight: 'calc(100vh - 40px - 64px)',
@@ -133,9 +133,9 @@ export const useStyles = makeStyles((theme) => ({
         "&::-webkit-scrollbar": {
             width: "0.75em",
         },
-        "&:hover::-webkit-scrollbar": {
-            width: "0.75em",
-        },
+        // "&:hover::-webkit-scrollbar": {
+        //     width: "0.75em",
+        // },
         "&::-webkit-scrollbar-track": {
             "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
         },
