@@ -1130,7 +1130,6 @@ function SubTable(props) {
               ...column.options,
               customBodyRender: (value, tableMeta, updateValue) => {
                 let id = props.targetLabel + tableMeta.columnIndex;
-
                 if(props.parent !== 'search' && props.targetLabel !== 'well'){
 
                   console.log('PROPS 2', props)
@@ -1159,6 +1158,11 @@ function SubTable(props) {
                           getWell({
                             variables: { wellId: value },
                           });
+                        } else if( props.parent === 'assocTaxRollInterests' && props.targetLabel === 'parcel'){
+                          let selectedParcel = props.rows.find((row) => {
+                            return row._id === tableMeta.rowData[0];
+                          });
+                          props.showParcelDetails(selectedParcel)
                         } else {
                           let selectedWell = props.rows.find((row) => {
                             if (row.id) return row.id == tableMeta.rowData[0];
@@ -1423,6 +1427,10 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
+                          
+                  if(props.parent === 'assocTaxRollInterests' && props.targetLabel === 'parcel'){
+                    targetSourceId = tableMeta.rowData[15];
+                  }
                   return (
                     <TrackToggleButton
                       id={id + targetSourceId + tableMeta.rowIndex}
@@ -1473,6 +1481,9 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
+                  if(props.parent === 'assocTaxRollInterests' && props.targetLabel === 'parcel'){
+                    targetSourceId = tableMeta.rowData[15];
+                  }
 
                   return (
                     //add download and search icons here
@@ -1841,7 +1852,10 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
-
+                  
+                  if(props.parent === 'assocTaxRollInterests' && props.targetLabel === 'parcel'){
+                    targetSourceId = tableMeta.rowData[15];
+                  }
                   return (
                     <div style={{ marginRight: "10px" }}>
                       <Tooltip
@@ -2240,7 +2254,7 @@ function SubTable(props) {
                   return (
                     <div
                       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
-                      className={`${props.parent === "assocTaxRollInterests" && (!tableMeta.rowData[14] || tableMeta.rowData[19]) ? [classes.blue] : []} ${props.parent === "ownersPerParcel" && (!tableMeta.rowData[14] || tableMeta.rowData[15]) ? [classes.blue] : []}` }
+                      className={`${props.parent === "assocTaxRollInterests" && props.addAble.type === 'wellInterest' && (!tableMeta.rowData[14] || tableMeta.rowData[19]) ? [classes.blue] : []}` }
                     >
 
                       {props.targetLabel === "contact" &&
@@ -2775,7 +2789,7 @@ function SubTable(props) {
       console.log('props addable type', props.addAble.type)
       var buttonLabel = "+ ADD";
       if (props.addAble.type === "contact") { buttonLabel = '+ ADD CONTACT' }
-      if (props.addAble.type === "wellInterest") { buttonLabel = '+ ADD INTEREST' }
+      if (props.addAble.type === "wellInterest" || props.addAble.type === "parcelInterest") { buttonLabel = '+ ADD INTEREST' }
       if (props.addAble.type === "deals") { buttonLabel = '+ ADD DEAL' }
       if (props.addAble && props.parent === "UserManagement") { buttonLabel = "+ ADD USER" }
       if (props.addAble.type === "ownerToParcel") { buttonLabel = '+ ADD INTEREST OWNER' }
@@ -2846,6 +2860,16 @@ function SubTable(props) {
       return (
         <>
           <div style={{ display: 'inline', cssFloat: 'left', marginRight: '15px', marginTop: '5px' }}>
+            {(props.addAble.type === "parcelInterest") && (
+              <Button
+                color="secondary"
+                className={classes.multiSelectionTopBarButtons}
+                disabled={true}
+                onClick={()=>{}}
+              >
+                {buttonLabel}
+              </Button>
+            )}
             {(props.addAble.type === "wellInterest"
               || props.addAble.type === "deals"
               || props.addAble.type === "ownerToParcel"
@@ -2929,7 +2953,7 @@ function SubTable(props) {
         }));
       }
 
-      if (props.parent === "assocTaxRollInterests") {
+      if (props.parent === "assocTaxRollInterests" && props.targetLabel === 'wells') {
         let card = { ...rows[dataIndex] };
         setStateApp((stateApp) => ({
           ...stateApp,
