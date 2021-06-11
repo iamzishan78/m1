@@ -21,6 +21,7 @@ import TableHeader from 'components/Shared/constants/contactperwell-header-schem
 import { handleTagColumn } from "../helpers";
 
 // Utilities
+import debounce from "lodash/debounce";
 import isEmpty from "lodash/isEmpty";
 
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +43,13 @@ function ContactWellInterestTable(props) {
   const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
   // queries 
-  const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY, { fetchPolicy: "cache-and-network", skip: true });
+  const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY, { fetchPolicy: "cache-and-network", skip: true,
+    // with a cache fetch policy, if network request returns same result we can end up in an infinite loading sitch.
+    // have only seen when searching / researching same string - so same result
+    onCompleted: () => {
+      props.setLoading(false);
+    }
+  });
   const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: [ "getContactWells", "getPaginatedContactWellInterests" ], awaitRefetchQueries: true });
   const tableData = dataContactWells?.paginatedContactWellInterests
 
@@ -94,12 +101,29 @@ function ContactWellInterestTable(props) {
       props.setLoading(false);
     }
     else if (tableData?.edges?.length === 0) {
+      props.setRows([]);
       props.setLoading(false);
     }
   }, [tableData, props.dependencyUpdate]);
 
   ////////////Contact Wells end///////////////////////////////////////////////
 
+  const searchRequest = (e) => {
+    e.setLoading(true);
+    e.tableState.page = 0;
+    e.tableState.count = 0;
+    e.setPageInd(e.tableState.page);
+    e.getPaginatedContactWellInterests(e.pageVariables);
+    // e.getContactsFilterOptions(e.pageVariables);
+  };
+
+  const delayedSearchRequest = React.useMemo(
+    () =>
+      debounce((request, callback) => {
+        searchRequest(request);
+      }, 500),
+    []
+  );
 
   const onTableChange = (action, tableState, rows, meta) => {
 
@@ -120,11 +144,11 @@ function ContactWellInterestTable(props) {
                 : -1,
           }
         },
-
         filters: {
           field: "contact._id",
           value: props.contactId,
         },
+        search: tableState.searchText,
       },
     };
 
@@ -167,6 +191,15 @@ function ContactWellInterestTable(props) {
         );
         break;
       case "search":
+        delayedSearchRequest({
+          tableState: tableState,
+          setLoading: props.setLoading,
+          setPageInd: meta.setPageInd,
+          getPaginatedContactWellInterests: getPaginatedContactWellInterests,
+          // getContactsFilterOptions:
+          //   props.contactsPageProps.getContactsFilterOptions,
+          pageVariables,
+        });
         break;
       case "onSearchClose":
         break;
