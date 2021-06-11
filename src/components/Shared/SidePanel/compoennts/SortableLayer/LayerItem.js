@@ -104,11 +104,13 @@ const LayerItem = React.memo((props) => {
 
 
             <Grid item>
+
+
               <Box display="inline-flex">
                 {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} />}
-                
+              </Box>
 
-                
+              <Box display="inline-flex">
                 {type === "group" && (
                   <FormControlLabel
                     control={
@@ -120,7 +122,9 @@ const LayerItem = React.memo((props) => {
                     }
                   />
                 )}
+              </Box>
 
+              <Box display="inline-flex">
                 {type === "group" && !collapsed && (
                   <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }}>
                     <ExpandLessIcon />
@@ -131,9 +135,9 @@ const LayerItem = React.memo((props) => {
                     <ChevronRightIcon fontsize='normal'/>
                   </ListItemIcon>
                 )}
-
-
               </Box>
+
+              
             </Grid>
           </Grid>
         </Box>
