@@ -38,6 +38,11 @@ import UploadZone from "./DailogUploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
 import { CircularProgress } from "@material-ui/core";
 import { Document, Page, pdfjs } from "react-pdf";
+
+// functions 
+import get_file_icon from "../../../components/Shared/functions/get_file_icon.js";
+
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100px !important",
     height: "100px !important",
     backgroundColor: "transparent !important",
-    border: "1px solid #999",
+    // border: "1px solid #999",
     borderRadius: "10px !important",
   },
   forImageContainer: {
@@ -64,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100px !important",
     borderRadius: "10px !important",
     backgroundColor: "#eeeeee !important",
-    border: "1px solid #999",
+    // border: "1px solid #999",
     textAlign: "center",
     fontSize: "1.5rem",
     fontWeight: "bold",
@@ -290,109 +295,6 @@ export default function Documents(props) {
     setNumPages(numPages);
   }
 
-  const getFileIcon = (fileExtension) => {
-    switch (fileExtension) {
-      case "pdf":
-        return (
-          <FontAwesomeIcon
-            icon={faFilePdf}
-            style={{ fontSize: "2rem", color: "#F15642" }}
-          />
-        );
-      case "csv":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "xlsx":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "xlsb":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "xlsm":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "xltx":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "doc":
-        return (
-          <FontAwesomeIcon
-            icon={faFileWord}
-            style={{ fontSize: "2rem", color: "#2A5599" }}
-          />
-        )
-      case "docx":
-        return (
-          <FontAwesomeIcon
-            icon={faFileWord}
-            style={{ fontSize: "2rem", color: "#2A5599" }}
-          />
-        );
-      case "ppt":
-        return (
-          <FontAwesomeIcon
-            icon={faFilePowerpoint}
-            style={{ fontSize: "2rem", color: "#D04424" }}
-          />
-        );
-      case "pptx":
-        return (
-          <FontAwesomeIcon
-            icon={faFilePowerpoint}
-            style={{ fontSize: "2rem", color: "#D04424" }}
-          />
-        );
-        case "jpg"|| "jpeg"|| "png" || "bmp":
-          return (
-            <FontAwesomeIcon
-              icon={faFileImage}
-              style={{ fontSize: "2rem", color: "#4c6ef5" }}
-            />
-          );
-        case "zip":
-          return (
-            <FontAwesomeIcon
-              icon={faFileArchive}
-              style={{ fontSize: "2rem", color: "#15aabf" }}
-            />
-          );
-        case "shp":
-          return (
-            <FontAwesomeIcon
-              icon={faFileCode}
-              style={{ fontSize: "2rem", color: "#82c91e" }}
-            />
-          );
-      default:
-        // return <span>{fileExtension}</span>;
-        return (
-          <FontAwesomeIcon
-            icon={faFile}
-            style={{ fontSize: "2rem", color: "grey" }}
-          />
-        );
-    }
-  };
 
   return (
     <div className={classes.root} variant="outlined">
@@ -432,6 +334,9 @@ export default function Documents(props) {
               let fileExtension = value?.name
                 ?.slice(value.name.lastIndexOf(".") + 1)
                 ?.toLowerCase();
+
+            console.log( 'VALUE TEST GOOD ONE', value)
+
               if (key <= 1) {
                 return (
                   <Grid item xs={4} key={key} className="" >
@@ -468,23 +373,26 @@ export default function Documents(props) {
                       }
                       interactive
                     >
+
+
                       <div>
                         {new RegExp(
                           ["jpg", "jpeg", "png", "bmp"].join("|")
                         ).test(fileExtension) ? (
+
+
                           <img
                             src={value.uri}
                             alt={value.name}
                             className={classes.forImage}
                           ></img>
+
+
                         ) : (
                           <div className={classes.forImageContainer} 
                           
                             onClick={() => {
-                            // if(fileExtension === 'pdf')
-                            // {
-                            //   setStateApp({ ...stateApp, viewDoc: {uri:value.uri, name:value.name, downloadFn:handleViewFile, downloadData: files?.getFileDescriptors[key].fileId}})
-                            // }
+
                             if (fileExtension === 'pdf') {
                               setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } })
                             }
@@ -494,8 +402,8 @@ export default function Documents(props) {
                               )
                             }
                           }}>
-                            {/* {fileExtension} */}
-                            {getFileIcon(fileExtension)}
+
+                            {get_file_icon(fileExtension)}
                           </div>
                         )}
                         <div className={classes.imageSubText}>
