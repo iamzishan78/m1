@@ -43,12 +43,14 @@ export const useStyles = makeStyles((theme) => ({
         opacity: "0.94",
         minWidth: "400px",
     },
+
+    // this is for basemap panel
     list: {
         padding: 0,
         minWidth: "425px",
         overflowY: "auto",
-        height: 'calc(100vh - 306px - 64px)',
-        maxHeight: 'calc(100vh - 40px - 64px)',
+        height: 'calc(100vh - 506px - 64px)',
+        // maxHeight: 'calc(100vh - 40px - 64px)',
         backgroundColor: "#263451",
         "&::-webkit-scrollbar": {
             width: "0.75em",
@@ -132,7 +134,7 @@ export const useStyles = makeStyles((theme) => ({
             width: "0.75em",
         },
         "&:hover::-webkit-scrollbar": {
-            width: "1.0em",
+            width: "0.75em",
         },
         "&::-webkit-scrollbar-track": {
             "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",

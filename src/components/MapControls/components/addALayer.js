@@ -33,6 +33,7 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
+import { truncate } from "components/Shared/functions";
 
 const random_rgb = () => {
   var o = Math.round,
@@ -242,6 +243,36 @@ export default function AddLayer(props) {
     });
   };
 
+  const parseGeoForTypesAndNames = (geo, name) => {
+    const layerTypes = []
+    const fileNames = []
+    geo.features.forEach((feature) => {
+      if (!feature.properties) {
+        feature.properties = {}
+      }
+      feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type }
+      if (!layerTypes.includes(feature.geometry.type)) {
+        layerTypes.push(feature.geometry.type)
+      }
+    })
+    layerTypes.forEach((layerType) => {
+      if (layerTypes.length > 1) {
+        fileNames.push(`${geo.fileName || name} - ${layerType}`)
+      } else {
+        fileNames.push(`${geo.fileName || name} `)
+      }
+    })
+    return { layerTypes, fileNames }
+  }
+
+  const singleGeojson = (geojson, groupName) => {
+    const { layerTypes, fileNames } = parseGeoForTypesAndNames(geojson, groupName)
+    geojson.fileNames = fileNames
+    geojson.featureTypes = layerTypes
+    geojson.groupName = groupName
+    return geojson;
+  }
+
   async function handleFileAsync(file) {
     let inputFile = null;
     let fileName = null;
@@ -261,7 +292,7 @@ export default function AddLayer(props) {
             return response.json();
           })
           .then((response) => {
-            resolve(response);
+            resolve(singleGeojson(response, fileName.replace('.geojson', '')));
           })
           .catch((error) => reject(error));
       });
@@ -270,15 +301,23 @@ export default function AddLayer(props) {
         fetch(inputFile).then((response) => {
           response.arrayBuffer().then((buffer) => {
             shp(buffer).then((geojson) => {
+              let allFileNames = []
+              let allLayerTypes = []
+              const name = fileName.replace('.zip', '')
               if (Array.isArray(geojson)) {
+                geojson.forEach((geo) => {
+                  const { layerTypes, fileNames } = parseGeoForTypesAndNames(geo, name)
+                  allLayerTypes = allLayerTypes.concat(layerTypes)
+                  allFileNames = allFileNames.concat(fileNames)
+                })
                 const merged = geojsonMerge.merge(geojson)
-                merged.fileNames = geojson.map((g) => g.fileName)
+                merged.fileNames = allFileNames
+                merged.featureTypes = allLayerTypes
                 merged.groupName = fileName.replace('.zip', '')
                 resolve(merged)
+              } else {
+                resolve(singleGeojson(geojson, name));
               }
-              geojson.fileNames = [geojson.fileName]
-              geojson.groupName = fileName.replace('.zip', '')
-              resolve(geojson);
             });
           });
         });
@@ -293,28 +332,17 @@ export default function AddLayer(props) {
       universalCircularLoaderAct: true,
     }));
     let fileContent = await handleFileAsync(fileObj);
-    const featureTypes = []
-    fileContent.features.forEach((feature) => {
-      if (!feature.properties) {
-        feature.properties = {}
-      }
-      feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type }
-      if (!featureTypes.includes(feature.geometry.type)) {
-        featureTypes.push(feature.geometry.type)
-      }
-    })
-    fileContent.featureTypes = featureTypes
     setStateApp((stateApp) => ({
       ...stateApp,
       universalCircularLoaderAct: false,
     }));
 
-
-    setStateMapControls({
-      ...stateMapControls,
-      layerAddControl: featureTypes.length > 0 ? "addGroup" : "add",
-      fileUploadedContent: fileContent,
-    });
+    if (fileContent?.featureTypes)
+      setStateMapControls({
+        ...stateMapControls,
+        layerAddControl: fileContent.featureTypes?.length > 1 ? "addGroup" : "add",
+        fileUploadedContent: fileContent,
+      });
   }
 
   const M1Layers = React.useMemo(() => {
@@ -394,7 +422,7 @@ export default function AddLayer(props) {
                       onChange={() => changeShowAble(layer)}
                       inputProps={{ "aria-label": "primary checkbox" }}
                     />
-                    <ListItemText id={labelId} primary={layer.layerName} />
+                    <ListItemText id={labelId} primary={truncate(layer.layerName, 30)} />
                   </StyledListItem>
                 );
               })}
@@ -425,6 +453,19 @@ export default function AddLayer(props) {
                         inputProps={{ "aria-label": "primary checkbox" }}
                       />
                       <EditableTextField onChange={changeLayerName} item={layer} name={layer.name} />
+                      <ListItemSecondaryAction style={{ marginRight: '30px' }} onClick={(e) => e.stopPropagation()}>
+                        <Tooltip title="Delete" placement="top">
+                          <IconButton
+                            edge="end"
+                            size="small"
+                            onClick={() => {
+                              setOpenDeleteDialog(layer);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </ListItemSecondaryAction>
                     </AccordionSummary>
                     <Box paddingLeft={2} paddingRight={2}>
                       <List className={classes.list}>
