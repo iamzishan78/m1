@@ -90,7 +90,7 @@ const LayerItem = React.memo((props) => {
                   {" "}
                   <DragIndicator style={{ cursor: "move" }} />
                 </ListItemIcon>
-                <ListItemText id={id} primary={truncate(name, depth ? 20 : 25)} className={!ifLayerHaveData(data, stateApp) ? classes.disabledLayerTitle : ""} />
+                <ListItemText id={id} primary={truncate(name, depth ? 18 : 22)} className={!ifLayerHaveData(data, stateApp) ? classes.disabledLayerTitle : ""} />
               </Box>
             </Grid>
 
