@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { TextField, Grid } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import Typography from '@material-ui/core/Typography';
+import { truncate } from "components/Shared/functions";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -12,14 +13,14 @@ const useStyles = makeStyles((theme) => ({
     }),
     textField: {
         height: "100%",
-        width: "100%",
+        width: '100%',
         paddingTop: "15px",
         '& .MuiFilledInput-input': {
-            padding: '12px 12px 10px'
+            padding: '12px 12px 10px',
         },
         '& .MuiFormHelperText-contained': {
             justifyContent: "flex-end",
-            display: "flex"
+            display: "flex",
         }
     },
     editIcon: (type) => ({
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         position: "relative"
     }),
     textFieldInput: {
-        height: "40px",
+        height: "40px"
     },
     textFieldLabel: {
     },
@@ -39,12 +40,14 @@ function EditableTextField({ item, onChange, name }) {
     const classes = useStyles({ isEdit, type: item.type });
     return (
         <Grid container onMouseOver={() => !isEdit.mode && setEdit({ ...isEdit, able: true })}
-            onMouseLeave={() => setEdit({ ...isEdit, able: false })}>
-            <Grid item >
+            onMouseLeave={() => setEdit({ ...isEdit, able: false })}
+        >
+            <Grid item md={10} style={isEdit.mode ? { width: '89%' } : {}}>
                 {!isEdit.mode ? (
-                    <Typography className={classes.heading}>{`${name}`}</Typography>
+                    <Typography className={classes.heading}>{`${truncate(name, 35)}`}</Typography>
                 ) : (
                     <TextField
+                        fullWidth={true}
                         placeholder="Project Name..."
                         className={classes.textField}
                         variant="outlined"
@@ -70,7 +73,7 @@ function EditableTextField({ item, onChange, name }) {
                     />
                 )}
             </Grid>
-            <Grid item className={classes.editIcon}>
+            <Grid item md={2} className={classes.editIcon}>
                 {isEdit.able && <EditIcon fontSize="small" onClick={(e) => { e.stopPropagation(); setEdit({ able: false, mode: true }) }} />}
             </Grid>
         </Grid>
