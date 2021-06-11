@@ -29,6 +29,7 @@ const FileTree = ({ layerMap }) => {
           if (layerMap[index].type === 'group') {
             updateFn[index] = {
               showable: { $set: layerMap[index].showable },
+              visiable: { $set: layerMap[index].visiable },
             }
           }
           if (item.name !== layerMap[index].name) {
@@ -58,7 +59,7 @@ const FileTree = ({ layerMap }) => {
     const index = newItems.findIndex((item) => item.id === currentItem.current.id);
     if (newItems[index].depth === 1) {
       const parent = findParent(newItems, index);
-      if (parent.type !== "group") {
+      if (parent.type !== "group" || parent.collapsed) {
         newItems[index].depth = 0;
       }
     }
@@ -81,6 +82,42 @@ const FileTree = ({ layerMap }) => {
 
     setItems(update(items, updateFn));
   };
+  const handleToggleGroup = (id) => {
+    const index = items.findIndex((item) => item.id === id);
+    const item = items[index];
+    const { visiable } = item;
+    const descendants = findDescendants(items, index);
+    const updateFn = {
+      [index]: { visiable: { $set: !visiable } },
+    };
+    const layersToUpdate = []
+    const currentLayers = [...items];
+
+    descendants.forEach((descendant) => {
+      const descendantIndex = items.indexOf(descendant);
+      updateFn[descendantIndex] = { layerSettings: { visiable: { $set: !visiable } } };
+      const layer = {
+        ...descendant,
+        layerSettings: {
+          ...descendant.layerSettings,
+          visiable: !visiable,
+        },
+      };
+      currentLayers[descendantIndex] = layer
+      layersToUpdate.push(layer)
+    });
+
+    setItems(update(items, updateFn));
+
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      layers: currentLayers.filter((l) => l.type !== "group"),
+    }));
+
+    updateManyUserLayerSettings({
+      variables: { manySettings: layersToUpdate.map((layer) => ({ _id: layer._id, layerSettings: layer.layerSettings })) },
+    });
+  };
 
   const handleDragBegin = (item) => {
     itemsRef.current = items;
@@ -100,7 +137,7 @@ const FileTree = ({ layerMap }) => {
     const layersToUpdate = [];
     let groupIndex;
 
-    if (oldItem.depth === 0 && newItem.depth === 1) {
+    if (newItem.depth === 1) {
       // if layer into group
       groupIndex = items.findIndex((item) => item.id === newItem.id);
       const parent = findParent(items, groupIndex);
@@ -181,6 +218,7 @@ const FileTree = ({ layerMap }) => {
                 <LayerItem
                   {...props}
                   onToggleCollapse={handleToggleCollapse}
+                  onToggleGroup={handleToggleGroup}
                   onDragEnd={handleDragEnd}
                   onDragBegin={handleDragBegin}
                   updateLayer={updateLayer}
