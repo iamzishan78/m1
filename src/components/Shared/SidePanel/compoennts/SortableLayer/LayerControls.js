@@ -80,11 +80,22 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
 
   const control1 = layer.layerSettings?.colorable && (
     <div
+      // style={{
+      //   paddingRight: !layer.layerSettings.interaction.interactionAble
+      //     ? "40"
+      //     : "",
+      // }}
+
       style={{
-        paddingRight: !layer.layerSettings.interaction.interactionAble
-          ? "40"
-          : "",
+        paddingRight: 20,
+        // height: "42px",
+        // width: "42px",
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}
+
     >
       <ListItemIcon onClick={() => handleColorPicker(layer)} style={{ verticalAlign: "bottom" }}>
         <Tooltip title="Layer Styling">
@@ -98,8 +109,12 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
     <div
       style={{
         paddingRight: 20,
-        height: "42px",
-        width: "42px",
+        // height: "42px",
+        // width: "42px",        
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}
     >
       <Checkbox
@@ -135,7 +150,6 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
 
   return (
     <>
-      {control1}
       {control2}
       <FormControlLabel
         control={
@@ -150,9 +164,15 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
               index,
             })}
             onChange={() => handleToggleVisibilty(layer)}
+            size="small"
           />
         }
+
+
       />
+
+      {control1}
+
     </>
   );
 };

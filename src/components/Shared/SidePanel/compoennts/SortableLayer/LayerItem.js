@@ -12,6 +12,9 @@ import LayerControls from "./LayerControls";
 import { truncate } from "components/Shared/functions";
 import { FormControlLabel } from "@material-ui/core";
 import { Switch } from "@material-ui/core";
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -19,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       background: props.muted ? "#4B618F" : "#263451",
     },
-    backgroundColor: "#263451",
+    backgroundColor: "#040e24",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
     },
@@ -89,7 +92,7 @@ const LayerItem = React.memo((props) => {
 
                 <ListItemIcon ref={drag}>
                   {" "}
-                  <DragIndicator style={{ cursor: "move" }} />
+                  <DragIndicator style={{ cursor: "move"}} />
                 </ListItemIcon>
 
 
@@ -104,16 +107,7 @@ const LayerItem = React.memo((props) => {
               <Box display="inline-flex">
                 {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} />}
                 
-                {type === "group" && !collapsed && (
-                  <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }}>
-                    <ExpandLessIcon />
-                  </ListItemIcon>
-                )}
-                {type === "group" && collapsed && (
-                  <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }} >
-                    <ExpandMoreIcon />
-                  </ListItemIcon>
-                )}
+
                 
                 {type === "group" && (
                   <FormControlLabel
@@ -121,9 +115,21 @@ const LayerItem = React.memo((props) => {
                       <Switch
                         checked={data.visiable}
                         onChange={() => onToggleGroup(id)}
+                        size = 'small'
                       />
                     }
                   />
+                )}
+
+                {type === "group" && !collapsed && (
+                  <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }}>
+                    <ExpandLessIcon />
+                  </ListItemIcon>
+                )}
+                {type === "group" && collapsed && (
+                  <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }} >
+                    <ChevronRightIcon fontsize='normal'/>
+                  </ListItemIcon>
                 )}
 
 
