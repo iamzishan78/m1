@@ -21,7 +21,7 @@ import MapBasicIcon from "../../svgIcons/MapBasicIcon";
 import Collapse from "@material-ui/core/Collapse";
 import Box from "@material-ui/core/Box";
 import { ThemeProvider } from "@material-ui/core/styles";
-import  Grid from "@material-ui/core/grid";
+import Grid from "@material-ui/core/Grid";
 
 import { useSelector } from "react-redux";
 import { deepEqualObjects } from "../../functions";
