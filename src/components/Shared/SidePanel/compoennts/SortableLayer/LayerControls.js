@@ -11,6 +11,9 @@ import { deepEqualObjects } from "../../../functions";
 import { ifLayerHaveData } from "../common.js";
 import { AppContext } from "AppContext.js";
 
+import { Box, Grid } from "@material-ui/core";
+
+
 const useStyles = makeStyles(() => ({
   disabledLayerTitle: {
     "& span": { color: "rgb(127, 149, 199) !important" },
@@ -87,13 +90,13 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
       // }}
 
       style={{
-        paddingRight: 20,
+        // paddingRight: 20,
         // height: "42px",
         // width: "42px",
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center'
+        // display: 'flex',
+        // flexDirection: 'column',
+        // alignItems: 'center',
+        // justifyContent: 'center'
       }}
 
     >
@@ -108,13 +111,11 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
   const control2 = layer.layerSettings?.interaction?.interactionAble && (
     <div
       style={{
-        paddingRight: 20,
-        // height: "42px",
-        // width: "42px",        
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center'
+        // paddingRight: 20, 
+        // display: 'flex',
+        // flexDirection: 'column',
+        // alignItems: 'center',
+        // justifyContent: 'center'
       }}
     >
       <Checkbox
@@ -150,28 +151,38 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
 
   return (
     <>
-      {control2}
-      <FormControlLabel
-        control={
-          <Switch
-            disabled={
-              !ifLayerHaveData(layer, stateApp)
-                ? classes.disabledLayerTitle
-                : ""
+      
+      <Grid container>
+
+      <Grid item>
+          {control2}
+      </Grid>
+
+        <Grid item>
+          <FormControlLabel
+            control={
+              <Switch
+                disabled={
+                  !ifLayerHaveData(layer, stateApp)
+                    ? classes.disabledLayerTitle
+                    : ""
+                }
+                checked={getLayerChecked({
+                  layer,
+                  index,
+                })}
+                onChange={() => handleToggleVisibilty(layer)}
+                size="small"
+              />
             }
-            checked={getLayerChecked({
-              layer,
-              index,
-            })}
-            onChange={() => handleToggleVisibilty(layer)}
-            size="small"
           />
-        }
+      </Grid>
 
+      <Grid item>
+          {control1}
+      </Grid>
 
-      />
-
-      {control1}
+      </Grid>
 
     </>
   );

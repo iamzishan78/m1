@@ -14,20 +14,26 @@ import { FormControlLabel } from "@material-ui/core";
 import { Switch } from "@material-ui/core";
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
     fontFamily: "Poppins",
-    "&:hover": {
-      background: props.muted ? "#4B618F" : "#263451",
-    },
-    backgroundColor: "#040e24",
+
+    // "&:hover": {
+    //   background: props.muted ? "#4B618F" : "#263451",
+    // },
+
+    backgroundColor: props.data.type === "group" ? "#2c3148": "#040e24",
+
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
     },
-    overflowX: "hidden",
+
+    // overflowX: "hidden",
     // alignItems: "center",
+
     fontSize: props.data.type === "group" ? 20 : 18,
     position: "relative",
     // cursor: "move",
@@ -45,6 +51,8 @@ const useStyles = makeStyles((theme) => ({
     "& span": { color: "rgb(127, 149, 199) !important" },
   },
 }));
+
+
 
 const LayerItem = React.memo((props) => {
   const colors = useSelector(({ MainMap }) => MainMap);
@@ -95,9 +103,9 @@ const LayerItem = React.memo((props) => {
                   <DragIndicator style={{ cursor: "move"}} />
                 </ListItemIcon>
 
-
-
-                <ListItemText id={id} primary={truncate(name, depth ? 20 : 25)} className={!ifLayerHaveData(data, stateApp) ? classes.disabledLayerTitle : ""} />
+                <ListItemText id={id} primary={truncate(name, depth ? 20 : 25)} 
+                                className={!ifLayerHaveData(data, stateApp) ? 
+                                classes.disabledLayerTitle : ""} />
               </Box>
             </Grid>
 
@@ -105,21 +113,14 @@ const LayerItem = React.memo((props) => {
 
             <Grid item>
 
-              <Grid container>
+              <Grid container >
 
-              <Grid item>
-                <Box display="inline-flex" float='right' justify='flex-end' alignContent='flex-end'>
+              <Grid item >
                   {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} />}
-                </Box>
-
-                <Box display="inline-flex" float='right' justify='flex-end' alignContent='flex-end'>
-                  {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} />}
-                </Box>
               </Grid>
 
 
               <Grid item>
-                <Box display="inline-flex" justifyContent='flex-end'>
                   {type === "group" && (
                     <FormControlLabel
                       control={
@@ -131,12 +132,10 @@ const LayerItem = React.memo((props) => {
                       }
                     />
                   )}
-                </Box>
               </Grid>
 
 
               <Grid item>
-                <Box display="inline-flex" justifyContent='flex-end'>
                   {type === "group" && !collapsed && (
                     <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }}>
                       <ExpandLessIcon />
@@ -147,7 +146,7 @@ const LayerItem = React.memo((props) => {
                       <ChevronRightIcon fontsize='normal'/>
                     </ListItemIcon>
                   )}
-                </Box>
+                {/* </Box> */}
               </Grid>
 
               </Grid>
