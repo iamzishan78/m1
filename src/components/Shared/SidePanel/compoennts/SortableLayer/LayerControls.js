@@ -154,9 +154,13 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
       
       <Grid container>
 
-      <Grid item>
-          {control2}
-      </Grid>
+        <Grid item>
+            {control2}
+        </Grid>
+
+        <Grid item>
+            {control1}
+        </Grid>
 
         <Grid item>
           <FormControlLabel
@@ -176,11 +180,10 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
               />
             }
           />
+          
       </Grid>
 
-      <Grid item>
-          {control1}
-      </Grid>
+
 
       </Grid>
 

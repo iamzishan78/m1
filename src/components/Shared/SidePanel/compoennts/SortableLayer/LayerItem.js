@@ -1,8 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/styles";
 import { Box, Grid, ListItemIcon, ListItemText } from "@material-ui/core";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+
 import { Flipped } from "react-flip-toolkit";
 import { useSelector } from "react-redux";
 import { getLayerColor, ifLayerHaveData } from "../common";
@@ -12,6 +11,10 @@ import LayerControls from "./LayerControls";
 import { truncate } from "components/Shared/functions";
 import { FormControlLabel } from "@material-ui/core";
 import { Switch } from "@material-ui/core";
+
+// icons 
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
@@ -37,9 +40,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: props.data.type === "group" ? 20 : 18,
     position: "relative",
     // cursor: "move",
-    padding: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : theme.spacing(0.5, 0),
+    // padding: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : theme.spacing(0.5, 0),
     // margin: props.data.collapsed && props.data.type === "layer" ? 0 : theme.spacing(0.5),
-    marginLeft: theme.spacing(props.depth * 2),
+    // marginLeft: theme.spacing(props.depth * 2),
     color: props.muted ? theme.palette.primary.dark : "inherit",
     zIndex: props.muted ? 1 : 0,
     fontWeight: props.data.type === "group" ? 600 : 500,
@@ -94,18 +97,37 @@ const LayerItem = React.memo((props) => {
     <Flipped flipId={id}>
       <div ref={(ref) => drop(preview(ref))} className={classes.root}>
         <Box borderColor={getLayerColor(data, "layer", colors)} borderLeft={4}>
-          <Grid container className={classes.root} direction="row" justify="space-between" alignItems="center">
+          <Grid container     
+                className={classes.root} 
+                direction="row" 
+                // justify="space-between" 
+                // alignItems="center"
+          >
+
             <Grid item>
-              <Box display="flex" flex={1} px={1}>
+              <Box display="flex" flex={1}>
+
+
 
                 <ListItemIcon ref={drag}>
-                  {" "}
                   <DragIndicator style={{ cursor: "move"}} />
                 </ListItemIcon>
+
+                  {type === "group" && !collapsed && (
+                    <ListItemIcon onClick={handleClick}>
+                      <ExpandLessIcon />
+                    </ListItemIcon>
+                  )}
+                  {type === "group" && collapsed && (
+                    <ListItemIcon onClick={handleClick} >
+                      <ExpandMoreIcon/>
+                    </ListItemIcon>
+                  )}
 
                 <ListItemText id={id} primary={truncate(name, depth ? 20 : 25)} 
                                 className={!ifLayerHaveData(data, stateApp) ? 
                                 classes.disabledLayerTitle : ""} />
+                {/* {id} */}
               </Box>
             </Grid>
 
@@ -135,19 +157,7 @@ const LayerItem = React.memo((props) => {
               </Grid>
 
 
-              <Grid item>
-                  {type === "group" && !collapsed && (
-                    <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }}>
-                      <ExpandLessIcon />
-                    </ListItemIcon>
-                  )}
-                  {type === "group" && collapsed && (
-                    <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }} >
-                      <ChevronRightIcon fontsize='normal'/>
-                    </ListItemIcon>
-                  )}
-                {/* </Box> */}
-              </Grid>
+
 
               </Grid>
             </Grid>
