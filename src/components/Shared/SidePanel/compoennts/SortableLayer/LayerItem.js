@@ -127,6 +127,7 @@ const LayerItem = React.memo((props) => {
 
               <Grid container     
                 direction="row"
+                wrap='nowrap'
                 className={classes.subContainer} 
                 style={{
                   display: 'flex', 
@@ -155,8 +156,8 @@ const LayerItem = React.memo((props) => {
                 )}
 
               <Typography id={id} color = "secondary"
-                          className={!ifLayerHaveData(data, stateApp) ? 
-                            classes.disabledLayerTitle : ""}
+                          // className={!ifLayerHaveData(data, stateApp) ? 
+                          //   classes.disabledLayerTitle : ""}
                           noWrap>{name}</Typography>
 
             </Grid>
