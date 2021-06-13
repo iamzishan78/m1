@@ -12,6 +12,8 @@ import { ifLayerHaveData } from "../common.js";
 import { AppContext } from "AppContext.js";
 
 import { Box, Grid } from "@material-ui/core";
+import DonutSmallIcon from '@material-ui/icons/DonutSmall';
+import { IconButton } from '@material-ui/core';
 
 
 const useStyles = makeStyles(() => ({
@@ -98,26 +100,22 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
         // alignItems: 'center',
         // justifyContent: 'center'
       }}
-
     >
-      <ListItemIcon onClick={() => handleColorPicker(layer)} style={{ verticalAlign: "bottom" }}>
-        <Tooltip title="Layer Styling">
-          <ColorControl />
+      {/* <ListItemIcon onClick={() => handleColorPicker(layer)} 
+      // style={{ verticalAlign: "bottom" }}
+      > */}
+      <IconButton>
+        <Tooltip title="Layer Styling" >
+          {/* <ColorControl htmlColor="#12abe0" onClick={() => handleColorPicker(layer)}/> */}
+          <DonutSmallIcon htmlColor="#12abe0" fontSize='small'/>
         </Tooltip>
-      </ListItemIcon>
+      </IconButton>
+      {/* </ListItemIcon> */}
     </div>
   );
 
   const control2 = layer.layerSettings?.interaction?.interactionAble && (
-    <div
-      style={{
-        // paddingRight: 20, 
-        // display: 'flex',
-        // flexDirection: 'column',
-        // alignItems: 'center',
-        // justifyContent: 'center'
-      }}
-    >
+
       <Checkbox
         icon={
           <CancelOutlinedIcon
@@ -145,24 +143,44 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
           "aria-labelledby": labelId,
         }}
         onChange={handleToggleInteraction(layer)}
+        size='small'
       />
-    </div>
-  );
+  ) ;
 
   return (
     <>
       
-      <Grid container>
+      <Grid container 
+            spacing={1}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            >
 
-        <Grid item>
+        <Grid item 
+              xs            
+              style={{
+            }}
+            >
             {control2}
         </Grid>
 
-        <Grid item>
+        <Grid item 
+              xs            
+              style={{
+            }}
+            >
             {control1}
         </Grid>
 
-        <Grid item>
+        <Grid item
+              xs             
+              style={{
+            }}
+            >
           <FormControlLabel
             control={
               <Switch
@@ -180,7 +198,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
               />
             }
           />
-          
+
       </Grid>
 
 

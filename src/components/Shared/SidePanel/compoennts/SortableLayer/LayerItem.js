@@ -23,36 +23,40 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
     fontFamily: "Poppins",
-
-    // "&:hover": {
-    //   background: props.muted ? "#4B618F" : "#263451",
-    // },
-
     backgroundColor: props.data.type === "group" ? "#2c3148": "#040e24",
-
-    "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: theme.palette.common.white,
-    },
-
-    // overflowX: "hidden",
-    // alignItems: "center",
-
-    fontSize: props.data.type === "group" ? 20 : 18,
-    position: "relative",
-    // cursor: "move",
-    // padding: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : theme.spacing(0.5, 0),
-    // margin: props.data.collapsed && props.data.type === "layer" ? 0 : theme.spacing(0.5),
-    // marginLeft: theme.spacing(props.depth * 2),
+    marginLeft: theme.spacing(props.depth * 2),
     color: props.muted ? theme.palette.primary.dark : "inherit",
     zIndex: props.muted ? 1 : 0,
     fontWeight: props.data.type === "group" ? 600 : 500,
     height: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : "auto",
-    // border: props.muted ? '1px dashed #1976d2' : '1px solid transparent',
+    fontSize: props.data.type === "group" ? 20 : 18,
+    position: "relative",
+    fontWeight: props.data.type === "group" ? 600 : 500,
+    height: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : "auto",
     overflow: "hidden",
+
+    disabledLayerTitle: {
+      "& span": { color: "rgb(127, 149, 199) !important" },
+    },
+    "&:hover": {
+      background: props.muted ? "#4B618F" : "#263451",
+    },
+    "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+      color: theme.palette.common.white,
+      minWidth: '40px' // for some reason controls the icon spacing
+    },
+
+    // display: 'flex',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // overflowX: "hidden",
+    // cursor: "move",
+    // padding: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : theme.spacing(0.5, 0),
+    // margin: props.data.collapsed && props.data.type === "layer" ? 0 : theme.spacing(0.5),
+    // border: props.muted ? '1px dashed #1976d2' : '1px solid transparent',
+
   }),
-  disabledLayerTitle: {
-    "& span": { color: "rgb(127, 149, 199) !important" },
-  },
+
 }));
 
 
@@ -95,7 +99,9 @@ const LayerItem = React.memo((props) => {
 
   return (
     <Flipped flipId={id}>
-      <div ref={(ref) => drop(preview(ref))} className={classes.root}>
+      <div ref={(ref) => drop(preview(ref))} 
+      // className={classes.root}
+      >
         <Box borderColor={getLayerColor(data, "layer", colors)} borderLeft={4}>
           <Grid container     
                 className={classes.root} 
@@ -104,45 +110,55 @@ const LayerItem = React.memo((props) => {
                 // alignItems="center"
           >
 
-            <Grid item>
-              <Box display="flex" flex={1}>
+            <Grid item 
+                  xs={9}
+                  style={{
+                  display: 'flex', 
+                  // flexGrow: 1,
+                  flexDirection: 'row', 
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  // float: 'right'
+                  }}
+                  >
 
-
-
-                <ListItemIcon ref={drag}>
+                <ListItemIcon ref={drag} style={{padding: 0}}>
                   <DragIndicator style={{ cursor: "move"}} />
                 </ListItemIcon>
 
-                  {type === "group" && !collapsed && (
-                    <ListItemIcon onClick={handleClick}>
-                      <ExpandLessIcon />
-                    </ListItemIcon>
-                  )}
-                  {type === "group" && collapsed && (
-                    <ListItemIcon onClick={handleClick} >
-                      <ExpandMoreIcon/>
-                    </ListItemIcon>
-                  )}
+                {type === "group" && !collapsed && (
+                  <ListItemIcon onClick={handleClick}>
+                    <ExpandLessIcon />
+                  </ListItemIcon>
+                )}
+                {type === "group" && collapsed && (
+                  <ListItemIcon onClick={handleClick} >
+                    <ExpandMoreIcon/>
+                  </ListItemIcon>
+                )}
 
                 <ListItemText id={id} primary={truncate(name, depth ? 20 : 25)} 
                                 className={!ifLayerHaveData(data, stateApp) ? 
                                 classes.disabledLayerTitle : ""} />
-                {/* {id} */}
-              </Box>
             </Grid>
 
 
 
-            <Grid item>
+            <Grid item 
+                  xs={3}
+                  styles={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    // justifyContent: 'flex-end',
+                    // alignItems: 'center',
+                    flexGrow: 1
+                  }}
+                  >
 
-              <Grid container >
 
-              <Grid item >
                   {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} />}
-              </Grid>
 
 
-              <Grid item>
                   {type === "group" && (
                     <FormControlLabel
                       control={
@@ -154,12 +170,10 @@ const LayerItem = React.memo((props) => {
                       }
                     />
                   )}
-              </Grid>
 
 
 
 
-              </Grid>
             </Grid>
           </Grid>
         </Box>
