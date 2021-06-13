@@ -84,34 +84,13 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
   };
 
   const control1 = layer.layerSettings?.colorable && (
-    <div
-      // style={{
-      //   paddingRight: !layer.layerSettings.interaction.interactionAble
-      //     ? "40"
-      //     : "",
-      // }}
-
-      style={{
-        // paddingRight: 20,
-        // height: "42px",
-        // width: "42px",
-        // display: 'flex',
-        // flexDirection: 'column',
-        // alignItems: 'center',
-        // justifyContent: 'center'
-      }}
-    >
-      {/* <ListItemIcon onClick={() => handleColorPicker(layer)} 
-      // style={{ verticalAlign: "bottom" }}
-      > */}
-      <IconButton>
+ 
+      <IconButton size='small'>
         <Tooltip title="Layer Styling" >
-          {/* <ColorControl htmlColor="#12abe0" onClick={() => handleColorPicker(layer)}/> */}
-          <DonutSmallIcon htmlColor="#12abe0" fontSize='small'/>
+          <DonutSmallIcon htmlColor="#12abe0" onClick={() => handleColorPicker(layer)}/>
         </Tooltip>
       </IconButton>
-      {/* </ListItemIcon> */}
-    </div>
+
   );
 
   const control2 = layer.layerSettings?.interaction?.interactionAble && (
@@ -155,7 +134,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
             style={{
               display: 'flex',
               flexDirection: 'row',
-              justifyContent: 'center',
+              justifyContent: 'flex-end',
               alignItems: 'center',
             }}
             >

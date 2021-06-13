@@ -111,7 +111,7 @@ const LayerItem = React.memo((props) => {
           >
 
             <Grid item 
-                  xs={9}
+                  xs={8}
                   style={{
                   display: 'flex', 
                   // flexGrow: 1,
@@ -145,7 +145,7 @@ const LayerItem = React.memo((props) => {
 
 
             <Grid item 
-                  xs={3}
+                  xs={4}
                   styles={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -160,6 +160,18 @@ const LayerItem = React.memo((props) => {
 
 
                   {type === "group" && (
+
+                    <Grid container 
+                      spacing={1}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'flex-end',
+                        alignItems: 'center',
+                      }}
+                      >
+
+                    <Grid item>
                     <FormControlLabel
                       control={
                         <Switch
@@ -169,7 +181,12 @@ const LayerItem = React.memo((props) => {
                         />
                       }
                     />
+                    </Grid>
+
+                    </Grid>
+                    
                   )}
+
 
 
 
