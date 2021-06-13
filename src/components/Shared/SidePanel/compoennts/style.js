@@ -28,8 +28,8 @@ export const useStyles = makeStyles((theme) => ({
         height: "80px",
         color: "white",
         width: "20px",
-        marginTop: "38px",
-        background: "#040e24",
+        marginTop: "50px",
+        background: "#141d32",
         cursor: "pointer",
         display: "flex",
         alignItems: "center",
@@ -39,9 +39,10 @@ export const useStyles = makeStyles((theme) => ({
         },
     },
     subHeaderItem: {
-        backgroundColor: "#040e24 !important",
-        opacity: "0.94", 
+        backgroundColor: "#141d32 !important",
+        // opacity: "0.94", 
         minWidth: "400px",
+        height: '50px'
     },
 
     // this is for basemap panel
@@ -49,7 +50,7 @@ export const useStyles = makeStyles((theme) => ({
         padding: 0,
         minWidth: "425px",
         overflowY: "auto",
-        height: 'calc(100vh - 506px - 64px)',
+        height: 'calc(100vh - 466px - 50px - 64px)',
         // maxHeight: 'calc(100vh - 40px - 64px)',
         backgroundColor: "#040e24",
         "&::-webkit-scrollbar": {
@@ -70,7 +71,7 @@ export const useStyles = makeStyles((theme) => ({
         padding: 0,
         minWidth: "425px",
         overflowY: "auto",
-        height: 'calc(100vh - 40px - 64px)',
+        height: 'calc(100vh - 50px - 64px)',
         maxHeight: 'calc(100vh - 40px - 64px)',
         backgroundColor: "#040e24",
         "&::-webkit-scrollbar": {
@@ -123,10 +124,11 @@ export const useStyles = makeStyles((theme) => ({
         },
     },
     fileTree: {
+        // for layer panel 
         backgroundColor: "#040e24",
         overflow: "auto",
-        height: 'calc(100vh - 40px - 64px)',
-        maxheight: 'calc(100vh - 40px - 64px)',
+        height: 'calc(100vh - 50px - 64px)',
+        maxheight: 'calc(100vh - 50px - 64px)',
         paddingTop: 10,
         paddingBottom: 10,
 
