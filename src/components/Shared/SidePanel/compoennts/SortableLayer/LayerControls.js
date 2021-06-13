@@ -97,24 +97,27 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
 
       <Checkbox
         icon={
-          <CancelOutlinedIcon
-            htmlColor={
-              !ifLayerHaveData(layer, stateApp)
-                ? "rgb(127, 149, 199)"
-                : "#12abe0"
-            }
-          />
+            <CancelOutlinedIcon
+              fontSize = 'small'
+              htmlColor={
+                !ifLayerHaveData(layer, stateApp)
+                  ? "rgb(127, 149, 199)"
+                  : "#12abe0"
+              }
+            />
         }
         checkedIcon={
-          <ClickIcon
-            color={
-              !ifLayerHaveData(layer, stateApp)
-                ? "rgb(127, 149, 199)"
-                : "#12abe0"
-            }
-          />
+          <IconButton size='small'>
+            <ClickIcon
+              color={
+                !ifLayerHaveData(layer, stateApp)
+                  ? "rgb(127, 149, 199)"
+                  : "#12abe0"
+              }
+              fontSize='small'
+            />
+          </IconButton>
         }
-        edge="start"
         checked={layer.layerSettings?.interaction?.interactionDetail?.click}
         tabIndex={-1}
         disableRipple

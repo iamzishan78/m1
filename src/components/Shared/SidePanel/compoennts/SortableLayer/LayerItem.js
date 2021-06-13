@@ -11,6 +11,8 @@ import LayerControls from "./LayerControls";
 import { truncate } from "components/Shared/functions";
 import { FormControlLabel } from "@material-ui/core";
 import { Switch } from "@material-ui/core";
+import Typography from '@material-ui/core/Typography';
+
 
 // icons 
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -24,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   root: (props) => ({
     fontFamily: "Poppins",
     backgroundColor: props.data.type === "group" ? "#2c3148": "#040e24",
-    marginLeft: theme.spacing(props.depth * 2),
+    // marginLeft: theme.spacing(props.depth * 2),
     color: props.muted ? theme.palette.primary.dark : "inherit",
     zIndex: props.muted ? 1 : 0,
     fontWeight: props.data.type === "group" ? 600 : 500,
@@ -32,18 +34,20 @@ const useStyles = makeStyles((theme) => ({
     fontSize: props.data.type === "group" ? 20 : 18,
     position: "relative",
     fontWeight: props.data.type === "group" ? 600 : 500,
-    height: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : "auto",
+    height: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : "35px",
     overflow: "hidden",
-
     disabledLayerTitle: {
       "& span": { color: "rgb(127, 149, 199) !important" },
     },
     "&:hover": {
-      background: props.muted ? "#4B618F" : "#263451",
+      background: "#506187",
     },
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
       minWidth: '40px' // for some reason controls the icon spacing
+    },
+    "& .MuiTypography-root": {
+      color: theme.palette.common.white,
     },
 
     // display: 'flex',
@@ -55,6 +59,9 @@ const useStyles = makeStyles((theme) => ({
     // margin: props.data.collapsed && props.data.type === "layer" ? 0 : theme.spacing(0.5),
     // border: props.muted ? '1px dashed #1976d2' : '1px solid transparent',
 
+  }),
+  subContainer: (props) => ({
+    marginLeft: theme.spacing(props.depth * 2),
   }),
 
 }));
@@ -100,31 +107,41 @@ const LayerItem = React.memo((props) => {
   return (
     <Flipped flipId={id}>
       <div ref={(ref) => drop(preview(ref))} 
-      // className={classes.root}
       >
-        <Box borderColor={getLayerColor(data, "layer", colors)} borderLeft={4}>
+
           <Grid container     
                 className={classes.root} 
                 direction="row" 
-                // justify="space-between" 
-                // alignItems="center"
           >
 
             <Grid item 
                   xs={8}
                   style={{
                   display: 'flex', 
-                  // flexGrow: 1,
                   flexDirection: 'row', 
-                  justifyContent: 'flex-end',
+                  justifyContent: 'flex-start',
                   alignItems: 'center',
-                  // float: 'right'
                   }}
                   >
 
-                <ListItemIcon ref={drag} style={{padding: 0}}>
-                  <DragIndicator style={{ cursor: "move"}} />
-                </ListItemIcon>
+
+              <Grid container     
+                direction="row"
+                className={classes.subContainer} 
+                style={{
+                  display: 'flex', 
+                  flexDirection: 'row', 
+                  justifyContent: 'flex-start',
+                  // marginLeft: '20px',
+                  alignItems: 'center',
+                  }} 
+              >
+
+                <Box borderColor={getLayerColor(data, "layer", colors)} borderLeft={4}>
+                  <ListItemIcon ref={drag} >
+                    <DragIndicator style={{ cursor: "move"}} />
+                  </ListItemIcon>
+                </Box>
 
                 {type === "group" && !collapsed && (
                   <ListItemIcon onClick={handleClick}>
@@ -137,27 +154,25 @@ const LayerItem = React.memo((props) => {
                   </ListItemIcon>
                 )}
 
-                <ListItemText id={id} primary={truncate(name, depth ? 20 : 25)} 
-                                className={!ifLayerHaveData(data, stateApp) ? 
-                                classes.disabledLayerTitle : ""} />
+              <Typography id={id} color = "secondary"
+                          className={!ifLayerHaveData(data, stateApp) ? 
+                            classes.disabledLayerTitle : ""}
+                          noWrap>{name}</Typography>
+
             </Grid>
-
-
+            </Grid>
 
             <Grid item 
                   xs={4}
                   styles={{
                     display: 'flex',
                     flexDirection: 'row',
-                    // justifyContent: 'flex-end',
-                    // alignItems: 'center',
+                    alignItems: 'center',
                     flexGrow: 1
                   }}
                   >
 
-
                   {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} />}
-
 
                   {type === "group" && (
 
@@ -187,13 +202,9 @@ const LayerItem = React.memo((props) => {
                     
                   )}
 
-
-
-
-
             </Grid>
           </Grid>
-        </Box>
+        {/* </Box> */}
       </div>
     </Flipped>
   );
