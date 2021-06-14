@@ -28,8 +28,8 @@ export const useStyles = makeStyles((theme) => ({
         height: "80px",
         color: "white",
         width: "20px",
-        marginTop: "38px",
-        background: "#011133",
+        marginTop: "50px",
+        background: "#141d32",
         cursor: "pointer",
         display: "flex",
         alignItems: "center",
@@ -39,23 +39,26 @@ export const useStyles = makeStyles((theme) => ({
         },
     },
     subHeaderItem: {
-        backgroundColor: "#011133 !important",
-        opacity: "0.94",
+        backgroundColor: "#141d32 !important",
+        // opacity: "0.94", 
         minWidth: "400px",
+        height: '50px'
     },
+
+    // this is for basemap panel
     list: {
         padding: 0,
         minWidth: "425px",
         overflowY: "auto",
-        height: 'calc(100vh - 306px - 64px)',
-        maxHeight: 'calc(100vh - 40px - 64px)',
-        backgroundColor: "#263451",
+        height: 'calc(100vh - 466px - 50px - 64px)',
+        // maxHeight: 'calc(100vh - 40px - 64px)',
+        backgroundColor: "#040e24",
         "&::-webkit-scrollbar": {
             width: "0.75em",
         },
-        "&:hover::-webkit-scrollbar": {
-            width: "1.0em",
-        },
+        // "&:hover::-webkit-scrollbar": {
+        //     width: "1.0em",
+        // },
         "&::-webkit-scrollbar-track": {
             "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
         },
@@ -68,15 +71,15 @@ export const useStyles = makeStyles((theme) => ({
         padding: 0,
         minWidth: "425px",
         overflowY: "auto",
-        height: 'calc(100vh - 40px - 64px)',
+        height: 'calc(100vh - 50px - 64px)',
         maxHeight: 'calc(100vh - 40px - 64px)',
-        backgroundColor: "#263451",
+        backgroundColor: "#040e24",
         "&::-webkit-scrollbar": {
-            width: "1em",
+            width: "0.75em",
         },
-        "&:hover::-webkit-scrollbar": {
-            width: "1.0em",
-        },
+        // "&:hover::-webkit-scrollbar": {
+        //     width: "1.0em",
+        // },
         "&::-webkit-scrollbar-track": {
             "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
         },
@@ -121,19 +124,20 @@ export const useStyles = makeStyles((theme) => ({
         },
     },
     fileTree: {
-        backgroundColor: "#263451",
+        // for layer panel 
+        backgroundColor: "#040e24",
         overflow: "auto",
-        height: 'calc(100vh - 40px - 64px)',
-        maxheight: 'calc(100vh - 40px - 64px)',
+        height: 'calc(100vh - 50px - 64px)',
+        maxheight: 'calc(100vh - 50px - 64px)',
         paddingTop: 10,
         paddingBottom: 10,
 
         "&::-webkit-scrollbar": {
             width: "0.75em",
         },
-        "&:hover::-webkit-scrollbar": {
-            width: "0.75em",
-        },
+        // "&:hover::-webkit-scrollbar": {
+        //     width: "0.75em",
+        // },
         "&::-webkit-scrollbar-track": {
             "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
         },
@@ -156,33 +160,6 @@ export const StyledMenu = withStyles({
 
 
 
-export const MarketplaceDropdown = withStyles((theme) => ({
-    icon: {
-        color: "white",
-        fill: "white",
-    },
-    root: {
-        fontFamily: "Poppins",
-        display: "flex",
-        fontWeight: "light",
-        justifyContent: "space-between",
-        color: "white",
-        minWidth: "8rem",
-        // "&:hover": {
-        // 	background: "#4B618F",
-        // },
-        // backgroundColor: "#263451",
-        "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-            color: theme.palette.common.white,
-        },
-        "& .MuiButton-textPrimary": {
-            color: theme.palette.common.white,
-            background: "#17acdd",
-            padding: "3px 10px",
-        },
-    },
-}))(Select);
-
 export const Dropdown = withStyles((theme) => ({
     root: {
         fontFamily: "Poppins",
@@ -190,7 +167,6 @@ export const Dropdown = withStyles((theme) => ({
         fontWeight: "light",
         justifyContent: "space-between",
         color: "#404040",
-        //minWidth: "13.5rem",
         background: "white",
         flex: "1",
         "&:hover": {
@@ -208,27 +184,6 @@ export const Dropdown = withStyles((theme) => ({
     },
 }))(Select);
 
-export const MarketPlaceMenu = withStyles((theme) => ({
-    root: {
-        fontFamily: "Poppins",
-        display: "flex",
-        justifyContent: "space-between",
-        "&:hover": {
-            background: "#263451",
-        },
-        backgroundColor: "#263451",
-        "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-            color: theme.palette.common.white,
-        },
-        "& .MuiButton-textPrimary": {
-            color: theme.palette.common.white,
-            background: "#17acdd",
-            padding: "10px 10px",
-            paddingTop: "10px",
-            paddingBottom: "10px",
-        },
-    },
-}))(MenuItem);
 
 export const StyledMenuHeaderItem = withStyles((theme) => ({
     root: {
@@ -259,10 +214,9 @@ export const StyledMenuItem = withStyles((theme) => ({
             background: "#4B618F",
         },
 
-        backgroundColor: "#263451",
+        backgroundColor: "#040e24",
         "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
             color: theme.palette.common.white,
-            // },
         },
     },
 }))(MenuItem);
@@ -277,102 +231,13 @@ export const StyledListItemSecondaryAction = withStyles((theme) => ({
     },
 }))(ListItemSecondaryAction);
 
-export const MarketPlaceListItem = withStyles((theme) => ({
-    root: {
-        fontFamily: "Poppins",
-        // "&:hover": {
-        // 	background: "#cccccc",
-        // },
-        display: "flex",
-
-        alignItems: "center",
-        marginBottom: "0.4rem",
-        color: "black",
-        border: "1px solid grey",
-        backgroundColor: "white",
-        display: "flex",
-        flexDirection: "column",
-        "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-            color: theme.palette.common.white,
-        },
-        "& .MuiListItemText-primary svg": {
-            marginLeft: "5px",
-            verticalAlign: "middle",
-        },
-    },
-}))(ListItem);
-
-export const MarketPlaceUpper = withStyles((theme) => ({
-    root: {
-        fontFamily: "Poppins",
-        // "&:hover": {
-        // 	background: "#cccccc",
-        // },
-        color: "black",
-
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-            color: theme.palette.common.white,
-        },
-        "& .MuiListItemText-primary svg": {
-            marginLeft: "5px",
-            verticalAlign: "middle",
-        },
-    },
-}))(ListItem);
-
-export const MarketPlaceLower = withStyles((theme) => ({
-    root: {
-        fontFamily: "Poppins",
-        // "&:hover": {
-        // 	background: "#cccccc",
-        // },
-        color: "black",
-        backgroundColor: "white",
-        display: "flex",
-        flexDirection: "row",
-        "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-            color: theme.palette.common.white,
-        },
-        "& .MuiListItemText-primary svg": {
-            marginLeft: "5px",
-            verticalAlign: "middle",
-        },
-    },
-}))(ListItem);
-
-export const MarketPlaceLowerItems = withStyles((theme) => ({
-    root: {
-        fontFamily: "Poppins",
-        // "&:hover": {
-        // 	background: "#cccccc",
-        // },
-        color: "black",
-        whiteSpace: "nowrap",
-        marginRight: "2rem",
-        backgroundColor: "white",
-        padding: "0",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        // textAlign: "center",
-        "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-            color: theme.palette.common.white,
-        },
-        "& .MuiListItemText-primary svg": {
-            //marginLeft: "5px",
-            verticalAlign: "middle",
-        },
-    },
-}))(ListItem);
 
 export const StyledListItem2 = withStyles((theme) => ({
     root: {
         fontFamily: "Poppins",
         "&:hover": {
             background: "#a3b2cf",
+            
         },
         backgroundColor: "#4B618F",
         "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
