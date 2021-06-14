@@ -144,6 +144,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputFieldDateRoot: {
     '& .MuiDialog-root': {},
+    overflow: 'auto'
   },
   progress: {
     marginLeft: "30px",
@@ -438,7 +439,7 @@ function AddDealDialog(props) {
     console.log('===========')
     console.log('FLOW TRANSACT BAR VIEW', stateApp.transactBarView)
 
-    
+
     if (stateApp.transactBarView !== "") {
       // handleValidate();
 
@@ -684,7 +685,7 @@ function AddDealDialog(props) {
     if (props.isTransactPage) setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
-      dealDialog: false, 
+      dealDialog: false,
       activeDeal: { cardId: null, laneId: null },
       transactBarView: "",
       viewDoc: null,
@@ -1220,10 +1221,10 @@ function AddDealDialog(props) {
           isTransactPage={props.isTransactPage}
           className={classes.mainRoot}
         >
-          <div 
-          
-          style={{ padding: "30px" }}
-          
+          <div
+
+            style={{ padding: "30px" }}
+
           >
 
             <Grid
@@ -1413,7 +1414,7 @@ function AddDealDialog(props) {
                   // error text that will prevent things 
                   error={(title && title !== '') ? false : true}
                   helperText={
-                    (title && title !== '') ? '' : 'Enter a deal name to get started' 
+                    (title && title !== '') ? '' : 'Enter a deal name to get started'
                   }
 
                   //   required
