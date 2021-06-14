@@ -206,7 +206,7 @@ const LayerItem = React.memo((props) => {
             </Grid>
           </Grid>
         {/* </Box> */}
-      </div>
+       </div>
     </Flipped>
   );
 });
