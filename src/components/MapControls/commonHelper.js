@@ -1,6 +1,7 @@
 export const clearMapAndCloseShapeActionsPopup = (stateApp, setStateApp) => {
     const { draw, map, currentFeature } = stateApp;
     draw.delete(currentFeature?.id);
+    draw.changeMode('simple_select');
     setStateApp((state) => ({
         ...state,
         editDraw: false,

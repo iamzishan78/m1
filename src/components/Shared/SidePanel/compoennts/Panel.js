@@ -137,9 +137,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	const getBasemapImageBox = () => {
 		return (
 			<>
-				<div 
-					// className={classes.imageBox} 
-					>
+				<div>
 					{mapStyles.map((style) => (
 						<StyledMenuItem
 							disableRipple
@@ -153,7 +151,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 							}}
 						>
 
-							{/* <ThemeProvider theme={theme}> */}
 							<Grid container alignContent='center' alignItems='center'>
 								<Grid item>
 									{style.name === "Outdoors" && <MapOutdoorIcon />}
@@ -166,7 +163,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 								<Grid item>
 									<ListItemText primary={style.name} style={{paddingLeft: '25px'}} />
 								</Grid>
-							{/* </ThemeProvider> */}
 							</Grid>
 
 						</StyledMenuItem>
@@ -174,13 +170,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 				</div>
 
 				<StyledListItem2 
-				// button onClick={handleClick}
 				>
 					<ListItemIcon>
 						<LayersIcon />
 					</ListItemIcon>
 					<ListItemText primary={`${title} Layers`} />
-					{/* {open ? <ExpandLess /> : <ExpandMore />} */}
 				</StyledListItem2>
 			</>
 		);
@@ -212,7 +206,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		</DragDropContext>
 	);
 	return (
-		// <ClickAwayListener onClickAway={handleClose}>
 		<div>
 			<div
 				style={{
@@ -232,7 +225,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			>
 				<StyledMenu
 					id="checklist-menu"
-					// anchorEl={stateMapControls.anchorEl}
 					style={!stateMapControls.expandedPanel ? { display: 'none' } : { minWidth: '425px' }}
 					keepMounted
 					open={Boolean(stateMapControls.selectedControl)}
@@ -266,7 +258,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 						type === "layer" && layerMap && layerMap[0]?.type ?
 
 							(
-								// <div styles={{  height: 'calc(100vh - 40px - 64px)'}}>
 								<SortableLayer layerMap={layerMap} />
 							)
 							: type === "base" ? (
