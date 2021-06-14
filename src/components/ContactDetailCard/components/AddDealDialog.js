@@ -65,6 +65,11 @@ import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider'
 import Contacts from 'components/FlowDrawer/Contacts';
 import EventIcon from '@material-ui/icons/Event';
 import './style/dialog.css';
+import { faCloudShowersHeavy } from '@fortawesome/free-solid-svg-icons';
+
+// mui icons 
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -95,9 +100,13 @@ NumberFormatCustom.propTypes = {
 };
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    '&  .MuiPaper-root': {
-    },
+  mainRoot: {
+    // '& .MuiPaper-root': {
+    //   overflowX: 'hidden !important'
+    // },
+    // '& .MuiDialog-root': {
+    //   overflowX: 'hidden !important'
+    // },
   },
   dialogTitle: {
     textAlign: "center",
@@ -359,7 +368,7 @@ function AddDealDialog(props) {
   const { selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
   const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [title, setTitle] = useState(''); // title change from contact.name to dealName
+  const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [titleFocus, setTitleFocus] = useState(false);
   const [label, setLabel] = useState('');
   const [stageId, setStageId] = useState(null);
@@ -389,8 +398,6 @@ function AddDealDialog(props) {
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
-
-  const [valid, setValid] = useState({});
 
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
@@ -427,8 +434,14 @@ function AddDealDialog(props) {
   }, []);
 
   useEffect(() => {
+
+    console.log('===========')
+    console.log('FLOW TRANSACT BAR VIEW', stateApp.transactBarView)
+
+    
     if (stateApp.transactBarView !== "") {
-      handleValidate();
+      // handleValidate();
+
 
       if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
         addUpdateDeal(null, false);
@@ -649,18 +662,9 @@ function AddDealDialog(props) {
     }
   }, [stateApp.activeDeal, props.contact, stateApp.dealDialog, stateApp.user]);
 
-  const handleValidate = () => {
-    const tempValid = {
-      ...valid,
-      title: !title,
-    };
-    setValid(tempValid);
-
-    return !Object.values(tempValid).reduce((acc, cur) => acc + cur);
-  };
 
   const handleClose = () => {
-    handleValidate();
+    // handleValidate();
     handleUpdate();
     setTitle("");
     setLabel("");
@@ -680,13 +684,12 @@ function AddDealDialog(props) {
     if (props.isTransactPage) setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
-      dealDialog: false, // some genius level coding here.
-      // addDealDialog: false, // not sure why different flags were used here
+      dealDialog: false, 
       activeDeal: { cardId: null, laneId: null },
       transactBarView: "",
       viewDoc: null,
     }));
-    setValid({});
+    // setValid({title: false});
   };
 
   const handleCloseContactDialog = () => {
@@ -1128,41 +1131,7 @@ function AddDealDialog(props) {
   };
   return (
     <>
-      {showExpandableCard && (
-        <Dialog className={classes.dialogExpCard} fullWidth maxWidth="xl" open={showExpandableCard} onClose={handleCloseDialog}>
-          <ExpandableCardProvider
-            expanded={true}
-            handleCloseExpandableCard={handleCloseExpandableCard}
-            title={"Documents"}
-            subTitle={" "}
-            parent="table"
-            mouseX={0}
-            mouseY={0}
-            position="relative"
-            cardLeft={"0"}
-            cardTop={"0"}
-            zIndex={1201}
-            cardWidthExpanded="100%"
-            cardHeightExpanded="100%"
-            targetSourceId={stateApp?.activeDeal?.cardId}
-            targetLabel={"deals"}
-            noTrackAvailable={true}
-            component={
-              <div
-                style={{
-                  width: "100%",
-                  backgroundColor: "#fff",
-                  minHeight: "100%",
-                }}
-              >
-                {/* //// ViewAll card top bar //// */}
 
-                {expCardSubComponent}
-              </div>
-            }
-          />
-        </Dialog>
-      )}
       {deleteDialogOpen && (
         <Dialog
           className={classes.dialog}
@@ -1187,22 +1156,28 @@ function AddDealDialog(props) {
         <RightDialog
           open={props.open}
           width={props.width}
-          onClose={() =>
-            setStateApp((stateApp) => ({
-              ...stateApp,
-              transactBarView: "",
-              viewDoc: null,
-            }))
-          }
+          handleClickDialogClose={() => {
+            if (!updateDealLoading && !addContactLoading) {
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                dealDialog: false,
+                activeDeal: { cardId: null, laneId: null },
+                transactBarView: "",
+                viewDoc: null,
+              }));
+              handleClose();
+            }
+          }}
+
           isTransactPage={props.isTransactPage}
         >
           <div style={{ padding: "30px" }}>
             <Grid item xs={12} style={{ minHeight: "35px" }}>
               <h4
                 style={{
-                  // margin: "0 0 15px 0",
                   float: "left",
                   fontSize: "1.1rem",
+                  marginTop: '0px'
                 }}
               >
                 {stateApp.transactBarView}
@@ -1220,8 +1195,7 @@ function AddDealDialog(props) {
                   }
                   size="small"
                 >
-                  {/* // this is the close icon "x" button for sub panels\ */}
-                  <CloseIcon fontSize="small" />
+                  <ArrowBackIcon />
                 </IconButton>
               </div>
             </Grid>
@@ -1244,8 +1218,13 @@ function AddDealDialog(props) {
           }}
           width={props.width}
           isTransactPage={props.isTransactPage}
+          className={classes.mainRoot}
         >
-          <div style={{ padding: "30px" }}>
+          <div 
+          
+          style={{ padding: "30px" }}
+          
+          >
 
             <Grid
               item
@@ -1422,25 +1401,24 @@ function AddDealDialog(props) {
                 fullWidth
                 size="small"
               >
+
                 <TextField
                   margin="dense"
                   value={title}
                   variant="outlined"
                   placeholder="Click to enter deal name"
-                  style={title.trim !== "" ? ({}) : ({ border: '1px solid #EBEBEB', })}
                   required
-                  error={valid['title']}
-                  helperText={
-                    valid['title'] ? 'Enter a deal name to get started' : ''
-                  }
                   fullWidth
+
+                  // error text that will prevent things 
+                  error={(title && title !== '') ? false : true}
+                  helperText={
+                    (title && title !== '') ? '' : 'Enter a deal name to get started' 
+                  }
+
                   //   required
                   onChange={(e) => {
                     setTitle(e.target.value);
-                    setValid({
-                      ...valid,
-                      title: false,
-                    });
                   }}
                   InputProps={{
                     classes: {

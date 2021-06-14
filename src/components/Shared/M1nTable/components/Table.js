@@ -81,19 +81,6 @@ import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDraw
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFilePdf,
-  faFilePowerpoint,
-  faFileWord,
-  faFile,
-  faFileExcel,
-  faFileArchive,
-  faFileCode,
-  faFileImage,
-} from "@fortawesome/free-solid-svg-icons";
-
-
 import ButtonDropDown from "./ButtonGroup"
 
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -109,11 +96,12 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 
 
-// import value formatters 
+// functions / value formatters 
 import capitalizeFirstLetter from "../../../Shared/valueformatters/capitalize-first-letter.js";
 import vf_currency from "../../../Shared/valueformatters/vf_currency.js";
 import ticksToDateString from "../../../Shared/valueformatters/ticks-to-string.js";
 import convert_date from "../../../Shared/valueformatters/convert_date.js";
+import get_file_icon from "../../../Shared/functions/get_file_icon.js";
 
 
 
@@ -667,109 +655,6 @@ function SubTable(props) {
     }
   };
 
-  const getFileIcon = (fileExtension) => {
-    switch (fileExtension) {
-      case "pdf":
-        return (
-          <FontAwesomeIcon
-            icon={faFilePdf}
-            style={{ fontSize: "2rem", color: "#F15642" }}
-          />
-        );
-      case "csv":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "xlsx":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "xlsb":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "xlsm":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "xltx":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "doc":
-        return (
-          <FontAwesomeIcon
-            icon={faFileWord}
-            style={{ fontSize: "2rem", color: "#2A5599" }}
-          />
-        )
-      case "docx":
-        return (
-          <FontAwesomeIcon
-            icon={faFileWord}
-            style={{ fontSize: "2rem", color: "#2A5599" }}
-          />
-        );
-      case "ppt":
-        return (
-          <FontAwesomeIcon
-            icon={faFilePowerpoint}
-            style={{ fontSize: "2rem", color: "#D04424" }}
-          />
-        );
-      case "pptx":
-        return (
-          <FontAwesomeIcon
-            icon={faFilePowerpoint}
-            style={{ fontSize: "2rem", color: "#D04424" }}
-          />
-        );
-      case "jpg"|| "jpeg"|| "png" || "bmp":
-        return (
-          <FontAwesomeIcon
-            icon={faFileImage}
-            style={{ fontSize: "2rem", color: "#4c6ef5" }}
-          />
-        );
-      case "zip":
-        return (
-          <FontAwesomeIcon
-            icon={faFileArchive}
-            style={{ fontSize: "2rem", color: "#15aabf" }}
-          />
-        );
-      case "shp":
-        return (
-          <FontAwesomeIcon
-            icon={faFileCode}
-            style={{ fontSize: "2rem", color: "#82c91e" }}
-          />
-        );
-      default:
-        // return <span>{fileExtension}</span>;
-        return (
-          <FontAwesomeIcon
-            icon={faFile}
-            style={{ fontSize: "2rem", color: "grey" }}
-          />
-        );
-    }}
-
   const handleOperatorFlyTo = (value) => {
     getOperatorWells({
       variables: {
@@ -1245,7 +1130,6 @@ function SubTable(props) {
               ...column.options,
               customBodyRender: (value, tableMeta, updateValue) => {
                 let id = props.targetLabel + tableMeta.columnIndex;
-
                 if(props.parent !== 'search' && props.targetLabel !== 'well'){
 
                   console.log('PROPS 2', props)
@@ -1274,6 +1158,11 @@ function SubTable(props) {
                           getWell({
                             variables: { wellId: value },
                           });
+                        } else if( props.parent === 'assocTaxRollInterests' && props.targetLabel === 'parcel'){
+                          let selectedParcel = props.rows.find((row) => {
+                            return row._id === tableMeta.rowData[0];
+                          });
+                          props.showParcelDetails(selectedParcel)
                         } else {
                           let selectedWell = props.rows.find((row) => {
                             if (row.id) return row.id == tableMeta.rowData[0];
@@ -1538,6 +1427,10 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
+                          
+                  if(props.parent === 'assocTaxRollInterests' && props.targetLabel === 'parcel'){
+                    targetSourceId = tableMeta.rowData[15];
+                  }
                   return (
                     <TrackToggleButton
                       id={id + targetSourceId + tableMeta.rowIndex}
@@ -1588,6 +1481,9 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
+                  if(props.parent === 'assocTaxRollInterests' && props.targetLabel === 'parcel'){
+                    targetSourceId = tableMeta.rowData[15];
+                  }
 
                   return (
                     //add download and search icons here
@@ -1956,7 +1852,10 @@ function SubTable(props) {
                         : props.parent === "ownersPerParcel"
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
-
+                  
+                  if(props.parent === 'assocTaxRollInterests' && props.targetLabel === 'parcel'){
+                    targetSourceId = tableMeta.rowData[15];
+                  }
                   return (
                     <div style={{ marginRight: "10px" }}>
                       <Tooltip
@@ -2137,7 +2036,7 @@ function SubTable(props) {
                               setStateApp({ ...stateApp, viewDoc: { uri: uri, name: file } })
                             }
                           }}>
-                            {getFileIcon(fileExtension)}
+                            {get_file_icon(fileExtension)}
                           </div>
                         {/* )
                         } */}
@@ -2355,7 +2254,7 @@ function SubTable(props) {
                   return (
                     <div
                       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
-                      className={`${props.parent === "assocTaxRollInterests" && (!tableMeta.rowData[14] || tableMeta.rowData[19]) ? [classes.blue] : []} ${props.parent === "ownersPerParcel" && (!tableMeta.rowData[14] || tableMeta.rowData[15]) ? [classes.blue] : []}` }
+                      className={`${props.parent === "assocTaxRollInterests" && props.addAble.type === 'wellInterest' && (!tableMeta.rowData[14] || tableMeta.rowData[19]) ? [classes.blue] : []}` }
                     >
 
                       {props.targetLabel === "contact" &&
@@ -2890,7 +2789,7 @@ function SubTable(props) {
       console.log('props addable type', props.addAble.type)
       var buttonLabel = "+ ADD";
       if (props.addAble.type === "contact") { buttonLabel = '+ ADD CONTACT' }
-      if (props.addAble.type === "wellInterest") { buttonLabel = '+ ADD INTEREST' }
+      if (props.addAble.type === "wellInterest" || props.addAble.type === "parcelInterest") { buttonLabel = '+ ADD INTEREST' }
       if (props.addAble.type === "deals") { buttonLabel = '+ ADD DEAL' }
       if (props.addAble && props.parent === "UserManagement") { buttonLabel = "+ ADD USER" }
       if (props.addAble.type === "ownerToParcel") { buttonLabel = '+ ADD INTEREST OWNER' }
@@ -2961,6 +2860,16 @@ function SubTable(props) {
       return (
         <>
           <div style={{ display: 'inline', cssFloat: 'left', marginRight: '15px', marginTop: '5px' }}>
+            {(props.addAble.type === "parcelInterest") && (
+              <Button
+                color="secondary"
+                className={classes.multiSelectionTopBarButtons}
+                disabled={true}
+                onClick={()=>{}}
+              >
+                {buttonLabel}
+              </Button>
+            )}
             {(props.addAble.type === "wellInterest"
               || props.addAble.type === "deals"
               || props.addAble.type === "ownerToParcel"
@@ -3044,7 +2953,7 @@ function SubTable(props) {
         }));
       }
 
-      if (props.parent === "assocTaxRollInterests") {
+      if (props.parent === "assocTaxRollInterests" && props.targetLabel === 'wells') {
         let card = { ...rows[dataIndex] };
         setStateApp((stateApp) => ({
           ...stateApp,

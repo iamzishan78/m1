@@ -86,17 +86,32 @@ const LayerItem = React.memo((props) => {
           <Grid container className={classes.root} direction="row" justify="space-between" alignItems="center">
             <Grid item>
               <Box display="flex" flex={1} px={1}>
+
                 <ListItemIcon ref={drag}>
                   {" "}
                   <DragIndicator style={{ cursor: "move" }} />
                 </ListItemIcon>
-                <ListItemText id={id} primary={truncate(name, depth ? 20 : 25)} className={!ifLayerHaveData(data, stateApp) ? classes.disabledLayerTitle : ""} />
+                <ListItemText id={id} primary={truncate(name, depth ? 18 : 22)} className={!ifLayerHaveData(data, stateApp) ? classes.disabledLayerTitle : ""} />
               </Box>
             </Grid>
+
+
 
             <Grid item>
               <Box display="inline-flex">
                 {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} />}
+                
+                {type === "group" && !collapsed && (
+                  <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }}>
+                    <ExpandLessIcon />
+                  </ListItemIcon>
+                )}
+                {type === "group" && collapsed && (
+                  <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }} >
+                    <ExpandMoreIcon />
+                  </ListItemIcon>
+                )}
+                
                 {type === "group" && (
                   <FormControlLabel
                     control={
@@ -108,16 +123,7 @@ const LayerItem = React.memo((props) => {
                   />
                 )}
 
-                {type === "group" && !collapsed && (
-                  <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }}>
-                    <ExpandLessIcon />
-                  </ListItemIcon>
-                )}
-                {type === "group" && collapsed && (
-                  <ListItemIcon onClick={handleClick} style={{ alignItems: 'center' }} >
-                    <ExpandMoreIcon />
-                  </ListItemIcon>
-                )}
+
               </Box>
             </Grid>
           </Grid>

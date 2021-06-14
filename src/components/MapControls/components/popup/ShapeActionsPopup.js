@@ -279,15 +279,24 @@ const ShapeActionsPopup = (props) => {
   const actionEdit = () => {
     const { selectedFeature } = props;
 
+    console.log('FILTER EDIT TRIGGER STATEAPP', stateApp)
+
+
     // If shape doesn't exist! AOI case
     if (!stateApp.draw.get(stateApp.currentFeature.id)) {
       stateApp.draw.add(stateApp.currentFeature);
     }
 
-    // If filter is allied, then remove it
-    if (stateApp.shapeActionsFilterSelected) {
-      clearFilter();
-    }
+    // If filter is applied, then remove it
+
+    console.log('FILTER STATEAPP', stateApp)
+    clearFilter();
+
+
+    // if (stateApp.shapeActionsFilterSelected) {
+    //   clearFilter();
+    // }
+
     stateApp.draw.changeMode("direct_select", {
       featureId: selectedFeature.id,
     });
@@ -471,7 +480,9 @@ const ShapeActionsPopup = (props) => {
 
           <span className={classes.divider}></span>
           <Tooltip title="Edit Active Shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
-            <IconButton size="small" aria-label="Edit Active Shape" onClick={!selectedAction && actionEdit}>
+            <IconButton size="small" aria-label="Edit Active Shape" onClick={
+              // !selectedAction && 
+              actionEdit}>
               <EditIcon className={selectedAction === "edit-shape" ? "selected" : ""} />
             </IconButton>
           </Tooltip>

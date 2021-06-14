@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import ParcelIcon from "../../Shared/svgIcons/ParcelIcon";
 import AddIcon from "@material-ui/icons/Add";
+import { useLazyQuery } from "@apollo/client";
 import IconButton from "@material-ui/core/IconButton";
-import ContactsWellInterestsParcelInterests from "./ContactsWellInterestsParcelInterests/ContactsWellInterestsParcelInterests";
+import { useHistory } from "react-router-dom";
+
+import { CONTACT_PARCEL_INTERESTS } from "graphQL/useQueryContactParcelInterest";
+import ParcelIcon from "../../Shared/svgIcons/ParcelIcon";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,23 +39,39 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ParcelsCard(props) {
   const classes = useStyles();
+  let history = useHistory();
+  const [count, setCount] = useState("-");
+
+  const [getContactParcels, { data: dataContactParcels }] = useLazyQuery(CONTACT_PARCEL_INTERESTS, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  useEffect(() => {
+    if (props.contactData && props.contactData._id) {
+      getContactParcels({
+        variables: {
+          contactId: props.contactData._id,
+        },
+      });
+    }
+  }, [getContactParcels, props.contactData]);
+
+  useEffect(() => {
+    if (dataContactParcels && dataContactParcels.contactParcelInterest) {
+      const wells = dataContactParcels.contactParcelInterest;
+      setCount(wells.length);
+    }
+  }, [dataContactParcels]);
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} onClick={() => {
+      history.push(`/contact/details/${props.contactData._id}/parcels`)
+    }}>
       <div>
-        <h4 style={{ marginTop: "0", float: "left" }}>Parcels (0)</h4>
+        <h4 style={{ marginTop: "0", float: "left" }}>Parcels ({count})</h4>
         {/* <IconButton
           size="small"
           className={classes.addIcon}
-          onClick={() => {
-            props.handleOpenExpandableCard(
-              <ContactsWellInterestsParcelInterests
-                activeTap={1}
-                contactData={props.contactData}
-              />,
-              "Associated Interests"
-            );
-          }}
         >
           <AddIcon htmlColor="rgb(28 173 225 / 81%)" />
         </IconButton> */}
