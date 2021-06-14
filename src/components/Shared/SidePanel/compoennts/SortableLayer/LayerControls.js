@@ -11,6 +11,11 @@ import { deepEqualObjects } from "../../../functions";
 import { ifLayerHaveData } from "../common.js";
 import { AppContext } from "AppContext.js";
 
+import { Box, Grid } from "@material-ui/core";
+import DonutSmallIcon from '@material-ui/icons/DonutSmall';
+import { IconButton } from '@material-ui/core';
+
+
 const useStyles = makeStyles(() => ({
   disabledLayerTitle: {
     "& span": { color: "rgb(127, 149, 199) !important" },
@@ -79,49 +84,40 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
   };
 
   const control1 = layer.layerSettings?.colorable && (
-    <div
-      style={{
-        paddingRight: !layer.layerSettings.interaction.interactionAble
-          ? "40"
-          : "",
-      }}
-    >
-      <ListItemIcon onClick={() => handleColorPicker(layer)} style={{ verticalAlign: "bottom" }}>
-        <Tooltip title="Layer Styling">
-          <ColorControl />
+ 
+      <IconButton size='small'>
+        <Tooltip title="Layer Styling" >
+          <DonutSmallIcon htmlColor="#12abe0" onClick={() => handleColorPicker(layer)}/>
         </Tooltip>
-      </ListItemIcon>
-    </div>
+      </IconButton>
+
   );
 
   const control2 = layer.layerSettings?.interaction?.interactionAble && (
-    <div
-      style={{
-        paddingRight: 20,
-        height: "42px",
-        width: "42px",
-      }}
-    >
+
       <Checkbox
         icon={
-          <CancelOutlinedIcon
-            htmlColor={
-              !ifLayerHaveData(layer, stateApp)
-                ? "rgb(127, 149, 199)"
-                : "#12abe0"
-            }
-          />
+            <CancelOutlinedIcon
+              fontSize = 'small'
+              htmlColor={
+                !ifLayerHaveData(layer, stateApp)
+                  ? "rgb(127, 149, 199)"
+                  : "#12abe0"
+              }
+            />
         }
         checkedIcon={
-          <ClickIcon
-            color={
-              !ifLayerHaveData(layer, stateApp)
-                ? "rgb(127, 149, 199)"
-                : "#12abe0"
-            }
-          />
+          <IconButton size='small'>
+            <ClickIcon
+              color={
+                !ifLayerHaveData(layer, stateApp)
+                  ? "rgb(127, 149, 199)"
+                  : "#12abe0"
+              }
+              fontSize='small'
+            />
+          </IconButton>
         }
-        edge="start"
         checked={layer.layerSettings?.interaction?.interactionDetail?.click}
         tabIndex={-1}
         disableRipple
@@ -129,30 +125,68 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
           "aria-labelledby": labelId,
         }}
         onChange={handleToggleInteraction(layer)}
+        size='small'
       />
-    </div>
-  );
+  ) ;
 
   return (
     <>
-      {control1}
-      {control2}
-      <FormControlLabel
-        control={
-          <Switch
-            disabled={
-              !ifLayerHaveData(layer, stateApp)
-                ? classes.disabledLayerTitle
-                : ""
+      
+      <Grid container 
+            spacing={1}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+            }}
+            >
+
+        <Grid item 
+              xs            
+              style={{
+            }}
+            >
+            {control2}
+        </Grid>
+
+        <Grid item 
+              xs            
+              style={{
+            }}
+            >
+            {control1}
+        </Grid>
+
+        <Grid item
+              xs             
+              style={{
+            }}
+            >
+          <FormControlLabel
+            control={
+              <Switch
+                disabled={
+                  !ifLayerHaveData(layer, stateApp)
+                    ? classes.disabledLayerTitle
+                    : ""
+                }
+                checked={getLayerChecked({
+                  layer,
+                  index,
+                })}
+                onChange={() => handleToggleVisibilty(layer)}
+                size="small"
+              />
             }
-            checked={getLayerChecked({
-              layer,
-              index,
-            })}
-            onChange={() => handleToggleVisibilty(layer)}
           />
-        }
-      />
+
+      </Grid>
+
+
+
+      </Grid>
+
     </>
   );
 };
