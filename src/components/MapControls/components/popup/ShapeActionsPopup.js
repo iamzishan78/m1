@@ -23,7 +23,7 @@ import { ABSTRACTGEOCONTAINSQUERY } from "graphQL/useQueryAbstractGeoContains";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { addCustomShapeProperties } from "../../components/DrawShapes/drawShapesHelpers";
 import Tooltip from "@material-ui/core/Tooltip";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setMapGridCardState } from "actions";
 
 import { gql } from "@apollo/client";
@@ -31,15 +31,16 @@ import { gql } from "@apollo/client";
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
   const { classes, children, toggleSpatialDataCard, showSpatialDataCard, popupCloseAction } = props;
+  const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateNav] = useContext(NavigationContext);
   const [isDeleteModal, setDeleteModal] = useState(false);
   const [error, setError] = useState(false);
   const [user, setUser] = useState({ _id: "" });
-  const [selectedAction, setSelectedAction] = useState('');
+  const [selectedAction, setSelectedAction] = useState("");
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
-  const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel }] = useMutation(UPSERTCUSTOMLAYER, {
+  const [getAbstractGeoContains] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
+  const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER, {
     update(
       cache,
       {
@@ -236,8 +237,11 @@ const ShapeActionsPopup = (props) => {
   };
 
   const applyFilter = () => {
-    let feature = props.selectedFeature;
+    let { selectedFeature } = props;
     let polygonString = getSelectedFeaturePolygonString();
+
+    //Changing shape to Blue
+    stateApp.draw.changeMode("simple_select");
 
     getAbstractGeoContains({
       variables: {
@@ -248,15 +252,13 @@ const ShapeActionsPopup = (props) => {
     setStateNav((stateNav) => ({
       ...stateNav,
       drawingMode: null,
-      filterDrawing: ["within", feature],
+      filterDrawing: ["within", selectedFeature],
     }));
 
     setStateApp((state) => ({
       ...state,
       shapeActionsFilterSelected: true,
     }));
-    //Changing shape to Blue
-    stateApp.draw.changeMode("simple_select");
   };
 
   const actionFilter = () => {
@@ -271,13 +273,30 @@ const ShapeActionsPopup = (props) => {
     } else {
       applyFilter();
     }
+    setSelectedAction("filter");
   };
 
   const actionEdit = () => {
     const { selectedFeature } = props;
+
+    console.log('FILTER EDIT TRIGGER STATEAPP', stateApp)
+
+
+    // If shape doesn't exist! AOI case
     if (!stateApp.draw.get(stateApp.currentFeature.id)) {
       stateApp.draw.add(stateApp.currentFeature);
     }
+
+    // If filter is applied, then remove it
+
+    console.log('FILTER STATEAPP', stateApp)
+    clearFilter();
+
+
+    // if (stateApp.shapeActionsFilterSelected) {
+    //   clearFilter();
+    // }
+
     stateApp.draw.changeMode("direct_select", {
       featureId: selectedFeature.id,
     });
@@ -285,11 +304,9 @@ const ShapeActionsPopup = (props) => {
       ...stateNav,
       drawingMode: DRAWING_MODES.DRAW_CIRCLE,
     }));
-    setStateApp(state => ({ ...state, currentFeature: selectedFeature }));
-    if (stateApp.selectedUserDefinedLayer) {
-      // If shape is only aoi
-      setSelectedAction('edit');
-    }
+    setStateApp((state) => ({ ...state, currentFeature: selectedFeature }));
+    if (stateApp.selectedUserDefinedLayer) setSelectedAction("edit-aoi");
+    else setSelectedAction("edit-shape");
   };
 
   const actionAOI = () => {
@@ -402,19 +419,6 @@ const ShapeActionsPopup = (props) => {
     popupCloseAction();
   };
 
-
-  const deleteShape = () => {
-    // Turning off the confirmation modal
-    setDeleteModal(false);
-
-    // Deleting Shape from map
-    stateApp.draw.delete(stateApp.currentFeature.id);
-
-    // Popup Close Action
-    popupCloseAction();
-  };
-
-
   const handleDeleteAoiModal = () => {
     setDeleteModal(!isDeleteModal);
   };
@@ -424,10 +428,11 @@ const ShapeActionsPopup = (props) => {
     addCustomShapeProperties(currentFeature, stateApp.draw);
     const customLayerData = {
       shape: JSON.stringify({
-        ...currentFeature, shapeArea: calculateLandArea(currentFeature),
-        shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates)
+        ...currentFeature,
+        shapeArea: calculateLandArea(currentFeature),
+        shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates),
       }),
-      layer: 'interest',
+      layer: "interest",
       name: currentFeature.properties.shapeLabel,
       user: stateApp.user.mongoId,
     };
@@ -439,9 +444,9 @@ const ShapeActionsPopup = (props) => {
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
     });
-    setSelectedAction('');
+    setSelectedAction("");
     stateApp.draw.delete(currentFeature.id);
-  }
+  };
 
   return (
     <Fragment>
@@ -450,7 +455,7 @@ const ShapeActionsPopup = (props) => {
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
           <Tooltip title="Grid">
             <IconButton size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
-              <GridOnIcon />
+              <GridOnIcon className={mapGridCardActivated ? "selected" : ""} />
             </IconButton>
           </Tooltip>
           <Tooltip title="Filter">
@@ -474,20 +479,20 @@ const ShapeActionsPopup = (props) => {
           </Tooltip>
 
           <span className={classes.divider}></span>
-          <Tooltip title="Edit Active Shape" className={selectedAction === 'edit' ? classes.disableAction : ""}>
-            <IconButton size="small" aria-label="Edit Active Shape" onClick={!selectedAction && actionEdit}>
-              <EditIcon />
+          <Tooltip title="Edit Active Shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
+            <IconButton size="small" aria-label="Edit Active Shape" onClick={
+              // !selectedAction && 
+              actionEdit}>
+              <EditIcon className={selectedAction === "edit-shape" ? "selected" : ""} />
             </IconButton>
           </Tooltip>
 
-          {
-            stateApp.currentFeature.properties.shapeLabel &&
+          {stateApp.currentFeature.properties.shapeLabel && (
             <Tooltip title="Delete Active Shape" className={!stateApp.currentFeature.properties.shapeLabel ? classes.disableAction : ""}>
               <IconButton
                 size="small"
                 aria-label="Delete Active Shape"
                 onClick={() => {
-
                   if (!!stateApp.currentFeature.properties.shapeLabel) {
                     handleDeleteAoiModal();
                   }
@@ -496,9 +501,9 @@ const ShapeActionsPopup = (props) => {
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
-          }
+          )}
 
-          {selectedAction === 'edit' && (
+          {selectedAction === "edit-aoi" && (
             <span className={classes.multiSelectCheck}>
               <Tooltip title="Confirm Editing">
                 <IconButton size="small" aria-label="Set Boundary" onClick={confirmEditing}>

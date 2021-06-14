@@ -40,14 +40,40 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
   const [updatePipelinesPositions] = useMutation(UPDATE_PIPELINES_POSITIONS);
 
   useEffect(() => {
+    if (selectedPipe) {
+      document.removeEventListener("keydown", () => { });
+      document.addEventListener("keydown", (event) => {
+        if (event.keyCode === 27) {
+          // Deselecting all flowwlines on ESC
+          setMultiSelection([selectedPipe._id]);
+        }
+      });
+    }
+  }, [selectedPipe]);
+
+  useEffect(() => {
     if (!deepEqual(items, filteredPipelines)) {
       let updateFn = {};
       filteredPipelines.forEach((item, index) => {
         const i = items.findIndex(pipe => pipe.id === item.id);
         if (i !== -1) {
-          updateFn[index] = { collapsed: { $set: items[i].collapsed } }
+          const parent = findParent(items, i);
+          if (parent) {
+            updateFn[index] = { collapsed: { $set: parent.collapsed } }
+          } else {
+            updateFn[index] = { collapsed: { $set: items[i].collapsed } }
+          }
         } else {
-          updateFn[index] = { collapsed: { $set: item.collapsed } }
+          if (item.projectId && item.type === 'Pipeline') {
+            const parent = items.find(i => i.type === 'Project' && i.projectId === item.projectId);
+            if (parent) {
+              updateFn[index] = { collapsed: { $set: parent.collapsed } }
+            } else {
+              updateFn[index] = { collapsed: { $set: item.collapsed } }
+            }
+          } else {
+            updateFn[index] = { collapsed: { $set: item.collapsed } }
+          }
         }
       });
       setItems(update(filteredPipelines, updateFn));
@@ -112,7 +138,7 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
 
   const handleChange = (newItems) => {
     const index = newItems.findIndex((item) => item.id === currentItem.current.id);
-    if (newItems[index].depth === 1) {
+    if (newItems[index].depth === 1 && newItems[index].type === 'Pipeline') {
       const parent = findParent(newItems, index);
       if (parent.type !== "Project") {
         newItems[index].depth = 0;
@@ -126,6 +152,7 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
       if (newItems[index].projectId && newItems[index].type === 'Pipeline') {
         newItems[index].projectName = null;
         newItems[index].projectId = null;
+        newItems[index].depth = 1;
       }
     }
     currentItem.current = newItems[index];
@@ -179,21 +206,34 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
       }
     }
     // we have parent and we have current item
-    if (newItem.depth === 0) {
+    if (newItem.depth === 1) {
+      if (newItem.type === 'Project' && parent.type === 'Pipeline') {
+        revert();
+        return;
+      } else if (newItem.type === 'Project' && parent.type === 'Project') {
+        let perentDescendants = findDescendants(items, parentIndex);
+        const selfDescendants = findDescendants(items, itemIndex).map(item => item._id);
+        perentDescendants = perentDescendants.filter(d => !selfDescendants.includes(d._id));
+        if (perentDescendants.findIndex(d => d.projectId === newItem.projectId) !== perentDescendants.length - 1) {
+          revert();
+          return;
+        }
+        newItem.depth = 0;
+      } else {
+        itemsToUpdate = getSuccessorItems('PROJECT_CHILDS');
+        const itemIndex = itemsToUpdate.findIndex(i => i.id === newItem.id);
+        if (oldItem.depth === 0) {
+          itemsToUpdate[itemIndex].switchType = 'addDescriptor';
+        } else if (oldItem.depth === newItem.depth && oldItem.projectId !== newItem.projectId) {
+          itemsToUpdate[itemIndex].projectId = parent.id;
+          itemsToUpdate[itemIndex].projectName = parent.projectName;
+          itemsToUpdate[itemIndex].switchType = 'updateDescriptor';
+        }
+      }
+    } if (newItem.depth === 0) {
       itemsToUpdate = getSuccessorItems('ALL');
       if (oldItem.depth === 1) {
         itemsToUpdate[0].switchType = 'deleteDescriptor';
-      }
-    } else if (newItem.depth === 1) {
-      if (newItem.type === 'Project') revert();
-      itemsToUpdate = getSuccessorItems('PROJECT_CHILDS');
-      const itemIndex = itemsToUpdate.findIndex(i => i.id === newItem.id);
-      if (oldItem.depth === 0) {
-        itemsToUpdate[itemIndex].switchType = 'addDescriptor';
-      } else if (oldItem.depth === newItem.depth && oldItem.projectId !== newItem.projectId) {
-        itemsToUpdate[itemIndex].projectId = parent.id;
-        itemsToUpdate[itemIndex].projectName = parent.projectName;
-        itemsToUpdate[itemIndex].switchType = 'updateDescriptor';
       }
     }
     // Implement the api for position update
