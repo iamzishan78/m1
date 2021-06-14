@@ -305,7 +305,7 @@ const ShapeActionsPopup = (props) => {
       drawingMode: DRAWING_MODES.DRAW_CIRCLE,
     }));
     setStateApp((state) => ({ ...state, currentFeature: selectedFeature }));
-    if (stateApp.selectedUserDefinedLayer) setSelectedAction("edit-aoi");
+    if (stateApp.selectedAoi) setSelectedAction("edit-aoi");
     else setSelectedAction("edit-shape");
   };
 
