@@ -247,6 +247,16 @@ export default function DrawShapes() {
     }
   }, [dataUser]);
 
+  //change colors
+  const setFeatureProperty = (drawFeatureID, field, value) => {
+    if (drawFeatureID !== '' && typeof stateApp.draw === 'object') {
+
+      stateApp.draw.setFeatureProperty(drawFeatureID, field, value);
+      var feat = stateApp.draw.get(drawFeatureID);
+      stateApp.draw.add(feat)
+    }
+  }
+
   useEffect(() => {
     if (!eventsConfiguredRef.current) {
       const { map } = stateApp;
@@ -288,15 +298,19 @@ export default function DrawShapes() {
               popupOpen: false,
               currentFeature: feature,
               featureOrMapShape: feature,
-              editDraw: true,
             };
           });
+          // setFeatureProperty(feature.id, 'editMode', stateApp.editDraw)
         } else {
-          setStateApp((state) => ({
-            ...state,
-            // currentFeature: undefined, // for allowing toolbar and filters if we off click shape
-            editDraw: false,
-          }));
+
+          setStateApp((state) => {
+            // setFeatureProperty(state.currentFeature.id, 'editMode', false)
+            return {
+              ...state,
+              // currentFeature: undefined, // for allowing toolbar and filters if we off click shape
+              editDraw: false,
+            }
+          });
         }
       });
 
@@ -304,9 +318,9 @@ export default function DrawShapes() {
     }
   }, [stateApp.map, stateApp.currentFeature]);
 
-  useEffect(() => {
-    setStateApp((state) => ({ ...state, editDraw: !!stateApp.currentFeature }));
-  }, [setStateApp, stateApp.currentFeature]);
+  // useEffect(() => {
+  //   setStateApp((state) => ({ ...state, editDraw: !!stateApp.currentFeature }));
+  // }, [setStateApp, stateApp.currentFeature]);
 
   const actionClose = () => {
     clearMapAndCloseShapeActionsPopup(stateApp, setStateApp)
