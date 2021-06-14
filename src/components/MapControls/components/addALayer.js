@@ -35,14 +35,14 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
 
 import proj4 from 'proj4';
-import conus from '../../../constants/nadgrids/us_noaa_conus.tif'
+import conus from '../../Shared/constants/nadgrids/conus.gsb';
 
 const handleNadGrid = (e) => {
   console.log(e.target.files[0])
 
   e.target.files[0].arrayBuffer()
   .then((buffer) => {
-    proj4.nadgrid('ntv2_0.gsb', buffer);
+    proj4.nadgrid('conus', buffer);
   })
 
   // fetch(e.target.files[0])
@@ -54,15 +54,11 @@ const handleNadGrid = (e) => {
   // })
 }
 
-proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@ntv2_0.gsb,null +no_defs");
+proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@conus,null +no_defs");
 const GCS_North_American_1927 = 'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]'
-const GCS_North_American_1927_ALT = 'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.978698213898]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]'
+// const GCS_North_American_1927_ALT = 'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.978698213898]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]'
 proj4.defs(GCS_North_American_1927, proj4.defs("EPSG:4267"));
-proj4.defs(GCS_North_American_1927_ALT, proj4.defs("EPSG:4267"));
-
-// proj4.defs("EPSG:4267","+init=epsg:4267 +proj=longlat +ellps=clrk66 +datum=NAD27" +
-//   " +no_defs +nadgrids=@conus,@alaska,@ntv2_0.gsb,@ntv1_can.dat");
-// proj4.defs("EPSG:4267", "+proj=tmerc +lat_0=0 +lon_0=-99 +k=0.9996 +x_0=500000.001016002 +towgs84=-8,161,176 +y_0=0 +ellps=clrk66 +to_meter=0.3048006096012192 +datum=NAD27 +no_defs")
+// proj4.defs(GCS_North_American_1927_ALT, proj4.defs("EPSG:4267"));
 
 const random_rgb = () => {
   var o = Math.round,
@@ -298,6 +294,23 @@ export default function AddLayer(props) {
           .catch((error) => reject(error));
       });
     } else if (fileName.endsWith(".zip")) {
+      // load contiguous lower 48 us nadgrid
+      const nadgrid = await new Promise((resolve, reject) => {
+        fetch(conus)
+          .then((response) => {
+            response.arrayBuffer()
+              .then((buffer) => {
+                const nadgrid = proj4.nadgrid('conus', buffer);
+                resolve(nadgrid);
+              })
+          })
+          .catch((err) => {
+            console.error(err);
+            reject(err);
+          })
+      })
+      console.log(nadgrid);
+
       res = await new Promise((resolve, reject) => {
         fetch(inputFile).then((response) => {
           response.arrayBuffer().then((buffer) => {
