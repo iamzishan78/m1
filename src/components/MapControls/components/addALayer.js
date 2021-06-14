@@ -38,28 +38,9 @@ import { truncate } from "components/Shared/functions";
 import proj4 from 'proj4';
 import conus from '../../Shared/constants/nadgrids/conus.gsb';
 
-const handleNadGrid = (e) => {
-  console.log(e.target.files[0])
-
-  e.target.files[0].arrayBuffer()
-  .then((buffer) => {
-    proj4.nadgrid('conus', buffer);
-  })
-
-  // fetch(e.target.files[0])
-  // .then((response) => {
-  //   response.arrayBuffer()
-  //     .then((buffer) => {
-  //       proj4.nadgrid('ntv2_0.gsb', buffer);
-  //     })
-  // })
-}
-
-proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@conus,null +no_defs");
 const GCS_North_American_1927 = 'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]'
-// const GCS_North_American_1927_ALT = 'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.978698213898]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]'
+proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@conus,null +no_defs");
 proj4.defs(GCS_North_American_1927, proj4.defs("EPSG:4267"));
-// proj4.defs(GCS_North_American_1927_ALT, proj4.defs("EPSG:4267"));
 
 const random_rgb = () => {
   var o = Math.round,
@@ -338,7 +319,7 @@ export default function AddLayer(props) {
             reject(err);
           })
       })
-      console.log(nadgrid);
+      // console.log(nadgrid);
 
       res = await new Promise((resolve, reject) => {
         fetch(inputFile).then((response) => {
@@ -416,18 +397,6 @@ export default function AddLayer(props) {
             Select one or more of the available layers below to add them to your
             current map view.
           </DialogContentText>
-
-          <Button
-            variant="contained"
-            component="label"
-          >
-            Upload File
-            <input
-              type="file"
-              hidden
-              onChange={handleNadGrid}
-            />
-          </Button>
 
           <DropzoneAreaBase
             onAdd={handleFileInput}
