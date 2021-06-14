@@ -198,25 +198,32 @@ const SidePanel = ({ }) => {
   };
 
   const flowlineActions = React.useMemo(
-    () => [
-      {
-        title: "Add Flowline",
-        icon: <AddBoxIcon fontSize="small" />,
-      },
-      {
-        title: !selectedPipe?.projectId ? "Project Group" : "Remove Pipeline From Group",
-        icon: !selectedPipe?.projectId ? <CreateNewFolderIcon fontSize="small" /> : <RemoveCircleIcon fontSize="small" />,
-      },
-      {
-        title: "Duplicate",
-        icon: <FileCopyIcon fontSize="small" />,
-      },
-      {
-        title: "Delete Flowline(s)",
-        icon: <DeleteIcon fontSize="small" />,
-      },
-    ],
-    [selectedPipe]
+    () => {
+      let isProjectPipelineSelected = false;
+      for (let i = 0; i < selectedPipelines.length; i += 1) {
+        isProjectPipelineSelected = !!filteredPipelines.find(p => p.id === selectedPipelines[i] && p.projectId);
+        if (isProjectPipelineSelected) break;
+      }
+      return [
+        {
+          title: "Add Flowline",
+          icon: <AddBoxIcon fontSize="small" />,
+        },
+        {
+          title: !isProjectPipelineSelected ? "Project Group" : "Remove Pipeline From Group",
+          icon: !isProjectPipelineSelected ? <CreateNewFolderIcon fontSize="small" /> : <RemoveCircleIcon fontSize="small" />,
+        },
+        {
+          title: "Duplicate",
+          icon: <FileCopyIcon fontSize="small" />,
+        },
+        {
+          title: "Delete Flowline(s)",
+          icon: <DeleteIcon fontSize="small" />,
+        },
+      ]
+    },
+    [selectedPipelines]
   );
 
   const filterSearch = (value) => {
@@ -245,7 +252,7 @@ const SidePanel = ({ }) => {
       case "Remove Pipeline From Group":
         let pipelines = [];
         pipelines = filteredPipelines
-          .filter((pipe) => selectedPipelines.includes(pipe._id))
+          .filter((pipe) => selectedPipelines.includes(pipe._id) && pipe.projectId)
           .map((pipe, index) => ({ ...pipe, position: index, switchType: "deleteDescriptor" }));
         pipelines = pipelines.concat(
           filteredPipelines

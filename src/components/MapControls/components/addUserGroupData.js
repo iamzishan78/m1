@@ -21,14 +21,8 @@ import { ADDLAYER } from "../../../graphQL/useMutationAddLayer";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { useDispatch } from "react-redux";
 import { showErrorMessage } from "../../../actions";
+import { getDefaultSettings } from './addUserHelper'
 import Loader from "components/Loaders";
-
-const random_rgb = () => {
-  var o = Math.round,
-    r = Math.random,
-    s = 255;
-  return "rgb(" + o(r() * s) + "," + o(r() * s) + "," + o(r() * s) + ")";
-};
 
 const Alert = (props) => {
   return <MuiAlert elevation={5} variant="filled" {...props} />;
@@ -176,70 +170,22 @@ export default function AddUserGroupData(props) {
         .then((response) => response.text())
         .then(() => {
           fileContent.featureTypes.forEach((type, index) => {
-            const idColor = random_rgb();
             const layerName = layerNames[index]
-            let paintProps = {};
-            if (type == "Point" || type == "MultiPoint") type = "circle";
-            else if (type == "LineString" || type == "Feature" || type == "MultiLineString") type = "line";
-            else type = "fill";
-
-            if (type == "circle") {
-              paintProps = {
-                "circle-radius": 5,
-                "circle-color": idColor,
-                "circle-stroke-width": 2,
-                "circle-stroke-color": "#fff",
-              };
-            } else if (type == "line") {
-              paintProps = {
-                "line-color": idColor,
-                "line-opacity": 1,
-                "line-width": 1,
-              };
-            } else {
-              paintProps = {
-                "fill-color": idColor,
-                "fill-opacity": 0.4,
-                "fill-outline-color": "#1C1C1C",
-              };
-            }
-
-            let layerPaintProps = [
-              {
-                id: layerName,
-                sourceProps: sourceProps + "_source",
-                paintType: type,
-                paintProps: paintProps,
-              },
-            ];
-
-            const layerSettings = {
-              interaction: {
-                interactionAble: false,
-                interactionDetail: {
-                  hover: false,
-                  click: false,
-                },
-              },
-              colorable: true,
-              showable: true,
-              visiable: true,
-            };
-
+            const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
             addLayer({
               variables: {
                 layer: {
                   layerName,
                   groupName,
                   groupId,
-                  layerGeometry: fileContent.featureTypes[index],
+                  layerGeometry: type,
                   identifier: layerName + uuid(),
                   layerType: "file layer",
                   layerCategory: "UD layer",
                   public: true,
                   createBy: stateApp.user.mongoId,
                   file: file_id,
-                  defaultSettings: { layerSettings, layerPaintProps },
+                  defaultSettings,
                 },
               },
               refetchQueries: index === fileContent.featureTypes.length - 1 ? ["getAllLayerSettingsByUser"] : [],
@@ -249,7 +195,7 @@ export default function AddUserGroupData(props) {
             if (index === fileContent.featureTypes.length - 1) {
               Loader.createToast('group-creation', 'Group layer creation in progress')
               const interval = setInterval(() => {
-                if (stateApp.map.isSourceLoaded(layerPaintProps[0].sourceProps)) {
+                if (stateApp.map.isSourceLoaded(sourceProps)) {
                   Loader.successToast('group-creation', 'Group layer created')
                   clearInterval(interval);
                 }
@@ -291,7 +237,7 @@ export default function AddUserGroupData(props) {
         },
       });
       if (file?.data?.addFile?.success) {
-        uploadFile(file.data, stateMapControls.fileUploadedContent, groupName + uuid())
+        uploadFile(file.data, stateMapControls.fileUploadedContent, groupName + uuid() + "_source")
       }
     }
   };
@@ -333,7 +279,7 @@ export default function AddUserGroupData(props) {
   if (notReturn) return null;
 
   return (
-    <Dialog open={isOpen} onClose={handleClose}>
+    <Dialog maxWidth='xs' fullWidth open={isOpen} onClose={handleCancel}>
       <DialogTitle>Create a new Group</DialogTitle>
       <DialogContent dividers>
 

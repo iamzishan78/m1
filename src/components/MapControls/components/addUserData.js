@@ -1,4 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
+import { v4 as uuid } from "uuid";
+import shp from "shpjs";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -14,19 +16,13 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import shp from "shpjs";
 import { ADDFILE } from "../../../graphQL/useMutationAddFile";
 import { ADDLAYER } from "../../../graphQL/useMutationAddLayer";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { useDispatch } from "react-redux";
 import { showErrorMessage } from "../../../actions";
-
-const random_rgb = () => {
-  var o = Math.round,
-    r = Math.random,
-    s = 255;
-  return "rgb(" + o(r() * s) + "," + o(r() * s) + "," + o(r() * s) + ")";
-};
+import { getDefaultSettings } from './addUserHelper'
+import Loader from "components/Loaders";
 
 const Alert = (props) => {
   return <MuiAlert elevation={5} variant="filled" {...props} />;
@@ -68,15 +64,33 @@ export default function AddUserData(props) {
   useEffect(() => {
     if (stateMapControls.fileUploadedContent) {
       setInputFiles(stateMapControls.fileUploadedContent);
+      setLayerName(stateMapControls.fileUploadedContent.groupName)
     }
   }, [stateMapControls.fileUploadedContent]);
 
-  const handleClose = () => {
+  const handleCancel = () => {
     setIsOpen(false);
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       layerAddControl: null,
       fileUploadedContent: null,
+      // selectedControl: 'layer'
+    }));
+    setNotReturn(false);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      universalCircularLoaderAct: false,
+    }));
+    setStateMapControls((stateMapControls) => ({
+      ...stateMapControls,
+      layerAddControl: null,
+      fileUploadedContent: null,
+      // selectedControl: 'layer',
+      addLayer: false,
     }));
     setNotReturn(false);
   };
@@ -141,112 +155,35 @@ export default function AddUserData(props) {
           })
             .then((response) => response.text())
             .then((response) => {
-              const idColor = random_rgb();
-              let type = turf.getType(fileContent);
-              let paintProps = {};
-
-              if (type == "Point" || type == "MultiPoint") type = "circle";
-              else if (
-                fileContent.features &&
-                fileContent.features.length > 0
-              ) {
-                let count = 0;
-
-                if (
-                  fileContent.features[0] &&
-                  (turf.getType(fileContent.features[0]) == "Point" ||
-                    turf.getType(fileContent.features[0]) == "MultiPoint")
-                ) {
-                  fileContent.features.map((feature) => {
-                    if (
-                      turf.getType(feature) == "Point" ||
-                      turf.getType(feature) == "MultiPoint"
-                    )
-                      count++;
-                  });
-
-                  if (count == fileContent.features.length) type = "circle";
-                } else if (
-                  fileContent.features[0] &&
-                  (turf.getType(fileContent.features[0]) == "LineString" ||
-                    turf.getType(fileContent.features[0]) == "Feature" ||
-                    turf.getType(fileContent.features[0]) == "MultiLineString")
-                ) {
-                  fileContent.features.map((feature) => {
-                    if (
-                      turf.getType(feature) == "LineString" ||
-                      turf.getType(feature) == "MultiLineString" ||
-                      turf.getType(feature) == "Feature"
-                    )
-                      count++;
-                  });
-
-                  ////  only lines feature
-                  if (count == fileContent.features.length) type = "line";
-                } else type = "fill";
-              } else type = "fill";
-
-              if (type == "circle") {
-                paintProps = {
-                  "circle-radius": 5,
-                  "circle-color": idColor,
-                  "circle-stroke-width": 2,
-                  "circle-stroke-color": "#fff",
-                };
-              } else if (type == "line") {
-                paintProps = {
-                  "line-color": idColor,
-                  "line-opacity": 1,
-                  "line-width": 1,
-                };
-              } else {
-                paintProps = {
-                  "fill-color": idColor,
-                  "fill-opacity": 0.4,
-                  "fill-outline-color": "#1C1C1C",
-                };
-              }
-
-              let layerPaintProps = [
-                {
-                  id: layerName,
-                  sourceProps:
-                    layerName.trim().toLowerCase().replace(" ", "_") +
-                    "_source",
-                  paintType: type,
-                  paintProps: paintProps,
-                },
-              ];
-
-              const layerSettings = {
-                interaction: {
-                  interactionAble: false,
-                  interactionDetail: {
-                    hover: false,
-                    click: false,
-                  },
-                },
-                colorable: true,
-                showable: true,
-                visiable: true,
-              };
-
+              let type = fileContent.featureTypes[0]
+              const sourceProps = layerName + uuid() + "_source"
+              const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
               addLayer({
                 variables: {
                   layer: {
                     layerName,
-                    identifier: layerName,
+                    identifier: layerName + uuid(),
+                    layerGeometry: type,
                     layerType: "file layer",
                     layerCategory: "UD layer",
                     public: true,
                     createBy: stateApp.user.mongoId,
                     file: file_id,
-                    defaultSettings: { layerSettings, layerPaintProps },
+                    defaultSettings,
                   },
                 },
                 refetchQueries: ["getAllLayerSettingsByUser"],
                 awaitRefetchQueries: true,
               });
+
+              Loader.createToast('layer-creation', 'Layer creation in progress')
+              const interval = setInterval(() => {
+                if (stateApp.map.isSourceLoaded(sourceProps)) {
+                  Loader.successToast('layer-creation', 'Layer created')
+                  clearInterval(interval);
+                }
+              }, 1000);
+              handleClose();
             })
             .catch((error) => {
               console.log(error);
@@ -359,10 +296,11 @@ export default function AddUserData(props) {
 
   if (notReturn) return null;
   return (
-    <Dialog open={isOpen} onClose={handleClose}>
+    <Dialog maxWidth='xs' fullWidth open={isOpen} onClose={handleCancel}>
       <DialogTitle>Create a new Layer</DialogTitle>
       <DialogContent dividers>
         <TextField
+          defaultValue={stateMapControls.fileUploadedContent.groupName}
           focused
           required
           margin="dense"
@@ -433,7 +371,7 @@ export default function AddUserData(props) {
         </Snackbar>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={handleClose} color="primary">
+        <Button autoFocus onClick={handleCancel} color="primary">
           Cancel
         </Button>
         <Button
