@@ -45,7 +45,7 @@ import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import { NavigationContext } from "../../../Navigation/NavigationContext";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "actions";
-import { clearMapAndCloseShapeActionsPopup } from "components/MapControls/commonHelper";
+import { clearMapAndCloseShapeActionsPopup, setFeatureProperty, drawShapeLayerToggle } from "components/MapControls/commonHelper";
 
 // const localStyles = makeStyles((theme) => ({
 //   label: {
@@ -247,15 +247,6 @@ export default function DrawShapes() {
     }
   }, [dataUser]);
 
-  //change colors
-  const setFeatureProperty = (drawFeatureID, field, value) => {
-    if (drawFeatureID !== '' && typeof stateApp.draw === 'object') {
-
-      stateApp.draw.setFeatureProperty(drawFeatureID, field, value);
-      var feat = stateApp.draw.get(drawFeatureID);
-      stateApp.draw.add(feat)
-    }
-  }
 
   useEffect(() => {
     if (!eventsConfiguredRef.current) {
@@ -286,6 +277,8 @@ export default function DrawShapes() {
         if (feature) {
           addCustomShapeProperties(feature, draw);
         }
+        setFeatureProperty(draw, feature.id, 'shapeEdit', false)
+        drawShapeLayerToggle(stateApp, "none")
         setStateApp((state) => ({ ...state, editDraw: false, showShapeActionsPopup: true }));
       });
 
@@ -300,11 +293,9 @@ export default function DrawShapes() {
               featureOrMapShape: feature,
             };
           });
-          // setFeatureProperty(feature.id, 'editMode', stateApp.editDraw)
         } else {
 
           setStateApp((state) => {
-            // setFeatureProperty(state.currentFeature.id, 'editMode', false)
             return {
               ...state,
               // currentFeature: undefined, // for allowing toolbar and filters if we off click shape
@@ -312,6 +303,10 @@ export default function DrawShapes() {
             }
           });
         }
+        setStateApp((stateApp) => {
+          drawShapeLayerToggle(stateApp, stateApp.shapeEdit ? "visible" : "none")
+          return stateApp
+        })
       });
 
       eventsConfiguredRef.current = true;
