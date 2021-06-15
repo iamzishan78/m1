@@ -65,7 +65,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
 
   const getLayerChecked = ({ layer, index }) => {
     if (type === "layer" && layer) {
-      return layer.layerSettings.visiable !== false;
+      return layer.layerSettings?.visiable !== false;
     } else if (
       type === "base" &&
       typeof index === "number" &&
