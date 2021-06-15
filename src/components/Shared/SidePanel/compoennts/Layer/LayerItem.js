@@ -20,60 +20,11 @@ import { deepEqualObjects } from "../../../functions";
 import { getLayerColor } from "../common.js";
 
 const useStyles = makeStyles((theme) => ({
-    pulloutBox: {
-        height: "100px",
-        color: "white",
-        width: "20px",
-        background: "#011133",
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        "& svg": {
-            transform: "scaleX(0.5)",
-        },
-    },
-    subHeaderItem: {
-        backgroundColor: "#011133 !important",
-        minWidth: "400px",
-    },
     list: {
         padding: 0,
     },
-    nested: {
-        paddingLeft: theme.spacing(6),
-        paddingRight: theme.spacing(6),
-    },
     disabledLayerTitle: {
         "& span": { color: "rgb(127, 149, 199) !important" },
-    },
-    boxtext: {
-        textAlign: "center",
-        margin: "auto",
-    },
-    imageBox: {
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr 1fr",
-        backgroundColor: "#263451",
-        "& :nth-child(1)": {
-            "float": "left",
-            display: "grid",
-        },
-        "& :nth-child(2)": {
-            "float": "left",
-            display: "grid",
-        },
-        "& :nth-child(3)": {
-            display: "grid",
-        },
-        "& :nth-child(4)": {
-            "float": "left",
-            display: "grid",
-        },
-        "& :nth-child(5)": {
-            display: "grid",
-            "float": "left",
-        },
     },
 }));
 
@@ -84,14 +35,12 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
     const [stateMapControls, setStateMapControls] = useContext(
         MapControlsContext
     );
-    // const [stateApp, setStateApp] = useContext(AppContext);
 
     const classes = useStyles();
 
     const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
     const handleToggleInteraction = (layer, index) => () => {
-        // const currentLayers = [...items];
         const currentLayers = []
         const updatedLayer = {
             ...layer,
@@ -130,9 +79,9 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
         root: {
             fontFamily: "Poppins",
             "&:hover": {
-                background: "#4B618F",
+                background: "#506187",
             },
-            backgroundColor: "#263451",
+            backgroundColor: "#040e24",
             "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
                 color: theme.palette.common.white,
             },
@@ -277,7 +226,7 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
 
     return (
         <Box
-            borderColor={getLayerColor(layer, type, colors)}
+            // borderColor={getLayerColor(layer, type, colors)}
             {...defaultProps}
             ref={provided.innerRef}
             {...provided.draggableProps}
@@ -292,7 +241,6 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
                 <ListItemText
                     id={labelId}
                     primary={getLayerName(layer)}
-                    //primary="Hello"
                     className={
                         checkIfNoLayerData(layer)
                             ? classes.disabledLayerTitle
@@ -305,6 +253,7 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
                 <FormControlLabel
                     control={
                         <Switch
+                            size = 'small'
                             disabled={
                                 checkIfNoLayerData(layer)
                                     ? classes.disabledLayerTitle

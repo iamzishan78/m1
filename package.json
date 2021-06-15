@@ -111,7 +111,7 @@
     "viewport-mercator-project": "^7.0.2"
   },
   "scripts": {
-    "start": "set NODE_OPTIONS=--max_old_space_size=8192&& react-scripts start --profile",
+    "start": "react-scripts start --profile",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

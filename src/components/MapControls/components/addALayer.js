@@ -36,7 +36,8 @@ import EditableTextField from "components/Shared/components/Fields/EditableTextF
 import { truncate } from "components/Shared/functions";
 
 import proj4 from 'proj4';
-import conus from '../../Shared/constants/nadgrids/conus.gsb';
+// cra webpack hack to call this a png to get included in bundle
+import conus from '../../Shared/constants/nadgrids/conus.png';
 
 const GCS_North_American_1927 = 'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]'
 proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@conus,null +no_defs");
@@ -316,7 +317,7 @@ export default function AddLayer(props) {
           })
           .catch((err) => {
             console.error(err);
-            reject(err);
+            resolve();
           })
       })
       // console.log(nadgrid);
