@@ -30,21 +30,22 @@ const AppProvider = (props) => {
     selectedParcel: null, // move to a selected object context (maybe flyto)
 
     // States for permits
-    selectedPermit: null, 
-    selectedPermitDetails: null, 
-    selectedPermitId: null, 
-    permitSelectedCoordinates: [], 
-    
+    selectedPermit: null,
+    selectedPermitDetails: null,
+    selectedPermitId: null,
+    permitSelectedCoordinates: [],
+
     selectedAoi: null,
 
     customLayers: [],
 
     // should be in a draw context 
-    editDraw: false,  
+    editDraw: false,
+    shapeEdit: false,
     showDrawShapesPopup: false,
     showShapeActionsPopup: false,
 
-    openDrawShapesControl: false, 
+    openDrawShapesControl: false,
 
     editLayer: true,
     selectedOwner: null,
@@ -132,9 +133,9 @@ const AppProvider = (props) => {
     activityDisplayType: "calendar",
     prevAOIVisible: false,
     prevParcelVisible: false,
-    prevBasinVisible: false, 
-    DocumentDrawer:false,  
-    selectedDocument:{},
+    prevBasinVisible: false,
+    DocumentDrawer: false,
+    selectedDocument: {},
     transactBarView: "",
     multiSelectLandGrids: false,
     isAbstractedLayersPolygon: false,

@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMapGridCardState } from "actions";
 
 import { gql } from "@apollo/client";
+import { setFeatureProperty, drawShapeLayerToggle } from "components/MapControls/commonHelper";
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
@@ -304,7 +305,9 @@ const ShapeActionsPopup = (props) => {
       ...stateNav,
       drawingMode: DRAWING_MODES.DRAW_CIRCLE,
     }));
-    setStateApp((state) => ({ ...state, currentFeature: selectedFeature }));
+    setFeatureProperty(stateApp.draw, selectedFeature.id, 'shapeEdit', !stateApp.shapeEdit)
+    drawShapeLayerToggle(stateApp, !stateApp.shapeEdit ? "visible" : "none")
+    setStateApp((state) => ({ ...state, currentFeature: selectedFeature, shapeEdit: !state.shapeEdit }));
     if (stateApp.selectedAoi) setSelectedAction("edit-aoi");
     else setSelectedAction("edit-shape");
   };
@@ -483,7 +486,7 @@ const ShapeActionsPopup = (props) => {
             <IconButton size="small" aria-label="Edit Active Shape" onClick={
               // !selectedAction && 
               actionEdit}>
-              <EditIcon className={selectedAction === "edit-shape" ? "selected" : ""} />
+              <EditIcon className={stateApp.shapeEdit ? "selected" : ""} />
             </IconButton>
           </Tooltip>
 
