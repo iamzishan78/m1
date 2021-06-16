@@ -288,7 +288,7 @@ export default function DrawShapes() {
           setStateApp((stateApp) => {
             return {
               ...stateApp,
-              popupOpen: false,
+              // popupOpen: false,
               currentFeature: feature,
               featureOrMapShape: feature,
             };
