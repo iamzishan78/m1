@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import MessageIcon from "@material-ui/icons/Message";
 import DescriptionIcon from "@material-ui/icons/DescriptionSharp";
@@ -6,10 +6,10 @@ import CheckmarkIcon from "@material-ui/icons/CheckBoxOutlined";
 import ShareIcon from "@material-ui/icons/Share";
 import FolderIcon from "@material-ui/icons/Folder";
 import IdentityIcon from "@material-ui/icons/PermIdentity";
+import FlowIcon from "@material-ui/icons/Repeat";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from '@material-ui/core/Badge';
 import { AppContext } from "../../../AppContext";
-import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -77,6 +77,17 @@ export default function Drawer() {
         badgeContent={stateApp?.activeDeal?.contacts?.length}
       >
         <IdentityIcon {...props} />
+      </Badge>
+    ),
+    Progress: (props) => (
+      <Badge
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        color="primary"
+      >
+        <FlowIcon {...props} />
       </Badge>
     ),
   };

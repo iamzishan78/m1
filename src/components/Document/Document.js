@@ -16,17 +16,17 @@ import { Container } from "@material-ui/core";
 
 
 const useStyles = makeStyles((theme) => ({
-  root:{
+  root: {
     "& div": {
       "&>.MuiPaper-root": {
         display: "flex",
-        ["flex-direction"]: "column",
+        "flex-direction": "column",
         height: "calc(100vh - 65px)",
-        ["align-items"]: "stretch",
-        "&>.MuiPaper-root": { 
+        "align-items": "stretch",
+        "&>.MuiPaper-root": {
           display: "contents",
         },
-        "&>:nth-child(3)": { 
+        "&>:nth-child(3)": {
           height: "inherit !important",
         },
         "&> table": {
@@ -58,11 +58,9 @@ export default function DocumentComponent() {
     setNumPages(numPages);
   }
 
-
-
   return (
     <div className={classes.root}>
-    {/* <Container 
+      {/* <Container 
         maxWidth='false' 
         style={{overflow: 'auto', 
         height: 'calc(100vh - 64px)'
@@ -70,7 +68,7 @@ export default function DocumentComponent() {
       <M1nTable dense parent="Documents"></M1nTable>
       <Drawer data={true}></Drawer>
 
-      
+
       <Dialog
         className={classes.dialogExpCard}
         fullWidth
@@ -130,7 +128,7 @@ export default function DocumentComponent() {
       </Dialog>
       {/* </Container> */}
 
-      
+
     </div>
   );
 }
