@@ -21,6 +21,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@mapbox/geojson-merge": "^1.1.1",
     "@mapbox/mapbox-gl-draw": "^1.2.2",
+    "@mapbox/mapbox-gl-draw-static-mode": "^1.0.1",
     "@mapbox/mapbox-gl-geocoder": "^4.7.0",
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
@@ -110,7 +111,7 @@
     "viewport-mercator-project": "^7.0.2"
   },
   "scripts": {
-    "start": "set NODE_OPTIONS=--max_old_space_size=8192&& react-scripts start --profile",
+    "start": "react-scripts start --profile",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

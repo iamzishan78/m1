@@ -26,26 +26,31 @@ const FileTree = ({ layerMap }) => {
       if (items.length === layerMap.length) {
         const updateFn = {};
         items.forEach((item, index) => {
-          if (layerMap[index].type === 'group') {
-            updateFn[index] = {
-              showable: { $set: layerMap[index].showable },
-              visiable: { $set: layerMap[index].visiable },
-            }
+          if (layerMap[index].id !== item.id) {
+            updateFn[index] = { $set: layerMap[index] }
           }
-          if (item.name !== layerMap[index].name) {
-            updateFn[index] = {
-              ...updateFn[index],
-              name: { $set: layerMap[index].name },
+          else {
+            if (layerMap[index].type === 'group') {
+              updateFn[index] = {
+                showable: { $set: layerMap[index].showable },
+                visiable: { $set: layerMap[index].visiable },
+              }
             }
-          }
-          if (item.layerSettings) {
-            updateFn[index] = {
-              ...updateFn[index],
-              layerSettings: { $set: layerMap[index].layerSettings },
-              showable: { $set: layerMap[index].showable },
-              layerPaintProps: { $set: layerMap[index].layerPaintProps },
-              groupName: { $set: layerMap[index].groupName },
-              layerName: { $set: layerMap[index].layerName }
+            if (item.name !== layerMap[index].name) {
+              updateFn[index] = {
+                ...updateFn[index],
+                name: { $set: layerMap[index].name },
+              }
+            }
+            if (item.layerSettings) {
+              updateFn[index] = {
+                ...updateFn[index],
+                layerSettings: { $set: layerMap[index].layerSettings },
+                showable: { $set: layerMap[index].showable },
+                layerPaintProps: { $set: layerMap[index].layerPaintProps },
+                groupName: { $set: layerMap[index].groupName },
+                layerName: { $set: layerMap[index].layerName }
+              }
             }
           }
         })
