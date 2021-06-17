@@ -2794,6 +2794,7 @@ function SubTable(props) {
       if (props.addAble && props.parent === "UserManagement") { buttonLabel = "+ ADD USER" }
       if (props.addAble.type === "ownerToParcel") { buttonLabel = '+ ADD INTEREST OWNER' }
       if (props.addAble.type === "suggestedOwnerToParcel") { buttonLabel = '+ ADD TO PARCEL' }
+      if (props.addAble.type === "parcelDocument") { buttonLabel = 'ADD DOCUMENT' }
 
 
       const addAction = (e) => {
@@ -2870,6 +2871,15 @@ function SubTable(props) {
                 {buttonLabel}
               </Button>
             )}
+            {props.addAble.type === 'parcelDocument' &&
+              <Button
+                color="secondary"
+                className={classes.multiSelectionTopBarButtons}
+                onClick={()=> props.onClickAdd()}
+              >
+                <PostAddIcon />{buttonLabel}
+              </Button>
+            }
             {(props.addAble.type === "wellInterest"
               || props.addAble.type === "deals"
               || props.addAble.type === "ownerToParcel"
