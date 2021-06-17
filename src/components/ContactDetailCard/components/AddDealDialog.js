@@ -1,75 +1,57 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useRef,
-  useCallback,
-} from 'react';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Select from '@material-ui/core/Select';
-import Grid from '@material-ui/core/Grid';
-import { AppContext } from '../../../AppContext';
-import { CONTACT } from '../../../graphQL/useQueryContact';
-import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
-import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
-import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
-import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import {
-  CircularProgress,
-  Dialog,
-  Typography,
-  Avatar,
-} from '@material-ui/core';
-import RightDialog from './RightDialog';
-import moment from 'moment';
-import {
-  deepEqual,
-  deepEqualObjects,
-  setStateIfDeepEqual,
-} from '../../Shared/functions';
-import TrackToggleButton from '../../Shared/TrackToggleButton';
-import { TRACKBYOBJECTID } from '../../../graphQL/useQueryTrackByObjectId';
-import TaggerWithIcon from '../../Shared/TaggerWithIcon';
-import CommentsWithIcon from '../../Shared/CommentsWithIcon';
-import DeleteConfirmationDialogContent from '../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import { useDispatch, useSelector } from 'react-redux';
-import { ADDDEAL } from 'graphQL/useMutationAddDeal';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { UPDATEDEAL } from 'graphQL/useMutationUpdateDeal';
-import { UPSERTDEALDESCRIPTOR } from 'graphQL/useMutationUpsertDealDescriptor';
-import { REMOVEDEALDESCRIPTOR } from '../../../graphQL/useMutationRemoveDealDescriptor';
-import { UPDATESTAGEDEALDESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
-import {
-  setFlowState,
-  showErrorMessage,
-  showSuccessMessage,
-} from '../../../actions';
-import { GETPIPELINES } from 'graphQL/useQueryPipelines';
-import PropTypes from 'prop-types';
-import NumberFormat from 'react-number-format';
-import Documents from '../../Shared/Documents';
-import AddDialogeUploadZone from './AddDialogUploadZone';
-import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
-import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-import { GETDEAL } from 'graphQL/useQueryDeal';
-import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider';
-import Contacts from 'components/FlowDrawer/Contacts';
-import EventIcon from '@material-ui/icons/Event';
-import './style/dialog.css';
-import { faCloudShowersHeavy } from '@fortawesome/free-solid-svg-icons';
+import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import FormControl from "@material-ui/core/FormControl";
+import Link from "@material-ui/core/Link";
+import InputLabel from "@material-ui/core/InputLabel";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Select from "@material-ui/core/Select";
+import Grid from "@material-ui/core/Grid";
+import { AppContext } from "../../../AppContext";
+import { CONTACT } from "../../../graphQL/useQueryContact";
+import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
+import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
+import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { CircularProgress, Dialog, Typography, Avatar } from "@material-ui/core";
+import RightDialog from "./RightDialog";
+import moment from "moment";
+import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../../Shared/functions";
+import TrackToggleButton from "../../Shared/TrackToggleButton";
+import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
+import TaggerWithIcon from "../../Shared/TaggerWithIcon";
+import CommentsWithIcon from "../../Shared/CommentsWithIcon";
+import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { useDispatch, useSelector } from "react-redux";
+import { ADDDEAL } from "graphQL/useMutationAddDeal";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import { UPDATEDEAL } from "graphQL/useMutationUpdateDeal";
+import { UPSERTDEALDESCRIPTOR } from "graphQL/useMutationUpsertDealDescriptor";
+import { REMOVEDEALDESCRIPTOR } from "../../../graphQL/useMutationRemoveDealDescriptor";
+import { UPDATESTAGEDEALDESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
+import { setFlowState, showErrorMessage, showSuccessMessage } from "../../../actions";
+import { GETPIPELINES } from "graphQL/useQueryPipelines";
+import PropTypes from "prop-types";
+import NumberFormat from "react-number-format";
+import Documents from "../../Shared/Documents";
+import AddDialogeUploadZone from "./AddDialogUploadZone";
+import LaneProgressZone from './LaneProgressZone'
+import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
+import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
+import { GETDEAL } from "graphQL/useQueryDeal";
+import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
+import Contacts from "components/FlowDrawer/Contacts";
+import EventIcon from "@material-ui/icons/Event";
+import "./style/dialog.css";
+import { faCloudShowersHeavy } from "@fortawesome/free-solid-svg-icons";
 
-// mui icons 
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-
+// mui icons
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -115,41 +97,41 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
   inputFieldOwner: {
-    marginBottom: '7px',
+    marginBottom: "7px",
   },
   inputFieldDate: {
-    marginBottom: '7px',
+    marginBottom: "7px",
   },
   inputFieldFlowline: {
-    marginBottom: '7px',
+    marginBottom: "7px",
   },
   inputFieldFlowStage: {
-    marginBottom: '7px',
+    marginBottom: "7px",
   },
   inputFieldCustomTextInput: {
-    marginBottom: '7px',
+    marginBottom: "7px",
   },
   inputFieldDealName: {
-    marginBottom: '10px',
-    width: '390px',
+    marginBottom: "10px",
+    width: "390px",
   },
   dateLabel: {
-    transform: 'translate(10px, 2px) scale(0.75) !important',
-    backgroundColor: '#fff !important',
-    padding: '0 6px',
+    transform: "translate(10px, 2px) scale(0.75) !important",
+    backgroundColor: "#fff !important",
+    padding: "0 6px",
   },
   shrinkLabel: {
     backgroundColor: "#fff !important",
     padding: "0 6px",
   },
   dealDetailRoot: {
-    overflow: 'auto',
-    maxHeight: '91vh',
-    padding: '0px 30px 0px 30px'
+    overflow: "auto",
+    maxHeight: "91vh",
+    padding: "0px 30px 0px 30px",
   },
   inputFieldDateRoot: {
-    '& .MuiDialog-root': {},
-    overflow: 'auto'
+    "& .MuiDialog-root": {},
+    overflow: "auto",
   },
   progress: {
     marginLeft: "30px",
@@ -168,7 +150,7 @@ const useStyles = makeStyles((theme) => ({
   },
   topBtnGroup: {},
   inputField: {
-    // marginBottom: "30px",  
+    // marginBottom: "30px",
     outline: "none",
   },
   dealStateOpenWon: {
@@ -202,9 +184,9 @@ const useStyles = makeStyles((theme) => ({
     // color: "#fff",
   },
   gridStyle: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
   dealStateReopen: {
     padding: "2px 10px",
@@ -217,7 +199,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "4px",
     fontSize: 12,
     letterSpacing: 2,
-    textAlign: 'center',
+    textAlign: "center",
   },
   dialog: {
     zIndex: "9999999999 !important",
@@ -228,10 +210,10 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     marginTop: 25,
 
-    '& .MuiOutlinedInput-root': {
-      width: '100%',
-      '& fieldset': {
-        borderColor: 'white',
+    "& .MuiOutlinedInput-root": {
+      width: "100%",
+      "& fieldset": {
+        borderColor: "white",
       },
     },
   },
@@ -239,75 +221,74 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "9999999999999999999 !important",
   },
   dateRoot: {
-    border: '1px solid #EBEBEB',
+    border: "1px solid #EBEBEB",
 
-    '&.Mui-focused fieldset': {
-      border: '1px solid black',
-      backgroundColor: 'transparent',
+    "&.Mui-focused fieldset": {
+      border: "1px solid black",
+      backgroundColor: "transparent",
     },
-    '&:hover': {
-      backgroundColor: '#EBEBEB',
+    "&:hover": {
+      backgroundColor: "#EBEBEB",
     },
-    '&:active': {
-      border: '1px solid black',
-      backgroundColor: '#fff',
+    "&:active": {
+      border: "1px solid black",
+      backgroundColor: "#fff",
     },
   },
 
   flowlineRoot: {
-    '&:hover': {
-      backgroundColor: '#EBEBEB',
-      '& .MuiOutlinedInput-notchedOutline': {
+    "&:hover": {
+      backgroundColor: "#EBEBEB",
+      "& .MuiOutlinedInput-notchedOutline": {
         border: 0,
       },
-      '& .MuiSelect-icon': {
-        display: 'inline-block',
+      "& .MuiSelect-icon": {
+        display: "inline-block",
       },
     },
-    '&:active': {
-      border: '1px solid black',
-      backgroundColor: '#EBEBEB',
+    "&:active": {
+      border: "1px solid black",
+      backgroundColor: "#EBEBEB",
     },
   },
   notchedOutlineFlow: {
-    border: '0.2px solid #EBEBEB',
+    border: "0.2px solid #EBEBEB",
   },
   notchedOutlineFlowFocused: {
-    '& .MuiOutlinedInput-notchedOutline': {
-      border: '1px solid black',
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "1px solid black",
     },
   },
   icon: {
-    display: 'none',
+    display: "none",
   },
   dealNameRoot: {
-    fontWeight: 'bold',
-    textAlign: 'left',
-    fontSize: '1.2rem',
-    '&.Mui-focused fieldset': {
-      border: '1px solid black',
-      backgroundColor: 'transparent',
+    fontWeight: "bold",
+    textAlign: "left",
+    fontSize: "1.2rem",
+    "&.Mui-focused fieldset": {
+      border: "1px solid black",
+      backgroundColor: "transparent",
     },
-    '&:hover': {
-      border: '1px solid black',
+    "&:hover": {
+      border: "1px solid black",
     },
   },
   customDataTextInputRoot: {
-    border: '1px solid #EBEBEB',
-    '&.Mui-focused fieldset': {
-      border: '1px solid black',
-      backgroundColor: 'transparent',
+    border: "1px solid #EBEBEB",
+    "&.Mui-focused fieldset": {
+      border: "1px solid black",
+      backgroundColor: "transparent",
     },
-    '&:hover': {
-      backgroundColor: '#EBEBEB',
+    "&:hover": {
+      backgroundColor: "#EBEBEB",
     },
   },
   notchedOutline: {
     border: 0,
   },
-
   dealOwnerRoot: {
-    border: '1px solid #EBEBEB',
+    border: "1px solid #EBEBEB",
 
     // This matches the specificity of the default styles at https://github.com/mui-org/material-ui/blob/v4.11.3/packages/material-ui-lab/src/Autocomplete/Autocomplete.js#L90
     '&[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input:first-child': {
@@ -315,42 +296,49 @@ const useStyles = makeStyles((theme) => ({
       paddingLeft: 26,
     },
 
-    '& .MuiOutlinedInput-notchedOutline': {
+    "& .MuiOutlinedInput-notchedOutline": {
       border: 0,
     },
-    '&:hover.MuiOutlinedInput-root': {
-      backgroundColor: '#EBEBEB',
+    "&:hover.MuiOutlinedInput-root": {
+      backgroundColor: "#EBEBEB",
     },
-    '&:hover .MuiAutocomplete-popupIndicator': {
-      visibility: 'visible',
-      padding: '2px',
-      marginRight: '-2px',
+    "&:hover .MuiAutocomplete-popupIndicator": {
+      visibility: "visible",
+      padding: "2px",
+      marginRight: "-2px",
     },
   },
   dealOwnerRootFocused: {
-    '& .MuiOutlinedInput-notchedOutline': {
-      border: '1px solid black',
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "1px solid black",
     },
   },
   dealOwnerAvatar: {
     width: theme.spacing(3),
     height: theme.spacing(3),
-    color: '#fff',
-    fontSize: '0.6rem',
-    backgroundColor: '#4880F6',
-    padding: '0.5em',
+    color: "#fff",
+    fontSize: "0.6rem",
+    backgroundColor: "#4880F6",
+    padding: "0.5em",
   },
   dealOwnerLabel: {
     marginLeft: 4,
   },
   popupIndicator: {
-    visibility: 'hidden',
-    padding: '2px',
-    marginRight: '-2px',
-    '&:hover': {
-      visibility: 'visible',
+    visibility: "hidden",
+    padding: "2px",
+    marginRight: "-2px",
+    "&:hover": {
+      visibility: "visible",
     },
   },
+  flowLaneHeader: {
+    "&.MuiTypography-root": {
+      '& > * + *': {
+        marginLeft: theme.spacing(2),
+      }
+    }
+  }
 }));
 
 const newContact = {
@@ -374,15 +362,15 @@ function AddDealDialog(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [titleFocus, setTitleFocus] = useState(false);
-  const [label, setLabel] = useState('');
+  const [label, setLabel] = useState("");
   const [stageId, setStageId] = useState(null);
   const [dealPosition, setDealPosition] = useState(null);
   const [dealState, setDealState] = useState(null);
   const [description, setDescription] = useState("");
   const [pipelineId, setPipelineId] = useState(selectedPipe?._id);
   const [stagesToChoose, setStagesToChoose] = useState([]);
-  const [ownerId, setOwnerId] = useState('');
-  const [cardId, setCardId] = useState('');
+  const [ownerId, setOwnerId] = useState("");
+  const [cardId, setCardId] = useState("");
   const [users, setUsers] = useState([]);
   const [closeDate, setCloseDate] = useState(new Date());
   const [colaborators, setColaborators] = useState([]);
@@ -438,14 +426,11 @@ function AddDealDialog(props) {
   }, []);
 
   useEffect(() => {
-
-    console.log('===========')
-    console.log('FLOW TRANSACT BAR VIEW', stateApp.transactBarView)
-
+    console.log("===========");
+    console.log("FLOW TRANSACT BAR VIEW", stateApp.transactBarView);
 
     if (stateApp.transactBarView !== "") {
       // handleValidate();
-
 
       if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
         addUpdateDeal(null, false);
@@ -455,7 +440,6 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (dealData) {
-
       setStateApp((stateApp) => ({
         ...stateApp,
         activeDeal: dealData?.addDeal?.deal,
@@ -468,7 +452,7 @@ function AddDealDialog(props) {
       //// select first one as default
       if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
         let activePipeline = {};
-        const isExist = !!pipelinesData.pipelines.find(p => p._id === selectedPipe?._id);
+        const isExist = !!pipelinesData.pipelines.find((p) => p._id === selectedPipe?._id);
         if (selectedPipe && isExist) {
           activePipeline = pipelinesData.pipelines.find((p) => p._id === selectedPipe._id);
         } else activePipeline = pipelinesData.pipelines[0];
@@ -666,7 +650,6 @@ function AddDealDialog(props) {
     }
   }, [stateApp.activeDeal, props.contact, stateApp.dealDialog, stateApp.user]);
 
-
   const handleClose = () => {
     // handleValidate();
     handleUpdate();
@@ -782,7 +765,6 @@ function AddDealDialog(props) {
 
         if (
           (stateApp.activeDeal?.owners?.length > 0 && stateApp.activeDeal?.owners[0]?.relatedObject?._id !== ownerId) ||
-
           !stateApp.activeDeal.owners ||
           stateApp.activeDeal.owners.length <= 0
         ) {
@@ -818,7 +800,6 @@ function AddDealDialog(props) {
                   variables: {
                     id: stateApp.activeDeal?.owners[0]?._id,
                     relatedObjectType: "User",
-
                   },
                   refetchQueries: ["getPipeline", "getContactDeals"],
 
@@ -1047,7 +1028,6 @@ function AddDealDialog(props) {
         },
       }));
     }
-
   }, [getDealResult]);
 
   const getView = () => {
@@ -1126,16 +1106,8 @@ function AddDealDialog(props) {
     setExpCardSubComponentTitle(subComponentTitle);
     setShowExpandableCard(true);
   };
-  const handleCloseExpandableCard = () => {
-    setShowExpandableCard(false);
-    setStateApp((state) => ({
-      ...state,
-      contactUpdated: null,
-    }));
-  };
   return (
     <>
-
       {deleteDialogOpen && (
         <Dialog
           className={classes.dialog}
@@ -1172,7 +1144,6 @@ function AddDealDialog(props) {
               handleClose();
             }
           }}
-
           isTransactPage={props.isTransactPage}
         >
           <div style={{ padding: "30px" }}>
@@ -1181,7 +1152,7 @@ function AddDealDialog(props) {
                 style={{
                   float: "left",
                   fontSize: "1.1rem",
-                  marginTop: '0px'
+                  marginTop: "0px",
                 }}
               >
                 {stateApp.transactBarView}
@@ -1230,131 +1201,113 @@ function AddDealDialog(props) {
             xs={12}
             style={{
               margin: 0,
-              padding: '30px 30px 0px 30px',
-              marginBottom: '1em'
+              padding: "30px 30px 0px 30px",
+              marginBottom: "1em",
             }}
             alignItems="center"
           >
-            {/* <Grid
-                item
-                xs
-                style={{
-                  flexGrow: 1,
-                  padding: 0,
-                  marginRight: titleFocus ? 0 : '5px',
-                }}
-              >
-              </Grid> */}
-
             <Grid container spacing={2} className={classes.gridStyle}>
-              <Grid item xs={6} style={{ minHeight: '35px' }}>
-                <Typography variant="h5" style={{
-                  // margin: '0 0 0 0',
-                  float: 'left',
-                  fontSize: '1.3rem',
-                }}>
+              <Grid item xs={6} style={{ minHeight: "35px" }}>
+                <Typography
+                  variant="h5"
+                  style={{
+                    // margin: '0 0 0 0',
+                    float: "left",
+                    fontSize: "1.3rem",
+                  }}
+                >
                   Deal Information
-                  </Typography>
+                </Typography>
               </Grid>
-              <Grid item xs={6} style={{ minHeight: '35px' }}>
+              <Grid item xs={6} style={{ minHeight: "35px" }}>
                 {!titleFocus && (
-                  <Grid item xs style={{
-                    flexGrow: 0, padding: 2,
-                    // marginTop: 2 
-                  }}>
-
+                  <Grid
+                    item
+                    xs
+                    style={{
+                      flexGrow: 0,
+                      padding: 2,
+                      // marginTop: 2
+                    }}
+                  >
                     <div
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        float: 'right',
+                        display: "flex",
+                        alignItems: "center",
+                        float: "right",
                       }}
                     >
-                      {(dealState === null || dealState === 'open') && (
+                      {(dealState === null || dealState === "open") && (
                         <>
                           <div
                             className={classes.dealStateOpenWon}
-                            onClick={() => setDealState('won')}
+                            onClick={() => setDealState("won")}
                             style={{
                               marginRight: 8,
                             }}
                           >
                             Won
-                            </div>
+                          </div>
 
-                          <div
-                            className={classes.dealStateOpenLost}
-                            onClick={() => setDealState('lost')}
-                          >
+                          <div className={classes.dealStateOpenLost} onClick={() => setDealState("lost")}>
                             Lost
-                            </div>
+                          </div>
                         </>
                       )}
-                      {dealState === 'won' && (
+                      {dealState === "won" && (
                         <>
                           <div
                             className={classes.dealStateClosed}
                             style={{
-                              backgroundColor: '#a6e5c3',
-                              fontWeight: 'bold',
-                              color: '#54a83c',
+                              backgroundColor: "#a6e5c3",
+                              fontWeight: "bold",
+                              color: "#54a83c",
                               marginRight: 8,
                             }}
                           >
                             Won
-                            </div>
-                          <div
-                            className={classes.dealStateReopen}
-                            onClick={() => setDealState(null)}
-                          >
+                          </div>
+                          <div className={classes.dealStateReopen} onClick={() => setDealState(null)}>
                             Re-open
-                            </div>
+                          </div>
                         </>
                       )}
-                      {dealState === 'lost' && (
+                      {dealState === "lost" && (
                         <>
                           <div
                             className={classes.dealStateClosed}
                             style={{
-                              backgroundColor: '#ffa8a8',
+                              backgroundColor: "#ffa8a8",
                               // borderStyle: "solid",
-                              fontWeight: 'bold',
-                              color: '#f96060',
+                              fontWeight: "bold",
+                              color: "#f96060",
                               marginRight: 8,
                             }}
                           >
                             Lost
-                            </div>
-                          <div
-                            className={classes.dealStateReopen}
-                            onClick={() => setDealState(null)}
-                          >
+                          </div>
+                          <div className={classes.dealStateReopen} onClick={() => setDealState(null)}>
                             Re-open
-                            </div>
+                          </div>
                         </>
                       )}
-                      {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
-
-                        stateApp.activeDeal?.laneId && (
-                          <>
-                            <IconButton
-                              disabled={updateDealLoading || addContactLoading}
-                              onClick={openConfirmationDialog}
-                              size="small"
-                              component="span"
-                              style={{
-                                background: 'transparent',
-                                paddingLeft: '10px',
-                                align: 'center'
-                              }}
-                            >
-                              <DeleteIcon
-                                size="medium"
-                                className={classes.closeIcon}
-                              />
-                            </IconButton>
-                          </>
-                        )}
+                      {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) && stateApp.activeDeal?.laneId && (
+                        <>
+                          <IconButton
+                            disabled={updateDealLoading || addContactLoading}
+                            onClick={openConfirmationDialog}
+                            size="small"
+                            component="span"
+                            style={{
+                              background: "transparent",
+                              paddingLeft: "10px",
+                              align: "center",
+                            }}
+                          >
+                            <DeleteIcon size="medium" className={classes.closeIcon} />
+                          </IconButton>
+                        </>
+                      )}
                     </div>
                   </Grid>
                 )}
@@ -1363,11 +1316,7 @@ function AddDealDialog(props) {
           </Grid>
 
           <div className={classes.dealDetailRoot}>
-            {!(
-              (Object.keys(contact).length === 0 &&
-                contact.constructor === Object) ||
-              contact === null
-            ) && !props.isTransactPage ? (
+            {!((Object.keys(contact).length === 0 && contact.constructor === Object) || contact === null) && !props.isTransactPage ? (
               <div className={classes.inputFieldDateRoot}>
                 <TextField
                   variant="outlined"
@@ -1383,12 +1332,7 @@ function AddDealDialog(props) {
               <></>
             )}
 
-            <FormControl
-              variant="outlined"
-              className={classes.inputFieldDealName}
-              fullWidth
-              size="small"
-            >
+            <FormControl variant="outlined" className={classes.inputFieldDealName} fullWidth size="small">
               <TextField
                 margin="dense"
                 value={title}
@@ -1396,11 +1340,9 @@ function AddDealDialog(props) {
                 placeholder="Click to enter deal name"
                 required
                 fullWidth
-                // error text that will prevent things 
-                error={(title && title !== '') ? false : true}
-                helperText={
-                  (title && title !== '') ? '' : 'Enter a deal name to get started'
-                }
+                // error text that will prevent things
+                error={title && title !== "" ? false : true}
+                helperText={title && title !== "" ? "" : "Enter a deal name to get started"}
                 //   required
                 onChange={(e) => {
                   setTitle(e.target.value);
@@ -1416,14 +1358,8 @@ function AddDealDialog(props) {
               />
             </FormControl>
 
-            <FormControl
-              variant="outlined"
-              fullWidth
-              size="small"
-            >
-              <Grid container
-                className={classes.gridStyle}
-              >
+            <FormControl variant="outlined" fullWidth size="small">
+              <Grid container className={classes.gridStyle}>
                 <Grid item xs={3}>
                   <div>Owner</div>
                 </Grid>
@@ -1466,20 +1402,20 @@ function AddDealDialog(props) {
                                       .find((user) => user?.value === ownerId)
                                       .text.toString()
                                       .toUpperCase()
-                                      .split(' ').length > 1
+                                      .split(" ").length > 1
                                       ? users
                                         .find((user) => user?.value === ownerId)
                                         .text.toString()
                                         .toUpperCase()
-                                        .split(' ')[0][0] +
-                                      '' +
+                                        .split(" ")[0][0] +
+                                      "" +
                                       users
                                         .find((user) => user?.value === ownerId)
                                         .text.toString()
                                         .toUpperCase()
-                                        .split(' ')[1][0]
-                                      : 'AO'
-                                    : 'AO'}
+                                        .split(" ")[1][0]
+                                      : "AO"
+                                    : "AO"}
                                 </Avatar>
                               </InputAdornment>
                               {params.InputProps.startAdornment}
@@ -1493,14 +1429,8 @@ function AddDealDialog(props) {
               </Grid>
             </FormControl>
 
-            <FormControl
-              variant="outlined"
-              fullWidth
-              size="small"
-            >
-              <Grid container
-                className={classes.gridStyle}
-              >
+            <FormControl variant="outlined" fullWidth size="small">
+              <Grid container className={classes.gridStyle}>
                 <Grid item xs={3}>
                   <div>Close Date</div>
                 </Grid>
@@ -1531,14 +1461,8 @@ function AddDealDialog(props) {
               </Grid>
             </FormControl>
 
-            <FormControl
-              variant="outlined"
-              fullWidth
-              size="small"
-            >
-              <Grid container
-                className={classes.gridStyle}
-              >
+            <FormControl variant="outlined" fullWidth size="small">
+              <Grid container className={classes.gridStyle}>
                 <Grid item xs={3}>
                   <div>Flowline</div>
                 </Grid>
@@ -1546,7 +1470,7 @@ function AddDealDialog(props) {
                 <Grid item xs={9}>
                   <TextField
                     variant="outlined"
-                    margin='dense'
+                    margin="dense"
                     select
                     SelectProps={{
                       native: true,
@@ -1569,14 +1493,9 @@ function AddDealDialog(props) {
                     }}
                     fullWidth
                   >
-                    {selectedPipe && (
-                      <option value={selectedPipe._id}>
-                        {selectedPipe.name}
-                      </option>
-                    )}
+                    {selectedPipe && <option value={selectedPipe._id}>{selectedPipe.name}</option>}
                     {sortedPipelines?.map((pipeline, i) => {
-                      if (selectedPipe && selectedPipe._id === pipeline._id)
-                        return;
+                      if (selectedPipe && selectedPipe._id === pipeline._id) return;
                       return (
                         <option value={pipeline._id} key={i}>
                           {pipeline.name}
@@ -1584,27 +1503,19 @@ function AddDealDialog(props) {
                       );
                     })}
                   </TextField>
-
                 </Grid>
               </Grid>
             </FormControl>
 
-            <FormControl
-              variant="outlined"
-              fullWidth
-              size="small"
-            >
-              <Grid container
-                className={classes.gridStyle}
-              >
+            <FormControl variant="outlined" fullWidth size="small">
+              <Grid container className={classes.gridStyle}>
                 <Grid item xs={3}>
                   <div>Flow Stage</div>
                 </Grid>
 
                 <Grid item xs={9}>
-
                   <TextField
-                    margin='dense'
+                    margin="dense"
                     variant="outlined"
                     select
                     SelectProps={{
@@ -1617,10 +1528,7 @@ function AddDealDialog(props) {
                     value={stageId}
                     className={classes.inputFieldFlowStage}
                     onChange={(e) => {
-                      settingNewStageAndFindNextAvailablePosition(
-                        e.target.value,
-                        true
-                      );
+                      settingNewStageAndFindNextAvailablePosition(e.target.value, true);
                     }}
                     InputProps={{
                       classes: {
@@ -1630,7 +1538,6 @@ function AddDealDialog(props) {
                       },
                     }}
                     fullWidth
-
                   >
                     {stagesToChoose &&
                       stagesToChoose.map((stage, i) => (
@@ -1638,20 +1545,13 @@ function AddDealDialog(props) {
                           {stage.name}
                         </option>
                       ))}
-
                   </TextField>
                 </Grid>
               </Grid>
             </FormControl>
 
-            <FormControl
-              variant="outlined"
-              fullWidth
-              size="small"
-            >
-              <Grid container
-                className={classes.gridStyle}
-              >
+            <FormControl variant="outlined" fullWidth size="small">
+              <Grid container className={classes.gridStyle}>
                 <Grid item xs={3}>
                   <div>Offer Price</div>
                 </Grid>
@@ -1661,9 +1561,7 @@ function AddDealDialog(props) {
                     variant="outlined"
                     value={label}
                     error={isNaN(label)}
-                    helperText={
-                      isNaN(label) ? 'Offer Price must be a valid number' : ''
-                    }
+                    helperText={isNaN(label) ? "Offer Price must be a valid number" : ""}
                     className={classes.inputFieldCustomTextInput}
                     fullWidth
                     onChange={(e) => {
@@ -1682,7 +1580,6 @@ function AddDealDialog(props) {
               </Grid>
             </FormControl>
 
-
             <TextField
               //   autoFocus
               margin="dense"
@@ -1692,8 +1589,6 @@ function AddDealDialog(props) {
               value={description}
               label="Description"
               fullWidth
-              multiline
-              //   required
               onChange={(e) => {
                 setDescription(e.target.value);
               }}
@@ -1703,16 +1598,17 @@ function AddDealDialog(props) {
             {originationDate && (
               <div className={classes.originationDate}>Deal Creation Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
             )}
-            <div>
-              <AddDialogeUploadZone
-                isTransactPage={true}
-                filesData={viewFileResult}
-                id={stateApp.activeDeal?.cardId}
-                loading={viewFileLoading}
-                disabled={!stateApp.activeDeal?.cardId}
-                handleOpenExpandableCard={handleOpenExpandableCard}
-              ></AddDialogeUploadZone>
-            </div>
+            <AddDialogeUploadZone
+              isTransactPage={true}
+              filesData={viewFileResult}
+              id={stateApp.activeDeal?.cardId}
+              loading={viewFileLoading}
+              disabled={!stateApp.activeDeal?.cardId}
+              handleOpenExpandableCard={handleOpenExpandableCard}
+            ></AddDialogeUploadZone>
+
+            {/* Here is flow lane form */}
+            <LaneProgressZone />
           </div>
         </RightDialog>
       )}

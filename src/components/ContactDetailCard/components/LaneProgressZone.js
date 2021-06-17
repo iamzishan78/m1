@@ -1,47 +1,24 @@
 import React, { useMemo, useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { get } from 'lodash';
-import gql from "graphql-tag";
-import moment from "moment";
-import Card from "@material-ui/core/Card";
-import Button from "@material-ui/core/Button";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFilePdf,
-  faFilePowerpoint,
-  faFileWord,
-  faFileExcel,
-  faFile,
-  faFileArchive,
-  faFileCode,
-  faFileImage,
-} from "@fortawesome/free-solid-svg-icons";
 // import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "../../Shared/DeleteDocumentConfirmation";
-import { ADDFILE } from "../../../graphQL/useMutationAddFile";
 import { AppContext } from "../../../AppContext";
-import { ADDDESCRIPTORFILE } from "../../../graphQL/useMutationAddDescriptorFile";
 import { GETRECENTCONTACTFILES } from "../../../graphQL/useQueryGetContactFiles";
 import { DELETEDESCRIPTORFILE } from "../../../graphQL/useMutationDeleteDescriptorFile";
 import { VIEWFILEQUERY } from "../../../graphQL/useQueryViewFile";
-import { useDispatch } from "react-redux";
 import UploadZone from "./DailogUploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
-import { CircularProgress } from "@material-ui/core";
-import { Document, Page, pdfjs } from "react-pdf";
+import { pdfjs } from "react-pdf";
 
 // functions 
-import get_file_icon from "../../../components/Shared/functions/get_file_icon.js";
-
+import get_file_icon from "../../Shared/functions/get_file_icon.js";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const useStyles = makeStyles((theme) => ({
@@ -83,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
     letterSpacing: "0.5px",
     textAlign: "center",
   },
-  viewAll: {
+  details: {
     textDecoration: "underline",
     margin: "0 0 8px 0",
     float: "right",
@@ -113,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: "underline",
     },
   },
-  fileUploadSection: {
+  laneProgressSection: {
     minHeight: "50px",
     display: "flex",
     justifyContent: "space-between",
@@ -214,11 +191,6 @@ export default function Documents(props) {
             }, 1000);
           } else {
             setFileRequestCounter(1);
-            // dispatch(
-            //   showWarningMessage(
-            //     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
-            //   )
-            // );
           }
         } else setFileRequestCounter(1);
       },
@@ -245,11 +217,6 @@ export default function Documents(props) {
       let a = document.createElement("a");
       a.href = viewFileResult.viewFile.uri;
       a.download = viewFileResult.viewFile.name;
-
-      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
-      // a.target = "_blank";
-
-      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
       a.click();
     }
   }, [viewFileResult]);
@@ -289,44 +256,28 @@ export default function Documents(props) {
       fontSize: 11,
     },
   }))(Tooltip);
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  function onDocumentLoadSuccess({ numPages }) {
-    setNumPages(numPages);
-  }
-
 
   return (
     <div className={classes.root} variant="outlined">
       <CardActions style={{ padding: "23px 0px 8px 0px" }}>
-        {props.isTransactPage && (
-          <Grid item xs={12} style={{ minHeight: "35px" }}>
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents ({get(files, 'getFileDescriptors.length', 0)})</h4>
-            <h4
-              className={classes.viewAll}
-              onClick={() => {
-                setStateApp((stateApp) => ({
-                  ...stateApp,
-                  transactBarView: "Documents",
-                }));
-              }}
-            >
-              View All
+        <Grid item xs={12} style={{ minHeight: "35px" }}>
+          <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Lane Progress</h4>
+          <h4
+            className={classes.details}
+          // onClick={() => {
+          //   setStateApp((stateApp) => ({
+          //     ...stateApp,
+          //     transactBarView: "Documents",
+          //   }));
+          // }}
+          >
+            Details
             </h4>
-          </Grid>
-        )}
+        </Grid>
       </CardActions>
       <CardContent style={{ padding: "0 23px" }}>
-        <div className={classes.fileUploadSection}>
+        <div className={classes.laneProgressSection}>
           {/* Show two recent docs */}
-
-          <DeleteDocumentConfirmation
-            open={openDeleteConfirmDialog}
-            handleClose={handleDeleteCancel}
-            handleAccept={() => {
-              handleDeleteAccept();
-            }}
-          />
 
           <Grid container spacing={2}>
             {console.log(recentFiles, "Files data in Adddialog")}
@@ -334,9 +285,6 @@ export default function Documents(props) {
               let fileExtension = value?.name
                 ?.slice(value.name.lastIndexOf(".") + 1)
                 ?.toLowerCase();
-
-              console.log('VALUE TEST GOOD ONE', value)
-
               if (key <= 1) {
                 return (
                   <Grid item xs={4} key={key} className="" >
@@ -373,21 +321,15 @@ export default function Documents(props) {
                       }
                       interactive
                     >
-
-
                       <div>
                         {new RegExp(
                           ["jpg", "jpeg", "png", "bmp"].join("|")
                         ).test(fileExtension) ? (
-
-
                           <img
                             src={value.uri}
                             alt={value.name}
                             className={classes.forImage}
                           ></img>
-
-
                         ) : (
                           <div className={classes.forImageContainer}
 
@@ -415,20 +357,8 @@ export default function Documents(props) {
                     </LightTooltip>
                   </Grid>
                 );
-              }
+              } else return <></>
             })}
-            <Grid item xs={4} >
-              <div className={classes.Uploadcomp}>
-                <UploadZone
-                  style={{ width: "150px", height: "150px" }}
-                  relatedObjectId={props.id}
-                  userId={userId}
-                  relatedObjectType={relatedObjectType} //Contact or Deal
-                  loading={props.loading}
-                  disabled={props.disabled}
-                />
-              </div>
-            </Grid>
           </Grid>
         </div>
       </CardContent>
