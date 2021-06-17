@@ -1,23 +1,16 @@
-import React, { useMemo, useEffect, useState } from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { useMutation, useLazyQuery } from "@apollo/client";
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import CardActions from "@material-ui/core/CardActions";
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
-import DeleteIcon from "@material-ui/icons/Delete";
-// import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
-import GetAppIcon from "@material-ui/icons/GetApp";
-import DeleteDocumentConfirmation from "../../Shared/DeleteDocumentConfirmation";
-import { AppContext } from "../../../AppContext";
-import { GETRECENTCONTACTFILES } from "../../../graphQL/useQueryGetContactFiles";
-import { DELETEDESCRIPTORFILE } from "../../../graphQL/useMutationDeleteDescriptorFile";
-import { VIEWFILEQUERY } from "../../../graphQL/useQueryViewFile";
-import UploadZone from "./DailogUploadZone";
-import Tooltip from "@material-ui/core/Tooltip";
+import Divider from "@material-ui/core/Divider";
 import { pdfjs } from "react-pdf";
+import ProgressBar from "../../Shared/ui/ProgressBar";
 
-// functions 
+// functions
 import get_file_icon from "../../Shared/functions/get_file_icon.js";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -139,227 +132,57 @@ const useStyles = makeStyles((theme) => ({
   fileDropError: {
     color: "red",
   },
+  flowLane: {
+    fontWeight: "bold",
+  },
+  newFlowLane: { color: "darkgray", marginTop: "10px", cursor: "pointer" },
 }));
 
-export default function Documents(props) {
+export default function LaneProgressZone(props) {
   const classes = useStyles();
-  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
-  const [fileIdToDelete, setFileIdToDelete] = useState(null);
-  const [fileRequestCounter, setFileRequestCounter] = useState(1);
-  const [stateApp, setStateApp] = React.useContext(AppContext);
-  const [recentFiles, setRecentFiles] = useState([]);
-
-  useEffect(() => {
-    if (props.filesData?.viewFiles) setRecentFiles(props.filesData.viewFiles);
-  }, [props.filesData]);
-
-  const userId = stateApp.user.mongoId;
-
-  const [relatedObjectType, limit] = useMemo(() => {
-    if (props.isTransactPage) return ["Deal", 99];
-    else return ["Contact", 2];
-  }, [props.isTransactPage]);
-
-  const [getRecentFiles, { data: files }] = useLazyQuery(
-    GETRECENTCONTACTFILES,
-    {
-      fetchPolicy: "cache-and-network",
-      onCompleted: ({ getFileDescriptors }) => {
-        let allActive = true;
-
-        console.log("File descriptors: ", getFileDescriptors);
-        if (getFileDescriptors)
-          for (let i = 0; i < getFileDescriptors.length; i++) {
-            if (getFileDescriptors[i].fileState !== "active") {
-              allActive = false;
-              break;
-            }
-          }
-
-        if (!allActive) {
-          if (fileRequestCounter <= 40) {
-            let waitBeforeRequestAgain = setTimeout(() => {
-              setFileRequestCounter(fileRequestCounter + 1);
-              getRecentFiles({
-                variables: {
-                  relatedObjectId: props.id,
-                  relatedObjectType,
-                  limit,
-                },
-              });
-              clearTimeout(waitBeforeRequestAgain);
-            }, 1000);
-          } else {
-            setFileRequestCounter(1);
-          }
-        } else setFileRequestCounter(1);
-      },
-    }
-  );
-  const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
-
-  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "no-cache",
-  });
-
-  useEffect(() => {
-    getRecentFiles({
-      variables: {
-        relatedObjectId: props.id,
-        relatedObjectType,
-        limit,
-      },
-    });
-  }, [props.id]);
-
-  useEffect(() => {
-    if (viewFileResult?.viewFile?.uri) {
-      let a = document.createElement("a");
-      a.href = viewFileResult.viewFile.uri;
-      a.download = viewFileResult.viewFile.name;
-      a.click();
-    }
-  }, [viewFileResult]);
-
-  useEffect(() => {
-    setStateApp((state) => ({ ...state, filesDescriptors: files?.getFileDescriptors }))
-  }, [files]);
-
-  const handleDeleteCancel = () => {
-    setFileIdToDelete(null);
-    setOpenDeleteConfirmDialog(false);
-  };
-
-  const handleDeleteAccept = () => {
-    // Delete Document Logic goes here
-    if (fileIdToDelete) {
-      deleteFile({
-        variables: {
-          id: fileIdToDelete,
-        },
-        refetchQueries: ["getRecentContactFiles", "getContactFiles"],
-        awaitRefetchQueries: true,
-      });
-      setFileIdToDelete(null);
-      setOpenDeleteConfirmDialog(false);
-    }
-  };
-
-  const handleViewFile = async (id) => {
-    viewFile({ variables: { fileId: id } });
-  };
-  const LightTooltip = withStyles((theme) => ({
-    tooltip: {
-      backgroundColor: theme.palette.common.white,
-      color: "rgba(0, 0, 0, 0.87)",
-      boxShadow: theme.shadows[1],
-      fontSize: 11,
-    },
-  }))(Tooltip);
+  const { pipeToShow } = props;
 
   return (
     <div className={classes.root} variant="outlined">
-      <CardActions style={{ padding: "23px 0px 8px 0px" }}>
+      <CardActions style={{ padding: "23px 0px 0px 0px", borderBottom: "1px solid lightgray" }}>
         <Grid item xs={12} style={{ minHeight: "35px" }}>
           <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Lane Progress</h4>
-          <h4
-            className={classes.details}
-          // onClick={() => {
-          //   setStateApp((stateApp) => ({
-          //     ...stateApp,
-          //     transactBarView: "Documents",
-          //   }));
-          // }}
-          >
-            Details
-            </h4>
+          <h4 className={classes.details}>Details</h4>
         </Grid>
       </CardActions>
-      <CardContent style={{ padding: "0 23px" }}>
+      <CardContent style={{ padding: 0 }}>
         <div className={classes.laneProgressSection}>
           {/* Show two recent docs */}
 
-          <Grid container spacing={2}>
-            {console.log(recentFiles, "Files data in Adddialog")}
-            {recentFiles?.map((value, key) => {
-              let fileExtension = value?.name
-                ?.slice(value.name.lastIndexOf(".") + 1)
-                ?.toLowerCase();
-              if (key <= 1) {
-                return (
-                  <Grid item xs={4} key={key} className="" >
-                    <LightTooltip
-                      title={
-                        <div className={classes.IconSection}>
-                          <IconButton
-                            size="small"
-                            onClick={() => {
-                              setOpenDeleteConfirmDialog(true);
-                              setFileIdToDelete(
-                                files?.getFileDescriptors[key].descriptorId
-                              );
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-
-                          <IconButton
-                            disabled={
-                              files?.getFileDescriptors[key]?.fileState !==
-                              "active"
-                            }
-                            size="small"
-                            onClick={() =>
-                              handleViewFile(
-                                files?.getFileDescriptors[key].fileId
-                              )
-                            }
-                          >
-                            <GetAppIcon />
-                          </IconButton>
-                        </div>
-                      }
-                      interactive
-                    >
-                      <div>
-                        {new RegExp(
-                          ["jpg", "jpeg", "png", "bmp"].join("|")
-                        ).test(fileExtension) ? (
-                          <img
-                            src={value.uri}
-                            alt={value.name}
-                            className={classes.forImage}
-                          ></img>
-                        ) : (
-                          <div className={classes.forImageContainer}
-
-                            onClick={() => {
-
-                              if (fileExtension === 'pdf') {
-                                setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } })
-                              }
-                              else {
-                                handleViewFile(
-                                  files?.getFileDescriptors[key].fileId
-                                )
-                              }
-                            }}>
-
-                            {get_file_icon(fileExtension)}
-                          </div>
-                        )}
-                        <div className={classes.imageSubText}>
-                          {value?.name?.length > 12
-                            ? value.name.slice(0, 8) + "..."
-                            : value.name}
-                        </div>
-                      </div>
-                    </LightTooltip>
+          {pipeToShow &&
+            pipeToShow.lanes.map((lane, index) => (
+              <>
+                <Grid key={index} container direction="row" justify="space-between" alignItems="center" className={classes.flowLane}>
+                  <Grid item style={{ width: "155px" }}>
+                    {lane.title}
                   </Grid>
-                );
-              } else return <></>
-            })}
-          </Grid>
+                  <Grid item style={{ minWidth: "100px" }}>
+                    <ProgressBar value={50} isNumeric />
+                  </Grid>
+                  <Grid item style={{ display: "flex" }}>
+                    <Grid container direction="row" justify="flex-end" alignItems="center">
+                      <Grid item>
+                        <IconButton>
+                          <AccountCircle fontSize="medium" />
+                        </IconButton>
+                      </Grid>
+                      <Grid item>
+                        <IconButton>
+                          <ChatBubbleOutlineIcon fontSize="medium" />
+                        </IconButton>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Divider />
+              </>
+            ))}
+          <div className={classes.newFlowLane}>+ Add New</div>
         </div>
       </CardContent>
     </div>

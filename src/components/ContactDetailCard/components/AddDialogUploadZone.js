@@ -373,21 +373,15 @@ export default function Documents(props) {
                       }
                       interactive
                     >
-
-
                       <div>
                         {new RegExp(
                           ["jpg", "jpeg", "png", "bmp"].join("|")
                         ).test(fileExtension) ? (
-
-
                           <img
                             src={value.uri}
                             alt={value.name}
                             className={classes.forImage}
                           ></img>
-
-
                         ) : (
                           <div className={classes.forImageContainer}
 

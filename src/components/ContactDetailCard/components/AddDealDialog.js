@@ -1608,7 +1608,7 @@ function AddDealDialog(props) {
             ></AddDialogeUploadZone>
 
             {/* Here is flow lane form */}
-            <LaneProgressZone />
+            <LaneProgressZone pipeToShow={pipeToShow} />
           </div>
         </RightDialog>
       )}

@@ -1,11 +1,14 @@
 import React from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid'
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 const BorderLinearProgress = withStyles((theme) => ({
     root: {
         height: 10,
+        width: '100%',
         borderRadius: 5,
+        direction: 'row'
     },
     colorPrimary: {
         backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 200 : 700],
@@ -16,18 +19,23 @@ const BorderLinearProgress = withStyles((theme) => ({
     },
 }))(LinearProgress);
 
-
-export default function CustomizedProgressBars() {
+export default function CustomizedProgressBars(props) {
+    const { value, isNumeric } = props;
     const useStyles = makeStyles({
         root: {
-            flexGrow: 1,
+            color: 'lightgray'
         },
     });
     const classes = useStyles();
 
     return (
-        <div className={classes.root}>
-            <BorderLinearProgress variant="determinate" value={50} />
-        </div>
+        <Grid container direction="row" alignItems="center" justify="space-between" className={classes.root}>
+            <Grid item style={{ minWidth: '80px' }}>
+                <BorderLinearProgress variant="determinate" value={value} />
+            </Grid>
+            <Grid item>
+                {isNumeric && <span>{value}%</span>}
+            </Grid>
+        </Grid>
     );
 }
