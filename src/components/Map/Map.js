@@ -51,6 +51,7 @@ import {
   DirectMode,
   SimpleSelectMode,
 } from "mapbox-gl-draw-circle";
+import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import debounce from "lodash/debounce";
@@ -81,6 +82,7 @@ import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 
 import { PERMITDETAILQUERY } from "../../graphQL/useQueryRecentPermitDetails";
+import { drawShapeStyles } from "components/MapControls/commonHelper";
 
 
 
@@ -1129,8 +1131,6 @@ function Map() {
         }));
       }
       if (feature.source === "interests_source") {
-
-
         const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
         const selectedUserDefinedLayer = {
           ...feature,
@@ -1336,7 +1336,7 @@ function Map() {
       map.on("click", mapClickHandler);
       setMapClick({ mapClickHandler });
     }
-  }, [map, stateApp.layers]);
+  }, [map, stateApp.layers, customLayerData]);
 
   useEffect(() => {
     let beforeLayer = null;
@@ -3805,8 +3805,10 @@ function Map() {
         let Draw = new MapboxDraw({
           displayControlsDefault: false,
           userProperties: true,
+          styles: drawShapeStyles,
           modes: {
             ...MapboxDraw.modes,
+            static: StaticMode,
             draw_circle: CircleMode,
             drag_circle: DragCircleMode,
             direct_select: DirectMode,
@@ -5105,6 +5107,5 @@ function Map() {
   );
 }
 
-Map.whyDidYouRender = true;
 
 export default React.memo(Map);
