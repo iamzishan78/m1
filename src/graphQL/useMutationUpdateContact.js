@@ -52,6 +52,7 @@ export const UPDATECONTACT = gql`
         companyName
         jobTitle
         IsDeleted
+        age
         homePhone2
         homePhone3
         mobilephone2

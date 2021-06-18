@@ -32,6 +32,7 @@ export const ADDCONTACT = gql`
         lastUpdateBy {
           name
         }
+        age
         homePhone2
         homePhone3
         mobilephone2

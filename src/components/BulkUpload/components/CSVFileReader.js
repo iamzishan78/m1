@@ -159,7 +159,7 @@ const mainContent = {
   padding: "14px 0px 0px  0px",
 };
 
-const csvColumns = `Full Name,Title,First Name,Last Name,Middle Name,Suffix,Primary Address 1,Primary Address 2,City,State,Zip,Country,Primary Email,Primary Home Phone,Primary Mobile Phone,Primary Work Phone,Email 2,LinkedIn Profile,Facebook Profile,Twitter Profile,Lead Source,Company Name,Job Title,Lead Stage,Home Phone 2,Home Phone 3,Mobile Phone 2,Mobile Phone 3,Work Phone 2,Work Phone 3,Email 3,Status,Time Zone,Territory,Campaign Name,Comments,Website,Industry Type,Contact Owner`
+const csvColumns = `Full Name,Title,First Name,Last Name,Middle Name,Suffix,Primary Address 1,Primary Address 2,City,State,Zip,Country,Primary Email,Primary Home Phone,Primary Mobile Phone,Primary Work Phone,Email 2,LinkedIn Profile,Facebook Profile,Twitter Profile,Lead Source,Company Name,Job Title,Lead Stage,Age,Home Phone 2,Home Phone 3,Mobile Phone 2,Mobile Phone 3,Work Phone 2,Work Phone 3,Email 3,Status,Time Zone,Territory,Campaign Name,Comments,Website,Industry Type,Contact Owner`
 const StyledTableCell = withStyles((theme) => ({
   head: {
     fontWeight: "bold",
