@@ -10,7 +10,7 @@ body {
   height: 100%;
   padding-right: 0 !important;
   overflow-x: hidden !important;
-  overflow-y: auto ;
+  overflow-y: auto;
 }
 
 #root {
@@ -48,18 +48,22 @@ body {
   z-index: 9999999999 !important;
 }
 
-.Toastify__toast-container{
+.Toastify__toast-container {
   z-index: 999999 !important;
 }
 
-.Toastify__toast{
-  border-top: 6px solid #17aadd  !important;
+.Toastify__toast {
+  border-top: 6px solid #17aadd !important;
 }
 
-.Toastify__toast_success{
-  border-top: 6px solid #04AA6D  !important;
+.Toastify__toast_success {
+  border-top: 6px solid #04aa6d !important;
 }
 
-.Toastify__toast_error{
-  border-top: 6px solid #A52A20 !important;
+.Toastify__toast_error {
+  border-top: 6px solid #a52a20 !important;
+}
+
+#laneProgressMenu {
+  z-index: 9999999999 !important;
 }

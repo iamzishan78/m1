@@ -1,6 +1,10 @@
 import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "AppContext";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import Button from "@material-ui/core/Button";
+import ArrowDown from "@material-ui/icons/ArrowDropDown";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
@@ -20,11 +24,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function FlowLaneDetails(props) {
+const FlowLaneDetails = (props) => {
     const classes = useStyles();
+    // const [anchorEl, setAnchorEl] = React.useState(null);
     const [stateApp] = useContext(AppContext);
-    const { pipeToShow } = props;
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
     return (
         <div className={classes.root}>
             <h1>{stateApp.activeDeal.name}</h1>
@@ -35,7 +47,17 @@ export default function FlowLaneDetails(props) {
                         <ProgressBar value={50} isNumeric />
                     </Grid>
                     <Grid item xs={6} style={{ textAlign: "right" }}>
-                        <h4>Details</h4>
+                        <div className={classes.popOver}>
+                            <Button aria-controls="laneProgressMenu" aria-haspopup="true" onClick={handleClick}>
+                                All
+                <ArrowDown></ArrowDown>
+                            </Button>
+                            <Menu id="laneProgressMenu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
+                                <MenuItem onClick={handleClose}>Option 1</MenuItem>
+                                <MenuItem onClick={handleClose}>Option 2</MenuItem>
+                                <MenuItem onClick={handleClose}>Option 3</MenuItem>
+                            </Menu>
+                        </div>
                     </Grid>
                     <Grid xs={12} className={classes.newLaneProgress}>
                         <div className={classes.newFlowLane}>+ Add New</div>
@@ -43,8 +65,10 @@ export default function FlowLaneDetails(props) {
                 </Grid>
             </CardActions>
             <CardContent style={{ padding: 0 }}>
-                <div className={classes.laneProgressSection}>{/* Show two recent docs */}</div>
+                <div className={classes.laneProgressSection}></div>
             </CardContent>
         </div>
     );
-}
+};
+
+export default FlowLaneDetails;
