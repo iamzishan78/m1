@@ -29,8 +29,8 @@ export default function CustomizedProgressBars(props) {
     const classes = useStyles();
 
     return (
-        <Grid container direction="row" alignItems="center" justify="space-between" className={classes.root}>
-            <Grid item style={{ minWidth: '80px' }}>
+        <Grid container direction="row" alignItems="center" justify="flex-start" className={classes.root}>
+            <Grid item style={{ minWidth: '70%' }}>
                 <BorderLinearProgress variant="determinate" value={value} />
             </Grid>
             <Grid item>

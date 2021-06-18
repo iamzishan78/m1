@@ -24,8 +24,6 @@ import moment from "moment";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../../Shared/functions";
 import TrackToggleButton from "../../Shared/TrackToggleButton";
 import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
-import TaggerWithIcon from "../../Shared/TaggerWithIcon";
-import CommentsWithIcon from "../../Shared/CommentsWithIcon";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
 import { ADDDEAL } from "graphQL/useMutationAddDeal";
@@ -40,7 +38,8 @@ import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
 import Documents from "../../Shared/Documents";
 import AddDialogeUploadZone from "./AddDialogUploadZone";
-import LaneProgressZone from './LaneProgressZone'
+import LaneProgressZone from './LaneProgressZone';
+import LaneProgressDetail from './FlowLaneDetails';
 import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GETDEAL } from "graphQL/useQueryDeal";
@@ -358,7 +357,7 @@ function AddDealDialog(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
   const { selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
-  const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
+  const [isProgressDetail, toggleProgressDetail] = useState(null);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [titleFocus, setTitleFocus] = useState(false);
@@ -472,6 +471,12 @@ function AddDealDialog(props) {
         );
     }
   }, [pipelinesData]);
+
+  useEffect(() => {
+    if (isProgressDetail) {
+      setStateApp((stateApp) => ({ ...stateApp, transactBarView: "Flow Lane Progress" }))
+    }
+  }, [isProgressDetail]);
 
   const settingNewStageAndFindNextAvailablePosition = (stageId, findPosition, localPipelineId = pipelineId) => {
     setStageId(stageId);
@@ -677,10 +682,6 @@ function AddDealDialog(props) {
       viewDoc: null,
     }));
     // setValid({title: false});
-  };
-
-  const handleCloseContactDialog = () => {
-    setOpenContactDialog(false);
   };
 
   useEffect(() => {
@@ -1033,9 +1034,10 @@ function AddDealDialog(props) {
   const getView = () => {
     if (stateApp.transactBarView === "Documents") {
       return <Documents id={stateApp.activeDeal?.cardId} user_id={stateApp.user.email} isTransactPage={true} />;
-    }
-    if (stateApp.transactBarView === "Contacts") {
+    } else if (stateApp.transactBarView === "Contacts") {
       return <Contacts addSelectedContact={addSelectedContactToDeal} loading={getDealLoading} getDeal={refetchDeal} />;
+    } else if (stateApp.transactBarView === "Flow Lane Progress") {
+      return <LaneProgressDetail />
     }
   };
 
@@ -1608,7 +1610,7 @@ function AddDealDialog(props) {
             ></AddDialogeUploadZone>
 
             {/* Here is flow lane form */}
-            <LaneProgressZone pipeToShow={pipeToShow} />
+            <LaneProgressZone pipeToShow={pipeToShow} toggleProgressDetail={toggleProgressDetail} />
           </div>
         </RightDialog>
       )}
