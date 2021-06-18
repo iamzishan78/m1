@@ -82,6 +82,12 @@ export default function BulkUpload(props) {
       actual_key: "name",
     },
     {
+      label: "Age",
+      mapped_key: "",
+      required: false,
+      actual_key: "age",
+    },
+    {
       label: "Home Phone 2",
       mapped_key: "",
       required: false,
