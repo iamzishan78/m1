@@ -434,6 +434,8 @@ function AddDealDialog(props) {
       if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
         addUpdateDeal(null, false);
       }
+    } else {
+      toggleProgressDetail(false);
     }
   }, [stateApp.transactBarView]);
 
