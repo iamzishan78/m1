@@ -1,15 +1,8 @@
 import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "AppContext";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import Button from "@material-ui/core/Button";
+import { Menu, MenuItem, Button, CardActions, CardContent, Grid } from "@material-ui/core";
 import ArrowDown from "@material-ui/icons/ArrowDropDown";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import IconButton from "@material-ui/core/IconButton";
-import Grid from "@material-ui/core/Grid";
-import Divider from "@material-ui/core/Divider";
 import ProgressBar from "../../Shared/ui/ProgressBar";
 
 const useStyles = makeStyles((theme) => ({
@@ -24,9 +17,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const FlowLaneDetails = (props) => {
+const FlowLaneDetails = () => {
     const classes = useStyles();
-    // const [anchorEl, setAnchorEl] = React.useState(null);
     const [stateApp] = useContext(AppContext);
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -50,7 +42,7 @@ const FlowLaneDetails = (props) => {
                         <div className={classes.popOver}>
                             <Button aria-controls="laneProgressMenu" aria-haspopup="true" onClick={handleClick}>
                                 All
-                <ArrowDown></ArrowDown>
+                  <ArrowDown />
                             </Button>
                             <Menu id="laneProgressMenu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
                                 <MenuItem onClick={handleClose}>Option 1</MenuItem>
