@@ -7,6 +7,7 @@ import ShareIcon from "@material-ui/icons/Share";
 import FolderIcon from "@material-ui/icons/Folder";
 import IdentityIcon from "@material-ui/icons/PermIdentity";
 import FlowIcon from "@material-ui/icons/Repeat";
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from '@material-ui/core/Badge';
 import { AppContext } from "../../../AppContext";
@@ -77,6 +78,17 @@ export default function Drawer() {
         badgeContent={stateApp?.activeDeal?.contacts?.length}
       >
         <IdentityIcon {...props} />
+      </Badge>
+    ),
+    "Flow Lane Progress": (props) => (
+      <Badge
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        color="primary"
+      >
+        <CheckBoxIcon {...props} />
       </Badge>
     ),
     Progress: (props) => (
