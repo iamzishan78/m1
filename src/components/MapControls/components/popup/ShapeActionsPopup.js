@@ -452,7 +452,9 @@ const ShapeActionsPopup = (props) => {
       awaitRefetchQueries: true,
     });
     setSelectedAction("");
-    stateApp.draw.delete(currentFeature.id);
+    stateApp.draw.changeMode("static");
+    setStateApp((state) => ({ ...state, shapeEdit: false }));
+    // stateApp.draw.delete(currentFeature.id);
   };
 
   return (
