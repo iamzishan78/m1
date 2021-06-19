@@ -7,13 +7,8 @@ import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
-import { pdfjs } from "react-pdf";
 import ProgressBar from "../../Shared/ui/ProgressBar";
 
-// functions
-import get_file_icon from "../../Shared/functions/get_file_icon.js";
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const useStyles = makeStyles((theme) => ({
   root: {
     // backgroundColor: "#fff",
@@ -135,7 +130,11 @@ const useStyles = makeStyles((theme) => ({
   flowLane: {
     fontWeight: "bold",
   },
-  newFlowLane: { color: "darkgray", marginTop: "10px", cursor: "pointer" },
+  newFlowLane: {
+    color: "darkgray",
+    margin: "10px 0px 20px 0px",
+    cursor: "pointer",
+  },
 }));
 
 export default function LaneProgressZone(props) {
@@ -147,7 +146,9 @@ export default function LaneProgressZone(props) {
       <CardActions style={{ padding: "23px 0px 0px 0px", borderBottom: "1px solid lightgray" }}>
         <Grid item xs={12} style={{ minHeight: "35px" }}>
           <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Lane Progress</h4>
-          <h4 className={classes.details} onClick={() => toggleProgressDetail(true)}>Details</h4>
+          <h4 className={classes.details} onClick={() => toggleProgressDetail(true)}>
+            Details
+          </h4>
         </Grid>
       </CardActions>
       <CardContent style={{ padding: 0 }}>
