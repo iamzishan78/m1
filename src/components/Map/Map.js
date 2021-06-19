@@ -3123,12 +3123,12 @@ function Map() {
       if (popUps[0]) {
         popUps[0].remove();
       }
-
-      new mapboxgl.Popup({ offset: 0, closeOnClick: false })
-        .setLngLat(coordinates)
-        .setMaxWidth("none")
-        .setHTML(`<div id="popupContainer"></div>`)
-        .addTo(map);
+      if (coordinates)
+        new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+          .setLngLat(coordinates)
+          .setMaxWidth("none")
+          .setHTML(`<div id="popupContainer"></div>`)
+          .addTo(map);
 
       setStateApp((state) => ({ ...state, popupOpen: true }));
       handleOpenExpandableCard();

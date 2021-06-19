@@ -412,7 +412,7 @@ const ShapeActionsPopup = (props) => {
     const { selectedAoi } = stateApp;
     updateCustomLayer({
       variables: {
-        customLayerId: selectedAoi.id,
+        customLayerId: selectedAoi.id || selectedAoi._id,
         customLayer: {
           IsDeleted: true,
         },
@@ -431,7 +431,7 @@ const ShapeActionsPopup = (props) => {
   };
 
   const confirmEditing = () => {
-    const { currentFeature } = stateApp;
+    let { currentFeature, selectedAoi } = stateApp;
     addCustomShapeProperties(currentFeature, stateApp.draw);
     const customLayerData = {
       shape: JSON.stringify({
@@ -445,7 +445,7 @@ const ShapeActionsPopup = (props) => {
     };
     updateCustomLayer({
       variables: {
-        customLayerId: currentFeature.id,
+        customLayerId: selectedAoi.id || selectedAoi._id,
         customLayer: customLayerData,
       },
       refetchQueries: ["getCustomLayers"],
@@ -454,7 +454,7 @@ const ShapeActionsPopup = (props) => {
     setSelectedAction("");
     stateApp.draw.changeMode("static");
     setStateApp((state) => ({ ...state, shapeEdit: false }));
-    // stateApp.draw.delete(currentFeature.id);
+    stateApp.draw.delete(currentFeature.id);
   };
 
   return (
