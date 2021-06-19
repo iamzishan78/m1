@@ -312,6 +312,16 @@ const ContactsHeadCells = [
     },
   },
   {
+    name: "age",
+    label: "Age",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
+  },
+  {
     name: "homePhone2",
     label: "Home Phone 2",
     options: {
