@@ -297,10 +297,14 @@ const ShapeActionsPopup = (props) => {
     // if (stateApp.shapeActionsFilterSelected) {
     //   clearFilter();
     // }
+    if (!stateApp.shapeEdit) {
+      stateApp.draw.changeMode("direct_select", {
+        featureId: selectedFeature.id,
+      });
+    } else {
+      stateApp.draw.changeMode("static");
+    }
 
-    stateApp.draw.changeMode("direct_select", {
-      featureId: selectedFeature.id,
-    });
     setStateNav((stateNav) => ({
       ...stateNav,
       drawingMode: DRAWING_MODES.DRAW_CIRCLE,
