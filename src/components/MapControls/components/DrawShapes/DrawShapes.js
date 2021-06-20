@@ -280,6 +280,10 @@ export default function DrawShapes() {
         setFeatureProperty(draw, feature.id, 'shapeEdit', false)
         drawShapeLayerToggle(stateApp, "none")
         setStateApp((state) => ({ ...state, editDraw: false, showShapeActionsPopup: true }));
+        setTimeout(() => {
+          draw.changeMode("static");
+        })
+
       });
 
       map.on("draw.selectionchange", ({ features }) => {
@@ -288,7 +292,7 @@ export default function DrawShapes() {
           setStateApp((stateApp) => {
             return {
               ...stateApp,
-              popupOpen: false,
+              // popupOpen: false,
               currentFeature: feature,
               featureOrMapShape: feature,
             };
@@ -304,6 +308,13 @@ export default function DrawShapes() {
           });
         }
         setStateApp((stateApp) => {
+          if (!stateApp.shapeEdit) {
+            stateApp.draw.changeMode("static");
+          } else if (stateApp.currentFeature || stateApp.featureOrMapShape) {
+            stateApp.draw.changeMode("direct_select", {
+              featureId: stateApp.currentFeature.id || stateApp.featureOrMapShape.id,
+            });
+          }
           drawShapeLayerToggle(stateApp, stateApp.shapeEdit ? "visible" : "none")
           return stateApp
         })
