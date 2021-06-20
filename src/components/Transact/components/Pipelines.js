@@ -63,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
   },
   removeIconButton: {
     color: "gray",
+    cursor: "pointer",
     "&:hover": {
       color: "red",
     },
@@ -624,6 +625,7 @@ export default function Pipelines(props) {
                     setName(event.target.value);
                     if (error) setError(false);
                   }}
+                  style={{ width: '48%' }}
                 />
               </Grid>
               <Grid item xs={12}>

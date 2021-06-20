@@ -58,34 +58,33 @@ export default function LaneProgressZone(props) {
         <div className={classes.laneProgressSection}>
           {/* Show two recent docs */}
 
-          {pipeToShow &&
-            pipeToShow.lanes.map((lane, index) => (
-              <>
-                <Grid key={index} container direction="row" justify="space-between" alignItems="center" className={classes.flowLane}>
-                  <Grid item style={{ width: "155px" }}>
-                    {lane.title}
-                  </Grid>
-                  <Grid item style={{ minWidth: "100px" }}>
-                    <ProgressBar value={50} isNumeric />
-                  </Grid>
-                  <Grid item style={{ display: "flex" }}>
-                    <Grid container direction="row" justify="flex-end" alignItems="center">
-                      <Grid item>
-                        <IconButton>
-                          <AccountCircle fontSize="medium" />
-                        </IconButton>
-                      </Grid>
-                      <Grid item>
-                        <IconButton>
-                          <ChatBubbleOutlineIcon fontSize="medium" />
-                        </IconButton>
-                      </Grid>
+          {pipeToShow?.lanes.map((lane, index) => (
+            <>
+              <Grid key={index} container direction="row" justify="space-between" alignItems="center" className={classes.flowLane}>
+                <Grid item style={{ width: "155px" }}>
+                  {lane.title}
+                </Grid>
+                <Grid item style={{ minWidth: "100px" }}>
+                  <ProgressBar value={50} isNumeric />
+                </Grid>
+                <Grid item style={{ display: "flex" }}>
+                  <Grid container direction="row" justify="flex-end" alignItems="center">
+                    <Grid item>
+                      <IconButton>
+                        <AccountCircle fontSize="medium" />
+                      </IconButton>
+                    </Grid>
+                    <Grid item>
+                      <IconButton>
+                        <ChatBubbleOutlineIcon fontSize="medium" />
+                      </IconButton>
                     </Grid>
                   </Grid>
                 </Grid>
-                <Divider />
-              </>
-            ))}
+              </Grid>
+              <Divider />
+            </>
+          ))}
           <div className={classes.newFlowLane}>+ Add New</div>
         </div>
       </CardContent>
