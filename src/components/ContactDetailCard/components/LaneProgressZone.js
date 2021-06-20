@@ -13,41 +13,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     // backgroundColor: "#fff",
   },
-  timelineItemRight: {
-    "&:before": {
-      content: "none",
-    },
-  },
-  Uploadcomp: {
-    width: "200px !important",
-    height: "130px !important",
-  },
-  forImage: {
-    width: "100px !important",
-    height: "100px !important",
-    backgroundColor: "transparent !important",
-    // border: "1px solid #999",
-    borderRadius: "10px !important",
-  },
-  forImageContainer: {
-    width: "100px !important",
-    height: "100px !important",
-    borderRadius: "10px !important",
-    backgroundColor: "#eeeeee !important",
-    // border: "1px solid #999",
-    textAlign: "center",
-    fontSize: "1.5rem",
-    fontWeight: "bold",
-    color: "#555",
-    textTransform: "uppercase",
-    paddingTop: "30px",
-    cursor: "pointer",
-    marginBottom: "5px",
-  },
-  imageSubText: {
-    letterSpacing: "0.5px",
-    textAlign: "center",
-  },
   details: {
     textDecoration: "underline",
     margin: "0 0 8px 0",
@@ -58,74 +23,12 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": { color: "#757575" },
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
-  timelineText: {
-    "& .MuiTypography-body1": { fontSize: "0.85rem" },
-    "& .MuiTypography-body2": { fontSize: "0.7rem" },
-    "&  p": {
-      margin: "0",
-    },
-  },
-  blue: {
-    color: theme.palette.secondary.main,
-  },
-  todayDot: {
-    fontSize: "8px",
-  },
-  dealTitle: {
-    cursor: "pointer",
-    "&:hover": {
-      fontWeight: "bold",
-      textDecoration: "underline",
-    },
-  },
   laneProgressSection: {
     minHeight: "50px",
     display: "flex",
     justifyContent: "space-between",
     flexDirection: "column",
     width: "100%",
-  },
-  fileUploadTopSection: {
-    minHeight: "50px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    marginBottom: "23px",
-  },
-  uploadTitle: {
-    margin: "0",
-    color: "#757575",
-    fontWeight: "normal",
-    marginBottom: "8px",
-  },
-  uploadSubtext: {
-    color: "rgb(176, 176, 176)",
-    margin: "0",
-    fontWeight: "normal",
-  },
-  IconSection: {
-    minHeight: "35px",
-    display: "flex",
-    justifyContent: "center",
-    width: "fit-content",
-  },
-  fileDrop: {
-    minHeight: "125px",
-    width: "100%",
-    padding: "10px 40px",
-    color: "#757575",
-    fontWeight: "normal",
-    backgroundColor: "#eee",
-    textAlign: "center",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    border: "2px dashed rgb(176, 176, 176)",
-    marginBottom: "30px",
-  },
-  fileDropError: {
-    color: "red",
   },
   flowLane: {
     fontWeight: "bold",
