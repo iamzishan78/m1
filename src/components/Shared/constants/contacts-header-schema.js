@@ -320,6 +320,15 @@ const ContactsHeadCells = [
       searchable: false,
       sort: false,
     },
+  },  {
+    name: "relatives",
+    label: "Relative Names",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+    },
   },
   {
     name: "homePhone2",

@@ -33,6 +33,7 @@ export const ADDCONTACT = gql`
           name
         }
         age
+        relatives
         homePhone2
         homePhone3
         mobilephone2
