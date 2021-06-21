@@ -2953,7 +2953,7 @@ function SubTable(props) {
         }));
       }
 
-      if (props.parent === "assocTaxRollInterests" && props.targetLabel === 'wells') {
+      if (props.parent === "assocTaxRollInterests" && props.targetLabel === 'well') {
         let card = { ...rows[dataIndex] };
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -2971,7 +2971,8 @@ function SubTable(props) {
           }));
       }
 
-      if (props.targetLabel === "Parcel Ownership") {
+      if (props.parent === "assocTaxRollInterests" && props.targetLabel === 'parcel' ||
+          props.targetLabel === "Parcel Ownership") {
         if (rows[dataIndex]?._id) {
           setOpenDialog("addOwnerToParcel");
           setSelectedRow(rows[dataIndex]);
