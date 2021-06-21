@@ -296,7 +296,7 @@ export const drawShapeStyles = [
         'type': 'line',
         'filter': ['all',
             ['==', '$type', 'Polygon'],
-            ['!=', 'mode', 'static'],
+            // ['!=', 'mode', 'static'],
             ['==', 'user_shapeEdit', false]
         ],
         'layout': {

@@ -44,6 +44,7 @@ export const PAGINATEDCONTACTSQUERY = gql`
           lastUpdateBy {
             name
           }
+          age
           homePhone2
           homePhone3
           mobilephone2

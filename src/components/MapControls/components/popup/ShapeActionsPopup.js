@@ -297,10 +297,14 @@ const ShapeActionsPopup = (props) => {
     // if (stateApp.shapeActionsFilterSelected) {
     //   clearFilter();
     // }
+    if (!stateApp.shapeEdit) {
+      stateApp.draw.changeMode("direct_select", {
+        featureId: selectedFeature.id,
+      });
+    } else {
+      stateApp.draw.changeMode("static");
+    }
 
-    stateApp.draw.changeMode("direct_select", {
-      featureId: selectedFeature.id,
-    });
     setStateNav((stateNav) => ({
       ...stateNav,
       drawingMode: DRAWING_MODES.DRAW_CIRCLE,
@@ -408,7 +412,7 @@ const ShapeActionsPopup = (props) => {
     const { selectedAoi } = stateApp;
     updateCustomLayer({
       variables: {
-        customLayerId: selectedAoi.id,
+        customLayerId: selectedAoi.id || selectedAoi._id,
         customLayer: {
           IsDeleted: true,
         },
@@ -427,7 +431,7 @@ const ShapeActionsPopup = (props) => {
   };
 
   const confirmEditing = () => {
-    const { currentFeature } = stateApp;
+    let { currentFeature, selectedAoi } = stateApp;
     addCustomShapeProperties(currentFeature, stateApp.draw);
     const customLayerData = {
       shape: JSON.stringify({
@@ -441,13 +445,15 @@ const ShapeActionsPopup = (props) => {
     };
     updateCustomLayer({
       variables: {
-        customLayerId: currentFeature.id,
+        customLayerId: selectedAoi.id || selectedAoi._id,
         customLayer: customLayerData,
       },
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
     });
     setSelectedAction("");
+    stateApp.draw.changeMode("static");
+    setStateApp((state) => ({ ...state, shapeEdit: false }));
     stateApp.draw.delete(currentFeature.id);
   };
 

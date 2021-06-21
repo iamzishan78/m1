@@ -143,7 +143,7 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 265,
-    color: "black",
+    color: "black"
     //paddingBottom: 3
   },
   label: {
@@ -286,6 +286,7 @@ export default function SpatialDataCardEdit(props) {
   };
 
   const closeSpatialDataCard = () => {
+    debugger;
     if (drawFeatureId) {
       stateApp.draw.delete(drawFeatureId);
       setDrawFeatureId("");
