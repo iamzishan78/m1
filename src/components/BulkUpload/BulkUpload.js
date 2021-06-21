@@ -22,6 +22,12 @@ export default function BulkUpload(props) {
   }, []);
   const M1neral_headers = [
     {
+      label: "Age",
+      mapped_key: "",
+      required: false,
+      actual_key: "age",
+    },
+    {
       label: "Campaign Name",
       mapped_key: "",
       required: false,
@@ -33,17 +39,23 @@ export default function BulkUpload(props) {
       required: false,
       actual_key: "city",
     },
-    {
-      label: "Comments",
-      mapped_key: "",
-      required: false,
-      actual_key: "notes",
-    },
+    // {
+    //   label: "Comments",
+    //   mapped_key: "",
+    //   required: false,
+    //   actual_key: "notes",
+    // },
     {
       label: "Company Name",
       mapped_key: "",
       required: false,
       actual_key: "companyName",
+    },
+    {
+      label: "Contact Owner",
+      mapped_key: "",
+      required: false,
+      actual_key: "contactOwner",
     },
     {
       label: "Country",
@@ -82,12 +94,6 @@ export default function BulkUpload(props) {
       actual_key: "name",
     },
     {
-      label: "Age",
-      mapped_key: "",
-      required: false,
-      actual_key: "age",
-    },
-    {
       label: "Home Phone 2",
       mapped_key: "",
       required: false,
@@ -104,12 +110,6 @@ export default function BulkUpload(props) {
       mapped_key: "",
       required: false,
       actual_key: "industryType",
-    },
-    {
-      label: "Contact Owner",
-      mapped_key: "",
-      required: false,
-      actual_key: "contactOwner",
     },
     {
       label: "Job Title",
@@ -129,12 +129,12 @@ export default function BulkUpload(props) {
       required: false,
       actual_key: "leadSource",
     },
-    {
-      label: "Lead Stage",
-      mapped_key: "",
-      required: false,
-      actual_key: "leadStage",
-    },
+    // {
+    //   label: "Lead Stage",
+    //   mapped_key: "",
+    //   required: false,
+    //   actual_key: "leadStage",
+    // },
     {
       label: "LinkedIn Profile",
       mapped_key: "",
@@ -201,12 +201,12 @@ export default function BulkUpload(props) {
       required: false,
       actual_key: "state",
     },
-    {
-      label: "Status",
-      mapped_key: "",
-      required: false,
-      actual_key: "status",
-    },
+    // {
+    //   label: "Status",
+    //   mapped_key: "",
+    //   required: false,
+    //   actual_key: "status",
+    // },
     {
       label: "Suffix",
       mapped_key: "",
@@ -219,12 +219,12 @@ export default function BulkUpload(props) {
       required: false,
       actual_key: "territory",
     },
-    {
-      label: "Time Zone",
-      mapped_key: "",
-      required: false,
-      actual_key: "timeZone",
-    },
+    // {
+    //   label: "Time Zone",
+    //   mapped_key: "",
+    //   required: false,
+    //   actual_key: "timeZone",
+    // },
     {
       label: "Twitter Profile",
       mapped_key: "",
