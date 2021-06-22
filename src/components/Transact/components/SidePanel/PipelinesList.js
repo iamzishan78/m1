@@ -40,18 +40,6 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
   const [updatePipelinesPositions] = useMutation(UPDATE_PIPELINES_POSITIONS);
 
   useEffect(() => {
-    if (selectedPipe) {
-      document.removeEventListener("keydown", () => { });
-      document.addEventListener("keydown", (event) => {
-        if (event.keyCode === 27) {
-          // Deselecting all flowwlines on ESC
-          setMultiSelection([selectedPipe._id]);
-        }
-      });
-    }
-  }, [selectedPipe]);
-
-  useEffect(() => {
     if (!deepEqual(items, filteredPipelines)) {
       let updateFn = {};
       filteredPipelines.forEach((item, index) => {
