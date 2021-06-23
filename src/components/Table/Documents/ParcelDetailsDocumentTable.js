@@ -47,7 +47,7 @@ function ParcelDetailsDocumentTable(props) {
   const [numPages, setNumPages] = useState(null);
 
   // queries 
-  const [getAllFiles, { data: dataParcelFiles, loading }] = useLazyQuery(GET_PARCELS_FILES, { fetchPolicy: "cache-and-network" });
+  const [getAllFiles, { data: dataParcelFiles, loading }] = useLazyQuery(GET_PARCELS_FILES);
 
   const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: [ "getContactWells", "getContactParcelInterests" ], awaitRefetchQueries: true });
   const tableData = dataParcelFiles?.getParcelFiles
@@ -184,7 +184,7 @@ function ParcelDetailsDocumentTable(props) {
       id={props.id ? props.id : props.parent}
     >
       {showDocumentSlider && (
-        <ParcelFile parcelId={props.customLayer._id} setShowDocumentSlider={setShowDocumentSlider} />
+        <ParcelFile getAllFiles={getAllFiles} parcelId={props.customLayer._id} setShowDocumentSlider={setShowDocumentSlider} />
       )}
       <Table
         style={{ backgroundColor: "#fff" }}

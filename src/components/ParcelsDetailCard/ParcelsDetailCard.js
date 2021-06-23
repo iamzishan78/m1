@@ -190,6 +190,13 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: "5px"
 
     }
+  },
+  parcelDocument: {
+    "& .MuiTableRow-root":{
+      "&>:nth-child(2) > span": { 
+        width: "336px !important"
+      }
+    }
   }
 }));
 
@@ -457,13 +464,15 @@ const DocumentHeader = () => (
               header="Associated Wells"
               dense
             />,
-            <ParcelDetailsDocumentTable
-              customLayer={parcelObj}
-              parent="associatedDocumentsPerParcel"
-              targetLabel="documents"
-              header={<DocumentHeader />}
-              dense
-            />
+            <div className={classes.parcelDocument}>
+              <ParcelDetailsDocumentTable
+                customLayer={parcelObj}
+                parent="associatedDocumentsPerParcel"
+                targetLabel="parcelDocument"
+                header={<DocumentHeader />}
+                dense
+              />
+            </div>
           ]}
         />
       </Grid>

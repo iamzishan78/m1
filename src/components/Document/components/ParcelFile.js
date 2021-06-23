@@ -236,9 +236,15 @@ export default function DocumentDrawer(props) {
             fileId: fileId || newDocument.fileId,
           },
         },
-        refetchQueries: ["getDocuments"],
+        refetchQueries: ["getAllFiles"],
         awaitRefetchQueries: true,
       }).then(() => {
+        props.getAllFiles({
+          variables: {
+            relatedObjectId: props.parcelId,
+            relatedObjectType: "Parcel",
+          },
+        });
         props.setShowDocumentSlider(false)
         setNameAutValueParty1({ name: "", _id: null });
         setNameAutValueParty2({ name: "", _id: null });
