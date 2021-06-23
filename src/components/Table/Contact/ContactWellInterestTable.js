@@ -52,7 +52,7 @@ function ContactWellInterestTable(props) {
     }
   });
   const [getContactWellInterestsFilterOptions, { data: dataContactWellsFilterOptions },] = useLazyQuery(CONTACTWELLINTERESTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
-  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: [ "getContactWells", "getPaginatedContactWellInterests" ], awaitRefetchQueries: true });
+  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: [ "getContactWells", "getPaginatedContactWellInterests", "getContactWellInterestsFilterOptions" ], awaitRefetchQueries: true });
   const tableData = dataContactWells?.paginatedContactWellInterests
   const filterData = dataContactWellsFilterOptions?.contactWellInterestsFilterOptions
 
@@ -268,7 +268,8 @@ function ContactWellInterestTable(props) {
         },
         refetchQueries: [
           "getContactWells",
-          "getPaginatedContactWellInterests"
+          "getPaginatedContactWellInterests",
+          "getContactWellInterestsFilterOptions"
         ],
         awaitRefetchQueries: true,
       });

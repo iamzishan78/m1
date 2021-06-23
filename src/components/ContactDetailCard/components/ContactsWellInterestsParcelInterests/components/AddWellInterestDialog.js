@@ -152,7 +152,8 @@ function AddWellInterestDialog(props) {
     },
     refetchQueries: [
       "getContactWells",
-      "getPaginatedContactWellInterests"
+      "getPaginatedContactWellInterests",
+      "getContactWellInterestsFilterOptions"
     ],
     awaitRefetchQueries: true,
   });
@@ -163,7 +164,8 @@ function AddWellInterestDialog(props) {
     },
     refetchQueries: [
       "getContactWells",
-      "getPaginatedContactWellInterests"
+      "getPaginatedContactWellInterests",
+      "getContactWellInterestsFilterOptions"
     ],
     awaitRefetchQueries: true,
   });
@@ -174,7 +176,8 @@ function AddWellInterestDialog(props) {
     },
     refetchQueries: [
       "getContactWells",
-      "getPaginatedContactWellInterests"
+      "getPaginatedContactWellInterests",
+      "getContactWellInterestsFilterOptions"
     ],
     awaitRefetchQueries: true,
   });
@@ -334,7 +337,8 @@ function AddWellInterestDialog(props) {
         },
         refetchQueries: [
           "getContactWells",
-          "getPaginatedContactWellInterests"
+          "getPaginatedContactWellInterests",
+          "getContactWellInterestsFilterOptions"
         ],
         awaitRefetchQueries: true,
       });
@@ -358,7 +362,8 @@ function AddWellInterestDialog(props) {
         },
         refetchQueries: [
           "getContactWells",
-          "getPaginatedContactWellInterests"
+          "getPaginatedContactWellInterests",
+          "getContactWellInterestsFilterOptions"
         ],
         awaitRefetchQueries: true,
       });
@@ -386,7 +391,8 @@ function AddWellInterestDialog(props) {
         },
         refetchQueries: [
           "getContactWells",
-          "getPaginatedContactWellInterests"
+          "getPaginatedContactWellInterests",
+          "getContactWellInterestsFilterOptions"
         ],
         awaitRefetchQueries: true,
       });
