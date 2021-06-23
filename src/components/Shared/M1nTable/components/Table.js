@@ -2875,7 +2875,13 @@ function SubTable(props) {
               <Button
                 color="secondary"
                 className={classes.multiSelectionTopBarButtons}
-                onClick={()=> props.onClickAdd()}
+                onClick={()=> {
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    selectedDocument: {},
+                  }));
+                  props.onClickAdd()
+                }}
               >
                 <PostAddIcon />{buttonLabel}
               </Button>
@@ -3008,13 +3014,13 @@ function SubTable(props) {
           selectedDocument: rows[dataIndex],
         }));
       }
-      // if (props.targetLabel === "parcelDocument") {
-      //   setStateApp((stateApp) => ({
-      //     ...stateApp,
-      //     selectedDocument: rows[dataIndex],
-      //   }));
-      //   props.onClickAdd()
-      // }
+      if (props.targetLabel === "parcelDocument") {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedDocument: rows[dataIndex],
+        }));
+        props.onClickAdd()
+      }
 
       if (props.targetLabel === "usermanagement") {
         if (rows[dataIndex]?.id) {

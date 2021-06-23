@@ -7,6 +7,8 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import SearchIcon from "@material-ui/icons/Search";
+import InputAdornment from "@material-ui/core/InputAdornment";
 import { AppContext } from "AppContext";
 import CloseIcon from "@material-ui/icons/Close";
 import { Typography, Grid } from "@material-ui/core";
@@ -156,6 +158,9 @@ const useStyles = makeStyles({
     color: "#827F7F",
     cursor: "pointer",
   },
+  optionNumber: {
+    fontSize: "12px",
+  },
 });
 
 export default function DocumentDrawer(props) {
@@ -179,6 +184,7 @@ export default function DocumentDrawer(props) {
     fileId: "",
   };
   const [newDocument, setNewDocument] = useState(documentInitial);
+  const [search, setSearch] = useState("");
 
   const [nameAutValueParty1, setNameAutValueParty1] = useState({
     name: "",
@@ -220,37 +226,36 @@ export default function DocumentDrawer(props) {
     } else if (newDocument.documentType?.name) {
       documentType = newDocument.documentType.name;
     }
-    // if (stateApp.selectedDocument.fileId) {
-      const fileId = fileData?.addFileDescriptor?.file?.id
-      setLoader(true);
-      updateDocument({
-        variables: {
-          document: {
-            recordingInfo: newDocument.recordingInfo,
-            documentName: newDocument.documentName,
-            dateTime: newDocument.dateTime,
-            documentNumber: newDocument.documentNumber,
-            documentType: documentType,
-            partyName1: nameAutValueParty1._id,
-            partyName2: nameAutValueParty2._id,
-            fileId: fileId || newDocument.fileId,
-          },
+    const fileId = fileData?.addFileDescriptor?.file?.id;
+    setLoader(true);
+    updateDocument({
+      variables: {
+        document: {
+          recordingInfo: newDocument.recordingInfo,
+          documentName: newDocument.documentName,
+          dateTime: newDocument.dateTime,
+          documentNumber: newDocument.documentNumber,
+          documentType: documentType,
+          partyName1: nameAutValueParty1._id,
+          partyName2: nameAutValueParty2._id,
+          fileId: fileId || newDocument.fileId,
         },
-        refetchQueries: ["getAllFiles"],
-        awaitRefetchQueries: true,
-      }).then(() => {
-        props.getAllFiles({
-          variables: {
-            relatedObjectId: props.parcelId,
-            relatedObjectType: "Parcel",
-          },
-        });
-        props.setShowDocumentSlider(false)
-        setNameAutValueParty1({ name: "", _id: null });
-        setNameAutValueParty2({ name: "", _id: null });
-        setNewDocument(documentInitial);
-        setLoader(false);
+      },
+      refetchQueries: ["getAllFiles"],
+      awaitRefetchQueries: true,
+    }).then(() => {
+      props.getAllFiles({
+        variables: {
+          relatedObjectId: props.parcelId,
+          relatedObjectType: "Parcel",
+        },
       });
+      props.setShowDocumentSlider(false);
+      setNameAutValueParty1({ name: "", _id: null });
+      setNameAutValueParty2({ name: "", _id: null });
+      setNewDocument(documentInitial);
+      setLoader(false);
+    });
     // }
   };
 
@@ -264,7 +269,7 @@ export default function DocumentDrawer(props) {
     setNewDocument(documentInitial);
   };
   const handleClose = () => {
-    props.setShowDocumentSlider(false)
+    props.setShowDocumentSlider(false);
     setNameAutValueParty1({ name: "", _id: null });
     setNameAutValueParty2({ name: "", _id: null });
     setNewDocument(documentInitial);
@@ -347,6 +352,8 @@ export default function DocumentDrawer(props) {
           fileId,
           recordingInfo,
         } = stateApp.selectedDocument;
+        setSearch(documentName);
+        setSelectedType("update");
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
           _id: partyName1?._id,
@@ -391,6 +398,49 @@ export default function DocumentDrawer(props) {
     setState({ ...state, [anchor]: open });
   };
 
+  const onSearcSelected = (searchedDocument) => {
+    let ID = [];
+    if (searchedDocument?.fileId) {
+      ID.push(searchedDocument?.fileId);
+      viewFiles({
+        variables: { fileIds: ID },
+      });
+      if (searchedDocument) {
+        const {
+          documentName,
+          dateTime,
+          documentNumber,
+          documentType,
+          partyName1,
+          partyName2,
+          fileId,
+          recordingInfo,
+        } = searchedDocument;
+        setNameAutValueParty1({
+          name: partyName1?.entityDetail?.name,
+          _id: partyName1?._id,
+        });
+        setNameAutValueParty2({
+          name: partyName2?.entityDetail?.name,
+          _id: partyName2?._id,
+        });
+
+        setNewDocument({
+          recordingInfo,
+          documentName,
+          dateTime,
+          documentNumber,
+          documentType,
+          partyName1,
+          partyName2,
+          fileId,
+        });
+      } else {
+        setNewDocument(documentInitial);
+      }
+    }
+  };
+
   const DocumentDetail = (anchor) => (
     <div
       style={{ width: "500px", marginLeft: "15px" }}
@@ -419,37 +469,134 @@ export default function DocumentDrawer(props) {
             </IconButton>
           </ListItemIcon>
         </ListItem>
-        <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <ListItemText>
-            <h4
-              onClick={() => setSelectedType("new")}
-              className={
-                selectedType === "new"
-                  ? classes.selectedType
-                  : classes.unSelectedType
-              }
+        {selectedType !== "update" && (
+          <>
+            <ListItem
+              style={{
+                flexDirection: "column",
+                justifyContent: "start",
+                alignItems: "start",
+              }}
             >
-              New Document
-            </h4>
-            <h4
-              onClick={() => setSelectedType("existing")}
-              className={
-                selectedType === "existing"
-                  ? classes.selectedType
-                  : classes.unSelectedType
-              }
-              style={{ marginLeft: "20px" }}
-            >
-              Existing Document
-            </h4>
-          </ListItemText>
-        </ListItem>
+              <ListItemText>
+                <h4
+                  onClick={() => {
+                    setSelectedType("new");
+                    setSearch("");
+                    setNewDocument(documentInitial);
+                  }}
+                  className={
+                    selectedType === "new"
+                      ? classes.selectedType
+                      : classes.unSelectedType
+                  }
+                >
+                  New Document
+                </h4>
+                <h4
+                  onClick={() => {
+                    setSelectedType("existing");
+                  }}
+                  className={
+                    selectedType === "existing"
+                      ? classes.selectedType
+                      : classes.unSelectedType
+                  }
+                  style={{ marginLeft: "20px" }}
+                >
+                  Existing Document
+                </h4>
+              </ListItemText>
+            </ListItem>
+            {selectedType === "existing" && (
+              <ListItem
+                style={{
+                  flexDirection: "column",
+                  justifyContent: "start",
+                  alignItems: "start",
+                }}
+              >
+                <Autocomplete
+                  defaultValue={search}
+                  value={search}
+                  disableListWrap
+                  className={classes.maxWidth}
+                  options={
+                    props.documents
+                      ? props.documents?.map((doc) => {
+                          return {
+                            _id: doc.fileId,
+                            name: doc.documentName,
+                            number: doc.documentNumber,
+                          };
+                        })
+                      : []
+                  }
+                  getOptionLabel={(option) => {
+                    if (typeof option === "string") {
+                      return option;
+                    }
+                    if (option.inputValue) {
+                      return option.name;
+                    }
+
+                    if (option?.name) return option.name;
+                    else return "";
+                  }}
+                  renderOption={(option) => (
+                    <React.Fragment>
+                      <Grid container direction="column">
+                        <Grid item>{option.name}</Grid>
+                        <Grid item className={classes.optionNumber}>
+                          {option.number}
+                        </Grid>
+                      </Grid>
+                    </React.Fragment>
+                  )}
+                  getOptionSelected={(option, value) => {
+                    return option?._id === value?._id;
+                  }}
+                  onInputChange={(event, value) => {
+                    setSearch(value);
+                  }}
+                  filterOptions={(options, params) => {
+                    const filtered = options.filter(
+                      (opt) =>
+                        opt.name?.includes(search) ||
+                        opt.number?.includes(search)
+                    );
+                    return filtered;
+                  }}
+                  onChange={(event, newValue) => {
+                    if (newValue) {
+                      const document = props.documents.find(
+                        (doc) => doc.fileId === newValue._id
+                      );
+                      onSearcSelected(document);
+                    } else setNewDocument(documentInitial);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      variant="outlined"
+                      margin="dense"
+                      placeholder="Search by document name or number"
+                      {...params}
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon />
+                          </InputAdornment>
+                        ),
+                      }}
+                      size="small"
+                    />
+                  )}
+                />
+              </ListItem>
+            )}
+          </>
+        )}
         <ListItem
           style={{
             flexDirection: "column",
@@ -461,6 +608,7 @@ export default function DocumentDrawer(props) {
           <TextField
             className={classes.maxWidth}
             multiline
+            disabled={selectedType === 'existing'}
             value={newDocument?.documentNumber}
             onChange={(e) => {
               setNewDocument({
@@ -481,6 +629,7 @@ export default function DocumentDrawer(props) {
           <TextField
             className={classes.maxWidth}
             multiline
+            disabled={selectedType === 'existing'}
             value={newDocument?.documentName}
             onChange={(e) => {
               setNewDocument({
@@ -499,6 +648,7 @@ export default function DocumentDrawer(props) {
         >
           <h4>Document Type</h4>
           <DocumentType
+            disabled={selectedType === 'existing'}
             className={classes.maxWidth}
             documentTypes={documentTypes}
             setDocumentType={(value) => {
@@ -521,6 +671,7 @@ export default function DocumentDrawer(props) {
           <KeyboardDatePicker
             className={classes.maxWidth}
             disableToolbar
+            disabled={selectedType === 'existing'}
             variant="inline"
             format="MM/DD/YYYY"
             margin="normal"
@@ -574,6 +725,7 @@ export default function DocumentDrawer(props) {
           <TextField
             className={classes.maxWidth}
             multiline
+            disabled={selectedType === 'existing'}
             value={newDocument?.recordingInfo}
             onChange={(e) => {
               setNewDocument({
@@ -585,7 +737,7 @@ export default function DocumentDrawer(props) {
         </ListItem>
       </List>
 
-      {stateApp.selectedDocument?.fileId || fileData ? (
+      {newDocument?.fileId || fileData ? (
         <ListItem>
           <div style={{ display: "flex", justifyContent: "start" }}>
             {viewFileSResult?.viewFiles?.map((value, key) => {
@@ -600,6 +752,7 @@ export default function DocumentDrawer(props) {
                         <div className={classes.IconSection}>
                           <IconButton
                             size="small"
+                            disabled={selectedType === 'existing'}
                             onClick={() => {
                               setOpenDeleteConfirmDialog(true);
                               setFileIdToDelete(
@@ -756,7 +909,7 @@ export default function DocumentDrawer(props) {
         </ListItem>
       )}
 
-      {!fileData && (
+      {!newDocument?.fileId && !fileData && (
         <div className={classes.Uploadcomp}>
           <UploadZone
             style={{
@@ -793,9 +946,9 @@ export default function DocumentDrawer(props) {
           color="secondary"
           size="medium"
           disableElevation
-          disabled={!fileData && !stateApp.selectedDocument.fileId}
+          disabled={!fileData && !newDocument.fileId || selectedType === 'existing'}
           onClick={() => {
-            if (fileData || stateApp.selectedDocument.fileId) {
+            if (fileData || newDocument.fileId) {
               setLoader(true);
               UpDatefileFN();
             }
