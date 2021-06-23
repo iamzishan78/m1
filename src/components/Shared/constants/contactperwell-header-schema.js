@@ -48,7 +48,7 @@ const ContactWellHeadCells = [
   } },
   { name: "interestOwner", label: "Interest Owner", options: {
     sort: true,
-    filter: false,
+    filter: true,
   } },
   { name: "entity", label: "Entity", options: {
     display: false,
@@ -61,7 +61,7 @@ const ContactWellHeadCells = [
   } },
   { name: "type", label: "Type", options: {
     sort: true,
-    filter: false,
+    filter: true,
   } },
   { name: "amount", label: "Amount", options: {
     sort: true,
@@ -97,8 +97,9 @@ const ContactWellHeadCells = [
     name: "tags",
     label: "Tags ",
     options: {
-      sort: false,
-      filter: false,
+      dbName: "tags.tag",
+      sort: true,
+      filter: true,
       download: false,
       print: false,
       filterOptions: {
@@ -119,9 +120,10 @@ const ContactWellHeadCells = [
     name: "commentsCounter",
     label: " ",
     options: {
+      dbName: "comments.comment",
       filter: false,
       searchable: false,
-      sort: false,
+      sort: true,
       download: false,
       print: false,
       viewColumns: false,

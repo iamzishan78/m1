@@ -12,13 +12,14 @@ import TableHOC from "components/Table/TableHOC";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
 import { PAGINATED_CONTACT_WELLINTERESTS_QUERY } from "graphQL/useQueryPaginatedContactWellInterests";
+import { CONTACTWELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryContactWellInterestsFilterOptions";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 import AddWellInterestDialog from "components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 
 // Header Schemas 
 import TableHeader from 'components/Shared/constants/contactperwell-header-schema.js'
-import { handleTagColumn } from "../helpers";
+import { handleTagColumn, handleCustomFilterColumns } from "../helpers";
 
 // Utilities
 import debounce from "lodash/debounce";
@@ -50,8 +51,10 @@ function ContactWellInterestTable(props) {
       props.setLoading(false);
     }
   });
+  const [getContactWellInterestsFilterOptions, { data: dataContactWellsFilterOptions },] = useLazyQuery(CONTACTWELLINTERESTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
   const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: [ "getContactWells", "getPaginatedContactWellInterests" ], awaitRefetchQueries: true });
   const tableData = dataContactWells?.paginatedContactWellInterests
+  const filterData = dataContactWellsFilterOptions?.contactWellInterestsFilterOptions
 
   const addAble = { type: "wellInterest" }
   const total = false
@@ -61,6 +64,12 @@ function ContactWellInterestTable(props) {
   useEffect(() => {
     if (props.parent && props.parent === "assocTaxRollInterests") {
       getPaginatedContactWellInterests({
+        variables: {
+          contactId: props.contactId,
+          filters: [{ field: 'contact._id', value: props.contactId }]
+        },
+      });
+      getContactWellInterestsFilterOptions({
         variables: {
           contactId: props.contactId,
           filters: [{ field: 'contact._id', value: props.contactId }]
@@ -95,8 +104,9 @@ function ContactWellInterestTable(props) {
         return well;
       });
       props.setRows(wells);
-      const cleanAvailableTags = []; // get from backend
-      const columns = handleTagColumn(TableHeader, cleanAvailableTags);
+      const cleanAvailableTags = filterData?.tags?.map((tag) => tag._id) || []; // get from backend
+      // const columns = handleTagColumn(TableHeader, cleanAvailableTags);
+      const columns = handleCustomFilterColumns(TableHeader, filterData);
       setColumns(columns);
       props.setLoading(false);
     }
@@ -104,7 +114,7 @@ function ContactWellInterestTable(props) {
       props.setRows([]);
       props.setLoading(false);
     }
-  }, [tableData, props.dependencyUpdate]);
+  }, [tableData, filterData, props.dependencyUpdate]);
 
   ////////////Contact Wells end///////////////////////////////////////////////
 
@@ -114,7 +124,7 @@ function ContactWellInterestTable(props) {
     e.tableState.count = 0;
     e.setPageInd(e.tableState.page);
     e.getPaginatedContactWellInterests(e.pageVariables);
-    // e.getContactsFilterOptions(e.pageVariables);
+    e.getContactWellInterestsFilterOptions(e.pageVariables);
   };
 
   const delayedSearchRequest = React.useMemo(
@@ -126,6 +136,23 @@ function ContactWellInterestTable(props) {
   );
 
   const onTableChange = (action, tableState, rows, meta) => {
+
+    let filters = [
+      {
+        field: "contact._id",
+        value: props.contactId,
+      },
+      ...tableState.filterList.reduce((acc, val, ind) => { 
+        if (val.length > 0) {
+          acc.push({
+            field: tableState.columns[ind].dbName || tableState.columns[ind].name,
+            value: val,
+          });
+        }
+  
+        return acc;
+       }, [])
+    ];
 
     const pageVariables = {
       variables: {
@@ -144,10 +171,7 @@ function ContactWellInterestTable(props) {
                 : -1,
           }
         },
-        filters: {
-          field: "contact._id",
-          value: props.contactId,
-        },
+        filters: filters,
         search: tableState.searchText,
       },
     };
@@ -196,8 +220,7 @@ function ContactWellInterestTable(props) {
           setLoading: props.setLoading,
           setPageInd: meta.setPageInd,
           getPaginatedContactWellInterests: getPaginatedContactWellInterests,
-          // getContactsFilterOptions:
-          //   props.contactsPageProps.getContactsFilterOptions,
+          getContactWellInterestsFilterOptions: getContactWellInterestsFilterOptions,
           pageVariables,
         });
         break;
@@ -206,8 +229,18 @@ function ContactWellInterestTable(props) {
       case "propsUpdate":
         break;
       case "filterChange":
+        props.setLoading(true);
+        tableState.page = 0;
+        meta.setPageInd(tableState.page);
+        getPaginatedContactWellInterests(pageVariables);
+        getContactWellInterestsFilterOptions(pageVariables);
         break;
       case "resetFilters":
+        props.setLoading(true);
+        tableState.page = 0;
+        meta.setPageInd(tableState.page);
+        getPaginatedContactWellInterests(pageVariables);
+        getContactWellInterestsFilterOptions(pageVariables);
         break;
       default:
     }
