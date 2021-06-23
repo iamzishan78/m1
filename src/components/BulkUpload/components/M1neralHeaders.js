@@ -275,7 +275,8 @@ export default function M1neralHeaders(props) {
                               {" "}
                               Select Header{" "}
                             </option>
-                            {data.map((option, i) => {
+                            {[ ...data ].sort((a, b) => a.label.toUpperCase() < b.label.toUpperCase() ? -1 : 1)
+                             .map((option, i) => {
                               return (
                                 <option value={i} key={i}>
                                   {(() => {

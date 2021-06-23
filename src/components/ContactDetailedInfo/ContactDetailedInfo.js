@@ -286,10 +286,6 @@ export default function DetailInfo(props) {
       data: { mobilephone3: props.contactData.mobilephone3 },
       linkType: LinkTypes.None,
     },
-    "Age": {
-      data: { age: props.contactData.age },
-      linkType: LinkTypes.None,
-    },
     "Home Phone 2": {
       data: { homePhone2: props.contactData.homePhone2 },
       linkType: LinkTypes.None,
@@ -304,6 +300,10 @@ export default function DetailInfo(props) {
     },
     "Work Phone 3": {
       data: { AltPhone3: props.contactData.AltPhone3 },
+      linkType: LinkTypes.None,
+    },
+    "Age": {
+      data: { age: props.contactData.age },
       linkType: LinkTypes.None,
     },
     "Relative Names": {

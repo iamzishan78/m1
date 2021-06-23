@@ -200,6 +200,10 @@ export default function ContactDetailedInfoCard() {
       data: { age: contactData?.age },
       linkType: LinkTypes.None,
     },
+    "Relative Names": {
+      data: { relatives: contactData?.relatives },
+      linkType: LinkTypes.None,
+    },
     "Home Phone 2": {
       data: { homePhone2: contactData?.homePhone2 },
       linkType: LinkTypes.None,
@@ -214,10 +218,6 @@ export default function ContactDetailedInfoCard() {
     },
     "Work Phone 3": {
       data: { AltPhone3: contactData?.AltPhone3 },
-      linkType: LinkTypes.None,
-    },
-    "Relative Names": {
-      data: { relatives: contactData?.relatives },
       linkType: LinkTypes.None,
     },
     "LinkedIn Profile": {
