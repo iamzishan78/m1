@@ -909,7 +909,7 @@ export default function DocumentDrawer(props) {
         </ListItem>
       )}
 
-      {!newDocument?.fileId && !fileData && (
+      {selectedType !== 'existing' && !newDocument?.fileId && !fileData && (
         <div className={classes.Uploadcomp}>
           <UploadZone
             style={{
