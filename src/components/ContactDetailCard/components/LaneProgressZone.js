@@ -32,6 +32,13 @@ const useStyles = makeStyles((theme) => ({
   },
   flowLane: {
     fontWeight: "bold",
+    minHeight: "40px",
+  },
+  laneActionsGrid: {
+    "& .MuiIconButton-root": {
+      width: "35px",
+      height: "35px",
+    },
   },
   newFlowLane: {
     color: "darkgray",
@@ -61,25 +68,19 @@ export default function LaneProgressZone(props) {
           {pipeToShow?.lanes.map((lane, index) => (
             <>
               <Grid key={index} container direction="row" justify="space-between" alignItems="center" className={classes.flowLane}>
-                <Grid item style={{ width: "155px" }}>
+                <Grid item style={{ width: "150px" }}>
                   {lane.title}
                 </Grid>
-                <Grid item style={{ minWidth: "100px" }}>
+                <Grid item style={{ minWidth: "110px" }}>
                   <ProgressBar value={50} isNumeric />
                 </Grid>
-                <Grid item style={{ display: "flex" }}>
-                  <Grid container direction="row" justify="flex-end" alignItems="center">
-                    <Grid item>
-                      <IconButton>
-                        <AccountCircle fontSize="medium" />
-                      </IconButton>
-                    </Grid>
-                    <Grid item>
-                      <IconButton>
-                        <ChatBubbleOutlineIcon fontSize="medium" />
-                      </IconButton>
-                    </Grid>
-                  </Grid>
+                <Grid item className={classes.laneActionsGrid} style={{ display: "flex" }}>
+                  <IconButton>
+                    <AccountCircle fontSize="small" />
+                  </IconButton>
+                  <IconButton>
+                    <ChatBubbleOutlineIcon fontSize="small" />
+                  </IconButton>
                 </Grid>
               </Grid>
               <Divider />

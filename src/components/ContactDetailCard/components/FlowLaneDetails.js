@@ -70,8 +70,6 @@ const useStyles = makeStyles((theme) => ({
   },
   dealOwnerRoot: {
     border: "1px solid #EBEBEB",
-
-    // This matches the specificity of the default styles at https://github.com/mui-org/material-ui/blob/v4.11.3/packages/material-ui-lab/src/Autocomplete/Autocomplete.js#L90
     '&[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input:first-child': {
       // Default left padding is 6px
       paddingLeft: 26,
