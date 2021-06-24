@@ -1,28 +1,21 @@
-import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
+import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
-import Link from "@material-ui/core/Link";
-import InputLabel from "@material-ui/core/InputLabel";
 import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
-import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
 import { AppContext } from "../../../AppContext";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
-import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { CircularProgress, Dialog, Typography, Avatar } from "@material-ui/core";
+import { Dialog, Typography, Avatar } from "@material-ui/core";
 import RightDialog from "./RightDialog";
 import moment from "moment";
-import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../../Shared/functions";
-import TrackToggleButton from "../../Shared/TrackToggleButton";
+import { setStateIfDeepEqual } from "../../Shared/functions";
 import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
@@ -41,13 +34,10 @@ import AddDialogeUploadZone from "./AddDialogUploadZone";
 import LaneProgressZone from './LaneProgressZone';
 import LaneProgressDetail from './FlowLaneDetails';
 import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
-import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
+import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GETDEAL } from "graphQL/useQueryDeal";
-import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
 import Contacts from "components/FlowDrawer/Contacts";
-import EventIcon from "@material-ui/icons/Event";
 import "./style/dialog.css";
-import { faCloudShowersHeavy } from "@fortawesome/free-solid-svg-icons";
 
 // mui icons
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
@@ -88,12 +78,6 @@ const useStyles = makeStyles((theme) => ({
     // '& .MuiDialog-root': {
     //   overflowX: 'hidden !important'
     // },
-  },
-  dialogTitle: {
-    textAlign: "center",
-  },
-  dialogContentText: {
-    textAlign: "center",
   },
   inputFieldOwner: {
     marginBottom: "7px",
@@ -1050,7 +1034,7 @@ function AddDealDialog(props) {
     } else if (stateApp.transactBarView === "Contacts") {
       return <Contacts addSelectedContact={addSelectedContactToDeal} loading={getDealLoading} getDeal={refetchDeal} />;
     } else if (stateApp.transactBarView === "Flow Lane Progress") {
-      return <LaneProgressDetail />
+      return <LaneProgressDetail users={users} ownerId={ownerId} />
     }
   };
 
