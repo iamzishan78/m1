@@ -275,7 +275,7 @@ const useStyles = makeStyles((theme) => ({
       "& th": {
         backgroundColor: "#F2F2F2",
         zIndex: "auto",
-        padding: (props) => (props.dense ? "10px" : null),
+        padding: (props) => (props.dense ? "10px 10px 10px 0px" : null),
         "& button": {
           "& .MuiButton-label": {
             textAlign: 'left'
@@ -1232,9 +1232,9 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   return (
-                    <>
+                    <span style={{ padding: 10 }}>
                     {moment(tableMeta.rowData[5]).format('MM/DD/YYYY')}
-                    </>
+                    </span>
                   );
                 },
               };
