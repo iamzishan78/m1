@@ -704,7 +704,7 @@ export default function DocumentDrawer(props) {
             }}
           />
         </ListItem>
-        {/* <ListItem
+        <ListItem
           style={{
             flexDirection: "column",
             justifyContent: "start",
@@ -716,8 +716,8 @@ export default function DocumentDrawer(props) {
             nameAutValue={nameAutValueParty1}
             setNameAutValue={setNameAutValueParty1}
           />
-        </ListItem> */}
-        {/* <ListItem
+        </ListItem>
+        <ListItem
           style={{
             flexDirection: "column",
             justifyContent: "start",
@@ -729,7 +729,7 @@ export default function DocumentDrawer(props) {
             nameAutValue={nameAutValueParty2}
             setNameAutValue={setNameAutValueParty2}
           />
-        </ListItem> */}
+        </ListItem>
         <ListItem
           style={{
             flexDirection: "column",
