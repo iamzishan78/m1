@@ -37,7 +37,9 @@ import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
+import { CREATEDESCRIPTORFILE } from "graphQL/useMutationCreateDescriptorFile";
 import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
+import { GET_DOCUMENTS } from "graphQL/useQueryDocuments";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 
 // functions
@@ -164,15 +166,6 @@ const useStyles = makeStyles({
 });
 
 export default function DocumentDrawer(props) {
-  const classes = useStyles();
-  const [state, setState] = React.useState({
-    right: false,
-  });
-  const [selectedType, setSelectedType] = React.useState("new");
-  const [stateApp, setStateApp] = React.useContext(AppContext);
-  const [recentFiles, setRecentFiles] = useState([]);
-  const [fileData, setFileData] = useState(null);
-
   const documentInitial = {
     documentName: "",
     recordingInfo: "",
@@ -183,9 +176,20 @@ export default function DocumentDrawer(props) {
     partyName2: "",
     fileId: "",
   };
-  const [newDocument, setNewDocument] = useState(documentInitial);
-  const [search, setSearch] = useState("");
+  const classes = useStyles();
+  const [stateApp, setStateApp] = React.useContext(AppContext);
 
+  let [loader, setLoader] = useState(false);
+  const [selectedType, setSelectedType] = useState("new");
+  const [recentFiles, setRecentFiles] = useState([]);
+  const [fileData, setFileData] = useState(null);
+  const [newDocument, setNewDocument] = useState(documentInitial);
+  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
+  const [fileIdToDelete, setFileIdToDelete] = useState(null);
+  const [search, setSearch] = useState("");
+  const [state, setState] = useState({
+    right: false,
+  });
   const [nameAutValueParty1, setNameAutValueParty1] = useState({
     name: "",
     _id: null,
@@ -195,29 +199,108 @@ export default function DocumentDrawer(props) {
     _id: null,
   });
 
-  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
-
-  const [fileIdToDelete, setFileIdToDelete] = useState(null);
-
-  let [loader, setLoader] = useState(false);
-  const [viewFile, { data: viewFileResult, loading: viewFileLoading }] =
-    useLazyQuery(VIEWFILEQUERY, {
-      fetchPolicy: "no-cache",
-    });
-
+  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
+    fetchPolicy: "no-cache",
+  });
   const [getDocumentTypes, { data: documentTypes }] = useLazyQuery(
     DOCUMENT_TYPE,
     {
       fetchPolicy: "no-cache",
     }
   );
+  const [updateDocument] = useMutation(UPDATE_DOCUMENT);
+  const [getDocuments, { data: documents }] = useLazyQuery(GET_DOCUMENTS, {
+    fetchPolicy: "no-cache",
+  });
+	const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
+		CREATEDESCRIPTORFILE,
+		{
+			refetchQueries: ["getRecentContactFiles"],
+			awaitRefetchQueries: true,
+		}
+	);
+
+  useEffect(() => {
+    getDocuments({
+      variables: {
+        search: "",
+      },
+    });
+  }, [getDocuments]);
 
   useEffect(() => {
     getDocumentTypes();
   }, [getDocumentTypes]);
 
-  const [updateDocument, { loading: updateFileloading }] =
-    useMutation(UPDATE_DOCUMENT);
+  useEffect(() => {
+    if (viewFileResult?.viewFile?.uri) {
+      let a = document.createElement("a");
+      a.href = viewFileResult.viewFile.uri;
+      a.download = viewFileResult.viewFile.name;
+
+      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
+      // a.target = "_blank";
+
+      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
+      a.click();
+    }
+  }, [viewFileResult]);
+
+  useEffect(() => {
+    if (fileData) {
+      let ID = [];
+      ID.push(fileData?.addFileDescriptor?.file?.id);
+      viewFiles({
+        variables: { fileIds: ID },
+      });
+    }
+  }, [fileData]);
+
+  useEffect(() => {
+    let ID = [];
+    if (stateApp.selectedDocument?.fileId) {
+      ID.push(stateApp.selectedDocument?.fileId);
+
+      viewFiles({
+        variables: { fileIds: ID },
+      });
+      if (stateApp.selectedDocument) {
+        const {
+          documentName,
+          dateTime,
+          documentNumber,
+          documentType,
+          partyName1,
+          partyName2,
+          fileId,
+          recordingInfo,
+        } = stateApp.selectedDocument;
+        setSearch(documentName);
+        setSelectedType("update");
+        setNameAutValueParty1({
+          name: partyName1?.entityDetail?.name,
+          _id: partyName1?._id,
+        });
+        setNameAutValueParty2({
+          name: partyName2?.entityDetail?.name,
+          _id: partyName2?._id,
+        });
+
+        setNewDocument({
+          recordingInfo,
+          documentName,
+          dateTime,
+          documentNumber,
+          documentType,
+          partyName1,
+          partyName2,
+          fileId,
+        });
+      } else {
+        setNewDocument(documentInitial);
+      }
+    }
+  }, [stateApp.selectedDocument]);
 
   const UpDatefileFN = () => {
     let documentType = "";
@@ -304,80 +387,10 @@ export default function DocumentDrawer(props) {
     }
   };
 
-  useEffect(() => {
-    if (viewFileResult?.viewFile?.uri) {
-      let a = document.createElement("a");
-      a.href = viewFileResult.viewFile.uri;
-      a.download = viewFileResult.viewFile.name;
-
-      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
-      // a.target = "_blank";
-
-      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
-      a.click();
-    }
-  }, [viewFileResult]);
-
   const [viewFiles, { data: viewFileSResult, loading: viewFileSLoading }] =
     useLazyQuery(VIEWFILESQUERY, {
       fetchPolicy: "no-cache",
     });
-
-  useEffect(() => {
-    if (fileData) {
-      let ID = [];
-      ID.push(fileData?.addFileDescriptor?.file?.id);
-      viewFiles({
-        variables: { fileIds: ID },
-      });
-    }
-  }, [fileData]);
-
-  useEffect(() => {
-    let ID = [];
-    if (stateApp.selectedDocument?.fileId) {
-      ID.push(stateApp.selectedDocument?.fileId);
-
-      viewFiles({
-        variables: { fileIds: ID },
-      });
-      if (stateApp.selectedDocument) {
-        const {
-          documentName,
-          dateTime,
-          documentNumber,
-          documentType,
-          partyName1,
-          partyName2,
-          fileId,
-          recordingInfo,
-        } = stateApp.selectedDocument;
-        setSearch(documentName);
-        setSelectedType("update");
-        setNameAutValueParty1({
-          name: partyName1?.entityDetail?.name,
-          _id: partyName1?._id,
-        });
-        setNameAutValueParty2({
-          name: partyName2?.entityDetail?.name,
-          _id: partyName2?._id,
-        });
-
-        setNewDocument({
-          recordingInfo,
-          documentName,
-          dateTime,
-          documentNumber,
-          documentType,
-          partyName1,
-          partyName2,
-          fileId,
-        });
-      } else {
-        setNewDocument(documentInitial);
-      }
-    }
-  }, [stateApp.selectedDocument]);
 
   const LightTooltip = withStyles((theme) => ({
     tooltip: {
@@ -415,6 +428,7 @@ export default function DocumentDrawer(props) {
           partyName2,
           fileId,
           recordingInfo,
+          fileName,
         } = searchedDocument;
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
@@ -434,6 +448,7 @@ export default function DocumentDrawer(props) {
           partyName1,
           partyName2,
           fileId,
+          fileName
         });
       } else {
         setNewDocument(documentInitial);
@@ -522,12 +537,13 @@ export default function DocumentDrawer(props) {
                   disableListWrap
                   className={classes.maxWidth}
                   options={
-                    props.documents
-                      ? props.documents?.map((doc) => {
+                    documents?.getFiles
+                      ? documents?.getFiles?.map((doc) => {
                           return {
                             _id: doc.fileId,
                             name: doc.documentName,
                             number: doc.documentNumber,
+                            fileName: doc.fileName,
                           };
                         })
                       : []
@@ -540,8 +556,8 @@ export default function DocumentDrawer(props) {
                       return option.name;
                     }
 
-                    if (option?.name) return option.name;
-                    else return "";
+                    // if (option?.name) return option.name;
+                    // else return "";
                   }}
                   renderOption={(option) => (
                     <React.Fragment>
@@ -569,7 +585,7 @@ export default function DocumentDrawer(props) {
                   }}
                   onChange={(event, newValue) => {
                     if (newValue) {
-                      const document = props.documents.find(
+                      const document = documents.getFiles.find(
                         (doc) => doc.fileId === newValue._id
                       );
                       onSearcSelected(document);
@@ -608,7 +624,7 @@ export default function DocumentDrawer(props) {
           <TextField
             className={classes.maxWidth}
             multiline
-            disabled={selectedType === 'existing'}
+            disabled={selectedType === "existing"}
             value={newDocument?.documentNumber}
             onChange={(e) => {
               setNewDocument({
@@ -629,7 +645,7 @@ export default function DocumentDrawer(props) {
           <TextField
             className={classes.maxWidth}
             multiline
-            disabled={selectedType === 'existing'}
+            disabled={selectedType === "existing"}
             value={newDocument?.documentName}
             onChange={(e) => {
               setNewDocument({
@@ -648,7 +664,7 @@ export default function DocumentDrawer(props) {
         >
           <h4>Document Type</h4>
           <DocumentType
-            disabled={selectedType === 'existing'}
+            disabled={selectedType === "existing"}
             className={classes.maxWidth}
             documentTypes={documentTypes}
             setDocumentType={(value) => {
@@ -671,7 +687,7 @@ export default function DocumentDrawer(props) {
           <KeyboardDatePicker
             className={classes.maxWidth}
             disableToolbar
-            disabled={selectedType === 'existing'}
+            disabled={selectedType === "existing"}
             variant="inline"
             format="MM/DD/YYYY"
             margin="normal"
@@ -688,7 +704,7 @@ export default function DocumentDrawer(props) {
             }}
           />
         </ListItem>
-        {/* <ListItem
+        <ListItem
           style={{
             flexDirection: "column",
             justifyContent: "start",
@@ -700,7 +716,7 @@ export default function DocumentDrawer(props) {
             nameAutValue={nameAutValueParty1}
             setNameAutValue={setNameAutValueParty1}
           />
-        </ListItem> */}
+        </ListItem>
         {/* <ListItem
           style={{
             flexDirection: "column",
@@ -725,7 +741,7 @@ export default function DocumentDrawer(props) {
           <TextField
             className={classes.maxWidth}
             multiline
-            disabled={selectedType === 'existing'}
+            disabled={selectedType === "existing"}
             value={newDocument?.recordingInfo}
             onChange={(e) => {
               setNewDocument({
@@ -752,7 +768,7 @@ export default function DocumentDrawer(props) {
                         <div className={classes.IconSection}>
                           <IconButton
                             size="small"
-                            disabled={selectedType === 'existing'}
+                            disabled={selectedType === "existing"}
                             onClick={() => {
                               setOpenDeleteConfirmDialog(true);
                               setFileIdToDelete(
@@ -909,7 +925,7 @@ export default function DocumentDrawer(props) {
         </ListItem>
       )}
 
-      {selectedType !== 'existing' && !newDocument?.fileId && !fileData && (
+      {selectedType !== "existing" && !newDocument?.fileId && !fileData && (
         <div className={classes.Uploadcomp}>
           <UploadZone
             style={{
@@ -946,11 +962,37 @@ export default function DocumentDrawer(props) {
           color="secondary"
           size="medium"
           disableElevation
-          disabled={!fileData && !newDocument.fileId || selectedType === 'existing'}
+          disabled={
+            (!fileData && !newDocument.fileId) || (selectedType === "existing" && !newDocument.fileId)
+          }
           onClick={() => {
-            if (fileData || newDocument.fileId) {
-              setLoader(true);
-              UpDatefileFN();
+            if(selectedType === "existing"){
+              addFile({
+                variables: {
+                  fileName: newDocument.fileName,
+                  descriptorObjectId: newDocument.fileId,
+                  userId: stateApp.user.mongoId,
+                  relatedObjectId: props.parcelId,
+                  relatedObjectType: "Parcel",
+                },
+              }).then(() => {
+                props.getAllFiles({
+                  variables: {
+                    relatedObjectId: props.parcelId,
+                    relatedObjectType: "Parcel",
+                  },
+                });
+                props.setShowDocumentSlider(false);
+                setNameAutValueParty1({ name: "", _id: null });
+                setNameAutValueParty2({ name: "", _id: null });
+                setNewDocument(documentInitial);
+                setLoader(false);
+              });
+            }else{
+              if (fileData || newDocument.fileId) {
+                setLoader(true);
+                UpDatefileFN();
+              }
             }
           }}
           className={classes.footerButton}
