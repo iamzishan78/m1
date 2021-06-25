@@ -13,14 +13,17 @@ const ContactWellHeadCells = [
     },
   },
   { name: "wellName", label: "Well", options: {
+    dbName: "well.wellName",
     sort: true,
     filter: false,
   } },
   { name: "api", label: "API", options: {
+    dbName: "well.apiNumber",
     sort: true,
     filter: false,
   } },
   { name: "leaseId", label: "Lease Id", options: {
+    dbName: "well.leaseId",
     display: false,
     filter: false,
     searchable: false,
@@ -30,6 +33,7 @@ const ContactWellHeadCells = [
     viewColumns: false,
   } },
   { name: "lease", label: "Lease Name", options: {
+    dbName: "well.lease",
     display: false,
     filter: false,
     searchable: false,
@@ -39,10 +43,12 @@ const ContactWellHeadCells = [
     viewColumns: false,
   } },
   { name: "leaseDescription", label: "Lease", options: {
+    dbName: "well.leaseDescription",
     sort: true,
     filter: false,
   } },
   { name: "leaseAcres", label: "Lease Acres", options: {
+    dbName: "well.leaseAcres",
     sort: true,
     filter: false,
   } },
@@ -64,10 +70,12 @@ const ContactWellHeadCells = [
     filter: true,
   } },
   { name: "amount", label: "Amount", options: {
+    dbName: "interest",
     sort: true,
     filter: false,
   } },
   { name: "taxValue", label: "Tax Value", options: {
+    dbName: "value",
     sort: true,
     filter: false,
   } },
