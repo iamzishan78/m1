@@ -475,7 +475,7 @@ export default function DocumentDrawer() {
 
 
         {/* TEMPORARY COMMENT OUT UNTIL FEATURE IS FIXED */}
-        <ListItem
+        {/* <ListItem
           style={{
             flexDirection: "column",
             justifyContent: "start",
@@ -494,7 +494,7 @@ export default function DocumentDrawer() {
         >
           <h4>Party 2 Name</h4>
           <ContactPaginatedDropdown nameAutValue={nameAutValueParty2} setNameAutValue={setNameAutValueParty2} />
-        </ListItem>
+        </ListItem> */}
         <ListItem
           style={{
             flexDirection: "column",

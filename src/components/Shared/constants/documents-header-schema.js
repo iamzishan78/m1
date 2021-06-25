@@ -44,14 +44,14 @@ const DocumentsHeadCells = [
   },
 
   // TEMPORARY COMMENT OUT UNTIL FEATURE IS FIXED
-  {
-    name: "partyName1",
-    label: "Party 1 Name",
-  },
-  {
-    name: "partyName2",
-    label: "Party 2 Name",
-  },
+  // {
+  //   name: "partyName1",
+  //   label: "Party 1 Name",
+  // },
+  // {
+  //   name: "partyName2",
+  //   label: "Party 2 Name",
+  // },
   
   {
     name: "recordingInfo",

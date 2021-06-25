@@ -47,14 +47,14 @@ const DocumentsHeadCells = [
   //   label: "RELATED PARTY NAME",
   // },
 
-  {
-    name: "partyName1",
-    label: "Party 1 Name",
-  },
-  {
-    name: "partyName2",
-    label: "Party 2 Name",
-  },
+  // {
+  //   name: "partyName1",
+  //   label: "Party 1 Name",
+  // },
+  // {
+  //   name: "partyName2",
+  //   label: "Party 2 Name",
+  // },
   {
     name: "recordingInfo",
     label: "Recording Info",
