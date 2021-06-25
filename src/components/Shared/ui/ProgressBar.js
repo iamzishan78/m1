@@ -27,7 +27,7 @@ export default function CustomizedProgressBars(props) {
     },
     progressBarGrid: {
       minWidth: "70%",
-      marginRight: "3px",
+      marginRight: "1px",
     },
   });
   const classes = useStyles();

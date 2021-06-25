@@ -163,21 +163,21 @@ function FlowLaneDetails({ users, ownerId }) {
           <Avatar className={classes.dealOwnerAvatar}>
             {users.find((user) => user?.value === ownerId)
               ? users
+                .find((user) => user?.value === ownerId)
+                .text.toString()
+                .toUpperCase()
+                .split(" ").length > 1
+                ? users
                   .find((user) => user?.value === ownerId)
                   .text.toString()
                   .toUpperCase()
-                  .split(" ").length > 1
-                ? users
-                    .find((user) => user?.value === ownerId)
-                    .text.toString()
-                    .toUpperCase()
-                    .split(" ")[0][0] +
-                  "" +
-                  users
-                    .find((user) => user?.value === ownerId)
-                    .text.toString()
-                    .toUpperCase()
-                    .split(" ")[1][0]
+                  .split(" ")[0][0] +
+                "" +
+                users
+                  .find((user) => user?.value === ownerId)
+                  .text.toString()
+                  .toUpperCase()
+                  .split(" ")[1][0]
                 : "AO"
               : "AO"}
           </Avatar>
@@ -194,7 +194,7 @@ function FlowLaneDetails({ users, ownerId }) {
           <Typography variant="body2" color="textSecondary">
             Progress
           </Typography>
-          <div style={{ marginLeft: "10px", minWidth: "100px" }}>
+          <div style={{ minWidth: "200px" }}>
             <ProgressBar value={50} isNumeric />
           </div>
         </Grid>
@@ -202,7 +202,7 @@ function FlowLaneDetails({ users, ownerId }) {
           <Typography variant="body2" color="textSecondary">
             Efficiency
           </Typography>
-          <div style={{ marginLeft: "10px", minWidth: "100px" }}>
+          <div style={{ minWidth: "200px" }}>
             <ProgressBar value={50} isNumeric />
           </div>
         </Grid>
@@ -246,21 +246,21 @@ function FlowLaneDetails({ users, ownerId }) {
                         <Avatar className={classes.dealOwnerAvatar}>
                           {users.find((user) => user?.value === ownerId)
                             ? users
+                              .find((user) => user?.value === ownerId)
+                              .text.toString()
+                              .toUpperCase()
+                              .split(" ").length > 1
+                              ? users
                                 .find((user) => user?.value === ownerId)
                                 .text.toString()
                                 .toUpperCase()
-                                .split(" ").length > 1
-                              ? users
-                                  .find((user) => user?.value === ownerId)
-                                  .text.toString()
-                                  .toUpperCase()
-                                  .split(" ")[0][0] +
-                                "" +
-                                users
-                                  .find((user) => user?.value === ownerId)
-                                  .text.toString()
-                                  .toUpperCase()
-                                  .split(" ")[1][0]
+                                .split(" ")[0][0] +
+                              "" +
+                              users
+                                .find((user) => user?.value === ownerId)
+                                .text.toString()
+                                .toUpperCase()
+                                .split(" ")[1][0]
                               : "AO"
                             : "AO"}
                         </Avatar>
