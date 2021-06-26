@@ -80,7 +80,7 @@ export default function FilterFromDrawing(props) {
       <IconButton
         className={
           stateNav.filterFeatureId &&
-          stateNav.filterFeatureId.includes("draw_polygon")
+            stateNav.filterFeatureId.includes("draw_polygon")
             ? classes.buttonEnabled
             : classes.buttonDisabled
         }
@@ -92,7 +92,7 @@ export default function FilterFromDrawing(props) {
       <IconButton
         className={
           stateNav.filterFeatureId &&
-          stateNav.filterFeatureId.includes("drag_circle")
+            stateNav.filterFeatureId.includes("drag_circle")
             ? classes.buttonEnabled
             : classes.buttonDisabled
         }
@@ -104,7 +104,7 @@ export default function FilterFromDrawing(props) {
       <IconButton
         className={
           stateNav.filterFeatureId &&
-          stateNav.filterFeatureId.includes("draw_rectangle")
+            stateNav.filterFeatureId.includes("draw_rectangle")
             ? classes.buttonEnabled
             : classes.buttonDisabled
         }

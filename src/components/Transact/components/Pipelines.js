@@ -1,10 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
-import moment from "moment";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import SettingsIcon from "@material-ui/icons/Settings";
@@ -402,7 +400,6 @@ export default function Pipelines(props) {
             name,
             stages,
             userId: stateApp.user.mongoId,
-            project: `Project ${moment().format("MM/DD/YYYY HH:m")}`,
           },
           refetchQueries: ["getPipelines", "getPipeline"],
           awaitRefetchQueries: true,
@@ -538,7 +535,7 @@ export default function Pipelines(props) {
             if (success === true) dispatch(showSuccessMessage("The Pipeline was successfully updated."));
             else dispatch(showErrorMessage("An error occurred during the update."));
           })
-          .catch((reason) => {});
+          .catch((reason) => { });
       }
 
       handleClose();
@@ -792,9 +789,9 @@ export default function Pipelines(props) {
           <DeleteConfirmationDialogContent
             header={deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`}
             onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => {}}
+            deleteFunc={deleteFunc ? deleteFunc : () => { }}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the Flowline?" : "Are you sure you want to delete the stage?"}
           </DeleteConfirmationDialogContent>

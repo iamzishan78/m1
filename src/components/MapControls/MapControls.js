@@ -136,9 +136,8 @@ export default function MapControls(props) {
   };
 
   const handleCloseShapeDrawer = () => {
-
-    const { draw, map, currentFeature } = stateApp;
-    draw.delete(currentFeature?.id);
+    const { map } = stateApp;
+    // draw.delete(currentFeature?.id);
     setStateApp((state) => ({
       ...state,
       editDraw: false,

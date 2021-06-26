@@ -302,6 +302,10 @@ export default function DetailInfo(props) {
       data: { AltPhone3: props.contactData.AltPhone3 },
       linkType: LinkTypes.None,
     },
+    "Age": {
+      data: { age: props.contactData.age },
+      linkType: LinkTypes.None,
+    },
     "Relative Names": {
       data: { relatives: props.contactData.relatives },
       linkType: LinkTypes.None,

@@ -98,7 +98,7 @@ const PipelineProject = (props) => {
   return (
     <Flipped flipId={data._id}>
       <div className={classes.root} ref={(ref) => drop(preview(ref))}>
-        <Accordion className={classes.accordionRoot} ref={drag}>
+        <Accordion className={classes.accordionRoot} ref={isEdit.mode ? null : drag}>
           <AccordionSummary aria-controls="panel1a-content" id="panel1a-header">
             <Grid
               container
@@ -138,12 +138,21 @@ const PipelineProject = (props) => {
                         onUpdateProjectNameHandler(e.target.value);
                       }
                     }}
+                    onClick={event => event.stopPropagation()}
                     onBlur={() => setEdit({ able: false, mode: false })}
                   />
                 )}
               </Grid>
               <Grid item style={{ height: "24px" }}>
-                {isEdit.able && <Edit fontSize="small" onClick={() => setEdit({ able: false, mode: true })} />}
+                {isEdit.able && (
+                  <Edit
+                    fontSize="small"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setEdit({ able: false, mode: true });
+                    }}
+                  />
+                )}
               </Grid>
             </Grid>
           </AccordionSummary>

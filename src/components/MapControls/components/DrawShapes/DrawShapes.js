@@ -45,7 +45,7 @@ import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import { NavigationContext } from "../../../Navigation/NavigationContext";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "actions";
-import { clearMapAndCloseShapeActionsPopup } from "components/MapControls/commonHelper";
+import { clearMapAndCloseShapeActionsPopup, setFeatureProperty, drawShapeLayerToggle } from "components/MapControls/commonHelper";
 
 // const localStyles = makeStyles((theme) => ({
 //   label: {
@@ -247,6 +247,7 @@ export default function DrawShapes() {
     }
   }, [dataUser]);
 
+
   useEffect(() => {
     if (!eventsConfiguredRef.current) {
       const { map } = stateApp;
@@ -276,7 +277,13 @@ export default function DrawShapes() {
         if (feature) {
           addCustomShapeProperties(feature, draw);
         }
+        setFeatureProperty(draw, feature.id, 'shapeEdit', false)
+        drawShapeLayerToggle(stateApp, "none")
         setStateApp((state) => ({ ...state, editDraw: false, showShapeActionsPopup: true }));
+        setTimeout(() => {
+          draw.changeMode("static");
+        })
+
       });
 
       map.on("draw.selectionchange", ({ features }) => {
@@ -285,28 +292,41 @@ export default function DrawShapes() {
           setStateApp((stateApp) => {
             return {
               ...stateApp,
-              popupOpen: false,
+              // popupOpen: false,
               currentFeature: feature,
               featureOrMapShape: feature,
-              editDraw: true,
             };
           });
         } else {
-          setStateApp((state) => ({
-            ...state,
-            // currentFeature: undefined, // for allowing toolbar and filters if we off click shape
-            editDraw: false,
-          }));
+
+          setStateApp((state) => {
+            return {
+              ...state,
+              // currentFeature: undefined, // for allowing toolbar and filters if we off click shape
+              editDraw: false,
+            }
+          });
         }
+        setStateApp((stateApp) => {
+          if (!stateApp.shapeEdit) {
+            stateApp.draw.changeMode("static");
+          } else if (stateApp.currentFeature || stateApp.featureOrMapShape) {
+            stateApp.draw.changeMode("direct_select", {
+              featureId: stateApp.currentFeature.id || stateApp.featureOrMapShape.id,
+            });
+          }
+          drawShapeLayerToggle(stateApp, stateApp.shapeEdit ? "visible" : "none")
+          return stateApp
+        })
       });
 
       eventsConfiguredRef.current = true;
     }
   }, [stateApp.map, stateApp.currentFeature]);
 
-  useEffect(() => {
-    setStateApp((state) => ({ ...state, editDraw: !!stateApp.currentFeature }));
-  }, [setStateApp, stateApp.currentFeature]);
+  // useEffect(() => {
+  //   setStateApp((state) => ({ ...state, editDraw: !!stateApp.currentFeature }));
+  // }, [setStateApp, stateApp.currentFeature]);
 
   const actionClose = () => {
     clearMapAndCloseShapeActionsPopup(stateApp, setStateApp)

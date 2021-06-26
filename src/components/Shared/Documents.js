@@ -38,6 +38,11 @@ import { useDispatch } from "react-redux";
 import UploadZone from "./UploadZone";
 import CardMedia from "@material-ui/core/CardMedia";
 
+
+// functions
+import get_file_icon from "../../components/Shared/functions/get_file_icon.js";
+
+
 const useStyles = makeStyles((theme) => ({
   root: {
     // backgroundColor: "#fff",
@@ -131,7 +136,28 @@ const useStyles = makeStyles((theme) => ({
   fileDropError: {
     color: "red",
   },
-
+  forImage: {
+    width: "80px !important",
+    height: "80px !important",
+    backgroundColor: "transparent !important",
+    // border: "1px solid #999",
+    borderRadius: "10px !important",
+  },
+  forImageContainer: {
+    // width: "100px !important",
+    // height: "100px !important",
+    // borderRadius: "10px !important",
+    // backgroundColor: "#eeeeee !important",
+    // border: "1px solid #999",
+    // textAlign: "center",
+    // fontSize: "1.5rem",
+    // fontWeight: "bold",
+    // color: "#555",
+    // textTransform: "uppercase",
+    // paddingTop: "30px",
+    // cursor: "pointer",
+    // marginBottom: "5px",
+  },
   greySquare: {
     cursor: "pointer",
     borderRadius: "12px",
@@ -141,7 +167,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "30px",
     height: "80px",
     width: "80px",
-    backgroundColor: "#cecece",
+    backgroundColor: "#eeeeee",
     marginRight: "10px",
 
     "& svg": {
@@ -284,109 +310,6 @@ export default function Documents(props) {
     }
   }, [viewFileResult?.viewFile]);
 
-  const getFileIcon = (fileExtension) => {
-    switch (fileExtension) {
-      case "pdf":
-        return (
-          <FontAwesomeIcon
-            icon={faFilePdf}
-            style={{ fontSize: "2rem", color: "#F15642" }}
-          />
-        );
-      case "csv":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "xlsx":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "xlsb":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "xlsm":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "xltx":
-        return (
-          <FontAwesomeIcon
-            icon={faFileExcel}
-            style={{ fontSize: "2rem", color: "#207244" }}
-          />
-        );
-      case "doc":
-        return (
-          <FontAwesomeIcon
-            icon={faFileWord}
-            style={{ fontSize: "2rem", color: "#2A5599" }}
-          />
-        )
-      case "docx":
-        return (
-          <FontAwesomeIcon
-            icon={faFileWord}
-            style={{ fontSize: "2rem", color: "#2A5599" }}
-          />
-        );
-      case "ppt":
-        return (
-          <FontAwesomeIcon
-            icon={faFilePowerpoint}
-            style={{ fontSize: "2rem", color: "#D04424" }}
-          />
-        );
-      case "pptx":
-        return (
-          <FontAwesomeIcon
-            icon={faFilePowerpoint}
-            style={{ fontSize: "2rem", color: "#D04424" }}
-          />
-        );
-        case "jpg"|| "jpeg"|| "png" || "bmp":
-          return (
-            <FontAwesomeIcon
-              icon={faFileImage}
-              style={{ fontSize: "2rem", color: "#4c6ef5" }}
-            />
-          );
-        case "zip":
-          return (
-            <FontAwesomeIcon
-              icon={faFileArchive}
-              style={{ fontSize: "2rem", color: "#15aabf" }}
-            />
-          );
-        case "shp":
-          return (
-            <FontAwesomeIcon
-              icon={faFileCode}
-              style={{ fontSize: "2rem", color: "#82c91e" }}
-            />
-          );
-      default:
-        // return <span>{fileExtension}</span>;
-        return (
-          <FontAwesomeIcon
-            icon={faFile}
-            style={{ fontSize: "2rem", color: "grey" }}
-          />
-        );
-    }
-  };
 
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
@@ -533,24 +456,12 @@ export default function Documents(props) {
                   <div className={classes.flexIcon}>
                     {
                       <div
-                        className={`${classes.greySquare} ${file.state !== "active"
-                          ? classes.disabledDownload
-                          : ""
-                          }`}
-
-                        onClick={() => {
-
-                          viewFileResultt?.viewFiles.forEach((value) => {
-
-                            if (value.id === file.id && ExtenstionGetter(file.name) === 'pdf') {
-                              setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: file.name } })
-                            }
-                            else {
-                              handleViewFile(file.id)
-                            }
-
-                          })
-                        }}
+                        className={`${classes.greySquare} 
+                        // ${file.state !== "active"
+                        //   ? classes.disabledDownload
+                        //   : ""
+                          }`
+                        }
                       >
                         {new RegExp(
                           ["jpg", "jpeg", "png", "bmp"].join("|")
@@ -561,34 +472,59 @@ export default function Documents(props) {
                             className={classes.forImage}
                           ></img>
                         ) : (
-                          <div className={classes.forImageContainer} onClick={() => {
+                          <div className={classes.forImageContainer} 
+                          
+                          onClick={() => {
+
                             if (file.state !== "active") return;
 
                             if (fileExtension === 'pdf') {
                               setStateApp({ ...stateApp, viewDoc: { uri: file.uri, name: file.name } })
                             }
+                            else {
+                              handleViewFile(file.id)
+                            }
+  
+
                           }}>
                             {/* {fileExtension} */}
-                            {getFileIcon(fileExtension)}
+                            {get_file_icon(fileExtension)}
                           </div>
                         )
                         }
                       </div>
                     }
                     <div className='DocumentTitle'
-                      onClick={() => {
+                      // onClick={() => {
 
-                        viewFileResultt?.viewFiles.map((value) => {
+                      //   viewFileResultt?.viewFiles.map((value) => {
 
-                          if (value.id === file.id && ExtenstionGetter(file.name) === 'pdf') {
-                            setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: file.name } })
+                      //     if (value.id === file.id && ExtenstionGetter(file.name) === 'pdf') {
+                      //       setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: file.name } })
+                      //     }
+                      //     else {
+                      //       handleViewFile(file.id)
+                      //     }
+
+                      //   })
+
+                        onClick={() => {
+
+                          if (file.state !== "active") return;
+
+                          if (fileExtension === 'pdf') {
+                            setStateApp({ ...stateApp, viewDoc: { uri: file.uri, name: file.name } })
                           }
                           else {
                             handleViewFile(file.id)
                           }
 
-                        })
-                      }}>
+
+                        }}>
+
+                      {/* }}> */}
+
+                      
                       <h4 className={classes.uploadTitle} >
                         {file?.name?.length > 22
                           ? file?.name?.slice(0, 20) + "..."

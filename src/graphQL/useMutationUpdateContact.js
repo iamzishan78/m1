@@ -42,7 +42,6 @@ export const UPDATECONTACT = gql`
         countryAlt
         AltPhone
         secondaryEmail
-        relatives
         linkedIn
         facebook
         twitter
@@ -52,6 +51,8 @@ export const UPDATECONTACT = gql`
         companyName
         jobTitle
         IsDeleted
+        age
+        relatives
         homePhone2
         homePhone3
         mobilephone2

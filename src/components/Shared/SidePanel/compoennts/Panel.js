@@ -21,6 +21,8 @@ import MapBasicIcon from "../../svgIcons/MapBasicIcon";
 import Collapse from "@material-ui/core/Collapse";
 import Box from "@material-ui/core/Box";
 import { ThemeProvider } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+
 import { useSelector } from "react-redux";
 import { deepEqualObjects } from "../../functions";
 import StarIcon from "@material-ui/icons/Star";
@@ -135,7 +137,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	const getBasemapImageBox = () => {
 		return (
 			<>
-				<div className={classes.imageBox} >
+				<div>
 					{mapStyles.map((style) => (
 						<StyledMenuItem
 							disableRipple
@@ -148,26 +150,31 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 								}));
 							}}
 						>
-							<ThemeProvider theme={theme}>
-								<div>{style.name === "Outdoors" && <MapOutdoorIcon />}</div>
-								<div>{style.name === "Satellite" && <MapSatelliteIcon />}</div>
-								<div>{style.name === "Light" && <MapLightIcon />}</div>
-								<div>{style.name === "Dark" && <MapDarkIcon />}</div>
-								<div>{style.name === "Basic" && <MapBasicIcon />}</div>
-								<div className={classes.boxtext}>
-									<ListItemText primary={style.name} />
-								</div>
-							</ThemeProvider>
+
+							<Grid container alignContent='center' alignItems='center'>
+								<Grid item>
+									{style.name === "Outdoors" && <MapOutdoorIcon />}
+									{style.name === "Satellite" && <MapSatelliteIcon />}
+									{style.name === "Light" && <MapLightIcon />}
+									{style.name === "Dark" && <MapDarkIcon />}
+									{style.name === "Basic" && <MapBasicIcon />}
+								</Grid>
+
+								<Grid item>
+									<ListItemText primary={style.name} style={{paddingLeft: '25px'}} />
+								</Grid>
+							</Grid>
+
 						</StyledMenuItem>
 					))}
 				</div>
 
-				<StyledListItem2 button onClick={handleClick}>
+				<StyledListItem2 
+				>
 					<ListItemIcon>
 						<LayersIcon />
 					</ListItemIcon>
 					<ListItemText primary={`${title} Layers`} />
-					{open ? <ExpandLess /> : <ExpandMore />}
 				</StyledListItem2>
 			</>
 		);
@@ -199,7 +206,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 		</DragDropContext>
 	);
 	return (
-		// <ClickAwayListener onClickAway={handleClose}>
 		<div>
 			<div
 				style={{
@@ -219,7 +225,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			>
 				<StyledMenu
 					id="checklist-menu"
-					// anchorEl={stateMapControls.anchorEl}
 					style={!stateMapControls.expandedPanel ? { display: 'none' } : { minWidth: '425px' }}
 					keepMounted
 					open={Boolean(stateMapControls.selectedControl)}
@@ -253,7 +258,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 						type === "layer" && layerMap && layerMap[0]?.type ?
 
 							(
-								// <div styles={{  height: 'calc(100vh - 40px - 64px)'}}>
 								<SortableLayer layerMap={layerMap} />
 							)
 							: type === "base" ? (

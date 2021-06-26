@@ -51,6 +51,7 @@ import {
   DirectMode,
   SimpleSelectMode,
 } from "mapbox-gl-draw-circle";
+import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import debounce from "lodash/debounce";
@@ -81,6 +82,7 @@ import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 
 import { PERMITDETAILQUERY } from "../../graphQL/useQueryRecentPermitDetails";
+import { drawShapeStyles } from "components/MapControls/commonHelper";
 
 
 
@@ -251,8 +253,8 @@ function Map() {
   const [rigs, RigData] = useState([]);
   const setRigData = (state) => { if (rigs != state) { RigData(state); } };
 
- // const [permits, PermitData] = useState([]);
- // const setPermitData = (state) => { if (permits != state) { PermitData(state); } };
+  // const [permits, PermitData] = useState([]);
+  // const setPermitData = (state) => { if (permits != state) { PermitData(state); } };
 
   const [recent_submitted_permits, RecentSubmittedPermitData] = useState([]);
   const setRecentSubmittedPermitData = (state) => { if (recent_submitted_permits != state) { RecentSubmittedPermitData(state); } };
@@ -1129,8 +1131,6 @@ function Map() {
         }));
       }
       if (feature.source === "interests_source") {
-
-
         const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
         const selectedUserDefinedLayer = {
           ...feature,
@@ -1319,8 +1319,8 @@ function Map() {
             layerId === "Tracked Owners" ||
             layerId === "Tags Filter" ||
             layerId === "Search" ||
-            layerId === "recent_submitted_permits" :
-           // layerId === "permits":
+            layerId === "recent_submitted_permits":
+            // layerId === "permits":
             wellPointClick(feature);
             break;
           default:
@@ -1336,7 +1336,7 @@ function Map() {
       map.on("click", mapClickHandler);
       setMapClick({ mapClickHandler });
     }
-  }, [map, stateApp.layers]);
+  }, [map, stateApp.layers, customLayerData]);
 
   useEffect(() => {
     let beforeLayer = null;
@@ -3123,12 +3123,12 @@ function Map() {
       if (popUps[0]) {
         popUps[0].remove();
       }
-
-      new mapboxgl.Popup({ offset: 0, closeOnClick: false })
-        .setLngLat(coordinates)
-        .setMaxWidth("none")
-        .setHTML(`<div id="popupContainer"></div>`)
-        .addTo(map);
+      if (coordinates)
+        new mapboxgl.Popup({ offset: 0, closeOnClick: false })
+          .setLngLat(coordinates)
+          .setMaxWidth("none")
+          .setHTML(`<div id="popupContainer"></div>`)
+          .addTo(map);
 
       setStateApp((state) => ({ ...state, popupOpen: true }));
       handleOpenExpandableCard();
@@ -3805,8 +3805,10 @@ function Map() {
         let Draw = new MapboxDraw({
           displayControlsDefault: false,
           userProperties: true,
+          styles: drawShapeStyles,
           modes: {
             ...MapboxDraw.modes,
+            static: StaticMode,
             draw_circle: CircleMode,
             drag_circle: DragCircleMode,
             direct_select: DirectMode,
@@ -4088,7 +4090,6 @@ function Map() {
 
   // Use effect for removing shape filter
   useEffect(() => {
-
     if (!loading && stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
       if (draw) draw.delete(drawingFilterFeatureId);
       setStateNav((stateNav) => ({
@@ -5106,6 +5107,5 @@ function Map() {
   );
 }
 
-Map.whyDidYouRender = true;
 
 export default React.memo(Map);
