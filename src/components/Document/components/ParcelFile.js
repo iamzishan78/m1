@@ -1105,15 +1105,18 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
       }}
       onInputChange={onInputChange}
       filterOptions={(options, params) => {
-        const filtered = filter(options, { ...params, inputValue: value });
-
+        let inputValue = JSON.parse(JSON.stringify(value));
+        if(inputValue.name){
+          inputValue = inputValue.name
+        }
+        const filtered = filter(options, { ...params, inputValue });
         const isExist = loadashFilter(filtered, (filter) => {
-          return filter._id === value;
+          return filter._id === inputValue;
         });
         // Suggest the creation of a new value
-        if (value !== "" && (!isExist || isExist.length === 0)) {
+        if (inputValue !== "" && (!isExist || isExist.length === 0)) {
           filtered.unshift({
-            name: value,
+            name: inputValue,
             _id: "newEntity",
           });
         }
