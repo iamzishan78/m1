@@ -38,6 +38,7 @@ import { truncate } from "components/Shared/functions";
 import proj4 from 'proj4';
 // cra webpack hack to call this a png to get included in bundle
 import conus from '../../Shared/constants/nadgrids/conus.png';
+import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 
 const GCS_North_American_1927 = 'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]'
 proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@conus,null +no_defs");
@@ -152,6 +153,7 @@ export default function AddLayer(props) {
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
+  const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
   useEffect(() => {
@@ -217,14 +219,20 @@ export default function AddLayer(props) {
 
   const handleApplyChange = () => {
     const layersToUpdate = [];
+    const layersSettingsToUpdate = [];
     for (let i = 0; i < currentLayers.length; i++) {
-      if (!deepEqualObjects(currentLayers[i], stateApp.layers[i]))
-        layersToUpdate.push({
+      if (!deepEqualObjects(currentLayers[i], stateApp.layers[i])) {
+        layersSettingsToUpdate.push({
           _id: currentLayers[i]._id,
-          layerName: currentLayers[i].layerName,
-          groupName: currentLayers[i].groupName,
           layerSettings: currentLayers[i].layerSettings,
         });
+        layersToUpdate.push({
+          _id: currentLayers[i].layerId,
+          layerName: currentLayers[i].layerName,
+          groupName: currentLayers[i].groupName,
+        })
+      }
+
     }
 
     //// saving to stateApp
@@ -234,12 +242,20 @@ export default function AddLayer(props) {
     });
 
     //// saving to mongo
-    if (layersToUpdate.length > 0)
+    if (layersToUpdate.length > 0) {
+      updateManyLayer({
+        variables: {
+          layers: layersToUpdate
+        },
+      })
+
       updateManyUserLayerSettings({
         variables: {
-          manySettings: layersToUpdate,
+          manySettings: layersSettingsToUpdate,
         },
       });
+    }
+
 
     handleClose();
   };
