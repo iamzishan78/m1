@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import { useDispatch } from "react-redux";
@@ -27,6 +28,7 @@ import ParcelDetailsMap from "./components/ParcelDetailsMap";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwnersTable";
 import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
+import ParcelDetailsDocumentTable from "components/Table/Documents/ParcelDetailsDocumentTable";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 import { AppContext } from "../../AppContext";
@@ -181,6 +183,21 @@ const useStyles = makeStyles((theme) => ({
     color: "#757575",
     "&:hover": { boxShadow: "none !important" },
   },
+  documentHeader: {
+    display: "flex",
+    "& span": {
+      marginTop: "2px",
+      marginLeft: "5px"
+
+    }
+  },
+  parcelDocument: {
+    "& .MuiTableRow-root":{
+      "&>:nth-child(2) > span": { 
+        width: "336px !important"
+      }
+    }
+  }
 }));
 
 export default function ParcelsDetailCard(props) {
@@ -284,6 +301,13 @@ const Header = () => (
     }}
   />
 );
+
+const DocumentHeader = () => (
+  <div className={classes.documentHeader}>
+    <DescriptionOutlinedIcon/>
+    <span>Related Documents</span>
+  </div>
+)
 
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
@@ -413,7 +437,7 @@ const Header = () => (
       </Grid>
       <Grid item sm={12}>
         <Taps
-          tabLabels={["Interest Owners", "Wells"]}
+          tabLabels={["Interest Owners", "Wells", "Documents"]}
           tabPanels={[
             <TabPanels
               value={selectedTab}
@@ -439,7 +463,16 @@ const Header = () => (
               targetLabel="well"
               header="Associated Wells"
               dense
-            />
+            />,
+            <div className={classes.parcelDocument}>
+              <ParcelDetailsDocumentTable
+                customLayer={parcelObj}
+                parent="associatedDocumentsPerParcel"
+                targetLabel="parcelDocument"
+                header={<DocumentHeader />}
+                dense
+              />
+            </div>
           ]}
         />
       </Grid>
