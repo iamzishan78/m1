@@ -334,7 +334,7 @@ const Login = (props) => {
             color: "#fff",
           }}
         >
-          © 2020 M1neral, LLC. All Rights Reserved.
+          © 2021 M1neral, LLC. All Rights Reserved.
         </div>
 
         <div
