@@ -25,48 +25,21 @@ const OwnersPerParcelHeadCells = [
     },
   },
   { name: "name", 
-    label: "Name",
+    label: "Owner Name",
     options:{ setCellProps: () => ({ style: { minWidth: "270px"}})} 
   },
-  {
-    name: "entity",
-    label: "Entity",
-    editable: true,
-    dropDownOptions: [
-      "Corporation",
-      "Educational Institution",
-      "Governmental Body",
-      "Individual",
-      "Non Profit",
-      "Religious Institution",
-      "Trust",
-      "Unknown",
-    ],
-    options:{ setCellProps: () => ({ style: { maxWidth: "185px"}})}
-  },
-
+  { name: "surface_interest", label: "Surface Interest" },
+  { name: "mineral_interest", label: "Mineral Interest" },
+  { name: "royality_interest", label: "Royality Interest" },
+  { name: "orri", label: "ORRI" },
+  { name: "record_title", label: "Record Title" },
+  { name: "operating_rights", label: "Operating Rights" },
+  { name: "nri", label: "NRI" },
+  { name: "net_acres", label: "Net Acers" },
+  { name: "nra", label: "NRA", editable: true, options:{ setCellProps: () => ({ style: { maxWidth: "70px"}})} },
   { name: "depthFrom", label: "Depth From", editabe: true },
   { name: "depthTo", label: "Depth To", editabe: true },
-
-  {
-    name: "type",
-    label: "Type",
-    editabe: true,
-    dropDownOptions: [
-      "Fee Interest",
-      "Leasehold",
-      "Mineral Interest",
-      "Non-Executive Mineral Interest (NEMI)",
-      "Overriding Royalty (ORRI)",
-      "Royalty Interest (NPRI)",
-      "Surface Rights",
-      "Unknown",
-      "Working Interest",
-    ],
-  },
-  { name: "interest", label: "Interest", editable: true, options:{ setCellProps: () => ({ style: { maxWidth: "70px"}})}},
-  { name: "nma", label: "NMA", editable: true, options:{ setCellProps: () => ({ style: { maxWidth: "70px"}})}},
-  { name: "nra", label: "NRA", editable: true, options:{ setCellProps: () => ({ style: { maxWidth: "70px"}})} },
+  { name: "qtr_calls", label: "QTR Calls" },
   {
     name: "tags",
     label: "Tags ",
@@ -161,3 +134,4 @@ const OwnersPerParcelHeadCells = [
 ];
 
 export default OwnersPerParcelHeadCells;
+
