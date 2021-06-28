@@ -107,6 +107,7 @@ export default function AddParcelOwnerDialogContent({
     qtr1: "",
     qtr2: "",
     qtr3: "",
+    qtr4: "",
     customLayer: props.customLayerId,
   });
   const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] =
@@ -141,6 +142,7 @@ export default function AddParcelOwnerDialogContent({
         qtr1,
         qtr2,
         qtr3,
+        qtr4,
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
 
@@ -159,6 +161,7 @@ export default function AddParcelOwnerDialogContent({
         qtr1,
         qtr2,
         qtr3,
+        qtr4,
         customLayer,
       });
 
@@ -271,6 +274,7 @@ export default function AddParcelOwnerDialogContent({
       qtr1: "",
       qtr2: "",
       qtr3: "",
+      qtr4: "",
       customLayer: props.customLayerId,
     });
     setParcelOwnersRadioBValue("true");
@@ -587,7 +591,7 @@ export default function AddParcelOwnerDialogContent({
                   onChange={(e, newInputValue) => {
                     setNewOwner({
                       ...newOwner,
-                      qtr1: newInputValue ? newInputValue : "",
+                      qtr2: newInputValue ? newInputValue : "",
                     });
                   }}
                   renderInput={(params) => (
@@ -609,7 +613,29 @@ export default function AddParcelOwnerDialogContent({
                   onChange={(e, newInputValue) => {
                     setNewOwner({
                       ...newOwner,
-                      qtr1: newInputValue ? newInputValue : "",
+                      qtr3: newInputValue ? newInputValue : "",
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      size="small"
+                      className={classes.maxWidth}
+                      multiline
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <h3>QTR 4</h3>
+                <Autocomplete
+                  options={qtrOptions}
+                  getOptionLabel={(option) => option}
+                  value={newOwner.qtr4}
+                  onChange={(e, newInputValue) => {
+                    setNewOwner({
+                      ...newOwner,
+                      qtr4: newInputValue ? newInputValue : "",
                     });
                   }}
                   renderInput={(params) => (
