@@ -469,7 +469,7 @@ export default function AddParcelOwnerDialogContent({
                 />
               </Grid>
               <Grid item xs={12}>
-                <h3>Overriding Royalty Interest (orri)</h3>
+                <h3>Overriding Royalty Interest (ORRI)</h3>
                 <TextField
                   type="number"
                   size="small"
@@ -528,7 +528,7 @@ export default function AddParcelOwnerDialogContent({
                 />
               </Grid>
               <Grid item xs={12}>
-                <h3>Net Acers</h3>
+                <h3>Net Acres</h3>
                 <TextField
                   size="small"
                   className={classes.maxWidth}

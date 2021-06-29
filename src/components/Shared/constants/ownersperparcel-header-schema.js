@@ -35,7 +35,7 @@ const OwnersPerParcelHeadCells = [
   { name: "record_title", label: "Record Title" },
   { name: "operating_rights", label: "Operating Rights" },
   { name: "nri", label: "NRI" },
-  { name: "net_acres", label: "Net Acers" },
+  { name: "net_acres", label: "Net Acres" },
   { name: "nra", label: "NRA", editable: true, options:{ setCellProps: () => ({ style: { maxWidth: "70px"}})} },
   { name: "depthFrom", label: "Depth From", editabe: true },
   { name: "depthTo", label: "Depth To", editabe: true },
