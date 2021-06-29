@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react";
+import React, { Fragment, useContext, useState, useEffect } from "react";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "AppContext";
 import {
@@ -21,6 +22,7 @@ import ArrowDown from "@material-ui/icons/ArrowDropDown";
 import ProgressBar from "../../Shared/ui/ProgressBar";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
+import { GET_DEAL_SETTINGS } from "graphQL/useQueryGetDealSettings";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -115,12 +117,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function FlowLaneDetails({ users, ownerId }) {
+function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
   const classes = useStyles();
   const [isCalendarOpen, setCalendar] = useState(false);
   const [isChecked, setCheck] = useState(false);
   const [stateApp] = useContext(AppContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [getDealSettings, { data: dealSettings }] = useLazyQuery(GET_DEAL_SETTINGS);
+
+  useEffect(() => {
+    getDealSettings({
+      variables: {
+        dealId: activeDeal._id,
+        pipelineId: pipelineId,
+      },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (dealSettings) {
+      console.log(dealSettings);
+    }
+  }, [dealSettings]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -163,21 +182,21 @@ function FlowLaneDetails({ users, ownerId }) {
           <Avatar className={classes.dealOwnerAvatar}>
             {users.find((user) => user?.value === ownerId)
               ? users
-                .find((user) => user?.value === ownerId)
-                .text.toString()
-                .toUpperCase()
-                .split(" ").length > 1
+                  .find((user) => user?.value === ownerId)
+                  .text.toString()
+                  .toUpperCase()
+                  .split(" ").length > 1
                 ? users
-                  .find((user) => user?.value === ownerId)
-                  .text.toString()
-                  .toUpperCase()
-                  .split(" ")[0][0] +
-                "" +
-                users
-                  .find((user) => user?.value === ownerId)
-                  .text.toString()
-                  .toUpperCase()
-                  .split(" ")[1][0]
+                    .find((user) => user?.value === ownerId)
+                    .text.toString()
+                    .toUpperCase()
+                    .split(" ")[0][0] +
+                  "" +
+                  users
+                    .find((user) => user?.value === ownerId)
+                    .text.toString()
+                    .toUpperCase()
+                    .split(" ")[1][0]
                 : "AO"
               : "AO"}
           </Avatar>
@@ -186,9 +205,9 @@ function FlowLaneDetails({ users, ownerId }) {
     </Grid>
   );
 
-  const LaneSettings = () => (
+  const LaneSettings = ({ settings }) => (
     <>
-      <Typography className={classes.laneName}>Land Evaluation</Typography>
+      <Typography className={classes.laneName}>{settings.stageName}</Typography>
       <Grid container classes={classes.laneDetail}>
         <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
           <Typography variant="body2" color="textSecondary">
@@ -246,21 +265,21 @@ function FlowLaneDetails({ users, ownerId }) {
                         <Avatar className={classes.dealOwnerAvatar}>
                           {users.find((user) => user?.value === ownerId)
                             ? users
-                              .find((user) => user?.value === ownerId)
-                              .text.toString()
-                              .toUpperCase()
-                              .split(" ").length > 1
+                                .find((user) => user?.value === ownerId)
+                                .text.toString()
+                                .toUpperCase()
+                                .split(" ").length > 1
                               ? users
-                                .find((user) => user?.value === ownerId)
-                                .text.toString()
-                                .toUpperCase()
-                                .split(" ")[0][0] +
-                              "" +
-                              users
-                                .find((user) => user?.value === ownerId)
-                                .text.toString()
-                                .toUpperCase()
-                                .split(" ")[1][0]
+                                  .find((user) => user?.value === ownerId)
+                                  .text.toString()
+                                  .toUpperCase()
+                                  .split(" ")[0][0] +
+                                "" +
+                                users
+                                  .find((user) => user?.value === ownerId)
+                                  .text.toString()
+                                  .toUpperCase()
+                                  .split(" ")[1][0]
                               : "AO"
                             : "AO"}
                         </Avatar>
@@ -323,12 +342,16 @@ function FlowLaneDetails({ users, ownerId }) {
             </div>
           </Grid>
           <Grid xs={12} className={classes.newLaneProgress}>
-            <div className={classes.newFlowLane}>+ Add New</div>
+            <div className={classes.newFlowLane}>+ Add New Lane</div>
           </Grid>
         </Grid>
       </CardActions>
       <CardContent style={{ padding: 0 }}>
-        <LaneSettings />
+        {dealSettings?.dealSettings?.map((settings, index) => (
+          <Fragment key={index}>
+            <LaneSettings settings={settings} />
+          </Fragment>
+        ))}
       </CardContent>
     </div>
   );

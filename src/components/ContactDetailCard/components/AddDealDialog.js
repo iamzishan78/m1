@@ -32,7 +32,7 @@ import NumberFormat from "react-number-format";
 import Documents from "../../Shared/Documents";
 import AddDialogeUploadZone from "./AddDialogUploadZone";
 import LaneProgressZone from './LaneProgressZone';
-import LaneProgressDetail from './FlowLaneDetails';
+import LaneProgressDetail from './DealSettingsDetails';
 import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GETDEAL } from "graphQL/useQueryDeal";
@@ -376,11 +376,6 @@ function AddDealDialog(props) {
   const setNameAutInputValue = (newState) => {
     setStateIfDeepEqual(NameAutInputValue, newState);
   };
-
-  const [openContactDialog, setOpenContactDialog] = useState(false);
-
-  const [dealInfoFocus, setDealInfoFocus] = useState(false);
-  const [pageVariables, setPageVariables] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
@@ -1034,7 +1029,7 @@ function AddDealDialog(props) {
     } else if (stateApp.transactBarView === "Contacts") {
       return <Contacts addSelectedContact={addSelectedContactToDeal} loading={getDealLoading} getDeal={refetchDeal} />;
     } else if (stateApp.transactBarView === "Flow Lane Progress") {
-      return <LaneProgressDetail users={users} ownerId={ownerId} />
+      return <LaneProgressDetail users={users} ownerId={ownerId} activeDeal={stateApp.activeDeal} pipelineId={pipelineId} />
     }
   };
 
