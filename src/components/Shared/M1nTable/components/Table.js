@@ -275,7 +275,7 @@ const useStyles = makeStyles((theme) => ({
       "& th": {
         backgroundColor: "#F2F2F2",
         zIndex: "auto",
-        padding: (props) => (props.dense ? "10px" : null),
+        padding: (props) => (props.dense ? "10px 10px 10px 0px" : null),
         "& button": {
           "& .MuiButton-label": {
             textAlign: 'left'
@@ -1232,9 +1232,9 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   return (
-                    <>
+                    <span style={{ padding: 10 }}>
                     {moment(tableMeta.rowData[5]).format('MM/DD/YYYY')}
-                    </>
+                    </span>
                   );
                 },
               };
@@ -2794,6 +2794,7 @@ function SubTable(props) {
       if (props.addAble && props.parent === "UserManagement") { buttonLabel = "+ ADD USER" }
       if (props.addAble.type === "ownerToParcel") { buttonLabel = '+ ADD INTEREST OWNER' }
       if (props.addAble.type === "suggestedOwnerToParcel") { buttonLabel = '+ ADD TO PARCEL' }
+      if (props.addAble.type === "parcelDocument") { buttonLabel = 'ADD DOCUMENT' }
 
 
       const addAction = (e) => {
@@ -2870,6 +2871,21 @@ function SubTable(props) {
                 {buttonLabel}
               </Button>
             )}
+            {props.addAble.type === 'parcelDocument' &&
+              <Button
+                color="secondary"
+                className={classes.multiSelectionTopBarButtons}
+                onClick={()=> {
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    selectedDocument: {},
+                  }));
+                  props.onClickAdd()
+                }}
+              >
+                <PostAddIcon />{buttonLabel}
+              </Button>
+            }
             {(props.addAble.type === "wellInterest"
               || props.addAble.type === "deals"
               || props.addAble.type === "ownerToParcel"
@@ -2997,6 +3013,13 @@ function SubTable(props) {
           ...stateApp,
           selectedDocument: rows[dataIndex],
         }));
+      }
+      if (props.targetLabel === "parcelDocument") {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedDocument: rows[dataIndex],
+        }));
+        props.onClickAdd()
       }
 
       if (props.targetLabel === "usermanagement") {
