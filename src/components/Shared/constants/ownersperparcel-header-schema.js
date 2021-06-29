@@ -30,7 +30,7 @@ const OwnersPerParcelHeadCells = [
   },
   { name: "surface_interest", label: "Surface Interest" },
   { name: "mineral_interest", label: "Mineral Interest" },
-  { name: "royality_interest", label: "Royality Interest" },
+  { name: "royality_interest", label: "Royalty Interest" },
   { name: "orri", label: "ORRI" },
   { name: "record_title", label: "Record Title" },
   { name: "operating_rights", label: "Operating Rights" },
