@@ -90,6 +90,7 @@ export default function AddParcelOwnerDialogContent({
   setSelectedRow,
   ...props
 }) {
+  console.log('customLayer', props.customLayer)
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [newOwner, setNewOwner] = useState({
@@ -565,6 +566,7 @@ export default function AddParcelOwnerDialogContent({
                   options={qtrOptions}
                   getOptionLabel={(option) => option}
                   value={newOwner.qtr1}
+                  disabled={props.customLayer.state === 'TX'}
                   onChange={(e, newInputValue) => {
                     setNewOwner({
                       ...newOwner,
@@ -588,6 +590,7 @@ export default function AddParcelOwnerDialogContent({
                   options={qtrOptions}
                   getOptionLabel={(option) => option}
                   value={newOwner.qtr2}
+                  disabled={props.customLayer.state === 'TX'}
                   onChange={(e, newInputValue) => {
                     setNewOwner({
                       ...newOwner,
@@ -610,6 +613,7 @@ export default function AddParcelOwnerDialogContent({
                   options={qtrOptions}
                   getOptionLabel={(option) => option}
                   value={newOwner.qtr3}
+                  disabled={props.customLayer.state === 'TX'}
                   onChange={(e, newInputValue) => {
                     setNewOwner({
                       ...newOwner,
@@ -632,6 +636,7 @@ export default function AddParcelOwnerDialogContent({
                   options={qtrOptions}
                   getOptionLabel={(option) => option}
                   value={newOwner.qtr4}
+                  disabled={props.customLayer.state === 'TX'}
                   onChange={(e, newInputValue) => {
                     setNewOwner({
                       ...newOwner,

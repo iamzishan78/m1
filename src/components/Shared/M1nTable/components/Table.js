@@ -3630,6 +3630,7 @@ function SubTable(props) {
               handleExpandClick={handleExpandClick}
               setM1nSelectedRowsIds={setM1nSelectedRowsIds}
               customLayerId={props.addAble.customLayerId}
+              customLayer={props.addAble.customLayer}
               selectedRow={selectedRow}
               setSelectedRow={setSelectedRow}
           />  

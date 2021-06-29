@@ -1936,6 +1936,7 @@ function M1nTable(props) {
       props.header ? setHeader(props.header) :  setHeader("Parcel Ownership");
       setAddAble({
         type: "ownerToParcel",
+        customLayer: props.customLayer,
         customLayerId: props.customLayer._id,
       });
       getParcelOwners({
