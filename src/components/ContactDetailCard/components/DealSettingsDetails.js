@@ -206,7 +206,7 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
   );
 
   const LaneSettings = ({ settings }) => (
-    <>
+    <div style={{ borderTop: "1px solid lightgrey" }}>
       <Typography className={classes.laneName}>{settings.stageName}</Typography>
       <Grid container classes={classes.laneDetail}>
         <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
@@ -308,7 +308,7 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
             className={classes.textField}
           />
         </Grid>
-        <Grid item xl={12} sm={12}>
+        <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
           <SubtaskRow />
           <SubtaskRow />
           <SubtaskRow />
@@ -316,13 +316,13 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
           <SubtaskRow />
         </Grid>
       </Grid>
-    </>
+    </div>
   );
 
   return (
     <div className={classes.root}>
       <h1>{stateApp.activeDeal.name}</h1>
-      <CardActions style={{ padding: 0, borderBottom: "1px solid lightgray" }}>
+      <CardActions style={{ padding: 0 }}>
         <Grid container direction="row" justify="space-between" alignItems="center">
           <Grid item xs={6}>
             <h4 style={{ height: "8px" }}>Lane Progress</h4>
