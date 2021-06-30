@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputFieldOwner: {
     marginBottom: "7px",
-    width: "310px",
+    width: "200px",
     backgroundColor: "#efefef",
   },
   dealOwnerRoot: {
@@ -116,6 +116,9 @@ const useStyles = makeStyles((theme) => ({
       height: "35px",
       width: "35px",
     },
+  },
+  addSubTaskButton: {
+    marginBottom: "10px",
   },
 }));
 
@@ -172,7 +175,7 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
     });
   };
 
-  const SubtaskRow = () => (
+  const SubtaskRow = ({ task }) => (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.subTaskRoot}>
       <Grid item>
         <FormControlLabel
@@ -237,7 +240,7 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
             Progress
           </Typography>
           <div style={{ minWidth: "200px" }}>
-            <ProgressBar value={50} isNumeric />
+            <ProgressBar value={settings.progress} isNumeric />
           </div>
         </Grid>
         <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
@@ -333,11 +336,12 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
           />
         </Grid>
         <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
-          <SubtaskRow />
-          <SubtaskRow />
-          <SubtaskRow />
-          <SubtaskRow />
-          <SubtaskRow />
+          {settings.tasks.map((task) => (
+            <SubtaskRow task={task} />
+          ))}
+        </Grid>
+        <Grid item xs={12} className={classes.addSubTaskButton}>
+          <Button>+ Add New Subtask</Button>
         </Grid>
       </Grid>
     </div>
