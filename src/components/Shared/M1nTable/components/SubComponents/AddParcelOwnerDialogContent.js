@@ -560,99 +560,98 @@ export default function AddParcelOwnerDialogContent({
                   }}
                 />
               </Grid>
-              <Grid item xs={3}>
-                <h3>QTR 1</h3>
-                <Autocomplete
-                  options={qtrOptions}
-                  getOptionLabel={(option) => option}
-                  value={newOwner.qtr1}
-                  disabled={props.customLayer.state === 'TX'}
-                  onChange={(e, newInputValue) => {
-                    setNewOwner({
-                      ...newOwner,
-                      qtr1: newInputValue ? newInputValue : "",
-                    });
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      size="small"
-                      className={classes.maxWidth}
-                      multiline
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={3}>
-                <h3>QTR 2</h3>
-                <Autocomplete
-                  options={qtrOptions}
-                  getOptionLabel={(option) => option}
-                  value={newOwner.qtr2}
-                  disabled={props.customLayer.state === 'TX'}
-                  onChange={(e, newInputValue) => {
-                    setNewOwner({
-                      ...newOwner,
-                      qtr2: newInputValue ? newInputValue : "",
-                    });
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      size="small"
-                      className={classes.maxWidth}
-                      multiline
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <h3>QTR 3</h3>
-                <Autocomplete
-                  options={qtrOptions}
-                  getOptionLabel={(option) => option}
-                  value={newOwner.qtr3}
-                  disabled={props.customLayer.state === 'TX'}
-                  onChange={(e, newInputValue) => {
-                    setNewOwner({
-                      ...newOwner,
-                      qtr3: newInputValue ? newInputValue : "",
-                    });
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      size="small"
-                      className={classes.maxWidth}
-                      multiline
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <h3>QTR 4</h3>
-                <Autocomplete
-                  options={qtrOptions}
-                  getOptionLabel={(option) => option}
-                  value={newOwner.qtr4}
-                  disabled={props.customLayer.state === 'TX'}
-                  onChange={(e, newInputValue) => {
-                    setNewOwner({
-                      ...newOwner,
-                      qtr4: newInputValue ? newInputValue : "",
-                    });
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      size="small"
-                      className={classes.maxWidth}
-                      multiline
-                    />
-                  )}
-                />
-              </Grid>
+              {props.customLayer.state !== 'TX' && (
+                <>
+                <Grid item xs={3}>
+                  <h3>QTR 1</h3>
+                  <Autocomplete
+                    options={qtrOptions}
+                    getOptionLabel={(option) => option}
+                    value={newOwner.qtr1}
+                    onChange={(e, newInputValue) => {
+                      setNewOwner({
+                        ...newOwner,
+                        qtr1: newInputValue ? newInputValue : "",
+                      });
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        size="small"
+                        className={classes.maxWidth}
+                        multiline
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <h3>QTR 2</h3>
+                  <Autocomplete
+                    options={qtrOptions}
+                    getOptionLabel={(option) => option}
+                    value={newOwner.qtr2}
+                    onChange={(e, newInputValue) => {
+                      setNewOwner({
+                        ...newOwner,
+                        qtr2: newInputValue ? newInputValue : "",
+                      });
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        size="small"
+                        className={classes.maxWidth}
+                        multiline
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <h3>QTR 3</h3>
+                  <Autocomplete
+                    options={qtrOptions}
+                    getOptionLabel={(option) => option}
+                    value={newOwner.qtr3}
+                    onChange={(e, newInputValue) => {
+                      setNewOwner({
+                        ...newOwner,
+                        qtr3: newInputValue ? newInputValue : "",
+                      });
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        size="small"
+                        className={classes.maxWidth}
+                        multiline
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <h3>QTR 4</h3>
+                  <Autocomplete
+                    options={qtrOptions}
+                    getOptionLabel={(option) => option}
+                    value={newOwner.qtr4}
+                    onChange={(e, newInputValue) => {
+                      setNewOwner({
+                        ...newOwner,
+                        qtr4: newInputValue ? newInputValue : "",
+                      });
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        size="small"
+                        className={classes.maxWidth}
+                        multiline
+                      />
+                    )}
+                  />
+                </Grid>
+                </>
+              )}
               {/* <Grid item xs={12}>
               <h3>Entity</h3>
               <Autocomplete
