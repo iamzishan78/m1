@@ -1,6 +1,7 @@
 import React, { Fragment, useContext, useState, useEffect } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
+import { get } from "lodash";
 import { AppContext } from "AppContext";
 import {
   Menu,
@@ -23,6 +24,7 @@ import ProgressBar from "../../Shared/ui/ProgressBar";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { GET_DEAL_SETTINGS } from "graphQL/useQueryGetDealSettings";
+import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputFieldOwner: {
     marginBottom: "7px",
-    width: "190px",
+    width: "310px",
     backgroundColor: "#efefef",
   },
   dealOwnerRoot: {
@@ -124,6 +126,7 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
   const [stateApp] = useContext(AppContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [getDealSettings, { data: dealSettings }] = useLazyQuery(GET_DEAL_SETTINGS);
+  const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
 
   useEffect(() => {
     getDealSettings({
@@ -147,6 +150,26 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleChange = (setting, params) => {
+    const descriptor = {
+      descriptorObject: activeDeal._id,
+      relatedObject: setting._id,
+      descriptorType: "Deal",
+      relatedObjectType: "Stage",
+      position: get(setting, "stageDealDescriptor.position", 0),
+      pipeline: get(activeDeal, "pipeline", null),
+      pipelineType: "Pipeline",
+      isDeleted: false,
+      user: stateApp.user.mongoId,
+      ...params,
+    };
+    updateStageDealDescriptor({
+      variables: { descriptor },
+      refetchQueries: ["dealSettings"],
+      awaitRefetchQueries: true,
+    });
   };
 
   const SubtaskRow = () => (
@@ -208,7 +231,7 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
   const LaneSettings = ({ settings }) => (
     <div style={{ borderTop: "1px solid lightgrey" }}>
       <Typography className={classes.laneName}>{settings.stageName}</Typography>
-      <Grid container classes={classes.laneDetail}>
+      <Grid container className={classes.laneDetail}>
         <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
           <Typography variant="body2" color="textSecondary">
             Progress
@@ -227,17 +250,16 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
         </Grid>
         <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
           <Typography variant="body2" color="textSecondary">
-            Assignee
+            Approver
           </Typography>
           <Autocomplete
             options={users}
             onChange={(e, user) => {
-              //   setOwnerId(user?.value);
-              console.log("user -----> ", user);
+              handleChange(settings, { approver: user?.value });
             }}
-            // value={users.find((user) => user?.value === ownerId) || null}
+            value={users.find((user) => user?.value === settings.stageDealDescriptor.approver) || null}
             getOptionLabel={(option) => option.text}
-            // getOptionSelected={(option) => option.value === ownerId}
+            getOptionSelected={(option) => option.value === settings.stageDealDescriptor.approver}
             classes={{
               inputRoot: classes.dealOwnerRoot,
               focused: classes.dealOwnerRootFocused,
@@ -256,27 +278,27 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
                     root: classes.dealOwnerLabel,
                   },
                 }}
-                placeholder="Assignee"
+                placeholder="Assign Owner"
                 InputProps={{
                   ...params.InputProps,
                   startAdornment: (
                     <>
                       <InputAdornment position="start">
                         <Avatar className={classes.dealOwnerAvatar}>
-                          {users.find((user) => user?.value === ownerId)
+                          {users.find((user) => user?.value === settings.stageDealDescriptor.approver)
                             ? users
-                                .find((user) => user?.value === ownerId)
+                                .find((user) => user?.value === settings.stageDealDescriptor.approver)
                                 .text.toString()
                                 .toUpperCase()
                                 .split(" ").length > 1
                               ? users
-                                  .find((user) => user?.value === ownerId)
+                                  .find((user) => user?.value === settings.stageDealDescriptor.approver)
                                   .text.toString()
                                   .toUpperCase()
                                   .split(" ")[0][0] +
                                 "" +
                                 users
-                                  .find((user) => user?.value === ownerId)
+                                  .find((user) => user?.value === settings.stageDealDescriptor.approver)
                                   .text.toString()
                                   .toUpperCase()
                                   .split(" ")[1][0]
@@ -294,18 +316,20 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
         </Grid>
         <Grid item xl={12} sm={12} className={classes.formControl}>
           <TextField
-            //   autoFocus
             margin="dense"
             variant="outlined"
-            multiline
+            // multiline
             rows={8}
-            //   value={description}
             label="Comment"
-            fullWidth
-            //   onChange={(e) => {
-            //     setDescription(e.target.value);
-            //   }}
+            defaultValue={get(settings, "stageDealDescriptor.comment", "")}
             className={classes.textField}
+            fullWidth
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleChange(settings, { comment: e.target.value });
+              }
+            }}
           />
         </Grid>
         <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
@@ -341,7 +365,7 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
               </Menu>
             </div>
           </Grid>
-          <Grid xs={12} className={classes.newLaneProgress}>
+          <Grid item xs={12} className={classes.newLaneProgress}>
             <div className={classes.newFlowLane}>+ Add New Lane</div>
           </Grid>
         </Grid>

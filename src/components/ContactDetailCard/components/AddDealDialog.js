@@ -24,15 +24,15 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import { UPDATEDEAL } from "graphQL/useMutationUpdateDeal";
 import { UPSERTDEALDESCRIPTOR } from "graphQL/useMutationUpsertDealDescriptor";
 import { REMOVEDEALDESCRIPTOR } from "../../../graphQL/useMutationRemoveDealDescriptor";
-import { UPDATESTAGEDEALDESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
+import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
 import { setFlowState, showErrorMessage, showSuccessMessage } from "../../../actions";
 import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
 import Documents from "../../Shared/Documents";
 import AddDialogeUploadZone from "./AddDialogUploadZone";
-import LaneProgressZone from './LaneProgressZone';
-import LaneProgressDetail from './DealSettingsDetails';
+import LaneProgressZone from "./LaneProgressZone";
+import LaneProgressDetail from "./DealSettingsDetails";
 import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GETDEAL } from "graphQL/useQueryDeal";
@@ -108,7 +108,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 6px",
   },
   dealDetailRoot: {
-    overflowX: 'hidden',
+    overflowX: "hidden",
     overflowY: "auto",
     maxHeight: "93vh",
     padding: "0px 30px 0px 30px",
@@ -119,9 +119,9 @@ const useStyles = makeStyles((theme) => ({
       "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
     },
     "&::-webkit-scrollbar-thumb": {
-      backgroundColor: 'lightgray',
+      backgroundColor: "lightgray",
       borderRadius: 5,
-    }
+    },
   },
   inputFieldDateRoot: {
     "& .MuiDialog-root": {},
@@ -328,11 +328,11 @@ const useStyles = makeStyles((theme) => ({
   },
   flowLaneHeader: {
     "&.MuiTypography-root": {
-      '& > * + *': {
+      "& > * + *": {
         marginLeft: theme.spacing(2),
-      }
-    }
-  }
+      },
+    },
+  },
 }));
 
 const newContact = {
@@ -392,7 +392,7 @@ function AddDealDialog(props) {
   const [updateDeal, { loading: updateDealLoading }] = useMutation(UPDATEDEAL);
   const [upsertDealDescriptor] = useMutation(UPSERTDEALDESCRIPTOR);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
-  const [updateStageDealDescriptor] = useMutation(UPDATESTAGEDEALDESCRIPTOR);
+  const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
 
   const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
@@ -466,7 +466,7 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (isProgressDetail) {
-      setStateApp((stateApp) => ({ ...stateApp, transactBarView: "Flow Lane Progress" }))
+      setStateApp((stateApp) => ({ ...stateApp, transactBarView: "Flow Lane Progress" }));
     }
   }, [isProgressDetail]);
 
@@ -819,10 +819,13 @@ function AddDealDialog(props) {
             new Promise((resolve, reject) => {
               updateStageDealDescriptor({
                 variables: {
-                  descriptorId: stateApp.activeDeal.descriptorId,
-                  relatedObject: stageId,
-                  position: dealPosition ? dealPosition : 0,
-                  pipeline: stateApp.activeDeal?.pipeline !== pipelineId ? pipelineId : null,
+                  descriptor: {
+                    descriptorObject: stateApp.activeDeal._id,
+                    relatedObject: stageId,
+                    position: dealPosition ? dealPosition : 0,
+                    pipeline: stateApp.activeDeal?.pipeline !== pipelineId ? pipelineId : null,
+                    pipelineType: "Pipeline",
+                  },
                 },
                 refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
@@ -1029,7 +1032,7 @@ function AddDealDialog(props) {
     } else if (stateApp.transactBarView === "Contacts") {
       return <Contacts addSelectedContact={addSelectedContactToDeal} loading={getDealLoading} getDeal={refetchDeal} />;
     } else if (stateApp.transactBarView === "Flow Lane Progress") {
-      return <LaneProgressDetail users={users} ownerId={ownerId} activeDeal={stateApp.activeDeal} pipelineId={pipelineId} />
+      return <LaneProgressDetail users={users} ownerId={ownerId} activeDeal={stateApp.activeDeal} pipelineId={pipelineId} />;
     }
   };
 
@@ -1115,7 +1118,7 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
@@ -1393,21 +1396,21 @@ function AddDealDialog(props) {
                                 <Avatar className={classes.dealOwnerAvatar}>
                                   {users.find((user) => user?.value === ownerId)
                                     ? users
-                                      .find((user) => user?.value === ownerId)
-                                      .text.toString()
-                                      .toUpperCase()
-                                      .split(" ").length > 1
+                                        .find((user) => user?.value === ownerId)
+                                        .text.toString()
+                                        .toUpperCase()
+                                        .split(" ").length > 1
                                       ? users
-                                        .find((user) => user?.value === ownerId)
-                                        .text.toString()
-                                        .toUpperCase()
-                                        .split(" ")[0][0] +
-                                      "" +
-                                      users
-                                        .find((user) => user?.value === ownerId)
-                                        .text.toString()
-                                        .toUpperCase()
-                                        .split(" ")[1][0]
+                                          .find((user) => user?.value === ownerId)
+                                          .text.toString()
+                                          .toUpperCase()
+                                          .split(" ")[0][0] +
+                                        "" +
+                                        users
+                                          .find((user) => user?.value === ownerId)
+                                          .text.toString()
+                                          .toUpperCase()
+                                          .split(" ")[1][0]
                                       : "AO"
                                     : "AO"}
                                 </Avatar>
