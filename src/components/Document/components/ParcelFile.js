@@ -169,7 +169,7 @@ export default function DocumentDrawer(props) {
   const documentInitial = {
     documentName: "",
     recordingInfo: "",
-    dateTime: new Date(),
+    dateTime: null,
     documentNumber: "",
     documentType: "",
     partyName1: "",
@@ -692,11 +692,11 @@ export default function DocumentDrawer(props) {
             format="MM/DD/YYYY"
             margin="normal"
             id="date-picker-inline"
-            value={newDocument?.dateTime}
+            value={newDocument?.dateTime ? new Date(newDocument.dateTime): null}
             onChange={(date) => {
               setNewDocument({
                 ...newDocument,
-                dateTime: String(date["_d"]),
+                dateTime: date ? String(date["_d"]) : '',
               });
             }}
             KeyboardButtonProps={{
