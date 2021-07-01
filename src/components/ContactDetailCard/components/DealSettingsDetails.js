@@ -23,8 +23,8 @@ import ArrowDown from "@material-ui/icons/ArrowDropDown";
 import ProgressBar from "../../Shared/ui/ProgressBar";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import { GET_DEAL_SETTINGS } from "graphQL/useQueryGetDealSettings";
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
+import { ADD_DEAL_SUBTASK } from "graphQL/useMutationAddDealSubtask";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -122,30 +122,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
+function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
   const classes = useStyles();
   const [isCalendarOpen, setCalendar] = useState(false);
   const [isChecked, setCheck] = useState(false);
+  const [isNewSubtask, setNewSubtask] = useState({ index: -1, value: false });
   const [stateApp] = useContext(AppContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [getDealSettings, { data: dealSettings }] = useLazyQuery(GET_DEAL_SETTINGS);
   const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
-
-  useEffect(() => {
-    getDealSettings({
-      variables: {
-        dealId: activeDeal._id,
-        pipelineId: pipelineId,
-      },
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (dealSettings) {
-      console.log(dealSettings);
-    }
-  }, [dealSettings]);
+  const [addDealSubtask] = useMutation(ADD_DEAL_SUBTASK);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -175,12 +160,25 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
     });
   };
 
+  const handleNewSubtask = (setting, params) => {
+    addDealSubtask({
+      variables: {
+        task: params,
+        stageId: setting._id,
+        dealId: activeDeal._id,
+      },
+      refetchQueries: ["dealSettings"],
+      awaitRefetchQueries: true,
+    });
+    setNewSubtask({ index: -1, value: !isNewSubtask.value });
+  };
+
   const SubtaskRow = ({ task }) => (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.subTaskRoot}>
       <Grid item>
         <FormControlLabel
-          control={<Checkbox name="testingCheckbox" value="testingCheckbox" onChange={() => setCheck(!isChecked)} checked={isChecked} />}
-          label="Testing Checkbox"
+          control={<Checkbox name="testingCheckbox" value={task.name} onChange={() => setCheck(!isChecked)} checked={task.isCompleted} />}
+          label={task.name}
         />
       </Grid>
       <Grid item style={{ alignItems: "right" }} className={classes.subTaskRightGrid}>
@@ -231,7 +229,7 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
     </Grid>
   );
 
-  const LaneSettings = ({ settings }) => (
+  const LaneSettings = ({ settings, index }) => (
     <div style={{ borderTop: "1px solid lightgrey" }}>
       <Typography className={classes.laneName}>{settings.stageName}</Typography>
       <Grid container className={classes.laneDetail}>
@@ -340,8 +338,28 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
             <SubtaskRow task={task} />
           ))}
         </Grid>
+        {isNewSubtask.index === index && isNewSubtask.value && (
+          <Grid item xs={12} className={classes.addSubTaskButton}>
+            <TextField
+              margin="dense"
+              variant="outlined"
+              label="Enter Subtask Name"
+              fullWidth
+              autoFocus
+              onBlur={() => setNewSubtask({ index: -1, value: !isNewSubtask.value })}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleNewSubtask(settings, { name: e.target.value });
+                }
+              }}
+            />
+          </Grid>
+        )}
         <Grid item xs={12} className={classes.addSubTaskButton}>
-          <Button>+ Add New Subtask</Button>
+          <Button size="small" style={{ color: "grey" }} onClick={() => setNewSubtask({ index, value: !isNewSubtask.value })}>
+            + Add New Subtask
+          </Button>
         </Grid>
       </Grid>
     </div>
@@ -375,9 +393,9 @@ function FlowLaneDetails({ users, ownerId, activeDeal, pipelineId }) {
         </Grid>
       </CardActions>
       <CardContent style={{ padding: 0 }}>
-        {dealSettings?.dealSettings?.map((settings, index) => (
+        {dealSettings?.map((settings, index) => (
           <Fragment key={index}>
-            <LaneSettings settings={settings} />
+            <LaneSettings settings={settings} index={index} />
           </Fragment>
         ))}
       </CardContent>

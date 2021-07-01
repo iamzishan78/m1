@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
+import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
@@ -34,6 +35,7 @@ import AddDialogeUploadZone from "./AddDialogUploadZone";
 import LaneProgressZone from "./LaneProgressZone";
 import LaneProgressDetail from "./DealSettingsDetails";
 import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
+import { GET_DEAL_SETTINGS } from "graphQL/useQueryGetDealSettings";
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GETDEAL } from "graphQL/useQueryDeal";
 import Contacts from "components/FlowDrawer/Contacts";
@@ -398,6 +400,9 @@ function AddDealDialog(props) {
     fetchPolicy: "cache-and-network",
   });
 
+  // DEAL SETTINGS
+  const [getDealSettings, { data: dealSettings }] = useLazyQuery(GET_DEAL_SETTINGS);
+
   // CONTACT
 
   const [getPaginatedContacts, { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
@@ -437,6 +442,18 @@ function AddDealDialog(props) {
       }));
     }
   }, [dealData]);
+
+  useEffect(() => {
+    if (stateApp.activeDeal && pipelineId) {
+      // fetching deal settings
+      getDealSettings({
+        variables: {
+          dealId: stateApp.activeDeal._id,
+          pipelineId: pipelineId,
+        },
+      });
+    }
+  }, [pipelineId, stateApp.activeDeal]);
 
   useEffect(() => {
     if (pipelinesData) {
@@ -1032,7 +1049,14 @@ function AddDealDialog(props) {
     } else if (stateApp.transactBarView === "Contacts") {
       return <Contacts addSelectedContact={addSelectedContactToDeal} loading={getDealLoading} getDeal={refetchDeal} />;
     } else if (stateApp.transactBarView === "Flow Lane Progress") {
-      return <LaneProgressDetail users={users} ownerId={ownerId} activeDeal={stateApp.activeDeal} pipelineId={pipelineId} />;
+      return (
+        <LaneProgressDetail
+          users={users}
+          ownerId={ownerId}
+          activeDeal={stateApp.activeDeal}
+          dealSettings={get(dealSettings, "dealSettings", [])}
+        />
+      );
     }
   };
 
@@ -1605,7 +1629,7 @@ function AddDealDialog(props) {
             ></AddDialogeUploadZone>
 
             {/* Here is flow lane form */}
-            <LaneProgressZone pipeToShow={pipeToShow} toggleProgressDetail={toggleProgressDetail} />
+            <LaneProgressZone toggleProgressDetail={toggleProgressDetail} dealSettings={get(dealSettings, "dealSettings", [])} />
           </div>
         </RightDialog>
       )}

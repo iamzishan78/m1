@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function LaneProgressZone(props) {
   const classes = useStyles();
-  const { pipeToShow, toggleProgressDetail } = props;
+  const { toggleProgressDetail, dealSettings } = props;
 
   return (
     <div className={classes.root} variant="outlined">
@@ -65,14 +65,14 @@ export default function LaneProgressZone(props) {
         <div className={classes.laneProgressSection}>
           {/* Show two recent docs */}
 
-          {pipeToShow?.lanes.map((lane, index) => (
+          {dealSettings.map((stage, index) => (
             <>
               <Grid key={index} container direction="row" justify="space-between" alignItems="center" className={classes.flowLane}>
-                <Grid item style={{ width: "150px" }}>
-                  {lane.title}
+                <Grid item style={{ width: "150px", fontWeight: "normal" }}>
+                  {stage.stageName}
                 </Grid>
                 <Grid item style={{ minWidth: "110px" }}>
-                  <ProgressBar value={50} isNumeric />
+                  <ProgressBar value={stage.progress} isNumeric />
                 </Grid>
                 <Grid item className={classes.laneActionsGrid} style={{ display: "flex" }}>
                   <IconButton>
