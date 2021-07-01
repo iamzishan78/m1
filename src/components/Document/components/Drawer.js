@@ -736,8 +736,8 @@ export default function DocumentDrawer() {
           size="medium"
           disableElevation
           onClick={() => {
-            setLoader(true);
             if (stateApp.selectedDocument.fileId || fileData) {
+              setLoader(true);
               UpDatefileFN();
             }
           }}
