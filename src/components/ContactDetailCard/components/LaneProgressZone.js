@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CardActions from "@material-ui/core/CardActions";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
+import Button from "@material-ui/core/Button";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
@@ -86,7 +87,11 @@ export default function LaneProgressZone(props) {
               <Divider />
             </>
           ))}
-          <div className={classes.newFlowLane}>+ Add New</div>
+          <div style={{ margin: "10px 0px 10px 0px" }}>
+            <Button size="small" style={{ color: "grey" }}>
+              + Add New
+            </Button>
+          </div>
         </div>
       </CardContent>
     </div>
