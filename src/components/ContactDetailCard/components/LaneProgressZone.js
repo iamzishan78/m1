@@ -72,7 +72,7 @@ export default function LaneProgressZone(props) {
                 <Grid item style={{ width: "150px", fontWeight: "normal" }}>
                   {stage.stageName}
                 </Grid>
-                <Grid item style={{ minWidth: "110px" }}>
+                <Grid item style={{ minWidth: "120px" }}>
                   <ProgressBar value={stage.progress} isNumeric />
                 </Grid>
                 <Grid item className={classes.laneActionsGrid} style={{ display: "flex" }}>

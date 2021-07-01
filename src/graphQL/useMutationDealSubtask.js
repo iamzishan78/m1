@@ -5,3 +5,14 @@ export const ADD_DEAL_SUBTASK = gql`
     addSubtask(task: $task, stageId: $stageId, dealId: $dealId)
   }
 `;
+
+export const UPDATE_DEAL_SUBTASK = gql`
+  mutation updateSubtask($task: JSON) {
+    updateSubtask(task: $task) {
+      success
+      message
+      error
+      task
+    }
+  }
+`;

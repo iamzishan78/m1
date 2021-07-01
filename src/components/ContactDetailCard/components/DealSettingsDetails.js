@@ -1,5 +1,5 @@
-import React, { Fragment, useContext, useState, useEffect } from "react";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import React, { Fragment, useContext, useState } from "react";
+import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { get } from "lodash";
 import { AppContext } from "AppContext";
@@ -24,7 +24,7 @@ import ProgressBar from "../../Shared/ui/ProgressBar";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
-import { ADD_DEAL_SUBTASK } from "graphQL/useMutationAddDealSubtask";
+import { ADD_DEAL_SUBTASK, UPDATE_DEAL_SUBTASK } from "graphQL/useMutationDealSubtask";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -131,6 +131,7 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
   const [addDealSubtask] = useMutation(ADD_DEAL_SUBTASK);
+  const [updateSubtask, { data: task }] = useMutation(UPDATE_DEAL_SUBTASK);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -140,7 +141,7 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
     setAnchorEl(null);
   };
 
-  const handleChange = (setting, params) => {
+  const handleChangeSettings = (setting, params) => {
     const descriptor = {
       descriptorObject: activeDeal._id,
       relatedObject: setting._id,
@@ -173,11 +174,28 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
     setNewSubtask({ index: -1, value: !isNewSubtask.value });
   };
 
-  const SubtaskRow = ({ task }) => (
+  const handleUpdateSubtask = (task, index) => {
+    updateSubtask({
+      variables: {
+        task,
+      },
+      refetchQueries: ["dealSettings"],
+      awaitRefetchQueries: true,
+    });
+  };
+
+  const SubtaskComponent = ({ task, index }) => (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.subTaskRoot}>
       <Grid item>
         <FormControlLabel
-          control={<Checkbox name="testingCheckbox" value={task.name} onChange={() => setCheck(!isChecked)} checked={task.isCompleted} />}
+          control={
+            <Checkbox
+              name="testingCheckbox"
+              value={task.name}
+              onChange={(e) => handleUpdateSubtask({ ...task, isCompleted: e.target.checked })}
+              checked={task.isCompleted}
+            />
+          }
           label={task.name}
         />
       </Grid>
@@ -256,7 +274,7 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
           <Autocomplete
             options={users}
             onChange={(e, user) => {
-              handleChange(settings, { approver: user?.value });
+              handleChangeSettings(settings, { approver: user?.value });
             }}
             value={users.find((user) => user?.value === settings.stageDealDescriptor.approver) || null}
             getOptionLabel={(option) => option.text}
@@ -328,14 +346,14 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
-                handleChange(settings, { comment: e.target.value });
+                handleChangeSettings(settings, { comment: e.target.value });
               }
             }}
           />
         </Grid>
         <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
-          {settings.tasks.map((task) => (
-            <SubtaskRow task={task} />
+          {settings.tasks.map((task, subtaskIndex) => (
+            <SubtaskComponent task={task} index={subtaskIndex} />
           ))}
         </Grid>
         {isNewSubtask.index === index && isNewSubtask.value && (
