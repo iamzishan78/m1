@@ -4,6 +4,7 @@ import CardActions from "@material-ui/core/CardActions";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
 import Button from "@material-ui/core/Button";
+import Avatar from "@material-ui/core/Avatar";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
@@ -46,11 +47,18 @@ const useStyles = makeStyles((theme) => ({
     margin: "10px 0px 20px 0px",
     cursor: "pointer",
   },
+  avatar: {
+    "& .MuiAvatar-root": {
+      width: "18px !important",
+      height: "18px !important",
+      fontSize: "0.60rem !important",
+    },
+  },
 }));
 
 export default function LaneProgressZone(props) {
   const classes = useStyles();
-  const { toggleProgressDetail, dealSettings } = props;
+  const { toggleProgressDetail, dealSettings, users } = props;
 
   return (
     <div className={classes.root} variant="outlined">
@@ -76,8 +84,32 @@ export default function LaneProgressZone(props) {
                   <ProgressBar value={stage.progress} isNumeric />
                 </Grid>
                 <Grid item className={classes.laneActionsGrid} style={{ display: "flex" }}>
-                  <IconButton>
-                    <AccountCircle fontSize="small" />
+                  <IconButton className={classes.avatar}>
+                    {stage.stageDealDescriptor.approver ? (
+                      <Avatar className={classes.dealOwnerAvatar}>
+                        {users.find((user) => user?.value === stage.stageDealDescriptor.approver)
+                          ? users
+                              .find((user) => user?.value === stage.stageDealDescriptor.approver)
+                              .text.toString()
+                              .toUpperCase()
+                              .split(" ").length > 1
+                            ? users
+                                .find((user) => user?.value === stage.stageDealDescriptor.approver)
+                                .text.toString()
+                                .toUpperCase()
+                                .split(" ")[0][0] +
+                              "" +
+                              users
+                                .find((user) => user?.value === stage.stageDealDescriptor.approver)
+                                .text.toString()
+                                .toUpperCase()
+                                .split(" ")[1][0]
+                            : "AO"
+                          : "AO"}
+                      </Avatar>
+                    ) : (
+                      <AccountCircle fontSize="small" />
+                    )}
                   </IconButton>
                   <IconButton>
                     <ChatBubbleOutlineIcon fontSize="small" />

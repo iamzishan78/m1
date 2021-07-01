@@ -1629,7 +1629,11 @@ function AddDealDialog(props) {
             ></AddDialogeUploadZone>
 
             {/* Here is flow lane form */}
-            <LaneProgressZone toggleProgressDetail={toggleProgressDetail} dealSettings={get(dealSettings, "dealSettings", [])} />
+            <LaneProgressZone
+              toggleProgressDetail={toggleProgressDetail}
+              dealSettings={get(dealSettings, "dealSettings", [])}
+              users={users}
+            />
           </div>
         </RightDialog>
       )}
