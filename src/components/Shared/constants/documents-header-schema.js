@@ -42,6 +42,19 @@ const DocumentsHeadCells = [
     name: "dateTime",
     label: "Document Date",
   },
+  {
+    name: "uploadedDate",
+    label: "Document Date",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 
   // TEMPORARY COMMENT OUT UNTIL FEATURE IS FIXED
   // {

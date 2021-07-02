@@ -1233,7 +1233,7 @@ function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   return (
                     <span style={{ padding: 10 }}>
-                    {moment(tableMeta.rowData[5]).format('MM/DD/YYYY')}
+                      {tableMeta.rowData[5] ? moment(tableMeta.rowData[5]).format('MM/DD/YYYY') : ''}
                     </span>
                   );
                 },
@@ -1990,7 +1990,7 @@ function SubTable(props) {
 
                     const row_line = Object.assign({}, ...(tableMeta.rowData.map((item, index) => ({ [columns[index]?.name]: item }))));
                     var dateTime = null;
-                    if(row_line && row_line.dateTime){dateTime=row_line.dateTime}
+                    if(row_line && row_line.uploadedDate){dateTime=row_line.uploadedDate}
                     const fileExtension = row_line?.fileName?.split('.')[row_line?.fileName?.split('.').length - 1]                  
                     const file = row_line?.fileName
                     const uri = row_line?.fileUrl     
