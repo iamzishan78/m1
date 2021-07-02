@@ -15,7 +15,7 @@ import TableHOC from "components/Table/TableHOC";
 // QUERIES 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GET_PARCELS_FILES } from "graphQL/useQueryGetParcelFiles";
-import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
+import { DELETEDESCRIPTORFILE } from "graphQL/useMutationDeleteDescriptorFile";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 import ParcelFile from "components/Document/components/ParcelFile";
@@ -49,7 +49,7 @@ function ParcelDetailsDocumentTable(props) {
   // queries 
   const [getAllFiles, { data: dataParcelFiles, loading }] = useLazyQuery(GET_PARCELS_FILES);
 
-  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: [ "getContactWells", "getContactParcelInterests" ], awaitRefetchQueries: true });
+  const [updateParcelDocument] = useMutation(DELETEDESCRIPTORFILE, { refetchQueries: [ "getAllFiles" ], awaitRefetchQueries: true });
   const tableData = dataParcelFiles?.getParcelFiles
 
   const addAble = { type: "parcelDocument" }
@@ -74,7 +74,7 @@ function ParcelDetailsDocumentTable(props) {
     if (dataParcelFiles?.getParcelFiles?.length > 0) {
       let wells = dataParcelFiles.getParcelFiles
       wells = wells.map((w) => {
-        return { ...w, _id:w.fileId }; 
+        return { ...w, _id: w.descriptorId }; 
       })
       props.setRows(wells);
       const cleanAvailableTags = [];
@@ -104,18 +104,21 @@ function ParcelDetailsDocumentTable(props) {
 
   const deleteFunc = (ids)=> {
     for(let i=0; i< ids.length;  i++){
-      updateWellInterest({
+      updateParcelDocument({
         variables: {
-          wellInterest: {
             id: ids[i],
-            isDeleted: true
-          },
         },
         refetchQueries: [
-          "getContactWells",
-          "getContactParcelInterests"
+          "getAllFiles",
         ],
         awaitRefetchQueries: true,
+      }).then(() =>{
+        getAllFiles({
+          variables: {
+            relatedObjectId: props.customLayer._id,
+            relatedObjectType: "Parcel",
+          },
+        });
       });
     }
   }
@@ -259,13 +262,7 @@ function ParcelDetailsDocumentTable(props) {
             <Page key={`page_${index + 1}`} pageNumber={index + 1} />
           ))}
         </Document>
-
-        {/* {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === 'pdf' ? (
-          <div className={classes.leftColumn}> <DocViewer DocStyle={{ backgroundColor: 'white !important', width: '70vw' }} divCondition={true}></DocViewer></div>
-        ): null} */}
-
       </Dialog>
-
     </Container>
   );
 }
