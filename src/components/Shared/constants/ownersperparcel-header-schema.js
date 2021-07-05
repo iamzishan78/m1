@@ -40,6 +40,17 @@ const OwnersPerParcelHeadCells = [
   { name: "depthFrom", label: "Depth From", editabe: true },
   { name: "depthTo", label: "Depth To", editabe: true },
   { name: "qtr_calls", label: "QTR Calls" },
+  { name: "qtr", label: "QTR", 
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    }, 
+  },
   {
     name: "tags",
     label: "Tags ",

@@ -245,6 +245,24 @@ export default function ParcelsDetailCard(props) {
       setParcelObj({
         ...dataCustomLayer.customLayer,
         shape: shape,
+        qtrQtr:{
+          nwnw: false,
+          nenw: false,
+          swnw: false,
+          senw: false,
+          nwne: false,
+          nene: false,
+          swne: false,
+          sene: false,
+          nwsw: false,
+          nesw: false,
+          swsw: false,
+          sesw: false,
+          nwse: false,
+          nese: false,
+          swse: false,
+          sese: false,
+        }
       });
       setProperties(shape.properties);
       setParcelName(shape.properties.shapeLabel);
@@ -264,7 +282,7 @@ export default function ParcelsDetailCard(props) {
   }, [updatedParcel]);
 
   const setQtrQtr = (qtrQtr) => {
-    setParcelObj((parcelData) => ({ ...parcelData, qtrQtr }));
+    setParcelObj({ ...parcelObj, qtrQtr });
   };
 
   useEffect(()=> {

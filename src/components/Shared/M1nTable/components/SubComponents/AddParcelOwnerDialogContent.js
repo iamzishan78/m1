@@ -105,10 +105,7 @@ export default function AddParcelOwnerDialogContent({
     depthFrom: "",
     depthTo: "",
     nra: null,
-    qtr1: "",
-    qtr2: "",
-    qtr3: "",
-    qtr4: "",
+    qtr:[null,null,null,null],
     customLayer: props.customLayerId,
   });
   const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] =
@@ -140,10 +137,7 @@ export default function AddParcelOwnerDialogContent({
         customLayer,
         name,
         ownerEntity,
-        qtr1,
-        qtr2,
-        qtr3,
-        qtr4,
+        qtr,
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
 
@@ -159,10 +153,7 @@ export default function AddParcelOwnerDialogContent({
         nra,
         depthFrom,
         depthTo,
-        qtr1,
-        qtr2,
-        qtr3,
-        qtr4,
+        qtr,
         customLayer,
       });
 
@@ -272,10 +263,7 @@ export default function AddParcelOwnerDialogContent({
       depthFrom: "",
       depthTo: "",
       nra: null,
-      qtr1: "",
-      qtr2: "",
-      qtr3: "",
-      qtr4: "",
+      qtr:[null,null,null,null],
       customLayer: props.customLayerId,
     });
     setParcelOwnersRadioBValue("true");
@@ -567,11 +555,13 @@ export default function AddParcelOwnerDialogContent({
                   <Autocomplete
                     options={qtrOptions}
                     getOptionLabel={(option) => option}
-                    value={newOwner.qtr1}
+                    value={newOwner.qtr[0]}
                     onChange={(e, newInputValue) => {
+                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr))
+                      qtr[0] = newInputValue ? newInputValue : ""
                       setNewOwner({
                         ...newOwner,
-                        qtr1: newInputValue ? newInputValue : "",
+                        qtr,
                       });
                     }}
                     renderInput={(params) => (
@@ -589,11 +579,13 @@ export default function AddParcelOwnerDialogContent({
                   <Autocomplete
                     options={qtrOptions}
                     getOptionLabel={(option) => option}
-                    value={newOwner.qtr2}
+                    value={newOwner.qtr[1]}
                     onChange={(e, newInputValue) => {
+                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr))
+                      qtr[1] = newInputValue ? newInputValue : ""
                       setNewOwner({
                         ...newOwner,
-                        qtr2: newInputValue ? newInputValue : "",
+                        qtr,
                       });
                     }}
                     renderInput={(params) => (
@@ -611,11 +603,13 @@ export default function AddParcelOwnerDialogContent({
                   <Autocomplete
                     options={qtrOptions}
                     getOptionLabel={(option) => option}
-                    value={newOwner.qtr3}
-                    onChange={(e, newInputValue) => {
+                    value={newOwner.qtr[2]}
+                    onChange={(e, newInputValue) => {           
+                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr))
+                      qtr[2] = newInputValue ? newInputValue : ""
                       setNewOwner({
                         ...newOwner,
-                        qtr3: newInputValue ? newInputValue : "",
+                        qtr,
                       });
                     }}
                     renderInput={(params) => (
@@ -633,11 +627,13 @@ export default function AddParcelOwnerDialogContent({
                   <Autocomplete
                     options={qtrOptions}
                     getOptionLabel={(option) => option}
-                    value={newOwner.qtr4}
+                    value={newOwner.qtr[3]}
                     onChange={(e, newInputValue) => {
+                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr))
+                      qtr[3] = newInputValue ? newInputValue : ""
                       setNewOwner({
                         ...newOwner,
-                        qtr4: newInputValue ? newInputValue : "",
+                        qtr,
                       });
                     }}
                     renderInput={(params) => (

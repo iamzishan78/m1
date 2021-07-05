@@ -560,6 +560,7 @@ function SubTable(props) {
   const setCumulative = (newState) => { setStateIfDeepEqual(Cumulative, newState); };
   const setViewColumns = (newState) => { setStateIfDeepEqual(ViewColumns, newState); };
   const setRows = (newState) => { setStateIfDeepEqual(Rows, newState); };
+  const [searchedRows, setSearchedRows] = useState([])
 
 
 
@@ -2465,6 +2466,47 @@ function SubTable(props) {
     }
   }, [props.targetLabel]);
 
+  useEffect(()=>{
+    setSearchedRows(rows)
+  },[rows])
+
+  const searchData = (tableState) => {
+    let rows = []
+    if(tableState.searchText){
+      for(let i=0; i< props.rows.length; i++){
+        for( const key of Object.keys(props.rows[i])){
+          const col = columns.find(column => column.name === key)
+          if(col && (!col.options || col.options.searchable !== false)) {
+            if(typeof props.rows[i][key] === 'string'){
+              console.log(props.rows[i][key], key)
+              const value = props.rows[i][key].toLowerCase()
+              if(value.includes(tableState.searchText.toLowerCase())){
+                rows.push(props.rows[i])
+                break
+              }
+            }
+          }
+        }
+      }
+    }else{
+      rows = props.rows
+    }
+    rows = JSON.parse(JSON.stringify(rows));
+    for(let j=0; j<tableState.filterList.length; j++){
+      if(tableState.filterList[j].length> 0){
+        for(let i=0; i<rows.length;i++){
+          const isFiltered = rows[i].isFiltered !== false 
+          const rowdata = rows[i][columns[j].name]
+          const filter = tableState.filterList[j][0]
+          if(isFiltered&& rowdata !== filter){
+            rows[i].isFiltered = false
+            continue
+          }
+        }
+      }
+    }
+    setSearchedRows(rows.filter(row => row.isFiltered !== false))
+  }
   const options = {
     filterType: "dropdown",
     rowsPerPage: rowsPerPage ? rowsPerPage : 25,
@@ -3375,6 +3417,19 @@ function SubTable(props) {
         }
       }
 
+      if(props.parent === 'ownersPerParcel' ){
+        switch (action) {
+          case "search":
+            searchData(tableState)
+            break;
+          case "onSearchClose":
+            break;
+          case "filterChange":
+            searchData(tableState)
+            break
+          default:
+        }
+      }
 
       if (props.onTableChange) {
         props.onTableChange(action, tableState, props.rows, { pageInd, setPageInd, setRowsPerPage })
@@ -3518,7 +3573,7 @@ function SubTable(props) {
         <MUIDataTable
           className={tableStyle}
           title={getHeaders()}
-          data={rows ? rows : []}
+          data={props.parent === 'ownersPerParcel' ? searchedRows: rows ? rows : []}
           // columns={
           //   props.parent === "ownersPerParcel" ? false :
           //   (columns ? columns : [])}
@@ -3542,16 +3597,18 @@ function SubTable(props) {
 
             // resizableColumns: true,
 
-            filter:          props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
-                          || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+            filter:         
+            //  props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
+                           props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
                           || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                           || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
                           || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
                     ? false : null,
 
-            viewColumns:     props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search 
-                          || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+            viewColumns:     
+            // props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search 
+                           props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
                           || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                           || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
                           || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
@@ -3564,7 +3621,7 @@ function SubTable(props) {
                 || props.header === 'Deals'
                 || props.header === 'Activities'
                 || props.header === 'Monthly Production'
-                || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
+                // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
                 || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 

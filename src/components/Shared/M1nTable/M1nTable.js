@@ -1,7 +1,7 @@
 
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-
+import findIndex from 'lodash/findIndex'
 // context
 import { AppContext } from "../../../AppContext";
 import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
@@ -1940,7 +1940,7 @@ function M1nTable(props) {
         customLayerId: props.customLayer._id,
       });
       getParcelOwners({
-        variables: { customLayerId: props.customLayer._id },
+        variables: { customLayerId: props.customLayer._id, qtr: props.customLayer.qtrQtr},
       });
     }
   }, [props.customLayer]);
@@ -1982,11 +1982,15 @@ function M1nTable(props) {
       dataTagSamples.tagSamples &&
       dataTracks &&
       checkIfOwnersAreContactsData &&
-      checkIfOwnersAreContactsData.ifAreContacts
+      checkIfOwnersAreContactsData.ifAreContacts &&
+      dataParcelOwners?.parcelOwners
     ) {
 
       const parcelOwners = dataParcelOwners.parcelOwners.map((o) => {
         let parcelOwner = { ...o };
+        if(parcelOwner.qtr){
+          parcelOwner.qtr_calls = `${parcelOwner.qtr[0] ? parcelOwner.qtr[0] : ''} ${parcelOwner.qtr[1] ? parcelOwner.qtr[1] : ''} ${parcelOwner.qtr[2] ? parcelOwner.qtr[2] : ''} ${parcelOwner.qtr[3] ? parcelOwner.qtr[3] : ''}`
+        }
         parcelOwner.commentsCounter = 0;
         parcelOwner.tags = [[], 0];
         parcelOwner.isTracked = false;
@@ -2042,6 +2046,29 @@ function M1nTable(props) {
       });
       const cleanAvailableTags = [...new Set(availableTags)];
 
+      const index = findIndex(OwnersPerParcelHeadCells,  column => column.name === 'qtr_calls')
+      if(props.customLayer.state === 'TX'){
+        OwnersPerParcelHeadCells[index].options = {
+          display: false,
+          filter: false,
+          searchable: false,
+          sort: false,
+          download: false,
+          print: false,
+          viewColumns: false,
+        };
+      }else{
+        OwnersPerParcelHeadCells[index].options = {
+          display: true,
+          filter: true,
+          searchable: true,
+          sort: true,
+          download: false,
+          print: false,
+          viewColumns: true,
+        };
+      }
+      
       setColumns(
         cleanAvailableTags.length > 0
           ? OwnersPerParcelHeadCells.map((column) => {
