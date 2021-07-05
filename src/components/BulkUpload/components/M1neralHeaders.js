@@ -120,8 +120,9 @@ export default function M1neralHeaders(props) {
     }));
   };
   const handleChange_select = (event, index) => {
-    CSV_headers[index].actual_key = data[event.target.value].actual_key;
-    CSV_headers[index].label = data[event.target.value].label;
+    const selectedHeader = data.find(el => el?.actual_key === event.target.value)
+    CSV_headers[index].actual_key = selectedHeader?.actual_key;
+    CSV_headers[index].label = selectedHeader?.label;
     CSV_headers[index].required = true;
     changeDataToSendState();
     UpdateState();
@@ -262,12 +263,12 @@ export default function M1neralHeaders(props) {
                             style={headers_input}
                             id={"select" + index}
                             defaultValue={(() => {
-                              const matchedKeyIndex = data.findIndex(el => el?.actual_key === row?.actual_key)
+                              const matchedKeyIndex = data.find(el => el?.actual_key === row?.actual_key)
                               return row.actual_key === "" 
                                 ? "initial"
-                                : matchedKeyIndex
+                                : matchedKeyIndex?.actual_key
                             })()}
-                            onChange={(event) =>
+                            onChange={(event) => 
                               handleChange_select(event, index)
                             }
                           >
@@ -278,7 +279,7 @@ export default function M1neralHeaders(props) {
                             {[ ...data ].sort((a, b) => a.label.toUpperCase() < b.label.toUpperCase() ? -1 : 1)
                              .map((option, i) => {
                               return (
-                                <option value={i} key={i}>
+                                <option value={option.actual_key} key={i}>
                                   {(() => {
                                     return option.label
                                   })()}
@@ -300,6 +301,6 @@ export default function M1neralHeaders(props) {
           uploading contacts.
         </div>
       </div>
-    </div>
+      </div>
   );
 }
