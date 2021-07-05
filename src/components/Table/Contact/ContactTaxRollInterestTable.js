@@ -17,7 +17,7 @@ import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functio
 import AddWellInterestDialog from "components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 
 // Header Schemas 
-import TableHeader from 'components/Shared/constants/contactperwell-header-schema.js'
+import TableHeader from 'components/Shared/constants/contact-tax-roll-header-schema.js'
 import { handleTagColumn } from "../helpers";
 
 // Utilities
