@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ContactWellInterestTable(props) {
+function ContactTaxRollInterestTable(props) {
   const classes = useStyles();
 
   // contexts
@@ -289,6 +289,6 @@ function ContactWellInterestTable(props) {
   );
 }
 
-export default React.memo(TableHOC(ContactWellInterestTable), deepEqualObjects);
+export default React.memo(TableHOC(ContactTaxRollInterestTable), deepEqualObjects);
 
 

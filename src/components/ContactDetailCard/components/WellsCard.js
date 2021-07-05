@@ -14,7 +14,7 @@ import AddWellInterestDialog from "./ContactsWellInterestsParcelInterests/compon
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: "23px 23px 0 23px",
-    cursor:"pointer",
+    cursor: "pointer",
   },
 
   cardContent: { width: "100%", display: "flex" },
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
   addIcon: {
     backgroundColor: "#D5F4FF",
-    float: "right",
+    "float": "right",
     top: "-6px",
   },
   lastContactedSpan: { fontWeight: "normal", marginBottom: "0" },
@@ -67,35 +67,35 @@ export default function WellsCard(props) {
       const wells = dataContactWells.contactWells;
       setInterestTypes([...new Set(wells.map(well => well.type))].join(", "));
       setCount(wells.length);
-      setAvgTaxValues(wells.map(well => well.taxValue).reduce((a, b) => (a + b), 0) / ( wells.length !== 0 ? wells.length : 1 ) );
+      setAvgTaxValues(wells.map(well => well.taxValue).reduce((a, b) => (a + b), 0) / (wells.length !== 0 ? wells.length : 1));
     }
   }, [dataContactWells]);
 
   return (
     <div className={classes.root} onClick={() => {
       history.push(`/contact/details/${props.contactData._id}/wells`)
-    //   props.handleOpenExpandableCard(
-    //     <ContactsWellInterestsParcelInterests
-    //       activeTap={0}
-    //       contactData={props.contactData}
-    //     />,
-    //     "Associated Interests"
-    //   );
-     }}
+      //   props.handleOpenExpandableCard(
+      //     <ContactsWellInterestsParcelInterests
+      //       activeTap={0}
+      //       contactData={props.contactData}
+      //     />,
+      //     "Associated Interests"
+      //   );
+    }}
     >
-     <AddWellInterestDialog
-            open={stateApp.wellInterestDialog ? true : false}
-            width="450px"
-            onClose={() =>
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                wellInterestDialog: false,
-              }))
-            }
-            contactId={props.contactData._id}
+      <AddWellInterestDialog
+        open={stateApp.wellInterestDialog ? true : false}
+        width="450px"
+        onClose={() =>
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            wellInterestDialog: false,
+          }))
+        }
+        contactId={props.contactData._id}
       />
       <div>
-        <h4 style={{ marginTop: "0", float: "left" }}>Wells ({ count })</h4>
+        <h4 style={{ marginTop: "0", "float": "left" }}>Tax Roll &amp; Well Interests ({count})</h4>
         <IconButton
           size="small"
           className={classes.addIcon}
@@ -120,12 +120,12 @@ export default function WellsCard(props) {
           <h5 className={classes.h5}>
             Types of Interest
             <br />
-            <span className={classes.lastContactedSpan}>{ interestTypes }</span>
+            <span className={classes.lastContactedSpan}>{interestTypes}</span>
           </h5>
           <h5 className={classes.h5}>
             Average Value
             <br />
-            <span className={classes.lastContactedSpan}>{ vf_currency(avgTaxValues) }</span>
+            <span className={classes.lastContactedSpan}>{vf_currency(avgTaxValues)}</span>
           </h5>
         </div>
       </div>
