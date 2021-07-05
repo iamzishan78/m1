@@ -15,7 +15,9 @@ import {
   IconButton,
   Avatar,
   InputAdornment,
+  Box,
 } from "@material-ui/core";
+import InputBase from "@material-ui/core/InputBase";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
@@ -116,9 +118,23 @@ const useStyles = makeStyles((theme) => ({
       height: "35px",
       width: "35px",
     },
+    "& .MuiTextField-root": {
+      marginTop: "2px",
+      marginBottom: 0,
+      width: "132px",
+    },
   },
   addSubTaskButton: {
     marginBottom: "10px",
+  },
+  dateField: {
+    "& .MuiInput-underline:before": {
+      borderBottom: "none !important",
+    },
+    // "&&:after": {
+    //   borderBottom: "none",
+    // },
+    // },
   },
 }));
 
@@ -182,6 +198,7 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
       refetchQueries: ["dealSettings"],
       awaitRefetchQueries: true,
     });
+    console.log(task);
   };
 
   const SubtaskComponent = ({ task, index }) => (
@@ -201,25 +218,17 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
       </Grid>
       <Grid item style={{ alignItems: "right" }} className={classes.subTaskRightGrid}>
         <KeyboardDatePicker
-          className={classes.maxWidth}
-          disableToolbar
+          // disableToolbar
           variant="inline"
-          format="MM/DD/YYYY"
+          format="MM-DD-YYYY"
           margin="normal"
-          // value={newDocument?.dateTime}
-          open={isCalendarOpen}
-          onChange={(date) => {
-            //   setNewDocument({
-            //     ...newDocument,
-            //     dateTime: String(date["_d"]),
-            //   });
-            console.log(String(date["_d"]));
-          }}
-          TextFieldComponent={() => null}
+          allowKeyboardControl={false}
+          value={task.dueDate || ""}
+          emptyLabel
+          id="subtaskDueDate"
+          InputProps={{ className: classes.dateField }}
+          onChange={(date) => handleUpdateSubtask({ ...task, dueDate: date ? String(date["_d"]) : "" })}
         />
-        <IconButton onClick={() => setCalendar(!isCalendarOpen)}>
-          <CalendarTodayIcon fontSize="small" />
-        </IconButton>
         <IconButton>
           <Avatar className={classes.dealOwnerAvatar}>
             {users.find((user) => user?.value === ownerId)
