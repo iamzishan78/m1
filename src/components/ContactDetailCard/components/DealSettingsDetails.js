@@ -2,6 +2,7 @@ import React, { Fragment, useContext, useState } from "react";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { get } from "lodash";
+import moment from "moment";
 import { AppContext } from "AppContext";
 import {
   Menu,
@@ -15,12 +16,9 @@ import {
   IconButton,
   Avatar,
   InputAdornment,
-  Box,
 } from "@material-ui/core";
-import InputBase from "@material-ui/core/InputBase";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import ArrowDown from "@material-ui/icons/ArrowDropDown";
 import ProgressBar from "../../Shared/ui/ProgressBar";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -123,25 +121,23 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: 0,
       width: "132px",
     },
-  },
-  addSubTaskButton: {
-    marginBottom: "10px",
-  },
-  dateField: {
     "& .MuiInput-underline:before": {
       borderBottom: "none !important",
     },
-    // "&&:after": {
-    //   borderBottom: "none",
-    // },
-    // },
+    "& .MuiInput-underline:after": {
+      borderBottom: "none !important",
+    },
+    "& .MuiFormHelperText-root": {
+      display: "none !important",
+    },
+  },
+  addSubTaskButton: {
+    marginBottom: "10px",
   },
 }));
 
 function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
   const classes = useStyles();
-  const [isCalendarOpen, setCalendar] = useState(false);
-  const [isChecked, setCheck] = useState(false);
   const [isNewSubtask, setNewSubtask] = useState({ index: -1, value: false });
   const [stateApp] = useContext(AppContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -198,10 +194,9 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
       refetchQueries: ["dealSettings"],
       awaitRefetchQueries: true,
     });
-    console.log(task);
   };
 
-  const SubtaskComponent = ({ task, index }) => (
+  const SubtaskComponent = ({ task }) => (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.subTaskRoot}>
       <Grid item>
         <FormControlLabel
@@ -218,15 +213,14 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
       </Grid>
       <Grid item style={{ alignItems: "right" }} className={classes.subTaskRightGrid}>
         <KeyboardDatePicker
-          // disableToolbar
+          disableToolbar
           variant="inline"
-          format="MM-DD-YYYY"
+          format="DD MMM, YYYY"
           margin="normal"
           allowKeyboardControl={false}
           value={task.dueDate || ""}
           emptyLabel
           id="subtaskDueDate"
-          InputProps={{ className: classes.dateField }}
           onChange={(date) => handleUpdateSubtask({ ...task, dueDate: date ? String(date["_d"]) : "" })}
         />
         <IconButton>
