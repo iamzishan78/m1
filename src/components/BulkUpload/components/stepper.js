@@ -291,7 +291,7 @@ export default function CustomizedSteppers(props) {
               >
                 {stateApp.activeStepNumber >= steps.length - 2
                   ? stateApp.activeStepNumber === steps.length - 1
-                    ? "Done"
+                    ? "Close"
                     : "Upload"
                   : "Continue"}
               </Button>
