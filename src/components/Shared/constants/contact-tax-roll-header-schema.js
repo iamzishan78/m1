@@ -26,7 +26,7 @@ const ContactWellHeadCells = [
   },
   {
     name: "leaseId", label: "Lease Id", options: {
-      display: false,
+      display: true,
       filter: false,
       searchable: false,
       sort: false,
@@ -47,7 +47,7 @@ const ContactWellHeadCells = [
     }
   },
   {
-    name: "leaseDescription", label: "Lease", options: {
+    name: "lease", label: "Lease", options: {
       sort: true,
       filter: false,
     }
