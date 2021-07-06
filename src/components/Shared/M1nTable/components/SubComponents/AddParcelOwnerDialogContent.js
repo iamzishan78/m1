@@ -98,8 +98,8 @@ export default function AddParcelOwnerDialogContent({
     mineral_interest: null,
     royalty_interest: null,
     orri: null,
-    record_title: "",
-    operating_rights: "",
+    record_title: null,
+    operating_rights: null,
     nri: null,
     net_acres: null,
     depthFrom: "",
@@ -256,8 +256,8 @@ export default function AddParcelOwnerDialogContent({
       mineral_interest: null,
       royalty_interest: null,
       orri: null,
-      record_title: "",
-      operating_rights: "",
+      record_title: null,
+      operating_rights: null,
       nri: null,
       net_acres: null,
       depthFrom: "",
@@ -476,13 +476,15 @@ export default function AddParcelOwnerDialogContent({
               <Grid item xs={12}>
                 <h3>Record Title</h3>
                 <TextField
+                  type="number"
                   size="small"
                   className={classes.maxWidth}
                   value={newOwner.record_title}
                   onChange={(e) => {
+                    const value = e.target.value;
                     setNewOwner({
                       ...newOwner,
-                      record_title: e.target.value,
+                      record_title: value ? parseFloat(e.target.value) : null,
                     });
                   }}
                 />
@@ -490,13 +492,15 @@ export default function AddParcelOwnerDialogContent({
               <Grid item xs={12}>
                 <h3>Operating Rights</h3>
                 <TextField
+                  type="number"
                   size="small"
                   className={classes.maxWidth}
                   value={newOwner.operating_rights}
                   onChange={(e) => {
+                    const value = e.target.value;
                     setNewOwner({
                       ...newOwner,
-                      operating_rights: e.target.value,
+                      operating_rights: value ? parseFloat(e.target.value) : null,
                     });
                   }}
                 />
@@ -504,6 +508,7 @@ export default function AddParcelOwnerDialogContent({
               <Grid item xs={12}>
                 <h3>Net Revenue Interest (NRI)</h3>
                 <TextField
+                  type="number"
                   size="small"
                   className={classes.maxWidth}
                   value={newOwner.nri}
@@ -519,6 +524,7 @@ export default function AddParcelOwnerDialogContent({
               <Grid item xs={12}>
                 <h3>Net Acres</h3>
                 <TextField
+                  type="number"
                   size="small"
                   className={classes.maxWidth}
                   value={newOwner.net_acres}
