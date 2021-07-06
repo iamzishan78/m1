@@ -1,10 +1,10 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 // context
 import { AppContext } from "AppContext";
 
-import { Container } from "@material-ui/core";
+import { Button, Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 
@@ -13,7 +13,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
-import AddWellInterestDialog from "components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
+// import AddWellInterestDialog from "components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 
 // Header Schemas 
 import TableHeader from 'components/Shared/constants/contact-tax-roll-header-schema.js'
@@ -21,6 +21,9 @@ import { handleTagColumn } from "../helpers";
 
 // Utilities
 import { GET_CONTACT_TAX_ROLL_INTERESTS_QUERY } from "graphQL/useQueryGetContactTaxRollInterests";
+import { ADD_MULTI_WELLINTEREST_TO_CONTACT } from "graphQL/useMutationAddMultiWellInterestToContact";
+import { useDispatch } from "react-redux";
+import { showErrorMessage, showSuccessMessage } from "actions";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -33,14 +36,17 @@ function ContactTaxRollInterestTable(props) {
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
-
+  const dispatch = useDispatch();
 
   // function states 
   const [columns, Columns] = useState([]);
+  const rowsSelected = useRef([]);
+
   const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
   const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
   // queries 
+  const [addMultiWellInterestToContact] = useMutation(ADD_MULTI_WELLINTEREST_TO_CONTACT);
   const [getContactTaxRollInterests, { data: dataContactTaxRollInterst }] = useLazyQuery(GET_CONTACT_TAX_ROLL_INTERESTS_QUERY, {
     fetchPolicy: "cache-and-network", skip: true,
     // with a cache fetch policy, if network request returns same result we can end up in an infinite loading sitch.
@@ -99,12 +105,68 @@ function ContactTaxRollInterestTable(props) {
 
   ////////////Contact Wells end///////////////////////////////////////////////
 
+
+  const addWellInterestToContact = (rows) => {
+    const selectedWells = tableData.filter((t, index) => rows.data.find((row) => row.dataIndex === index))
+    props.setLoading(true);
+    addMultiWellInterestToContact({
+      variables: { wells: selectedWells, contactId: props.contactId, userId: stateApp.user.mongoId, },
+      refetchQueries: [
+        "getContactWells"
+      ],
+      awaitRefetchQueries: true
+    }).then(
+      ({ data: { addMultiWellInterestToContact } }) => {
+
+        if (addMultiWellInterestToContact?.success) {
+          rowsSelected.current = []
+          Columns([...columns])
+          dispatch(showSuccessMessage(addMultiWellInterestToContact.message));
+        } else {
+          dispatch(showErrorMessage(addMultiWellInterestToContact.message));
+        }
+        props.setLoading(false);
+      },
+      err => {
+        console.log(err)
+        props.setLoading(false);
+        dispatch(showErrorMessage("Failed to attach to contact"));
+      }
+    );
+  }
+
   const count = dataContactTaxRollInterst?.contactTaxRollInterests?.length || 0
+
   const options = {
     rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
     count: count,
-    serverSide: true
+    serverSide: true,
+    onRowSelectionChange: (currentRowsSelected, selectedRows) => {
+      rowsSelected.current = selectedRows.map((row) => row.dataIndex)
+    },
+
+    rowsSelected: rowsSelected.current,
+    customToolbarSelect: (rows) => {
+      return (
+        <div style={{ height: "48px", display: "flex" }} >
+          <div style={{ marginTop: "6px", height: "35px", display: "flex", marginRight: "20px" }} >
+            <Button
+              color="secondary"
+              className={classes.multiSelectionTopBarButtons}
+              onClick={() => {
+                addWellInterestToContact(rows)
+              }}
+            >
+              + ADD TO CONTACT
+            </Button>
+          </div>
+        </div>
+
+      )
+    }
+
   }
+
   ////////////-----Add your code section here-----///////////////////////
   const getWellOwnersByYear = (selectedYear) => {
     setSelectedYear(selectedYear)
@@ -134,7 +196,7 @@ function ContactTaxRollInterestTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
-
+      {/* 
       {props.parent && props.parent === "assocTaxRollInterests" && (
         <AddWellInterestDialog
           open={stateApp.wellInterestDialog ? true : false}
@@ -147,7 +209,7 @@ function ContactTaxRollInterestTable(props) {
           }
           contactId={props.contactId}
         />
-      )}
+      )} */}
 
       <Table
         style={{ backgroundColor: "#fff" }}
