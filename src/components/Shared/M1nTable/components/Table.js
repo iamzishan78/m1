@@ -2613,6 +2613,37 @@ function SubTable(props) {
               </div>
             );
           }
+          if(props.addAble.type === 'parcelDocument'){
+            return (
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    height: "35px",
+                    display: "flex",
+                  }}
+                >
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        handleExpandClick(null, null, null, "deleteParcelDocument")
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </div>
+            )
+          }
           if(props.addAble.type === 'wellInterest'){
             return (
               <div
@@ -3718,6 +3749,7 @@ function SubTable(props) {
                 openDialog === "printLabels" ||
                 openDialog === "deleteUser" ||
                 openDialog === "deleteWellInterest" ||
+                openDialog === "deleteParcelDocument" ||
                 openDialog === "addParcelInterestsToEntity"
                 ? true
                 : false
@@ -3867,6 +3899,22 @@ function SubTable(props) {
                   ? "s"
                   : ""
                   } from  this contact?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "deleteParcelDocument" && (
+              <DeleteConfirmationDialogContent
+                header="Delete Parcel Documents(s)"
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to permanently delete the document${m1nSelectedRowsIds &&
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                  ? "s"
+                  : ""
+                  } from  this parcel?`}
               </DeleteConfirmationDialogContent>
             )}
             {openDialog === "deleteContact" && (

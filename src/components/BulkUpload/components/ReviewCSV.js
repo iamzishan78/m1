@@ -100,7 +100,7 @@ export default function MaterialTableDemo() {
   return (
     <div style={main_div}>
       <div style={{ ...big_text, ...padding_div_top }}>
-        Review, modify or delete any contacts before they are uploaded to the
+        Review, modify or delete any records before they are uploaded to the
         system.
       </div>
       <div style={{ ...padding_div_top, ...table }}>

@@ -578,8 +578,8 @@ export default function DocumentDrawer(props) {
                   filterOptions={(options, params) => {
                     const filtered = options.filter(
                       (opt) =>
-                        opt.name?.includes(search) ||
-                        opt.number?.includes(search)
+                        opt.name?.toLowerCase()?.includes(search?.toLowerCase()) ||
+                        opt.number?.toLowerCase()?.includes(search?.toLowerCase())
                     );
                     return filtered;
                   }}
