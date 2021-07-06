@@ -2,7 +2,6 @@ import React, { Fragment, useContext, useState } from "react";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { get } from "lodash";
-import moment from "moment";
 import { AppContext } from "AppContext";
 import {
   Menu,
@@ -16,7 +15,14 @@ import {
   IconButton,
   Avatar,
   InputAdornment,
+  Popover,
+  Box,
+  List,
+  ListItem,
+  ListItemText,
 } from "@material-ui/core";
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import ArrowDown from "@material-ui/icons/ArrowDropDown";
@@ -111,6 +117,11 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "40px",
   },
+  subTaskLeftGrid: {
+    "& .MuiFormControlLabel-root": {
+      marginRight: 0,
+    },
+  },
   subTaskRightGrid: {
     "& .MuiIconButton-root": {
       height: "35px",
@@ -196,19 +207,23 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
     });
   };
 
+  function truncate(str, n) {
+    return str.length > n ? str.substr(0, n - 1) + "..." : str;
+  }
+
   const SubtaskComponent = ({ task }) => (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.subTaskRoot}>
-      <Grid item>
+      <Grid item xs={6} className={classes.subTaskLeftGrid}>
         <FormControlLabel
           control={
             <Checkbox
-              name="testingCheckbox"
+              name="subtaskCheckbox"
               value={task.name}
               onChange={(e) => handleUpdateSubtask({ ...task, isCompleted: e.target.checked })}
               checked={task.isCompleted}
             />
           }
-          label={task.name}
+          label={truncate(task.name, 15)}
         />
       </Grid>
       <Grid item style={{ alignItems: "right" }} className={classes.subTaskRightGrid}>
@@ -220,32 +235,60 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
           allowKeyboardControl={false}
           value={task.dueDate || ""}
           emptyLabel
-          id="subtaskDueDate"
           onChange={(date) => handleUpdateSubtask({ ...task, dueDate: date ? String(date["_d"]) : "" })}
         />
-        <IconButton>
-          <Avatar className={classes.dealOwnerAvatar}>
-            {users.find((user) => user?.value === ownerId)
-              ? users
-                  .find((user) => user?.value === ownerId)
-                  .text.toString()
-                  .toUpperCase()
-                  .split(" ").length > 1
-                ? users
-                    .find((user) => user?.value === ownerId)
-                    .text.toString()
-                    .toUpperCase()
-                    .split(" ")[0][0] +
-                  "" +
-                  users
-                    .find((user) => user?.value === ownerId)
-                    .text.toString()
-                    .toUpperCase()
-                    .split(" ")[1][0]
-                : "AO"
-              : "AO"}
-          </Avatar>
-        </IconButton>
+        <PopupState variant="popover" popupId="demo-popup-popover">
+          {(popupState) => (
+            <>
+              <IconButton {...bindTrigger(popupState)}>
+                {task.assignee ? (
+                  <Avatar className={classes.dealOwnerAvatar}>
+                    {users.find((user) => user?.value === task.assignee)
+                      ? users
+                          .find((user) => user?.value === task.assignee)
+                          .text.toString()
+                          .toUpperCase()
+                          .split(" ").length > 1
+                        ? users
+                            .find((user) => user?.value === task.assignee)
+                            .text.toString()
+                            .toUpperCase()
+                            .split(" ")[0][0] +
+                          "" +
+                          users
+                            .find((user) => user?.value === task.assignee)
+                            .text.toString()
+                            .toUpperCase()
+                            .split(" ")[1][0]
+                        : "AO"
+                      : "AO"}
+                  </Avatar>
+                ) : (
+                  <AccountCircle fontSize="default" />
+                )}
+              </IconButton>
+              <Popover
+                {...bindPopover(popupState)}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "center",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "center",
+                }}
+              >
+                <List style={{ maxHeight: 300 }}>
+                  {users.map((user) => (
+                    <ListItem button onClick={() => handleUpdateSubtask({ ...task, assignee: user.value })}>
+                      <ListItemText primary={user.text} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Popover>
+            </>
+          )}
+        </PopupState>
       </Grid>
     </Grid>
   );

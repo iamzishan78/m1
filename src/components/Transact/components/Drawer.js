@@ -7,9 +7,9 @@ import ShareIcon from "@material-ui/icons/Share";
 import FolderIcon from "@material-ui/icons/Folder";
 import IdentityIcon from "@material-ui/icons/PermIdentity";
 import FlowIcon from "@material-ui/icons/Repeat";
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import Tooltip from "@material-ui/core/Tooltip";
-import Badge from '@material-ui/core/Badge';
+import Badge from "@material-ui/core/Badge";
 import { AppContext } from "../../../AppContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     right: 0,
     top: 0,
-    zIndex: 999999,
+    zIndex: 1223,
     backgroundColor: "rgb(240,245,248)",
   },
   icon: {
@@ -108,12 +108,7 @@ export default function Drawer() {
     <div className={classes.root}>
       {Object.keys(drawerIcons).map((key) => (
         <Tooltip title={key} placement="left">
-          <div
-            className={classes.icon}
-            onClick={() =>
-              setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))
-            }
-          >
+          <div className={classes.icon} onClick={() => setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))}>
             {drawerIcons[key]({
               opacity: "1",
               height: "30",
