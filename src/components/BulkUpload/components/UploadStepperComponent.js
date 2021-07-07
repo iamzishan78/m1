@@ -49,14 +49,14 @@ export default function BulkUpload(props) {
         Sit tight as this may take a bit.
       </div>
       <div style={{ ...big_grey_text, ...padding_div_2 }}>
-        Our robots are working their magic to quickly upload your contacts.
+        Our robots are working their magic to quickly upload your data.
       </div>
       <div style={{ ...padding_div_top }}>
         <img style={image_style} src="img/M1neral Robot.svg"></img>
       </div>
       <div style={notification_div}>
         <div style={{ ...text_grey, ...padding_div_top }}>
-          We will send an in-app notification once your contacts are uploaded.
+          We will send an in-app notification once your data has been uploaded.
         </div>
       </div>
     </div>
