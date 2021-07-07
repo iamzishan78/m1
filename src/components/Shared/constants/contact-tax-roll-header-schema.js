@@ -29,7 +29,7 @@ const ContactWellHeadCells = [
       display: true,
       filter: true,
       searchable: false,
-      sort: false,
+      sort: true,
       download: false,
       print: false,
       viewColumns: false,
@@ -38,7 +38,7 @@ const ContactWellHeadCells = [
   {
     name: "lease", label: "Lease Name", options: {
       display: false,
-      filter: true,
+      filter: false,
       searchable: false,
       sort: false,
       download: false,
@@ -67,7 +67,7 @@ const ContactWellHeadCells = [
   {
     name: "entity", label: "Entity", options: {
       display: false,
-      filter: true,
+      filter: false,
       searchable: false,
       sort: false,
       download: false,
