@@ -29,6 +29,7 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwnersTable";
 import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
 import ParcelDetailsDocumentTable from "components/Table/Documents/ParcelDetailsDocumentTable";
+import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 import { AppContext } from "../../AppContext";
@@ -437,7 +438,7 @@ const DocumentHeader = () => (
       </Grid>
       <Grid item sm={12}>
         <Taps
-          tabLabels={["Interest Owners", "Wells", "Documents"]}
+          tabLabels={["Interest Owners", "Runsheet", "Wells", "Documents"]}
           tabPanels={[
             <TabPanels
               value={selectedTab}
@@ -457,6 +458,15 @@ const DocumentHeader = () => (
                 </div>
               ]}
             />,
+            <div className={classes.parcelDocument}>
+              <ParcelDetailsRunsheetTable
+                customLayer={parcelObj}
+                parent="associatedRunsheetPerParcel"
+                targetLabel="parcelRunsheet"
+                header='Limited Title Runsheet'
+                dense
+              />
+            </div>,
             <AssociatedWellsParcelTable
               customLayer={parcelObj}
               parent="associatedWellsPerParcel"

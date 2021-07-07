@@ -2826,6 +2826,7 @@ function SubTable(props) {
       if (props.addAble.type === "ownerToParcel") { buttonLabel = '+ ADD INTEREST OWNER' }
       if (props.addAble.type === "suggestedOwnerToParcel") { buttonLabel = '+ ADD TO PARCEL' }
       if (props.addAble.type === "parcelDocument") { buttonLabel = 'ADD DOCUMENT' }
+      if (props.addAble.type === "parcelRunsheet") { buttonLabel = '+ ADD INSTRUMENT' }
 
 
       const addAction = (e) => {
@@ -2898,6 +2899,15 @@ function SubTable(props) {
                 className={classes.multiSelectionTopBarButtons}
                 disabled={true}
                 onClick={()=>{}}
+              >
+                {buttonLabel}
+              </Button>
+            )}
+            {(props.addAble.type === "parcelRunsheet") && (
+              <Button
+                color="secondary"
+                className={classes.multiSelectionTopBarButtons}
+                onClick={()=>  props.onClickAdd()}
               >
                 {buttonLabel}
               </Button>
