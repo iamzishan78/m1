@@ -153,7 +153,7 @@ export default function AddParcelOwnerDialogContent({
         nra,
         depthFrom,
         depthTo,
-        qtr,
+        qtr: qtr? qtr: [null, null, null, null],
         customLayer,
       });
 
@@ -554,7 +554,7 @@ export default function AddParcelOwnerDialogContent({
                   }}
                 />
               </Grid>
-              {props.customLayer.state !== 'TX' && (
+              {props?.customLayer?.state !== 'TX' && (
                 <>
                 <Grid item xs={3}>
                   <h3>QTR 1</h3>
