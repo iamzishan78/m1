@@ -96,7 +96,7 @@ export default function OwnersSummaryCard(props) {
               }));
             }}
           >
-            Interest Owners
+            ners
           </Typography>
           <Typography className="wellInterestsText">
             {selectedOwner && selectedOwner.name
