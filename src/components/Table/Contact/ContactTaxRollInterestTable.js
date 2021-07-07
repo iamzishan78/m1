@@ -74,15 +74,6 @@ function ContactTaxRollInterestTable(props) {
   }, [props.parent]);
 
   useEffect(() => {
-    if (tableData?.edges?.length > 0) {
-      let wells = tableData.edges.map((el) => el.node)
-      const objectsIdsArray = wells.map((well) => well.wellId);
-      // props.initializeGenericData(objectsIdsArray, ['comments', 'tags'])
-    }
-
-  }, [tableData])
-
-  useEffect(() => {
     if (tableData?.length > 0) {
       let wells = tableData
 
@@ -140,7 +131,9 @@ function ContactTaxRollInterestTable(props) {
   const options = {
     rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
     count: count,
-    serverSide: true,
+    filter: true,
+    searchable: true,
+    sort: true,
     onRowSelectionChange: (currentRowsSelected, selectedRows) => {
       rowsSelected.current = selectedRows.map((row) => row.dataIndex)
     },

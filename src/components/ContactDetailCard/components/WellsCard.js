@@ -9,6 +9,7 @@ import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 import { AppContext } from "../../../AppContext";
 import AddWellInterestDialog from "./ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
+import { CONTACT_ASSOCIATED_WELL_COUNT } from "graphQL/useQueryContactAssociatedWellCount";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -50,6 +51,9 @@ export default function WellsCard(props) {
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS, {
     fetchPolicy: "cache-and-network",
   });
+  const [getContactAssociatedWellCount, { data: dataContactWellCount }] = useLazyQuery(CONTACT_ASSOCIATED_WELL_COUNT, {
+    fetchPolicy: "cache-and-network",
+  });
   const [stateApp, setStateApp] = useContext(AppContext);
 
   useEffect(() => {
@@ -59,17 +63,28 @@ export default function WellsCard(props) {
           contactId: props.contactData._id,
         },
       });
+      getContactAssociatedWellCount({
+        variables: {
+          contactId: props.contactData._id,
+        },
+      });
     }
   }, [props.contactData]);
 
   useEffect(() => {
-    if (dataContactWells && dataContactWells.contactWells) {
+    if (dataContactWells?.contactWells) {
       const wells = dataContactWells.contactWells;
       setInterestTypes([...new Set(wells.map(well => well.type))].join(", "));
       setCount(wells.length);
       setAvgTaxValues(wells.map(well => well.taxValue).reduce((a, b) => (a + b), 0) / (wells.length !== 0 ? wells.length : 1));
     }
   }, [dataContactWells]);
+
+  useEffect(() => {
+    if (dataContactWellCount?.contactAssociatedWellCount) {
+      setCount(dataContactWellCount.contactAssociatedWellCount);
+    }
+  }, [dataContactWellCount]);
 
   return (
     <div className={classes.root} onClick={() => {

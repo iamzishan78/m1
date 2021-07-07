@@ -3415,8 +3415,6 @@ function SubTable(props) {
 
 
     },
-
-    ...props.options
   };
 
   if (props.header === "Well Interests"
@@ -3620,7 +3618,8 @@ function SubTable(props) {
 
                   return getHeaders()
                 }
-            }
+            },
+            ...props.options
           }}
         />
         {
