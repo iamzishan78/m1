@@ -6,6 +6,7 @@ export const ADD_PIPELINE = gql`
       success
       message
       error
+      pipeline
     }
   }
 `;
