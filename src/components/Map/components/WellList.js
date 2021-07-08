@@ -93,7 +93,7 @@ export default function WellList() {
               key="subheader" 
               button>
           <ListItemText 
-          primary={`Tracked Wells (${wells.length})`} 
+          primary={` (${wells.length})`} 
           secondary = ''
           />
         </ListItem> 

@@ -106,7 +106,7 @@ function ShapeGridWellsTable(props) {
                     well.spudDate = ticksToDateString(well.spudDate);
                 if (well.completionDate && well.completionDate != "null")
                     well.completionDate = ticksToDateString(well.completionDate);
-                if (well.firstProductionDate && well.firstProductionDate != "null")
+                if (well.firstDate && well.firstProductionDate != "null")
                     well.firstProductionDate = ticksToDateString(
                         well.firstProductionDate
                     );

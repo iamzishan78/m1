@@ -16,6 +16,9 @@ import Button from '@material-ui/core/Button';
 import WellIcon from "../WellCard/components/svgIcons/WellIcon";
 import ProductionIcon from "../WellCard/components/svgIcons/ProductionIcon";
 import OwnershipIcon from "../WellCard/components/svgIcons/OwnershipIcon";
+import DescriptionIcon from "../WellCard/components/svgIcons/DescriptionIcon";
+// import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+
 
 import ParcelsDetailCard from "./ParcelsDetailCard";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
@@ -187,7 +190,7 @@ export default function ParcelCard(props) {
       ...state,
       expandedCard: true,
       parcelDetailCardOpen: true,
-       parcelDetailCardTabIndex: isOwner ? 1 : 0,
+      parcelDetailCardTabIndex: isOwner ? 1 : 0,
       popupOpen: false,
     }));
   };
@@ -201,21 +204,18 @@ export default function ParcelCard(props) {
           <CardActions classes={{ root: classes.cardAction }}>
             <Button
               className={classes.button}
-              onClick = {() => {handleOpenDetails(true)}}
+              onClick={() => { handleOpenDetails() }}
             >
               <div className={classes.iconContainer}>
                 <WellIcon
                   htmlColor="black"
                   viewBox="0 0 32 31"
                   fontSize="large"
-
-
                 />
                 <Typography
                   align="center"
                   className={classes.text1}
                   variant="subtitle2"
-
                 >
                   Well Count
                 </Typography>
@@ -224,16 +224,15 @@ export default function ParcelCard(props) {
                   className={classes.text2}
                   variant="caption"
                 >
-                  {parcelObj?.wellCount || "--"}
                   {wellNumber}
-                  
+
                 </Typography>
               </div>
             </Button>
             <Button
               className={classes.button}
-              onClick = {() => {handleOpenDetails(true)}}
-              >
+              onClick={() => { handleOpenDetails(true) }}
+            >
               <div className={classes.iconContainer}>
                 <OwnershipIcon
                   htmlColor="black"
@@ -252,13 +251,40 @@ export default function ParcelCard(props) {
                   className={classes.text2}
                   variant="caption"
                 >
-                 
                   {parcelObj?.ownerCount || "--"}
                 </Typography>
               </div>
             </Button>
             <Button
               className={classes.button}
+              onClick={() => { handleOpenDetails(true) }}
+            >
+              <div className={classes.iconContainer}>
+                <DescriptionIcon
+                  htmlColor="black"
+                  viewBox="0 0 26 31"
+                  fontSize="large"
+                />
+                <Typography
+                  align="center"
+                  className={classes.text1}
+                  variant="subtitle2"
+                >
+                  Document
+                </Typography>
+                <Typography
+                  align="center"
+                  className={classes.text2}
+                  variant="caption"
+                >
+                  {1}
+                  
+                </Typography>
+              </div>
+            </Button>
+            <Button
+              className={classes.button}
+              onClick={() => { handleOpenDetails() }}
             >
               <div className={classes.iconContainer}>
                 <LayerIcon
