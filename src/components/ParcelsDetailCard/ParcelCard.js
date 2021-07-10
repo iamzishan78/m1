@@ -26,6 +26,7 @@ import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
 import { SHAPEWELLS } from "graphQL/useQueryPaginatedShapeWells";
+import { GET_PARCELS_FILES } from "graphQL/useQueryGetParcelFiles";
 import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 
 // contexts 
@@ -126,6 +127,8 @@ export default function ParcelCard(props) {
   // queries 
   const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true });
   const wellNumber = dataShapeWells?.paginatedShapeWells.totalCount
+  const [getAllFiles, { data: dataParcelFiles }] = useLazyQuery(GET_PARCELS_FILES);
+  const documentCount = dataParcelFiles?.getParcelFiles.length || 0;
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER,);
 
 
@@ -171,6 +174,16 @@ export default function ParcelCard(props) {
   }, [parcelObj]);
 
   useEffect(() => {
+		getAllFiles({
+			variables: {
+				relatedObjectId: parcelObj?._id || stateApp.user.mongoId,
+				relatedObjectType: "Parcel",
+			},
+		});
+	}, [parcelObj]);
+
+
+  useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
       let shape = dataCustomLayer.customLayer.shape;
       if (typeof shape === "string") {
@@ -185,12 +198,12 @@ export default function ParcelCard(props) {
       setProperties(properties);
     }
   }, [dataCustomLayer]);
-  const handleOpenDetails = (isOwner) => {
+  const handleOpenDetails = (tabIndex) => {
     setStateApp((state) => ({
       ...state,
       expandedCard: true,
       parcelDetailCardOpen: true,
-      parcelDetailCardTabIndex: isOwner ? 1 : 0,
+      parcelDetailCardTabIndex: tabIndex,
       popupOpen: false,
     }));
   };
@@ -204,7 +217,7 @@ export default function ParcelCard(props) {
           <CardActions classes={{ root: classes.cardAction }}>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails() }}
+              onClick={() => { handleOpenDetails(1) }}
             >
               <div className={classes.iconContainer}>
                 <WellIcon
@@ -231,7 +244,7 @@ export default function ParcelCard(props) {
             </Button>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails(true) }}
+              onClick={() => { handleOpenDetails(0) }}
             >
               <div className={classes.iconContainer}>
                 <OwnershipIcon
@@ -257,7 +270,7 @@ export default function ParcelCard(props) {
             </Button>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails(true) }}
+              onClick={() => { handleOpenDetails(2) }}
             >
               <div className={classes.iconContainer}>
                 <DescriptionIcon
@@ -277,7 +290,7 @@ export default function ParcelCard(props) {
                   className={classes.text2}
                   variant="caption"
                 >
-                  {1}
+                  {documentCount}
                   
                 </Typography>
               </div>
@@ -384,7 +397,7 @@ export default function ParcelCard(props) {
       <div style={{ height: "100%" }}>
         <Card className={classes.card}>
           <CardContent className={classes.content}>
-            <ParcelsDetailCard id={stateApp.selectedParcel.id} />
+            <ParcelsDetailCard id={stateApp.selectedParcel.id} selectTabIndex={stateApp.parcelDetailCardTabIndex}/>
           </CardContent>
         </Card>
       </div>
