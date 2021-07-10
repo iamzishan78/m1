@@ -2,7 +2,7 @@ import debounce from "lodash/debounce";
 
 export const callWellSearch = debounce((request, callback) => {
     const endpoint =
-        "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&$top=" +
+        "https://m1..windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&$top=" +
         request.top +
         "&search=" +
         encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));

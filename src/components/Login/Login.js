@@ -157,7 +157,7 @@ const Login = (props) => {
                 return currentAccounts && currentAccounts.length === 1
                   ? currentAccounts[0]
                   : (() => {
-                      // Add choose account code here
+                      // hoose account code here
                       return;
                     })();
               })();
