@@ -222,7 +222,7 @@ export default function ParcelCard(props) {
               <div className={classes.iconContainer}>
                 <WellIcon
                   htmlColor="black"
-                  viewBox="0 0 32 31"
+                  viewBox="0 0 36 31"
                   fontSize="large"
                 />
                 <Typography
@@ -230,7 +230,7 @@ export default function ParcelCard(props) {
                   className={classes.text1}
                   variant="subtitle2"
                 >
-                  Well Count
+                  Wells
                 </Typography>
                 <Typography
                   align="center"
@@ -275,7 +275,7 @@ export default function ParcelCard(props) {
               <div className={classes.iconContainer}>
                 <DescriptionIcon
                   htmlColor="black"
-                  viewBox="0 0 26 31"
+                  viewBox="5 0 17 26"
                   fontSize="large"
                 />
                 <Typography
@@ -283,7 +283,7 @@ export default function ParcelCard(props) {
                   className={classes.text1}
                   variant="subtitle2"
                 >
-                  Document
+                  Documents
                 </Typography>
                 <Typography
                   align="center"
@@ -302,7 +302,7 @@ export default function ParcelCard(props) {
               <div className={classes.iconContainer}>
                 <LayerIcon
                   htmlColor="black"
-                  viewBox="0 0 32 31"
+                  viewBox="5 0 17 26"
                   fontSize="large"
                 />
                 <Typography
@@ -310,7 +310,7 @@ export default function ParcelCard(props) {
                   className={classes.text1}
                   variant="subtitle2"
                 >
-                  Calc. Acres
+                  Acres
                 </Typography>
                 <Typography
                   align="center"
