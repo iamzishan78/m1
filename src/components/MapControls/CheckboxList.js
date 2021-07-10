@@ -306,7 +306,7 @@ export default function CheckboxList(props) {
         !(
           stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0
         )) ||
-      (layer.identifier === "" &&
+      (layer.identifier === "Tracked Wells" &&
         !(stateApp.trackedwells && stateApp.trackedwells.length > 0)) ||
       (layer.identifier === "Tracked Owners" &&
         !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))

@@ -1315,7 +1315,7 @@ function Map() {
             layerId === "welllines" ||
             layerId === "Parcels" ||
             layerId === "Area of Interest" ||
-            layerId === "" ||
+            layerId === "Tracked Wells" ||
             layerId === "Tracked Owners" ||
             layerId === "Tags Filter" ||
             layerId === "Search" ||
@@ -1382,7 +1382,7 @@ function Map() {
           let data = null;
           if (layer.layerPaintProps && layer.layerPaintProps.length > 0) {
             switch (layer.identifier) {
-              case "":
+              case "Tracked Wells":
                 data = stateApp.trackedwells;
                 break;
               case "Tracked Owners":
