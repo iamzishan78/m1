@@ -42,11 +42,22 @@ function ShapeGridTaxOwnersTable(props) {
     const [count, setCount] = useState()  // local state for async count query
 
     // queries 
-    const [getPaginatedShapeOwners, { data: dataShapeOwners }] = useLazyQuery(SHAPE_OWNERS, { fetchPolicy: "cache-and-network", skip: true });
+    const [getPaginatedShapeOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(SHAPE_OWNERS, { fetchPolicy: "cache-and-network", skip: true,
+        onCompleted: (dataShapeOwners) => {
+            setCount((state, props) => {
+                let newState = state || dataShapeOwners?.paginatedShapeOwners?.edges?.length;
+                let newStateIncrement = !variablesShapeOwners?.pagination?.before &&
+                    dataShapeOwners?.paginatedShapeOwners?.pageInfo?.hasNextPage
+                    ? 1
+                    : 0;
+
+                return newState + newStateIncrement
+            })
+        },
+    });
     const tableData = dataShapeOwners?.paginatedShapeOwners
     const [getShapeOwnersCount, { data: dataShapeOwnersCount }] = useLazyQuery(SHAPEOWNERSCOUNT, { fetchPolicy: "cache-and-network", skip: true,
         onCompleted: (dataShapeOwnersCount) => {
-            setCount(dataShapeOwnersCount?.shapeOwnersCount)
             setStateApp((state) => ({
                 ...state,
                 shapeGridOwnersCount: dataShapeOwnersCount?.shapeOwnersCount,
@@ -156,6 +167,11 @@ function ShapeGridTaxOwnersTable(props) {
                 break;
             case "changePage":
                 props.setLoading(true);
+                if (tableState.page > meta.pageInd) {
+                    setCount((state, props) => {
+                        return (tableState.page + 1) * tableState.rowsPerPage
+                    })
+                }
                 getPaginatedShapeOwners({
                     ...pageVariables,
                     variables: {
@@ -198,7 +214,7 @@ function ShapeGridTaxOwnersTable(props) {
 
     const options = {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
-        count: count || tableData?.totalCount || 0,
+        count: stateApp.shapeGridOwnersCount || count || 0,
         serverSide: true, 
         filter: false,
     }
