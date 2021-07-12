@@ -142,17 +142,17 @@ export default function AddParcelOwnerDialogContent({
       setNameAutValue({ name, _id: ownerEntity });
 
       setNewOwner({
-        surface_interest,
-        mineral_interest,
-        royalty_interest,
-        orri,
-        record_title,
-        operating_rights,
-        nri,
-        net_acres,
-        nra,
-        depthFrom,
-        depthTo,
+        surface_interest: surface_interest || null,
+        mineral_interest: mineral_interest || null,
+        royalty_interest: royalty_interest || null,
+        orri: orri || null,
+        record_title: record_title || null,
+        operating_rights: operating_rights || null,
+        nri: nri || null,
+        net_acres: net_acres || null,
+        nra: nra || null,
+        depthFrom: depthFrom || "",
+        depthTo: depthTo || "",
         qtr: qtr? qtr: [null, null, null, null],
         customLayer,
       });
@@ -303,7 +303,7 @@ export default function AddParcelOwnerDialogContent({
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: ["getparcelOwners", "getContactParcelInterests"],
+          refetchQueries: ["getparcelOwners", "getContactParcelInterests", "getContactParcelInterest"],
           awaitRefetchQueries: true,
         });
       } else {
@@ -320,6 +320,7 @@ export default function AddParcelOwnerDialogContent({
             // causing timing issue since getCustomLayer also calls this query
             "getparcelOwners",
             "getContactParcelInterests",
+            "getContactParcelInterest"
           ],
           awaitRefetchQueries: true,
         });
