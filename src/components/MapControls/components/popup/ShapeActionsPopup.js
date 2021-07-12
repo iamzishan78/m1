@@ -185,7 +185,7 @@ const ShapeActionsPopup = (props) => {
       if (selectedFeature.geometry.type === "Polygon") {
         const areaInSqMeters = area(selectedFeature);
         const areaInAcres = convertArea(areaInSqMeters, "meters", "acres");
-        return `${formatNumber(Math.round(areaInAcres * 100) / 100)} acres`;
+        return `${formatNumber(Math.round(areaInAcres * 100) / 100)}`;
       }
       if (selectedFeature.geometry.type === "LineString") {
         const distanceInMiles = length(selectedFeature, { units: "miles" });
