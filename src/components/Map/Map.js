@@ -1130,7 +1130,8 @@ function Map() {
           selectedParcel: feature.properties,
         }));
       }
-      if (feature.source === "interests_source") {
+      const drawMode = stateApp.draw.getMode();
+      if (feature.source === "interests_source" && !drawMode.includes('draw') && !drawMode.includes('drag')) {
         const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
         const selectedUserDefinedLayer = {
           ...feature,
