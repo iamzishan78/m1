@@ -203,10 +203,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ParcelsDetailCard(props) {
-  
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
   const [parcelObj, setParcelObj] = useState();
   const [parcelWells, setParcelWells] = useState();
   const [parcelProperties, setProperties] = useState();
@@ -458,6 +457,7 @@ const DocumentHeader = () => (
       <Grid item sm={12}>
         <Taps
           tabLabels={["Interest Owners", "Wells", "Documents"]}
+          openTabIdex={selectedTab}
           tabPanels={[
             <TabPanels
               value={selectedTab}

@@ -286,7 +286,6 @@ export default function SpatialDataCardEdit(props) {
   };
 
   const closeSpatialDataCard = () => {
-    debugger;
     if (drawFeatureId) {
       stateApp.draw.delete(drawFeatureId);
       setDrawFeatureId("");

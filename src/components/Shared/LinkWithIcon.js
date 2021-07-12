@@ -91,7 +91,7 @@ export default function LinkWithIcon(props) {
                   <Grid item>
                     <Typography className={classes.topHeading} style={{ fontWeight: "bold" }} variant="h5" component="h2">
                       Linked Platform Owners
-                      </Typography>
+                    </Typography>
                   </Grid>
                   <Grid item>
                     <IconButton aria-label="delete" color="primary" onClick={() => setOpenDialog(false)}>
