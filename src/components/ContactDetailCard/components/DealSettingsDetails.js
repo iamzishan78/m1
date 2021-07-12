@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useState } from "react";
+import React, { Fragment, useContext, useState, useRef, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { get } from "lodash";
@@ -16,7 +16,6 @@ import {
   Avatar,
   InputAdornment,
   Popover,
-  Box,
   List,
   ListItem,
   ListItemText,
@@ -124,8 +123,9 @@ const useStyles = makeStyles((theme) => ({
   },
   subTaskRightGrid: {
     "& .MuiIconButton-root": {
-      height: "35px",
-      width: "35px",
+      height: "25px",
+      width: "25px",
+      margin: "5px",
     },
     "& .MuiTextField-root": {
       marginTop: "2px",
@@ -145,16 +145,31 @@ const useStyles = makeStyles((theme) => ({
   addSubTaskButton: {
     marginBottom: "10px",
   },
+  customAvatar: {
+    borderRadius: "50%",
+    backgroundColor: "red",
+    padding: "4px",
+    color: "#fff",
+    width: "25px",
+    height: "25px",
+    fontSize: "0.7rem",
+    textAlign: "center",
+  },
+  avatarButton: {
+    "& .MuiIconButton-label": {
+      width: "auto",
+    },
+  },
 }));
 
-function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
+function FlowLaneDetails({ users, activeDeal, dealSettings }) {
   const classes = useStyles();
   const [isNewSubtask, setNewSubtask] = useState({ index: -1, value: false });
   const [stateApp] = useContext(AppContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
   const [addDealSubtask] = useMutation(ADD_DEAL_SUBTASK);
-  const [updateSubtask, { data: task }] = useMutation(UPDATE_DEAL_SUBTASK);
+  const [updateSubtask] = useMutation(UPDATE_DEAL_SUBTASK);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -211,6 +226,66 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
     return str.length > n ? str.substr(0, n - 1) + "..." : str;
   }
 
+  const defaultColors = ["#d73d32", "#7e3794", "#4285f4", "#67ae3f", "#d61a7f", "#ff4080"];
+
+  function _stringAsciiPRNG(value, m) {
+    // Xn+1 = (a * Xn + c) % m
+    // 0 < a < m
+    // 0 <= c < m
+    // 0 <= X0 < m
+
+    const charCodes = [...value].map((letter) => letter.charCodeAt(0));
+    const len = charCodes.length;
+
+    const a = (len % (m - 1)) + 1;
+    const c = charCodes.reduce((current, next) => current + next) % m;
+
+    let random = charCodes[0] % m;
+    for (let i = 0; i < len; i++) random = (a * random + c) % m;
+
+    return random;
+  }
+
+  function getRandomColor(value, colors = defaultColors) {
+    // if no value is passed, always return transparent color otherwise
+    // a rerender would show a new color which would will
+    // give strange effects when an interface is loading
+    // and gets rerendered a few consequent times
+    if (!value) return "transparent";
+
+    // value based random color index
+    // the reason we don't just use a random number is to make sure that
+    // a certain value will always get the same color assigned given
+    // a fixed set of colors
+    const colorIndex = _stringAsciiPRNG(value, colors.length);
+    return colors[colorIndex];
+  }
+
+  const CustomAvatar = ({ text = "", type }) => {
+    const getInitials = (name) => {
+      if (!name || name.length === 0) return "--";
+      const split = name ? name.split(" ") : [""];
+      let initials = "";
+      split.forEach((s) => {
+        if (s[0]) initials += s[0];
+        if (initials.length === 2) return;
+      });
+      return initials.toUpperCase();
+    };
+
+    return (
+      <span
+        className={classes.customAvatar}
+        style={{
+          backgroundColor: getRandomColor(text),
+          paddingTop: type === "subtask" ? "6px" : "4px",
+        }}
+      >
+        {getInitials(text)}
+      </span>
+    );
+  };
+
   const SubtaskComponent = ({ task }) => (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.subTaskRoot}>
       <Grid item xs={6} className={classes.subTaskLeftGrid}>
@@ -230,7 +305,7 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
         <KeyboardDatePicker
           disableToolbar
           variant="inline"
-          format="DD MMM, YYYY"
+          format="MM/DD/YYYY"
           margin="normal"
           allowKeyboardControl={false}
           value={task.dueDate || ""}
@@ -240,29 +315,9 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
         <PopupState variant="popover" popupId="demo-popup-popover">
           {(popupState) => (
             <>
-              <IconButton {...bindTrigger(popupState)}>
+              <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
                 {task.assignee ? (
-                  <Avatar className={classes.dealOwnerAvatar}>
-                    {users.find((user) => user?.value === task.assignee)
-                      ? users
-                          .find((user) => user?.value === task.assignee)
-                          .text.toString()
-                          .toUpperCase()
-                          .split(" ").length > 1
-                        ? users
-                            .find((user) => user?.value === task.assignee)
-                            .text.toString()
-                            .toUpperCase()
-                            .split(" ")[0][0] +
-                          "" +
-                          users
-                            .find((user) => user?.value === task.assignee)
-                            .text.toString()
-                            .toUpperCase()
-                            .split(" ")[1][0]
-                        : "AO"
-                      : "AO"}
-                  </Avatar>
+                  <CustomAvatar text={users.find((user) => user?.value === task.assignee).text.toString()} type="subtask" />
                 ) : (
                   <AccountCircle fontSize="default" />
                 )}
@@ -349,27 +404,13 @@ function FlowLaneDetails({ users, ownerId, activeDeal, dealSettings }) {
                   startAdornment: (
                     <>
                       <InputAdornment position="start">
-                        <Avatar className={classes.dealOwnerAvatar}>
-                          {users.find((user) => user?.value === settings.stageDealDescriptor.approver)
-                            ? users
-                                .find((user) => user?.value === settings.stageDealDescriptor.approver)
-                                .text.toString()
-                                .toUpperCase()
-                                .split(" ").length > 1
-                              ? users
-                                  .find((user) => user?.value === settings.stageDealDescriptor.approver)
-                                  .text.toString()
-                                  .toUpperCase()
-                                  .split(" ")[0][0] +
-                                "" +
-                                users
-                                  .find((user) => user?.value === settings.stageDealDescriptor.approver)
-                                  .text.toString()
-                                  .toUpperCase()
-                                  .split(" ")[1][0]
-                              : "AO"
-                            : "AO"}
-                        </Avatar>
+                        {settings.stageDealDescriptor.approver ? (
+                          <CustomAvatar
+                            text={users.find((user) => user?.value === settings.stageDealDescriptor.approver).text.toString()}
+                          />
+                        ) : (
+                          <AccountCircle fontSize="default" />
+                        )}
                       </InputAdornment>
                       {params.InputProps.startAdornment}
                     </>

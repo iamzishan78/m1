@@ -12,7 +12,7 @@ import PipelineCard from "./PipelineCard";
 import { setFlowState } from "actions";
 import { UPDATE_PIPELINES_POSITIONS } from "graphQL/useMutationUpdatePipelinesPositions";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   flowlinesList: {
     margin: "5px 5px 10px 5px",
     overflowY: "auto",
