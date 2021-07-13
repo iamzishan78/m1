@@ -65,8 +65,10 @@ export default function ParcelsCard(props) {
       let net_acres = 0
       let nra = 0
       for(let i = 0; i < wells.length; i++){
-        net_acres = net_acres + wells[i].net_acres ? wells[i].net_acres : 0
-        nra = nra + wells[i].nra ? wells[i].nra : 0
+        const newNetAcres = wells[i].net_acres ? wells[i].net_acres : 0
+        net_acres = net_acres + newNetAcres
+        const newNra = wells[i].nra ? wells[i].nra : 0
+        nra = nra + newNra
       }
       setNRA(nra)
       setNetAcres(net_acres)
