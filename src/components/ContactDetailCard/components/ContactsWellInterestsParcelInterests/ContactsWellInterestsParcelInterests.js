@@ -14,7 +14,7 @@ function ContactsWellInterestsParcelInterests(props) {
     history.location.pathname.split("/").length - 1
     ];
 
-  const [selectedTab, setSelectedTab] = useState(type === 'wells' ? 0 : 1);
+  const [selectedTab, setSelectedTab] = useState(type === 'wells' ? 0 : type === 'parcels' ? 2 : 1);
 
 
   const Header = () => (
