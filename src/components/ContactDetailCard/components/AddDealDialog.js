@@ -109,11 +109,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#fff !important",
     padding: "0 6px",
   },
-  dealDetailRoot: {
+  scrollbar: {
     overflowX: "hidden",
     overflowY: "auto",
-    maxHeight: "93vh",
-    padding: "0px 30px 0px 30px",
     "&::-webkit-scrollbar": {
       width: "0.4em",
     },
@@ -124,6 +122,10 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "lightgray",
       borderRadius: 5,
     },
+  },
+  dealDetailRoot: {
+    maxHeight: "93vh",
+    padding: "0px 30px 0px 30px",
   },
   inputFieldDateRoot: {
     "& .MuiDialog-root": {},
@@ -1167,7 +1169,7 @@ function AddDealDialog(props) {
           }}
           isTransactPage={props.isTransactPage}
         >
-          <div style={{ padding: "30px" }}>
+          <div style={{ padding: "30px" }} className={classes.scrollbar}>
             <Grid item xs={12} style={{ minHeight: "35px" }}>
               <h4
                 style={{
@@ -1336,7 +1338,7 @@ function AddDealDialog(props) {
             </Grid>
           </Grid>
 
-          <div className={classes.dealDetailRoot}>
+          <div className={`${classes.dealDetailRoot} ${classes.scrollbar}`}>
             {!((Object.keys(contact).length === 0 && contact.constructor === Object) || contact === null) && !props.isTransactPage ? (
               <div className={classes.inputFieldDateRoot}>
                 <TextField

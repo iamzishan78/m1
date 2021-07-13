@@ -30,8 +30,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     border: "none",
     borderLeft: "4px solid #e2e2e2",
-    boxShadow:
-      "rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px",
+    boxShadow: "rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px",
     backgroundColor: "rgb(242, 242, 242)",
     textAlign: "center",
     marginBottom: "10px",
@@ -85,18 +84,45 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold !important",
   },
   boardAndTable: {
+    marginTop: "8px",
     maxHeight: "calc(100vh - 140px) !important",
     overflowY: "auto",
     maxWidth: "100vw",
     "& .react-trello-board": {
       height: "calc( 100vh - 140px)",
       "& >div": {
+        overflowX: "scroll",
+        overflowY: "hidden",
+        "&::-webkit-scrollbar": {
+          height: "0.4em",
+        },
+        "&::-webkit-scrollbar-track": {
+          "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          backgroundColor: "lightgray",
+          borderRadius: 5,
+        },
         height: "100%",
         "& .smooth-dnd-container": {
           height: "100%",
           "& section": {
             height: "100%",
             minHeight: "100%",
+
+            "& .vertical, & .horizontal": {
+              "&::-webkit-scrollbar": {
+                width: "0.4em",
+              },
+              "&::-webkit-scrollbar-track": {
+                "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "lightgray",
+                borderRadius: 5,
+              },
+              overflowY: "scroll",
+            },
           },
         },
       },
@@ -150,14 +176,7 @@ const CustomAvatar = ({ text = "" }) => {
   );
 };
 
-const defaultColors = [
-  "#d73d32",
-  "#7e3794",
-  "#4285f4",
-  "#67ae3f",
-  "#d61a7f",
-  "#ff4080",
-];
+const defaultColors = ["#d73d32", "#7e3794", "#4285f4", "#67ae3f", "#d61a7f", "#ff4080"];
 
 function _stringAsciiPRNG(value, m) {
   // Xn+1 = (a * Xn + c) % m
@@ -223,9 +242,7 @@ export default function Transact() {
           break;
 
         default:
-          cards = cards.filter(
-            (card) => card.metadata.status == filter && !card.metadata.IsDeleted
-          );
+          cards = cards.filter((card) => card.metadata.status == filter && !card.metadata.IsDeleted);
           break;
       }
 
@@ -244,12 +261,7 @@ export default function Transact() {
           lane &&
             lane.cards &&
             lane.cards.forEach((card) => {
-              const ownerId =
-                card &&
-                card.metadata &&
-                card.metadata.owners &&
-                card.metadata.owners[0] &&
-                card.metadata.owners[0].id;
+              const ownerId = card && card.metadata && card.metadata.owners && card.metadata.owners[0] && card.metadata.owners[0].id;
               if (!(ownerId in cardColors.current)) {
                 cardColors.current = {
                   ...cardColors.current,
@@ -279,9 +291,7 @@ export default function Transact() {
 
   useEffect(() => {
     if (pipeToShowTab && dealFilter) {
-      setFilteredTabTransactData([
-        ...filterTabCards(pipeToShowTab, dealFilter),
-      ]);
+      setFilteredTabTransactData([...filterTabCards(pipeToShowTab, dealFilter)]);
     }
   }, [pipeToShowTab, dealFilter]);
 
@@ -301,43 +311,24 @@ export default function Transact() {
     }));
   };
 
-  const handleCardDragEnd = (
-    cardId,
-    sourceLaneId,
-    targetLaneId,
-    position,
-    cardDetails
-  ) => {
+  const handleCardDragEnd = (cardId, sourceLaneId, targetLaneId, position, cardDetails) => {
     // handle drag within lanes - runs first
 
-    let unfilteredSourceLane = pipeToShow.lanes.find(
-      (lane) => lane?.id === sourceLaneId
-    );
-    let unfilteredTargetLane = pipeToShow.lanes.find(
-      (lane) => lane?.id === targetLaneId
-    );
+    let unfilteredSourceLane = pipeToShow.lanes.find((lane) => lane?.id === sourceLaneId);
+    let unfilteredTargetLane = pipeToShow.lanes.find((lane) => lane?.id === targetLaneId);
 
-    let filteredSourceLane = filteredBoardTransactData.lanes.find(
-      (lane) => lane?.id === sourceLaneId
-    );
-    let filteredTargetLane = filteredBoardTransactData.lanes.find(
-      (lane) => lane?.id === targetLaneId
-    );
+    let filteredSourceLane = filteredBoardTransactData.lanes.find((lane) => lane?.id === sourceLaneId);
+    let filteredTargetLane = filteredBoardTransactData.lanes.find((lane) => lane?.id === targetLaneId);
 
-    let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex(
-      (card) => card?.id === cardId
-    );
+    let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex((card) => card?.id === cardId);
     let unfilteredTargetPosition = (() => {
       if (position === 0) return 0;
       let atEnd = position >= filteredTargetLane?.cards?.length;
       let prevCardFilteredPosition = position - atEnd;
-      let prevCardAtPosition =
-        filteredTargetLane?.cards[prevCardFilteredPosition];
-      let prevCardUnfilteredPosition = unfilteredTargetLane?.cards.findIndex(
-        (card) => {
-          return card?.id === prevCardAtPosition?.id;
-        }
-      );
+      let prevCardAtPosition = filteredTargetLane?.cards[prevCardFilteredPosition];
+      let prevCardUnfilteredPosition = unfilteredTargetLane?.cards.findIndex((card) => {
+        return card?.id === prevCardAtPosition?.id;
+      });
 
       return (prevCardUnfilteredPosition += atEnd);
     })();
@@ -352,42 +343,32 @@ export default function Transact() {
     // update unfilteredSourceLane descriptors
     // including dragging down in same lane
     let sourceSliceStart = unfilteredSourcePosition + 1;
-    let sourceSliceEnd =
-      sourceLaneId === targetLaneId ? unfilteredTargetPosition + 1 : undefined;
+    let sourceSliceEnd = sourceLaneId === targetLaneId ? unfilteredTargetPosition + 1 : undefined;
     let unfilteredSourceLaneDescriptors = [
-      ...unfilteredSourceLane.cards
-        .slice(sourceSliceStart, sourceSliceEnd)
-        .map((card, index) => {
-          return {
-            _id: card.metadata.descriptorId,
-            position: unfilteredSourcePosition + index,
-          };
-        }),
+      ...unfilteredSourceLane.cards.slice(sourceSliceStart, sourceSliceEnd).map((card, index) => {
+        return {
+          _id: card.metadata.descriptorId,
+          position: unfilteredSourcePosition + index,
+        };
+      }),
     ];
 
     // update unfilteredTargetLane descriptors
     // including dragging up in same lane
     let targetSliceStart = unfilteredTargetPosition;
-    let targetSliceEnd =
-      sourceLaneId === targetLaneId ? unfilteredSourcePosition : undefined;
+    let targetSliceEnd = sourceLaneId === targetLaneId ? unfilteredSourcePosition : undefined;
     let unfilteredTargetLaneDescriptors = [
-      ...unfilteredTargetLane.cards
-        .slice(targetSliceStart, targetSliceEnd)
-        .map((card, index) => {
-          return {
-            _id: card.metadata.descriptorId,
-            position: unfilteredTargetPosition + index + 1,
-          };
-        }),
+      ...unfilteredTargetLane.cards.slice(targetSliceStart, targetSliceEnd).map((card, index) => {
+        return {
+          _id: card.metadata.descriptorId,
+          position: unfilteredTargetPosition + index + 1,
+        };
+      }),
     ];
 
     updateStageDealDescriptors({
       variables: {
-        stageDealDescriptors: [
-          movedCardDescriptor,
-          ...unfilteredSourceLaneDescriptors,
-          ...unfilteredTargetLaneDescriptors,
-        ],
+        stageDealDescriptors: [movedCardDescriptor, ...unfilteredSourceLaneDescriptors, ...unfilteredTargetLaneDescriptors],
       },
       refetchQueries: ["getPipeline"],
       // awaitRefetchQueries: true,
@@ -401,8 +382,7 @@ export default function Transact() {
 
       if (
         unfilteredTargetLane?.metadata?.dealsStatus &&
-        unfilteredTargetLane.metadata.dealsStatus.toLowerCase() !==
-          cardDetails?.metadata?.status?.toLowerCase()
+        unfilteredTargetLane.metadata.dealsStatus.toLowerCase() !== cardDetails?.metadata?.status?.toLowerCase()
       )
         updatedDeal = {
           ...updatedDeal,
@@ -446,10 +426,7 @@ export default function Transact() {
 
     let formattedDate = null;
 
-    if (metadata?.closeDate)
-      formattedDate = moment
-        .parseZone(new Date(metadata.closeDate))
-        .format("MM/DD/yyyy");
+    if (metadata?.closeDate) formattedDate = moment.parseZone(new Date(metadata.closeDate)).format("MM/DD/yyyy");
 
     let owner = null;
     let ownerId = null;
@@ -461,15 +438,11 @@ export default function Transact() {
     }
 
     let desc = description;
-    if (description && description.length > 50)
-      desc = description.slice(0, 53) + "...";
+    if (description && description.length > 50) desc = description.slice(0, 53) + "...";
 
-    const stageChangeDate =
-      metadata.stageChangeDate && moment.parseZone(metadata.stageChangeDate);
+    const stageChangeDate = metadata.stageChangeDate && moment.parseZone(metadata.stageChangeDate);
 
-    const lane = filteredBoardTransactData.lanes.find(
-      (lane) => lane.id === laneId
-    );
+    const lane = filteredBoardTransactData.lanes.find((lane) => lane.id === laneId);
 
     let cardColor = "limegreen";
     if (lane?.metadata?.rotting && stageChangeDate) {
@@ -508,21 +481,12 @@ export default function Transact() {
   };
 
   const getLaneHeader = ({ title, id, metadata }) => {
-    const lane = filteredBoardTransactData?.lanes?.find(
-      (lane) => lane.id === id
-    );
+    const lane = filteredBoardTransactData?.lanes?.find((lane) => lane.id === id);
     let dealCount = 0;
     if (lane) dealCount = lane?.cards.length;
 
     let priceSum = 0;
-    lane &&
-      lane.cards.forEach(
-        (card) =>
-          (priceSum +=
-            card && card.metadata && card.metadata.offerPrice
-              ? card.metadata.offerPrice
-              : 0)
-      );
+    lane && lane.cards.forEach((card) => (priceSum += card && card.metadata && card.metadata.offerPrice ? card.metadata.offerPrice : 0));
 
     const formattedTotal = vf_currency(priceSum);
 
@@ -539,14 +503,10 @@ export default function Transact() {
           {title} ({dealCount})
         </span>
         <span className={classes.laneHeaderTotalStyle}>
-          Total:{" "}
-          <span className={classes.laneHeaderNotBold}>{formattedTotal}</span>
+          Total: <span className={classes.laneHeaderNotBold}>{formattedTotal}</span>
         </span>
         <span className={classes.laneHeaderTotalStyle}>
-          Forecast:{" "}
-          <span className={classes.laneHeaderNotBold}>
-            {forecast === 0 || forecast === null ? "--" : forecastFormatted}
-          </span>
+          Forecast: <span className={classes.laneHeaderNotBold}>{forecast === 0 || forecast === null ? "--" : forecastFormatted}</span>
         </span>
       </header>
     );
@@ -603,8 +563,7 @@ export default function Transact() {
                   textAlign: "left",
                 }}
                 cardStyle={{
-                  boxShadow:
-                    "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
                   backgroundColor: "#F2F2F2",
                   textAlign: "center",
                   marginBottom: "10px",
@@ -633,18 +592,11 @@ export default function Transact() {
               />
             )}
             {stateApp.dealDisplayType === "table" && (
-              <M1nTable
-                dense
-                filteredTabTransactData={filteredTabTransactData}
-                parent="TransactDeals"
-              />
+              <M1nTable dense filteredTabTransactData={filteredTabTransactData} parent="TransactDeals" />
             )}
           </div>
         ) : pipeToShow === false ? (
-          <h1 style={{ marginTop: 80 }}>
-            No flowlines currently exist - please setup a new flowline and
-            corresponding stages.
-          </h1>
+          <h1 style={{ marginTop: 80 }}>No flowlines currently exist - please setup a new flowline and corresponding stages.</h1>
         ) : (
           <CircularProgress size={80} disableShrink color="secondary" />
         )}

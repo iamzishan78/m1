@@ -32,9 +32,7 @@ import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDeal
 import { ADD_DEAL_SUBTASK, UPDATE_DEAL_SUBTASK } from "graphQL/useMutationDealSubtask";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    // backgroundColor: "#fff",
-  },
+  root: {},
   newLaneProgress: {
     margin: "10px 0px 10px 0px",
   },
