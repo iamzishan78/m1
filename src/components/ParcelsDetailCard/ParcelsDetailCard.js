@@ -474,15 +474,13 @@ const DocumentHeader = () => (
               header="Associated Wells"
               dense
             />,
-            <div className={classes.parcelDocument}>
-              <ParcelDetailsDocumentTable
-                customLayer={parcelObj}
-                parent="associatedDocumentsPerParcel"
-                targetLabel="parcelDocument"
-                header={<DocumentHeader />}
-                dense
-              />
-            </div>
+            <ParcelDetailsDocumentTable
+              customLayer={parcelObj}
+              parent="associatedDocumentsPerParcel"
+              targetLabel="parcelDocument"
+              header={<DocumentHeader />}
+              dense
+            />
           ]}
         />
       </Grid>

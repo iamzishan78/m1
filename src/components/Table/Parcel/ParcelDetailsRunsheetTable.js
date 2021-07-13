@@ -14,7 +14,7 @@ import TableHOC from "components/Table/TableHOC";
 
 // QUERIES 
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { GET_PARCELS_FILES } from "graphQL/useQueryGetParcelFiles";
+import { GET_PARCELS_AGREEMENT } from "graphQL/useQueryGetParcelAgreement";
 import { DELETEDESCRIPTORFILE } from "graphQL/useMutationDeleteDescriptorFile";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
@@ -47,10 +47,10 @@ function ParcelDetailsRunsheetTable(props) {
   const [numPages, setNumPages] = useState(null);
 
   // queries 
-  const [getAllFiles, { data: dataParcelFiles, loading }] = useLazyQuery(GET_PARCELS_FILES);
+  const [getParcelAgreement, { data: dataParcelAgreement, loading }] = useLazyQuery(GET_PARCELS_AGREEMENT);
 
   const [updateParcelDocument] = useMutation(DELETEDESCRIPTORFILE, { refetchQueries: [ "getAllFiles" ], awaitRefetchQueries: true });
-  const tableData = dataParcelFiles?.getParcelFiles
+  const tableData = dataParcelAgreement?.getParcelAgreement
 
   const addAble = { type: "parcelRunsheet" }
   const total = false
@@ -61,18 +61,17 @@ function ParcelDetailsRunsheetTable(props) {
   },[props.rows])
 
   useEffect(() => {
-		getAllFiles({
+		getParcelAgreement({
 			variables: {
-				relatedObjectId: props.customLayer._id,
-				relatedObjectType: "Parcel",
+				parcelId: props.customLayer._id,
 			},
 		});
-	}, [getAllFiles, props.customLayer._id]);
+	}, [getParcelAgreement, props.customLayer._id]);
 
 
   useEffect(() => {
-    if (dataParcelFiles?.getParcelFiles?.length > 0) {
-      let wells = dataParcelFiles.getParcelFiles
+    if (dataParcelAgreement?.getParcelAgreement?.length > 0) {
+      let wells = dataParcelAgreement.getParcelAgreement
       wells = wells.map((w) => {
         return { ...w, _id: w.descriptorId }; 
       })
@@ -82,12 +81,12 @@ function ParcelDetailsRunsheetTable(props) {
       setColumns(columns);
       props.setLoading(false);
     }
-    else if (dataParcelFiles?.getParcelFiles?.length === 0) {
+    else if (dataParcelAgreement?.getParcelAgreement?.length === 0) {
       props.setLoading(false);
     }
   }, [tableData, props.dependencyUpdate]);
 
-  const count = dataParcelFiles?.paginatedContactWellInterests?.totalCount || 0
+  const count = dataParcelAgreement?.paginatedContactWellInterests?.totalCount || 0
   const options = {
     rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
     count: count,
@@ -109,17 +108,10 @@ function ParcelDetailsRunsheetTable(props) {
             id: ids[i],
         },
         refetchQueries: [
-          "getAllFiles",
+          "getParcelAgreement",
         ],
         awaitRefetchQueries: true,
-      }).then(() =>{
-        getAllFiles({
-          variables: {
-            relatedObjectId: props.customLayer._id,
-            relatedObjectType: "Parcel",
-          },
-        });
-      });
+      })
     }
   }
 

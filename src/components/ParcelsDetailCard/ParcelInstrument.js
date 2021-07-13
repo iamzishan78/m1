@@ -32,7 +32,9 @@ import joinAddress from "components/Shared/valueformatters/join-address.js";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { CREATEDESCRIPTORFILE } from "graphQL/useMutationCreateDescriptorFile";
-import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
+import { ADD_PARCEL_AGREEMENT } from "graphQL/useMutationAddParcelAgreement";
+import { INSTRUMENT_TYPE } from "graphQL/useQueryInstrumentType";
+import { RECORD_TYPE } from "graphQL/useQueryRecordType";
 
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
@@ -164,7 +166,7 @@ export default function ParcelInstrument(props) {
     effective_date: null,
     instrument_date: null,
     file_date: null,
-    rec: "",
+    rec_num: "",
     volume: "",
     page: "",
     legal_description: "",
@@ -188,19 +190,19 @@ export default function ParcelInstrument(props) {
   const [state, setState] = useState({
     right: false,
   });
-
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
   const [getInstrumentTypes, { data: instrumentTypes }] = useLazyQuery(
-    DOCUMENT_TYPE,
+    INSTRUMENT_TYPE,
     {
       fetchPolicy: "no-cache",
     }
   );
-  const [getRecordTypes, { data: recordTypes }] = useLazyQuery(DOCUMENT_TYPE, {
+  const [getRecordTypes, { data: recordTypes }] = useLazyQuery(RECORD_TYPE, {
     fetchPolicy: "no-cache",
   });
+  const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT);
 
   const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
     CREATEDESCRIPTORFILE,
@@ -269,6 +271,45 @@ export default function ParcelInstrument(props) {
     setState({ ...state, [anchor]: open });
   };
 
+  const handleSave = () => {
+    let instrument_type = "";
+    if (typeof newInstrument.instrument_type === "string") {
+      instrument_type = newInstrument.instrument_type;
+    } else if (newInstrument.instrument_type?.name) {
+      instrument_type = newInstrument.instrument_type.name;
+    }
+
+    let record_type = "";
+    if (typeof newInstrument.record_type === "string") {
+      record_type = newInstrument.record_type;
+    } else if (newInstrument.record_type?.name) {
+      record_type = newInstrument.record_type.name;
+    }
+    const fileId = fileData?.addFileDescriptor?.file?.id;
+    setLoader(true);
+    addParcelAgreement({
+      variables: {
+        agreement: {
+          instrument_type: instrument_type,
+          effective_date: newInstrument.effective_date,
+          file_date: newInstrument.file_date,
+          grantee: newInstrument.grantee,
+          grantor: newInstrument.grantor,
+          instrument_date: newInstrument.instrument_date,
+          legal_description: newInstrument.legal_description,
+          page: newInstrument.page,
+          rec_num: newInstrument.rec_num,
+          record_type: record_type,
+          volume: newInstrument.volume,
+          fileId: fileId || newInstrument.fileId,
+        },
+      },
+    }).then(() => {
+      props.setShowSlider(false);
+      setNewInstrument(instrumentInitial);
+      setLoader(false);
+    })
+  }
   return (
     <div>
       <Drawer anchor={"right"} open={true}>
@@ -319,11 +360,11 @@ export default function ParcelInstrument(props) {
                 setValue={(value) => {
                   setNewInstrument({
                     ...newInstrument,
-                    documentType: value,
+                    instrumentType: value,
                   });
                 }}
                 value={
-                  newInstrument.documentType ? newInstrument.documentType : ""
+                  newInstrument.instrumentType ? newInstrument.instrumentType : ""
                 }
               />
             </ListItem>
@@ -338,11 +379,11 @@ export default function ParcelInstrument(props) {
               <TextField
                 className={classes.maxWidth}
                 multiline
-                value={newInstrument?.documentName}
+                value={newInstrument?.grantor}
                 onChange={(e) => {
                   setNewInstrument({
                     ...newInstrument,
-                    documentName: e.target.value,
+                    grantor: e.target.value,
                   });
                 }}
               />
@@ -358,11 +399,11 @@ export default function ParcelInstrument(props) {
               <TextField
                 className={classes.maxWidth}
                 multiline
-                value={newInstrument?.documentName}
+                value={newInstrument?.grantee}
                 onChange={(e) => {
                   setNewInstrument({
                     ...newInstrument,
-                    documentName: e.target.value,
+                    grantee: e.target.value,
                   });
                 }}
               />
@@ -383,14 +424,14 @@ export default function ParcelInstrument(props) {
                 margin="normal"
                 id="date-picker-inline"
                 value={
-                  newInstrument?.dateTime
-                    ? new Date(newInstrument.dateTime)
+                  newInstrument?.effective_date
+                    ? new Date(newInstrument.effective_date)
                     : null
                 }
                 onChange={(date) => {
                   setNewInstrument({
                     ...newInstrument,
-                    dateTime: date ? String(date["_d"]) : "",
+                    effective_date: date ? String(date["_d"]) : "",
                   });
                 }}
                 KeyboardButtonProps={{
@@ -414,14 +455,14 @@ export default function ParcelInstrument(props) {
                 margin="normal"
                 id="date-picker-inline"
                 value={
-                  newInstrument?.dateTime
-                    ? new Date(newInstrument.dateTime)
+                  newInstrument?.instrument_date
+                    ? new Date(newInstrument.instrument_date)
                     : null
                 }
                 onChange={(date) => {
                   setNewInstrument({
                     ...newInstrument,
-                    dateTime: date ? String(date["_d"]) : "",
+                    instrument_date: date ? String(date["_d"]) : "",
                   });
                 }}
                 KeyboardButtonProps={{
@@ -445,14 +486,14 @@ export default function ParcelInstrument(props) {
                 margin="normal"
                 id="date-picker-inline"
                 value={
-                  newInstrument?.dateTime
-                    ? new Date(newInstrument.dateTime)
+                  newInstrument?.file_date
+                    ? new Date(newInstrument.file_date)
                     : null
                 }
                 onChange={(date) => {
                   setNewInstrument({
                     ...newInstrument,
-                    dateTime: date ? String(date["_d"]) : "",
+                    file_date: date ? String(date["_d"]) : "",
                   });
                 }}
                 KeyboardButtonProps={{
@@ -474,11 +515,11 @@ export default function ParcelInstrument(props) {
                 setValue={(value) => {
                   setNewInstrument({
                     ...newInstrument,
-                    documentType: value,
+                    record_type: value,
                   });
                 }}
                 value={
-                  newInstrument.documentType ? newInstrument.documentType : ""
+                  newInstrument.record_type ? newInstrument.record_type : ""
                 }
               />
             </ListItem>
@@ -496,11 +537,11 @@ export default function ParcelInstrument(props) {
                     <TextField
                       className={classes.maxWidth}
                       multiline
-                      value={newInstrument?.documentName}
+                      value={newInstrument?.rec_num}
                       onChange={(e) => {
                         setNewInstrument({
                           ...newInstrument,
-                          documentName: e.target.value,
+                          rec_num: e.target.value,
                         });
                       }}
                     />
@@ -512,11 +553,11 @@ export default function ParcelInstrument(props) {
                     <TextField
                       className={classes.maxWidth}
                       multiline
-                      value={newInstrument?.documentName}
+                      value={newInstrument?.volume}
                       onChange={(e) => {
                         setNewInstrument({
                           ...newInstrument,
-                          documentName: e.target.value,
+                          volume: e.target.value,
                         });
                       }}
                     />
@@ -528,11 +569,11 @@ export default function ParcelInstrument(props) {
                     <TextField
                       className={classes.maxWidth}
                       multiline
-                      value={newInstrument?.documentName}
+                      value={newInstrument?.page}
                       onChange={(e) => {
                         setNewInstrument({
                           ...newInstrument,
-                          documentName: e.target.value,
+                          page: e.target.value,
                         });
                       }}
                     />
@@ -551,11 +592,11 @@ export default function ParcelInstrument(props) {
               <TextField
                 className={classes.maxWidth}
                 multiline
-                value={newInstrument?.documentName}
+                value={newInstrument?.legal_description}
                 onChange={(e) => {
                   setNewInstrument({
                     ...newInstrument,
-                    documentName: e.target.value,
+                    legal_description: e.target.value,
                   });
                 }}
               />
@@ -684,14 +725,14 @@ export default function ParcelInstrument(props) {
               color="secondary"
               size="medium"
               disableElevation
-              disabled={
-                (!fileData && !newInstrument.fileId) || !newInstrument.fileId
-              }
+              // disabled={
+              //   (!fileData && !newInstrument.fileId) || !newInstrument.fileId
+              // }
               onClick={() => {
-                if (fileData || newInstrument.fileId) {
+                // if (fileData || newInstrument.fileId) {
                   setLoader(true);
-                  // UpDatefileFN();
-                }
+                  handleSave();
+                // }
               }}
               className={classes.footerButton}
             >
