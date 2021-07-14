@@ -292,7 +292,13 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
             <Checkbox
               name="subtaskCheckbox"
               value={task.name}
-              onChange={(e) => handleUpdateSubtask({ ...task, isCompleted: e.target.checked })}
+              onChange={(e) =>
+                handleUpdateSubtask({
+                  ...task,
+                  isCompleted: e.target.checked,
+                  completionDate: e.target.checked ? new Date().toString() : null,
+                })
+              }
               checked={task.isCompleted}
             />
           }
@@ -333,7 +339,10 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
               >
                 <List style={{ maxHeight: 300 }}>
                   {users.map((user) => (
-                    <ListItem button onClick={() => handleUpdateSubtask({ ...task, assignee: user.value })}>
+                    <ListItem
+                      button
+                      onClick={() => handleUpdateSubtask({ ...task, assignee: user.value, assignedDate: new Date().toString() })}
+                    >
                       <ListItemText primary={user.text} />
                     </ListItem>
                   ))}
@@ -363,7 +372,7 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
             Efficiency
           </Typography>
           <div style={{ minWidth: "200px" }}>
-            <ProgressBar value={50} isNumeric />
+            <ProgressBar value={settings.efficiency} isNumeric />
           </div>
         </Grid>
         <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
