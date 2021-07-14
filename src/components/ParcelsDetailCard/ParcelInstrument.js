@@ -179,14 +179,6 @@ export default function ParcelInstrument(props) {
   const [fileData, setFileData] = useState(null);
   const [newInstrument, setNewInstrument] = useState(instrumentInitial);
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
-  const [instrumentType, setInstrumentType] = useState({
-    name: "",
-    _id: null,
-  });
-  const [recordType, setRecordType] = useState({
-    name: "",
-    _id: null,
-  });
   const [state, setState] = useState({
     right: false,
   });
@@ -242,8 +234,6 @@ export default function ParcelInstrument(props) {
 
   const handleClose = () => {
     props.setShowSlider(false);
-    setInstrumentType({ name: "", _id: null });
-    setRecordType({ name: "", _id: null });
     setNewInstrument(instrumentInitial);
   };
 
@@ -272,6 +262,7 @@ export default function ParcelInstrument(props) {
   };
 
   const handleSave = () => {
+    debugger
     let instrument_type = "";
     if (typeof newInstrument.instrument_type === "string") {
       instrument_type = newInstrument.instrument_type;
@@ -285,30 +276,33 @@ export default function ParcelInstrument(props) {
     } else if (newInstrument.record_type?.name) {
       record_type = newInstrument.record_type.name;
     }
+
     const fileId = fileData?.addFileDescriptor?.file?.id;
     setLoader(true);
-    addParcelAgreement({
-      variables: {
-        agreement: {
-          instrument_type: instrument_type,
-          effective_date: newInstrument.effective_date,
-          file_date: newInstrument.file_date,
-          grantee: newInstrument.grantee,
-          grantor: newInstrument.grantor,
-          instrument_date: newInstrument.instrument_date,
-          legal_description: newInstrument.legal_description,
-          page: newInstrument.page,
-          rec_num: newInstrument.rec_num,
-          record_type: record_type,
-          volume: newInstrument.volume,
-          fileId: fileId || newInstrument.fileId,
-        },
-      },
-    }).then(() => {
-      props.setShowSlider(false);
-      setNewInstrument(instrumentInitial);
-      setLoader(false);
-    })
+    // addParcelAgreement({
+    //   variables: {
+    //     agreement: {
+    //       instrument_type: instrument_type,
+    //       effective_date: newInstrument.effective_date,
+    //       file_date: newInstrument.file_date,
+    //       grantee: newInstrument.grantee,
+    //       grantor: newInstrument.grantor,
+    //       instrument_date: newInstrument.instrument_date,
+    //       legal_description: newInstrument.legal_description,
+    //       page: newInstrument.page,
+    //       rec_num: newInstrument.rec_num,
+    //       record_type: record_type,
+    //       volume: newInstrument.volume,
+    //       fileId: fileId || newInstrument.fileId,
+    //       fileName: fileData?.addFileDescriptor?.file?.name,
+    //       userId: stateApp.user.mongoId
+    //     },
+    //   },
+    // }).then(() => {
+    //   props.setShowSlider(false);
+    //   setNewInstrument(instrumentInitial);
+    //   setLoader(false);
+    // })
   }
   return (
     <div>
@@ -360,11 +354,11 @@ export default function ParcelInstrument(props) {
                 setValue={(value) => {
                   setNewInstrument({
                     ...newInstrument,
-                    instrumentType: value,
+                    instrument_type: value,
                   });
                 }}
                 value={
-                  newInstrument.instrumentType ? newInstrument.instrumentType : ""
+                  newInstrument.instrument_type ? newInstrument.instrument_type : ""
                 }
               />
             </ListItem>
@@ -725,14 +719,12 @@ export default function ParcelInstrument(props) {
               color="secondary"
               size="medium"
               disableElevation
-              // disabled={
-              //   (!fileData && !newInstrument.fileId) || !newInstrument.fileId
-              // }
+              disabled={!fileData && !newInstrument.fileId}
               onClick={() => {
-                // if (fileData || newInstrument.fileId) {
+                if (fileData || newInstrument.fileId) {
                   setLoader(true);
                   handleSave();
-                // }
+                }
               }}
               className={classes.footerButton}
             >
