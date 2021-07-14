@@ -56,7 +56,8 @@ function Search({ contactId }) {
       variables: { wells: selectedWells, contactId, userId: stateApp.user.mongoId, },
       refetchQueries: [
         "getContactWells",
-        "getPaginatedContactWellInterests"
+        "getPaginatedContactWellInterests",
+        "getContactWellInterestsFilterOptions"
       ],
       awaitRefetchQueries: true
     }).then(
