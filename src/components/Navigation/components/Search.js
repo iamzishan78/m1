@@ -33,6 +33,10 @@ import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHis
 import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
+import { PAGINATEDWELLSQUERY } from "graphQL/useQueryPaginatedWells";
+import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
+import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
+import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
 
 // custom components 
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
@@ -305,37 +309,40 @@ function Search() {
     }
   }, [searchHistoryList]);
 
+  const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(
+    PAGINATEDWELLSQUERY,
+    { fetchPolicy: "cache-and-network", skip: true }
+  );
+
+  const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(
+    PAGINATEDOWNERSQUERY,
+    { fetchPolicy: "cache-and-network", skip: true }
+  );
+
+  const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(
+    PAGINATEDOPERATORSQUERY,
+    { fetchPolicy: "cache-and-network", skip: true }
+  );
+
+  const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(
+    PAGINATEDLEASESQUERY,
+    { fetchPolicy: "cache-and-network", skip: true }
+  );
+
   //////////// Search History End//////////////////
 
 
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const endpoint =
-          "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
-          top +
-          "&search=" +
-          encodeURIComponent(
-            request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~")
-          );
 
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
+        getPaginatedWells({
+          variables: {
+            search: request.input,
+            pageOverride: top
+          }
+        })
 
-        const options = {
-          method: "GET",
-          headers: headers,
-        };
-
-        fetch(endpoint, options)
-          .then((response) => response.json())
-          .then((response) => {
-            callback(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
       }, 500),
     []
   );
@@ -343,31 +350,12 @@ function Search() {
   const callOwnerSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const endpoint =
-          "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName&top=" +
-          top +
-          "&search=" +
-          encodeURIComponent(
-            request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~")
-          );
-
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
-
-        const options = {
-          method: "GET",
-          headers: headers,
-        };
-
-        fetch(endpoint, options)
-          .then((response) => response.json())
-          .then((response) => {
-            callback(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        getPaginatedOwners({
+          variables: {
+            search: request.input,
+            pageOverride: top
+          }
+        })
       }, 500),
     []
   );
@@ -375,31 +363,12 @@ function Search() {
   const callOperatorSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const endpoint =
-          "https://m1search.search.windows.net/indexes/"+operatorIndexName+"/docs?api-version=2020-06-30&queryType=full&ount=true&searchFields=Operator&top=" +
-          top +
-          "&search=" +
-          encodeURIComponent(
-            request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~")
-          );
-
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
-
-        const options = {
-          method: "GET",
-          headers: headers,
-        };
-
-        fetch(endpoint, options)
-          .then((response) => response.json())
-          .then((response) => {
-            callback(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        getPaginatedOperators({
+          variables: {
+            search: request.input,
+            pageOverride: top
+          }
+        })
       }, 500),
     []
   );
@@ -407,31 +376,14 @@ function Search() {
   const callLeaseSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const endpoint =
-          "https://m1search.search.windows.net/indexes/"+leaseIndexName+"/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
-          top +
-          "&search=" +
-          encodeURIComponent(
-            request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~")
-          );
+        
+        getPaginatedLeases({
+          variables: {
+            search: request.input,
+            pageOverride: top
+          }
+        })
 
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
-
-        const options = {
-          method: "GET",
-          headers: headers,
-        };
-
-        fetch(endpoint, options)
-          .then((response) => response.json())
-          .then((response) => {
-            callback(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
       }, 500),
     []
   );
@@ -462,10 +414,109 @@ function Search() {
   );
 
   useEffect(() => {
+    let newOptions = []
+      if (constDataOperators) {
+
+        newOptions = [
+          ...constDataOperators.paginatedOperators.edges.map((result) => {
+            return {
+              ...result,
+              Source: operatorIndexName,
+              Primary: result.Operator,
+              Secondary: null,
+            };
+          }),
+        ];
+
+        setMaxMinOperatosScore(maxMinScore(constDataOperators.paginatedOperators.edges));
+
+        setOptions(newOptions);
+        setLoadingOperators(false);
+      }
+
+  }, [constDataOperators])
+
+  useEffect(() => {
+    
+    if (constDataWells) {
+
+      let newOptions = [];
+      newOptions = [
+      ...constDataWells.paginatedWells.edges.map((well) => {
+          return {
+            ...well,
+            Source: wellCogIndexName,
+            Primary: well.WellName,
+            Secondary: well.ApiNumber,
+          };
+        })
+      ]
+      setMaxMinWellsScore(maxMinScore(constDataWells.paginatedWells.edges));
+
+      setOptions(newOptions);
+      setLoadingWells(false);
+
+    }
+  }, [constDataWells])
+  useEffect(() => {
+    if (constDataLeases) {
+      let newOptions = []
+
+      newOptions = [
+        ...constDataLeases.paginatedLeases.edges.map((result) => {
+          return {
+            ...result,
+            Source: leaseIndexName,
+            Primary:
+              result.Lease &&
+              (result.Lease === "" ||
+                result.Lease === "N/A" ||
+                result.Lease === "(N/A)")
+                ? "--"
+                : result.Lease,
+            Secondary:
+              result.LeaseId &&
+              (result.LeaseId === "" ||
+                result.LeaseId === "N/A" ||
+                result.LeaseId === "(N/A)")
+                ? null
+                : result.LeaseId,
+          };
+        }),
+      ];
+      setMaxMinLeasesScore(maxMinScore(constDataLeases.paginatedLeases.edges));
+
+      setOptions(newOptions);
+      setLoadingLeases(false);
+    }
+
+  }, [constDataLeases])
+
+  useEffect(() => {
+
+    if (constDataOwners) {
+      let newOptions
+        newOptions = [
+          ...constDataOwners.paginatedOwners.edges.map((result) => {
+            return {
+              ...result,
+              Source: ownerCogIndexName,
+              Primary: result.OwnerName,
+              Secondary: `${result.StreetAddress}\n${result.City}\n${result.State}\n${result.Zip}`,
+            };
+          }),
+        ];
+
+      setMaxMinOwnersScore(maxMinScore(constDataOwners.paginatedOwners.edges));
+      setOptions(newOptions);
+      setLoadingOwners(false);
+    }
+  }, [constDataOwners])
+
+  useEffect(() => {
     // this use effect takes the contactdata once it comes in from the gql query
     // and flattens things into an array 
     // that presents options up to the search menu bar (called newOptions)
-
     if (
       constDataContacts 
     ) {
@@ -500,7 +551,7 @@ function Search() {
 
     }
   }, [
-    constDataContacts,
+    constDataContacts
   ]);
 
   //////// >>>>>>>>> END 
@@ -559,141 +610,24 @@ function Search() {
             ? callWellSearch(
                 { input: searchInputValue },
                 searchTop,
-                (results) => {
-                  if (results) {
-                    const indexSource = results["@odata.context"].substring(
-                      results["@odata.context"].indexOf("('") + 2,
-                      results["@odata.context"].indexOf("')")
-                    );
-
-                    newOptions = [
-                      ...results.value.map((result) => {
-                        result.Score = result["@search.score"];
-                        delete result["@search.score"];
-                        return {
-                          ...result,
-                          Source: indexSource,
-                          Primary: result.WellName,
-                          Secondary: result.ApiNumber,
-                        };
-                      }),
-                      ...newOptions,
-                    ];
-
-                    setMaxMinWellsScore(maxMinScore(results.value));
-                  }
-
-                  setOptions(newOptions);
-                  setLoadingWells(false);
-                }
               )
             : null,
           searchOption == "all" || searchOption == "owners"
             ? callOwnerSearch(
                 { input: searchInputValue },
                 searchTop,
-                (results) => {
-                  if (results) {
-                    const indexSource = results["@odata.context"].substring(
-                      results["@odata.context"].indexOf("('") + 2,
-                      results["@odata.context"].indexOf("')")
-                    );
-                    newOptions = [
-                      ...results.value.map((result) => {
-                        result.Score = result["@search.score"];
-                        delete result["@search.score"];
-                        return {
-                          ...result,
-                          Source: indexSource,
-                          Primary: result.OwnerName,
-                          Secondary: `${result.StreetAddress}\n${result.City}\n${result.State}\n${result.Zip}`,
-                        };
-                      }),
-                      ...newOptions,
-                    ];
-
-                    setMaxMinOwnersScore(maxMinScore(results.value));
-                  }
-
-                  setOptions(newOptions);
-                  setLoadingOwners(false);
-                }
               )
             : null,
           searchOption == "all" || searchOption == "operators"
             ? callOperatorSearch(
                 { input: searchInputValue },
                 searchTop,
-                (results) => {
-                  if (results) {
-                    const indexSource = results["@odata.context"].substring(
-                      results["@odata.context"].indexOf("('") + 2,
-                      results["@odata.context"].indexOf("')")
-                    );
-                    newOptions = [
-                      ...results.value.map((result) => {
-                        result.Score = result["@search.score"];
-                        delete result["@search.score"];
-                        return {
-                          ...result,
-                          Source: indexSource,
-                          Primary: result.Operator,
-                          Secondary: null,
-                        };
-                      }),
-                      ...newOptions,
-                    ];
-
-                    setMaxMinOperatosScore(maxMinScore(results.value));
-                  }
-
-                  setOptions(newOptions);
-                  setLoadingOperators(false);
-                }
               )
             : null,
           searchOption == "all" || searchOption == "leases"
             ? callLeaseSearch(
                 { input: searchInputValue },
                 searchTop,
-                (results) => {
-                  if (results) {
-                    const indexSource = results["@odata.context"].substring(
-                      results["@odata.context"].indexOf("('") + 2,
-                      results["@odata.context"].indexOf("')")
-                    );
-                    newOptions = [
-                      ...results.value.map((result) => {
-                        result.Score = result["@search.score"];
-                        delete result["@search.score"];
-
-                        return {
-                          ...result,
-                          Source: indexSource,
-                          Primary:
-                            result.Lease &&
-                            (result.Lease === "" ||
-                              result.Lease === "N/A" ||
-                              result.Lease === "(N/A)")
-                              ? "--"
-                              : result.Lease,
-                          Secondary:
-                            result.LeaseId &&
-                            (result.LeaseId === "" ||
-                              result.LeaseId === "N/A" ||
-                              result.LeaseId === "(N/A)")
-                              ? null
-                              : result.LeaseId,
-                        };
-                      }),
-                      ...newOptions,
-                    ];
-                    setMaxMinLeasesScore(maxMinScore(results.value));
-                  }
-
-                  setOptions(newOptions);
-                  setLoadingLeases(false);
-                }
               )
             : null,
 

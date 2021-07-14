@@ -19,8 +19,14 @@ import joinAddress from "../../Shared/valueformatters/join-address.js";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+import { PAGINATEDWELLSQUERY } from "graphQL/useQueryPaginatedWells";
+import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
+import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
+import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
 
-
+const leaseIndexName = 'lease-index-v2';
+const operatorIndexName = 'operator-index';
+const wellCogIndexName = "wellheader-index-en-ms";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -136,132 +142,82 @@ function MapGridCardSearch(props) {
 
 
 
+  const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(
+    PAGINATEDWELLSQUERY,
+    { fetchPolicy: "cache-and-network", skip: true }
+  );
 
+  const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(
+    PAGINATEDOWNERSQUERY,
+    { fetchPolicy: "cache-and-network", skip: true }
+  );
+
+  const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(
+    PAGINATEDOPERATORSQUERY,
+    { fetchPolicy: "cache-and-network", skip: true }
+  );
+
+  const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(
+    PAGINATEDLEASESQUERY,
+    { fetchPolicy: "cache-and-network", skip: true }
+  );
 
 
   const callWellSearch = React.useMemo(
     () =>
-      debounce((request, callback) => {
+      debounce((request, top, callback) => {
 
-        const endpoint =
-          "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
-          searchTop +
-          "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
+        getPaginatedWells({
+          variables: {
+            search: request.input,
+            pageOverride: top
+          }
+        })
 
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
-
-        const options = {
-          method: "GET",
-          headers: headers,
-        };
-
-        fetch(endpoint, options)
-          .then((response) => response.json())
-          .then((response) => {
-            callback(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
       }, 500),
-
-
     []
   );
 
   const callOwnerSearch = React.useMemo(
     () =>
-      debounce((request, callback) => {
-        const endpoint =
-          "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName&top=" +
-          searchTop +
-          "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
-
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
-
-        const options = {
-          method: "GET",
-          headers: headers,
-        };
-
-        fetch(endpoint, options)
-          .then((response) => response.json())
-          .then((response) => {
-            callback(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+      debounce((request, top, callback) => {
+        getPaginatedOwners({
+          variables: {
+            search: request.input,
+            pageOverride: top
+          }
+        })
       }, 500),
     []
   );
 
   const callOperatorSearch = React.useMemo(
     () =>
-      debounce((request, callback) => {
-        const endpoint =
-          "https://m1search.search.windows.net/indexes/operator-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Operator&top=" +
-          searchTop +
-          "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
-
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
-
-        const options = {
-          method: "GET",
-          headers: headers,
-        };
-
-        fetch(endpoint, options)
-          .then((response) => response.json())
-          .then((response) => {
-            callback(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+      debounce((request, top, callback) => {
+        getPaginatedOperators({
+          variables: {
+            search: request.input,
+            pageOverride: top
+          }
+        })
       }, 500),
     []
   );
 
   const callLeaseSearch = React.useMemo(
     () =>
-      debounce((request, callback) => {
-        const endpoint =
-          "https://m1search.search.windows.net/indexes/lease-index-v2/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
-          searchTop +
-          "&search=" +
-          encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
+      debounce((request, top, callback) => {
+        
+        getPaginatedLeases({
+          variables: {
+            search: request.input,
+            pageOverride: top
+          }
+        })
 
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
-
-        const options = {
-          method: "GET",
-          headers: headers,
-        };
-
-        fetch(endpoint, options)
-          .then((response) => response.json())
-          .then((response) => {
-            callback(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
       }, 500),
     []
   );
-
   const callMapboxSearch = React.useMemo(
     () =>
       debounce((request, callback) => {
@@ -293,102 +249,143 @@ function MapGridCardSearch(props) {
     []
   );
 
+  useEffect(() => {
+    let newOptions = []
+      if (constDataOperators) {
+
+        newOptions = [
+          ...constDataOperators.paginatedOperators.edges.map((result) => {
+            return {
+              ...result,
+              Source: operatorIndexName,
+              Primary: result.Operator,
+              Secondary: null,
+            };
+          }),
+        ];
+        dispatch(
+          setMapGridCardState({
+            searchResultData: [...newOptions],
+            searchloading: false,
+          })
+        );
+      }
+
+  }, [constDataOperators])
+
+  useEffect(() => {
+    
+    if (constDataWells) {
+
+      let newOptions = [];
+      newOptions = [
+      ...constDataWells.paginatedWells.edges.map((well) => {
+          return {
+            ...well,
+            Source: wellCogIndexName,
+            Primary: well.WellName,
+            Secondary: well.ApiNumber,
+          };
+        })
+      ]
+      dispatch(
+        setMapGridCardState({
+          searchResultData: [...newOptions],
+          searchloading: false,
+        })
+      );
+
+    }
+  }, [constDataWells])
+
+  useEffect(() => {
+    if (constDataLeases) {
+      let newOptions = []
+
+      newOptions = [
+        ...constDataLeases.paginatedLeases.edges.map((result) => {
+          return {
+            ...result,
+            Source: leaseIndexName,
+            Primary:
+              result.Lease &&
+              (result.Lease === "" ||
+                result.Lease === "N/A" ||
+                result.Lease === "(N/A)")
+                ? "--"
+                : result.Lease,
+            Secondary:
+              result.LeaseId &&
+              (result.LeaseId === "" ||
+                result.LeaseId === "N/A" ||
+                result.LeaseId === "(N/A)")
+                ? null
+                : result.LeaseId,
+          };
+        }),
+      ];
+      dispatch(
+        setMapGridCardState({
+          searchResultData: [...newOptions],
+          searchloading: false,
+        })
+      );
+    }
+
+  }, [constDataLeases])
+
+  useEffect(() => {
+
+    if (constDataOwners) {
+      let newOptions
+        newOptions = [
+          ...constDataOwners.paginatedOwners.edges.map((result) => {
+            return {
+              ...result,
+              Source: 'globalowner-index',
+              Primary: result.OwnerName,
+              Secondary: `${result.StreetAddress}\n${result.City}\n${result.State}\n${result.Zip}`,
+            };
+          }),
+        ];
+
+        dispatch(
+          setMapGridCardState({
+            searchResultData: [...newOptions],
+            searchloading: false,
+          })
+        );
+    }
+  }, [constDataOwners])
+
   React.useEffect(() => {
     (async () => {
       let newOptions = [];
 
       Promise.all([
         props.searchOption == "well"
-          ? callWellSearch({ input: searchInputValue }, (results) => {
-              if (results) {
-                const indexSource = results["@odata.context"].substring(
-                  results["@odata.context"].indexOf("('") + 2,
-                  results["@odata.context"].indexOf("')")
-                );
-                newOptions = [...results.value];
-              }
-              dispatch(
-                setMapGridCardState({
-                  searchResultData: [...newOptions],
-                  searchloading: false,
-                })
-              );
-            })
+          ? callWellSearch({
+            input: searchInputValue,
+            searchTop
+          })
           : null,
         props.searchOption == "owner"
-          ? callOwnerSearch({ input: searchInputValue }, (results) => {
-              if (results) {
-                const indexSource = results["@odata.context"].substring(
-                  results["@odata.context"].indexOf("('") + 2,
-                  results["@odata.context"].indexOf("')")
-                );
-                newOptions = [
-                  ...results.value.map((result) => {
-                    return {
-                      ...result,
-                      id: result.Id,
-                      FullAddress: joinAddress(result),
-                    };
-                  }),
-                ];
-              }
-              dispatch(
-                setMapGridCardState({
-                  searchResultData: [...newOptions],
-                  searchloading: false,
-                })
-              );
-            })
+          ? callOwnerSearch({
+            input: searchInputValue,
+            searchTop
+          })
           : null,
         props.searchOption == "operator"
-          ? callOperatorSearch({ input: searchInputValue }, (results) => {
-              if (results) {
-                const indexSource = results["@odata.context"].substring(
-                  results["@odata.context"].indexOf("('") + 2,
-                  results["@odata.context"].indexOf("')")
-                );
-                newOptions = [...results.value];
-              }
-              dispatch(
-                setMapGridCardState({
-                  searchResultData: [...newOptions],
-                  searchloading: false,
-                })
-              );
-            })
+          ? callOperatorSearch({
+            input: searchInputValue,
+            searchTop
+          })
           : null,
         props.searchOption == "lease"
-          ? callLeaseSearch({ input: searchInputValue }, (results) => {
-              if (results) {
-                const indexSource = results["@odata.context"].substring(
-                  results["@odata.context"].indexOf("('") + 2,
-                  results["@odata.context"].indexOf("')")
-                );
-                newOptions = [
-                  ...results.value.map((result) => {
-                    return {
-                      ...result,
-                      Lease:
-                        result.Lease &&
-                        (result.Lease === "N/A" || result.Lease === "(N/A)")
-                          ? null
-                          : result.Lease,
-                      LeaseId:
-                        result.LeaseId &&
-                        (result.LeaseId === "N/A" || result.LeaseId === "(N/A)")
-                          ? null
-                          : result.LeaseId,
-                    };
-                  }),
-                ];
-              }
-              dispatch(
-                setMapGridCardState({
-                  searchResultData: [...newOptions],
-                  searchloading: false,
-                })
-              );
-            })
+          ? callLeaseSearch({ 
+            input: searchInputValue,
+            searchTop
+          })
           : null,
 
         props.searchOption == "contacts"
