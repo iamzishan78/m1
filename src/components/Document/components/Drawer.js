@@ -154,13 +154,14 @@ export default function DocumentDrawer() {
   const documentInitial = {
     documentName: "",
     recordingInfo: "",
-    dateTime: new Date(),
+    dateTime: null,
     documentNumber: "",
     documentType: "",
     partyName1: "",
     partyName2: "",
     fileId: "",
   }
+  const [fileData, setFileData] = useState(null);
   const [newDocument, setNewDocument] = useState(documentInitial);
 
   const [nameAutValueParty1, setNameAutValueParty1] = useState({
@@ -186,6 +187,17 @@ export default function DocumentDrawer() {
   });
 
   useEffect(() => {
+    if (fileData) {
+      let ID = [];
+      ID.push(fileData?.addFileDescriptor?.file?.id);
+      viewFiles({
+        variables: { fileIds: ID },
+      });
+    }
+  }, [fileData]);
+
+
+  useEffect(() => {
     getDocumentTypes();
   }, [getDocumentTypes]);
 
@@ -198,7 +210,8 @@ export default function DocumentDrawer() {
     } else if (newDocument.documentType?.name) {
       documentType = newDocument.documentType.name;
     }
-    if (stateApp.selectedDocument.fileId) {
+    const fileId = fileData?.addFileDescriptor?.file?.id;
+    if (stateApp.selectedDocument.fileId || fileId ) {
       setLoader(true);
       updateDocument({
         variables: {
@@ -210,12 +223,13 @@ export default function DocumentDrawer() {
             documentType: documentType,
             partyName1: nameAutValueParty1._id,
             partyName2: nameAutValueParty2._id,
-            fileId: newDocument.fileId,
+            fileId: fileId || newDocument.fileId,
           },
         },
         refetchQueries: ["getDocuments"],
         awaitRefetchQueries: true,
       }).then(() => {
+        setFileData(null)
         setStateApp({
           ...stateApp,
           DocumentDrawer: false,
@@ -244,6 +258,7 @@ export default function DocumentDrawer() {
       DocumentDrawer: false,
       selectedDocument: {},
     });
+    setFileData(null)
     setNameAutValueParty1({ name: "", _id: null })
     setNameAutValueParty2({ name: "", _id: null })
     setNewDocument(documentInitial)
@@ -460,11 +475,11 @@ export default function DocumentDrawer() {
             format="MM/DD/YYYY"
             margin="normal"
             id="date-picker-inline"
-            value={newDocument?.dateTime}
+            value={newDocument?.dateTime ? new Date(newDocument.dateTime): null}
             onChange={(date) => {
               setNewDocument({
                 ...newDocument,
-                dateTime: String(date["_d"]),
+                dateTime: date ? String(date["_d"]) : '',
               });
             }}
             KeyboardButtonProps={{
@@ -521,7 +536,7 @@ export default function DocumentDrawer() {
 
 
 
-      {stateApp.selectedDocument?.fileId ? (
+      {stateApp.selectedDocument?.fileId || fileData ? (
           <ListItem>
             <div style={{ display: "flex", justifyContent: "start" }}>
               {viewFileSResult?.viewFiles?.map((value, key) => {
@@ -676,7 +691,7 @@ export default function DocumentDrawer() {
         )}
 
 
-        {!stateApp.selectedDocument?.fileId ? (
+        {!stateApp.selectedDocument?.fileId && !fileData ? (
           <div className={classes.Uploadcomp}>
             <UploadZone
               style={{ 
@@ -685,6 +700,8 @@ export default function DocumentDrawer() {
                 paddingLeft: "50px"
 
               }}
+              userId={stateApp.user.mongoId}
+              setFileData={setFileData}
               // relatedObjectId={props.id}
               // userId={userId}
               // relatedObjectType={relatedObjectType} //Contact or Deal
@@ -719,8 +736,8 @@ export default function DocumentDrawer() {
           size="medium"
           disableElevation
           onClick={() => {
-            setLoader(true);
-            if (stateApp.selectedDocument.fileId) {
+            if (stateApp.selectedDocument.fileId || fileData) {
+              setLoader(true);
               UpDatefileFN();
             }
           }}
@@ -828,15 +845,18 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
       }}
       onInputChange={onInputChange}
       filterOptions={(options, params) => {
-        const filtered = filter(options, { ...params, inputValue: value });
-
+        let inputValue = JSON.parse(JSON.stringify(value));
+        if(inputValue.name){
+          inputValue = inputValue.name
+        }
+        const filtered = filter(options, { ...params, inputValue });
         const isExist = loadashFilter(filtered, (filter) => {
-          return filter._id === value;
+          return filter._id === inputValue;
         });
         // Suggest the creation of a new value
-        if (value !== "" && (!isExist || isExist.length === 0)) {
+        if (inputValue !== "" && (!isExist || isExist.length === 0)) {
           filtered.unshift({
-            name: value,
+            name: inputValue,
             _id: "newEntity",
           });
         }

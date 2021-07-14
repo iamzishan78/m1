@@ -3,22 +3,23 @@ import Search from "./components/Search";
 import { useHistory } from "react-router-dom";
 import ContactWellInterestTable from "components/Table/Contact/ContactWellInterestTable";
 import ContactParcelInterestTable from "components/Table/Contact/ContactParcelInterestTable";
+import ContactTaxRollInterestTable from "components/Table/Contact/ContactTaxRollInterestTable";
 import TabPanels from "components/Shared/TabPanels";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
 
 function ContactsWellInterestsParcelInterests(props) {
   let history = useHistory();
   const type =
-  history.location.pathname.split("/")[
+    history.location.pathname.split("/")[
     history.location.pathname.split("/").length - 1
-  ];
+    ];
 
-  const [selectedTab, setSelectedTab] = useState(type === 'wells' ? 0 : 1);
+  const [selectedTab, setSelectedTab] = useState(type === 'wells' ? 0 : type === 'parcels' ? 2 : 1);
 
 
   const Header = () => (
     <TabButtons
-      labels={["Well Interests", "Parcel Interests"]}
+      labels={["Tax Roll Interests", "Well Interests", "Parcel Interests"]}
       value={selectedTab}
       setValue={(n) => {
         setSelectedTab(n);
@@ -35,6 +36,13 @@ function ContactsWellInterestsParcelInterests(props) {
         <TabPanels
           value={selectedTab}
           panels={[
+            <ContactTaxRollInterestTable
+              parent="assocTaxRollInterests"
+              header={<Header />}
+              targetLabel="well"
+              contactId={props.contactData._id}
+              showTracks
+            />,
             <ContactWellInterestTable
               parent="assocTaxRollInterests"
               header={<Header />}

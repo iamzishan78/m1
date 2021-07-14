@@ -44,7 +44,8 @@ function ContactWellInterestTable(props) {
   const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
   // queries 
-  const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY, { fetchPolicy: "cache-and-network", skip: true,
+  const [getPaginatedContactWellInterests, { data: dataContactWells }] = useLazyQuery(PAGINATED_CONTACT_WELLINTERESTS_QUERY, {
+    fetchPolicy: "cache-and-network", skip: true,
     // with a cache fetch policy, if network request returns same result we can end up in an infinite loading sitch.
     // have only seen when searching / researching same string - so same result
     onCompleted: () => {
@@ -56,7 +57,7 @@ function ContactWellInterestTable(props) {
   const tableData = dataContactWells?.paginatedContactWellInterests
   const filterData = dataContactWellsFilterOptions?.contactWellInterestsFilterOptions
 
-  const addAble = { type: "wellInterest" }
+  const addAble = {}
   const total = false
   const orderByTracks = false
 
@@ -257,8 +258,8 @@ function ContactWellInterestTable(props) {
     setSelectedYear(selectedYear)
   }
 
-  const deleteFunc = (ids)=> {
-    for(let i=0; i< ids.length;  i++){
+  const deleteFunc = (ids) => {
+    for (let i = 0; i < ids.length; i++) {
       updateWellInterest({
         variables: {
           wellInterest: {
@@ -275,7 +276,7 @@ function ContactWellInterestTable(props) {
       });
     }
   }
-  
+
   return (
     <Container
       maxWidth={false}

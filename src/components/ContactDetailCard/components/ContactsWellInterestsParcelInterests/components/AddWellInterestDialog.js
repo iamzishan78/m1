@@ -432,13 +432,13 @@ function AddWellInterestDialog(props) {
             <h4
               style={{
                 margin: "0 0 15px 0",
-                cssFloat: "left",
+                "float": "left",
                 fontSize: "1.1rem",
               }}
             >
               {stateApp.activeWellInterest ? "Update Well Interest" : "Add Well Interest"}
             </h4>
-            <div style={{ cssFloat: "right" }}>
+            <div style={{ "float": "right" }}>
               {(stateApp.activeWellInterest && (
                 <>
                   <IconButton
