@@ -1132,42 +1132,46 @@ function Map() {
       }
       const drawMode = stateApp.draw.getMode();
       if (feature.source === "interests_source" && !drawMode.includes('draw') && !drawMode.includes('drag')) {
-        const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
-        const selectedUserDefinedLayer = {
-          ...feature,
-          ...JSON.parse(filteredLayer.shape),
-          id: filteredLayer._id,
-        }
-        setStateApp((state) => ({
-          ...state,
-          showShapeActionsPopup: true,
-          selectedUserDefinedLayer,
-          selectedParcel: null,
-          openDrawShapesControl: true,
-        }));
 
-        if (!stateApp.editDraw) {
-          setStateApp((state) => ({
-            ...state,
-            showDrawShapesPopup: !state.showDrawShapesPopup,
-            editDraw: true,
-          }));
-        }
+        setStateApp((state) => {
+          if (state.isDrawing) return state
 
-        if (stateApp.editDraw) {
-          setStateApp((state) => ({
+          const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
+          const selectedUserDefinedLayer = {
+            ...feature,
+            ...JSON.parse(filteredLayer.shape),
+            id: filteredLayer._id,
+          }
+
+          state = {
             ...state,
-            editDraw: false,
-            currentFeature: undefined,
-            isAbstractedLayersPolygon: false,
-            multiSelectLandGrids: false,
-            selectedAbstracts: [],
-            showShapeActionsPopup: false,
-            showDrawShapesPopup: false,
-          }));
-        }
+            showShapeActionsPopup: true,
+            selectedUserDefinedLayer,
+            selectedParcel: null,
+            openDrawShapesControl: true,
+          }
+
+          if (!state.editDraw) {
+            state = {
+              ...state,
+              showDrawShapesPopup: !state.showDrawShapesPopup,
+              editDraw: true,
+            }
+          } else {
+            state = {
+              ...state,
+              editDraw: false,
+              currentFeature: undefined,
+              isAbstractedLayersPolygon: false,
+              multiSelectLandGrids: false,
+              selectedAbstracts: [],
+              showShapeActionsPopup: false,
+              showDrawShapesPopup: false,
+            }
+          }
+          return state
+        });
       }
-
       createUDPopUp(feature.properties);
       map.resize();
     };
