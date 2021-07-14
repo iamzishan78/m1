@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -306,7 +307,7 @@ export default function ParcelInstrument(props) {
   }
   return (
     <div>
-      <Drawer anchor={"right"} open={true}>
+      <Drawer anchor={"right"} open={true} ModalProps={{ onBackdropClick: handleClose }}>
         <Dialog open={loader} style={{ zIndex: 99999999999 }}>
           <DialogTitle id="alert-dialog-title">
             <CircularProgress />
