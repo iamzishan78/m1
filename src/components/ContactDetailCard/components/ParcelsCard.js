@@ -4,6 +4,7 @@ import AddIcon from "@material-ui/icons/Add";
 import { useLazyQuery } from "@apollo/client";
 import IconButton from "@material-ui/core/IconButton";
 import { useHistory } from "react-router-dom";
+import _ from 'lodash';
 
 import { CONTACT_PARCEL_INTERESTS } from "graphQL/useQueryContactParcelInterest";
 import ParcelIcon from "../../Shared/svgIcons/ParcelIcon";
@@ -41,6 +42,8 @@ export default function ParcelsCard(props) {
   const classes = useStyles();
   let history = useHistory();
   const [count, setCount] = useState("-");
+  const [netAcres, setNetAcres] = useState("-");
+  const [nra, setNRA] = useState("-");
 
   const [getContactParcels, { data: dataContactParcels }] = useLazyQuery(CONTACT_PARCEL_INTERESTS, {
     fetchPolicy: "cache-and-network",
@@ -59,6 +62,16 @@ export default function ParcelsCard(props) {
   useEffect(() => {
     if (dataContactParcels && dataContactParcels.contactParcelInterest) {
       const wells = dataContactParcels.contactParcelInterest;
+      let net_acres = 0
+      let nra = 0
+      for(let i = 0; i < wells.length; i++){
+        const newNetAcres = wells[i].net_acres ? wells[i].net_acres : 0
+        net_acres = net_acres + newNetAcres
+        const newNra = wells[i].nra ? wells[i].nra : 0
+        nra = nra + newNra
+      }
+      setNRA(nra)
+      setNetAcres(net_acres)
       setCount(wells.length);
     }
   }, [dataContactParcels]);
@@ -85,14 +98,14 @@ export default function ParcelsCard(props) {
 
         <div>
           <h5 className={classes.h5}>
-            Gross Acres
-            <br />
-            <span className={classes.lastContactedSpan}>-</span>
-          </h5>
-          <h5 className={classes.h5}>
             Net Acres
             <br />
-            <span className={classes.lastContactedSpan}>-</span>
+            <span className={classes.lastContactedSpan}>{netAcres}</span>
+          </h5>
+          <h5 className={classes.h5}>
+            Net Royalty Acres(NRA)
+            <br />
+            <span className={classes.lastContactedSpan}>{nra}</span>
           </h5>
         </div>
       </div>
