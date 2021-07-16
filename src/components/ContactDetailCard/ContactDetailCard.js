@@ -118,13 +118,13 @@ const useStyles = makeStyles((theme) => ({
   },
   userIcon: {
     marginRight: "15px",
-    float: "left",
+    "float": "left",
   },
   userName: {
     color: "#919191",
     minWidth: "50%",
     maxWidth: "calc( 100% - 400px)",
-    float: "left",
+    "float": "left",
     "& h2": {
       margin: "0",
       color: "#202020",
@@ -192,7 +192,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     zIndex: "600",
     height: "0",
-    float: "right",
+    "float": "right",
     color: "#757575",
     "& a": {
       textDecoration: "none !important",
@@ -238,7 +238,7 @@ const useStyles = makeStyles((theme) => ({
       width: "100%",
     },
   },
-  linkClass:{
+  linkClass: {
 
   },
   expTardTopBarNav: {
@@ -282,7 +282,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     margin: "0 0 8px 0",
-    float: "right",
+    "float": "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -300,7 +300,7 @@ export default function ContactDetailCard(props) {
   let history = useHistory();
   const contactId =
     history.location.pathname.split("/")[
-      history.location.pathname.split("/").length - 1
+    history.location.pathname.split("/").length - 1
     ];
   const shrinkRightColumn = useSelector(
     ({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn
@@ -499,7 +499,7 @@ export default function ContactDetailCard(props) {
         {/*/////////// left column //////////// */}
 
         {stateApp.viewDoc &&
-        ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
+          ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
           <div className={classes.leftColumn}>
             {" "}
             <DocViewer
@@ -568,51 +568,48 @@ export default function ContactDetailCard(props) {
                       {(contactData.facebook ||
                         contactData.twitter ||
                         contactData.linkedIn) && (
-                        <span className={classes.socialMediaSection}>
-                          {contactData.facebook && (
-                            <a
-                              href={`${
-                                !contactData.facebook.startsWith("http") &&
-                                !contactData.facebook.startsWith("//")
+                          <span className={classes.socialMediaSection}>
+                            {contactData.facebook && (
+                              <a
+                                href={`${!contactData.facebook.startsWith("http") &&
+                                  !contactData.facebook.startsWith("//")
                                   ? "//"
                                   : ""
-                              }${contactData.facebook}`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              <FacebookIcon />
-                            </a>
-                          )}
-                          {contactData.twitter && (
-                            <a
-                              href={`${
-                                !contactData.twitter.startsWith("http") &&
-                                !contactData.twitter.startsWith("//")
+                                  }${contactData.facebook}`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <FacebookIcon />
+                              </a>
+                            )}
+                            {contactData.twitter && (
+                              <a
+                                href={`${!contactData.twitter.startsWith("http") &&
+                                  !contactData.twitter.startsWith("//")
                                   ? "//"
                                   : ""
-                              }${contactData.twitter}`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              <TwitterIcon className={classes.twitterIcon} />
-                            </a>
-                          )}
-                          {contactData.linkedIn && (
-                            <a
-                              href={`${
-                                !contactData.linkedIn.startsWith("http") &&
-                                !contactData.linkedIn.startsWith("//")
+                                  }${contactData.twitter}`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <TwitterIcon className={classes.twitterIcon} />
+                              </a>
+                            )}
+                            {contactData.linkedIn && (
+                              <a
+                                href={`${!contactData.linkedIn.startsWith("http") &&
+                                  !contactData.linkedIn.startsWith("//")
                                   ? "//"
                                   : ""
-                              }${contactData.linkedIn}`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              <LinkedInIcon />
-                            </a>
-                          )}
-                        </span>
-                      )}
+                                  }${contactData.linkedIn}`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <LinkedInIcon />
+                              </a>
+                            )}
+                          </span>
+                        )}
                     </FieldContent>
                   </h2>
                   <h4>
@@ -682,7 +679,7 @@ export default function ContactDetailCard(props) {
             <Grid item xs={12} className={`${classes.border}`}>
               <div className={classes.SectMargin}>
                 <Grid item xs={12} style={{ minHeight: "33px" }}>
-                  <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
+                  <h4 style={{ margin: "0 0 13px 0", "float": "left" }}>
                     Lead Stage changed:{" "}
                     <span style={{ fontWeight: "normal" }}>
                       {anyToDate(
@@ -719,8 +716,8 @@ export default function ContactDetailCard(props) {
               spacing={0}
             >
               <Grid item xs={12}>
-                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-                  Associated Interests & Deals
+                <h4 style={{ margin: "0 0 13px 0", "float": "left" }}>
+                  Associated Interests &amp; Deals
                 </h4>
               </Grid>
 
@@ -878,7 +875,7 @@ export default function ContactDetailCard(props) {
               <BuyContactsInfoDialogContent
                 onClose={handleCloseDialog}
                 rows={[contactData]}
-                setRows={() => {}}
+                setRows={() => { }}
                 updateMelissaTable={() => {
                   getLastMelissaRecord({
                     variables: {
@@ -927,82 +924,82 @@ export default function ContactDetailCard(props) {
             </Grid>
           )}
         </RightDialog>
-        {showExpandableCard &&(
-            <Dialog
-              className={classes.dialogFullScreen}
-              fullWidth
-              maxWidth="xl"
-              open={showExpandableCard}
-              onClose={handleCloseDialog}
+        {showExpandableCard && (
+          <Dialog
+            className={classes.dialogFullScreen}
+            fullWidth
+            maxWidth="xl"
+            open={showExpandableCard}
+            onClose={handleCloseDialog}
+          >
+            <div
+              style={{
+                width: "100%",
+                backgroundColor: "#fff",
+                minHeight: "100%",
+              }}
             >
-              <div
-                style={{
-                  width: "100%",
-                  backgroundColor: "#fff",
-                  minHeight: "100%",
-                }}
-              >
-                <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-                  <Breadcrumbs
-                    separator={<NavigateNextIcon fontSize="small" />}
-                    aria-label="breadcrumb"
+              <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
+                <Breadcrumbs
+                  separator={<NavigateNextIcon fontSize="small" />}
+                  aria-label="breadcrumb"
+                >
+                  {checkModuleHistory() && (
+                    <Link className={classes.linkClass}
+                      style={{
+                        marginLeft: "5px",
+                        fontSize: "16px",
+                        cursor: "pointer",
+                      }}
+                      color="inherit"
+                      onClick={() => {
+                        history.push("/");
+                        setStateNav((stateApp) => ({
+                          ...stateApp,
+                          contactFromMap: false,
+                        }));
+                      }}
+                    >
+                      Map
+                    </Link>
+                  )}
+                  <Link
+                    style={{
+                      marginLeft: "5px",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                    }}
+                    color="inherit"
+                    onClick={() => history.push("/contacts")}
                   >
-                    {checkModuleHistory() && (
-                      <Link className={classes.linkClass}
-                        style={{
-                          marginLeft: "5px",
-                          fontSize: "16px",
-                          cursor: "pointer",
-                        }}
-                        color="inherit"
-                        onClick={() => {
-                          history.push("/");
-                          setStateNav((stateApp) => ({
-                            ...stateApp,
-                            contactFromMap: false,
-                          }));
-                        }}
-                      >
-                        Map
-                      </Link>
-                    )}
-                    <Link
-                      style={{
-                        marginLeft: "5px",
-                        fontSize: "16px",
-                        cursor: "pointer",
-                      }}
-                      color="inherit"
-                      onClick={() => history.push("/contacts")}
-                    >
-                      Contacts
-                    </Link>
-                    <Link
-                      style={{
-                        marginLeft: "5px",
-                        fontSize: "16px",
-                        cursor: "pointer",
-                      }}
-                      color="inherit"
-                      onClick={handleCloseExpandableCard}
-                    >
-                      {contactData.name}
-                    </Link>
-                    <Typography
-                      style={{
-                        color: "#18AADD",
-                        fontSize: "16px",
-                        marginLeft: "5px",
-                      }}
-                    >
-                      {expCardSubComponentTitle}
-                    </Typography>
-                  </Breadcrumbs>
-                </Toolbar>
-                {expCardSubComponent}
-              </div>
-            </Dialog>
-          )}
+                    Contacts
+                  </Link>
+                  <Link
+                    style={{
+                      marginLeft: "5px",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                    }}
+                    color="inherit"
+                    onClick={handleCloseExpandableCard}
+                  >
+                    {contactData.name}
+                  </Link>
+                  <Typography
+                    style={{
+                      color: "#18AADD",
+                      fontSize: "16px",
+                      marginLeft: "5px",
+                    }}
+                  >
+                    {expCardSubComponentTitle}
+                  </Typography>
+                </Breadcrumbs>
+              </Toolbar>
+              {expCardSubComponent}
+            </div>
+          </Dialog>
+        )}
       </div>
     </>
   ) : (

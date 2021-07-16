@@ -6,6 +6,8 @@ import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import { useDispatch } from "react-redux";
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import Taps from "../Shared/Taps";
 import TabPanels from "components/Shared/TabPanels"
@@ -202,10 +204,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ParcelsDetailCard(props) {
-  
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
   const [parcelObj, setParcelObj] = useState();
   const [parcelWells, setParcelWells] = useState();
   const [parcelProperties, setProperties] = useState();
@@ -244,6 +245,24 @@ export default function ParcelsDetailCard(props) {
       setParcelObj({
         ...dataCustomLayer.customLayer,
         shape: shape,
+        qtrQtr:{
+          nwnw: false,
+          nenw: false,
+          swnw: false,
+          senw: false,
+          nwne: false,
+          nene: false,
+          swne: false,
+          sene: false,
+          nwsw: false,
+          nesw: false,
+          swsw: false,
+          sesw: false,
+          nwse: false,
+          nese: false,
+          swse: false,
+          sese: false,
+        }
       });
       setProperties(shape.properties);
       setParcelName(shape.properties.shapeLabel);
@@ -263,7 +282,7 @@ export default function ParcelsDetailCard(props) {
   }, [updatedParcel]);
 
   const setQtrQtr = (qtrQtr) => {
-    setParcelObj((parcelData) => ({ ...parcelData, qtrQtr }));
+    setParcelObj({ ...parcelObj, qtrQtr });
   };
 
   useEffect(()=> {
@@ -439,6 +458,7 @@ const DocumentHeader = () => (
       <Grid item sm={12}>
         <Taps
           tabLabels={["Interest Owners", "Runsheet", "Wells", "Documents"]}
+          openTabIdex={selectedTab}
           tabPanels={[
             <TabPanels
               value={selectedTab}

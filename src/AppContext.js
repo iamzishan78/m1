@@ -41,6 +41,7 @@ const AppProvider = (props) => {
 
     // should be in a draw context 
     editDraw: false,
+    isDrawing: false,
     shapeEdit: false,
     showDrawShapesPopup: false,
     showShapeActionsPopup: false,

@@ -11,6 +11,7 @@ import TableHOC from "components/Table/TableHOC";
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
 import { SHAPE_OWNERS } from "graphQL/useQueryPaginatedShapeOwners";
+import { SHAPEOWNERSCOUNT } from "graphQL/useQueryShapeOwnersCount";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 
@@ -38,10 +39,31 @@ function ShapeGridTaxOwnersTable(props) {
     const [columns, Columns] = useState([]);
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
     const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
+    const [count, setCount] = useState()  // local state for async count query
 
     // queries 
-    const [getPaginatedShapeOwners, { data: dataShapeOwners }] = useLazyQuery(SHAPE_OWNERS, { fetchPolicy: "cache-and-network", skip: true });
+    const [getPaginatedShapeOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(SHAPE_OWNERS, { fetchPolicy: "cache-and-network", skip: true,
+        onCompleted: (dataShapeOwners) => {
+            setCount((state, props) => {
+                let newState = state || dataShapeOwners?.paginatedShapeOwners?.edges?.length;
+                let newStateIncrement = !variablesShapeOwners?.pagination?.before &&
+                    dataShapeOwners?.paginatedShapeOwners?.pageInfo?.hasNextPage
+                    ? 1
+                    : 0;
+
+                return newState + newStateIncrement
+            })
+        },
+    });
     const tableData = dataShapeOwners?.paginatedShapeOwners
+    const [getShapeOwnersCount, { data: dataShapeOwnersCount }] = useLazyQuery(SHAPEOWNERSCOUNT, { fetchPolicy: "cache-and-network", skip: true,
+        onCompleted: (dataShapeOwnersCount) => {
+            setStateApp((state) => ({
+                ...state,
+                shapeGridOwnersCount: dataShapeOwnersCount?.shapeOwnersCount,
+            }));
+        },
+    });
 
     const addAble = false
     const total = false
@@ -53,6 +75,11 @@ function ShapeGridTaxOwnersTable(props) {
             variables: {
                 polygon: stateApp.gridPolygonString,
                 userId: stateApp.user.mongoId,
+            },
+        });
+        getShapeOwnersCount({
+            variables: {
+                polygon: stateApp.gridPolygonString,
             },
         });
     }, [props.parent]);
@@ -93,10 +120,6 @@ function ShapeGridTaxOwnersTable(props) {
             const columns = handleTagColumn(TableHeader, cleanAvailableTags);
             setColumns(columns);
             props.setLoading(false);
-            setStateApp((state) => ({
-                ...state,
-                shapeGridOwnersCount: tableData.totalCount,
-            }));
         }
         else if (tableData?.edges?.length === 0) {
             props.setLoading(false);
@@ -144,6 +167,11 @@ function ShapeGridTaxOwnersTable(props) {
                 break;
             case "changePage":
                 props.setLoading(true);
+                if (tableState.page > meta.pageInd) {
+                    setCount((state, props) => {
+                        return (tableState.page + 1) * tableState.rowsPerPage
+                    })
+                }
                 getPaginatedShapeOwners({
                     ...pageVariables,
                     variables: {
@@ -184,10 +212,9 @@ function ShapeGridTaxOwnersTable(props) {
         }
     }
 
-    const count = tableData?.totalCount || 0
     const options = {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
-        count: count,
+        count: stateApp.shapeGridOwnersCount || count || 0,
         serverSide: true, 
         filter: false,
     }

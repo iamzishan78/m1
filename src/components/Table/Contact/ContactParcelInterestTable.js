@@ -91,6 +91,9 @@ function ContactParcelInterestTable(props) {
         well.section = original_properties.state === 'TX' ? original_properties.section : original_properties.range
         well.abstract = original_properties.state === 'TX' ? original_properties.abstract : original_properties.section
         well.grantee = original_properties.altSurvey
+        if(well.qtr){
+          well.qtr_calls = `${well.qtr[0] ? well.qtr[0] : ''} ${well.qtr[1] ? well.qtr[1] : ''} ${well.qtr[2] ? well.qtr[2] : ''} ${well.qtr[3] ? well.qtr[3] : ''}`
+        }
         well.detailCard = well.wellId;
         well.isTracked = false;
         well.commentsCounter = 0;

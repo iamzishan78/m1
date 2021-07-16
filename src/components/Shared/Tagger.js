@@ -320,6 +320,7 @@ export default function Tags(props) {
             "getWellsIdsFromTagsArray",
             "getOwnersIdsFromTagsArray",
             "getContactsFilterOptions",
+            "getContactWellInterestsFilterOptions"
           ],
           awaitRefetchQueries: true,
         });
@@ -345,6 +346,7 @@ export default function Tags(props) {
               "getOwnersIdsFromTagsArray",
               "getTagsByObjectsIds",
               "getContactsFilterOptions",
+              "getContactWellInterestsFilterOptions"
             ],
             awaitRefetchQueries: true,
           });
