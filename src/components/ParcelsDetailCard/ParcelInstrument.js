@@ -162,6 +162,8 @@ const useStyles = makeStyles({
 
 export default function ParcelInstrument(props) {
   const instrumentInitial = {
+    instrument_type:"",
+    record_type:"",
     grantor: "",
     grantee: "",
     effective_date: null,
@@ -197,18 +199,53 @@ export default function ParcelInstrument(props) {
   });
   const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT);
 
-  const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
-    CREATEDESCRIPTORFILE,
-    {
-      refetchQueries: ["getRecentContactFiles"],
-      awaitRefetchQueries: true,
-    }
-  );
-
   useEffect(() => {
     getInstrumentTypes();
     getRecordTypes();
   }, [getInstrumentTypes, getRecordTypes]);
+
+  useEffect(() => {
+    let ID = [];
+    if (stateApp.selectedAgreement?.fileId) {
+      ID.push(stateApp.selectedAgreement?.fileId);
+
+      viewFiles({
+        variables: { fileIds: ID },
+      });
+      if (stateApp.selectedAgreement) {
+        const {
+          instrument_type,
+          record_type,
+          grantor,
+          grantee,
+          effective_date,
+          instrument_date,
+          file_date,
+          rec_num,
+          volume,
+          page,
+          legal_description,
+          fileId
+        } = stateApp.selectedAgreement;
+        setNewInstrument({
+          instrument_type,
+          record_type,
+          grantor,
+          grantee,
+          effective_date,
+          instrument_date,
+          file_date,
+          rec_num,
+          volume,
+          page,
+          legal_description,
+          fileId,
+        });
+      } else {
+        setNewInstrument(instrumentInitial);
+      }
+    }
+  }, [stateApp.selectedAgreement]);
 
   useEffect(() => {
     if (viewFileResult?.viewFile?.uri) {
@@ -263,7 +300,6 @@ export default function ParcelInstrument(props) {
   };
 
   const handleSave = () => {
-    debugger
     let instrument_type = "";
     if (typeof newInstrument.instrument_type === "string") {
       instrument_type = newInstrument.instrument_type;
@@ -280,30 +316,31 @@ export default function ParcelInstrument(props) {
 
     const fileId = fileData?.addFileDescriptor?.file?.id;
     setLoader(true);
-    // addParcelAgreement({
-    //   variables: {
-    //     agreement: {
-    //       instrument_type: instrument_type,
-    //       effective_date: newInstrument.effective_date,
-    //       file_date: newInstrument.file_date,
-    //       grantee: newInstrument.grantee,
-    //       grantor: newInstrument.grantor,
-    //       instrument_date: newInstrument.instrument_date,
-    //       legal_description: newInstrument.legal_description,
-    //       page: newInstrument.page,
-    //       rec_num: newInstrument.rec_num,
-    //       record_type: record_type,
-    //       volume: newInstrument.volume,
-    //       fileId: fileId || newInstrument.fileId,
-    //       fileName: fileData?.addFileDescriptor?.file?.name,
-    //       userId: stateApp.user.mongoId
-    //     },
-    //   },
-    // }).then(() => {
-    //   props.setShowSlider(false);
-    //   setNewInstrument(instrumentInitial);
-    //   setLoader(false);
-    // })
+    addParcelAgreement({
+      variables: {
+        agreement: {
+          instrument_type: instrument_type,
+          effective_date: newInstrument.effective_date,
+          file_date: newInstrument.file_date,
+          grantee: newInstrument.grantee,
+          grantor: newInstrument.grantor,
+          instrument_date: newInstrument.instrument_date,
+          legal_description: newInstrument.legal_description,
+          page: newInstrument.page,
+          rec_num: newInstrument.rec_num,
+          record_type: record_type,
+          volume: newInstrument.volume,
+          fileId: fileId || newInstrument.fileId,
+          fileName: fileData?.addFileDescriptor?.file?.name,
+          userId: stateApp.user.mongoId,
+          parcelId: props.parcelId
+        },
+      },
+    }).then(() => {
+      props.setShowSlider(false);
+      setNewInstrument(instrumentInitial);
+      setLoader(false);
+    })
   }
   return (
     <div>
@@ -351,7 +388,7 @@ export default function ParcelInstrument(props) {
               <h4>Instrument Type</h4>
               <AutoCompleteField
                 className={classes.maxWidth}
-                options={instrumentTypes || []}
+                options={instrumentTypes?.getInstrumentType || []}
                 setValue={(value) => {
                   setNewInstrument({
                     ...newInstrument,
@@ -598,8 +635,7 @@ export default function ParcelInstrument(props) {
             </ListItem>
           </List>
 
-          {newInstrument?.fileId ||
-            (fileData && (
+          {(newInstrument?.fileId || fileData) && (
               <ListItem>
                 <div style={{ display: "flex", justifyContent: "start" }}>
                   {viewFileSResult?.viewFiles?.map((value, key) => {
@@ -617,7 +653,7 @@ export default function ParcelInstrument(props) {
                                   onClick={() => {
                                     //   setOpenDeleteConfirmDialog(true);
                                     setFileIdToDelete(
-                                      stateApp.selectedDocument.fileId
+                                      stateApp.selectedAgreement.fileId
                                     );
                                   }}
                                 >
@@ -654,14 +690,14 @@ export default function ParcelInstrument(props) {
                                     console.log("STATE", stateApp);
                                     if (fileExtension === "pdf") {
                                       console.log("STATE PDR CLICKED");
-                                      // setStateApp({ ...stateApp, viewDoc: { uri: stateApp.selectedDocument.fileUrl, name: stateApp.selectedDocument.fileName } })
+                                      // setStateApp({ ...stateApp, viewDoc: { uri: stateApp.selectedAgreement.fileUrl, name: stateApp.selectedAgreement.fileName } })
                                       setStateApp((state) => ({
                                         ...state,
-                                        pdfView: stateApp.selectedDocument,
+                                        pdfView: stateApp.selectedAgreement,
                                       }));
                                     } else {
                                       handleViewFile(
-                                        stateApp.selectedDocument.fileId
+                                        stateApp.selectedAgreement.fileId
                                       );
                                     }
                                   }}
@@ -682,7 +718,7 @@ export default function ParcelInstrument(props) {
                   })}
                 </div>
               </ListItem>
-            ))}
+            )}
 
           {!newInstrument?.fileId && !fileData && (
             <div className={classes.Uploadcomp}>
@@ -739,7 +775,7 @@ export default function ParcelInstrument(props) {
 }
 
 const AutoCompleteField = ({ setValue, value, options, ...other }) => {
-    console.log('options',options)
+  console.log('options',options)
   const useStyles = makeStyles({
     inputRoot: {
       backgroundColor: "#ffffff",

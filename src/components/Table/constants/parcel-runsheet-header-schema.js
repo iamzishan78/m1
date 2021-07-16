@@ -19,44 +19,56 @@ const DocumentsHeadCells = [
     label: "Instrument Type",
   },
   {
-    name: "documentNumber",
+    name: "grantor",
     label: "Party of the First (Grantor)",
   },
   {
-    name: "documentName",
+    name: "grantee",
     label: "Party of the Second (Grantee)",
   },
   {
-    name: "documentType",
+    name: "effective_date",
     label: "Effective Date",
   },
   {
-    name: "dateTime",
+    name: "instrument_date",
     label: "Instrument Date",
   },
   {
-    name: "dateTime",
+    name: "file_date",
     label: "File Date",
   },
   {
-    name: "recordingInfo",
+    name: "record_type",
     label: "Record Type",
   },
   {
-    name: "recordingInfo",
+    name: "rec_num",
     label: "Rec #",
   },
   {
-    name: "recordingInfo",
+    name: "volume",
     label: "Volumn",
   },
   {
-    name: "recordingInfo",
+    name: "page",
     label: "Page",
   },
   {
-    name: "recordingInfo",
+    name: "legal_description",
     label: "Legal Description",
+  },
+  {
+    name: "fileId",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
   },
   {
     name: "tags",
@@ -78,17 +90,6 @@ const DocumentsHeadCells = [
         },
       },
     },
-  },
-  {
-    name: " ",
-    label: " ",
-    options: {
-      display: true,
-      filter: false,
-      searchable: false,
-      sort: false,
-      viewColumns: false,
-    }
   },
   {
     name: "commentsCounter",

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import moment from 'moment';
 
 import Grid from "@material-ui/core/Grid";
 import Dialog from "@material-ui/core/Dialog";
@@ -73,7 +74,20 @@ function ParcelDetailsRunsheetTable(props) {
     if (dataParcelAgreement?.getParcelAgreement?.length > 0) {
       let wells = dataParcelAgreement.getParcelAgreement
       wells = wells.map((w) => {
-        return { ...w, _id: w.descriptorId }; 
+        let well = { ...w };
+        well.instrument_type = well.descriptorObject.instrument_type
+        well.grantor = well.descriptorObject.grantor
+        well.grantee = well.descriptorObject.grantee
+        well.effective_date = well.descriptorObject.effective_date ? moment(well.descriptorObject.effective_date).format('MM/DD/YYYY') : ''
+        well.instrument_date = well.descriptorObject.instrument_date ? moment(well.descriptorObject.instrument_date).format('MM/DD/YYYY') : ''
+        well.file_date = well.descriptorObject.file_date ? moment(well.descriptorObject.file_date).format('MM/DD/YYYY') : ''
+        well.record_type = well.descriptorObject.record_type
+        well.rec_num = well.descriptorObject.rec_num
+        well.volume = well.descriptorObject.volume
+        well.page = well.descriptorObject.page
+        well.legal_description = well.descriptorObject.legal_description
+        well.fileId = well.descriptorObject.file[0].descriptorObject
+        return { ...well, _id: w.descriptorObject._id }; 
       })
       props.setRows(wells);
       const cleanAvailableTags = [];
@@ -179,7 +193,7 @@ function ParcelDetailsRunsheetTable(props) {
       id={props.id ? props.id : props.parent}
     >
       {showSlider && (
-        <ParcelInstrument setShowSlider={setShowSlider} />
+        <ParcelInstrument parcelId={props.customLayer._id} setShowSlider={setShowSlider} />
       )}
       <Table
         style={{ backgroundColor: "#fff" }}

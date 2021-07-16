@@ -3062,6 +3062,13 @@ function SubTable(props) {
         }));
         props.onClickAdd()
       }
+      // if (props.targetLabel === "parcelRunsheet") {
+      //   setStateApp((stateApp) => ({
+      //     ...stateApp,
+      //     selectedAgreement: rows[dataIndex],
+      //   }));
+      //   props.onClickAdd()
+      // }
 
       if (props.targetLabel === "usermanagement") {
         if (rows[dataIndex]?.id) {

@@ -458,15 +458,13 @@ const DocumentHeader = () => (
                 </div>
               ]}
             />,
-            <div className={classes.parcelDocument}>
               <ParcelDetailsRunsheetTable
                 customLayer={parcelObj}
                 parent="associatedRunsheetPerParcel"
                 targetLabel="parcelRunsheet"
                 header='Limited Title Runsheet'
                 dense
-              />
-            </div>,
+              />,
             <AssociatedWellsParcelTable
               customLayer={parcelObj}
               parent="associatedWellsPerParcel"
