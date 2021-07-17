@@ -26,7 +26,7 @@ export default function DeleteConfirmationDialog(props) {
     if (layerDeleted && layerDeleted.updateLayer) {
       if (layerDeleted.updateLayer.success) {
         dispatch(showSuccessMessage("The layer was successfully removed"));
-        dispatch(setMainMapState({ removeLayerFromMap: props.layer }));
+        dispatch(setMainMapState({ removeLayerFromMap: [props.layer] }));
         setStateApp((state) => ({
           ...state,
           universalCircularLoaderAct: false,
@@ -46,9 +46,7 @@ export default function DeleteConfirmationDialog(props) {
     if (layersDeleted && layersDeleted.updateManyLayer) {
       if (layersDeleted.updateManyLayer.success) {
         dispatch(showSuccessMessage("The Group was successfully removed"));
-        props.layer.layers.forEach((layer) => {
-          dispatch(setMainMapState({ removeLayerFromMap: layer }));
-        })
+        dispatch(setMainMapState({ removeLayerFromMap: props.layer.layers }));
         setStateApp((state) => ({
           ...state,
           universalCircularLoaderAct: false,
