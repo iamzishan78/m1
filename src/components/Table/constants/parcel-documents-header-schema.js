@@ -55,8 +55,11 @@ const DocumentsHeadCells = [
       viewColumns: false,
     },
   },
+  // {
+  //   name: "RELATED PARTY NAME",
+  //   label: "RELATED PARTY NAME",
+  // },
 
-  // TEMPORARY COMMENT OUT UNTIL FEATURE IS FIXED
   // {
   //   name: "partyName1",
   //   label: "Party 1 Name",
@@ -65,7 +68,6 @@ const DocumentsHeadCells = [
   //   name: "partyName2",
   //   label: "Party 2 Name",
   // },
-  
   {
     name: "recordingInfo",
     label: "Recording Info",

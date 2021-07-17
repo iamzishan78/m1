@@ -100,6 +100,9 @@ export default function UploadZone(props) {
 						console.log(res);
 						if (res?.status == 201) {
 							// props.getRecentFiles();
+							if(props.setFileData){
+								props.setFileData(addFileData)
+							}
 						} else dispatch(showErrorMessage("Upload failed"));
 					})
 					.catch((err) => console.log(err));

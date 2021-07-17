@@ -126,11 +126,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SidePanel = ({ }) => {
+const SidePanel = ({}) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { selectedPipe, pipelines } = useSelector(({ Flow }) => Flow);
   const [selectedPipelines, setMultiSelection] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
   const [isSearchActive, setSearchState] = useState(false);
   const [filteredPipelines, setPipelines] = useState([]);
   const [deleteDialogOpen, setModal] = useState(false);
@@ -197,38 +198,36 @@ const SidePanel = ({ }) => {
     return projectIncludedPipelines;
   };
 
-  const flowlineActions = React.useMemo(
-    () => {
-      let isProjectPipelineSelected = false;
-      for (let i = 0; i < selectedPipelines.length; i += 1) {
-        isProjectPipelineSelected = !!filteredPipelines.find(p => p.id === selectedPipelines[i] && p.projectId);
-        if (isProjectPipelineSelected) break;
-      }
-      return [
-        {
-          title: "Add Flowline",
-          icon: <AddBoxIcon fontSize="small" />,
-        },
-        {
-          title: !isProjectPipelineSelected ? "Project Group" : "Remove Pipeline From Group",
-          icon: !isProjectPipelineSelected ? <CreateNewFolderIcon fontSize="small" /> : <RemoveCircleIcon fontSize="small" />,
-        },
-        {
-          title: "Duplicate",
-          icon: <FileCopyIcon fontSize="small" />,
-        },
-        {
-          title: "Delete Flowline(s)",
-          icon: <DeleteIcon fontSize="small" />,
-        },
-      ]
-    },
-    [selectedPipelines]
-  );
+  const flowlineActions = React.useMemo(() => {
+    let isProjectPipelineSelected = false;
+    for (let i = 0; i < selectedPipelines.length; i += 1) {
+      isProjectPipelineSelected = !!filteredPipelines.find((p) => p.id === selectedPipelines[i] && p.projectId);
+      if (isProjectPipelineSelected) break;
+    }
+    return [
+      {
+        title: "Add Flowline",
+        icon: <AddBoxIcon fontSize="small" />,
+      },
+      {
+        title: !isProjectPipelineSelected ? "Project Group" : "Remove Pipeline From Group",
+        icon: !isProjectPipelineSelected ? <CreateNewFolderIcon fontSize="small" /> : <RemoveCircleIcon fontSize="small" />,
+      },
+      {
+        title: "Duplicate",
+        icon: <FileCopyIcon fontSize="small" />,
+      },
+      {
+        title: "Delete Flowline(s)",
+        icon: <DeleteIcon fontSize="small" />,
+      },
+    ];
+  }, [selectedPipelines]);
 
   const filterSearch = (value) => {
     const newPipelines = pipelines.filter((pipeline) => pipeline.name?.toLowerCase()?.includes(value.toLowerCase()));
     setPipelines(mapFLowlinesToProject(newPipelines));
+    setSearchValue(value);
   };
 
   const handleAction = (action) => {
@@ -349,9 +348,11 @@ const SidePanel = ({ }) => {
                   }}
                   inputProps={{ "aria-label": "search" }}
                   onFocus={() => setSearchState(true)}
+                  value={searchValue}
                   onBlur={() =>
                     setTimeout(() => {
                       setSearchState(false);
+                      filterSearch("");
                     }, 200)
                   }
                   onChange={(evt) => filterSearch(evt.target.value)}
@@ -386,7 +387,7 @@ const SidePanel = ({ }) => {
           onClose={() => setModal(false)}
           deleteFunc={handleDelete}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => { }}
+          setM1nSelectedRowsIndexes={() => {}}
         >
           {selectedPipelines.length > 1
             ? "Are you sure you want to delete the selected flowlines?"

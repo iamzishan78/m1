@@ -25,7 +25,7 @@ const localStyles = makeStyles((theme) => ({
     display: "inline",
     flexDirection: "column",
     justifyContent: "center",
-    // overflowY: 'auto',
+    //overflowY: 'auto',
   },
   height_100: {
     height: "100vh",
@@ -157,7 +157,7 @@ const Login = (props) => {
                 return currentAccounts && currentAccounts.length === 1
                   ? currentAccounts[0]
                   : (() => {
-                      // Add choose account code here
+                      // hoose account code here
                       return;
                     })();
               })();
@@ -711,7 +711,7 @@ const Login = (props) => {
             color: "#fff",
           }}
         >
-          © 2020 M1neral, LLC. All Rights Reserved.
+          © 2021 M1neral, LLC. All Rights Reserved.
         </div>
 
         <div className={localClass.termsAndPrivacy}>

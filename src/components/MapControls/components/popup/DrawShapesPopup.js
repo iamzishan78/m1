@@ -149,7 +149,7 @@ const DrawShapesPopup = (props) => {
         editDraw: false,
       }));
     } else {
-      setStateApp((state) => ({ ...state, editDraw: true }));
+      setStateApp((state) => ({ ...state, editDraw: true, isDrawing: true }));
       props.handleClose();
     }
     stateApp.draw.changeMode(shape.mode);

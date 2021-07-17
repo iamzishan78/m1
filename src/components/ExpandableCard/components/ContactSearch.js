@@ -11,7 +11,7 @@ import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/
 
 const ContactSearch = (props) => {
   let history = useHistory();
-  const contactId = history.location.pathname.split('/')[history.location.pathname.split('/').length - 1]
+  const contactId = history.location.pathname.split('/')[3]
   const [
     getPaginatedContacts,
     { data: allContacts, fetchMore: fetchMorePaginatedContacts },
