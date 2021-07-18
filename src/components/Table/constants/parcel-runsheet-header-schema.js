@@ -15,35 +15,35 @@ const DocumentsHeadCells = [
     },
   },
   {
-    name: "instrument_type",
+    name: "instrumentType",
     label: "Instrument Type",
   },
   {
-    name: "grantor",
+    name: "fromPartySummary",
     label: "Party of the First (Grantor)",
   },
   {
-    name: "grantee",
+    name: "toPartySummary",
     label: "Party of the Second (Grantee)",
   },
   {
-    name: "effective_date",
+    name: "effectiveDate",
     label: "Effective Date",
   },
   {
-    name: "instrument_date",
+    name: "executionDate",
     label: "Instrument Date",
   },
   {
-    name: "file_date",
+    name: "fileDate",
     label: "File Date",
   },
   {
-    name: "record_type",
+    name: "recordType",
     label: "Record Type",
   },
   {
-    name: "rec_num",
+    name: "recordationNumber",
     label: "Rec #",
   },
   {
@@ -55,7 +55,7 @@ const DocumentsHeadCells = [
     label: "Page",
   },
   {
-    name: "legal_description",
+    name: "legalDescription",
     label: "Legal Description",
   },
   {

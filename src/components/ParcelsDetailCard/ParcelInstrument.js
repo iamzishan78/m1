@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -32,7 +31,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { CREATEDESCRIPTORFILE } from "graphQL/useMutationCreateDescriptorFile";
 import { ADD_PARCEL_AGREEMENT } from "graphQL/useMutationAddParcelAgreement";
 import { INSTRUMENT_TYPE } from "graphQL/useQueryInstrumentType";
 import { RECORD_TYPE } from "graphQL/useQueryRecordType";
@@ -162,17 +160,17 @@ const useStyles = makeStyles({
 
 export default function ParcelInstrument(props) {
   const instrumentInitial = {
-    instrument_type:"",
-    record_type:"",
-    grantor: "",
-    grantee: "",
-    effective_date: null,
-    instrument_date: null,
-    file_date: null,
-    rec_num: "",
+    instrumentType:"",
+    recordType:"",
+    fromPartySummary: "",
+    toPartySummary: "",
+    effectiveDate: null,
+    executionDate: null,
+    fileDate: null,
+    recordationNumber: "",
     volume: "",
     page: "",
-    legal_description: "",
+    legalDescription: "",
   };
   const classes = useStyles();
   const anchor = "right";
@@ -214,31 +212,31 @@ export default function ParcelInstrument(props) {
       });
       if (stateApp.selectedAgreement) {
         const {
-          instrument_type,
-          record_type,
-          grantor,
-          grantee,
-          effective_date,
-          instrument_date,
-          file_date,
-          rec_num,
+          instrumentType,
+          recordType,
+          fromPartySummary,
+          toPartySummary,
+          effectiveDate,
+          executionDate,
+          fileDate,
+          recordationNumber,
           volume,
           page,
-          legal_description,
+          legalDescription,
           fileId
         } = stateApp.selectedAgreement;
         setNewInstrument({
-          instrument_type,
-          record_type,
-          grantor,
-          grantee,
-          effective_date,
-          instrument_date,
-          file_date,
-          rec_num,
+          instrumentType,
+          recordType,
+          fromPartySummary,
+          toPartySummary,
+          effectiveDate,
+          executionDate,
+          fileDate,
+          recordationNumber,
           volume,
           page,
-          legal_description,
+          legalDescription,
           fileId,
         });
       } else {
@@ -300,18 +298,18 @@ export default function ParcelInstrument(props) {
   };
 
   const handleSave = () => {
-    let instrument_type = "";
-    if (typeof newInstrument.instrument_type === "string") {
-      instrument_type = newInstrument.instrument_type;
-    } else if (newInstrument.instrument_type?.name) {
-      instrument_type = newInstrument.instrument_type.name;
+    let instrumentType = "";
+    if (typeof newInstrument.instrumentType === "string") {
+      instrumentType = newInstrument.instrumentType;
+    } else if (newInstrument.instrumentType?.name) {
+      instrumentType = newInstrument.instrumentType.name;
     }
 
-    let record_type = "";
-    if (typeof newInstrument.record_type === "string") {
-      record_type = newInstrument.record_type;
-    } else if (newInstrument.record_type?.name) {
-      record_type = newInstrument.record_type.name;
+    let recordType = "";
+    if (typeof newInstrument.recordType === "string") {
+      recordType = newInstrument.recordType;
+    } else if (newInstrument.recordType?.name) {
+      recordType = newInstrument.recordType.name;
     }
 
     const fileId = fileData?.addFileDescriptor?.file?.id;
@@ -319,16 +317,16 @@ export default function ParcelInstrument(props) {
     addParcelAgreement({
       variables: {
         agreement: {
-          instrument_type: instrument_type,
-          effective_date: newInstrument.effective_date,
-          file_date: newInstrument.file_date,
-          grantee: newInstrument.grantee,
-          grantor: newInstrument.grantor,
-          instrument_date: newInstrument.instrument_date,
-          legal_description: newInstrument.legal_description,
+          instrumentType: instrumentType,
+          effectiveDate: newInstrument.effectiveDate,
+          fileDate: newInstrument.fileDate,
+          toPartySummary: newInstrument.toPartySummary,
+          fromPartySummary: newInstrument.fromPartySummary,
+          executionDate: newInstrument.executionDate,
+          legalDescription: newInstrument.legalDescription,
           page: newInstrument.page,
-          rec_num: newInstrument.rec_num,
-          record_type: record_type,
+          recordationNumber: newInstrument.recordationNumber,
+          recordType: recordType,
           volume: newInstrument.volume,
           fileId: fileId || newInstrument.fileId,
           fileName: fileData?.addFileDescriptor?.file?.name,
@@ -392,11 +390,11 @@ export default function ParcelInstrument(props) {
                 setValue={(value) => {
                   setNewInstrument({
                     ...newInstrument,
-                    instrument_type: value,
+                    instrumentType: value,
                   });
                 }}
                 value={
-                  newInstrument.instrument_type ? newInstrument.instrument_type : ""
+                  newInstrument.instrumentType ? newInstrument.instrumentType : ""
                 }
               />
             </ListItem>
@@ -411,11 +409,11 @@ export default function ParcelInstrument(props) {
               <TextField
                 className={classes.maxWidth}
                 multiline
-                value={newInstrument?.grantor}
+                value={newInstrument?.fromPartySummary}
                 onChange={(e) => {
                   setNewInstrument({
                     ...newInstrument,
-                    grantor: e.target.value,
+                    fromPartySummary: e.target.value,
                   });
                 }}
               />
@@ -431,11 +429,11 @@ export default function ParcelInstrument(props) {
               <TextField
                 className={classes.maxWidth}
                 multiline
-                value={newInstrument?.grantee}
+                value={newInstrument?.toPartySummary}
                 onChange={(e) => {
                   setNewInstrument({
                     ...newInstrument,
-                    grantee: e.target.value,
+                    toPartySummary: e.target.value,
                   });
                 }}
               />
@@ -456,14 +454,14 @@ export default function ParcelInstrument(props) {
                 margin="normal"
                 id="date-picker-inline"
                 value={
-                  newInstrument?.effective_date
-                    ? new Date(newInstrument.effective_date)
+                  newInstrument?.effectiveDate
+                    ? new Date(newInstrument.effectiveDate)
                     : null
                 }
                 onChange={(date) => {
                   setNewInstrument({
                     ...newInstrument,
-                    effective_date: date ? String(date["_d"]) : "",
+                    effectiveDate: date ? String(date["_d"]) : "",
                   });
                 }}
                 KeyboardButtonProps={{
@@ -487,14 +485,14 @@ export default function ParcelInstrument(props) {
                 margin="normal"
                 id="date-picker-inline"
                 value={
-                  newInstrument?.instrument_date
-                    ? new Date(newInstrument.instrument_date)
+                  newInstrument?.executionDate
+                    ? new Date(newInstrument.executionDate)
                     : null
                 }
                 onChange={(date) => {
                   setNewInstrument({
                     ...newInstrument,
-                    instrument_date: date ? String(date["_d"]) : "",
+                    executionDate: date ? String(date["_d"]) : "",
                   });
                 }}
                 KeyboardButtonProps={{
@@ -518,14 +516,14 @@ export default function ParcelInstrument(props) {
                 margin="normal"
                 id="date-picker-inline"
                 value={
-                  newInstrument?.file_date
-                    ? new Date(newInstrument.file_date)
+                  newInstrument?.fileDate
+                    ? new Date(newInstrument.fileDate)
                     : null
                 }
                 onChange={(date) => {
                   setNewInstrument({
                     ...newInstrument,
-                    file_date: date ? String(date["_d"]) : "",
+                    fileDate: date ? String(date["_d"]) : "",
                   });
                 }}
                 KeyboardButtonProps={{
@@ -547,11 +545,11 @@ export default function ParcelInstrument(props) {
                 setValue={(value) => {
                   setNewInstrument({
                     ...newInstrument,
-                    record_type: value,
+                    recordType: value,
                   });
                 }}
                 value={
-                  newInstrument.record_type ? newInstrument.record_type : ""
+                  newInstrument.recordType ? newInstrument.recordType : ""
                 }
               />
             </ListItem>
@@ -569,11 +567,11 @@ export default function ParcelInstrument(props) {
                     <TextField
                       className={classes.maxWidth}
                       multiline
-                      value={newInstrument?.rec_num}
+                      value={newInstrument?.recordationNumber}
                       onChange={(e) => {
                         setNewInstrument({
                           ...newInstrument,
-                          rec_num: e.target.value,
+                          recordationNumber: e.target.value,
                         });
                       }}
                     />
@@ -624,11 +622,11 @@ export default function ParcelInstrument(props) {
               <TextField
                 className={classes.maxWidth}
                 multiline
-                value={newInstrument?.legal_description}
+                value={newInstrument?.legalDescription}
                 onChange={(e) => {
                   setNewInstrument({
                     ...newInstrument,
-                    legal_description: e.target.value,
+                    legalDescription: e.target.value,
                   });
                 }}
               />

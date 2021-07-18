@@ -75,17 +75,17 @@ function ParcelDetailsRunsheetTable(props) {
       let wells = dataParcelAgreement.getParcelAgreement
       wells = wells.map((w) => {
         let well = { ...w };
-        well.instrument_type = well.descriptorObject.instrument_type
-        well.grantor = well.descriptorObject.grantor
-        well.grantee = well.descriptorObject.grantee
-        well.effective_date = well.descriptorObject.effective_date ? moment(well.descriptorObject.effective_date).format('MM/DD/YYYY') : ''
-        well.instrument_date = well.descriptorObject.instrument_date ? moment(well.descriptorObject.instrument_date).format('MM/DD/YYYY') : ''
-        well.file_date = well.descriptorObject.file_date ? moment(well.descriptorObject.file_date).format('MM/DD/YYYY') : ''
-        well.record_type = well.descriptorObject.record_type
-        well.rec_num = well.descriptorObject.rec_num
+        well.instrumentType = well.descriptorObject.instrumentType
+        well.fromPartySummary = well.descriptorObject.fromPartySummary
+        well.toPartySummary = well.descriptorObject.toPartySummary
+        well.effectiveDate = well.descriptorObject.effectiveDate ? moment(well.descriptorObject.effectiveDate).format('MM/DD/YYYY') : ''
+        well.executionDate = well.descriptorObject.executionDate ? moment(well.descriptorObject.executionDate).format('MM/DD/YYYY') : ''
+        well.fileDate = well.descriptorObject.fileDate ? moment(well.descriptorObject.fileDate).format('MM/DD/YYYY') : ''
+        well.recordType = well.descriptorObject.recordType
+        well.recordationNumber = well.descriptorObject.recordationNumber
         well.volume = well.descriptorObject.volume
         well.page = well.descriptorObject.page
-        well.legal_description = well.descriptorObject.legal_description
+        well.legalDescription = well.descriptorObject.legalDescription
         well.fileId = well.descriptorObject.file[0].descriptorObject
         return { ...well, _id: w.descriptorObject._id }; 
       })
