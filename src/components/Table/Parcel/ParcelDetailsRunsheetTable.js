@@ -75,19 +75,20 @@ function ParcelDetailsRunsheetTable(props) {
       let wells = dataParcelAgreement.getParcelAgreement
       wells = wells.map((w) => {
         let well = { ...w };
-        well.instrumentType = well.descriptorObject.instrumentType
-        well.fromPartySummary = well.descriptorObject.fromPartySummary
-        well.toPartySummary = well.descriptorObject.toPartySummary
-        well.effectiveDate = well.descriptorObject.effectiveDate ? moment(well.descriptorObject.effectiveDate).format('MM/DD/YYYY') : ''
-        well.executionDate = well.descriptorObject.executionDate ? moment(well.descriptorObject.executionDate).format('MM/DD/YYYY') : ''
-        well.fileDate = well.descriptorObject.fileDate ? moment(well.descriptorObject.fileDate).format('MM/DD/YYYY') : ''
-        well.recordType = well.descriptorObject.recordType
-        well.recordationNumber = well.descriptorObject.recordationNumber
-        well.volume = well.descriptorObject.volume
-        well.page = well.descriptorObject.page
-        well.legalDescription = well.descriptorObject.legalDescription
-        well.fileId = well.descriptorObject.file[0].descriptorObject
-        return { ...well, _id: w.descriptorObject._id }; 
+        well.instrumentType = well.relatedObject.instrumentType
+        well.fromPartySummary = well.relatedObject.fromPartySummary
+        well.toPartySummary = well.relatedObject.toPartySummary
+        well.effectiveDate = well.relatedObject.effectiveDate ? moment(well.relatedObject.effectiveDate).format('MM/DD/YYYY') : ''
+        well.executionDate = well.relatedObject.executionDate ? moment(well.relatedObject.executionDate).format('MM/DD/YYYY') : ''
+        well.fileDate = well.relatedObject.fileDate ? moment(well.relatedObject.fileDate).format('MM/DD/YYYY') : ''
+        well.recordType = well.relatedObject.recordType
+        well.recordationNumber = well.relatedObject.recordationNumber
+        well.volume = well.relatedObject.volume
+        well.page = well.relatedObject.page
+        well.legalDescription = well.relatedObject.legalDescription
+        well.fileId = well.relatedObject.file[0]?.descriptorObject?._id
+        well.fileName = well.relatedObject.file[0]?.descriptorObject?.name
+        return { ...well, _id: w.relatedObject._id }; 
       })
       props.setRows(wells);
       const cleanAvailableTags = [];

@@ -71,6 +71,18 @@ const DocumentsHeadCells = [
     },
   },
   {
+    name: "fileName",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "tags",
     label: "Tags ",
     options: {
@@ -93,6 +105,18 @@ const DocumentsHeadCells = [
   },
   {
     name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: " ",
     label: " ",
     options: {
       filter: false,

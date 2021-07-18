@@ -1940,7 +1940,7 @@ function SubTable(props) {
                       <IconButton onClick={(e) => {
                         e.stopPropagation()
                         console.log("modell download")
-                        handleViewFile(row_line?._id)
+                        handleViewFile(props.addAble.type === "parcelRunsheet" ? row_line.fileId : row_line?._id)
                       }}>
                         <GetAppIcon />
                       </IconButton>
@@ -3106,13 +3106,13 @@ function SubTable(props) {
         }));
         props.onClickAdd()
       }
-      // if (props.targetLabel === "parcelRunsheet") {
-      //   setStateApp((stateApp) => ({
-      //     ...stateApp,
-      //     selectedAgreement: rows[dataIndex],
-      //   }));
-      //   props.onClickAdd()
-      // }
+      if (props.targetLabel === "parcelRunsheet") {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedAgreement: rows[dataIndex],
+        }));
+        props.onClickAdd()
+      }
 
       if (props.targetLabel === "usermanagement") {
         if (rows[dataIndex]?.id) {

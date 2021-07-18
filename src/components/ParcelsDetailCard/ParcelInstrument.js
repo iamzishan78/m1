@@ -32,6 +32,7 @@ import joinAddress from "components/Shared/valueformatters/join-address.js";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { ADD_PARCEL_AGREEMENT } from "graphQL/useMutationAddParcelAgreement";
+import { UPDATE_PARCEL_AGREEMENT } from "graphQL/useMutationUpdateParcelAgreement";
 import { INSTRUMENT_TYPE } from "graphQL/useQueryInstrumentType";
 import { RECORD_TYPE } from "graphQL/useQueryRecordType";
 
@@ -195,7 +196,8 @@ export default function ParcelInstrument(props) {
   const [getRecordTypes, { data: recordTypes }] = useLazyQuery(RECORD_TYPE, {
     fetchPolicy: "no-cache",
   });
-  const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT);
+  const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, { refetchQueries: [ "getParcelAgreement" ], awaitRefetchQueries: true });
+  const [updateParcelAgreement] = useMutation(UPDATE_PARCEL_AGREEMENT, { refetchQueries: [ "getParcelAgreement" ], awaitRefetchQueries: true });
 
   useEffect(() => {
     getInstrumentTypes();
@@ -240,6 +242,10 @@ export default function ParcelInstrument(props) {
           fileId,
         });
       } else {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedAgreement: null,
+        }));
         setNewInstrument(instrumentInitial);
       }
     }
@@ -270,6 +276,10 @@ export default function ParcelInstrument(props) {
 
   const handleClose = () => {
     props.setShowSlider(false);
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedAgreement: null,
+    }));
     setNewInstrument(instrumentInitial);
   };
 
@@ -314,31 +324,68 @@ export default function ParcelInstrument(props) {
 
     const fileId = fileData?.addFileDescriptor?.file?.id;
     setLoader(true);
-    addParcelAgreement({
-      variables: {
-        agreement: {
-          instrumentType: instrumentType,
-          effectiveDate: newInstrument.effectiveDate,
-          fileDate: newInstrument.fileDate,
-          toPartySummary: newInstrument.toPartySummary,
-          fromPartySummary: newInstrument.fromPartySummary,
-          executionDate: newInstrument.executionDate,
-          legalDescription: newInstrument.legalDescription,
-          page: newInstrument.page,
-          recordationNumber: newInstrument.recordationNumber,
-          recordType: recordType,
-          volume: newInstrument.volume,
-          fileId: fileId || newInstrument.fileId,
-          fileName: fileData?.addFileDescriptor?.file?.name,
-          userId: stateApp.user.mongoId,
-          parcelId: props.parcelId
+    if(stateApp.selectedAgreement){
+      updateParcelAgreement({
+        variables: {
+          agreement: {
+            _id: stateApp.selectedAgreement._id,
+            instrumentType: instrumentType,
+            effectiveDate: newInstrument.effectiveDate,
+            fileDate: newInstrument.fileDate,
+            toPartySummary: newInstrument.toPartySummary,
+            fromPartySummary: newInstrument.fromPartySummary,
+            executionDate: newInstrument.executionDate,
+            legalDescription: newInstrument.legalDescription,
+            page: newInstrument.page,
+            recordationNumber: newInstrument.recordationNumber,
+            recordType: recordType,
+            volume: newInstrument.volume,
+          },
         },
-      },
-    }).then(() => {
-      props.setShowSlider(false);
-      setNewInstrument(instrumentInitial);
-      setLoader(false);
-    })
+        refetchQueries: ["getParcelAgreement"],
+        awaitRefetchQueries: true,
+      }).then(() => {
+        props.setShowSlider(false);
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedAgreement: null,
+        }));
+        setNewInstrument(instrumentInitial);
+        setLoader(false);
+      })
+    }else{
+      addParcelAgreement({
+        variables: {
+          agreement: {
+            instrumentType: instrumentType,
+            effectiveDate: newInstrument.effectiveDate,
+            fileDate: newInstrument.fileDate,
+            toPartySummary: newInstrument.toPartySummary,
+            fromPartySummary: newInstrument.fromPartySummary,
+            executionDate: newInstrument.executionDate,
+            legalDescription: newInstrument.legalDescription,
+            page: newInstrument.page,
+            recordationNumber: newInstrument.recordationNumber,
+            recordType: recordType,
+            volume: newInstrument.volume,
+            fileId: fileId || newInstrument.fileId,
+            fileName: fileData?.addFileDescriptor?.file?.name,
+            userId: stateApp.user.mongoId,
+            parcelId: props.parcelId
+          },
+          refetchQueries: ["getParcelAgreement"],
+          awaitRefetchQueries: true,
+        },
+      }).then(() => {
+        props.setShowSlider(false);
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedAgreement: null,
+        }));
+        setNewInstrument(instrumentInitial);
+        setLoader(false);
+      })
+    }
   }
   return (
     <div>
@@ -368,7 +415,11 @@ export default function ParcelInstrument(props) {
               }}
             >
               <ListItemText>
-                <h3>Add New Instrument</h3>
+                {stateApp.selectedAgreement ? (
+                  <h3>Update Instrument</h3>
+                ) :(
+                  <h3>Add New Instrument</h3>
+                )}
               </ListItemText>
               <ListItemIcon style={{ cursor: "pointer" }}>
                 <IconButton size="small" onClick={() => handleClose()}>
@@ -541,7 +592,7 @@ export default function ParcelInstrument(props) {
               <h4>Record Type</h4>
               <AutoCompleteField
                 className={classes.maxWidth}
-                options={recordTypes || []}
+                options={recordTypes?.getRecordType || []}
                 setValue={(value) => {
                   setNewInstrument({
                     ...newInstrument,
@@ -799,8 +850,8 @@ const AutoCompleteField = ({ setValue, value, options, ...other }) => {
       disableListWrap
       classes={classes}
       options={
-        options?.getFilesType
-          ? options?.getFilesType?.map((type) => {
+        options
+          ? options?.map((type) => {
               return { _id: type, name: type };
             })
           : []
