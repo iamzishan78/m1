@@ -16,7 +16,7 @@ import TableHOC from "components/Table/TableHOC";
 // QUERIES 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GET_PARCELS_AGREEMENT } from "graphQL/useQueryGetParcelAgreement";
-import { DELETEDESCRIPTORFILE } from "graphQL/useMutationDeleteDescriptorFile";
+import { DELETE_PARCEL_RUNSHEET } from "graphQL/useMutationDeleteParcelAgreement";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 import ParcelInstrument from "components/ParcelsDetailCard/ParcelInstrument";
@@ -50,7 +50,7 @@ function ParcelDetailsRunsheetTable(props) {
   // queries 
   const [getParcelAgreement, { data: dataParcelAgreement, loading }] = useLazyQuery(GET_PARCELS_AGREEMENT);
 
-  const [updateParcelDocument] = useMutation(DELETEDESCRIPTORFILE, { refetchQueries: [ "getAllFiles" ], awaitRefetchQueries: true });
+  const [deleteParcelRunsheet] = useMutation(DELETE_PARCEL_RUNSHEET, { refetchQueries: [ "getParcelAgreement" ], awaitRefetchQueries: true });
   const tableData = dataParcelAgreement?.getParcelAgreement
 
   const addAble = { type: "parcelRunsheet" }
@@ -75,20 +75,10 @@ function ParcelDetailsRunsheetTable(props) {
       let wells = dataParcelAgreement.getParcelAgreement
       wells = wells.map((w) => {
         let well = { ...w };
-        well.instrumentType = well.relatedObject.instrumentType
-        well.fromPartySummary = well.relatedObject.fromPartySummary
-        well.toPartySummary = well.relatedObject.toPartySummary
-        well.effectiveDate = well.relatedObject.effectiveDate ? moment(well.relatedObject.effectiveDate).format('MM/DD/YYYY') : ''
-        well.executionDate = well.relatedObject.executionDate ? moment(well.relatedObject.executionDate).format('MM/DD/YYYY') : ''
-        well.fileDate = well.relatedObject.fileDate ? moment(well.relatedObject.fileDate).format('MM/DD/YYYY') : ''
-        well.recordType = well.relatedObject.recordType
-        well.recordationNumber = well.relatedObject.recordationNumber
-        well.volume = well.relatedObject.volume
-        well.page = well.relatedObject.page
-        well.legalDescription = well.relatedObject.legalDescription
-        well.fileId = well.relatedObject.file[0]?.descriptorObject?._id
-        well.fileName = well.relatedObject.file[0]?.descriptorObject?.name
-        return { ...well, _id: w.relatedObject._id }; 
+        well.effectiveDate = well.effectiveDate ? moment(well.effectiveDate).format('MM/DD/YYYY') : ''
+        well.executionDate = well.executionDate ? moment(well.executionDate).format('MM/DD/YYYY') : ''
+        well.fileDate = well.fileDate ? moment(well.fileDate).format('MM/DD/YYYY') : ''
+        return { ...well, _id: w._id }; 
       })
       props.setRows(wells);
       const cleanAvailableTags = [];
@@ -118,15 +108,18 @@ function ParcelDetailsRunsheetTable(props) {
 
   const deleteFunc = (ids)=> {
     for(let i=0; i< ids.length;  i++){
-      updateParcelDocument({
-        variables: {
-            id: ids[i],
-        },
-        refetchQueries: [
-          "getParcelAgreement",
-        ],
-        awaitRefetchQueries: true,
-      })
+      const record = props.rows.find(row => row._id === ids[i])
+      if(record){
+        deleteParcelRunsheet({
+          variables: {
+              id: record.descriptorObject,
+          },
+          refetchQueries: [
+            "getParcelAgreement",
+          ],
+          awaitRefetchQueries: true,
+        })
+      }
     }
   }
 

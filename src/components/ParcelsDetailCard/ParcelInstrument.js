@@ -206,12 +206,14 @@ export default function ParcelInstrument(props) {
 
   useEffect(() => {
     let ID = [];
-    if (stateApp.selectedAgreement?.fileId) {
-      ID.push(stateApp.selectedAgreement?.fileId);
+    if (stateApp.selectedAgreement?._id) {
+      if (stateApp.selectedAgreement?.fileId) {
+        ID.push(stateApp.selectedAgreement?.fileId);
 
-      viewFiles({
-        variables: { fileIds: ID },
-      });
+        viewFiles({
+          variables: { fileIds: ID },
+        });
+      }
       if (stateApp.selectedAgreement) {
         const {
           instrumentType,
@@ -340,6 +342,8 @@ export default function ParcelInstrument(props) {
             recordationNumber: newInstrument.recordationNumber,
             recordType: recordType,
             volume: newInstrument.volume,
+            fileId: fileId,
+            fileName: fileData?.addFileDescriptor?.file?.name,
           },
         },
         refetchQueries: ["getParcelAgreement"],
@@ -805,12 +809,12 @@ export default function ParcelInstrument(props) {
               color="secondary"
               size="medium"
               disableElevation
-              disabled={!fileData && !newInstrument.fileId}
+              // disabled={!fileData && !newInstrument.fileId}
               onClick={() => {
-                if (fileData || newInstrument.fileId) {
+                // if (fileData || newInstrument.fileId) {
                   setLoader(true);
                   handleSave();
-                }
+                // }
               }}
               className={classes.footerButton}
             >
