@@ -145,6 +145,7 @@ const AppProvider = (props) => {
     isContactSearching: false,
     viewDoc: null,
     pdfView: null,
+    selectedAgreement: null,
 
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {
