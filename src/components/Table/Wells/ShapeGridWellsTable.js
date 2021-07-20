@@ -11,6 +11,7 @@ import TableHOC from "components/Table/TableHOC";
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
 import { SHAPEWELLS } from "graphQL/useQueryPaginatedShapeWells";
+import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount.js";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 
@@ -33,7 +34,7 @@ function ShapeGridWellsTable(props) {
 
     // contexts
     const [stateApp, setStateApp] = useContext(AppContext);
-
+    const [count, setTotalCount] = useState(0);
     // function states 
     const [columns, Columns] = useState([]);
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
@@ -41,6 +42,15 @@ function ShapeGridWellsTable(props) {
 
     // queries 
     const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true });
+    const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true,
+        onCompleted: (dataShapeWellsCount) => {
+          setTotalCount(dataShapeWellsCount?.shapeWellsCount || 0)
+          setStateApp((state) => ({
+              ...state,
+              shapeGridWellsCount: dataShapeWellsCount?.shapeWellsCount,
+          }));
+      }, 
+    });
     const tableData = dataShapeWells?.paginatedShapeWells
 
     const addAble = false
@@ -55,6 +65,11 @@ function ShapeGridWellsTable(props) {
                 userId: stateApp.user.mongoId,
             },
         });
+        getShapeWellsCount({
+            variables: {
+                polygon: stateApp.gridPolygonString,
+            }
+        })
     }, [props.parent]);
 
     useEffect(() => {
@@ -111,10 +126,6 @@ function ShapeGridWellsTable(props) {
             setColumns(columns);
             props.setLoading(false);
 
-            setStateApp((state) => ({
-                ...state,
-                shapeGridWellsCount: tableData.totalCount,
-            }));
         }
         else if (tableData?.edges?.length === 0) {
             props.setLoading(false);
@@ -202,7 +213,6 @@ function ShapeGridWellsTable(props) {
         }
     }
 
-    const count = tableData?.totalCount || 0
     const options = {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
         count: count,
