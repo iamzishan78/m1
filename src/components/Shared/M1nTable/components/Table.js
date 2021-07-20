@@ -3977,7 +3977,7 @@ function SubTable(props) {
                 m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
-                {`Do you want to permanently delete the runsheet${m1nSelectedRowsIds &&
+                {`Do you want to permanently delete the instrument${m1nSelectedRowsIds &&
                   m1nSelectedRowsIds.length > 1 &&
                   removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                   ? "s"
