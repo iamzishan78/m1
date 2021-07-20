@@ -1464,9 +1464,11 @@ function Map() {
           map.removeLayer(layerId + "-clusters");
       }
 
+      const layers = map.getStyle().layers
       // -> remove source
       const sourceId = prop.sourceProps;
-      if (map.getSource(sourceId)) map.removeSource(sourceId);
+      const sourceLayers = layers.filter((layer) => layer.source === sourceId)
+      if (map.getSource(sourceId) && sourceLayers.length === 0) map.removeSource(sourceId);
       if (map.getSource(`${sourceId}_point`))
         map.removeSource(`${sourceId}_point`);
       if (map.getSource(`${sourceId}_filter`))
@@ -1476,7 +1478,9 @@ function Map() {
 
   useEffect(() => {
     if (removeLayerFromMap && map) {
-      removeLayer(removeLayerFromMap);
+      removeLayerFromMap.forEach((layer) => {
+        removeLayer(layer);
+      })
       dispatch(setMainMapState({ removeLayerFromMap: null }));
     }
   }, [removeLayerFromMap]);
