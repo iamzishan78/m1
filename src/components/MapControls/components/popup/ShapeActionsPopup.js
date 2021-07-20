@@ -473,13 +473,13 @@ const ShapeActionsPopup = (props) => {
             </IconButton>
           </Tooltip>
 
-          {stateApp.isAbstractedLayersPolygon && (
-            <Tooltip title="Create Parcel">
-              <IconButton size="small" aria-label="Parcel" onClick={saveAndOpenParcelDetail}>
-                <LayerIcon color="secondary" />
-              </IconButton>
-            </Tooltip>
-          )}
+          {/* {stateApp.isAbstractedLayersPolygon && ( */}
+          <Tooltip title="Create Parcel">
+            <IconButton size="small" aria-label="Parcel" onClick={saveAndOpenParcelDetail}>
+              <LayerIcon color="secondary" />
+            </IconButton>
+          </Tooltip>
+          {/* )} */}
 
           <Tooltip title="Area of Interest">
             <IconButton size="small" onClick={actionAOI} aria-label="Area of Interest">
