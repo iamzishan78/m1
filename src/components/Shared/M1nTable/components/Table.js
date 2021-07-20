@@ -2790,7 +2790,7 @@ function SubTable(props) {
     customSort: (data, colIndex, order) => {
       let temp_rows = [];
       let temp_rows_per_page = rowsPerPage ? rowsPerPage : 25;
-      let temp = data.filter((item) => item.data[1] != "Cumulative");
+      let temp = data.filter((item) => item.data[1] !== "Cumulative");
       if (props.parent === "production_WellDetails") {
         if (colIndex === 1) {
           temp_rows = temp.sort((a, b) => {
@@ -2813,17 +2813,17 @@ function SubTable(props) {
         let temp_cumulative_array = [];
 
         for (let counter = 0; counter < cumulative_array.length; counter++) {
-          if (counter != 0 && counter != 9 && counter != 10 && counter != 11 && counter != 12) {
+          if (counter !== 0 && counter !== 9 && counter !== 10 && counter !== 11 && counter !== 12) {
             temp_cumulative_array.push(cumulative_array[counter]);
           }
         }
 
-        if (Object.entries(cumulative).length != 0) {
+        if (Object.entries(cumulative).length !== 0) {
           let multiplier = temp_rows.length / insertInBetween;
 
           for (let counter = 1; counter <= multiplier; counter++) {
             let insert_index = 0;
-            if (counter != 1) {
+            if (counter !== 1) {
               insert_index = counter * temp_rows_per_page;
               temp_rows.splice(insert_index - 1, 0, {
                 data: temp_cumulative_array,
@@ -2848,7 +2848,7 @@ function SubTable(props) {
       if (props.total === true) {
         switch (props.parent) {
           case "production_WellDetails":
-            let trimmed = rows.filter((item) => item.ReportDate != "Cumulative");
+            let trimmed = rows.filter((item) => item.ReportDate !== "Cumulative");
             setRowsPerPage(numberOfRows);
             setRows(displayCumulative(trimmed, props.total, cumulative, numberOfRows));
             break;
@@ -3103,13 +3103,13 @@ function SubTable(props) {
 
   const displayCumulative = (data, total, cumulative, rowsPerPage = 25) => {
     let rows = data;
-    if (total === true && rows.length != 0) {
+    if (total === true && rows.length !== 0) {
       let insertInBetween = rowsPerPage - 1;
-      if (Object.entries(cumulative).length != 0) {
+      if (Object.entries(cumulative).length !== 0) {
         let multiplier = rows.length / insertInBetween;
         for (let temp = 1; temp <= multiplier; temp++) {
           let insert_index = 0;
-          if (temp != 1) {
+          if (temp !== 1) {
             insert_index = temp * rowsPerPage;
             rows.splice(insert_index - 1, 0, cumulative);
           } else {
@@ -3118,7 +3118,7 @@ function SubTable(props) {
         }
         rows.push(cumulative);
       }
-      if (rows[rows.length - 1] != cumulative) {
+      if (rows[rows.length - 1] !== cumulative) {
         rows.push(cumulative);
       }
     }
