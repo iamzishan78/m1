@@ -1943,7 +1943,7 @@ function SubTable(props) {
                       <IconButton onClick={(e) => {
                         e.stopPropagation()
                         console.log("modell download")
-                        handleViewFile(row_line?._id)
+                        handleViewFile(props.addAble.type === "parcelRunsheet" ? row_line.fileId : row_line?._id)
                       }}>
                         <GetAppIcon />
                       </IconButton>
@@ -2649,6 +2649,37 @@ function SubTable(props) {
               </div>
             )
           }
+          if (props.addAble.type === 'parcelRunsheet') {
+            return (
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    height: "35px",
+                    display: "flex",
+                  }}
+                >
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        handleExpandClick(null, null, null, "deleteParcelRunsheet")
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </div>
+            )
+          }
           if (props.addAble.type === 'wellInterest') {
             return (
               <div
@@ -2873,6 +2904,7 @@ function SubTable(props) {
       if (props.addAble.type === "ownerToParcel") { buttonLabel = '+ ADD INTEREST OWNER' }
       if (props.addAble.type === "suggestedOwnerToParcel") { buttonLabel = '+ ADD TO PARCEL' }
       if (props.addAble.type === "parcelDocument") { buttonLabel = 'ADD DOCUMENT' }
+      if (props.addAble.type === "parcelRunsheet") { buttonLabel = '+ ADD INSTRUMENT' }
 
 
       const addAction = (e) => {
@@ -2945,6 +2977,15 @@ function SubTable(props) {
                 className={classes.multiSelectionTopBarButtons}
                 disabled={true}
                 onClick={() => { }}
+              >
+                {buttonLabel}
+              </Button>
+            )}
+            {(props.addAble.type === "parcelRunsheet") && (
+              <Button
+                color="secondary"
+                className={classes.multiSelectionTopBarButtons}
+                onClick={()=>  props.onClickAdd()}
               >
                 {buttonLabel}
               </Button>
@@ -3096,6 +3137,13 @@ function SubTable(props) {
         setStateApp((stateApp) => ({
           ...stateApp,
           selectedDocument: rows[dataIndex],
+        }));
+        props.onClickAdd()
+      }
+      if (props.targetLabel === "parcelRunsheet") {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedAgreement: rows[dataIndex],
         }));
         props.onClickAdd()
       }
@@ -3756,6 +3804,7 @@ function SubTable(props) {
                 openDialog === "deleteUser" ||
                 openDialog === "deleteWellInterest" ||
                 openDialog === "deleteParcelDocument" ||
+                openDialog === "deleteParcelRunsheet" ||
                 openDialog === "addParcelInterestsToEntity"
                 ? true
                 : false
@@ -3916,6 +3965,22 @@ function SubTable(props) {
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to permanently delete the document${m1nSelectedRowsIds &&
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                  ? "s"
+                  : ""
+                  } from  this parcel?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "deleteParcelRunsheet" && (
+              <DeleteConfirmationDialogContent
+                header="Delete Parcel Runsheet(s)"
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to permanently delete the instrument${m1nSelectedRowsIds &&
                   m1nSelectedRowsIds.length > 1 &&
                   removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                   ? "s"
