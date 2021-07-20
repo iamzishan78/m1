@@ -9,7 +9,7 @@ import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 import { AppContext } from "../../../AppContext";
 import AddWellInterestDialog from "./ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
-import { CONTACT_ASSOCIATED_WELL_COUNT } from "graphQL/useQueryContactAssociatedWellCount";
+import { CONTACT_WELL_CARD_DETAIL } from "graphQL/useQueryContactWellCardDetail";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -48,22 +48,14 @@ export default function WellsCard(props) {
   const [interestTypes, setInterestTypes] = useState("");
   const [count, setCount] = useState("-");
   const [avgTaxValues, setAvgTaxValues] = useState(0);
-  const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS, {
-    fetchPolicy: "cache-and-network",
-  });
-  const [getContactAssociatedWellCount, { data: dataContactWellCount }] = useLazyQuery(CONTACT_ASSOCIATED_WELL_COUNT, {
+  const [getContactWellCardDetail, { data: dataContactWellDetail }] = useLazyQuery(CONTACT_WELL_CARD_DETAIL, {
     fetchPolicy: "cache-and-network",
   });
   const [stateApp, setStateApp] = useContext(AppContext);
 
   useEffect(() => {
     if (props.contactData && props.contactData._id) {
-      getContactWells({
-        variables: {
-          contactId: props.contactData._id,
-        },
-      });
-      getContactAssociatedWellCount({
+      getContactWellCardDetail({
         variables: {
           contactId: props.contactData._id,
         },
@@ -72,18 +64,12 @@ export default function WellsCard(props) {
   }, [props.contactData]);
 
   useEffect(() => {
-    if (dataContactWells?.contactWells) {
-      const wells = dataContactWells.contactWells;
-      setInterestTypes([...new Set(wells.map(well => well.type))].join(", "));
-      setAvgTaxValues(wells.map(well => well.taxValue).reduce((a, b) => (a + b), 0) / (wells.length !== 0 ? wells.length : 1));
+    if (dataContactWellDetail?.contactWellCardDetail) {
+      setInterestTypes(dataContactWellDetail.contactWellCardDetail?.interestTypes)
+      setAvgTaxValues(dataContactWellDetail.contactWellCardDetail?.avgTaxValues)
+      setCount(dataContactWellDetail.contactWellCardDetail?.total)
     }
-  }, [dataContactWells]);
-
-  useEffect(() => {
-    if (dataContactWellCount?.contactAssociatedWellCount) {
-      setCount(dataContactWellCount.contactAssociatedWellCount);
-    }
-  }, [dataContactWellCount]);
+  }, [dataContactWellDetail]);
 
   return (
     <div className={classes.root} onClick={() => {

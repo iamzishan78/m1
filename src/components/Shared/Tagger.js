@@ -372,6 +372,8 @@ export default function Tags(props) {
           "getWellsIdsFromTagsArray",
           "getOwnersIdsFromTagsArray",
           "getTagsByObjectsIds",
+          "getPaginatedContacts",
+          "getContactsFilterOptions",
         ],
         awaitRefetchQueries: true,
       });
@@ -392,6 +394,8 @@ export default function Tags(props) {
             "getWellsIdsFromTagsArray",
             "getOwnersIdsFromTagsArray",
             "getTagsByObjectsIds",
+            "getPaginatedContacts",
+            "getContactsFilterOptions",
           ],
           awaitRefetchQueries: true,
         });
@@ -564,8 +568,8 @@ export default function Tags(props) {
           )} */}
         </Grid>
       ) : (
-          <CircularProgress color="secondary"></CircularProgress>
-        )}
+        <CircularProgress color="secondary"></CircularProgress>
+      )}
     </div>
   );
 }

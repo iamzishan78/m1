@@ -1,6 +1,7 @@
 {
     "git.ignoreLimitWarning": true,
     "git.autofetch": true,
+    "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.fixAll": true
     },
