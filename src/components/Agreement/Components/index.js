@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Agreement(props) {
   const classes = useStyles();
-  const [breadcrumbTitle, setTitle] = useState("New Agreement");
+  const [breadcrumbTitle, setTitle] = useState();
 
   return (
     <>

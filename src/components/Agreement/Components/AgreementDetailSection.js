@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import { Breadcrumbs, Typography, Grid, IconButton, Accordion, AccordionSummary, AccordionDetails, TextField } from "@material-ui/core";
+import { makeStyles, Grid, Accordion, AccordionSummary, AccordionDetails, TextField } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 const useStyles = makeStyles((theme) => ({
@@ -21,14 +18,14 @@ function AgreementDetailSection({ setTitle }) {
   const [title, setHeaderTitle] = useState({ name: "", number: "" });
 
   useEffect(() => {
-    if (!title.number) {
+    if (!title.number && title.name) {
       setTitle(`${title.name}`);
-    }
-    if (!title.name) {
+    } else if (!title.name && title.number) {
       setTitle(`${title.number}`);
-    }
-    if (title.name && title.number) {
+    } else if (title.name && title.number) {
       setTitle(`${title.number}-${title.name}`);
+    } else if (!title.number && !title.name) {
+      setTitle("New Agreement");
     }
   }, [title, setTitle]);
 
@@ -44,8 +41,8 @@ function AgreementDetailSection({ setTitle }) {
           Agreement Details
         </AccordionSummary>
         <AccordionDetails>
-          <Grid container direction="row" justify="space-between" alignItems="center">
-            <Grid item xl={2.5}>
+          <Grid container direction="row" justify="space-between" alignItems="center" style={{ width: "100%" }}>
+            <Grid item>
               <TextField
                 margin="dense"
                 label="Agreement Number"
@@ -53,7 +50,7 @@ function AgreementDetailSection({ setTitle }) {
                 onChange={({ target }) => setHeaderTitle({ ...title, number: target.value })}
               />
             </Grid>
-            <Grid item xl={4}>
+            <Grid item>
               <TextField
                 margin="dense"
                 label="Agreement Name"
@@ -61,8 +58,91 @@ function AgreementDetailSection({ setTitle }) {
                 onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
               />
             </Grid>
-            <Grid item xl={2.5}></Grid>
-            <Grid item xl={2.5}></Grid>
+            <Grid item>
+              <TextField
+                select
+                label="Agreement Type"
+                fullWidth
+                style={{ minWidth: 200 }}
+                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+              >
+                <option key="Oil, gas" value="Oil, gas........">
+                  Oil, gas
+                </option>
+              </TextField>
+            </Grid>
+            <Grid item>
+              <TextField
+                select
+                label="Agreement Status"
+                fullWidth
+                style={{ minWidth: 200 }}
+                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+              >
+                <option key="Active" value="Active">
+                  Active
+                </option>
+                <option key="DeActive" value="DeActive">
+                  DeActive
+                </option>
+              </TextField>
+            </Grid>
+          </Grid>
+          <Grid container direction="row" justify="space-between" alignItems="center">
+            <Grid item>
+              <TextField
+                select
+                margin="dense"
+                label="Rights"
+                fullWidth
+                // onChange={({ target }) => setHeaderTitle({ ...title, number: target.value })}
+              >
+                <option key="Oil, gas" value="Oil, gas........">
+                  Oil, gas
+                </option>
+              </TextField>
+            </Grid>
+            <Grid item>
+              <TextField
+                margin="dense"
+                label="Property Status"
+                fullWidth
+                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+              >
+                <option key="Oil, gas" value="Oil, gas........">
+                  Held by Production
+                </option>
+              </TextField>
+            </Grid>
+            <Grid item>
+              <TextField
+                select
+                label="Agreement Type"
+                fullWidth
+                style={{ minWidth: 200 }}
+                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+              >
+                <option key="Oil, gas" value="Oil, gas........">
+                  Oil, gas
+                </option>
+              </TextField>
+            </Grid>
+            <Grid item>
+              <TextField
+                select
+                label="Agreement Status"
+                fullWidth
+                style={{ minWidth: 200 }}
+                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+              >
+                <option key="Active" value="Active">
+                  Active
+                </option>
+                <option key="DeActive" value="DeActive">
+                  DeActive
+                </option>
+              </TextField>
+            </Grid>
           </Grid>
         </AccordionDetails>
       </Accordion>
