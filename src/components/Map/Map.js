@@ -1122,12 +1122,18 @@ function Map() {
         expandedCard: false,
         popupOpen: false,
       }));
+      const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
+      const selectedUserDefinedLayer = {
+        ...feature,
+        ...JSON.parse(filteredLayer.shape),
+        id: filteredLayer._id,
+      }
 
       if (feature.source === "parcels_source") {
         setStateApp((state) => ({
           ...state,
           selectedUserDefinedLayer: null,
-          selectedParcel: feature.properties,
+          selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
         }));
       }
       const drawMode = stateApp.draw.getMode();
@@ -1135,14 +1141,6 @@ function Map() {
 
         setStateApp((state) => {
           if (state.isDrawing) return state
-
-          const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
-          const selectedUserDefinedLayer = {
-            ...feature,
-            ...JSON.parse(filteredLayer.shape),
-            id: filteredLayer._id,
-          }
-
           state = {
             ...state,
             showShapeActionsPopup: true,

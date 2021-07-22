@@ -332,7 +332,6 @@ const ShapeActionsPopup = (props) => {
     if (!user._id) {
       return;
     }
-
     const abstractShape = stateApp.currentFeature;
 
     const properties = abstractShape?.properties;
@@ -397,6 +396,7 @@ const ShapeActionsPopup = (props) => {
         shapeCenter: JSON.stringify(calculateShapeCenter(abstractShape.geometry.coordinates)),
         shapeLabelLayer: "",
         id: featureId,
+        feature: abstractShape
       },
       customLayers: layers,
       expandedCard: true,
@@ -431,18 +431,23 @@ const ShapeActionsPopup = (props) => {
   };
 
   const confirmEditing = () => {
+    debugger;
     let { currentFeature, selectedAoi } = stateApp;
-    addCustomShapeProperties(currentFeature, stateApp.draw);
     const customLayerData = {
       shape: JSON.stringify({
         ...currentFeature,
         shapeArea: calculateLandArea(currentFeature),
         shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates),
       }),
-      layer: "interest",
-      name: currentFeature.properties.shapeLabel,
+      layer: selectedAoi.layer.id,
       user: stateApp.user.mongoId,
     };
+
+    if (selectedAoi.layer.id === 'interest') {
+      customLayerData.name = currentFeature.properties.shapeLabel
+    }
+    addCustomShapeProperties(currentFeature, stateApp.draw);
+
     updateCustomLayer({
       variables: {
         customLayerId: selectedAoi.id || selectedAoi._id,
@@ -457,32 +462,34 @@ const ShapeActionsPopup = (props) => {
     stateApp.draw.delete(currentFeature.id);
   };
 
+  const isParcel = stateApp.selectedAoi.layer.id
+
   return (
     <Fragment>
       <Fragment>
         <span class={classes.label}>{isLine() ? "Calc. Dist" : "Calc. Area"}</span> {calculateLandArea()}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
-          <Tooltip title="Grid">
-            <IconButton size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
+          <Tooltip title="Grid" className={isParcel && classes.disableAction} >
+            <IconButton disabled={isParcel} size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
               <GridOnIcon className={mapGridCardActivated ? "selected" : ""} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Filter">
-            <IconButton size="small" onClick={actionFilter} aria-label="Filter">
+          <Tooltip title="Filter" className={isParcel && classes.disableAction}>
+            <IconButton size="small" disabled={isParcel} onClick={actionFilter} aria-label="Filter">
               <FilterAltIcon className={stateApp.shapeActionsFilterSelected ? "selected" : ""} />
             </IconButton>
           </Tooltip>
 
           {/* {stateApp.isAbstractedLayersPolygon && ( */}
-          <Tooltip title="Create Parcel">
-            <IconButton size="small" aria-label="Parcel" onClick={saveAndOpenParcelDetail}>
+          <Tooltip title="Create Parcel" className={isParcel && classes.disableAction}>
+            <IconButton size="small" disabled={isParcel} aria-label="Parcel" onClick={saveAndOpenParcelDetail}>
               <LayerIcon color="secondary" />
             </IconButton>
           </Tooltip>
           {/* )} */}
 
-          <Tooltip title="Area of Interest">
-            <IconButton size="small" onClick={actionAOI} aria-label="Area of Interest">
+          <Tooltip title="Area of Interest" className={isParcel && classes.disableAction}>
+            <IconButton size="small" disabled={isParcel} onClick={actionAOI} aria-label="Area of Interest">
               <GpxFixedIcon />
             </IconButton>
           </Tooltip>
@@ -496,7 +503,7 @@ const ShapeActionsPopup = (props) => {
             </IconButton>
           </Tooltip>
 
-          {stateApp.currentFeature.properties.shapeLabel && (
+          {stateApp.currentFeature.properties.shapeLabel && !isParcel && (
             <Tooltip title="Delete Active Shape" className={!stateApp.currentFeature.properties.shapeLabel ? classes.disableAction : ""}>
               <IconButton
                 size="small"
