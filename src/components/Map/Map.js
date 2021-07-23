@@ -2627,27 +2627,28 @@ function Map() {
         filterArray.unshift("all");
 
         //// start filtering
-        var boundingMultiPoly = mergeIntoMultiPolygon(filterCustomArray["welllines"])
 
-        var features = wellLinesSourceFeatures;
+        var intersectingWellLinesFilter
+        if (filterCustomArray["welllines"]) {
+          var boundingMultiPoly = mergeIntoMultiPolygon(filterCustomArray["welllines"])
+          var features = wellLinesSourceFeatures;
 
-        console.time(`booleanIntersects`);
-        var intersectingWellLinesFilter = features.reduce(
-          function (memo, feature) {
-            boundingMultiPoly?.features?.forEach(boundingPoly => {
-              if (turf.booleanIntersects(feature.geometry, boundingPoly.geometry)) {
-                memo.push(feature.properties.id);
-              }
-            })
-            return memo;
-          },
-          ['in', 'id']
-        );
-        console.timeEnd(`booleanIntersects`);
+          console.time(`booleanIntersects`);
+          intersectingWellLinesFilter = features.reduce(
+            function (memo, feature) {
+              boundingMultiPoly?.features?.forEach(boundingPoly => {
+                if (turf.booleanIntersects(feature.geometry, boundingPoly.geometry)) {
+                  memo[2][1].push(feature.properties.id);
+                }
+              })
+              return memo;
+            },
+            ['in', ["get", "id"], ["literal", []]]
+          );
+          console.timeEnd(`booleanIntersects`);
+        }
 
         if (filterCustomArray["wellpoints"]) {
-
-
           map.setFilter("wellpoints", [
             ...filterArray,
             ["any",
