@@ -113,9 +113,10 @@ const ShapeActionsPopup = (props) => {
     const feature = JSON.parse(customLayer.shape);
     feature.id = customLayer._id;
     feature.properties.id = customLayer._id;
+    feature.layer = { id: 'parcel' }
     setStateApp((state) => ({
       ...state,
-      selectedParcel: feature.properties,
+      selectedParcel: { ...feature.properties, feature },
     }));
     setStateApp((state) => ({
       ...state,
@@ -396,10 +397,8 @@ const ShapeActionsPopup = (props) => {
         shapeCenter: JSON.stringify(calculateShapeCenter(abstractShape.geometry.coordinates)),
         shapeLabelLayer: "",
         id: featureId,
-        feature: abstractShape
       },
       customLayers: layers,
-      expandedCard: true,
     }));
     popupCloseAction();
   };
@@ -431,7 +430,6 @@ const ShapeActionsPopup = (props) => {
   };
 
   const confirmEditing = () => {
-    debugger;
     let { currentFeature, selectedAoi } = stateApp;
     const customLayerData = {
       shape: JSON.stringify({
@@ -462,7 +460,7 @@ const ShapeActionsPopup = (props) => {
     stateApp.draw.delete(currentFeature.id);
   };
 
-  const isParcel = stateApp.selectedAoi.layer.id
+  const isParcel = stateApp.selectedAoi?.layer?.id === 'parcel'
 
   return (
     <Fragment>

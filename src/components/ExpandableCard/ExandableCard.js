@@ -377,7 +377,6 @@ function ExpandableCard(props) {
   };
 
   const handleEditParcelShape = () => {
-    debugger;
     setStateApp((state) => ({
       ...state,
       showDrawShapesPopup: true,
