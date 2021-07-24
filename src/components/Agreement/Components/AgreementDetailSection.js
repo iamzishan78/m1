@@ -2,23 +2,36 @@ import React, { useState, useEffect } from "react";
 import { makeStyles, Grid, Accordion, AccordionSummary, AccordionDetails, TextField } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { KeyboardDatePicker } from "@material-ui/pickers";
+import StateCard from "components/ParcelsDetailCard/components/StateCard";
+import CountyCard from "components/ParcelsDetailCard/components/CountyCard";
+import MeridianCard from "components/ParcelsDetailCard/components/MeridianCard";
+import TownshipCard from "components/ParcelsDetailCard/components/TownshipCard";
+import RangeCard from "components/ParcelsDetailCard/components/RangeCard";
+import SurveyCard from "components/ParcelsDetailCard/components/SurveyCard";
+import BlockCard from "components/ParcelsDetailCard/components/BlockCard";
+import SectionCard from "components/ParcelsDetailCard/components/SectionCard";
+import AbstractCard from "components/ParcelsDetailCard/components/AbstractCard";
+import AltSurvey from "components/ParcelsDetailCard/components/AltSurveyCard";
 
 const useStyles = makeStyles((theme) => ({
   accordionRoot: {
     color: "black",
     "&.MuiAccordion-root.Mui-expanded": {
-      margin: 0
-    }
+      margin: 0,
+    },
   },
   accordionSummary: {
     backgroundColor: "#F2F2F2",
     minHeight: "70px",
     padding: "10px 30px 10px 30px",
+    "& .MuiAccordionSummary-content": {
+      margin: "0px !important",
+    },
   },
   detailFieldsRow2: {
     marginRight: 45,
-    marginTop: '40px'
-  }
+    marginTop: "40px",
+  },
 }));
 
 function AgreementDetailSection({ setTitle }) {
@@ -46,11 +59,37 @@ function AgreementDetailSection({ setTitle }) {
           expandIcon={<ExpandMoreIcon />}
           className={classes.accordionSummary}
         >
-          Agreement Details
+          <Grid container direction="center" display="flex" justify="space-between" style={{ marginLeft: "20px" }}>
+            <Grid item>
+              <StateCard state="Texas" />
+            </Grid>
+            <Grid item>
+              <CountyCard />
+            </Grid>
+            <Grid item>
+              <SurveyCard />
+            </Grid>
+            <Grid item>
+              <BlockCard />
+            </Grid>
+            <Grid item>
+              <SectionCard />
+            </Grid>
+            <Grid item>
+              <AbstractCard />
+            </Grid>
+            <Grid item>
+              <AltSurvey />
+            </Grid>
+            <Grid item></Grid>
+            <Grid item></Grid>
+            <Grid item></Grid>
+            <Grid item></Grid>
+          </Grid>
         </AccordionSummary>
         <AccordionDetails>
-          <Grid container direction="row" justify="flex-start" alignItems="center" style={{ width: "100%", margin: 5 }}>
-            <Grid item style={{ width: '13%', marginRight: 50 }}>
+          <Grid container direction="row" justify="flex-start" alignItems="center" style={{ width: "100%", margin: "5px 5px 5px 20px" }}>
+            <Grid item style={{ width: "13%", marginRight: 50 }}>
               <TextField
                 margin="dense"
                 label="Agreement Number"
@@ -58,7 +97,7 @@ function AgreementDetailSection({ setTitle }) {
                 onChange={({ target }) => setHeaderTitle({ ...title, number: target.value })}
               />
             </Grid>
-            <Grid item style={{ width: '40%', marginRight: 50 }}>
+            <Grid item style={{ width: "40%", marginRight: 50 }}>
               <TextField
                 margin="dense"
                 label="Agreement Name"
@@ -66,26 +105,26 @@ function AgreementDetailSection({ setTitle }) {
                 onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
               />
             </Grid>
-            <Grid item style={{ width: '20%', marginRight: 50 }}>
+            <Grid item style={{ width: "20%", marginRight: 50 }}>
               <TextField
                 select
                 label="Agreement Type"
                 fullWidth
                 style={{ minWidth: 200 }}
-              // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
               >
                 <option key="Oil, gas" value="Oil, gas........">
                   Oil, gas
                 </option>
               </TextField>
             </Grid>
-            <Grid item style={{ width: '15%', marginRight: 45 }}>
+            <Grid item style={{ width: "15%", marginRight: 45 }}>
               <TextField
                 select
                 label="Agreement Status"
                 fullWidth
                 style={{ minWidth: 200 }}
-              // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
               >
                 <option key="Active" value="Active">
                   Active
@@ -95,25 +134,25 @@ function AgreementDetailSection({ setTitle }) {
                 </option>
               </TextField>
             </Grid>
-            <Grid item style={{ minWidth: '10%' }} className={classes.detailFieldsRow2}>
+            <Grid item style={{ minWidth: "10%" }} className={classes.detailFieldsRow2}>
               <TextField
                 select
                 margin="dense"
                 label="Rights"
                 fullWidth
-              // onChange={({ target }) => setHeaderTitle({ ...title, number: target.value })}
+                // onChange={({ target }) => setHeaderTitle({ ...title, number: target.value })}
               >
                 <option key="Oil, gas" value="Oil, gas........">
                   Oil, gas
                 </option>
               </TextField>
             </Grid>
-            <Grid item style={{ minWidth: '15%' }} className={classes.detailFieldsRow2}>
+            <Grid item style={{ minWidth: "15%" }} className={classes.detailFieldsRow2}>
               <TextField
                 margin="dense"
                 label="Property Status"
                 fullWidth
-              // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
               >
                 <option key="Oil, gas" value="Oil, gas........">
                   Held by Production

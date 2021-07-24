@@ -16,9 +16,8 @@ import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: "23px 23px 0 23px",
-    cursor:"pointer",
+    cursor: "pointer",
   },
-
   cardContent: { width: "100%", display: "flex" },
   leftColumn: {
     textAlign: "center",
@@ -42,8 +41,6 @@ const useStyles = makeStyles((theme) => ({
   },
   h5: { color: "#757575", marginTop: "0" },
 }));
-
-
 
 export default function Deals({ contact, ...props }) {
   const classes = useStyles();
@@ -137,32 +134,31 @@ export default function Deals({ contact, ...props }) {
     //       className={classes.addIcon}
     //       onClick={() => {
     <div className={classes.root} onClick={() => {
-            history.push(`/contact/details/${contact._id}/deals`)
-            // props.handleOpenExpandableCard(
-            //   <DealsDetailCard
-            //     activeDeals={activeDeals}
-            //     lostDeals={lostDeals}
-            //     closedDeals={wonDeals}
-            //     contact={contact}
-            //   />,
-            //   "Deals"
-            // );
-          }}
-        >
-
-        <AddDealDialog
-            open={stateApp.dealDialog ? true : false}
-            width="450px"
-            onClose={() =>
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                dealDialog: false,
-              }))
-            }
-            contactId={contact._id}
+      history.push(`/contact/details/${contact._id}/deals`)
+      // props.handleOpenExpandableCard(
+      //   <DealsDetailCard
+      //     activeDeals={activeDeals}
+      //     lostDeals={lostDeals}
+      //     closedDeals={wonDeals}
+      //     contact={contact}
+      //   />,
+      //   "Deals"
+      // );
+    }}
+    >
+      <AddDealDialog
+        open={stateApp.dealDialog ? true : false}
+        width="450px"
+        onClose={() =>
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            dealDialog: false,
+          }))
+        }
+        contactId={contact._id}
       />
-         <div>
-        <h4 style={{ marginTop: "0", float: "left" }}>Deals ({ allDeals.length })</h4>
+      <div>
+        <h4 style={{ marginTop: "0", float: "left" }}>Deals ({allDeals.length})</h4>
         <IconButton
           size="small"
           className={classes.addIcon}
