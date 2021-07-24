@@ -11,6 +11,7 @@ import TableHOC from "components/Table/TableHOC";
 // QUERIES
 import { useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
 import { SHAPE_OWNERS } from "graphQL/useQueryPaginatedShapeOwners";
+import { SHAPEOWNERSCOUNT } from "graphQL/useQueryShapeOwnersCount";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { ADDOWNERTOAPARCEL } from "graphQL/useMutationAddOwnerToAParcel";
 import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from "graphQL/useMutationConvertMultitpleOwnerToContact";
@@ -48,11 +49,26 @@ function SuggestedOwnerTable(props) {
     setStateIfDeepEqual(Columns, newState);
   };
   const [selectedYear, setSelectedYear] = useState(2020); // production selected year state
+  const [count, setCount] = useState()  // local state for async count query
+  const [suggestedOwnersCount, setSuggestedOwnersCount] = useState()  // local state for async count query
 
   // queries
-  const [getPaginatedShapeOwners, { data: dataShapeOwners }] = useLazyQuery(
+  const [getPaginatedShapeOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(
     SHAPE_OWNERS,
-    { fetchPolicy: "cache-and-network", skip: true }
+    {
+      fetchPolicy: "cache-and-network", skip: true,
+      onCompleted: (dataShapeOwners) => {
+        setCount((state, props) => {
+          let newState = state || dataShapeOwners?.paginatedShapeOwners?.edges?.length;
+          let newStateIncrement = !variablesShapeOwners?.pagination?.before &&
+            dataShapeOwners?.paginatedShapeOwners?.pageInfo?.hasNextPage
+            ? 1
+            : 0;
+
+          return newState + newStateIncrement
+        })
+      },
+    }
   );
   const [addOwnerToAParcel, { data: mutationData }] =
     useMutation(ADDOWNERTOAPARCEL);
@@ -61,6 +77,12 @@ function SuggestedOwnerTable(props) {
   );
 
   const tableData = dataShapeOwners?.paginatedShapeOwners;
+  const [getShapeOwnersCount, { data: dataShapeOwnersCount }] = useLazyQuery(SHAPEOWNERSCOUNT, {
+    fetchPolicy: "cache-and-network", skip: true,
+    onCompleted: (dataShapeOwnersCount) => {
+      setSuggestedOwnersCount(dataShapeOwnersCount?.shapeOwnersCount);
+    },
+  });
 
   const addAble = { type: "suggestedOwnerToParcel" };
   const total = false;
@@ -68,10 +90,17 @@ function SuggestedOwnerTable(props) {
 
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
+    const queryPoly = getPolygonString(props.customLayer?.shape)
+
     getPaginatedShapeOwners({
       variables: {
-        polygon: getPolygonString(props.customLayer?.shape),
+        polygon: queryPoly,
         userId: stateApp.user.mongoId,
+      },
+    });
+    getShapeOwnersCount({
+      variables: {
+        polygon: queryPoly,
       },
     });
   }, [props.parent]);
@@ -120,12 +149,12 @@ function SuggestedOwnerTable(props) {
         ...(!isEmpty(tableState.sortOrder)) && {
           sort:
           {
-              field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.dbName ||
-                tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
-              order:
-                  tableState.sortOrder?.direction === "asc"
-                      ? 1
-                      : -1,
+            field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.dbName ||
+              tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
+            order:
+              tableState.sortOrder?.direction === "asc"
+                ? 1
+                : -1,
           }
         },
 
@@ -143,6 +172,11 @@ function SuggestedOwnerTable(props) {
         break;
       case "changePage":
         props.setLoading(true);
+        if (tableState.page > meta.pageInd) {
+          setCount((state, props) => {
+            return (tableState.page + 1) * tableState.rowsPerPage
+          })
+        }
         getPaginatedShapeOwners({
           ...pageVariables,
           variables: {
@@ -181,11 +215,10 @@ function SuggestedOwnerTable(props) {
     }
   };
 
-  const count = tableData?.totalCount || 0;
   const options = {
     rowsPerPageOptions:
       count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
-    count: count,
+    count: suggestedOwnersCount || count || 0,
     serverSide: true,
     filter: false,
   };
@@ -241,7 +274,7 @@ function SuggestedOwnerTable(props) {
           console.log(err)
         }
       );
-    } 
+    }
     if (selectedRows.length > 0) {
       addParcel(selectedRows);
     }
@@ -263,21 +296,21 @@ function SuggestedOwnerTable(props) {
         type: "",
         isSuggested: true
       };
-        addOwnerToAParcel({
-          variables: {
-            parcelOwner: {
-              ...ownerToAdd,
-              createBy: stateApp.user.mongoId,
-              lastUpdateBy: stateApp.user.mongoId,
-            },
+      addOwnerToAParcel({
+        variables: {
+          parcelOwner: {
+            ...ownerToAdd,
+            createBy: stateApp.user.mongoId,
+            lastUpdateBy: stateApp.user.mongoId,
           },
-          refetchQueries: [
-            "getCustomLayer",
-            "getparcelOwners",
-            "getContactParcelInterests",
-          ],
-          awaitRefetchQueries: true,
-        });
+        },
+        refetchQueries: [
+          "getCustomLayer",
+          "getparcelOwners",
+          "getContactParcelInterests",
+        ],
+        awaitRefetchQueries: true,
+      });
     }
   };
 
