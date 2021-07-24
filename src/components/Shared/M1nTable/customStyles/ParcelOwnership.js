@@ -29,39 +29,39 @@ const ParcelOwnershipStyles = makeStyles((theme) => ({
             padding: 0
           }
         },
-        "& td:nth-child(3)": {
-          "& div": {
-            width: 300
-          }
-        },
-        "& td:nth-child(8)": {
-            "& div": {
-              width: 150
-            }
-          },
-        "& td:nth-child(9)": {
-        "& div": {
-            width: 150
-        }
-        },
-        "& td:nth-child(6)": {
-        "& div": {
-            width: 150
-        }
-        },
-        "& td:nth-child(7)": {
-        "& div": {
-            width: 150
-        }
-        },
-        "& td:nth-child(19)": {
-          "& div": {
-            width: 300,
-            "& span": {
-              maxWidth: 300
-            }
-          }
-        },
+        // "& td:nth-child(3)": {
+        //   "& div": {
+        //     width: 300
+        //   }
+        // },
+        // "& td:nth-child(8)": {
+        //     "& div": {
+        //       width: 150
+        //     }
+        //   },
+        // "& td:nth-child(9)": {
+        // "& div": {
+        //     width: 150
+        // }
+        // },
+        // "& td:nth-child(6)": {
+        // "& div": {
+        //     width: 150
+        // }
+        // },
+        // "& td:nth-child(7)": {
+        // "& div": {
+        //     width: 150
+        // }
+        // },
+        // "& td:nth-child(19)": {
+        //   "& div": {
+        //     width: 300,
+        //     "& span": {
+        //       maxWidth: 300
+        //     }
+        //   }
+        // },
       },
       "& thead": {
         opacity: "1",

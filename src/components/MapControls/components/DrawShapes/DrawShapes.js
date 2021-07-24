@@ -282,6 +282,7 @@ export default function DrawShapes() {
         setStateApp((state) => ({ ...state, editDraw: false, showShapeActionsPopup: true }));
         setTimeout(() => {
           draw.changeMode("static");
+          setStateApp((state) => ({ ...state, isDrawing: false }));
         })
 
       });

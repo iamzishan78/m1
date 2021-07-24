@@ -145,7 +145,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
               <Grid item>
                 <Typography className={classes.topHeading} variant="h5" component="h2">
                   Convert to Contact
-              </Typography>
+                </Typography>
               </Grid>
               <Grid item>
                 <IconButton aria-label="delete" color="primary" onClick={handleClose}>
@@ -230,13 +230,13 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                 </Grid>
 
                 <Grid item md={1}>
-                {rows.length > 1 && 
-                  <IconButton aria-label="delete" onClick={() => onDelete(row)}>
-                    <CloseSharp />
-                  </IconButton>
-}
+                  {rows.length > 1 &&
+                    <IconButton aria-label="delete" onClick={() => onDelete(row)}>
+                      <CloseSharp />
+                    </IconButton>
+                  }
                 </Grid>
-                
+
               </Grid>
 
             ))}
@@ -260,31 +260,31 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             </Box>
           }
 
-          {((tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)) && 
-              <Typography style={{ fontWeight: "bold" , color: "red", marginTop: '40px', marginLeft: '25px'}}>
-                ** Please select a contact from the dropdown menu **
-              </Typography>
+          {((tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)) &&
+            <Typography style={{ fontWeight: "bold", color: "red", marginTop: '40px', marginLeft: '25px' }}>
+              ** Please select a contact from the dropdown menu **
+            </Typography>
           }
 
 
-          <Box pt={6} mt={6}>
+          <Box pt={6} mt={6} mb={6} mr={2}>
             <Grid container direction="row" justify="flex-end" alignItems="flex-end">
               <Grid item>
                 <Button onClick={handleClose}>Cancel</Button>
               </Grid>
               <Grid item>
-                
-              {((tab === TAB.NEW && rows && rows.length > 0) || (tab === TAB.EXISTING && nameAutValue && nameAutValue.id !== 0)) && 
-                <Button
-                  variant="contained"
-                  component="span"
-                  disabled={(tab === TAB.NEW && rows && rows.length === 0) || (tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)}                    
-                  style={{ backgroundColor: "#00abed", color: "white" }}
-                  onClick={onConvert}
-                >
-                  Convert
-              </Button>
-              }
+
+                {((tab === TAB.NEW && rows && rows.length > 0) || (tab === TAB.EXISTING && nameAutValue && nameAutValue.id !== 0)) &&
+                  <Button
+                    variant="contained"
+                    component="span"
+                    disabled={(tab === TAB.NEW && rows && rows.length === 0) || (tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)}
+                    style={{ backgroundColor: "#00abed", color: "white" }}
+                    onClick={onConvert}
+                  >
+                    Convert
+                  </Button>
+                }
 
 
               </Grid>
