@@ -1109,7 +1109,7 @@ function Search() {
   return (
     <div className={classes.root} style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
 
-      {location.pathname === '/documents' && (
+      {/* {location.pathname === '/documents' && (
         <Accordion style={{ width: '40px', backgroundColor: 'transparent', display: 'flex', flexDirection: 'column', padding: '0px', }}>
           <AccordionSummary
             // expandIcon={<SearchIcon style={{color:'white',backgroundColor:'transparent'}}></SearchIcon>}
@@ -1133,7 +1133,7 @@ function Search() {
           </AccordionDetails>
         </Accordion>
       )
-      }
+      } */}
       <Autocomplete
         id="cognitive-search-autocomplete"
         getOptionLabel={(option, value) => option.Primary || searchInputValue}
