@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles, Grid, Accordion, AccordionSummary, AccordionDetails, TextField } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { KeyboardDatePicker } from "@material-ui/pickers";
 
 const useStyles = makeStyles((theme) => ({
   accordionRoot: {
     color: "black",
+    "&.MuiAccordion-root.Mui-expanded": {
+      margin: 0
+    }
   },
   accordionSummary: {
     backgroundColor: "#F2F2F2",
     minHeight: "70px",
     padding: "10px 30px 10px 30px",
   },
+  detailFieldsRow2: {
+    marginRight: 45,
+    marginTop: '40px'
+  }
 }));
 
 function AgreementDetailSection({ setTitle }) {
@@ -41,8 +49,8 @@ function AgreementDetailSection({ setTitle }) {
           Agreement Details
         </AccordionSummary>
         <AccordionDetails>
-          <Grid container direction="row" justify="space-between" alignItems="center" style={{ width: "100%" }}>
-            <Grid item>
+          <Grid container direction="row" justify="flex-start" alignItems="center" style={{ width: "100%", margin: 5 }}>
+            <Grid item style={{ width: '13%', marginRight: 50 }}>
               <TextField
                 margin="dense"
                 label="Agreement Number"
@@ -50,7 +58,7 @@ function AgreementDetailSection({ setTitle }) {
                 onChange={({ target }) => setHeaderTitle({ ...title, number: target.value })}
               />
             </Grid>
-            <Grid item>
+            <Grid item style={{ width: '40%', marginRight: 50 }}>
               <TextField
                 margin="dense"
                 label="Agreement Name"
@@ -58,26 +66,26 @@ function AgreementDetailSection({ setTitle }) {
                 onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
               />
             </Grid>
-            <Grid item>
+            <Grid item style={{ width: '20%', marginRight: 50 }}>
               <TextField
                 select
                 label="Agreement Type"
                 fullWidth
                 style={{ minWidth: 200 }}
-                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+              // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
               >
                 <option key="Oil, gas" value="Oil, gas........">
                   Oil, gas
                 </option>
               </TextField>
             </Grid>
-            <Grid item>
+            <Grid item style={{ width: '15%', marginRight: 45 }}>
               <TextField
                 select
                 label="Agreement Status"
                 fullWidth
                 style={{ minWidth: 200 }}
-                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+              // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
               >
                 <option key="Active" value="Active">
                   Active
@@ -87,61 +95,123 @@ function AgreementDetailSection({ setTitle }) {
                 </option>
               </TextField>
             </Grid>
-          </Grid>
-          <Grid container direction="row" justify="space-between" alignItems="center">
-            <Grid item>
+            <Grid item style={{ minWidth: '10%' }} className={classes.detailFieldsRow2}>
               <TextField
                 select
                 margin="dense"
                 label="Rights"
                 fullWidth
-                // onChange={({ target }) => setHeaderTitle({ ...title, number: target.value })}
+              // onChange={({ target }) => setHeaderTitle({ ...title, number: target.value })}
               >
                 <option key="Oil, gas" value="Oil, gas........">
                   Oil, gas
                 </option>
               </TextField>
             </Grid>
-            <Grid item>
+            <Grid item style={{ minWidth: '15%' }} className={classes.detailFieldsRow2}>
               <TextField
                 margin="dense"
                 label="Property Status"
                 fullWidth
-                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+              // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
               >
                 <option key="Oil, gas" value="Oil, gas........">
                   Held by Production
                 </option>
               </TextField>
             </Grid>
-            <Grid item>
-              <TextField
-                select
-                label="Agreement Type"
-                fullWidth
-                style={{ minWidth: 200 }}
-                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
-              >
-                <option key="Oil, gas" value="Oil, gas........">
-                  Oil, gas
-                </option>
-              </TextField>
+            <Grid item className={classes.detailFieldsRow2}>
+              <KeyboardDatePicker
+                className={classes.maxWidth}
+                disableToolbar
+                label="Agreement Date"
+                variant="inline"
+                format="MM/DD/YYYY"
+                margin="normal"
+                id="date-picker-inline"
+                // value={newDocument?.dateTime ? new Date(newDocument.dateTime): null}
+                onChange={(date) => {
+                  // setNewDocument({
+                  //   ...newDocument,
+                  //   dateTime: date ? String(date["_d"]) : '',
+                  // });
+                }}
+                KeyboardButtonProps={{
+                  "aria-label": "change date",
+                }}
+              />
             </Grid>
-            <Grid item>
+            <Grid item className={classes.detailFieldsRow2}>
+              <KeyboardDatePicker
+                className={classes.maxWidth}
+                label="Effective Date"
+                disableToolbar
+                variant="inline"
+                format="MM/DD/YYYY"
+                margin="normal"
+                id="date-picker-inline"
+                // value={newDocument?.dateTime ? new Date(newDocument.dateTime): null}
+                onChange={(date) => {
+                  // setNewDocument({
+                  //   ...newDocument,
+                  //   dateTime: date ? String(date["_d"]) : '',
+                  // });
+                }}
+                KeyboardButtonProps={{
+                  "aria-label": "change date",
+                }}
+              />
+            </Grid>
+            <Grid item className={classes.detailFieldsRow2}>
               <TextField
-                select
-                label="Agreement Status"
+                margin="dense"
+                label="Term"
                 fullWidth
-                style={{ minWidth: 200 }}
-                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
-              >
-                <option key="Active" value="Active">
-                  Active
-                </option>
-                <option key="DeActive" value="DeActive">
-                  DeActive
-                </option>
-              </TextField>
+                number
+                onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+              />
+            </Grid>
+            <Grid item className={classes.detailFieldsRow2}>
+              <KeyboardDatePicker
+                className={classes.maxWidth}
+                label="Expiration Date"
+                disableToolbar
+                variant="inline"
+                format="MM/DD/YYYY"
+                margin="normal"
+                id="date-picker-inline"
+                // value={newDocument?.dateTime ? new Date(newDocument.dateTime): null}
+                onChange={(date) => {
+                  // setNewDocument({
+                  //   ...newDocument,
+                  //   dateTime: date ? String(date["_d"]) : '',
+                  // });
+                }}
+                KeyboardButtonProps={{
+                  "aria-label": "change date",
+                }}
+              />
+            </Grid>
+            <Grid item className={classes.detailFieldsRow2}>
+              <KeyboardDatePicker
+                className={classes.maxWidth}
+                label="Estimated Expiration Date"
+                disableToolbar
+                variant="inline"
+                format="MM/DD/YYYY"
+                margin="normal"
+                id="date-picker-inline"
+                // value={newDocument?.dateTime ? new Date(newDocument.dateTime): null}
+                onChange={(date) => {
+                  // setNewDocument({
+                  //   ...newDocument,
+                  //   dateTime: date ? String(date["_d"]) : '',
+                  // });
+                }}
+                KeyboardButtonProps={{
+                  "aria-label": "change date",
+                }}
+              />
             </Grid>
           </Grid>
         </AccordionDetails>

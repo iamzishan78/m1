@@ -4,9 +4,9 @@ import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import { Breadcrumbs, Typography, Grid, IconButton } from "@material-ui/core";
 import PrintIcon from "@material-ui/icons/Print";
-import TagIcon from "@material-ui/icons/LocalOffer";
 import ChatIcon from "@material-ui/icons/Chat";
 import AgreementDetailSection from "./AgreementDetailSection";
+import TaggerWithIcon from "components/Shared/TaggerWithIcon";
 
 const useStyles = makeStyles((theme) => ({
   headerRoot: {
@@ -21,6 +21,9 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#D4E8F1",
       borderRadius: "50%",
       margin: 1,
+      "&:hover": {
+        backgroundColor: "#D4E8F1 !important",
+      },
     },
   },
 }));
@@ -54,14 +57,13 @@ function Agreement(props) {
           <IconButton>
             <ChatIcon />
           </IconButton>
-          <IconButton>
-            <TagIcon />
-          </IconButton>
+          <TaggerWithIcon objectId="" targetLabel="agreement" iconZiseSmall={false} />
           <IconButton>
             <PrintIcon />
           </IconButton>
         </Grid>
       </Grid>
+
       {/**
        * Here is Agreement Detail header
        */}
