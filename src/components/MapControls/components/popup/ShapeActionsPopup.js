@@ -339,12 +339,16 @@ const ShapeActionsPopup = (props) => {
     if (!abstractShape.properties.State) {
       const featuresList = stateApp.map.getSource("abstract_geo_source")._data
         .features;
-      const foundFeature = featuresList.find((feature) => {
+      const foundFeatures = featuresList.filter((feature) => {
         var intersection = turf.intersect(abstractShape, feature);
         return !!intersection
       })
-      if (foundFeature)
-        abstractShape.properties = foundFeature.properties
+      const result = foundFeatures.reduce(function (result, currentFeature) {
+        const area = turf.area(currentFeature);
+        return area > result.area ? { area, feature: currentFeature } : result
+      }, { area: 0, feature: null })
+      if (result?.feature?.properties)
+        abstractShape.properties = result.feature.properties
     }
 
     const properties = abstractShape?.properties;
