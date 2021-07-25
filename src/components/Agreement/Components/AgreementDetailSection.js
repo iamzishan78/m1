@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import loadashFilter from "lodash/filter";
 import { makeStyles, Grid, Accordion, AccordionSummary, AccordionDetails, TextField, Typography } from "@material-ui/core";
-import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import StateCard from "components/ParcelsDetailCard/components/StateCard";
@@ -16,6 +14,7 @@ import BlockCard from "components/ParcelsDetailCard/components/BlockCard";
 import SectionCard from "components/ParcelsDetailCard/components/SectionCard";
 import AbstractCard from "components/ParcelsDetailCard/components/AbstractCard";
 import AltSurvey from "components/ParcelsDetailCard/components/AltSurveyCard";
+import AutoComplete from 'components/Shared/components/Fields/AutoComplete';
 
 const useStyles = makeStyles((theme) => ({
   accordionRoot: {
@@ -44,7 +43,7 @@ function AgreementDetailSection({ setTitle }) {
   const [status, setStatus] = useState("");
   const [hbp, setHbp] = useState("");
 
-  const filter = createFilterOptions();
+
 
   useEffect(() => {
     if (!title.number && title.name) {
@@ -118,126 +117,16 @@ function AgreementDetailSection({ setTitle }) {
               />
             </Grid>
             <Grid item style={{ width: "20%", marginRight: 50 }}>
-              <TextField
-                select
-                label="Agreement Type"
-                fullWidth
-                style={{ minWidth: 200 }}
-              // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
-              >
-                <option key="Oil, gas" value="Oil, gas........">
-                  Oil, gas
-                </option>
-              </TextField>
+              <AutoComplete classes={classes} onChange={setHbp} label="Agreement Type" options={['Lease - Oil, Gas, Minerals']} />
             </Grid>
             <Grid item style={{ width: "15%", marginRight: 45 }}>
-              <TextField
-                select
-                label="Agreement Status"
-                fullWidth
-                style={{ minWidth: 200 }}
-                onChange={({ target }) => setStatus(target.value)}
-              >
-                <option key="Active" value="Active">
-                  Active
-                </option>
-                <option key="DeActive" value="DeActive">
-                  DeActive
-                </option>
-              </TextField>
+              <AutoComplete classes={classes} label="Agreement Status" options={['Active', 'DeActive']} />
             </Grid>
             <Grid item style={{ minWidth: "10%" }} className={classes.detailFieldsRow2}>
-              <TextField
-                select
-                margin="dense"
-                label="Rights"
-                fullWidth
-              // onChange={({ target }) => setHeaderTitle({ ...title, number: target.value })}
-              >
-                <option key="Oil, gas" value="Oil, gas........">
-                  Oil, gas
-                </option>
-              </TextField>
+              <AutoComplete classes={classes} onChange={setHbp} label="Rights" options={['Oil & gas']} />
             </Grid>
-            <Grid item style={{ minWidth: "15%", marginTop: "58px" }} className={classes.detailFieldsRow2}>
-              <Autocomplete
-                // defaultValue={value}
-                // value={value}
-                disableListWrap
-                classes={classes}
-                options={['Active - Held By Production', 'Active - Undeveloped', 'Inactive']}
-                getOptionLabel={(option) => {
-                  // Value selected with enter, right from the input
-                  if (typeof option === "string") {
-                    return option;
-                  }
-                  // Add "xxx" option created dynamically
-                  if (option.inputValue) {
-                    return option.name;
-                  }
-
-                  if (option?.name) return option.name;
-                  else return "";
-                }}
-                getOptionSelected={(option, value) => {
-                  return option?._id === value?._id;
-                }}
-                renderOption={(option) => {
-                  if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
-
-                  return (
-                    <Grid container spacing={0}>
-                      <Grid container item xs={12} alignItems="center">
-                        <Grid item xs>
-                          <span style={{ fontWeight: 400 }}>{option.name}</span>
-
-                          <Typography variant="body2" color="textSecondary">
-                            {option}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  );
-                }}
-                // onInputChange={onInputChange}
-                filterOptions={(options, params) => {
-                  let inputValue = params.inputValue;
-                  const filtered = filter(options, { ...params, inputValue });
-                  // const isExist = loadashFilter(filtered, (filter) => {
-                  //   return filter.includes(inputValue);
-                  // });
-                  // // Suggest the creation of a new value
-                  // if (inputValue !== "" && (!isExist || isExist.length === 0)) {
-                  //   filtered.unshift(inputValue);
-                  // }
-                  return filtered;
-                }}
-                onChange={(event, newValue) => {
-                  setHbp(newValue)
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    margin="dense"
-                    {...params}
-                    InputProps={{
-                      ...params.InputProps,
-                    }}
-                    size="small"
-                  />
-                )}
-              // {...other}
-              />
-              {/* <TextField
-                select
-                margin="dense"
-                label="Property Status"
-                fullWidth
-                onChange={({ target }) => setHbp(target.value)}
-              >
-                <option key="Held by Production" value="Held by Production">
-                  Held by Production
-                </option>
-              </TextField> */}
+            <Grid item style={{ minWidth: "15" }} className={classes.detailFieldsRow2}>
+              <AutoComplete classes={classes} onChange={setHbp} label="Held By Production" options={['Active - Held By Production', 'Active - Undeveloped', 'Inactive']} />
             </Grid>
             <Grid item className={classes.detailFieldsRow2}>
               <KeyboardDatePicker
