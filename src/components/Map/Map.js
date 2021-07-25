@@ -268,13 +268,6 @@ function Map() {
     }
   };
 
-  const [wellLinesSourceFeatures, WellLinesSourceFeatures] = useState([]);
-  const setWellLinesSourceFeatures = (state) => {
-    if (wellLinesSourceFeatures !== state) {
-      WellLinesSourceFeatures(state);
-    }
-  };
-
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, AnchorElPoPOver] = useState(null);
   const setAnchorElPoPOver = (state) => {
@@ -283,6 +276,10 @@ function Map() {
     }
   };
   const mapEl = useRef(null);
+
+  // hacky but having to use a ref for valid state during map on event callback
+  const stateNavRef = useRef();
+  stateNavRef.current = stateNav;
 
   const [hoverUdIds, HoverUdIds] = useState([]);
   const setHoverUdIds = (id) => {
@@ -2497,7 +2494,7 @@ function Map() {
         totalCount += stateNav.parcelName.length;
       }
 
-      if (fitBounds) {
+      if (!deepEqualObjects(stateApp.fitBounds, fitBounds)) {
         setStateApp((stateApp) => ({
           ...stateApp,
           fitBounds: { ...fitBounds },
@@ -2634,9 +2631,9 @@ function Map() {
         var intersectingWellLinesFilter
         if (filterCustomArray["welllines"]) {
           var boundingMultiPoly = mergeIntoMultiPolygon(filterCustomArray["welllines"])
-          var features = wellLinesSourceFeatures;
+          var features = stateNav.filterIntersectingWellLines;
 
-          console.time(`booleanIntersects`);
+          // console.time(`booleanIntersects`);
           intersectingWellLinesFilter = features.reduce(
             function (memo, feature) {
               boundingMultiPoly?.features?.forEach(boundingPoly => {
@@ -2648,7 +2645,7 @@ function Map() {
             },
             ['in', ["get", "id"], ["literal", []]]
           );
-          console.timeEnd(`booleanIntersects`);
+          // console.timeEnd(`booleanIntersects`);
         }
 
         if (filterCustomArray["wellpoints"]) {
@@ -2972,7 +2969,6 @@ function Map() {
     }
   }, [
     map,
-    wellLinesSourceFeatures,
     setStateNav,
     stateNav.defaultOn,
     stateNav.filterAllInterestTypes,
@@ -3040,6 +3036,7 @@ function Map() {
     stateApp.trackedwells,
     stateApp.customLayers,
     stateApp.wellListFromTagsFilter,
+    stateNav.filterIntersectingWellLines,
   ]);
 
   useEffect(() => {
@@ -3759,17 +3756,23 @@ function Map() {
     }
   }, [map, stateApp.customLayers, stateApp.multiSelectLandGrids]);
 
-  const shapeFilterControl = (map) => {
-    if (map.getFilter("welllines")) {
-      console.log('here');
+  // having to use a ref because callbacks are not guaranteed to get the correct version of context state!!!
+  function shapeFilterControl(map) {
+    if (stateNavRef.current?.filterBasin ||
+      stateNavRef.current?.filterAOI ||
+      stateNavRef.current?.filterParcel ||
+      stateNavRef.current?.filterDrawing[1]) {
 
-      console.time(`querySourceFeatures`);
+      // console.time(`querySourceFeatures`);
       var features = map.querySourceFeatures("composite", {
         sourceLayer: "wellLines",
       });
-      setWellLinesSourceFeatures(features);
+      // console.timeEnd(`querySourceFeatures`);
 
-      console.timeEnd(`querySourceFeatures`);
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        filterIntersectingWellLines: features
+      }));
     }
   };
 
