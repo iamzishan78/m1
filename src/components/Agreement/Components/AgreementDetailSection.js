@@ -8,6 +8,7 @@ import MeridianCard from "components/ParcelsDetailCard/components/MeridianCard";
 import TownshipCard from "components/ParcelsDetailCard/components/TownshipCard";
 import RangeCard from "components/ParcelsDetailCard/components/RangeCard";
 import StatusCard from 'components/Shared/components/Cards/StatusCard';
+import HBPCard from 'components/Shared/components/Cards/HBPCard';
 import SurveyCard from "components/ParcelsDetailCard/components/SurveyCard";
 import BlockCard from "components/ParcelsDetailCard/components/BlockCard";
 import SectionCard from "components/ParcelsDetailCard/components/SectionCard";
@@ -39,6 +40,7 @@ function AgreementDetailSection({ setTitle }) {
   const classes = useStyles();
   const [title, setHeaderTitle] = useState({ name: "", number: "" });
   const [status, setStatus] = useState("");
+  const [hbp, setHbp] = useState("");
 
   useEffect(() => {
     if (!title.number && title.name) {
@@ -87,6 +89,7 @@ function AgreementDetailSection({ setTitle }) {
               <StatusCard status={status} label="Agreement" />
             </Grid>
             <Grid item>
+              <HBPCard status={hbp} label="Property" />
             </Grid>
             <Grid item></Grid>
             <Grid item></Grid>
@@ -154,12 +157,13 @@ function AgreementDetailSection({ setTitle }) {
             </Grid>
             <Grid item style={{ minWidth: "15%" }} className={classes.detailFieldsRow2}>
               <TextField
+                select
                 margin="dense"
                 label="Property Status"
                 fullWidth
-              // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+                onChange={({ target }) => setHbp(target.value)}
               >
-                <option key="Oil, gas" value="Oil, gas........">
+                <option key="Held by Production" value="Held by Production">
                   Held by Production
                 </option>
               </TextField>
