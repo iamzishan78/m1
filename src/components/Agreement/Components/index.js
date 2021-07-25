@@ -8,7 +8,7 @@ import AgreementDetailSection from "./AgreementDetailSection";
 import TaggerWithIcon from "components/Shared/TaggerWithIcon";
 import CommentsWithIcon from "components/Shared/CommentsWithIcon";
 import { useMutation } from "@apollo/client";
-import { ADD_AGREEMENT } from "graphQL/useMutationAddAgreement";
+import { ADD_AGREEMENT } from "graphQL/useMutatioAgreement";
 
 const useStyles = makeStyles((theme) => ({
   headerRoot: {
@@ -34,21 +34,21 @@ function Agreement(props) {
   const classes = useStyles();
   const [breadcrumbTitle, setTitle] = useState();
   const [newAgreement, setNewAgreement] = useState({});
-  const [addAgreement, { data: agreement }] = useMutation(ADD_AGREEMENT);
+  const [addAgreement, { data: addedAgreement }] = useMutation(ADD_AGREEMENT);
 
   useEffect(() => {
     addAgreement({
       variables: {
-        agreement: {},
+        agreement: { type: 'agreement' },
       },
     });
   }, [addAgreement]);
 
   useEffect(() => {
-    if (agreement?.addAgreement) {
-      setNewAgreement(agreement.addAgreement);
+    if (addedAgreement?.addAgreement) {
+      setNewAgreement(addedAgreement.addAgreement);
     }
-  }, [agreement]);
+  }, [addedAgreement]);
 
   return (
     <>
@@ -87,7 +87,7 @@ function Agreement(props) {
       {/**
        * Here is Agreement Detail header
        */}
-      <AgreementDetailSection setTitle={setTitle} />
+      <AgreementDetailSection setTitle={setTitle} newAgreement={newAgreement} />
     </>
   );
 }

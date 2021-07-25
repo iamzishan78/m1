@@ -55,16 +55,13 @@ export default function AutoCompleteComponent(props) {
                 const isExist = loadashFilter(filtered, (filter) => {
                     return filter.includes(inputValue);
                 });
+                // Suggest the creation of a new value
                 if (inputValue !== "" && (!isExist || isExist.length === 0)) {
                     filtered.unshift({
                         id: 'newEntity',
                         value: inputValue
                     });
                 }
-                // // Suggest the creation of a new value
-                // if (inputValue !== "" && (!isExist || isExist.length === 0)) {
-                //   filtered.unshift(inputValue);
-                // }
                 return filtered;
             }}
             onChange={(event, newValue) => {

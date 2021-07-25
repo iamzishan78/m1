@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles, Grid, Accordion, AccordionSummary, AccordionDetails, TextField, Typography } from "@material-ui/core";
+import { makeStyles, Grid, Accordion, AccordionSummary, AccordionDetails, TextField } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import StateCard from "components/ParcelsDetailCard/components/StateCard";
 import CountyCard from "components/ParcelsDetailCard/components/CountyCard";
-import MeridianCard from "components/ParcelsDetailCard/components/MeridianCard";
-import TownshipCard from "components/ParcelsDetailCard/components/TownshipCard";
-import RangeCard from "components/ParcelsDetailCard/components/RangeCard";
 import StatusCard from 'components/Shared/components/Cards/StatusCard';
 import HBPCard from 'components/Shared/components/Cards/HBPCard';
 import SurveyCard from "components/ParcelsDetailCard/components/SurveyCard";
@@ -15,6 +12,8 @@ import SectionCard from "components/ParcelsDetailCard/components/SectionCard";
 import AbstractCard from "components/ParcelsDetailCard/components/AbstractCard";
 import AltSurvey from "components/ParcelsDetailCard/components/AltSurveyCard";
 import AutoComplete from 'components/Shared/components/Fields/AutoComplete';
+import { useMutation } from "@apollo/client";
+import { UPDATE_AGREEMENT } from "graphQL/useMutatioAgreement";
 
 const useStyles = makeStyles((theme) => ({
   accordionRoot: {
@@ -37,13 +36,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function AgreementDetailSection({ setTitle }) {
+function AgreementDetailSection({ setTitle, newAgreement }) {
   const classes = useStyles();
   const [title, setHeaderTitle] = useState({ name: "", number: "" });
   const [status, setStatus] = useState("");
   const [hbp, setHbp] = useState("");
 
-
+  const [updateAgreement, { data: updatedAgreement }] = useMutation(UPDATE_AGREEMENT);
 
   useEffect(() => {
     if (!title.number && title.name) {
@@ -56,6 +55,20 @@ function AgreementDetailSection({ setTitle }) {
       setTitle("New Agreement");
     }
   }, [title, setTitle]);
+
+  useEffect(() => {
+    if (updatedAgreement) {
+      console.log(updatedAgreement);
+    }
+  }, [updatedAgreement]);
+
+  const handleUpdateAgreement = (agreementKey) => {
+    updateAgreement({
+      variables: {
+        agreement: { ...newAgreement, ...agreementKey }
+      }
+    })
+  }
 
   return (
     <>
@@ -106,6 +119,13 @@ function AgreementDetailSection({ setTitle }) {
                 label="Agreement Number"
                 fullWidth
                 onChange={({ target }) => setHeaderTitle({ ...title, number: target.value })}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    event.preventDefault();
+                    handleUpdateAgreement({ number: event.target.value });
+                  }
+                }}
+                onBlur={event => handleUpdateAgreement({ number: event.target.value })}
               />
             </Grid>
             <Grid item style={{ width: "40%", marginRight: 50 }}>
@@ -114,13 +134,25 @@ function AgreementDetailSection({ setTitle }) {
                 label="Agreement Name"
                 fullWidth
                 onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    event.preventDefault();
+                    handleUpdateAgreement({ name: event.target.value });
+                  }
+                }}
+                onBlur={event => handleUpdateAgreement({ name: event.target.value })}
               />
             </Grid>
             <Grid item style={{ width: "20%", marginRight: 50 }}>
-              <AutoComplete classes={classes} onChange={setHbp} label="Agreement Type" options={['Lease - Oil, Gas, Minerals']} />
+              <AutoComplete
+                classes={classes}
+                onChange={value => handleUpdateAgreement({ agreementType: value })}
+                label="Agreement Type"
+                options={['Lease - Oil, Gas, Minerals']}
+              />
             </Grid>
             <Grid item style={{ width: "15%", marginRight: 45 }}>
-              <AutoComplete classes={classes} label="Agreement Status" options={['Active', 'DeActive']} />
+              <AutoComplete classes={classes} label="Agreement Status" options={['Active', 'DeActive']} onChange={setStatus} />
             </Grid>
             <Grid item style={{ minWidth: "10%" }} className={classes.detailFieldsRow2}>
               <AutoComplete classes={classes} onChange={setHbp} label="Rights" options={['Oil & gas']} />
