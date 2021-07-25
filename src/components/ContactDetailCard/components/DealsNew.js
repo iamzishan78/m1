@@ -11,6 +11,7 @@ import { AppContext } from "../../../AppContext";
 import DealsDetailCard from "../../DealsDetailCard/DealsDetailCard";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
+import Button from '@material-ui/core/Button';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -28,6 +29,12 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#D5F4FF",
     float: "right",
     top: "-6px",
+  },
+  button: {
+    height: "100%",
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'center'
   },
   lastContactedSpan: { fontWeight: "normal", marginBottom: "0" },
   icon: {
@@ -127,15 +134,14 @@ export default function Deals({ contact, ...props }) {
   };
 
   return (
-    // <div className={classes.root}>
-    //   <div>
-    //     <h4 style={{ marginTop: "0", float: "left" }}>
-    //       Deals ({allDeals.length})
-    //     </h4>
-    //     <IconButton
-    //       size="small"
-    //       className={classes.addIcon}
-    //       onClick={() => {
+
+      <Button
+      className={classes.button}
+      fullWidth={true}
+      variant='outlined'
+      // style={{justifyContent: "flex-start"}}
+      >     
+
     <div className={classes.root} onClick={() => {
             history.push(`/contact/details/${contact._id}/deals`)
             // props.handleOpenExpandableCard(
@@ -204,5 +210,6 @@ export default function Deals({ contact, ...props }) {
         </div>
       </div>
     </div>
+    </Button>
   );
 }
