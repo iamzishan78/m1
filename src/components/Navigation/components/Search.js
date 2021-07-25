@@ -1202,7 +1202,7 @@ function Search() {
                     margin: "0 4px",
                   }}
                 >
-                  <Button
+                  {/* <Button
                     className={classes.headerButtons}
                     variant={searchOption === "all" ? "contained" : "outlined"}
                     size="small"
@@ -1213,7 +1213,7 @@ function Search() {
                     }}
                   >
                     All
-                  </Button>
+                  </Button> */}
                   <Button
                     className={classes.headerButtons}
                     variant={searchOption === "wells" ? "contained" : "outlined"}

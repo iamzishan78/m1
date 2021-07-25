@@ -1088,7 +1088,8 @@ function Map() {
         // from contacts api is slightly different than other apis
         // need to setup in a standard format
 
-        if (properties.id && feature.layer.id === "wellpoints") {
+
+        if (properties.id && feature.layer.id !== "recent_submitted_permits") {
 
           setStateApp((state) => ({
             ...state,
@@ -1334,6 +1335,8 @@ function Map() {
             layerId === "Search" ||
             layerId === "recent_submitted_permits":
             // layerId === "permits":
+
+            console.log('LAYER', layerId);
             wellPointClick(feature);
             break;
           default:

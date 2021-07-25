@@ -10,6 +10,7 @@ import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 import { AppContext } from "../../../AppContext";
 import AddWellInterestDialog from "./ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 import { CONTACT_WELL_CARD_DETAIL } from "graphQL/useQueryContactWellCardDetail";
+import Button from '@material-ui/core/Button';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -27,6 +28,12 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#D5F4FF",
     "float": "right",
     top: "-6px",
+  },
+  button: {
+    height: "100%",
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'center'
   },
   lastContactedSpan: { fontWeight: "normal", marginBottom: "0" },
   icon: {
@@ -72,6 +79,13 @@ export default function WellsCard(props) {
   }, [dataContactWellDetail]);
 
   return (
+
+    <Button
+                className={classes.button}
+                fullWidth={true}
+                variant='outlined'
+                // style={{justifyContent: "flex-start"}}
+                >              
     <div className={classes.root} onClick={() => {
       history.push(`/contact/details/${props.contactData._id}/wells`)
       //   props.handleOpenExpandableCard(
@@ -83,6 +97,7 @@ export default function WellsCard(props) {
       //   );
     }}
     >
+
       <AddWellInterestDialog
         open={stateApp.wellInterestDialog ? true : false}
         width="450px"
@@ -95,7 +110,7 @@ export default function WellsCard(props) {
         contactId={props.contactData._id}
       />
       <div>
-        <h4 style={{ marginTop: "0", "float": "left" }}>Tax Roll &amp; Well Interests ({count})</h4>
+        <h4 style={{ marginTop: "0", "float": "left" }}>Tax Roll &amp; Well  ({count})</h4>
         <IconButton
           size="small"
           className={classes.addIcon}
@@ -129,6 +144,9 @@ export default function WellsCard(props) {
           </h5>
         </div>
       </div>
+
     </div>
+    </Button>
+
   );
 }
