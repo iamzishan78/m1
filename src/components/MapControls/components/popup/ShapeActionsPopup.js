@@ -460,7 +460,9 @@ const ShapeActionsPopup = (props) => {
   return (
     <Fragment>
       <Fragment>
-        <span class={classes.label}>{isLine() ? "Calc. Dist" : "Calc. Area"}</span> {calculateLandArea()}
+        <span class={classes.label}>{isLine() ? "Calc. Dist" : 
+        (isLine()  ? "AOI" :"Calc. Area")
+        }</span> {calculateLandArea()}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
           <Tooltip title="Grid">
             <IconButton size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
