@@ -7,6 +7,7 @@ import CountyCard from "components/ParcelsDetailCard/components/CountyCard";
 import MeridianCard from "components/ParcelsDetailCard/components/MeridianCard";
 import TownshipCard from "components/ParcelsDetailCard/components/TownshipCard";
 import RangeCard from "components/ParcelsDetailCard/components/RangeCard";
+import StatusCard from 'components/Shared/components/Cards/StatusCard';
 import SurveyCard from "components/ParcelsDetailCard/components/SurveyCard";
 import BlockCard from "components/ParcelsDetailCard/components/BlockCard";
 import SectionCard from "components/ParcelsDetailCard/components/SectionCard";
@@ -37,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 function AgreementDetailSection({ setTitle }) {
   const classes = useStyles();
   const [title, setHeaderTitle] = useState({ name: "", number: "" });
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     if (!title.number && title.name) {
@@ -81,8 +83,11 @@ function AgreementDetailSection({ setTitle }) {
             <Grid item>
               <AltSurvey />
             </Grid>
-            <Grid item></Grid>
-            <Grid item></Grid>
+            <Grid item>
+              <StatusCard status={status} label="Agreement" />
+            </Grid>
+            <Grid item>
+            </Grid>
             <Grid item></Grid>
             <Grid item></Grid>
           </Grid>
@@ -124,7 +129,7 @@ function AgreementDetailSection({ setTitle }) {
                 label="Agreement Status"
                 fullWidth
                 style={{ minWidth: 200 }}
-              // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+                onChange={({ target }) => setStatus(target.value)}
               >
                 <option key="Active" value="Active">
                   Active
