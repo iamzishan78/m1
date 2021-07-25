@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles, Grid, Accordion, AccordionSummary, AccordionDetails, TextField } from "@material-ui/core";
+import loadashFilter from "lodash/filter";
+import { makeStyles, Grid, Accordion, AccordionSummary, AccordionDetails, TextField, Typography } from "@material-ui/core";
+import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import StateCard from "components/ParcelsDetailCard/components/StateCard";
@@ -41,6 +43,8 @@ function AgreementDetailSection({ setTitle }) {
   const [title, setHeaderTitle] = useState({ name: "", number: "" });
   const [status, setStatus] = useState("");
   const [hbp, setHbp] = useState("");
+
+  const filter = createFilterOptions();
 
   useEffect(() => {
     if (!title.number && title.name) {
@@ -155,8 +159,75 @@ function AgreementDetailSection({ setTitle }) {
                 </option>
               </TextField>
             </Grid>
-            <Grid item style={{ minWidth: "15%" }} className={classes.detailFieldsRow2}>
-              <TextField
+            <Grid item style={{ minWidth: "15%", marginTop: "58px" }} className={classes.detailFieldsRow2}>
+              <Autocomplete
+                // defaultValue={value}
+                // value={value}
+                disableListWrap
+                classes={classes}
+                options={['Active - Held By Production', 'Active - Undeveloped', 'Inactive']}
+                getOptionLabel={(option) => {
+                  // Value selected with enter, right from the input
+                  if (typeof option === "string") {
+                    return option;
+                  }
+                  // Add "xxx" option created dynamically
+                  if (option.inputValue) {
+                    return option.name;
+                  }
+
+                  if (option?.name) return option.name;
+                  else return "";
+                }}
+                getOptionSelected={(option, value) => {
+                  return option?._id === value?._id;
+                }}
+                renderOption={(option) => {
+                  if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
+
+                  return (
+                    <Grid container spacing={0}>
+                      <Grid container item xs={12} alignItems="center">
+                        <Grid item xs>
+                          <span style={{ fontWeight: 400 }}>{option.name}</span>
+
+                          <Typography variant="body2" color="textSecondary">
+                            {option}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  );
+                }}
+                // onInputChange={onInputChange}
+                filterOptions={(options, params) => {
+                  let inputValue = params.inputValue;
+                  const filtered = filter(options, { ...params, inputValue });
+                  // const isExist = loadashFilter(filtered, (filter) => {
+                  //   return filter.includes(inputValue);
+                  // });
+                  // // Suggest the creation of a new value
+                  // if (inputValue !== "" && (!isExist || isExist.length === 0)) {
+                  //   filtered.unshift(inputValue);
+                  // }
+                  return filtered;
+                }}
+                onChange={(event, newValue) => {
+                  setHbp(newValue)
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    margin="dense"
+                    {...params}
+                    InputProps={{
+                      ...params.InputProps,
+                    }}
+                    size="small"
+                  />
+                )}
+              // {...other}
+              />
+              {/* <TextField
                 select
                 margin="dense"
                 label="Property Status"
@@ -166,7 +237,7 @@ function AgreementDetailSection({ setTitle }) {
                 <option key="Held by Production" value="Held by Production">
                   Held by Production
                 </option>
-              </TextField>
+              </TextField> */}
             </Grid>
             <Grid item className={classes.detailFieldsRow2}>
               <KeyboardDatePicker

@@ -1,10 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, IconButton, Button } from "@material-ui/core/";
-
-import QuestionIcon from "@material-ui/icons/Help";
-import XIcon from "@material-ui/icons/HighlightOff";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import { Typography, Button } from "@material-ui/core/";
 
 const useStyles = makeStyles((theme) => ({
     iconContainer: {
