@@ -61,7 +61,7 @@ function AgreementDetailSection({ setTitle }) {
         >
           <Grid container direction="center" display="flex" justify="space-between" style={{ marginLeft: "20px" }}>
             <Grid item>
-              <StateCard state="Texas" />
+              <StateCard />
             </Grid>
             <Grid item>
               <CountyCard />
@@ -111,7 +111,7 @@ function AgreementDetailSection({ setTitle }) {
                 label="Agreement Type"
                 fullWidth
                 style={{ minWidth: 200 }}
-                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+              // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
               >
                 <option key="Oil, gas" value="Oil, gas........">
                   Oil, gas
@@ -124,7 +124,7 @@ function AgreementDetailSection({ setTitle }) {
                 label="Agreement Status"
                 fullWidth
                 style={{ minWidth: 200 }}
-                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+              // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
               >
                 <option key="Active" value="Active">
                   Active
@@ -140,7 +140,7 @@ function AgreementDetailSection({ setTitle }) {
                 margin="dense"
                 label="Rights"
                 fullWidth
-                // onChange={({ target }) => setHeaderTitle({ ...title, number: target.value })}
+              // onChange={({ target }) => setHeaderTitle({ ...title, number: target.value })}
               >
                 <option key="Oil, gas" value="Oil, gas........">
                   Oil, gas
@@ -152,7 +152,7 @@ function AgreementDetailSection({ setTitle }) {
                 margin="dense"
                 label="Property Status"
                 fullWidth
-                // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+              // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
               >
                 <option key="Oil, gas" value="Oil, gas........">
                   Held by Production
@@ -234,7 +234,7 @@ function AgreementDetailSection({ setTitle }) {
             <Grid item className={classes.detailFieldsRow2}>
               <KeyboardDatePicker
                 className={classes.maxWidth}
-                label="Estimated Expiration Date"
+                label="Extension Expiration Date"
                 disableToolbar
                 variant="inline"
                 format="MM/DD/YYYY"

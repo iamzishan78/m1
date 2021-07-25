@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import { Breadcrumbs, Typography, Grid, IconButton } from "@material-ui/core";
 import PrintIcon from "@material-ui/icons/Print";
-import ChatIcon from "@material-ui/icons/Chat";
 import AgreementDetailSection from "./AgreementDetailSection";
 import TaggerWithIcon from "components/Shared/TaggerWithIcon";
+import CommentsWithIcon from "components/Shared/CommentsWithIcon";
+import { useMutation } from "@apollo/client";
+import { ADD_AGREEMENT } from "graphQL/useMutationAddAgreement";
 
 const useStyles = makeStyles((theme) => ({
   headerRoot: {
-    padding: "7px 22px 7px 11px",
+    padding: "11px 22px 7px 11px",
     backgroundColor: "#F2F2F2",
     minHeight: "64px",
     borderBottom: "1px solid rgba(224, 224, 224, 1)",
@@ -31,6 +33,22 @@ const useStyles = makeStyles((theme) => ({
 function Agreement(props) {
   const classes = useStyles();
   const [breadcrumbTitle, setTitle] = useState();
+  const [newAgreement, setNewAgreement] = useState({});
+  const [addAgreement, { data: agreement }] = useMutation(ADD_AGREEMENT);
+
+  useEffect(() => {
+    addAgreement({
+      variables: {
+        agreement: {},
+      },
+    });
+  }, [addAgreement]);
+
+  useEffect(() => {
+    if (agreement?.addAgreement) {
+      setNewAgreement(agreement.addAgreement);
+    }
+  }, [agreement]);
 
   return (
     <>
@@ -54,10 +72,12 @@ function Agreement(props) {
           </Breadcrumbs>
         </Grid>
         <Grid item className={classes.headerIcon}>
-          <IconButton>
-            <ChatIcon />
-          </IconButton>
-          <TaggerWithIcon objectId="" targetLabel="agreement" iconZiseSmall={false} />
+          <CommentsWithIcon
+            objectId={newAgreement._id}
+            targetLabel='agreement'
+            iconZiseSmall={false}
+          />
+          <TaggerWithIcon objectId={newAgreement._id} targetLabel="agreement" iconZiseSmall={false} />
           <IconButton>
             <PrintIcon />
           </IconButton>
