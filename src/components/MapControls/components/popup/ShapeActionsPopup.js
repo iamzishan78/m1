@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useState, Fragment } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import get from "lodash/get";
+import * as turf from "@turf/turf";
 import hat from "hat";
 import polylabel from "polylabel";
 import Modal from "@material-ui/core/Modal";
@@ -333,7 +334,18 @@ const ShapeActionsPopup = (props) => {
     if (!user._id) {
       return;
     }
-    const abstractShape = stateApp.currentFeature;
+    let abstractShape = stateApp.currentFeature;
+
+    if (!abstractShape.properties.State) {
+      const featuresList = stateApp.map.getSource("abstract_geo_source")._data
+        .features;
+      const foundFeature = featuresList.find((feature) => {
+        var intersection = turf.intersect(abstractShape, feature);
+        return !!intersection
+      })
+      if (foundFeature)
+        abstractShape.properties = foundFeature.properties
+    }
 
     const properties = abstractShape?.properties;
     let township = properties?.Township;
