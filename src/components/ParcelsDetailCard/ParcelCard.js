@@ -174,13 +174,13 @@ export default function ParcelCard(props) {
   }, [parcelObj]);
 
   useEffect(() => {
-		getAllFiles({
-			variables: {
-				relatedObjectId: parcelObj?._id || stateApp.user.mongoId,
-				relatedObjectType: "Parcel",
-			},
-		});
-	}, [parcelObj]);
+    getAllFiles({
+      variables: {
+        relatedObjectId: parcelObj?._id || stateApp.user.mongoId,
+        relatedObjectType: "Parcel",
+      },
+    });
+  }, [parcelObj]);
 
 
   useEffect(() => {
@@ -237,7 +237,7 @@ export default function ParcelCard(props) {
                   className={classes.text2}
                   variant="caption"
                 >
-                  {wellNumber}
+                  {wellNumber || "0"}
 
                 </Typography>
               </div>
@@ -264,7 +264,7 @@ export default function ParcelCard(props) {
                   className={classes.text2}
                   variant="caption"
                 >
-                  {parcelObj?.ownerCount || "--"}
+                  {parcelObj?.ownerCount || "0"}
                 </Typography>
               </div>
             </Button>
@@ -291,7 +291,7 @@ export default function ParcelCard(props) {
                   variant="caption"
                 >
                   {documentCount}
-                  
+
                 </Typography>
               </div>
             </Button>
@@ -397,7 +397,7 @@ export default function ParcelCard(props) {
       <div style={{ height: "100%" }}>
         <Card className={classes.card}>
           <CardContent className={classes.content}>
-            <ParcelsDetailCard id={stateApp.selectedParcel.id} selectTabIndex={stateApp.parcelDetailCardTabIndex}/>
+            <ParcelsDetailCard id={stateApp.selectedParcel.id} selectTabIndex={stateApp.parcelDetailCardTabIndex} />
           </CardContent>
         </Card>
       </div>
