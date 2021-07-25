@@ -3,6 +3,8 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import GavelIcon from '@material-ui/icons/Gavel';
+import LocationIcon from '@material-ui/icons/Place';
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import { useDispatch } from "react-redux";
@@ -295,7 +297,7 @@ export default function ParcelsDetailCard(props) {
   useEffect(() => {
     if (updatedParcel) {
       if (updatedParcel.updateCustomLayer.success) {
-        dispatch(showSuccessMessage("Successfully updated the parcel."));
+        dispatch(showSuccessMessage("Successfully updated the parcel"));
       } else {
         dispatch(showErrorMessage("Failed to update parcel"));
       }
@@ -346,9 +348,23 @@ export default function ParcelsDetailCard(props) {
   const DocumentHeader = () => (
     <div className={classes.documentHeader}>
       <DescriptionOutlinedIcon />
-      <span>Related Documents</span>
+      <span>ASSOCIATED DOCUMENTS</span>
     </div>
-  )
+  );
+
+  const RunsheetHeader = () => (
+    <div className={classes.documentHeader}>
+      <GavelIcon />
+      <span>LIMITED TITLE RUNSHEET</span>
+    </div>
+  );
+
+  const WellHeader = () => (
+    <div className={classes.documentHeader}>
+      <LocationIcon />
+      <span>ASSOCIATED WELLS</span>
+    </div>
+  );
 
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
@@ -402,6 +418,7 @@ export default function ParcelsDetailCard(props) {
                   variant="outlined"
                   onChange={(e) => {
                     setParcelName(e.target.value);
+
                   }}
                   onKeyDown={(e) => {
                     updateParcel(e, "shapeLabel", parcelName);
@@ -518,7 +535,7 @@ export default function ParcelsDetailCard(props) {
                 customLayer={parcelObj}
                 parent="associatedRunsheetPerParcel"
                 targetLabel="parcelRunsheet"
-                header='Limited Title Runsheet'
+                header={<RunsheetHeader />}
                 dense
               />
             </div>,
@@ -527,7 +544,7 @@ export default function ParcelsDetailCard(props) {
                 customLayer={parcelObj}
                 parent="associatedWellsPerParcel"
                 targetLabel="well"
-                header="Associated Wells"
+                header={<WellHeader />}
                 dense
               />
             </div>,
