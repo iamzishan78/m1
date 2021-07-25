@@ -114,9 +114,9 @@ const DocumentSearch = () => {
                   htmlColor="#fff"
                   aria-controls="customized-menu"
                   aria-haspopup="true"
-                  onClick={(e) => setAnchorEl(e.currentTarget)}
+                //onClick={(e) => setAnchorEl(e.currentTarget)}
                 />
-                <div className="check">
+                {/* <div className="check">
                   <Menu
                     elevation={0}
                     className={classes.customWidth}
@@ -179,7 +179,7 @@ const DocumentSearch = () => {
                       </Typography>
                     </MenuItem>
                   </Menu>
-                </div>
+                </div> */}
               </IconButton>
             </InputAdornment>
           ),
@@ -190,10 +190,9 @@ const DocumentSearch = () => {
                   <IconButton
                     size="small"
                     htmlColor="#fff"
-                    className={`${classes.toggleBtn} ${
-                      stateApp.activityDisplayType === "table" &&
+                    className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" &&
                       classes.activeBtn
-                    }`}
+                      }`}
                     onClick={() => {
                       setSearch("");
                       setStateApp((stateApp) => ({
