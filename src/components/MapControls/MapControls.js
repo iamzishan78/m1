@@ -238,7 +238,7 @@ export default function MapControls(props) {
 
 
       if (action === "draw") {
-
+        debugger;
         setStateMapControls({
           ...stateMapControls,
           selectedMapControl: action,
@@ -251,9 +251,7 @@ export default function MapControls(props) {
             showDrawShapesPopup: !state.showDrawShapesPopup,
             editDraw: true,
           }));
-        }
-
-        if (stateApp.editDraw) {
+        } else {
           clearMapAndCloseShapeActionsPopup(stateApp, setStateApp)
         }
       }

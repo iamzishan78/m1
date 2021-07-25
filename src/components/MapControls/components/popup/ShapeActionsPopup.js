@@ -470,10 +470,10 @@ const ShapeActionsPopup = (props) => {
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
     });
-    setSelectedAction("");
-    stateApp.draw.changeMode("static");
-    setStateApp((state) => ({ ...state, shapeEdit: false }));
-    stateApp.draw.delete(currentFeature.id);
+    // setSelectedAction("");
+    // stateApp.draw.changeMode("static");
+    setStateApp((state) => ({ ...state, shapeEdit: false, editDraw: false }));
+    popupCloseAction();
   };
 
   const isParcel = stateApp.selectedAoi?.layer?.id === 'parcel'

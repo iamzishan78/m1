@@ -29,7 +29,7 @@ export const clearMapAndCloseShapeActionsPopup = (stateApp, setStateApp) => {
 };
 
 export const setFeatureProperty = (draw, drawFeatureID, field, value) => {
-    if (drawFeatureID !== '' && typeof draw === 'object') {
+    if (drawFeatureID !== '' && typeof draw === 'object' && draw.setFeatureProperty) {
         draw.setFeatureProperty(drawFeatureID, field, value);
         var feat = draw.get(drawFeatureID);
         draw.add(feat)
