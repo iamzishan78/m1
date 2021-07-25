@@ -23,29 +23,9 @@ import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
 import { getPolygonString } from "components/Shared/functions";
 import { handleTagColumn } from "../helpers/index.js";
 
-
 const useStyles = makeStyles((theme) => ({
-    root:{
-        "& div": {
-          "&>.MuiPaper-root": {
-            display: "flex",
-            "flex-direction": "column",
-            height: "calc(100vh - 65px)",
-            "align-items": "stretch",
-            "&>.MuiPaper-root": { 
-              display: "contents",
-            },
-            "&>:nth-child(3)": { 
-              height: "inherit !important",
-            },
-            "&> table": {
-              bottom: 0,
-            }
-          },
-        },
-      },
     container: {
-        padding: "0 !important",
+        padding: "0 !important"
     },
 }));
 
@@ -242,32 +222,32 @@ function ShapeGridWellsTable(props) {
     return (
 
         <div className={classes.root}>
-        <Container
-            maxWidth={false}
-            className={classes.container}
-            id={props.id ? props.id : props.parent}
-        >
-            <Table
-                style={{ backgroundColor: "#fff" }}
-                header={props.header}
-                columns={columns}
-                rows={props.rows}
-                total={total}
-                loading={props.loading}
-                addAble={addAble}
-                targetLabel={props.targetLabel}
-                deleteFunc={null}
-                uploadIcon={null}
-                dense={props.dense ? props.dense : undefined}
-                orderByTracks={orderByTracks}
-                startPaginationAt={null}
-                onTableChange={onTableChange}
-                options={options}
-                parent={props.parent}
-                setColumnsBase={[]}
-                getWellOwnersByYear={getWellOwnersByYear}
-            />
-        </Container>
+            <Container
+                maxWidth={false}
+                className={classes.container}
+                id={props.id ? props.id : props.parent}
+            >
+                <Table
+                    style={{ backgroundColor: "#fff" }}
+                    header={props.header}
+                    columns={columns}
+                    rows={props.rows}
+                    total={total}
+                    loading={props.loading}
+                    addAble={addAble}
+                    targetLabel={props.targetLabel}
+                    deleteFunc={null}
+                    uploadIcon={null}
+                    dense={props.dense ? props.dense : undefined}
+                    orderByTracks={orderByTracks}
+                    startPaginationAt={null}
+                    onTableChange={onTableChange}
+                    options={options}
+                    parent={props.parent}
+                    setColumnsBase={[]}
+                    getWellOwnersByYear={getWellOwnersByYear}
+                />
+            </Container>
         </div>
     );
 }
