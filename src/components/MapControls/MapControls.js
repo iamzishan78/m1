@@ -238,7 +238,6 @@ export default function MapControls(props) {
 
 
       if (action === "draw") {
-        debugger;
         setStateMapControls({
           ...stateMapControls,
           selectedMapControl: action,

@@ -3664,8 +3664,9 @@ function Map() {
             onAbstactLayerClick(currentFeature, "remove");
           } else {
             let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
-
-            if (!isExisting) {
+            const shape = JSON.parse(isExisting.shape)
+            var point = turf.point([e.lngLat.lng, e.lngLat.lat]);
+            if (!isExisting || !turf.booleanContains(shape, point)) {
               map.setFeatureState(
                 { source: "abstract_geo_source", id: currentFeature.id },
                 { click: true }
