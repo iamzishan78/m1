@@ -311,9 +311,9 @@ export default function DrawShapes() {
         setStateApp((stateApp) => {
           if (!stateApp.shapeEdit) {
             stateApp.draw.changeMode("static");
-          } else if (stateApp.currentFeature || stateApp.featureOrMapShape) {
+          } else if (stateApp.draw.get(stateApp.currentFeature?.id) || stateApp.draw.get(stateApp.featureOrMapShape?.id)) {
             stateApp.draw.changeMode("direct_select", {
-              featureId: stateApp.currentFeature.id || stateApp.featureOrMapShape.id,
+              featureId: stateApp?.currentFeature?.id || stateApp?.featureOrMapShape?.id,
             });
           }
           drawShapeLayerToggle(stateApp, stateApp.shapeEdit ? "visible" : "none")

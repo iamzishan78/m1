@@ -1,6 +1,10 @@
 export const clearMapAndCloseShapeActionsPopup = (stateApp, setStateApp) => {
     const { draw, map, currentFeature } = stateApp;
-    draw.delete(currentFeature?.id);
+    if (currentFeature?.id) {
+        setFeatureProperty(stateApp.draw, currentFeature.id, 'shapeEdit', true)
+        draw.delete(currentFeature?.id);
+    }
+
     draw.changeMode('simple_select');
     setStateApp((state) => ({
         ...state,
@@ -13,6 +17,7 @@ export const clearMapAndCloseShapeActionsPopup = (stateApp, setStateApp) => {
         showShapeActionsPopup: false,
         showDrawShapesPopup: false,
     }));
+    drawShapeLayerToggle(stateApp, "visible")
 
     // unselecting the grids
     const featuresList = map.getSource("abstract_geo_source")._data.features;
