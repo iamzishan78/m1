@@ -473,8 +473,9 @@ const ShapeActionsPopup = (props) => {
     });
     // setSelectedAction("");
     // stateApp.draw.changeMode("static");
-    setStateApp((state) => ({ ...state, shapeEdit: false, editDraw: false }));
-    popupCloseAction();
+    // setStateApp((state) => ({ ...state, shapeEdit: false, editDraw: false }));
+    setTimeout(() => popupCloseAction(), 0)
+
   };
 
   const isParcel = stateApp.selectedAoi?.layer?.id === 'parcel'

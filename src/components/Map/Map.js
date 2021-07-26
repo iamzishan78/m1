@@ -1123,11 +1123,13 @@ function Map() {
         popupOpen: false,
       }));
       const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
-      const selectedUserDefinedLayer = {
-        ...feature,
-        ...JSON.parse(filteredLayer.shape),
-        id: filteredLayer._id,
-      }
+      let selectedUserDefinedLayer
+      if (filteredLayer)
+        selectedUserDefinedLayer = {
+          ...feature,
+          ...JSON.parse(filteredLayer.shape),
+          id: filteredLayer._id,
+        }
 
       if (feature.source === "parcels_source") {
         setStateApp((state) => ({

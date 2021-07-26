@@ -316,7 +316,8 @@ export default function DrawShapes() {
               featureId: stateApp?.currentFeature?.id || stateApp?.featureOrMapShape?.id,
             });
           }
-          drawShapeLayerToggle(stateApp, stateApp.shapeEdit ? "visible" : "none")
+          const { features } = stateApp.draw.getAll()
+          drawShapeLayerToggle(stateApp, stateApp.shapeEdit || !features || features.length === 0 ? "visible" : "none")
           return stateApp
         })
       });
