@@ -1123,6 +1123,11 @@ function Map() {
 
     // AOI/Parcel Click Handler
     const udLayerClickHandler = (feature) => {
+      const drawMode = stateApp.draw.getMode();
+      if (drawMode.includes('draw') || drawMode.includes('drag')) {
+        map.resize();
+        return
+      }
       setStateApp((state) => ({
         ...state,
         expandedCard: false,
@@ -1144,7 +1149,6 @@ function Map() {
           selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
         }));
       }
-      const drawMode = stateApp.draw.getMode();
       if (feature.source === "interests_source" && !drawMode.includes('draw') && !drawMode.includes('drag')) {
 
         setStateApp((state) => {
@@ -3677,6 +3681,11 @@ function Map() {
         if (!e.features.length) {
           return;
         }
+        const drawMode = stateApp.draw.getMode();
+        if (drawMode.includes('draw') || drawMode.includes('drag')) {
+          return
+        }
+
         const currentFeature = e.features[0];
         const featureState = map.getFeatureState({
           source: "abstract_geo_source",
