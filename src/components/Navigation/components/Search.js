@@ -311,22 +311,22 @@ function Search() {
 
   const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(
     PAGINATEDWELLSQUERY,
-    { fetchPolicy: "cache-and-network", skip: true }
+    { fetchPolicy: "network-only", skip: true }
   );
 
   const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(
     PAGINATEDOWNERSQUERY,
-    { fetchPolicy: "cache-and-network", skip: true }
+    { fetchPolicy: "network-only", skip: true }
   );
 
   const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(
     PAGINATEDOPERATORSQUERY,
-    { fetchPolicy: "cache-and-network", skip: true }
+    { fetchPolicy: "network-only", skip: true }
   );
 
   const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(
     PAGINATEDLEASESQUERY,
-    { fetchPolicy: "cache-and-network", skip: true }
+    { fetchPolicy: "network-only", skip: true }
   );
 
   //////////// Search History End//////////////////
@@ -601,7 +601,6 @@ function Search() {
         setStateApp((state) => ({ ...state, wellListFromSearch: [] }));
         return undefined;
       }
-
       (async () => {
         let newOptions = [];
 
