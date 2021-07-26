@@ -344,7 +344,8 @@ const ShapeActionsPopup = (props) => {
         return !!intersection
       })
       const result = foundFeatures.reduce(function (result, currentFeature) {
-        const area = turf.area(currentFeature);
+        var intersection = turf.intersect(abstractShape, currentFeature);
+        const area = turf.area(intersection);
         return area > result.area ? { area, feature: currentFeature } : result
       }, { area: 0, feature: null })
       if (result?.feature?.properties)
