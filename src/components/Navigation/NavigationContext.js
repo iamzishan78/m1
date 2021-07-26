@@ -6,7 +6,7 @@ export const DRAWING_MODES = {
   DRAW_CIRCLE: "drag_circle"
 }
 
-const NavigationContext = createContext([{}, () => {}]);
+const NavigationContext = createContext([{}, () => { }]);
 
 const NavigationContextProvider = (props) => {
   const [stateNav, setStateNav] = useState({
@@ -146,7 +146,8 @@ const NavigationContextProvider = (props) => {
     selectedTags: [],
     wellsIdsFromTags: [],
     isUserManagementOpen: true,
-    contactFromMap: false, 
+    contactFromMap: false,
+    filterIntersectingWellLines: []
   });
 
   return (
