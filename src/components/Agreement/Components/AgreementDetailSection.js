@@ -47,6 +47,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
     term: 0,
     expirationDate: "",
   });
+  const [extensionExpirationDate, setExtensionDate] = useState("");
   const [isExtendable, setExtendable] = useState(false);
 
   const [updateAgreement, { data: updatedAgreement }] = useMutation(UPDATE_AGREEMENT);
@@ -225,7 +226,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
                 format="MM/DD/YYYY"
                 margin="normal"
                 id="date-picker-inline"
-                // value={newDocument?.dateTime ? new Date(newDocument.dateTime): null}
+                value={dates.effectiveDate || null}
                 onChange={(date) => {
                   setDates({
                     ...dates,
@@ -262,7 +263,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
                 format="MM/DD/YYYY"
                 margin="normal"
                 id="date-picker-inline"
-                value={dates.expirationDate ? dates.expirationDate : null}
+                value={dates.expirationDate || null}
                 onChange={(date) => {
                   setDates({
                     ...dates,
@@ -294,8 +295,9 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
                 margin="normal"
                 id="date-picker-inline"
                 disabled={!isExtendable}
-                value={null}
+                value={extensionExpirationDate || null}
                 onChange={(date) => {
+                  setExtensionDate(String(date["_d"]));
                   handleUpdateAgreement({ extensionExpirationDate: date ? String(date["_d"]) : "" });
                 }}
                 KeyboardButtonProps={{
