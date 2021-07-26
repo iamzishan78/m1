@@ -157,7 +157,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
             <Grid item style={{ minWidth: "10%" }} className={classes.detailFieldsRow2}>
               <AutoComplete classes={classes} onChange={setHbp} label="Rights" options={['Oil & gas']} />
             </Grid>
-            <Grid item style={{ minWidth: "15" }} className={classes.detailFieldsRow2}>
+            <Grid item style={{ minWidth: "14%" }} className={classes.detailFieldsRow2}>
               <AutoComplete classes={classes} onChange={setHbp} label="Held By Production" options={['Active - Held By Production', 'Active - Undeveloped', 'Inactive']} />
             </Grid>
             <Grid item className={classes.detailFieldsRow2}>
