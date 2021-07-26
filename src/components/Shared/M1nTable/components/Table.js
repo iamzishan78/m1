@@ -1956,10 +1956,10 @@ function SubTable(props) {
                     <div
                       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
                       className={`${props.parent === "assocTaxRollInterests" &&
-                          props.addAble.type === "wellInterest" &&
-                          (!tableMeta.rowData[14] || tableMeta.rowData[19])
-                          ? [classes.blue]
-                          : []
+                        props.addAble.type === "wellInterest" &&
+                        (!tableMeta.rowData[14] || tableMeta.rowData[19])
+                        ? [classes.blue]
+                        : []
                         }`}
                     >
                       {props.targetLabel === "contact" && column.name === "name" && (
@@ -2655,21 +2655,6 @@ function SubTable(props) {
                 <PostAddIcon></PostAddIcon>
               </ButtonDropDown>
             )}
-            {/* <ButtonGroup variant="contained" style={{ height: "40px" }} color="primary" aria-label="split button">
-                <Button
-                  color="primary"
-                  size="small"
-                  aria-label="select merge strategy"
-                  aria-haspopup="menu"
-                  onClick={() => {
-                    setStateApp({ ...stateApp, DocumentDrawer: true, selectedDocument: {} });
-                  }}
-                >
-                  <PostAddIcon></PostAddIcon>
-                  Add Document
-                </Button>
-              </ButtonGroup>
-            )} */}
 
             {props.addAble.type === "contact" && (
               <>
