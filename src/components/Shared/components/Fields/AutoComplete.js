@@ -56,7 +56,7 @@ export default function AutoCompleteComponent(props) {
                     return filter.includes(inputValue);
                 });
                 // Suggest the creation of a new value
-                if (inputValue !== "" && (!isExist || isExist.length === 0)) {
+                if (inputValue !== "" && (!isExist || isExist.length === 0) && rest.canAdd === undefined) {
                     filtered.unshift({
                         id: 'newEntity',
                         value: inputValue

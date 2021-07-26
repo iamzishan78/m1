@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
+import moment from "moment";
 import { makeStyles, Grid, Accordion, AccordionSummary, AccordionDetails, TextField } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import StateCard from "components/ParcelsDetailCard/components/StateCard";
 import CountyCard from "components/ParcelsDetailCard/components/CountyCard";
-import StatusCard from 'components/Shared/components/Cards/StatusCard';
-import HBPCard from 'components/Shared/components/Cards/HBPCard';
+import StatusCard from "components/Shared/components/Cards/StatusCard";
+import HBPCard from "components/Shared/components/Cards/HBPCard";
 import SurveyCard from "components/ParcelsDetailCard/components/SurveyCard";
 import BlockCard from "components/ParcelsDetailCard/components/BlockCard";
 import SectionCard from "components/ParcelsDetailCard/components/SectionCard";
 import AbstractCard from "components/ParcelsDetailCard/components/AbstractCard";
 import AltSurvey from "components/ParcelsDetailCard/components/AltSurveyCard";
-import AutoComplete from 'components/Shared/components/Fields/AutoComplete';
+import AutoComplete from "components/Shared/components/Fields/AutoComplete";
 import { useMutation } from "@apollo/client";
 import { UPDATE_AGREEMENT } from "graphQL/useMutatioAgreement";
 
@@ -31,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   detailFieldsRow2: {
-    marginRight: 45,
+    marginRight: 30,
     marginTop: "40px",
   },
 }));
@@ -41,6 +42,12 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
   const [title, setHeaderTitle] = useState({ name: "", number: "" });
   const [status, setStatus] = useState("");
   const [hbp, setHbp] = useState("");
+  const [dates, setDates] = useState({
+    effectiveDate: "",
+    term: 0,
+    expirationDate: "",
+  });
+  const [isExtendable, setExtendable] = useState(false);
 
   const [updateAgreement, { data: updatedAgreement }] = useMutation(UPDATE_AGREEMENT);
 
@@ -62,13 +69,24 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
     }
   }, [updatedAgreement]);
 
+  useEffect(() => {
+    if (dates.effectiveDate) {
+      let addedDate = moment(dates.effectiveDate).add(dates.term, "M");
+      addedDate = moment(addedDate, "DD MM YYYY hh:mm:ss").toDate();
+      setDates({ ...dates, expirationDate: addedDate });
+      handleUpdateAgreement({ effectiveDate: String(dates.effectiveDate), term: dates.term, expirationDate: String(addedDate) });
+    }
+  }, [dates.effectiveDate, dates.term]);
+
+  useEffect(() => {}, [dates.expirationDate]);
+
   const handleUpdateAgreement = (agreementKey) => {
     updateAgreement({
       variables: {
-        agreement: { ...newAgreement, ...agreementKey }
-      }
-    })
-  }
+        agreement: { ...newAgreement, ...agreementKey },
+      },
+    });
+  };
 
   return (
     <>
@@ -120,12 +138,12 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
                 fullWidth
                 onChange={({ target }) => setHeaderTitle({ ...title, number: target.value })}
                 onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
+                  if (event.key === "Enter") {
                     event.preventDefault();
                     handleUpdateAgreement({ number: event.target.value });
                   }
                 }}
-                onBlur={event => handleUpdateAgreement({ number: event.target.value })}
+                onBlur={(event) => handleUpdateAgreement({ number: event.target.value })}
               />
             </Grid>
             <Grid item style={{ width: "40%", marginRight: 50 }}>
@@ -135,30 +153,51 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
                 fullWidth
                 onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
                 onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
+                  if (event.key === "Enter") {
                     event.preventDefault();
                     handleUpdateAgreement({ name: event.target.value });
                   }
                 }}
-                onBlur={event => handleUpdateAgreement({ name: event.target.value })}
+                onBlur={(event) => handleUpdateAgreement({ name: event.target.value })}
               />
             </Grid>
             <Grid item style={{ width: "20%", marginRight: 50 }}>
               <AutoComplete
                 classes={classes}
-                onChange={value => handleUpdateAgreement({ agreementType: value })}
+                onChange={(value) => handleUpdateAgreement({ agreementType: value })}
                 label="Agreement Type"
-                options={['Lease - Oil, Gas, Minerals']}
+                options={["Lease - Oil, Gas, Minerals"]}
               />
             </Grid>
             <Grid item style={{ width: "15%", marginRight: 45 }}>
-              <AutoComplete classes={classes} label="Agreement Status" options={['Active', 'DeActive']} onChange={setStatus} />
+              <AutoComplete
+                classes={classes}
+                label="Agreement Status"
+                options={["Active", "DeActive"]}
+                onChange={(value) => {
+                  setStatus(value);
+                  handleUpdateAgreement({ status: value });
+                }}
+              />
             </Grid>
             <Grid item style={{ minWidth: "10%" }} className={classes.detailFieldsRow2}>
-              <AutoComplete classes={classes} onChange={setHbp} label="Rights" options={['Oil & gas']} />
+              <AutoComplete
+                classes={classes}
+                onChange={(value) => {
+                  setHbp(value);
+                  handleUpdateAgreement({ rights: value });
+                }}
+                label="Rights"
+                options={["Oil & gas"]}
+              />
             </Grid>
             <Grid item style={{ minWidth: "14%" }} className={classes.detailFieldsRow2}>
-              <AutoComplete classes={classes} onChange={setHbp} label="Held By Production" options={['Active - Held By Production', 'Active - Undeveloped', 'Inactive']} />
+              <AutoComplete
+                classes={classes}
+                onChange={(value) => handleUpdateAgreement({ propertyStatus: value })}
+                label="Property Status"
+                options={["Active - Held By Production", "Active - Undeveloped", "Inactive"]}
+              />
             </Grid>
             <Grid item className={classes.detailFieldsRow2}>
               <KeyboardDatePicker
@@ -169,12 +208,8 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
                 format="MM/DD/YYYY"
                 margin="normal"
                 id="date-picker-inline"
-                // value={newDocument?.dateTime ? new Date(newDocument.dateTime): null}
                 onChange={(date) => {
-                  // setNewDocument({
-                  //   ...newDocument,
-                  //   dateTime: date ? String(date["_d"]) : '',
-                  // });
+                  handleUpdateAgreement({ createdAt: date ? String(date["_d"]) : "" });
                 }}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
@@ -192,23 +227,30 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
                 id="date-picker-inline"
                 // value={newDocument?.dateTime ? new Date(newDocument.dateTime): null}
                 onChange={(date) => {
-                  // setNewDocument({
-                  //   ...newDocument,
-                  //   dateTime: date ? String(date["_d"]) : '',
-                  // });
+                  setDates({
+                    ...dates,
+                    effectiveDate: date ? date["_d"] : "",
+                  });
                 }}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
                 }}
               />
             </Grid>
-            <Grid item className={classes.detailFieldsRow2}>
+            <Grid item className={classes.detailFieldsRow2} style={{ maxWidth: "5%" }}>
               <TextField
                 margin="dense"
                 label="Term"
                 fullWidth
-                number
-                onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+                type="number"
+                value={dates.term}
+                onChange={({ target }) =>
+                  setDates({
+                    ...dates,
+                    term: target.value,
+                  })
+                }
+                defaultValue={0}
               />
             </Grid>
             <Grid item className={classes.detailFieldsRow2}>
@@ -220,16 +262,26 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
                 format="MM/DD/YYYY"
                 margin="normal"
                 id="date-picker-inline"
-                // value={newDocument?.dateTime ? new Date(newDocument.dateTime): null}
+                value={dates.expirationDate ? dates.expirationDate : null}
                 onChange={(date) => {
-                  // setNewDocument({
-                  //   ...newDocument,
-                  //   dateTime: date ? String(date["_d"]) : '',
-                  // });
+                  setDates({
+                    ...dates,
+                    expirationDate: date ? String(date["_d"]) : "",
+                  });
                 }}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
                 }}
+              />
+            </Grid>
+            <Grid item className={classes.detailFieldsRow2}>
+              <AutoComplete
+                classes={classes}
+                label="Extended?"
+                options={["Yes", "No"]}
+                defaultValue="No"
+                canAdd={false}
+                onChange={(value) => setExtendable(value === "Yes")}
               />
             </Grid>
             <Grid item className={classes.detailFieldsRow2}>
@@ -241,12 +293,10 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
                 format="MM/DD/YYYY"
                 margin="normal"
                 id="date-picker-inline"
-                // value={newDocument?.dateTime ? new Date(newDocument.dateTime): null}
+                disabled={!isExtendable}
+                value={null}
                 onChange={(date) => {
-                  // setNewDocument({
-                  //   ...newDocument,
-                  //   dateTime: date ? String(date["_d"]) : '',
-                  // });
+                  handleUpdateAgreement({ extensionExpirationDate: date ? String(date["_d"]) : "" });
                 }}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
