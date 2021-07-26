@@ -41,6 +41,7 @@ const AppProvider = (props) => {
 
     // should be in a draw context 
     editDraw: false,
+    isDrawing: false,
     shapeEdit: false,
     showDrawShapesPopup: false,
     showShapeActionsPopup: false,
@@ -144,6 +145,7 @@ const AppProvider = (props) => {
     isContactSearching: false,
     viewDoc: null,
     pdfView: null,
+    selectedAgreement: null,
 
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {

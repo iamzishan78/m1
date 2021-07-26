@@ -1,3 +1,4 @@
+/* eslint-disable no-lone-blocks */
 import React, {
   useState,
   useContext,
@@ -560,6 +561,7 @@ function SubTable(props) {
   const setCumulative = (newState) => { setStateIfDeepEqual(Cumulative, newState); };
   const setViewColumns = (newState) => { setStateIfDeepEqual(ViewColumns, newState); };
   const setRows = (newState) => { setStateIfDeepEqual(Rows, newState); };
+  const [searchedRows, setSearchedRows] = useState([])
 
 
 
@@ -1649,8 +1651,10 @@ function SubTable(props) {
                             m1nSelectedRowsIndexes.push(tableMeta.rowIndex)
                           }
                           if (m1nSelectedRowsIndexes?.length > 0) {
-                            const selectedRows = m1nSelectedRowsIndexes.map((index) => rows[index]);
-                            return handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, selectedRows, "multipleOwnerToContact");
+                            let selectedRows = m1nSelectedRowsIndexes.map((index) => rows[index]);
+                            selectedRows = selectedRows.filter((row) => !row.isContact)
+                            if (selectedRows.length > 0)
+                              return handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, selectedRows, "multipleOwnerToContact");
                           }
 
                           if (value && value !== "false") {
@@ -1939,7 +1943,7 @@ function SubTable(props) {
                       <IconButton onClick={(e) => {
                         e.stopPropagation()
                         console.log("modell download")
-                        handleViewFile(row_line?._id)
+                        handleViewFile(props.addAble.type === "parcelRunsheet" ? row_line.fileId : row_line?._id)
                       }}>
                         <GetAppIcon />
                       </IconButton>
@@ -2467,6 +2471,47 @@ function SubTable(props) {
     }
   }, [props.targetLabel]);
 
+  useEffect(() => {
+    setSearchedRows(rows)
+  }, [rows])
+
+  const searchData = (tableState) => {
+    let rows = []
+    if (tableState.searchText) {
+      for (let i = 0; i < props.rows.length; i++) {
+        for (const key of Object.keys(props.rows[i])) {
+          const col = columns.find(column => column.name === key)
+          if (col && (!col.options || col.options.searchable !== false)) {
+            if (typeof props.rows[i][key] === 'string') {
+              console.log(props.rows[i][key], key)
+              const value = props.rows[i][key].toLowerCase()
+              if (value.includes(tableState.searchText.toLowerCase())) {
+                rows.push(props.rows[i])
+                break
+              }
+            }
+          }
+        }
+      }
+    } else {
+      rows = props.rows
+    }
+    rows = JSON.parse(JSON.stringify(rows));
+    for (let j = 0; j < tableState.filterList.length; j++) {
+      if (tableState.filterList[j].length > 0) {
+        for (let i = 0; i < rows.length; i++) {
+          const isFiltered = rows[i].isFiltered !== false
+          const rowdata = rows[i][columns[j].name]
+          const filter = tableState.filterList[j][0]
+          if (isFiltered && rowdata !== filter) {
+            rows[i].isFiltered = false
+            continue
+          }
+        }
+      }
+    }
+    setSearchedRows(rows.filter(row => row.isFiltered !== false))
+  }
   const options = {
     filterType: "dropdown",
     rowsPerPage: rowsPerPage ? rowsPerPage : 25,
@@ -2594,6 +2639,37 @@ function SubTable(props) {
                       style={{ margin: "0 5px" }}
                       onClick={(e) => {
                         handleExpandClick(null, null, null, "deleteParcelDocument")
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </div>
+            )
+          }
+          if (props.addAble.type === 'parcelRunsheet') {
+            return (
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    height: "35px",
+                    display: "flex",
+                  }}
+                >
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        handleExpandClick(null, null, null, "deleteParcelRunsheet")
                       }}
                       aria-label="delete"
                     >
@@ -2828,6 +2904,7 @@ function SubTable(props) {
       if (props.addAble.type === "ownerToParcel") { buttonLabel = '+ ADD INTEREST OWNER' }
       if (props.addAble.type === "suggestedOwnerToParcel") { buttonLabel = '+ ADD TO PARCEL' }
       if (props.addAble.type === "parcelDocument") { buttonLabel = 'ADD DOCUMENT' }
+      if (props.addAble.type === "parcelRunsheet") { buttonLabel = '+ ADD INSTRUMENT' }
 
 
       const addAction = (e) => {
@@ -2900,6 +2977,15 @@ function SubTable(props) {
                 className={classes.multiSelectionTopBarButtons}
                 disabled={true}
                 onClick={() => { }}
+              >
+                {buttonLabel}
+              </Button>
+            )}
+            {(props.addAble.type === "parcelRunsheet") && (
+              <Button
+                color="secondary"
+                className={classes.multiSelectionTopBarButtons}
+                onClick={()=>  props.onClickAdd()}
               >
                 {buttonLabel}
               </Button>
@@ -3051,6 +3137,13 @@ function SubTable(props) {
         setStateApp((stateApp) => ({
           ...stateApp,
           selectedDocument: rows[dataIndex],
+        }));
+        props.onClickAdd()
+      }
+      if (props.targetLabel === "parcelRunsheet") {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedAgreement: rows[dataIndex],
         }));
         props.onClickAdd()
       }
@@ -3408,6 +3501,19 @@ function SubTable(props) {
         }
       }
 
+      if (props.parent === 'ownersPerParcel') {
+        switch (action) {
+          case "search":
+            searchData(tableState)
+            break;
+          case "onSearchClose":
+            break;
+          case "filterChange":
+            searchData(tableState)
+            break
+          default:
+        }
+      }
 
       if (props.onTableChange) {
         props.onTableChange(action, tableState, props.rows, { pageInd, setPageInd, setRowsPerPage })
@@ -3551,7 +3657,7 @@ function SubTable(props) {
         <MUIDataTable
           className={tableStyle}
           title={getHeaders()}
-          data={rows ? rows : []}
+          data={props.parent === 'ownersPerParcel' ? searchedRows : rows ? rows : []}
           // columns={
           //   props.parent === "ownersPerParcel" ? false :
           //   (columns ? columns : [])}
@@ -3575,21 +3681,23 @@ function SubTable(props) {
 
             // resizableColumns: true,
 
-            filter: props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
-              || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
-              || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
-              || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
-              || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+            filter:
+              //  props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
+              props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
-              ? false : null,
+                ? false : null,
 
-            viewColumns: props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search 
-              || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
-              || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
-              || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
-              || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+            viewColumns:
+              // props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search 
+              props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
-              ? false : null,
+                ? false : null,
 
             search:
               (
@@ -3597,7 +3705,7 @@ function SubTable(props) {
                 || props.header === 'Deals'
                 || props.header === 'Activities'
                 || props.header === 'Monthly Production'
-                || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
+                // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
                 || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
@@ -3664,6 +3772,7 @@ function SubTable(props) {
             handleExpandClick={handleExpandClick}
             setM1nSelectedRowsIds={setM1nSelectedRowsIds}
             customLayerId={props.addAble.customLayerId}
+            customLayer={props.addAble.customLayer}
             selectedRow={selectedRow}
             setSelectedRow={setSelectedRow}
           />
@@ -3695,6 +3804,7 @@ function SubTable(props) {
                 openDialog === "deleteUser" ||
                 openDialog === "deleteWellInterest" ||
                 openDialog === "deleteParcelDocument" ||
+                openDialog === "deleteParcelRunsheet" ||
                 openDialog === "addParcelInterestsToEntity"
                 ? true
                 : false
@@ -3855,6 +3965,22 @@ function SubTable(props) {
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {`Do you want to permanently delete the document${m1nSelectedRowsIds &&
+                  m1nSelectedRowsIds.length > 1 &&
+                  removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                  ? "s"
+                  : ""
+                  } from  this parcel?`}
+              </DeleteConfirmationDialogContent>
+            )}
+            {openDialog === "deleteParcelRunsheet" && (
+              <DeleteConfirmationDialogContent
+                header="Delete Parcel Runsheet(s)"
+                onClose={handleCloseDialog}
+                deleteFunc={props.deleteFunc}
+                m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+              >
+                {`Do you want to permanently delete the instrument${m1nSelectedRowsIds &&
                   m1nSelectedRowsIds.length > 1 &&
                   removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                   ? "s"

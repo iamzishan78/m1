@@ -267,6 +267,14 @@ function Map() {
       DrawingFilterFeatureId(state);
     }
   };
+
+  const [wellLinesSourceFeatures, WellLinesSourceFeatures] = useState([]);
+  const setWellLinesSourceFeatures = (state) => {
+    if (wellLinesSourceFeatures !== state) {
+      WellLinesSourceFeatures(state);
+    }
+  };
+
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, AnchorElPoPOver] = useState(null);
   const setAnchorElPoPOver = (state) => {
@@ -1130,43 +1138,48 @@ function Map() {
           selectedParcel: feature.properties,
         }));
       }
-      if (feature.source === "interests_source") {
-        const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
-        const selectedUserDefinedLayer = {
-          ...feature,
-          ...JSON.parse(filteredLayer.shape),
-          id: filteredLayer._id,
-        }
-        setStateApp((state) => ({
-          ...state,
-          showShapeActionsPopup: true,
-          selectedUserDefinedLayer,
-          selectedParcel: null,
-          openDrawShapesControl: true,
-        }));
+      const drawMode = stateApp.draw.getMode();
+      if (feature.source === "interests_source" && !drawMode.includes('draw') && !drawMode.includes('drag')) {
 
-        if (!stateApp.editDraw) {
-          setStateApp((state) => ({
-            ...state,
-            showDrawShapesPopup: !state.showDrawShapesPopup,
-            editDraw: true,
-          }));
-        }
+        setStateApp((state) => {
+          if (state.isDrawing) return state
 
-        if (stateApp.editDraw) {
-          setStateApp((state) => ({
+          const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
+          const selectedUserDefinedLayer = {
+            ...feature,
+            ...JSON.parse(filteredLayer.shape),
+            id: filteredLayer._id,
+          }
+
+          state = {
             ...state,
-            editDraw: false,
-            currentFeature: undefined,
-            isAbstractedLayersPolygon: false,
-            multiSelectLandGrids: false,
-            selectedAbstracts: [],
-            showShapeActionsPopup: false,
-            showDrawShapesPopup: false,
-          }));
-        }
+            showShapeActionsPopup: true,
+            selectedUserDefinedLayer,
+            selectedParcel: null,
+            openDrawShapesControl: true,
+          }
+
+          if (!state.editDraw) {
+            state = {
+              ...state,
+              showDrawShapesPopup: !state.showDrawShapesPopup,
+              editDraw: true,
+            }
+          } else {
+            state = {
+              ...state,
+              editDraw: false,
+              currentFeature: undefined,
+              isAbstractedLayersPolygon: false,
+              multiSelectLandGrids: false,
+              selectedAbstracts: [],
+              showShapeActionsPopup: false,
+              showDrawShapesPopup: false,
+            }
+          }
+          return state
+        });
       }
-
       createUDPopUp(feature.properties);
       map.resize();
     };
@@ -1459,9 +1472,11 @@ function Map() {
           map.removeLayer(layerId + "-clusters");
       }
 
+      const layers = map.getStyle().layers
       // -> remove source
       const sourceId = prop.sourceProps;
-      if (map.getSource(sourceId)) map.removeSource(sourceId);
+      const sourceLayers = layers.filter((layer) => layer.source === sourceId)
+      if (map.getSource(sourceId) && sourceLayers.length === 0) map.removeSource(sourceId);
       if (map.getSource(`${sourceId}_point`))
         map.removeSource(`${sourceId}_point`);
       if (map.getSource(`${sourceId}_filter`))
@@ -1471,7 +1486,9 @@ function Map() {
 
   useEffect(() => {
     if (removeLayerFromMap && map) {
-      removeLayer(removeLayerFromMap);
+      removeLayerFromMap.forEach((layer) => {
+        removeLayer(layer);
+      })
       dispatch(setMainMapState({ removeLayerFromMap: null }));
     }
   }, [removeLayerFromMap]);
@@ -2610,11 +2627,34 @@ function Map() {
         filterArray.unshift("all");
 
         //// start filtering
+
+        var intersectingWellLinesFilter
+        if (filterCustomArray["welllines"]) {
+          var boundingMultiPoly = mergeIntoMultiPolygon(filterCustomArray["welllines"])
+          var features = wellLinesSourceFeatures;
+
+          console.time(`booleanIntersects`);
+          intersectingWellLinesFilter = features.reduce(
+            function (memo, feature) {
+              boundingMultiPoly?.features?.forEach(boundingPoly => {
+                if (turf.booleanIntersects(feature.geometry, boundingPoly.geometry)) {
+                  memo[2][1].push(feature.properties.id);
+                }
+              })
+              return memo;
+            },
+            ['in', ["get", "id"], ["literal", []]]
+          );
+          console.timeEnd(`booleanIntersects`);
+        }
+
         if (filterCustomArray["wellpoints"]) {
           map.setFilter("wellpoints", [
             ...filterArray,
-
-            ["within", mergeIntoMultiPolygon(filterCustomArray["wellpoints"])],
+            ["any",
+              ["within", mergeIntoMultiPolygon(filterCustomArray["wellpoints"])],
+              intersectingWellLinesFilter
+            ]
           ]);
         } else if (Object.keys(filterCustomArray).length > 0) {
           map.setFilter("wellpoints", [
@@ -2631,7 +2671,10 @@ function Map() {
         if (filterCustomArray["welllines"]) {
           map.setFilter("welllines", [
             ...filterArray,
-            ["within", mergeIntoMultiPolygon(filterCustomArray["welllines"])],
+            ["any",
+              ["within", mergeIntoMultiPolygon(filterCustomArray["welllines"])],
+              intersectingWellLinesFilter
+            ]
           ]);
         } else if (Object.keys(filterCustomArray).length > 0) {
           map.setFilter("welllines", [
@@ -2926,6 +2969,7 @@ function Map() {
     }
   }, [
     map,
+    wellLinesSourceFeatures,
     setStateNav,
     stateNav.defaultOn,
     stateNav.filterAllInterestTypes,
@@ -3712,6 +3756,20 @@ function Map() {
     }
   }, [map, stateApp.customLayers, stateApp.multiSelectLandGrids]);
 
+  const shapeFilterControl = (map) => {
+    if (map.getFilter("welllines")) {
+      console.log('here');
+
+      console.time(`querySourceFeatures`);
+      var features = map.querySourceFeatures("composite", {
+        sourceLayer: "wellLines",
+      });
+      setWellLinesSourceFeatures(features);
+
+      console.timeEnd(`querySourceFeatures`);
+    }
+  };
+
   useEffect(() => {
     if (mapStyles.length > 0) {
       // const SET_INITIAL_MAP_STYLE = "Satellite";
@@ -3883,9 +3941,11 @@ function Map() {
 
         newMap.on("zoomend", function (e) {
           abstractControl(e);
+          shapeFilterControl(e.target);
         });
         newMap.on("moveend", function (e) {
           abstractControl(e);
+          shapeFilterControl(e.target);
         });
 
         setStateApp({ ...stateApp, map: newMap, draw: Draw });
@@ -4090,19 +4150,23 @@ function Map() {
 
   // Use effect for removing shape filter
   useEffect(() => {
-    if (!loading && stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
-      if (draw) draw.delete(drawingFilterFeatureId);
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        drawingMode: null,
-        filterDrawing: stateNav.filterDrawing,
-        filterFeatureId: null,
-      }));
-      setDrawingFilterFeatureId(null);
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-      }));
+    if (!loading) {
+      if (stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
+        if (draw) draw.delete(drawingFilterFeatureId);
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          drawingMode: null,
+          filterDrawing: stateNav.filterDrawing,
+          filterFeatureId: null,
+        }));
+        setDrawingFilterFeatureId(null);
+        setStateApp((state) => ({
+          ...state,
+          popupOpen: false,
+        }));
+      }
+
+      shapeFilterControl(map)
     }
   }, [stateNav.filterDrawing]);
 
