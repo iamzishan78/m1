@@ -298,12 +298,23 @@ export default function ParcelsDetailCard(props) {
       e.stopPropagation();
       const shape = parcelObj.shape;
       shape.properties[field] = value;
+
+      const customLayer = {
+        shape: JSON.stringify(shape),
+      }
+
+      if (field === 'shapeLabel') {
+        setStateApp((state) => ({
+          ...state,
+          selectedParcel: { ...state.selectedParcel, shapeLabel: value },
+        }));
+        customLayer.name = value;
+      }
+
       updateCustomLayer({
         variables: {
           customLayerId: parcelObj._id,
-          customLayer: {
-            shape: JSON.stringify(shape),
-          },
+          customLayer,
         },
       });
 
