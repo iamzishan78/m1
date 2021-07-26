@@ -3,12 +3,14 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import GavelIcon from '@material-ui/icons/Gavel';
+import LocationIcon from '@material-ui/icons/Place';
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import { useDispatch } from "react-redux";
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-
+import { Box, IconButton } from "@material-ui/core";
 import Taps from "../Shared/Taps";
 import TabPanels from "components/Shared/TabPanels"
 import TabButtons from "components/Shared/TabPanels/TabButtons"
@@ -35,6 +37,8 @@ import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRun
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 import { AppContext } from "../../AppContext";
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 const ENTER_KEY = 13;
 
@@ -57,10 +61,14 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     display: "flex",
     height: "100%",
-    padding: 10
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
+
   },
   parcelSummmary: {
-    marginBottom: '0px'
+    marginBottom: '0px',
+
   },
   gridPortion: {
     flexGrow: 1,
@@ -168,6 +176,19 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  subContent2: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          height: "calc(100vh - 35vh ) !important",
+          "& .MuiTableCell-paddingCheckbox": {
+            position: 'unset',
+          },
+        },
+      },
+    },
+  },
+
   tapsPanels: {
     "& .MuiBox-root": { padding: "0" },
   },
@@ -216,7 +237,7 @@ export default function ParcelsDetailCard(props) {
   const [legalDescription, setLegalDesc] = useState();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [onChangeFooterLabel, setChangeFooterLabel] = useState({ parcelName: false, grossAcres: false, legalDescription: false });
-
+  const [showSummary, setShowSummary] = useState(true);
   const [updateCustomLayer, { data: updatedParcel }] = useMutation(
     UPDATECUSTOMLAYER,
   );
@@ -274,7 +295,7 @@ export default function ParcelsDetailCard(props) {
   useEffect(() => {
     if (updatedParcel) {
       if (updatedParcel.updateCustomLayer.success) {
-        dispatch(showSuccessMessage("Successfully updated the parcel."));
+        dispatch(showSuccessMessage("Successfully updated the parcel"));
       } else {
         dispatch(showErrorMessage("Failed to update parcel"));
       }
@@ -343,9 +364,23 @@ export default function ParcelsDetailCard(props) {
   const DocumentHeader = () => (
     <div className={classes.documentHeader}>
       <DescriptionOutlinedIcon />
-      <span>Related Documents</span>
+      <span>ASSOCIATED DOCUMENTS</span>
     </div>
-  )
+  );
+
+  const RunsheetHeader = () => (
+    <div className={classes.documentHeader}>
+      <GavelIcon />
+      <span>LIMITED TITLE RUNSHEET</span>
+    </div>
+  );
+
+  const WellHeader = () => (
+    <div className={classes.documentHeader}>
+      <LocationIcon />
+      <span>ASSOCIATED WELLS</span>
+    </div>
+  );
 
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
@@ -366,109 +401,124 @@ export default function ParcelsDetailCard(props) {
               <RangeCard range={originalProperties.range} />,
               <SectionCard section={originalProperties.section} />]
             )}
+            <Box>
+              <IconButton
+                onClick={() => setShowSummary(!showSummary)}
+                aria-label="delete" color="primary">
+                {
+                  showSummary ? <KeyboardArrowUpIcon fontSize="large" /> : <KeyboardArrowDownIcon fontSize="large" />
+                }
+
+              </IconButton>
+            </Box>
           </Grid>
         )}
-        <Grid item
-
-          // sm={6} 
-
-          // temporary code hiding the parcel QQ grid in texas until we can build out the component
-          sm={originalProperties && originalProperties !== null && originalProperties.state == "TX" ? 12 : 6}
-
-          className={classes.gridPacelDetails}>
-
+        {showSummary &&
           <Grid item
 
-            sm={12}
+            // sm={6} 
 
-            container>
-            <div className={classes.calcSummary}>
-              <p className={classes.parcelSummmary}>Parcel Name</p>
-              <TextField
-                size="small"
-                value={parcelName}
-                variant="outlined"
-                onChange={(e) => {
-                  setParcelName(e.target.value);
-                }}
-                onKeyDown={(e) => {
-                  updateParcel(e, "shapeLabel", parcelName);
-                }}
-                onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: true }) }}
-                onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: false }) }}
-                InputProps={{
-                  endAdornment: (onChangeFooterLabel.parcelName == true &&
-                    <p className={classes.foodText}>
-                      <span>Return</span> to save
-                    </p>)
-                }}
-                fullWidth
-              >
-              </TextField>
-              <p className={classes.parcelSummmary}>Gross Acres</p>
-              <TextField
-                size="small"
-                value={grossAcres}
-                variant="outlined"
-                onChange={(e) => {
-                  setGrossAcres(e.target.value);
-                }}
-                onKeyDown={(e) => {
-                  updateParcel(e, "sdGrossAcres", grossAcres);
-                }}
-                onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: true }) }}
-                onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: false }) }}
-                InputProps={{
-                  endAdornment: (onChangeFooterLabel.grossAcres == true &&
-                    <p className={classes.foodText}>
-                      <span>Return</span> to save
-                    </p>)
-                }}
-                fullWidth
-              />
-              <p className={classes.parcelSummmary}>Calc. Acres</p>
-              <TextField
-                disabled
-                size="small"
-                value={parcelProperties.shapeArea}
-                variant="outlined"
-                fullWidth
-                InputProps={{
-                  readOnly: true
-                }}
-              />
+            // temporary code hiding the parcel QQ grid in texas until we can build out the component
+            sm={originalProperties && originalProperties !== null && originalProperties.state == "TX" ? 12 : 6}
 
-              <p className={classes.parcelSummmary}>Full Legal Description</p>
-              <TextField
-                size="small"
-                multiline
-                rows={7}
-                value={legalDescription}
-                variant="outlined"
-                fullWidth
-                placeholder="Enter legal description here"
-                onChange={(e) => {
-                  setLegalDesc(e.target.value);
-                }}
-                onKeyDown={(e) => {
-                  updateParcel(e, "legalDescription", legalDescription);
-                }}
-                onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, legalDescription: true }) }}
-                onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, legalDescription: false }) }}
-                InputProps={{
-                  endAdornment: (onChangeFooterLabel.legalDescription == true &&
-                    <p className={classes.foodText}>
-                      <span>Return</span> to save
-                    </p>)
-                }}
-              />
-            </div>
+            className={classes.gridPacelDetails}>
+
+            <Grid item
+              sm={12}
+              container>
+              <div className={classes.calcSummary}>
+                <p className={classes.parcelSummmary}>Parcel Name</p>
+                <TextField
+                  size="small"
+                  value={parcelName}
+                  variant="outlined"
+                  onChange={(e) => {
+                    setParcelName(e.target.value);
+
+                  }}
+                  onKeyDown={(e) => {
+                    updateParcel(e, "shapeLabel", parcelName);
+                  }}
+                  onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: true }) }}
+                  onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: false }) }}
+                  InputProps={{
+                    endAdornment: (onChangeFooterLabel.parcelName == true &&
+                      <p className={classes.foodText}>
+                        <span>Return</span> to save
+                      </p>)
+                  }}
+                  fullWidth
+                >
+                </TextField>
+                <p className={classes.parcelSummmary}>Gross Acres</p>
+                <TextField
+                  size="small"
+                  value={grossAcres}
+                  variant="outlined"
+                  onChange={(e) => {
+                    setGrossAcres(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    updateParcel(e, "sdGrossAcres", grossAcres);
+                  }}
+                  onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: true }) }}
+                  onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: false }) }}
+                  InputProps={{
+                    endAdornment: (onChangeFooterLabel.grossAcres == true &&
+                      <p className={classes.foodText}>
+                        <span>Return</span> to save
+                      </p>)
+                  }}
+                  fullWidth
+                />
+                <p className={classes.parcelSummmary}>Calc. Acres</p>
+                <TextField
+                  disabled
+                  size="small"
+                  value={parcelProperties.shapeArea}
+                  variant="outlined"
+                  fullWidth
+                  InputProps={{
+                    readOnly: true
+                  }}
+                />
+
+                <p className={classes.parcelSummmary}>Full Legal Description</p>
+                <TextField
+                  size="small"
+                  multiline
+                  rows={7}
+                  value={legalDescription}
+                  variant="outlined"
+                  fullWidth
+                  placeholder="Enter legal description here"
+
+                  onChange={(e) => {
+                    setLegalDesc(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    updateParcel(e, "legalDescription", legalDescription);
+                  }}
+                  onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, legalDescription: true }) }}
+                  onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, legalDescription: false }) }}
+                  InputProps={{
+                    endAdornment: (onChangeFooterLabel.legalDescription == true &&
+                      <p className={classes.foodText}>
+                        <span>Return</span> to save
+                      </p>)
+                  }}
+                />
+              </div>
+            </Grid>
+
           </Grid>
-        </Grid>
-
+        }
         {originalProperties && originalProperties !== null && originalProperties.state == "TX" ? (null) : (
+
           <Grid item sm={6} className={classes.gridPortion}>
-            <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
+            {showSummary &&
+              <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
+            }
           </Grid>
         )}
 
@@ -481,10 +531,10 @@ export default function ParcelsDetailCard(props) {
             <TabPanels
               value={selectedTab}
               panels={[
-                <div className={classes.subContent}>
+                <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense header={<Header />} />
                 </div>,
-                <div className={classes.subContent}>
+                <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <SuggestedTaxOwnersTable
                     customLayer={parcelObj}
                     parent="suggestedOwnersPerParcel"
@@ -496,30 +546,37 @@ export default function ParcelsDetailCard(props) {
                 </div>
               ]}
             />,
-            <ParcelDetailsRunsheetTable
-              customLayer={parcelObj}
-              parent="associatedRunsheetPerParcel"
-              targetLabel="parcelRunsheet"
-              header='Limited Title Runsheet'
-              dense
-            />,
-            <AssociatedWellsParcelTable
-              customLayer={parcelObj}
-              parent="associatedWellsPerParcel"
-              targetLabel="well"
-              header="Associated Wells"
-              dense
-            />,
-            <ParcelDetailsDocumentTable
-              customLayer={parcelObj}
-              parent="associatedDocumentsPerParcel"
-              targetLabel="parcelDocument"
-              header={<DocumentHeader />}
-              dense
-            />
+            <div className={showSummary ? classes.subContent : classes.subContent2}>
+              <ParcelDetailsRunsheetTable
+                customLayer={parcelObj}
+                parent="associatedRunsheetPerParcel"
+                targetLabel="parcelRunsheet"
+                header={<RunsheetHeader />}
+                dense
+              />
+            </div>,
+            <div className={showSummary ? classes.subContent : classes.subContent2}>
+              <AssociatedWellsParcelTable
+                customLayer={parcelObj}
+                parent="associatedWellsPerParcel"
+                targetLabel="well"
+                header={<WellHeader />}
+                dense
+              />
+            </div>,
+            <div className={showSummary ? classes.subContent : classes.subContent2}>
+              <ParcelDetailsDocumentTable
+                customLayer={parcelObj}
+                parent="associatedDocumentsPerParcel"
+                targetLabel="parcelDocument"
+                header={<DocumentHeader />}
+                dense
+              />
+            </div>
           ]}
         />
       </Grid>
+
     </Grid>
   ) : (
     <div

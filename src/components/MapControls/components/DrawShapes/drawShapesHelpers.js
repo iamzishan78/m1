@@ -26,7 +26,7 @@ const calculateLandArea = feature => {
   if (feature.geometry.type === "Polygon") {
     const areaInSqMeters = area(feature);
     const areaInAcres = convertArea(areaInSqMeters, "meters", "acres");
-    return `${Math.round(areaInAcres * 100) / 100} acres`;
+    return `${Math.round(areaInAcres * 100) / 100}`;
   }
   if (feature.geometry.type === "LineString") {
     const distanceInMiles = length(feature, { units: "miles" });

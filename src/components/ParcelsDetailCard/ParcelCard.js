@@ -237,7 +237,7 @@ export default function ParcelCard(props) {
                   className={classes.text2}
                   variant="caption"
                 >
-                  {wellNumber}
+                  {wellNumber || "0"}
 
                 </Typography>
               </div>
@@ -264,7 +264,7 @@ export default function ParcelCard(props) {
                   className={classes.text2}
                   variant="caption"
                 >
-                  {parcelObj?.ownerCount || "--"}
+                  {parcelObj?.ownerCount || "0"}
                 </Typography>
               </div>
             </Button>

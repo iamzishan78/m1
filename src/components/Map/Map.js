@@ -267,6 +267,7 @@ function Map() {
       DrawingFilterFeatureId(state);
     }
   };
+
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, AnchorElPoPOver] = useState(null);
   const setAnchorElPoPOver = (state) => {
@@ -275,6 +276,10 @@ function Map() {
     }
   };
   const mapEl = useRef(null);
+
+  // hacky but having to use a ref for valid state during map on event callback
+  const stateNavRef = useRef();
+  stateNavRef.current = stateNav;
 
   const [hoverUdIds, HoverUdIds] = useState([]);
   const setHoverUdIds = (id) => {
@@ -1080,7 +1085,8 @@ function Map() {
         // from contacts api is slightly different than other apis
         // need to setup in a standard format
 
-        if (properties.id && feature.layer.id === "wellpoints") {
+
+        if (properties.id && feature.layer.id !== "recent_submitted_permits") {
 
           setStateApp((state) => ({
             ...state,
@@ -1326,6 +1332,8 @@ function Map() {
             layerId === "Search" ||
             layerId === "recent_submitted_permits":
             // layerId === "permits":
+
+            console.log('LAYER', layerId);
             wellPointClick(feature);
             break;
           default:
@@ -2486,7 +2494,7 @@ function Map() {
         totalCount += stateNav.parcelName.length;
       }
 
-      if (fitBounds) {
+      if (!deepEqualObjects(stateApp.fitBounds, fitBounds)) {
         setStateApp((stateApp) => ({
           ...stateApp,
           fitBounds: { ...fitBounds },
@@ -2619,11 +2627,34 @@ function Map() {
         filterArray.unshift("all");
 
         //// start filtering
+
+        var intersectingWellLinesFilter
+        if (filterCustomArray["welllines"]) {
+          var boundingMultiPoly = mergeIntoMultiPolygon(filterCustomArray["welllines"])
+          var features = stateNav.filterIntersectingWellLines;
+
+          // console.time(`booleanIntersects`);
+          intersectingWellLinesFilter = features.reduce(
+            function (memo, feature) {
+              boundingMultiPoly?.features?.forEach(boundingPoly => {
+                if (turf.booleanIntersects(feature.geometry, boundingPoly.geometry)) {
+                  memo[2][1].push(feature.properties.id);
+                }
+              })
+              return memo;
+            },
+            ['in', ["get", "id"], ["literal", []]]
+          );
+          // console.timeEnd(`booleanIntersects`);
+        }
+
         if (filterCustomArray["wellpoints"]) {
           map.setFilter("wellpoints", [
             ...filterArray,
-
-            ["within", mergeIntoMultiPolygon(filterCustomArray["wellpoints"])],
+            ["any",
+              ["within", mergeIntoMultiPolygon(filterCustomArray["wellpoints"])],
+              intersectingWellLinesFilter
+            ]
           ]);
         } else if (Object.keys(filterCustomArray).length > 0) {
           map.setFilter("wellpoints", [
@@ -2640,7 +2671,10 @@ function Map() {
         if (filterCustomArray["welllines"]) {
           map.setFilter("welllines", [
             ...filterArray,
-            ["within", mergeIntoMultiPolygon(filterCustomArray["welllines"])],
+            ["any",
+              ["within", mergeIntoMultiPolygon(filterCustomArray["welllines"])],
+              intersectingWellLinesFilter
+            ]
           ]);
         } else if (Object.keys(filterCustomArray).length > 0) {
           map.setFilter("welllines", [
@@ -3002,6 +3036,7 @@ function Map() {
     stateApp.trackedwells,
     stateApp.customLayers,
     stateApp.wellListFromTagsFilter,
+    stateNav.filterIntersectingWellLines,
   ]);
 
   useEffect(() => {
@@ -3722,6 +3757,26 @@ function Map() {
     }
   }, [map, stateApp.customLayers, stateApp.multiSelectLandGrids]);
 
+  // having to use a ref because callbacks are not guaranteed to get the correct version of context state!!!
+  function shapeFilterControl(map) {
+    if (stateNavRef.current?.filterBasin ||
+      stateNavRef.current?.filterAOI ||
+      stateNavRef.current?.filterParcel ||
+      stateNavRef.current?.filterDrawing[1]) {
+
+      // console.time(`querySourceFeatures`);
+      var features = map.querySourceFeatures("composite", {
+        sourceLayer: "wellLines",
+      });
+      // console.timeEnd(`querySourceFeatures`);
+
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        filterIntersectingWellLines: features
+      }));
+    }
+  };
+
   useEffect(() => {
     if (mapStyles.length > 0) {
       // const SET_INITIAL_MAP_STYLE = "Satellite";
@@ -3893,9 +3948,11 @@ function Map() {
 
         newMap.on("zoomend", function (e) {
           abstractControl(e);
+          shapeFilterControl(e.target);
         });
         newMap.on("moveend", function (e) {
           abstractControl(e);
+          shapeFilterControl(e.target);
         });
 
         setStateApp({ ...stateApp, map: newMap, draw: Draw });
@@ -4100,19 +4157,23 @@ function Map() {
 
   // Use effect for removing shape filter
   useEffect(() => {
-    if (!loading && stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
-      if (draw) draw.delete(drawingFilterFeatureId);
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        drawingMode: null,
-        filterDrawing: stateNav.filterDrawing,
-        filterFeatureId: null,
-      }));
-      setDrawingFilterFeatureId(null);
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-      }));
+    if (!loading) {
+      if (stateNav.filterDrawing && stateNav.filterDrawing.length === 0) {
+        if (draw) draw.delete(drawingFilterFeatureId);
+        setStateNav((stateNav) => ({
+          ...stateNav,
+          drawingMode: null,
+          filterDrawing: stateNav.filterDrawing,
+          filterFeatureId: null,
+        }));
+        setDrawingFilterFeatureId(null);
+        setStateApp((state) => ({
+          ...state,
+          popupOpen: false,
+        }));
+      }
+
+      shapeFilterControl(map)
     }
   }, [stateNav.filterDrawing]);
 
