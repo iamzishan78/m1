@@ -95,10 +95,11 @@ function ExpandableCard(props) {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
-    if (props.targetLabel === "activity") {
+    if (props.targetLabel === "activity" || props.targetLabel === "parcel") {
       setTitle(props.title);
     }
   }, [props.title, props.targetLabel]);
+
 
 
 
@@ -329,6 +330,8 @@ function ExpandableCard(props) {
       </div>
     );
   };
+
+  console.log("Title Rendered: ", props.title)
 
   const openConfirmationDialog = () => {
     setOpenDialog(true);

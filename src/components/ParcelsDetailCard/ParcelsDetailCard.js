@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
       borderRadius: 10,
-  },
+    },
   },
   gridItemGrey: {
     flexGrow: 1,
@@ -159,13 +159,13 @@ const useStyles = makeStyles((theme) => ({
   subContent: {
     "& div": {
       "&>.MuiPaper-root": {
-        "&>:nth-child(3)": { 
-          height: "calc(100vh - 53vh ) !important", 
+        "&>:nth-child(3)": {
+          height: "calc(100vh - 53vh ) !important",
           "& .MuiTableCell-paddingCheckbox": {
             position: 'unset',
           },
-       },
-     },
+        },
+      },
     },
   },
   tapsPanels: {
@@ -195,8 +195,8 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   parcelDocument: {
-    "& .MuiTableRow-root":{
-      "&>:nth-child(2) > span": { 
+    "& .MuiTableRow-root": {
+      "&>:nth-child(2) > span": {
         width: "336px !important"
       }
     }
@@ -215,10 +215,10 @@ export default function ParcelsDetailCard(props) {
   const [grossAcres, setGrossAcres] = useState();
   const [legalDescription, setLegalDesc] = useState();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [onChangeFooterLabel, setChangeFooterLabel] = useState({parcelName: false, grossAcres: false, legalDescription: false});
+  const [onChangeFooterLabel, setChangeFooterLabel] = useState({ parcelName: false, grossAcres: false, legalDescription: false });
 
   const [updateCustomLayer, { data: updatedParcel }] = useMutation(
-    UPDATECUSTOMLAYER, 
+    UPDATECUSTOMLAYER,
   );
 
   const [getCustomLayer, { data: dataCustomLayer, loading }] = useLazyQuery(
@@ -245,7 +245,7 @@ export default function ParcelsDetailCard(props) {
       setParcelObj({
         ...dataCustomLayer.customLayer,
         shape: shape,
-        qtrQtr:{
+        qtrQtr: {
           nwnw: false,
           nenw: false,
           swnw: false,
@@ -285,7 +285,7 @@ export default function ParcelsDetailCard(props) {
     setParcelObj({ ...parcelObj, qtrQtr });
   };
 
-  useEffect(()=> {
+  useEffect(() => {
     if (parcelObj) {
       const original_properties = getParcelOriginalProperties(parcelObj.shape.properties);
       setOriginalProperties(original_properties);
@@ -306,64 +306,71 @@ export default function ParcelsDetailCard(props) {
           },
         },
       });
+
+      if (field === 'shapeLabel') {
+        setStateApp((state) => ({
+          ...state,
+          selectedParcel: { ...state.selectedParcel, shapeLabel: value },
+        }));
+      }
     }
   };
 
-const Header = () => (
-  <TabButtons
-    labels={[
-      "Parcel Ownership",
-      "Suggested Ownership",
-    ]}
-    value={selectedTab}
-    setValue={(n) => {
-      setSelectedTab(n);
-    }}
-  />
-);
+  const Header = () => (
+    <TabButtons
+      labels={[
+        "Parcel Ownership",
+        "Suggested Ownership",
+      ]}
+      value={selectedTab}
+      setValue={(n) => {
+        setSelectedTab(n);
+      }}
+    />
+  );
 
-const DocumentHeader = () => (
-  <div className={classes.documentHeader}>
-    <DescriptionOutlinedIcon/>
-    <span>Related Documents</span>
-  </div>
-)
+  const DocumentHeader = () => (
+    <div className={classes.documentHeader}>
+      <DescriptionOutlinedIcon />
+      <span>Related Documents</span>
+    </div>
+  )
 
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
       <Grid item sm={12} container>
         {originalProperties && (
           <Grid item sm={12} className={classes.gridItemGrey}>
-            <StateCard state={originalProperties.state}/>
-            <CountyCard county={originalProperties.county}/>
+            <StateCard state={originalProperties.state} />
+            <CountyCard county={originalProperties.county} />
             {originalProperties.state == "TX" ? (
-                [<SurveyCard survey={originalProperties.survey}/>,
-                <BlockCard block={originalProperties.block}/>,
-                <SectionCard section={originalProperties.section}/>,
-                <AbstractCard abstract={originalProperties.abstract}/>,
-                <AltSurveyCard altSurvey={originalProperties.altSurvey}/>]
+              [<SurveyCard survey={originalProperties.survey} />,
+              <BlockCard block={originalProperties.block} />,
+              <SectionCard section={originalProperties.section} />,
+              <AbstractCard abstract={originalProperties.abstract} />,
+              <AltSurveyCard altSurvey={originalProperties.altSurvey} />]
             ) : (
-              [<MeridianCard meridian={originalProperties.meridian}/>,
-                <TownshipCard township={originalProperties.township}/>,
-                <RangeCard range={originalProperties.range}/>,
-                <SectionCard section={originalProperties.section}/>]
+              [<MeridianCard meridian={originalProperties.meridian} />,
+              <TownshipCard township={originalProperties.township} />,
+              <RangeCard range={originalProperties.range} />,
+              <SectionCard section={originalProperties.section} />]
             )}
           </Grid>
         )}
-        <Grid item 
-        
+        <Grid item
+
           // sm={6} 
 
           // temporary code hiding the parcel QQ grid in texas until we can build out the component
-          sm = {originalProperties && originalProperties !== null && originalProperties.state == "TX" ? 12 : 6}
-          
+          sm={originalProperties && originalProperties !== null && originalProperties.state == "TX" ? 12 : 6}
+
           className={classes.gridPacelDetails}>
 
-          <Grid item 
+          <Grid item
 
-          sm={12} 
-          
-          container>
+            sm={12}
+
+            container>
             <div className={classes.calcSummary}>
               <p className={classes.parcelSummmary}>Parcel Name</p>
               <TextField
@@ -376,8 +383,8 @@ const DocumentHeader = () => (
                 onKeyDown={(e) => {
                   updateParcel(e, "shapeLabel", parcelName);
                 }}
-                onFocus={()=> {setChangeFooterLabel({...onChangeFooterLabel, parcelName: true})}}
-                onBlur={()=> {setChangeFooterLabel({...onChangeFooterLabel, parcelName: false})}}
+                onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: true }) }}
+                onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: false }) }}
                 InputProps={{
                   endAdornment: (onChangeFooterLabel.parcelName == true &&
                     <p className={classes.foodText}>
@@ -398,8 +405,8 @@ const DocumentHeader = () => (
                 onKeyDown={(e) => {
                   updateParcel(e, "sdGrossAcres", grossAcres);
                 }}
-                onFocus={()=> {setChangeFooterLabel({...onChangeFooterLabel, grossAcres: true})}}
-                onBlur={()=> {setChangeFooterLabel({...onChangeFooterLabel, grossAcres: false})}}
+                onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: true }) }}
+                onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: false }) }}
                 InputProps={{
                   endAdornment: (onChangeFooterLabel.grossAcres == true &&
                     <p className={classes.foodText}>
@@ -435,8 +442,8 @@ const DocumentHeader = () => (
                 onKeyDown={(e) => {
                   updateParcel(e, "legalDescription", legalDescription);
                 }}
-                onFocus={()=> {setChangeFooterLabel({...onChangeFooterLabel, legalDescription: true})}}
-                onBlur={()=> {setChangeFooterLabel({...onChangeFooterLabel, legalDescription: false})}}
+                onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, legalDescription: true }) }}
+                onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, legalDescription: false }) }}
                 InputProps={{
                   endAdornment: (onChangeFooterLabel.legalDescription == true &&
                     <p className={classes.foodText}>
@@ -449,9 +456,9 @@ const DocumentHeader = () => (
         </Grid>
 
         {originalProperties && originalProperties !== null && originalProperties.state == "TX" ? (null) : (
-        <Grid item sm={6} className={classes.gridPortion}>
-          <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
-        </Grid> 
+          <Grid item sm={6} className={classes.gridPortion}>
+            <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
+          </Grid>
         )}
 
       </Grid>
@@ -478,13 +485,13 @@ const DocumentHeader = () => (
                 </div>
               ]}
             />,
-              <ParcelDetailsRunsheetTable
-                customLayer={parcelObj}
-                parent="associatedRunsheetPerParcel"
-                targetLabel="parcelRunsheet"
-                header='Limited Title Runsheet'
-                dense
-              />,
+            <ParcelDetailsRunsheetTable
+              customLayer={parcelObj}
+              parent="associatedRunsheetPerParcel"
+              targetLabel="parcelRunsheet"
+              header='Limited Title Runsheet'
+              dense
+            />,
             <AssociatedWellsParcelTable
               customLayer={parcelObj}
               parent="associatedWellsPerParcel"
@@ -509,7 +516,7 @@ const DocumentHeader = () => (
         padding: "20px",
         position: "absolute",
         height: "100%",
-        width: "100%",
+        width: "100%"
         // zIndex: "50",
       }}
     >
