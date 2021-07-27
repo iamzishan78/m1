@@ -3661,11 +3661,24 @@ function Map() {
       popupOpen: false,
     }));
     if (action === "add") {
-      setStateApp((state) => ({
-        ...state,
-        selectedAbstracts: [...state.selectedAbstracts, feature],
-        showDrawShapesPopup: true
-      }));
+      setStateApp((state) => {
+        const isContinous = state.selectedAbstracts.find((shape) => {
+          const intersect = turf.union(shape, feature);
+          return intersect.geometry.type === "Polygon"
+        })
+        if (!isContinous && state.selectedAbstracts.length > 0)
+          return state
+
+        map.setFeatureState(
+          { source: "abstract_geo_source", id: feature.id },
+          { click: true }
+        );
+        return {
+          ...state,
+          selectedAbstracts: [...state.selectedAbstracts, feature],
+          showDrawShapesPopup: true
+        }
+      });
     }
     if (action === "remove") {
       setStateApp((state) => ({
@@ -3716,10 +3729,6 @@ function Map() {
             // const shape = JSON.parse(isExisting.shape)
             // var point = turf.point([e.lngLat.lng, e.lngLat.lat]);
             // if (!isExisting || !turf.booleanContains(shape, point)) {
-            map.setFeatureState(
-              { source: "abstract_geo_source", id: currentFeature.id },
-              { click: true }
-            );
             onAbstactLayerClick(currentFeature, "add");
             // }
           }
