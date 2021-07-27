@@ -1143,11 +1143,14 @@ function Map() {
         }
 
       if (feature.source === "parcels_source") {
-        setStateApp((state) => ({
-          ...state,
-          selectedUserDefinedLayer: null,
-          selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
-        }));
+        setStateApp((state) => {
+          if (state.isDrawing) return state
+          return {
+            ...state,
+            selectedUserDefinedLayer: null,
+            selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
+          }
+        });
       }
       if (feature.source === "interests_source" && !drawMode.includes('draw') && !drawMode.includes('drag')) {
 
