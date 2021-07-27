@@ -94,8 +94,6 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: 10,
     },
   },
-
-
   gridItemGrey: {
     flexGrow: 1,
     display: "flex",
@@ -321,14 +319,32 @@ export default function ParcelsDetailCard(props) {
       e.stopPropagation();
       const shape = parcelObj.shape;
       shape.properties[field] = value;
+
+      const customLayer = {
+        shape: JSON.stringify(shape),
+      }
+
+      if (field === 'shapeLabel') {
+        setStateApp((state) => ({
+          ...state,
+          selectedParcel: { ...state.selectedParcel, shapeLabel: value },
+        }));
+        customLayer.name = value;
+      }
+
       updateCustomLayer({
         variables: {
           customLayerId: parcelObj._id,
-          customLayer: {
-            shape: JSON.stringify(shape),
-          },
+          customLayer,
         },
       });
+
+      if (field === 'shapeLabel') {
+        setStateApp((state) => ({
+          ...state,
+          selectedParcel: { ...state.selectedParcel, shapeLabel: value },
+        }));
+      }
     }
   };
 
@@ -568,7 +584,7 @@ export default function ParcelsDetailCard(props) {
         padding: "20px",
         position: "absolute",
         height: "100%",
-        width: "100%",
+        width: "100%"
         // zIndex: "50",
       }}
     >

@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useState, Fragment } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import get from "lodash/get";
+import * as turf from "@turf/turf";
 import hat from "hat";
 import polylabel from "polylabel";
 import Modal from "@material-ui/core/Modal";
@@ -113,9 +114,10 @@ const ShapeActionsPopup = (props) => {
     const feature = JSON.parse(customLayer.shape);
     feature.id = customLayer._id;
     feature.properties.id = customLayer._id;
+    feature.layer = { id: 'parcel' }
     setStateApp((state) => ({
       ...state,
-      selectedParcel: feature.properties,
+      selectedParcel: { ...feature.properties, feature },
     }));
     setStateApp((state) => ({
       ...state,
@@ -332,8 +334,23 @@ const ShapeActionsPopup = (props) => {
     if (!user._id) {
       return;
     }
+    let abstractShape = stateApp.currentFeature;
 
-    const abstractShape = stateApp.currentFeature;
+    if (!abstractShape.properties.State) {
+      const featuresList = stateApp.map.getSource("abstract_geo_source")._data
+        .features;
+      const foundFeatures = featuresList.filter((feature) => {
+        var intersection = turf.intersect(abstractShape, feature);
+        return !!intersection
+      })
+      const result = foundFeatures.reduce(function (result, currentFeature) {
+        var intersection = turf.intersect(abstractShape, currentFeature);
+        const area = turf.area(intersection);
+        return area > result.area ? { area, feature: currentFeature } : result
+      }, { area: 0, feature: null })
+      if (result?.feature?.properties)
+        abstractShape.properties = result.feature.properties
+    }
 
     const properties = abstractShape?.properties;
     let township = properties?.Township;
@@ -399,7 +416,6 @@ const ShapeActionsPopup = (props) => {
         id: featureId,
       },
       customLayers: layers,
-      expandedCard: true,
     }));
     popupCloseAction();
   };
@@ -432,17 +448,21 @@ const ShapeActionsPopup = (props) => {
 
   const confirmEditing = () => {
     let { currentFeature, selectedAoi } = stateApp;
-    addCustomShapeProperties(currentFeature, stateApp.draw);
     const customLayerData = {
       shape: JSON.stringify({
         ...currentFeature,
         shapeArea: calculateLandArea(currentFeature),
         shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates),
       }),
-      layer: "interest",
-      name: currentFeature.properties.shapeLabel,
+      layer: selectedAoi.layer.id,
       user: stateApp.user.mongoId,
     };
+
+    if (selectedAoi.layer.id === 'interest') {
+      customLayerData.name = currentFeature.properties.shapeLabel
+    }
+    addCustomShapeProperties(currentFeature, stateApp.draw);
+
     updateCustomLayer({
       variables: {
         customLayerId: selectedAoi.id || selectedAoi._id,
@@ -451,11 +471,14 @@ const ShapeActionsPopup = (props) => {
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
     });
-    setSelectedAction("");
-    stateApp.draw.changeMode("static");
-    setStateApp((state) => ({ ...state, shapeEdit: false }));
-    stateApp.draw.delete(currentFeature.id);
+    // setSelectedAction("");
+    // stateApp.draw.changeMode("static");
+    // setStateApp((state) => ({ ...state, shapeEdit: false, editDraw: false }));
+    setTimeout(() => popupCloseAction(), 0)
+
   };
+
+  const isParcel = stateApp.selectedAoi?.layer?.id === 'parcel'
 
   return (
     <Fragment>
@@ -464,27 +487,27 @@ const ShapeActionsPopup = (props) => {
         (isLine()  ? "AOI" :"Calc. Area")
         }</span> {calculateLandArea()}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
-          <Tooltip title="Grid">
-            <IconButton size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
+          <Tooltip title="Grid" className={isParcel && classes.disableAction} >
+            <IconButton disabled={isParcel} size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
               <GridOnIcon className={mapGridCardActivated ? "selected" : ""} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Filter">
-            <IconButton size="small" onClick={actionFilter} aria-label="Filter">
+          <Tooltip title="Filter" className={isParcel && classes.disableAction}>
+            <IconButton size="small" disabled={isParcel} onClick={actionFilter} aria-label="Filter">
               <FilterAltIcon className={stateApp.shapeActionsFilterSelected ? "selected" : ""} />
             </IconButton>
           </Tooltip>
 
-          {stateApp.isAbstractedLayersPolygon && (
-            <Tooltip title="Create Parcel">
-              <IconButton size="small" aria-label="Parcel" onClick={saveAndOpenParcelDetail}>
-                <LayerIcon color="secondary" />
-              </IconButton>
-            </Tooltip>
-          )}
+          {/* {stateApp.isAbstractedLayersPolygon && ( */}
+          <Tooltip title="Create Parcel" className={isParcel && classes.disableAction}>
+            <IconButton size="small" disabled={isParcel} aria-label="Parcel" onClick={saveAndOpenParcelDetail}>
+              <LayerIcon color="secondary" />
+            </IconButton>
+          </Tooltip>
+          {/* )} */}
 
-          <Tooltip title="Area of Interest">
-            <IconButton size="small" onClick={actionAOI} aria-label="Area of Interest">
+          <Tooltip title="Area of Interest" className={isParcel && classes.disableAction}>
+            <IconButton size="small" disabled={isParcel} onClick={actionAOI} aria-label="Area of Interest">
               <GpxFixedIcon />
             </IconButton>
           </Tooltip>
@@ -498,7 +521,7 @@ const ShapeActionsPopup = (props) => {
             </IconButton>
           </Tooltip>
 
-          {stateApp.currentFeature.properties.shapeLabel && (
+          {stateApp.currentFeature.properties.shapeLabel && !isParcel && (
             <Tooltip title="Delete Active Shape" className={!stateApp.currentFeature.properties.shapeLabel ? classes.disableAction : ""}>
               <IconButton
                 size="small"

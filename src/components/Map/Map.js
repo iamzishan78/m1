@@ -1123,32 +1123,36 @@ function Map() {
 
     // AOI/Parcel Click Handler
     const udLayerClickHandler = (feature) => {
+      const drawMode = stateApp.draw.getMode();
+      if (drawMode.includes('draw') || drawMode.includes('drag')) {
+        map.resize();
+        return
+      }
       setStateApp((state) => ({
         ...state,
         expandedCard: false,
         popupOpen: false,
       }));
+      const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
+      let selectedUserDefinedLayer
+      if (filteredLayer)
+        selectedUserDefinedLayer = {
+          ...feature,
+          ...JSON.parse(filteredLayer.shape),
+          id: filteredLayer._id,
+        }
 
       if (feature.source === "parcels_source") {
         setStateApp((state) => ({
           ...state,
           selectedUserDefinedLayer: null,
-          selectedParcel: feature.properties,
+          selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
         }));
       }
-      const drawMode = stateApp.draw.getMode();
       if (feature.source === "interests_source" && !drawMode.includes('draw') && !drawMode.includes('drag')) {
 
         setStateApp((state) => {
           if (state.isDrawing) return state
-
-          const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
-          const selectedUserDefinedLayer = {
-            ...feature,
-            ...JSON.parse(filteredLayer.shape),
-            id: filteredLayer._id,
-          }
-
           state = {
             ...state,
             showShapeActionsPopup: true,
@@ -3677,6 +3681,11 @@ function Map() {
         if (!e.features.length) {
           return;
         }
+        const drawMode = stateApp.draw.getMode();
+        if (drawMode.includes('draw') || drawMode.includes('drag')) {
+          return
+        }
+
         const currentFeature = e.features[0];
         const featureState = map.getFeatureState({
           source: "abstract_geo_source",
@@ -3700,15 +3709,16 @@ function Map() {
             );
             onAbstactLayerClick(currentFeature, "remove");
           } else {
-            let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
-
-            if (!isExisting) {
-              map.setFeatureState(
-                { source: "abstract_geo_source", id: currentFeature.id },
-                { click: true }
-              );
-              onAbstactLayerClick(currentFeature, "add");
-            }
+            // let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
+            // const shape = JSON.parse(isExisting.shape)
+            // var point = turf.point([e.lngLat.lng, e.lngLat.lat]);
+            // if (!isExisting || !turf.booleanContains(shape, point)) {
+            map.setFeatureState(
+              { source: "abstract_geo_source", id: currentFeature.id },
+              { click: true }
+            );
+            onAbstactLayerClick(currentFeature, "add");
+            // }
           }
         } else {
           // Clear all selected features when click off the shapes

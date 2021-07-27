@@ -317,7 +317,7 @@ export default function ParcelCard(props) {
                   className={classes.text2}
                   variant="caption"
                 >
-                  {stateApp.selectedParcel.shapeArea}
+                  {stateApp.selectedParcel.sdGrossAcres || stateApp.selectedParcel.shapeArea}
                 </Typography>
               </div>
             </Button>
