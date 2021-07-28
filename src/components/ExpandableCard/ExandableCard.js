@@ -18,6 +18,7 @@ import ReportBugModal from "./components/ReportBugModal";
 import { TRACKBYOBJECTID } from "../../graphQL/useQueryTrackByObjectId";
 import TaggerWithIcon from "../Shared/TaggerWithIcon";
 import CommentsWithIcon from "../Shared/CommentsWithIcon";
+import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
 import TrackToggleButton from "../Shared/TrackToggleButton";
 import LinkWithIcon from "../Shared/LinkWithIcon";
 import BugsIcon from "../Shared/svgIcons/bug.js";
@@ -94,7 +95,7 @@ function ExpandableCard(props) {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
-    if (props.targetLabel === "activity") {
+    if (props.targetLabel === "activity" || props.targetLabel === "parcel") {
       setTitle(props.title);
     }
   }, [props.title, props.targetLabel]);
@@ -102,9 +103,10 @@ function ExpandableCard(props) {
 
 
 
+
   const useStyles = makeStyles((theme) => ({
     root: {
-        // zIndex: 88888,
+      // zIndex: 88888,
     },
 
     card: {
@@ -123,7 +125,7 @@ function ExpandableCard(props) {
       "& .MuiCardHeader-action": {
         alignSelf: "left",
       },
-      zIndex: 1250, // https://material-ui.com/customization/z-index/
+      zIndex: 1250 // https://material-ui.com/customization/z-index/
     },
     title: {
       fontFamily: "Poppins",
@@ -166,8 +168,8 @@ function ExpandableCard(props) {
       // },
 
       "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "#929292",
-          borderRadius: 10,
+        backgroundColor: "#929292",
+        borderRadius: 10,
       },
       height: stateExpandableCard.expanded
         ? "calc(100% - 72px)"
@@ -179,6 +181,9 @@ function ExpandableCard(props) {
       },
       color: "white",
     },
+    iconPolygon: {
+      color: "#FFFFFF", stroke: "#FFFFFF", fill: "#FFFFFF", marginRight: '10px'
+    }
   }));
 
   const classes = useStyles();
@@ -284,7 +289,7 @@ function ExpandableCard(props) {
         popupOpen: false,
         selectedWell: null,
         selectedParcel: null,
-        selectedPermit: null, 
+        selectedPermit: null,
         expandedCard: false,
         viewDoc: null,
       }));
@@ -308,23 +313,25 @@ function ExpandableCard(props) {
         }}
       >
         {(targetLabel != "contact"
-        ) && 
-        <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
+        ) &&
+          <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
         }
 
         {(targetLabel === "contact"
           && parent != 'table'
         ) && <ContactSearch />}
 
-      {(targetLabel === "contact"
+        {(targetLabel === "contact"
           && parent != 'table'
-        ) && 
-        <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
+        ) &&
+          <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
         }
 
       </div>
     );
   };
+
+  console.log("Title Rendered: ", props.title)
 
   const openConfirmationDialog = () => {
     setOpenDialog(true);
@@ -370,6 +377,19 @@ function ExpandableCard(props) {
 
   const deleteActivity = async () => {
     await props.handleDelete();
+  };
+
+  const handleEditParcelShape = () => {
+    setStateApp((state) => ({
+      ...state,
+      showDrawShapesPopup: true,
+      selectedUserDefinedLayer: state.selectedParcel.feature,
+      currentFeature: state.selectedParcel.feature,
+      openDrawShapesControl: true,
+      editParcel: true,
+      editDraw: true,
+    }));
+    handleClose();
   };
 
   useEffect(() => {
@@ -424,17 +444,33 @@ function ExpandableCard(props) {
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
             <div className={classes.headerIcons}>
-              { targetLabel !== "activity" &&
+              {
+                targetLabel === 'parcel' && (
+                  <Tooltip title={'Edit Parcel'} placement="top">
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        handleEditParcelShape();
+                      }}
+                      aria-label={'Edit Parcel'}
+                    >
+                      <DrawPoly className={classes.iconPolygon} />
+                    </IconButton>
+                  </Tooltip>
+
+                )
+              }
+              {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
                 (
-                    <CommentsWithIcon
-                      objectId={targetSourceId.toLowerCase()}
-                      targetLabel={props.targetLabel}
-                      iconZiseSmall={!stateExpandableCard.expanded}
-                    />
+                  <CommentsWithIcon
+                    objectId={targetSourceId.toLowerCase()}
+                    targetLabel={props.targetLabel}
+                    iconZiseSmall={!stateExpandableCard.expanded}
+                  />
                 )}
 
-              { targetLabel !== "activity" &&
+              {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
                 targetLabel !== "recent_submitted_permits" && (
                   <TaggerWithIcon
@@ -444,25 +480,25 @@ function ExpandableCard(props) {
                   />
                 )}
 
-              { targetLabel == "contact" &&
+              {targetLabel == "contact" &&
                 parent !== "table" && (
                   <LinkWithIcon
                     objectId={targetSourceId.toLowerCase()}
                     targetLabel={props.targetLabel}
                     iconZiseSmall={!stateExpandableCard.expanded}
-                />
+                  />
                 )}
 
-              {!props.noTrackAvailable 
+              {!props.noTrackAvailable
                 && targetLabel !== "recent_submitted_permits"
                 && (
-                <TrackToggleButton
-                  target={target}
-                  targetLabel={targetLabel}
-                  targetSourceId={targetSourceId.toLowerCase()}
-                  iconZiseSmall={!stateExpandableCard.expanded}
-                />
-              )}
+                  <TrackToggleButton
+                    target={target}
+                    targetLabel={targetLabel}
+                    targetSourceId={targetSourceId.toLowerCase()}
+                    iconZiseSmall={!stateExpandableCard.expanded}
+                  />
+                )}
 
               {/* 
               {stateExpandableCard.expanded &&
@@ -503,20 +539,20 @@ function ExpandableCard(props) {
                 )}
 
 
-              {stateExpandableCard.expanded 
-              
-                && targetLabel !== "activity" 
+              {stateExpandableCard.expanded
+
+                && targetLabel !== "activity"
                 && targetLabel !== "contact"
                 && parent !== 'table'
-                ? parent !== "table" 
-                  && targetLabel !== "well" 
-                  && targetLabel !== "expandedWell" 
-                  && targetLabel !== "parcel" 
+                ? parent !== "table"
+                  && targetLabel !== "well"
+                  && targetLabel !== "expandedWell"
+                  && targetLabel !== "parcel"
                   && targetLabel !== "expandedParcel"
                   && targetLabel !== "recent_submitted_permits"
                   ? (
 
-                    
+
                     <Tooltip title={"Shrink"} placement="top">
                       <IconButton
                         color="secondary"
@@ -552,7 +588,7 @@ function ExpandableCard(props) {
                   )
                 : (
                   parent !== "table" &&
-                  targetLabel !== "activity" && 
+                  targetLabel !== "activity" &&
                   targetLabel !== "recent_submitted_permits" && (
                     <Tooltip title={"Expand"} placement="top">
                       <IconButton

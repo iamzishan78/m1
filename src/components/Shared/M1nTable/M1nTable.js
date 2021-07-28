@@ -165,7 +165,7 @@ function M1nTable(props) {
   const [updateContact] = useMutation(UPDATECONTACT);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
-  const [getParcelOwners, { data: dataParcelOwners }] = useLazyQuery(PARCELOWNERSQUERY, { fetchPolicy: "cache-and-network" });
+  const [getParcelOwners, { data: dataParcelOwners, loading: parcelOwnerLoading }] = useLazyQuery(PARCELOWNERSQUERY, { fetchPolicy: "cache-and-network" });
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
   const [getMelissaRowsCount, { data: dataMelissaRowsCount }] = useLazyQuery(MELISSARECORDSCOUNTBYIDS, { fetchPolicy: "cache-and-network", });
   const [getContactParcelInterests, { data: dataContactParcelInterests },] = useLazyQuery(CONTACTPARCELINTERESTS, { fetchPolicy: "cache-and-network", });
@@ -1952,7 +1952,7 @@ function M1nTable(props) {
       props.parent === "ownersPerParcel" &&
       dataParcelOwners
     ) {
-      if (dataParcelOwners.parcelOwners && dataParcelOwners.parcelOwners.length > 0) {
+      if (dataParcelOwners.parcelOwners && dataParcelOwners.parcelOwners.length > 0 && !parcelOwnerLoading) {
         setLoading(true);
         const objectsIdsArray = dataParcelOwners.parcelOwners.map(
           (owner) => owner.ownerEntity
@@ -1971,7 +1971,7 @@ function M1nTable(props) {
         setRows([]);
       }
     }
-  }, [dataParcelOwners]);
+  }, [dataParcelOwners, parcelOwnerLoading]);
 
   useEffect(() => {
     if (
