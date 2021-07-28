@@ -5,6 +5,8 @@ import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import { Breadcrumbs, Typography, Grid, IconButton } from "@material-ui/core";
 import PrintIcon from "@material-ui/icons/Print";
 import AgreementDetailSection from "./AgreementDetailSection";
+import LegalDescription from "./LegalDescription";
+import RelatedParties from "./RelatedParties";
 import TaggerWithIcon from "components/Shared/TaggerWithIcon";
 import CommentsWithIcon from "components/Shared/CommentsWithIcon";
 import { useMutation } from "@apollo/client";
@@ -39,7 +41,7 @@ function Agreement(props) {
   useEffect(() => {
     addAgreement({
       variables: {
-        agreement: { type: 'agreement' },
+        agreement: { type: "agreement" },
       },
     });
   }, [addAgreement]);
@@ -72,11 +74,7 @@ function Agreement(props) {
           </Breadcrumbs>
         </Grid>
         <Grid item className={classes.headerIcon}>
-          <CommentsWithIcon
-            objectId={newAgreement._id}
-            targetLabel='agreement'
-            iconZiseSmall={false}
-          />
+          <CommentsWithIcon objectId={newAgreement._id} targetLabel="agreement" iconZiseSmall={false} />
           <TaggerWithIcon objectId={newAgreement._id} targetLabel="agreement" iconZiseSmall={false} />
           <IconButton>
             <PrintIcon />
@@ -88,6 +86,8 @@ function Agreement(props) {
        * Here is Agreement Detail header
        */}
       <AgreementDetailSection setTitle={setTitle} newAgreement={newAgreement} />
+      <RelatedParties />
+      {/* <LegalDescription /> */}
     </>
   );
 }
