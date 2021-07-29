@@ -34,8 +34,14 @@ const sumDeals = (deals) => {
     if (card.offerPrice && !isNaN(card.offerPrice)) sum += card.offerPrice;
     // sum += parseFloat(card.label.split("$").join("").split(",").join(""))
   });
+  if (sum != 0) {
+    return vf_currency(sum);
 
-  return vf_currency(sum);
+  }
+  else {
+    return "$0"
+  }
+
 };
 
 export default function DealsDetailCard(props) {

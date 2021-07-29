@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     margin: "23px 23px 0 23px",
     cursor: "pointer",
+    width: "100%"
   },
 
   cardContent: { width: "100%", display: "flex" },

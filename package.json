@@ -20,7 +20,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@mapbox/geojson-merge": "^1.1.1",
-    "@mapbox/mapbox-gl-draw": "^1.2.2",
+    "@mapbox/mapbox-gl-draw": "^1.3.0",
     "@mapbox/mapbox-gl-draw-static-mode": "^1.0.1",
     "@mapbox/mapbox-gl-geocoder": "^4.7.0",
     "@material-ui/core": "^4.11.4",
@@ -113,7 +113,7 @@
     "viewport-mercator-project": "^7.0.2"
   },
   "scripts": {
-    "start": "react-scripts start --profile",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
