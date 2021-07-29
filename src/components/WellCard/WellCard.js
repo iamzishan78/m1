@@ -186,7 +186,7 @@ function WellCard() {
       });
     }
   }, [stateApp.user, source]);
-  
+
 
   useEffect(() => {
     getWellSummaryDetail({
@@ -208,15 +208,15 @@ function WellCard() {
       ...state,
       expandedCard: true,
       wellDetailCardOpen: true,
-      wellDetailCardTabIndex:isOwner ? 1 : 0,
+      wellDetailCardTabIndex: isOwner ? 1 : 0,
       popupOpen: false,
     }));
   };
 
 
-  
-  if (stateApp.selectedWell 
-    && stateApp.selectedWell.wellStatus !== "PERMIT" 
+
+  if (stateApp.selectedWell
+    && stateApp.selectedWell.wellStatus !== "PERMIT"
     && stateApp.selectedWell.wellStatus !== "PERMIT - EXISTING WELL"
     && stateApp.selectedWell.wellStatus !== "EXPIRED PERMIT"
     && stateApp.selectedWell.wellStatus !== "PERMIT - NEW DRILL") {
@@ -232,118 +232,118 @@ function WellCard() {
             >
               <Button
                 className={classes.button}
-                onClick = {() => {handleOpenDetails()}}
+                onClick={() => { handleOpenDetails() }}
               >
-              <div className={classes.iconContainer}>
-                <WellIcon
-                  htmlColor="black"
-                  viewBox="0 0 32 31"
-                  fontSize="large"
-                />
+                <div className={classes.iconContainer}>
+                  <WellIcon
+                    htmlColor="black"
+                    viewBox="0 0 32 31"
+                    fontSize="large"
+                  />
 
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
-                  Well Status
+                  <Typography
+                    align="center"
+                    className={classes.text1}
+                    variant="subtitle2"
+                  >
+                    Well Status
 
-                </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
-                  {stateApp.selectedWell.wellStatus
-                    ? stateApp.selectedWell.wellStatus
-                    : "--"}
-                </Typography>
-              </div>
+                  </Typography>
+                  <Typography
+                    align="center"
+                    className={classes.text2}
+                    variant="caption"
+                  >
+                    {stateApp.selectedWell.wellStatus
+                      ? stateApp.selectedWell.wellStatus
+                      : "--"}
+                  </Typography>
+                </div>
               </Button>
 
               <Button
                 className={classes.button}
-                onClick = {() => {handleOpenDetails()}}
-                              >
-              <div className={classes.iconContainer}>
-                <ProductionIcon
-                  htmlColor="black"
-                  viewBox="0 0 39 31"
-                  fontSize="large"
-                />
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
-                  Last 12 Prod
-                </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
-                  {`${formatBOE(stateApp.selectedWell.lastTwelveMonthBOE)} BOE`}
-                </Typography>
-              </div>
+                onClick={() => { handleOpenDetails() }}
+              >
+                <div className={classes.iconContainer}>
+                  <ProductionIcon
+                    htmlColor="black"
+                    viewBox="0 0 39 31"
+                    fontSize="large"
+                  />
+                  <Typography
+                    align="center"
+                    className={classes.text1}
+                    variant="subtitle2"
+                  >
+                    Last 12 Prod
+                  </Typography>
+                  <Typography
+                    align="center"
+                    className={classes.text2}
+                    variant="caption"
+                  >
+                    {`${formatBOE(stateApp.selectedWell.lastTwelveMonthBOE)} BOE`}
+                  </Typography>
+                </div>
               </Button>
 
               <Button
                 className={classes.button}
-                onClick = {() => {handleOpenDetails(true)}}
-                              >
-              <div className={classes.iconContainer}>
-                <OwnershipIcon
-                  htmlColor="black"
-                  viewBox="0 0 45 31"
-                  fontSize="large"
-                />
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
-                  Owners
-                </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
-                  {stateApp.selectedWell.ownerCount
-                    ? stateApp.selectedWell.ownerCount
-                    : "--"}
-                </Typography>
-              </div>
+                onClick={() => { handleOpenDetails(true) }}
+              >
+                <div className={classes.iconContainer}>
+                  <OwnershipIcon
+                    htmlColor="black"
+                    viewBox="0 0 45 31"
+                    fontSize="large"
+                  />
+                  <Typography
+                    align="center"
+                    className={classes.text1}
+                    variant="subtitle2"
+                  >
+                    Owners
+                  </Typography>
+                  <Typography
+                    align="center"
+                    className={classes.text2}
+                    variant="caption"
+                  >
+                    {stateApp.selectedWell.ownerCount
+                      ? stateApp.selectedWell.ownerCount
+                      : "--"}
+                  </Typography>
+                </div>
               </Button>
 
               <Button
                 className={classes.button}
-                onClick = {() => {handleOpenDetails()}}
-                              >
-              <div className={classes.iconContainer}>
-                <Avatar variant="circle" className={classes.avatar}>
-                  {stateApp.selectedWell.wellBoreProfile
-                    ? stateApp.selectedWell.wellBoreProfile.substring(0, 1)
-                    : "H"}{" "}
-                </Avatar>
-                <Typography
-                  align="center"
-                  className={classes.text1}
-                  variant="subtitle2"
-                >
-                  Profile
-                </Typography>
-                <Typography
-                  align="center"
-                  className={classes.text2}
-                  variant="caption"
-                >
-                  {stateApp.selectedWell.wellBoreProfile
-                    ? stateApp.selectedWell.wellBoreProfile
-                    : "--"}
-                </Typography>
-              </div>
+                onClick={() => { handleOpenDetails() }}
+              >
+                <div className={classes.iconContainer}>
+                  <Avatar variant="circle" className={classes.avatar}>
+                    {stateApp.selectedWell.wellBoreProfile
+                      ? stateApp.selectedWell.wellBoreProfile.substring(0, 1)
+                      : "H"}{" "}
+                  </Avatar>
+                  <Typography
+                    align="center"
+                    className={classes.text1}
+                    variant="subtitle2"
+                  >
+                    Profile
+                  </Typography>
+                  <Typography
+                    align="center"
+                    className={classes.text2}
+                    variant="caption"
+                  >
+                    {stateApp.selectedWell.wellBoreProfile
+                      ? stateApp.selectedWell.wellBoreProfile
+                      : "--"}
+                  </Typography>
+                </div>
               </Button>
 
             </CardActions>
@@ -410,7 +410,7 @@ function WellCard() {
                     </TableCell>
                   </TableRow>
 
-                  {stateApp.selectedWell.wellStatus == "P&A"? 
+                  {stateApp.selectedWell.wellStatus == "P&A" ?
                     <TableRow className={classes.rowGrey}>
                       <TableCell className={classes.cell1} align="left">
                         Plug Date
@@ -419,7 +419,7 @@ function WellCard() {
                         {convert_date(stateApp.selectedWell.plugDate)}
                       </TableCell>
                     </TableRow>
-                  : null}
+                    : null}
                 </TableBody>
               </Table>
             </CardContent>
@@ -438,163 +438,169 @@ function WellCard() {
     ) : (
       <CircularProgress color="secondary" />
     );
-  
+
   } else {
-      return stateApp.selectedWell ? (
-        !stateApp.expandedCard ? (
-          <div>
-            <Card className={classes.card}>
-              <CardActions
-                classes={{
-                  root: classes.cardAction
-                }}
-              >
-                <div className={classes.iconContainer}>
-                  <WellIcon htmlColor="black" viewBox="0 0 32 31" fontSize="large" />
-      
-                  <Typography
-                    align="center"
-                    className={classes.text1}
-                    variant="subtitle2"
-                  >
-                    Well Status
-                  </Typography>
-                  <Typography
-                    align="center"
-                    className={classes.text2}
-                    variant="caption"
-                  >
-                    {stateApp.selectedWell.wellStatus
-                      ? stateApp.selectedWell.wellStatus.toUpperCase()
-                      : '--'}
-                  </Typography>
-                </div>
-      
-      
-                <div className={classes.iconContainer}>
-                  <Avatar variant="circle" className={classes.avatar}>
-                    {stateApp.selectedWell.wellBoreProfile
-                      ? stateApp.selectedWell.wellBoreProfile.substring(0, 1)
-                      : 'H'}{' '}
-                  </Avatar>
-                  <Typography
-                    align="center"
-                    className={classes.text1}
-                    variant="subtitle2"
-                  >
-                    Profile
-                  </Typography>
-                  <Typography
-                    align="center"
-                    className={classes.text2}
-                    variant="caption"
-                  >
-                    {stateApp.selectedWell.wellBoreProfile
-                      ? stateApp.selectedWell.wellBoreProfile
-                      : '--'}
-                  </Typography>
-                </div>
-              </CardActions>
-              <CardContent className={classes.content}>
-                <Table className={classes.table} size="small" aria-label="well table">
-                  <TableBody>
-                  <TableRow className={classes.rowGrey}>
-                      <TableCell className={classes.cell1} align="left">
-                        Permit #
-                      </TableCell>
-                      <TableCell className={classes.cell2} align="right">
-                        {stateApp.selectedWell.permitNumber
-                          ? stateApp.selectedWell.permitNumber
-                          : '--'}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow className={classes.rowWhite}>
-                      <TableCell className={classes.cell1} align="left">
-                        Operator
-                      </TableCell>
-                      <TableCell className={classes.cell2} align="right">
-                        {stateApp.selectedWell.operator
-                          ? stateApp.selectedWell.operator
-                          : '--'}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow className={classes.rowGrey}>
-                      <TableCell className={classes.cell1} align="left">
-                        Well Type
-                      </TableCell>
-                      <TableCell className={classes.cell2} align="right">
-                        {stateApp.selectedWell.wellType
-                          ? stateApp.selectedWell.wellType
-                          : '--'}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow className={classes.rowWhite}>
-                      <TableCell className={classes.cell1} align="left">
-                        Approved Date
-                      </TableCell>
-                      <TableCell className={classes.cell2} align="right">
-                        {convert_date(stateApp.selectedWell.permitApprovedDate)}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow className={classes.rowGrey}>
-                      <TableCell className={classes.cell1} align="left">
-                        Measured Depth [ft]
-                      </TableCell>
-                      <TableCell className={classes.cell2} align="right">
-                        {stateApp.selectedWell.measuredDepth
-                          ? formatBOE(stateApp.selectedWell.measuredDepth)
-                          : '--'}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow className={classes.rowWhite}>
-                      <TableCell className={classes.cell1} align="left">
-                        Lateral Length [ft]
-                      </TableCell>
-                      <TableCell className={classes.cell2} align="right">
-                        {stateApp.selectedWell.lateralLength
-                          ? formatBOE(stateApp.selectedWell.lateralLength)
-                          : '--'}
-                      </TableCell>
-                    </TableRow>
+    return stateApp.selectedWell ? (
+      !stateApp.expandedCard ? (
+        <div>
+          <Card className={classes.card}>
+            <CardActions
+              classes={{
+                root: classes.cardAction
+              }}
+            >
+              <div className={classes.iconContainer}>
+                <WellIcon htmlColor="black" viewBox="0 0 32 31" fontSize="large" />
 
-
-      
-                  </TableBody>
-                </Table>
-                <div>
-                <Link href="http://webapps2.rrc.texas.gov/EWA/drillingPermitsQueryAction.do" 
-                      onClick={() => {
-                        console.info("I'm a button.");
-                      }}                
-                      variant="body2"
-                      target="_blank"
-                      
+                <Typography
+                  align="center"
+                  className={classes.text1}
+                  variant="subtitle2"
                 >
-                              <Typography
-                    align="center"
-                    variant="subtitle2"
-                    className={classes.link_permit}
+                  Well Status
+                </Typography>
+                <Typography
+                  align="center"
+                  className={classes.text2}
+                  variant="caption"
+                >
+                  {stateApp.selectedWell.wellStatus
+                    ? stateApp.selectedWell.wellStatus.toUpperCase()
+                    : '--'}
+                </Typography>
+              </div>
+
+
+              <div className={classes.iconContainer}>
+                <Avatar variant="circle" className={classes.avatar}>
+                  {stateApp.selectedWell.wellBoreProfile
+                    ? stateApp.selectedWell.wellBoreProfile.substring(0, 1)
+                    : 'H'}{' '}
+                </Avatar>
+                <Typography
+                  align="center"
+                  className={classes.text1}
+                  variant="subtitle2"
+                >
+                  Profile
+                </Typography>
+                <Typography
+                  align="center"
+                  className={classes.text2}
+                  variant="caption"
+                >
+                  {stateApp.selectedWell.wellBoreProfile
+                    ? stateApp.selectedWell.wellBoreProfile
+                    : '--'}
+                </Typography>
+              </div>
+            </CardActions>
+            <CardContent className={classes.content}>
+              <Table className={classes.table} size="small" aria-label="well table">
+                <TableBody>
+                  <TableRow className={classes.rowGrey}>
+                    <TableCell className={classes.cell1} align="left">
+                      Permit #
+                    </TableCell>
+                    <TableCell className={classes.cell2} align="right">
+                      {stateApp.selectedWell.permitNumber
+                        ? stateApp.selectedWell.permitNumber
+                        : '--'}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className={classes.rowWhite}>
+                    <TableCell className={classes.cell1} align="left">
+                      Operator
+                    </TableCell>
+                    <TableCell className={classes.cell2} align="right">
+                      {stateApp.selectedWell.operator
+                        ? stateApp.selectedWell.operator
+                        : '--'}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className={classes.rowGrey}>
+                    <TableCell className={classes.cell1} align="left">
+                      Well Type
+                    </TableCell>
+                    <TableCell className={classes.cell2} align="right">
+                      {stateApp.selectedWell.wellType
+                        ? stateApp.selectedWell.wellType
+                        : '--'}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className={classes.rowWhite}>
+                    <TableCell className={classes.cell1} align="left">
+                      Approved Date
+                    </TableCell>
+                    <TableCell className={classes.cell2} align="right">
+                      {convert_date(stateApp.selectedWell.permitApprovedDate)}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className={classes.rowGrey}>
+                    <TableCell className={classes.cell1} align="left">
+                      Measured Depth [ft]
+                    </TableCell>
+                    <TableCell className={classes.cell2} align="right">
+                      {stateApp.selectedWell.measuredDepth
+                        ? formatBOE(stateApp.selectedWell.measuredDepth)
+                        : '--'}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className={classes.rowWhite}>
+                    <TableCell className={classes.cell1} align="left">
+                      Lateral Length [ft]
+                    </TableCell>
+                    <TableCell className={classes.cell2} align="right">
+                      {stateApp.selectedWell.lateralLength
+                        ? formatBOE(stateApp.selectedWell.lateralLength)
+                        : '--'}
+                    </TableCell>
+                  </TableRow>
+
+
+
+                </TableBody>
+              </Table>
+
+              <div   >
+                {stateApp.selectedWell.state == 'TX'
+                  ?
+                  <Link href="http://webapps2.rrc.texas.gov/EWA/drillingPermitsQueryAction.do"
+                    // doesnt work yet but starting point for customized permit link for all RRC wells
+                    // href={"http://webapps2.rrc.texas.gov/EWA/leaseDetailAction.do?searchType=apiNo&selTab=4096&apiNo=" + getWellSummaryDetail.WellCardDetails.ApiNumber8 + "&methodToCall=displayLeaseDetail&rrcActionMan=H4sIAAAAAAAAALWPS2vDQAyEf016XKRdJ3EOOpjSnPsILcX0sLGFE9hkjdZOWtgfXyUlUPo4lZ40zCDpm4wAZDMCEl6JNFUzbOP-vpG2hhc6-0de-75P1mhsBn71yXTxMHFVCZpbmtjlzVOl0p3kkUNYR-G7keXt45ppo6YF7XjYxHYVr30IakxJeBhlv4oP7KXZqFUSfIOo0zmtpEum9-J3jz6MrGxzcoC5JFe4cpEX9PxlFf-dP124Z3RZu_UdyyfOH0vhX0rVv7061SXMlhCyU1EQ5KnOmRrvJXOTh-cBAAA"}
+                    onClick={() => {
+                      console.info("I'm a button.");
+                    }}
+                    variant="body2"
+                    target="_blank"
+
                   >
-                                RRC Permit Search Tool
-      
-                  </Typography>
-                </Link>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        ) : (
-          <div style={{ height: "100%" }}>
-            <Card className={classes.card}>
-              <CardContent className={classes.content}>
-                <WellCardDetails target={target} summary={summary} />
-              </CardContent>
-            </Card>
-          </div>
-        )  
+                    <Typography
+                      align="center"
+                      variant="subtitle2"
+                      className={classes.link_permit}
+                    >
+                      RRC Permit Search Tool
+
+                    </Typography>
+                  </Link>
+                  : ''}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
+        <div style={{ height: "100%" }}>
+          <Card className={classes.card}>
+            <CardContent className={classes.content}>
+              <WellCardDetails target={target} summary={summary} />
+            </CardContent>
+          </Card>
+        </div>
+      )
     ) : (
       <CircularProgress color="secondary" />
-    ) 
+    )
   }
 
 
