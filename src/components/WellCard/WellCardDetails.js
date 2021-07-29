@@ -83,10 +83,10 @@ const useStyles = makeStyles((theme) => ({
     // "&::-webkit-scrollbar-track": {
     //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
     // },
-          "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "#929292",
-          borderRadius: 10,
-      },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#929292",
+      borderRadius: 10,
+    },
   },
   card: {
     width: "100%",
@@ -168,19 +168,19 @@ const useStyles = makeStyles((theme) => ({
   subContent: {
     "& div": {
       "&>.MuiPaper-root": {
-        "&>:nth-child(3)": { 
-          height: "calc(100vh - 56vh ) !important", 
-       },
-     },
+        "&>:nth-child(3)": {
+          height: "calc(100vh - 56vh ) !important",
+        },
+      },
     },
   },
   subContent2: {
     "& div": {
       "&>.MuiPaper-root": {
-        "&>:nth-child(3)": { 
-          height: "calc(100vh - 56vh + 482px) !important", 
-       },
-     },
+        "&>:nth-child(3)": {
+          height: "calc(100vh - 56vh + 482px) !important",
+        },
+      },
     },
   },
 }));
@@ -207,7 +207,7 @@ const tableGridStyle = makeStyles({
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
       borderRadius: 10,
-  },
+    },
 
   },
   rowName: {
@@ -434,7 +434,8 @@ export default function WellCardDetails(props) {
                           />}
                         label="Multi-Axes"
                       />
-                      <FormControlLabel disabled control={<Switch />} label="Log Scale" />
+                      {/* --hide for now until we fix the data issues */}
+                      {/* <FormControlLabel disabled control={<Switch />} label="Log Scale" /> */}
                     </div>
                   </Grid>
                   <Grid item xs={12}>
@@ -442,7 +443,7 @@ export default function WellCardDetails(props) {
                   </Grid>
                   <Grid item xs={12}>
                     {
-                      production != null && 
+                      production != null &&
                       <div className={showSummary ? classes.subContent : classes.subContent2}>
                         <M1nTable
                           dense
@@ -455,20 +456,20 @@ export default function WellCardDetails(props) {
                 </Grid>
               </Paper>
               ,
-              <Paper elevation={3} style={{ padding: "10px"}}>
+              <Paper elevation={3} style={{ padding: "10px" }}>
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                
-                {console.log('stateApp.selectedWell',stateApp.selectedWell)}
-                <M1nTable
-                  parent="OwnersPerWell"
-                  selectedWell={stateApp.selectedWell}  // MIGRATE TO WELL CARD CONTEXT
-                />
+
+                  {console.log('stateApp.selectedWell', stateApp.selectedWell)}
+                  <M1nTable
+                    parent="OwnersPerWell"
+                    selectedWell={stateApp.selectedWell}  // MIGRATE TO WELL CARD CONTEXT
+                  />
                 </div>
               </Paper>,
 
-              <CompletionsContainer showSummary={showSummary}/>,
-              <SimulationContainer showSummary={showSummary}/>,
-              <FormationContainer showSummary={showSummary}/>,
+              <CompletionsContainer showSummary={showSummary} />,
+              <SimulationContainer showSummary={showSummary} />,
+              <FormationContainer showSummary={showSummary} />,
             ]}
             openTabIdex={stateApp.wellDetailCardTabIndex}
           />
