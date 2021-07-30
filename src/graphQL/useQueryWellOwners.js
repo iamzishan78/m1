@@ -15,6 +15,7 @@ export const WELLOWNERSQUERY = gql`
       interestType
       ownershipPercentage
       appraisedValue
+      propertyName
     }
   }
 `;
