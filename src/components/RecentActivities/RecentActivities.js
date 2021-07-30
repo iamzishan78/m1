@@ -6,6 +6,7 @@ import ActivitiesList from "./components/ActivitiesList";
 import ActivitySummary from "./components/ActivitySummary";
 import RightDialog from "../ContactDetailCard/components/RightDialog";
 import AddActivityDialog from "../ContactDetailCard/components/AddActivityDialog";
+import {grey} from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -101,6 +102,12 @@ const useStyles = makeStyles((theme) => ({
     color: "#7B7B7B",
     textAlign: "center",
   },
+  contact: {
+    color: "grey",
+    fontWeight: "normal",
+    marginTop: "10px",
+
+  }
 }));
 
 export default ({
@@ -122,7 +129,7 @@ export default ({
     setSelectedActivity(null);
     setActivityModalOpen(true);
   };
-
+console.log(props);
   return (
     <div className={classes.root}>
       {/* <AddActivityModal
@@ -149,7 +156,9 @@ export default ({
           <h4 style={{ margin: "0px 12px 8px 0px" }}>Recent Activities</h4>
           <h4 className={classes.addNew} onClick={addActivity}>
             Add New
+            {props.activityLog.length > 0 ? <h4 className={classes.contact}>contact created</h4>: null}
           </h4>
+
         </div>
         <h4
           className={classes.viewAll}
