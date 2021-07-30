@@ -14,6 +14,7 @@ import Button from '@material-ui/core/Button';
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: "23px 23px 0 23px",
+    width: "100%"
   },
 
   cardContent: { width: "100%", display: "flex" },
