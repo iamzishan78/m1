@@ -98,6 +98,7 @@ export default function AddParcelOwnerDialogContent({
     mineral_interest: null,
     royalty_interest: null,
     orri: null,
+    unknown_interest: null,
     record_title: null,
     operating_rights: null,
     nri: null,
@@ -105,7 +106,7 @@ export default function AddParcelOwnerDialogContent({
     depthFrom: "",
     depthTo: "",
     nra: null,
-    qtr:[null,null,null,null],
+    qtr: [null, null, null, null],
     customLayer: props.customLayerId,
   });
   const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] =
@@ -127,6 +128,7 @@ export default function AddParcelOwnerDialogContent({
         mineral_interest,
         royalty_interest,
         orri,
+        unknown_interest,
         record_title,
         operating_rights,
         nri,
@@ -146,6 +148,7 @@ export default function AddParcelOwnerDialogContent({
         mineral_interest: mineral_interest || null,
         royalty_interest: royalty_interest || null,
         orri: orri || null,
+        unknown_interest: unknown_interest || null,
         record_title: record_title || null,
         operating_rights: operating_rights || null,
         nri: nri || null,
@@ -153,7 +156,7 @@ export default function AddParcelOwnerDialogContent({
         nra: nra || null,
         depthFrom: depthFrom || "",
         depthTo: depthTo || "",
-        qtr: qtr? qtr: [null, null, null, null],
+        qtr: qtr ? qtr : [null, null, null, null],
         customLayer,
       });
 
@@ -256,6 +259,7 @@ export default function AddParcelOwnerDialogContent({
       mineral_interest: null,
       royalty_interest: null,
       orri: null,
+      unknown_interest: null,
       record_title: null,
       operating_rights: null,
       nri: null,
@@ -263,7 +267,7 @@ export default function AddParcelOwnerDialogContent({
       depthFrom: "",
       depthTo: "",
       nra: null,
-      qtr:[null,null,null,null],
+      qtr: [null, null, null, null],
       customLayer: props.customLayerId,
     });
     setParcelOwnersRadioBValue("true");
@@ -337,7 +341,7 @@ export default function AddParcelOwnerDialogContent({
       <React.Fragment>
         <RightDialog
           open={true}
-          handleClickDialogClose={() => {}}
+          handleClickDialogClose={() => { }}
           width={"450px"}
         >
           <DialogTitle
@@ -475,6 +479,22 @@ export default function AddParcelOwnerDialogContent({
                 />
               </Grid>
               <Grid item xs={12}>
+                <h3>Unknown Interest</h3>
+                <TextField
+                  type="number"
+                  size="small"
+                  className={classes.maxWidth}
+                  value={newOwner.unknown_interest}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setNewOwner({
+                      ...newOwner,
+                      unknown_interest: value ? parseFloat(e.target.value) : null,
+                    });
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
                 <h3>Record Title</h3>
                 <TextField
                   type="number"
@@ -557,102 +577,102 @@ export default function AddParcelOwnerDialogContent({
               </Grid>
               {props?.customLayer?.state !== 'TX' && (
                 <>
-                <Grid item xs={3}>
-                  <h3>QTR 1</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={(option) => option}
-                    value={newOwner.qtr[0]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr))
-                      qtr[0] = newInputValue ? newInputValue : ""
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        size="small"
-                        className={classes.maxWidth}
-                        multiline
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <h3>QTR 2</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={(option) => option}
-                    value={newOwner.qtr[1]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr))
-                      qtr[1] = newInputValue ? newInputValue : ""
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        size="small"
-                        className={classes.maxWidth}
-                        multiline
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <h3>QTR 3</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={(option) => option}
-                    value={newOwner.qtr[2]}
-                    onChange={(e, newInputValue) => {           
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr))
-                      qtr[2] = newInputValue ? newInputValue : ""
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        size="small"
-                        className={classes.maxWidth}
-                        multiline
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <h3>QTR 4</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={(option) => option}
-                    value={newOwner.qtr[3]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr))
-                      qtr[3] = newInputValue ? newInputValue : ""
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        size="small"
-                        className={classes.maxWidth}
-                        multiline
-                      />
-                    )}
-                  />
-                </Grid>
+                  <Grid item xs={3}>
+                    <h3>QTR 1</h3>
+                    <Autocomplete
+                      options={qtrOptions}
+                      getOptionLabel={(option) => option}
+                      value={newOwner.qtr[0]}
+                      onChange={(e, newInputValue) => {
+                        const qtr = JSON.parse(JSON.stringify(newOwner.qtr))
+                        qtr[0] = newInputValue ? newInputValue : ""
+                        setNewOwner({
+                          ...newOwner,
+                          qtr,
+                        });
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          size="small"
+                          className={classes.maxWidth}
+                          multiline
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <h3>QTR 2</h3>
+                    <Autocomplete
+                      options={qtrOptions}
+                      getOptionLabel={(option) => option}
+                      value={newOwner.qtr[1]}
+                      onChange={(e, newInputValue) => {
+                        const qtr = JSON.parse(JSON.stringify(newOwner.qtr))
+                        qtr[1] = newInputValue ? newInputValue : ""
+                        setNewOwner({
+                          ...newOwner,
+                          qtr,
+                        });
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          size="small"
+                          className={classes.maxWidth}
+                          multiline
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <h3>QTR 3</h3>
+                    <Autocomplete
+                      options={qtrOptions}
+                      getOptionLabel={(option) => option}
+                      value={newOwner.qtr[2]}
+                      onChange={(e, newInputValue) => {
+                        const qtr = JSON.parse(JSON.stringify(newOwner.qtr))
+                        qtr[2] = newInputValue ? newInputValue : ""
+                        setNewOwner({
+                          ...newOwner,
+                          qtr,
+                        });
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          size="small"
+                          className={classes.maxWidth}
+                          multiline
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <h3>QTR 4</h3>
+                    <Autocomplete
+                      options={qtrOptions}
+                      getOptionLabel={(option) => option}
+                      value={newOwner.qtr[3]}
+                      onChange={(e, newInputValue) => {
+                        const qtr = JSON.parse(JSON.stringify(newOwner.qtr))
+                        qtr[3] = newInputValue ? newInputValue : ""
+                        setNewOwner({
+                          ...newOwner,
+                          qtr,
+                        });
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          size="small"
+                          className={classes.maxWidth}
+                          multiline
+                        />
+                      )}
+                    />
+                  </Grid>
                 </>
               )}
               {/* <Grid item xs={12}>
