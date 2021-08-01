@@ -85,9 +85,7 @@ export default function WellsCard(props) {
       className={classes.button}
       fullWidth={true}
       variant='outlined'
-    // style={{justifyContent: "flex-start"}}
-    >
-      <div className={classes.root} onClick={() => {
+      onClick={() => {
         history.push(`/contact/details/${props.contactData._id}/wells`)
         //   props.handleOpenExpandableCard(
         //     <ContactsWellInterestsParcelInterests
@@ -97,6 +95,9 @@ export default function WellsCard(props) {
         //     "Associated Interests"
         //   );
       }}
+    // style={{justifyContent: "flex-start"}}
+    >
+      <div className={classes.root}
       >
 
         <AddWellInterestDialog

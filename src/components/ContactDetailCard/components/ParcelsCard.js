@@ -92,12 +92,13 @@ export default function ParcelsCard(props) {
       className={classes.button}
       fullWidth={true}
       variant='outlined'
+      onClick={() => {
+        history.push(`/contact/details/${props.contactData._id}/parcels`)
+      }}
     // style={{justifyContent: "flex-start"}}
     >
 
-      <div className={classes.root} onClick={() => {
-        history.push(`/contact/details/${props.contactData._id}/parcels`)
-      }}>
+      <div className={classes.root} >
         <div>
           <h4 style={{ marginTop: "0", float: "left" }}>Parcels ({count})</h4>
           {/* <IconButton

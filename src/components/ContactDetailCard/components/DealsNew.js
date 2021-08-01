@@ -145,9 +145,7 @@ export default function Deals({ contact, ...props }) {
       fullWidth={true}
       variant='outlined'
     // style={{justifyContent: "flex-start"}}
-    >
-
-      <div className={classes.root} onClick={() => {
+      onClick={() => {
         history.push(`/contact/details/${contact._id}/deals`)
         // props.handleOpenExpandableCard(
         //   <DealsDetailCard
@@ -159,6 +157,9 @@ export default function Deals({ contact, ...props }) {
         //   "Deals"
         // );
       }}
+    >
+
+      <div className={classes.root}
       >
 
         <AddDealDialog
