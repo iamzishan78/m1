@@ -146,14 +146,15 @@ const useStyles = makeStyles((theme) => ({
 export const CustomAvatar = ({ text = "", email = "", diglog }) => {
   const classes = useStyles();
   const [profileImage, setProfileImage] = useState(null);
-  const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE);
+  const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE, {
+    fetchPolicy: "cache-first"
+  });
 
   useEffect(() => {
     if (email) {
       setProfileImage(null);
       getProfileImage({
-        variables: { email },
-        fetchPolicy: "network-only"
+        variables: { email }
       });
     }
   }, [email, getProfileImage, text]);
