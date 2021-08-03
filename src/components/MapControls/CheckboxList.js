@@ -468,6 +468,7 @@ export default function CheckboxList(props) {
                                   >
                                     <Checkbox
                                       icon={
+
                                         <CancelOutlinedIcon
                                           htmlColor={
                                             !ifLayerHaveData(layer)
@@ -475,6 +476,7 @@ export default function CheckboxList(props) {
                                               : "#12abe0"
                                           }
                                         />
+
                                       }
                                       checkedIcon={
                                         <ClickIcon

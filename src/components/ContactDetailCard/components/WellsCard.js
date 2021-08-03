@@ -15,8 +15,9 @@ import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: "23px 23px 0 23px",
+    padding: "23px 23px 0 23px",
     cursor: "pointer",
+    width: "100%"
   },
 
   cardContent: { width: "100%", display: "flex" },
@@ -84,9 +85,7 @@ export default function WellsCard(props) {
       className={classes.button}
       fullWidth={true}
       variant='outlined'
-    // style={{justifyContent: "flex-start"}}
-    >
-      <div className={classes.root} onClick={() => {
+      onClick={() => {
         history.push(`/contact/details/${props.contactData._id}/wells`)
         //   props.handleOpenExpandableCard(
         //     <ContactsWellInterestsParcelInterests
@@ -96,6 +95,9 @@ export default function WellsCard(props) {
         //     "Associated Interests"
         //   );
       }}
+    // style={{justifyContent: "flex-start"}}
+    >
+      <div className={classes.root}
       >
 
         <AddWellInterestDialog

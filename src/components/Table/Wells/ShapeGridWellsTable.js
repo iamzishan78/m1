@@ -11,6 +11,7 @@ import TableHOC from "components/Table/TableHOC";
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
 import { SHAPEWELLS } from "graphQL/useQueryPaginatedShapeWells";
+import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount.js";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 
@@ -33,14 +34,34 @@ function ShapeGridWellsTable(props) {
 
     // contexts
     const [stateApp, setStateApp] = useContext(AppContext);
-
+    const [count, setCount] = useState(0);
     // function states 
     const [columns, Columns] = useState([]);
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
     const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
     // queries 
-    const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true });
+    const [getPaginatedShapeWells, { data: dataShapeWells, variables: variablesShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true,
+        onCompleted: (dataShapeWells) => {
+        setCount((state, props) => {
+            let newState = state || dataShapeWells?.paginatedShapeWells?.edges?.length;
+            let newStateIncrement = !variablesShapeWells?.pagination?.before &&
+              dataShapeWells?.paginatedShapeWells?.pageInfo?.hasNextPage
+                ? 1
+                : 0;
+
+            return newState + newStateIncrement
+        })
+    },
+    });
+    const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true,
+        onCompleted: (dataShapeWellsCount) => {
+          setStateApp((state) => ({
+              ...state,
+              shapeGridWellsCount: dataShapeWellsCount?.shapeWellsCount,
+          }));
+      }, 
+    });
     const tableData = dataShapeWells?.paginatedShapeWells
 
     const addAble = false
@@ -55,6 +76,11 @@ function ShapeGridWellsTable(props) {
                 userId: stateApp.user.mongoId,
             },
         });
+        getShapeWellsCount({
+            variables: {
+                polygon: stateApp.gridPolygonString,
+            }
+        })
     }, [props.parent]);
 
     useEffect(() => {
@@ -111,10 +137,6 @@ function ShapeGridWellsTable(props) {
             setColumns(columns);
             props.setLoading(false);
 
-            setStateApp((state) => ({
-                ...state,
-                shapeGridWellsCount: tableData.totalCount,
-            }));
         }
         else if (tableData?.edges?.length === 0) {
             props.setLoading(false);
@@ -162,6 +184,11 @@ function ShapeGridWellsTable(props) {
                 break;
             case "changePage":
                 props.setLoading(true);
+                if (tableState.page > meta.pageInd) {
+                  setCount((state, props) => {
+                    return (tableState.page + 1) * tableState.rowsPerPage
+                  })
+                }
                 getPaginatedShapeWells({
                     ...pageVariables,
                     variables: {
@@ -201,11 +228,10 @@ function ShapeGridWellsTable(props) {
             default:
         }
     }
-
-    const count = tableData?.totalCount || 0
+    console.log(count, 'comes')
     const options = {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
-        count: count,
+        count: stateApp.shapeGridWellsCount || count || 0,
         serverSide: true,
         search: true,
     }
