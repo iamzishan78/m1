@@ -95,8 +95,11 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
 
   const control2 = layer.layerSettings?.interaction?.interactionAble && (
 
+    <Tooltip title="Clickable" >
+
       <Checkbox
         icon={
+
             <CancelOutlinedIcon
               fontSize = 'small'
               htmlColor={
@@ -105,6 +108,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
                   : "#12abe0"
               }
             />
+
         }
         checkedIcon={
           <IconButton size='small'>
@@ -127,6 +131,8 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
         onChange={handleToggleInteraction(layer)}
         size='small'
       />
+      </Tooltip>
+
   ) ;
 
   return (

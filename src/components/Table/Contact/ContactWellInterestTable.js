@@ -53,11 +53,12 @@ function ContactWellInterestTable(props) {
     }
   });
   const [getContactWellInterestsFilterOptions, { data: dataContactWellsFilterOptions },] = useLazyQuery(CONTACTWELLINTERESTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
-  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: [ "getContactWells", "getPaginatedContactWellInterests", "getContactWellInterestsFilterOptions" ], awaitRefetchQueries: true });
+  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: ["getContactWells", "getPaginatedContactWellInterests", "getContactWellInterestsFilterOptions"], awaitRefetchQueries: true });
   const tableData = dataContactWells?.paginatedContactWellInterests
   const filterData = dataContactWellsFilterOptions?.contactWellInterestsFilterOptions
 
-  const addAble = {}
+  const targetLabel = 'well'
+  const addAble = { type: "wellInterest" }
   const total = false
   const orderByTracks = false
 
@@ -143,16 +144,16 @@ function ContactWellInterestTable(props) {
         field: "contact._id",
         value: props.contactId,
       },
-      ...tableState.filterList.reduce((acc, val, ind) => { 
+      ...tableState.filterList.reduce((acc, val, ind) => {
         if (val.length > 0) {
           acc.push({
             field: tableState.columns[ind].dbName || tableState.columns[ind].name,
             value: val,
           });
         }
-  
+
         return acc;
-       }, [])
+      }, [])
     ];
 
     const pageVariables = {

@@ -17,6 +17,9 @@ const useStyles = makeStyles(() => ({
     "&>:nth-child(8)": {
       display: "none",
     },
+    "&>:nth-child(7)": {
+      display: "none",
+    },
   },
   dateCard: {
     alignSelf: "center",
@@ -105,7 +108,9 @@ const WeatherCard = () => {
         const res = await fetch(
           `https://api.openweathermap.org/data/2.5/onecall?lat=${location.lat}&lon=${location.long}&exclude="current,minutely,hourly"&appid=${weatherkey}`
         );
+
         const data = await res.json();
+
         const fdata = data.daily.map((f) => ({
           temp: toFahr(f.temp.max),
           icon: f.weather[0].icon,

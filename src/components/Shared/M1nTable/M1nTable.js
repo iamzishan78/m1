@@ -150,7 +150,8 @@ function M1nTable(props) {
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, { onError: () => { setLoading(false) }, fetchPolicy: "cache-and-network" });
   const [getDocuments, { data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS, { fetchPolicy: "no-cache" });
   const [removeUser] = useMutation(REMOVEUSER);
-  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, { fetchPolicy: "cache-and-network", skip: true,
+  const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network", skip: true,
     // with a cache fetch policy, if network request returns same result we can end up in an infinite loading sitch.
     // have only seen when searching / researching same string - so same result
     onCompleted: () => {
@@ -164,7 +165,7 @@ function M1nTable(props) {
   const [updateContact] = useMutation(UPDATECONTACT);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
-  const [getParcelOwners, { data: dataParcelOwners }] = useLazyQuery(PARCELOWNERSQUERY, { fetchPolicy: "cache-and-network" });
+  const [getParcelOwners, { data: dataParcelOwners, loading: parcelOwnerLoading }] = useLazyQuery(PARCELOWNERSQUERY, { fetchPolicy: "cache-and-network" });
   const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
   const [getMelissaRowsCount, { data: dataMelissaRowsCount }] = useLazyQuery(MELISSARECORDSCOUNTBYIDS, { fetchPolicy: "cache-and-network", });
   const [getContactParcelInterests, { data: dataContactParcelInterests },] = useLazyQuery(CONTACTPARCELINTERESTS, { fetchPolicy: "cache-and-network", });
@@ -1099,7 +1100,7 @@ function M1nTable(props) {
       dataCommentsCounter.commentsCounter &&
       dataTagSamples &&
       dataTagSamples.tagSamples &&
-      dataTracks 
+      dataTracks
       && checkIfOwnersAreContactsData &&
       checkIfOwnersAreContactsData.ifAreContacts
     ) {
@@ -1629,7 +1630,7 @@ function M1nTable(props) {
           for (let i = 0; i < documentIdsToDelete.length; i++) {
             updateDocument({
               variables: {
-                document:{
+                document: {
                   fileId: documentIdsToDelete[i],
                   isDeleted: true,
                 }
@@ -1933,14 +1934,14 @@ function M1nTable(props) {
     if (props.parent && props.parent === "ownersPerParcel") {
       setLoading(true);
       setTargetLabel("Parcel Ownership");
-      props.header ? setHeader(props.header) :  setHeader("Parcel Ownership");
+      props.header ? setHeader(props.header) : setHeader("Parcel Ownership");
       setAddAble({
         type: "ownerToParcel",
         customLayer: props.customLayer,
         customLayerId: props.customLayer._id,
       });
       getParcelOwners({
-        variables: { customLayerId: props.customLayer._id, qtr: props.customLayer.qtrQtr},
+        variables: { customLayerId: props.customLayer._id, qtr: props.customLayer.qtrQtr },
       });
     }
   }, [props.customLayer]);
@@ -1951,7 +1952,7 @@ function M1nTable(props) {
       props.parent === "ownersPerParcel" &&
       dataParcelOwners
     ) {
-      if (dataParcelOwners.parcelOwners && dataParcelOwners.parcelOwners.length > 0) {
+      if (dataParcelOwners.parcelOwners && dataParcelOwners.parcelOwners.length > 0 && !parcelOwnerLoading) {
         setLoading(true);
         const objectsIdsArray = dataParcelOwners.parcelOwners.map(
           (owner) => owner.ownerEntity
@@ -1970,7 +1971,7 @@ function M1nTable(props) {
         setRows([]);
       }
     }
-  }, [dataParcelOwners]);
+  }, [dataParcelOwners, parcelOwnerLoading]);
 
   useEffect(() => {
     if (
@@ -1988,7 +1989,7 @@ function M1nTable(props) {
 
       const parcelOwners = dataParcelOwners.parcelOwners.map((o) => {
         let parcelOwner = { ...o };
-        if(parcelOwner.qtr){
+        if (parcelOwner.qtr) {
           parcelOwner.qtr_calls = `${parcelOwner.qtr[0] ? parcelOwner.qtr[0] : ''} ${parcelOwner.qtr[1] ? parcelOwner.qtr[1] : ''} ${parcelOwner.qtr[2] ? parcelOwner.qtr[2] : ''} ${parcelOwner.qtr[3] ? parcelOwner.qtr[3] : ''}`
         }
         parcelOwner.commentsCounter = 0;
@@ -2046,8 +2047,8 @@ function M1nTable(props) {
       });
       const cleanAvailableTags = [...new Set(availableTags)];
 
-      const index = findIndex(OwnersPerParcelHeadCells,  column => column.name === 'qtr_calls')
-      if(props.customLayer.state === 'TX'){
+      const index = findIndex(OwnersPerParcelHeadCells, column => column.name === 'qtr_calls')
+      if (props.customLayer.state === 'TX') {
         OwnersPerParcelHeadCells[index].options = {
           display: false,
           filter: false,
@@ -2057,7 +2058,7 @@ function M1nTable(props) {
           print: false,
           viewColumns: false,
         };
-      }else{
+      } else {
         OwnersPerParcelHeadCells[index].options = {
           display: true,
           filter: true,
@@ -2068,7 +2069,7 @@ function M1nTable(props) {
           viewColumns: true,
         };
       }
-      
+
       setColumns(
         cleanAvailableTags.length > 0
           ? OwnersPerParcelHeadCells.map((column) => {

@@ -309,6 +309,7 @@ export default function AddLayer(props) {
       fileName = fileName[fileName.length - 1];
     }
     let res;
+    fileName = fileName.toLowerCase()
     if (fileName.endsWith(".geojson")) {
       res = await new Promise((resolve, reject) => {
         fetch(inputFile)

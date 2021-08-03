@@ -25,6 +25,13 @@ const ContactWellHeadCells = [
     }
   },
   {
+    name: "propertyName", label: "Property Name", options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "200px" } })
+    }
+  },
+  {
     name: "leaseId", label: "Lease Id", options: {
       display: true,
       filter: true,

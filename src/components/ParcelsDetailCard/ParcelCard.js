@@ -34,6 +34,7 @@ import { WellCardContext } from "../WellCard/WellCardContext";
 import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
 import { ParcelCardContext } from "./ParcelCardContext";
+import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -119,14 +120,14 @@ export default function ParcelCard(props) {
   const [parcelContext, setParcelContext] = useContext(ParcelCardContext);
   const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
+  const [wellNumber, setWellNumber] = useState()
 
   const [parcelObj, setParcelObj] = useState();
   const [parcelProperties, setProperties] = useState();
   const classes = useStyles();
 
   // queries 
-  const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true });
-  const wellNumber = dataShapeWells?.paginatedShapeWells.totalCount
+  const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true });
   const [getAllFiles, { data: dataParcelFiles }] = useLazyQuery(GET_PARCELS_FILES);
   const documentCount = dataParcelFiles?.getParcelFiles.length || 0;
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER,);
@@ -151,7 +152,11 @@ export default function ParcelCard(props) {
     }
   };
 
-
+  useEffect(() => {
+    if (dataShapeWellsCount) {
+      setWellNumber(dataShapeWellsCount?.shapeWellsCount)
+    }
+  }, [dataShapeWellsCount])
   useEffect(() => {
     if (stateApp.selectedParcel) {
       getCustomLayer({
@@ -164,23 +169,22 @@ export default function ParcelCard(props) {
 
   useEffect(() => {
     if (parcelObj) {
-      getPaginatedShapeWells({
+      getShapeWellsCount({
         variables: {
-          polygon: getSelectedFeaturePolygonString(),
-          userId: stateApp.user.mongoId,
+          polygon: getSelectedFeaturePolygonString()
         },
       });
     }
   }, [parcelObj]);
 
   useEffect(() => {
-		getAllFiles({
-			variables: {
-				relatedObjectId: parcelObj?._id || stateApp.user.mongoId,
-				relatedObjectType: "Parcel",
-			},
-		});
-	}, [parcelObj]);
+    getAllFiles({
+      variables: {
+        relatedObjectId: parcelObj?._id || stateApp.user.mongoId,
+        relatedObjectType: "Parcel",
+      },
+    });
+  }, [parcelObj]);
 
 
   useEffect(() => {
@@ -237,7 +241,7 @@ export default function ParcelCard(props) {
                   className={classes.text2}
                   variant="caption"
                 >
-                  {wellNumber}
+                  {wellNumber || "0"}
 
                 </Typography>
               </div>
@@ -264,7 +268,7 @@ export default function ParcelCard(props) {
                   className={classes.text2}
                   variant="caption"
                 >
-                  {parcelObj?.ownerCount || "--"}
+                  {parcelObj?.ownerCount || "0"}
                 </Typography>
               </div>
             </Button>
@@ -291,7 +295,7 @@ export default function ParcelCard(props) {
                   variant="caption"
                 >
                   {documentCount}
-                  
+
                 </Typography>
               </div>
             </Button>
@@ -317,7 +321,7 @@ export default function ParcelCard(props) {
                   className={classes.text2}
                   variant="caption"
                 >
-                  {stateApp.selectedParcel.shapeArea}
+                  {stateApp.selectedParcel.sdGrossAcres || stateApp.selectedParcel.shapeArea}
                 </Typography>
               </div>
             </Button>
@@ -397,7 +401,7 @@ export default function ParcelCard(props) {
       <div style={{ height: "100%" }}>
         <Card className={classes.card}>
           <CardContent className={classes.content}>
-            <ParcelsDetailCard id={stateApp.selectedParcel.id} selectTabIndex={stateApp.parcelDetailCardTabIndex}/>
+            <ParcelsDetailCard id={stateApp.selectedParcel.id} selectTabIndex={stateApp.parcelDetailCardTabIndex} />
           </CardContent>
         </Card>
       </div>

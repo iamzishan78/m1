@@ -268,13 +268,6 @@ function Map() {
     }
   };
 
-  const [wellLinesSourceFeatures, WellLinesSourceFeatures] = useState([]);
-  const setWellLinesSourceFeatures = (state) => {
-    if (wellLinesSourceFeatures !== state) {
-      WellLinesSourceFeatures(state);
-    }
-  };
-
   // const [geocoder, setGeocoder] = useState(null);
   const [anchorElPoPOver, AnchorElPoPOver] = useState(null);
   const setAnchorElPoPOver = (state) => {
@@ -283,6 +276,10 @@ function Map() {
     }
   };
   const mapEl = useRef(null);
+
+  // hacky but having to use a ref for valid state during map on event callback
+  const stateNavRef = useRef();
+  stateNavRef.current = stateNav;
 
   const [hoverUdIds, HoverUdIds] = useState([]);
   const setHoverUdIds = (id) => {
@@ -1088,7 +1085,8 @@ function Map() {
         // from contacts api is slightly different than other apis
         // need to setup in a standard format
 
-        if (properties.id && feature.layer.id === "wellpoints") {
+
+        if (properties.id && feature.layer.id !== "recent_submitted_permits") {
 
           setStateApp((state) => ({
             ...state,
@@ -1125,32 +1123,39 @@ function Map() {
 
     // AOI/Parcel Click Handler
     const udLayerClickHandler = (feature) => {
+      const drawMode = stateApp.draw.getMode();
+      if (drawMode.includes('draw') || drawMode.includes('drag')) {
+        map.resize();
+        return
+      }
       setStateApp((state) => ({
         ...state,
         expandedCard: false,
         popupOpen: false,
       }));
+      const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
+      let selectedUserDefinedLayer
+      if (filteredLayer)
+        selectedUserDefinedLayer = {
+          ...feature,
+          ...JSON.parse(filteredLayer.shape),
+          id: filteredLayer._id,
+        }
 
       if (feature.source === "parcels_source") {
-        setStateApp((state) => ({
-          ...state,
-          selectedUserDefinedLayer: null,
-          selectedParcel: feature.properties,
-        }));
+        setStateApp((state) => {
+          if (state.isDrawing) return state
+          return {
+            ...state,
+            selectedUserDefinedLayer: null,
+            selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
+          }
+        });
       }
-      const drawMode = stateApp.draw.getMode();
       if (feature.source === "interests_source" && !drawMode.includes('draw') && !drawMode.includes('drag')) {
 
         setStateApp((state) => {
           if (state.isDrawing) return state
-
-          const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
-          const selectedUserDefinedLayer = {
-            ...feature,
-            ...JSON.parse(filteredLayer.shape),
-            id: filteredLayer._id,
-          }
-
           state = {
             ...state,
             showShapeActionsPopup: true,
@@ -1334,6 +1339,8 @@ function Map() {
             layerId === "Search" ||
             layerId === "recent_submitted_permits":
             // layerId === "permits":
+
+            console.log('LAYER', layerId);
             wellPointClick(feature);
             break;
           default:
@@ -2494,7 +2501,7 @@ function Map() {
         totalCount += stateNav.parcelName.length;
       }
 
-      if (fitBounds) {
+      if (!deepEqualObjects(stateApp.fitBounds, fitBounds)) {
         setStateApp((stateApp) => ({
           ...stateApp,
           fitBounds: { ...fitBounds },
@@ -2631,9 +2638,9 @@ function Map() {
         var intersectingWellLinesFilter
         if (filterCustomArray["welllines"]) {
           var boundingMultiPoly = mergeIntoMultiPolygon(filterCustomArray["welllines"])
-          var features = wellLinesSourceFeatures;
+          var features = stateNav.filterIntersectingWellLines;
 
-          console.time(`booleanIntersects`);
+          // console.time(`booleanIntersects`);
           intersectingWellLinesFilter = features.reduce(
             function (memo, feature) {
               boundingMultiPoly?.features?.forEach(boundingPoly => {
@@ -2645,7 +2652,7 @@ function Map() {
             },
             ['in', ["get", "id"], ["literal", []]]
           );
-          console.timeEnd(`booleanIntersects`);
+          // console.timeEnd(`booleanIntersects`);
         }
 
         if (filterCustomArray["wellpoints"]) {
@@ -2969,7 +2976,6 @@ function Map() {
     }
   }, [
     map,
-    wellLinesSourceFeatures,
     setStateNav,
     stateNav.defaultOn,
     stateNav.filterAllInterestTypes,
@@ -3037,6 +3043,7 @@ function Map() {
     stateApp.trackedwells,
     stateApp.customLayers,
     stateApp.wellListFromTagsFilter,
+    stateNav.filterIntersectingWellLines,
   ]);
 
   useEffect(() => {
@@ -3654,11 +3661,24 @@ function Map() {
       popupOpen: false,
     }));
     if (action === "add") {
-      setStateApp((state) => ({
-        ...state,
-        selectedAbstracts: [...state.selectedAbstracts, feature],
-        showDrawShapesPopup: true
-      }));
+      setStateApp((state) => {
+        const isContinous = state.selectedAbstracts.find((shape) => {
+          const intersect = turf.union(shape, feature);
+          return intersect.geometry.type === "Polygon"
+        })
+        if (!isContinous && state.selectedAbstracts.length > 0)
+          return state
+
+        map.setFeatureState(
+          { source: "abstract_geo_source", id: feature.id },
+          { click: true }
+        );
+        return {
+          ...state,
+          selectedAbstracts: [...state.selectedAbstracts, feature],
+          showDrawShapesPopup: true
+        }
+      });
     }
     if (action === "remove") {
       setStateApp((state) => ({
@@ -3677,6 +3697,11 @@ function Map() {
         if (!e.features.length) {
           return;
         }
+        const drawMode = stateApp.draw.getMode();
+        if (drawMode.includes('draw') || drawMode.includes('drag')) {
+          return
+        }
+
         const currentFeature = e.features[0];
         const featureState = map.getFeatureState({
           source: "abstract_geo_source",
@@ -3700,15 +3725,12 @@ function Map() {
             );
             onAbstactLayerClick(currentFeature, "remove");
           } else {
-            let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
-
-            if (!isExisting) {
-              map.setFeatureState(
-                { source: "abstract_geo_source", id: currentFeature.id },
-                { click: true }
-              );
-              onAbstactLayerClick(currentFeature, "add");
-            }
+            // let isExisting = stateApp.customLayers.find(x => x.shape.includes(currentFeature.id));
+            // const shape = JSON.parse(isExisting.shape)
+            // var point = turf.point([e.lngLat.lng, e.lngLat.lat]);
+            // if (!isExisting || !turf.booleanContains(shape, point)) {
+            onAbstactLayerClick(currentFeature, "add");
+            // }
           }
         } else {
           // Clear all selected features when click off the shapes
@@ -3756,17 +3778,23 @@ function Map() {
     }
   }, [map, stateApp.customLayers, stateApp.multiSelectLandGrids]);
 
-  const shapeFilterControl = (map) => {
-    if (map.getFilter("welllines")) {
-      console.log('here');
+  // having to use a ref because callbacks are not guaranteed to get the correct version of context state!!!
+  function shapeFilterControl(map) {
+    if (stateNavRef.current?.filterBasin ||
+      stateNavRef.current?.filterAOI ||
+      stateNavRef.current?.filterParcel ||
+      stateNavRef.current?.filterDrawing[1]) {
 
-      console.time(`querySourceFeatures`);
+      // console.time(`querySourceFeatures`);
       var features = map.querySourceFeatures("composite", {
         sourceLayer: "wellLines",
       });
-      setWellLinesSourceFeatures(features);
+      // console.timeEnd(`querySourceFeatures`);
 
-      console.timeEnd(`querySourceFeatures`);
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        filterIntersectingWellLines: features
+      }));
     }
   };
 
