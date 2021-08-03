@@ -34,17 +34,28 @@ function ShapeGridWellsTable(props) {
 
     // contexts
     const [stateApp, setStateApp] = useContext(AppContext);
-    const [count, setTotalCount] = useState(0);
+    const [count, setCount] = useState(0);
     // function states 
     const [columns, Columns] = useState([]);
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
     const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
     // queries 
-    const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true });
+    const [getPaginatedShapeWells, { data: dataShapeWells, variables: variablesShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true,
+        onCompleted: (dataShapeWells) => {
+        setCount((state, props) => {
+            let newState = state || dataShapeWells?.paginatedShapeWells?.edges?.length;
+            let newStateIncrement = !variablesShapeWells?.pagination?.before &&
+              dataShapeWells?.paginatedShapeWells?.pageInfo?.hasNextPage
+                ? 1
+                : 0;
+
+            return newState + newStateIncrement
+        })
+    },
+    });
     const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true,
         onCompleted: (dataShapeWellsCount) => {
-          setTotalCount(dataShapeWellsCount?.shapeWellsCount || 0)
           setStateApp((state) => ({
               ...state,
               shapeGridWellsCount: dataShapeWellsCount?.shapeWellsCount,
@@ -173,6 +184,11 @@ function ShapeGridWellsTable(props) {
                 break;
             case "changePage":
                 props.setLoading(true);
+                if (tableState.page > meta.pageInd) {
+                  setCount((state, props) => {
+                    return (tableState.page + 1) * tableState.rowsPerPage
+                  })
+                }
                 getPaginatedShapeWells({
                     ...pageVariables,
                     variables: {
@@ -212,10 +228,10 @@ function ShapeGridWellsTable(props) {
             default:
         }
     }
-
+    console.log(count, 'comes')
     const options = {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
-        count: count,
+        count: stateApp.shapeGridWellsCount || count || 0,
         serverSide: true,
         search: true,
     }
