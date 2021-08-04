@@ -8,18 +8,18 @@ const random_rgb = () => {
 export const getDefaultSettings = (type, layerName, sourceProps) => {
     const idColor = random_rgb();
     let paintProps = {};
-    if (type == "Point" || type == "MultiPoint") type = "circle";
-    else if (type == "LineString" || type == "Feature" || type == "MultiLineString") type = "line";
+    if (type === "Point" || type === "MultiPoint") type = "circle";
+    else if (type === "LineString" || type === "Feature" || type === "MultiLineString") type = "line";
     else type = "fill";
 
-    if (type == "circle") {
+    if (type === "circle") {
         paintProps = {
             "circle-radius": 5,
             "circle-color": idColor,
             "circle-stroke-width": 2,
             "circle-stroke-color": "#fff",
         };
-    } else if (type == "line") {
+    } else if (type === "line") {
         paintProps = {
             "line-color": idColor,
             "line-opacity": 1,
@@ -44,7 +44,7 @@ export const getDefaultSettings = (type, layerName, sourceProps) => {
 
     const layerSettings = {
         interaction: {
-            interactionAble: false,
+            interactionAble: true,
             interactionDetail: {
                 hover: false,
                 click: false,

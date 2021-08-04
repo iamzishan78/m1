@@ -35,6 +35,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
         ...layer.layerSettings,
         interaction: {
           ...layer.layerSettings.interaction,
+          interactionAble: true,
           interactionDetail: {
             hover: !layer.layerSettings.interaction.interactionDetail.hover,
             click: !layer.layerSettings.interaction.interactionDetail.click,
@@ -84,30 +85,30 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
   };
 
   const control1 = layer.layerSettings?.colorable && (
- 
-      <IconButton size='small'>
-        <Tooltip title="Layer Styling" >
-          <DonutSmallIcon htmlColor="#12abe0" onClick={() => handleColorPicker(layer)}/>
-        </Tooltip>
-      </IconButton>
+
+    <IconButton size='small'>
+      <Tooltip title="Layer Styling" >
+        <DonutSmallIcon htmlColor="#12abe0" onClick={() => handleColorPicker(layer)} />
+      </Tooltip>
+    </IconButton>
 
   );
 
-  const control2 = layer.layerSettings?.interaction?.interactionAble && (
+  const control2 = (layer.layerSettings?.interaction?.interactionAble || layer.layerType === 'file layer') && (
 
     <Tooltip title="Clickable" >
 
       <Checkbox
         icon={
 
-            <CancelOutlinedIcon
-              fontSize = 'small'
-              htmlColor={
-                !ifLayerHaveData(layer, stateApp)
-                  ? "rgb(127, 149, 199)"
-                  : "#12abe0"
-              }
-            />
+          <CancelOutlinedIcon
+            fontSize='small'
+            htmlColor={
+              !ifLayerHaveData(layer, stateApp)
+                ? "rgb(127, 149, 199)"
+                : "#12abe0"
+            }
+          />
 
         }
         checkedIcon={
@@ -131,44 +132,44 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
         onChange={handleToggleInteraction(layer)}
         size='small'
       />
-      </Tooltip>
+    </Tooltip>
 
-  ) ;
+  );
 
   return (
     <>
-      
-      <Grid container 
-            spacing={1}
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-            }}
-            >
 
-        <Grid item 
-              xs            
-              style={{
-            }}
-            >
-            {control2}
-        </Grid>
+      <Grid container
+        spacing={1}
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+        }}
+      >
 
-        <Grid item 
-              xs            
-              style={{
-            }}
-            >
-            {control1}
+        <Grid item
+          xs
+          style={{
+          }}
+        >
+          {control2}
         </Grid>
 
         <Grid item
-              xs             
-              style={{
-            }}
-            >
+          xs
+          style={{
+          }}
+        >
+          {control1}
+        </Grid>
+
+        <Grid item
+          xs
+          style={{
+          }}
+        >
           <FormControlLabel
             control={
               <Switch
@@ -187,7 +188,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
             }
           />
 
-      </Grid>
+        </Grid>
 
 
 

@@ -1233,7 +1233,7 @@ function Map() {
         const visible =
           layer.layerSettings.showable &&
           layer.layerSettings.visiable !== false;
-        if (interaction && visible) {
+        if ((interaction && visible) || (interaction && layer.layerType === 'file layer')) {
           if (layer.layerCategory === "UD layer") {
             layer.layerPaintProps.forEach((paintProps) => {
               const layerId = paintProps.id;
@@ -1264,6 +1264,10 @@ function Map() {
                 ) {
                   udLayers.push(layerId);
                 }
+              }
+              if (map.getLayer(layer.identifier) && layer.layerType === 'file layer') {
+                layers.push(layer.identifier);
+                udLayers.push(layer.identifier);
               }
             });
           } else {
@@ -1355,13 +1359,6 @@ function Map() {
         map.off("click", mapClick.mapClickHandler);
       }
       map.on("click", mapClickHandler);
-
-      // Binding click handler for user uploaded layers
-      stateApp.layers.filter(l => l.layerType === 'file layer').forEach(layer => {
-        map.on("click", `${layer.identifier}`, ({ features }) => {
-          udLayerClickHandler(features[0]);
-        });
-      });
       setMapClick({ mapClickHandler });
     }
   }, [map, stateApp.layers, customLayerData]);
