@@ -734,7 +734,7 @@ function Map() {
       }
 
 
-      if (sourceId == "parcels_source" || sourceId == "interests_source") {
+      if (sourceId === "parcels_source" || sourceId === "interests_source") {
 
         let pointSource = geoJson.features.map(feature => {
 
@@ -1352,6 +1352,17 @@ function Map() {
           default:
             break;
         }
+      } else if (isNormalClick && features && features.length === 0) {
+        switch (true) {
+          case stateApp.selectedUserDefinedLayer !== null:
+            setStateApp(stateApp => ({
+              ...stateApp,
+              selectedUserDefinedLayer: null
+            }));
+            break;
+          default:
+            break;
+        }
       }
     };
     if (map) {
@@ -1361,7 +1372,7 @@ function Map() {
       map.on("click", mapClickHandler);
       setMapClick({ mapClickHandler });
     }
-  }, [map, stateApp.layers, customLayerData]);
+  }, [map, stateApp.layers, customLayerData, stateApp.selectedUserDefinedLayer]);
 
   useEffect(() => {
     let beforeLayer = null;
@@ -5176,7 +5187,6 @@ function Map() {
                   mouseX={0}
                   mouseY={0}
                   position="relative"
-                  cardWidth="350px"
                 />
               </PortalD>
             )}
