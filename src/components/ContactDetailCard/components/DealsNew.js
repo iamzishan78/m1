@@ -16,7 +16,7 @@ import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: "23px 23px 0 23px",
+    padding: "23px 23px 0 23px",
     cursor: "pointer",
     width: "100%"
   },
@@ -145,9 +145,7 @@ export default function Deals({ contact, ...props }) {
       fullWidth={true}
       variant='outlined'
     // style={{justifyContent: "flex-start"}}
-    >
-
-      <div className={classes.root} onClick={() => {
+      onClick={() => {
         history.push(`/contact/details/${contact._id}/deals`)
         // props.handleOpenExpandableCard(
         //   <DealsDetailCard
@@ -159,6 +157,9 @@ export default function Deals({ contact, ...props }) {
         //   "Deals"
         // );
       }}
+    >
+
+      <div className={classes.root}
       >
 
         <AddDealDialog
