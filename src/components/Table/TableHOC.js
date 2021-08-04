@@ -9,12 +9,14 @@ import { TAGSAMPLES } from "graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "graphQL/useQueryCommentsCounter";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { TRACKSBYOBJECTTYPE } from "graphQL/useQueryTracksByObjectType";
+import { isEmpty } from "lodash";
 
 export const TableHOC = (Component) => {
     return function HOC(props) {
 
         const [rows, Rows] = useState([]);
         const setRows = (newState) => { setStateIfDeepEqual(Rows, newState) };
+        const [searchedRows, setSearchedRows] = useState([])
 
         const [loading, Loading] = useState(true);
         const setLoading = (newState) => { setStateIfDeepEqual(Loading, newState) };
@@ -33,6 +35,10 @@ export const TableHOC = (Component) => {
 
         const client = useApolloClient();
         const [stateApp, setStateApp] = useContext(AppContext);
+
+        useEffect(() => {
+            setSearchedRows(rows)
+        }, [rows])
 
         useEffect(() => {
             const tracksByObjectType = async () => {
@@ -140,10 +146,99 @@ export const TableHOC = (Component) => {
             return data
         };
 
+        const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery) => {
+            let pageESVariables = {
+                variables: {
+                    search: tableState.searchText,
+                    pagination: {
+                        pit: tableData?.before_pit,
+                        first: tableState.rowsPerPage,
+                        after: null,
+                    },
+                    ...(!isEmpty(tableState.sortOrder)) && {
+                        sort:
+                            [{
+                                [columns.find(el => el.name === tableState.sortOrder?.name)?.sortKey ||
+                                    columns.find(el => el.name === tableState.sortOrder?.name)?.name]: {
+                                    order: tableState.sortOrder?.direction,
+                                    unmapped_type: "keyword"
+                                }
+                            }]
+                    },
+
+                    filters: {},
+                },
+            };
+            return {
+                pageESVariables,
+                genericESAction: () => {
+                    setLoading(true);
+                    tableState.page = 0;
+                    meta.setPageInd(tableState.page);
+                    meta.setRowsPerPage(tableState.rowsPerPage);
+                    gqlQuery(pageESVariables);
+                },
+                changeESPage: () => {
+                    setLoading(true);
+                    gqlQuery({
+                        ...pageESVariables,
+                        variables: {
+                            ...pageESVariables.variables,
+                            pagination: {
+                                pit: tableData.pit,
+                                ...pageESVariables.variables.pagination,
+                                before: rows && tableState.page < meta.pageInd ? rows[0]?.sort : null,
+                                after: rows && tableState.page > meta.pageInd ? rows[rows.length - 1]?.sort : null,
+                            },
+                        },
+                    });
+                },
+                searchData: () => {
+                    let searchRows = []
+                    if (tableState.searchText) {
+                        for (let i = 0; i < rows.length; i++) {
+                            for (const key of Object.keys(rows[i])) {
+                                const col = columns.find(column => column.name === key)
+                                if (col && (!col.options || col.options.searchable !== false)) {
+                                    if (typeof rows[i][key] === 'string') {
+                                        console.log(rows[i][key], key)
+                                        const value = rows[i][key].toLowerCase()
+                                        if (value.includes(tableState.searchText.toLowerCase())) {
+                                            rows.push(rows[i])
+                                            break
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        searchRows = rows
+                    }
+                    searchRows = JSON.parse(JSON.stringify(rows));
+                    for (let j = 0; j < tableState.filterList.length; j++) {
+                        if (tableState.filterList[j].length > 0) {
+                            for (let i = 0; i < searchRows.length; i++) {
+                                const isFiltered = searchRows[i].isFiltered !== false
+                                const rowdata = searchRows[i][columns[j].name]
+                                const filter = tableState.filterList[j][0]
+                                if (isFiltered && rowdata !== filter) {
+                                    searchRows[i].isFiltered = false
+                                    continue
+                                }
+                            }
+                        }
+                    }
+                    setSearchedRows(searchRows.filter(row => row.isFiltered !== false))
+                }
+            }
+        }
+
         return (
             <Component
                 {...props}
                 rows={rows}
+                searchedRows={searchedRows}
+                setSearchedRows={setSearchedRows}
                 loading={loading}
                 dataTracks={dataTracksIds}
                 setRows={setRows}
@@ -151,6 +246,7 @@ export const TableHOC = (Component) => {
                 initializeGenericData={initializeGenericData}
                 setGenricData={setGenricData}
                 dependencyUpdate={dependencyUpdate}
+                initializeTableActions={initializeTableActions}
             />
         );
     };
