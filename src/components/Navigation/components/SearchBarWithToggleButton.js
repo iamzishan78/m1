@@ -1,13 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { AppContext } from "../../../AppContext";
-import { NavigationContext } from "../NavigationContext";
 import { makeStyles, fade } from "@material-ui/core/styles";
 import Search from "./Search";
 import Tooltip from "@material-ui/core/Tooltip";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived } from "../../../actions";
 import PostAddOutlinedIcon from '@material-ui/icons/PostAddOutlined';
 import { useLocation } from "react-router-dom";
@@ -38,13 +37,41 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: fade(theme.palette.common.white, 0.25),
     },
   },
+  selected: {
+    color: "rgba(23, 170, 221, 1) !important",
+    "&:hover ": {
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+    },
+  },
 }));
 
-export default function SearchBarWithToggleButton() {
+
+function GridIcon() {
   const dispatch = useDispatch();
   const classes = useStyles();
+  const { mapGridCardActivated } = useSelector(
+    ({ MapGridCard }) => MapGridCard
+  );
+  return (
+    <Tooltip title="Search Grid">
+
+      <Button
+        className={mapGridCardActivated ? classes.selected : classes.gridOnIcon}
+
+        onClick={() => {
+          dispatch(toggleMapGridCardAtived());
+        }}
+      >
+        <GridOnIcon />
+      </Button>
+    </Tooltip>
+  );
+}
+
+
+export default function SearchBarWithToggleButton() {
+  const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
-  const [stateNav, setStateNav] = React.useContext(NavigationContext);
   let location = useLocation();
   return (
     <div className={classes.root} >
@@ -54,42 +81,26 @@ export default function SearchBarWithToggleButton() {
         aria-label="text primary button group"
       >
         <Search />
-        
-          {location.pathname === "/documents" ? (
 
-        <Tooltip title="Add Document">
+        {location.pathname === "/documents" ? (
 
-            <Button
-            className={classes.gridOnIcon}
-            
-            onClick={()=>{
-              console.log(stateApp, 'Add Document')
-              setStateApp({...stateApp, DocumentDrawer:true})
-            }}
-            
-            
-          >
-            <PostAddOutlinedIcon />
-          </Button>
-        </Tooltip>
-
-          ) : (
-
-
-        <Tooltip title="Search Grid">
+          <Tooltip title="Add Document">
 
             <Button
-            className={classes.gridOnIcon}
-          
-            onClick={() => {
-              dispatch(toggleMapGridCardAtived());
-            }}
-          >
-            <GridOnIcon />
-          </Button>
-        </Tooltip>
+              className={classes.gridOnIcon}
 
-          )}
+              onClick={() => {
+                console.log(stateApp, 'Add Document')
+                setStateApp({ ...stateApp, DocumentDrawer: true })
+              }}
+            >
+              <PostAddOutlinedIcon />
+            </Button>
+          </Tooltip>
+
+        ) : (
+          <GridIcon />
+        )}
       </ButtonGroup>
     </div>
   );
