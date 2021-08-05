@@ -670,7 +670,7 @@ function Map() {
           return {
             type: "FeatureCollection",
             features: mdata.map((feature) => {
-              if (Object.hasOwn(feature, 'Geometry')) {
+              if (feature.hasOwnProperty('Geometry')) {
                 return {
                   type: "Feature",
                   properties: feature,
@@ -2676,7 +2676,8 @@ function Map() {
           intersectingWellLinesFilter = features.reduce(
             function (memo, feature) {
               boundingMultiPoly?.features?.forEach(boundingPoly => {
-                if (turf.booleanIntersects(feature.geometry, boundingPoly.geometry)) {
+                if (turf.booleanIntersects(feature.geometry, boundingPoly.geometry) &&
+                  feature.properties.id) {
                   memo[2][1].push(feature.properties.id);
                 }
               })
@@ -2685,6 +2686,25 @@ function Map() {
             ['in', ["get", "id"], ["literal", []]]
           );
           // console.timeEnd(`booleanIntersects`);
+        }
+
+        var intersectingPermitLinesFilter
+        if (filterCustomArray["recent_submitted_permit_laterals"]) {
+          var boundingMultiPoly = mergeIntoMultiPolygon(filterCustomArray["recent_submitted_permit_laterals"])
+          var features = stateNav.filterIntersectingWellLines;
+
+          intersectingPermitLinesFilter = features.reduce(
+            function (memo, feature) {
+              boundingMultiPoly?.features?.forEach(boundingPoly => {
+                if (turf.booleanIntersects(feature.geometry, boundingPoly.geometry) &&
+                  feature.properties.Id) {
+                  memo.push(feature.properties.Id);
+                }
+              })
+              return memo;
+            },
+            ['in', "Id"]
+          );
         }
 
         if (filterCustomArray["wellpoints"]) {
@@ -2773,8 +2793,6 @@ function Map() {
                 "Tracked Owners",
                 "Tags Filter",
                 //"permits",
-                "recent_submitted_permits",
-                "recent_submitted_permit_laterals",
                 "rigs",
               ].indexOf(filterLayer) > -1
             ) {
@@ -2785,6 +2803,16 @@ function Map() {
                 "within",
                 mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
               ]]);
+            } else if (["recent_submitted_permits", "recent_submitted_permit_laterals"].indexOf(filterLayer) > -1) {
+              map.setFilter(filterLayer, [
+                "all",
+                baseFilter,
+                [
+                  "any",
+                  ["within", mergeIntoMultiPolygon(filterCustomArray[filterLayer])],
+                  intersectingPermitLinesFilter
+                ]
+              ]);
             } else if (["interest", "parcel"].indexOf(filterLayer) > -1) {
               map.setFilter(filterLayer, [
                 "match",
@@ -3837,9 +3865,15 @@ function Map() {
       stateNavRef.current?.filterDrawing[1]) {
 
       // console.time(`querySourceFeatures`);
-      var features = map.querySourceFeatures("composite", {
-        sourceLayer: "wellLines",
-      });
+      let features = [];
+      features = [
+        ...features,
+        ...map.querySourceFeatures("composite", { sourceLayer: "wellLines" })
+      ];
+      features = [
+        ...features,
+        ...map.querySourceFeatures("recentsub_permits_source")
+      ];
       // console.timeEnd(`querySourceFeatures`);
 
       setStateNav((stateNav) => ({
