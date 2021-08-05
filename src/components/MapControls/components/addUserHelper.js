@@ -46,8 +46,8 @@ export const getDefaultSettings = (type, layerName, sourceProps) => {
         interaction: {
             interactionAble: true,
             interactionDetail: {
-                hover: false,
-                click: false,
+                hover: true,
+                click: true,
             },
         },
         colorable: true,
