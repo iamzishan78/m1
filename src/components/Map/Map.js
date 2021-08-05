@@ -1192,22 +1192,26 @@ function Map() {
           return state
         });
       } else {
-        let shapeCenter = polylabel(feature.geometry.coordinates);
+        // For user defined layers details popup
+        let shapeCenter = polylabel(feature.geometry.coordinates),
+          featureLayer = { ...feature.layer, ...stateApp.layers.find(l => l.identifier === feature.layer.id) };
+        if (
+          (featureLayer.layerGeometry === 'LineString' && feature._geometry.type === 'LineString')
+          || (featureLayer.layerGeometry === 'MultiLineString' && feature._geometry.type === 'LineString')
+        ) {
+          const lineLength = turf.length(feature._geometry, { units: 'miles' });
+          const lineCenterGeometry = turf.along(feature._geometry, lineLength / 2, { units: 'miles' })
+          shapeCenter = lineCenterGeometry.geometry.coordinates;
+        }
         selectedUserDefinedLayer = {
           ...feature,
           properties: {
             ...feature.properties,
             shapeCenter
           },
-          layer: { ...feature.layer, ...stateApp.layers.find(l => l.identifier === feature.layer.id) }
+          layer: featureLayer
         }
         feature = selectedUserDefinedLayer;
-        if (feature.layer.layerGeometry === 'LineString' && feature._geometry.type === 'LineString') {
-          const lineLength = turf.length(feature._geometry, { units: 'miles' });
-          const lineCenterGeometry = turf.along(feature._geometry, lineLength / 2, { units: 'miles' })
-          selectedUserDefinedLayer.properties.shapeCenter = lineCenterGeometry.geometry.coordinates;
-          feature = selectedUserDefinedLayer;
-        }
         setStateApp(state => ({
           ...state,
           selectedUserDefinedLayer
