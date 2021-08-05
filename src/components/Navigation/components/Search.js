@@ -124,9 +124,11 @@ const useStyles = makeStyles((theme) => ({
       color: "#ffffffc9",
       height: "5px",
       minWidth: "0 !important",
-      visibility: ({ mapGridCardActivated }) =>
-        mapGridCardActivated ? "hidden" : "unset",
-      opacity: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : "1"),
+      visibility: "unset",
+      opacity: "1",
+      // visibility: ({ mapGridCardActivated }) =>
+      //   mapGridCardActivated ? "hidden" : "unset",
+      // opacity: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : "1"),
       transition: "opacity 0.5s linear",
     },
     // "& .MuiInputAdornment-root": {
@@ -138,10 +140,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   endAdornmentIcon: {
-    opacity: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : "1"),
+    opacity: "1",
+    // opacity: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : "1"),
     transition: "opacity 1.2s linear",
     "& button": {
-      width: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : ""),
+      width: "",
+      // width: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : ""),
       transition: "width 1s ",
     },
   },
@@ -1383,7 +1387,7 @@ function Search() {
                       </Button>
                     </InputAdornment>
                   ),
-                  endAdornment: !mapGridCardActivated && (
+                  endAdornment: (
                     <InputAdornment className={classes.endAdornmentIcon}>
                       <div>
                         {((searchInputValue && searchInputValue !== "") ||

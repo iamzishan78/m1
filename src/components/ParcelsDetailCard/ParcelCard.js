@@ -178,12 +178,13 @@ export default function ParcelCard(props) {
   }, [parcelObj]);
 
   useEffect(() => {
-    getAllFiles({
-      variables: {
-        relatedObjectId: parcelObj?._id || stateApp.user.mongoId,
-        relatedObjectType: "Parcel",
-      },
-    });
+    if (parcelObj)
+      getAllFiles({
+        variables: {
+          relatedObjectId: parcelObj?._id || stateApp.user.mongoId,
+          relatedObjectType: "Parcel",
+        },
+      });
   }, [parcelObj]);
 
 

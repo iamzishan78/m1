@@ -235,7 +235,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
     marginLeft: 5,
     width: ({ mapGridCardActivated }) =>
-      mapGridCardActivated ? "80px" : "34%",
+      mapGridCardActivated ? "34%" : "34%",
     transition: "width 0.5s",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5
@@ -410,7 +410,7 @@ const useStyles = makeStyles((theme) => ({
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
       borderRadius: 10,
-  },
+    },
     "&:last-child": {
       paddingBottom: "0",
     },
@@ -802,7 +802,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments:0
+        selectedMenuIndexDocuments: 0
       }));
     } else if (location.pathname === "/track") {
       setStateNav((state) => ({
@@ -816,7 +816,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments:0
+        selectedMenuIndexDocuments: 0
 
       }));
     } else if (location.pathname === "/flow") {
@@ -831,7 +831,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments:0
+        selectedMenuIndexDocuments: 0
 
       }));
     } else if (location.pathname === "/title") {
@@ -847,7 +847,7 @@ export default function Navigation(props) {
         selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments:0
+        selectedMenuIndexDocuments: 0
 
       }));
     } else if (location.pathname === "/contacts") {
@@ -866,7 +866,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments:0
+        selectedMenuIndexDocuments: 0
 
       }));
     } else if (location.pathname === "/alerts") {
@@ -881,7 +881,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments:0
+        selectedMenuIndexDocuments: 0
 
       }));
     } else if (location.pathname === "/dashboard") {
@@ -896,7 +896,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 1,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments:0
+        selectedMenuIndexDocuments: 0
 
       }));
     } else if (location.pathname === "/studio") {
@@ -911,7 +911,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 1,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments:0
+        selectedMenuIndexDocuments: 0
 
       }));
     } else if (location.pathname === "/activities") {
@@ -926,7 +926,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 1,
-        selectedMenuIndexDocuments:0
+        selectedMenuIndexDocuments: 0
 
       }));
     }
@@ -942,7 +942,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments:1
+        selectedMenuIndexDocuments: 1
 
       }));
     }
@@ -982,17 +982,17 @@ export default function Navigation(props) {
       setMatchFind(false);
     }
   }, [location.pathname]);
- 
 
-//  useEffect(() => {
-//     if (location.pathname === "/documents") {
-//       // setMatchLocation(true);
-//       setMatchDocument(true);
-//     } else {
-//       // setMatchLocation(false);
-//       setMatchDocument(false);
-//     }
-//   }, [location.pathname]);
+
+  //  useEffect(() => {
+  //     if (location.pathname === "/documents") {
+  //       // setMatchLocation(true);
+  //       setMatchDocument(true);
+  //     } else {
+  //       // setMatchLocation(false);
+  //       setMatchDocument(false);
+  //     }
+  //   }, [location.pathname]);
 
   const handleSearchInputChange = (event) => {
     setStateNav((state) => ({
@@ -1082,7 +1082,7 @@ export default function Navigation(props) {
           My Account
         </Typography>
       </MenuItem>
-      { (stateApp?.user?.roles?.includes("Owner") || stateApp?.user?.roles?.includes("Admin")) && (
+      {(stateApp?.user?.roles?.includes("Owner") || stateApp?.user?.roles?.includes("Admin")) && (
         <MenuItem
           className={classes.userMenuItem}
           onClick={(e) => openUserManagement(e)}
@@ -1691,7 +1691,7 @@ export default function Navigation(props) {
             </div>
           </ListItem>
 
-            {/* TEMP REMOVAL */}
+          {/* TEMP REMOVAL */}
           {/* <ListItem
             classes={{
               root: classes.menuListItem,
