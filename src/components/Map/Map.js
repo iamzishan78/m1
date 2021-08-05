@@ -83,6 +83,7 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 
 import { PERMITDETAILQUERY } from "../../graphQL/useQueryRecentPermitDetails";
 import { drawShapeStyles } from "components/MapControls/commonHelper";
+import _ from "lodash";
 
 
 
@@ -3524,6 +3525,7 @@ function Map() {
     fetch(req, { signal: signal })
       .then((results) => results.json())
       .then((data) => {
+        data = _.uniqBy(data, 'name');
         setMapStyles(data.slice(0, 5));
       });
 
@@ -3904,8 +3906,7 @@ function Map() {
         setWellsTileset(
           mapStyles[index].sources.composite.url
             .split(",")
-            .find((element) => element.indexOf("m1neral.wells") > -1)
-            .replace("mapbox://", "")
+            .find((element) => element.indexOf("m1neral.wells") > -1)?.replace("mapbox://", "")
         );
 
         /// optimized interactions w/ map
