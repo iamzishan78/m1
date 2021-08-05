@@ -1194,7 +1194,7 @@ function Map() {
         });
       } else {
         // For user defined layers details popup
-        let shapeCenter = polylabel(feature.geometry.coordinates),
+        let shapeCenter,
           featureLayer = { ...feature.layer, ...stateApp.layers.find(l => l.identifier === feature.layer.id) };
         if (
           (featureLayer.layerGeometry === 'LineString' && feature._geometry.type === 'LineString')
@@ -1203,6 +1203,13 @@ function Map() {
           const lineLength = turf.length(feature._geometry, { units: 'miles' });
           const lineCenterGeometry = turf.along(feature._geometry, lineLength / 2, { units: 'miles' })
           shapeCenter = lineCenterGeometry.geometry.coordinates;
+        } else if (
+          (featureLayer.layerGeometry === 'Circle' && feature.geometry.type === 'MultiPolygon')
+          || (featureLayer.layerGeometry === 'Point' && feature.geometry.coordinates.length === 2)
+        ) {
+          shapeCenter = feature.geometry.coordinates;
+        } else {
+          shapeCenter = polylabel(feature.geometry.coordinates);
         }
         selectedUserDefinedLayer = {
           ...feature,
