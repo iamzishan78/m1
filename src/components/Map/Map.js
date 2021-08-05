@@ -1176,15 +1176,22 @@ function Map() {
           return state
         });
       } else {
+        let shapeCenter = polylabel(feature.geometry.coordinates);
         selectedUserDefinedLayer = {
           ...feature,
           properties: {
             ...feature.properties,
-            shapeCenter: polylabel(feature.geometry.coordinates)
+            shapeCenter
           },
           layer: { ...feature.layer, ...stateApp.layers.find(l => l.identifier === feature.layer.id) }
         }
         feature = selectedUserDefinedLayer;
+        if (feature.layer.layerGeometry === 'LineString' && feature._geometry.type === 'LineString') {
+          const lineLength = turf.length(feature._geometry, { units: 'miles' });
+          const lineCenterGeometry = turf.along(feature._geometry, lineLength / 2, { units: 'miles' })
+          selectedUserDefinedLayer.properties.shapeCenter = lineCenterGeometry.geometry.coordinates;
+          feature = selectedUserDefinedLayer;
+        }
         setStateApp(state => ({
           ...state,
           selectedUserDefinedLayer

@@ -76,7 +76,6 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#929292",
       borderRadius: 10,
     },
-    height: "fit-content",
   },
   icons: {
     "&:hover": {
@@ -84,12 +83,9 @@ const useStyles = makeStyles((theme) => ({
     },
     color: "white",
   },
-  iconPolygon: {
-    color: "#FFFFFF",
-    stroke: "#FFFFFF",
-    fill: "#FFFFFF",
-    marginRight: "10px",
-  },
+  contentGrid: {
+    padding: 20,
+  }
 }));
 
 function UdLayerCard(props) {
@@ -180,7 +176,7 @@ function UdLayerCard(props) {
           subheader={layer.groupName ? layer.layerName : ""}
         />
         <CardContent className={classes.content}>
-          <Grid container direction="row" alignItems="center" justify="flex" style={{ padding: 20 }}>
+          <Grid container direction="row" alignItems="center" justify="flex" className={classes.contentGrid}>
             {Object.keys(properties)
               .filter((prop) => prop !== "shapeCenter")
               .map((prop) => (
