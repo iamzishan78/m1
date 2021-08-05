@@ -671,7 +671,13 @@ function Map() {
           return {
             type: "FeatureCollection",
             features: mdata.map((feature) => {
-              if (feature.latitude && feature.longitude) {
+              if (feature.hasOwnProperty('Geometry')) {
+                return {
+                  type: "Feature",
+                  properties: feature,
+                  geometry: JSON.parse(feature.Geometry)
+                };
+              } else if (feature.latitude && feature.longitude) {
                 return {
                   type: "Feature",
                   properties: feature,
@@ -723,22 +729,26 @@ function Map() {
         let mapSourceData = map.getSource(sourceId)._data;
         if (mapSourceData && !deepEqualObjects(geoJson, mapSourceData))
           map.getSource(sourceId).setData(geoJson);
+      } else if (sourceId == "recentsub_permits_source") {
+        // need to avoid auto clustering
+        map.addSource(sourceId, {
+          type: "geojson",
+          data: geoJson
+        });
+      } else if (paintType === "circle" || paintType === "symbol") {
+        map.addSource(sourceId, {
+          type: "geojson",
+          data: geoJson,
+          cluster: true,
+          clusterRadius: 50,
+          clusterMaxZoom: 6,
+        });
       } else {
-        if (paintType === "circle" || paintType === "symbol") {
-          map.addSource(sourceId, {
-            type: "geojson",
-            data: geoJson,
-            cluster: true,
-            clusterRadius: 50,
-            clusterMaxZoom: 6,
-          });
-        } else {
-          map.addSource(sourceId, {
-            type: "geojson",
-            data: geoJson,
-            // promoteId: "id",
-          });
-        }
+        map.addSource(sourceId, {
+          type: "geojson",
+          data: geoJson,
+          // promoteId: "id",
+        });
       }
 
 
@@ -838,6 +848,7 @@ function Map() {
         };
 
         if (prop.paintProps) layerConfig.paint = prop.paintProps;
+        if (prop.filter) layerConfig.filter = prop.filter;
         if (config.layerGeometry && data.featureTypes) layerConfig.filter = ['==', 'layerGeometry', config.layerGeometry]
 
         if (prop.minZoom) {
@@ -1087,7 +1098,10 @@ function Map() {
         // need to setup in a standard format
 
 
-        if (properties.id && feature.layer.id !== "recent_submitted_permits") {
+        if (properties.id &&
+          feature.layer.id !== "recent_submitted_permits" &&
+          feature.layer.id !== "recent_submitted_permit_laterals"
+        ) {
 
           setStateApp((state) => ({
             ...state,
@@ -1104,7 +1118,9 @@ function Map() {
             wellSelectedCoordinates: [properties.longitude, properties.latitude],
           }));
         }
-        else if (properties.Id && feature.layer.id === "recent_submitted_permits") {
+        else if (properties.Id &&
+          (feature.layer.id === "recent_submitted_permits" ||
+            feature.layer.id === "recent_submitted_permit_laterals")) {
           setStateApp((state) => ({
             ...state,
             popupOpen: false,
@@ -1338,7 +1354,8 @@ function Map() {
             layerId === "Tracked Owners" ||
             layerId === "Tags Filter" ||
             layerId === "Search" ||
-            layerId === "recent_submitted_permits":
+            layerId === "recent_submitted_permits" ||
+            layerId === "recent_submitted_permit_laterals":
             // layerId === "permits":
 
             console.log('LAYER', layerId);
@@ -2077,6 +2094,14 @@ function Map() {
 
       let fitBounds = null;
 
+      const getLayerBaseFilters = (filterLayer) => {
+        let baseFilter;
+        stateApp?.layers?.find(layer =>
+          baseFilter = Array.isArray(layer?.layerPaintProps) && layer?.layerPaintProps?.find(layerPaintProp => layerPaintProp?.id === filterLayer)?.filter
+        )
+        return baseFilter || [];
+      }
+
       const findBounds = (shapes) => {
         let bound = null;
         if (
@@ -2232,12 +2257,15 @@ function Map() {
               "Tags Filter",
               //"permits",
               "recent_submitted_permits",
+              "recent_submitted_permit_laterals",
               "rigs",
             ].indexOf(filterLayer) > -1
           ) {
             if (shapeList.length > 0) {
+              const baseFilter = getLayerBaseFilters(filterLayer);
+
               if (!filterCustomArray[filterLayer]) {
-                filterCustomArray[filterLayer] = [];
+                filterCustomArray[filterLayer] = baseFilter;
               }
               filterCustomArray[filterLayer] = [
                 ...filterCustomArray[filterLayer],
@@ -2403,6 +2431,7 @@ function Map() {
           "Tags Filter",
           //"permits",
           "recent_submitted_permits",
+          "recent_submitted_permit_laterals",
           "rigs",
           "interest",
           "parcel",
@@ -2452,6 +2481,7 @@ function Map() {
           "Tags Filter",
           //"permits",
           "recent_submitted_permits",
+          "recent_submitted_permit_laterals",
           "rigs",
           "parcel",
         ];
@@ -2488,6 +2518,7 @@ function Map() {
           "Tags Filter",
           //"permits",
           "recent_submitted_permits",
+          "recent_submitted_permit_laterals",
           "rigs",
           "interest",
         ];
@@ -2579,6 +2610,7 @@ function Map() {
           "Tags Filter",
           //"permits",
           "recent_submitted_permits",
+          "recent_submitted_permit_laterals",
           "rigs",
           "interest",
           "parcel",
@@ -2645,7 +2677,8 @@ function Map() {
           intersectingWellLinesFilter = features.reduce(
             function (memo, feature) {
               boundingMultiPoly?.features?.forEach(boundingPoly => {
-                if (turf.booleanIntersects(feature.geometry, boundingPoly.geometry)) {
+                if (turf.booleanIntersects(feature.geometry, boundingPoly.geometry) &&
+                  feature.properties.id) {
                   memo[2][1].push(feature.properties.id);
                 }
               })
@@ -2654,6 +2687,25 @@ function Map() {
             ['in', ["get", "id"], ["literal", []]]
           );
           // console.timeEnd(`booleanIntersects`);
+        }
+
+        var intersectingPermitLinesFilter
+        if (filterCustomArray["recent_submitted_permit_laterals"]) {
+          var boundingMultiPoly = mergeIntoMultiPolygon(filterCustomArray["recent_submitted_permit_laterals"])
+          var features = stateNav.filterIntersectingWellLines;
+
+          intersectingPermitLinesFilter = features.reduce(
+            function (memo, feature) {
+              boundingMultiPoly?.features?.forEach(boundingPoly => {
+                if (turf.booleanIntersects(feature.geometry, boundingPoly.geometry) &&
+                  feature.properties.Id) {
+                  memo.push(feature.properties.Id);
+                }
+              })
+              return memo;
+            },
+            ['in', "Id"]
+          );
         }
 
         if (filterCustomArray["wellpoints"]) {
@@ -2729,9 +2781,12 @@ function Map() {
           "parcel",
           //"permits",
           "recent_submitted_permits",
+          "recent_submitted_permit_laterals",
           "rigs",
         ];
         filterLayers.forEach((filterLayer) => {
+          const baseFilter = getLayerBaseFilters(filterLayer);
+
           if (filterCustomArray[filterLayer]) {
             if (
               [
@@ -2739,16 +2794,25 @@ function Map() {
                 "Tracked Owners",
                 "Tags Filter",
                 //"permits",
-                "recent_submitted_permits",
                 "rigs",
               ].indexOf(filterLayer) > -1
             ) {
               // const filterClusterLayer = filterLayer + "-clusters";
               // const filterClusterLayerLabel = filterLayer + "-clusters-counts";
 
-              map.setFilter(filterLayer, [
+              map.setFilter(filterLayer, ["all", baseFilter, [
                 "within",
                 mergeIntoMultiPolygon(filterCustomArray[filterLayer]),
+              ]]);
+            } else if (["recent_submitted_permits", "recent_submitted_permit_laterals"].indexOf(filterLayer) > -1) {
+              map.setFilter(filterLayer, [
+                "all",
+                baseFilter,
+                [
+                  "any",
+                  ["within", mergeIntoMultiPolygon(filterCustomArray[filterLayer])],
+                  intersectingPermitLinesFilter
+                ]
               ]);
             } else if (["interest", "parcel"].indexOf(filterLayer) > -1) {
               map.setFilter(filterLayer, [
@@ -2817,6 +2881,7 @@ function Map() {
                     "Tags Filter",
                     //"permits",
                     "recent_submitted_permits",
+                    "recent_submitted_permit_laterals",
                     "rigs",
                   ].indexOf(filterLayer) > -1
                 ) {
@@ -2870,7 +2935,7 @@ function Map() {
             } else {
               const layer = map.getLayer(filterLayer);
               if (layer) {
-                map.setFilter(filterLayer, null);
+                map.setFilter(filterLayer, baseFilter);
                 if (map.getLayer(filterLayer + "_point")) {
                   map.setFilter(filterLayer + "_point", null);
                 }
@@ -2878,7 +2943,7 @@ function Map() {
                   map.setFilter(filterLayer + "_labels", null);
                 }
                 if (map.getLayer(filterLayer.replace("Labels", "s"))) {
-                  map.setFilter(filterLayer.replace("Labels", "s"), null);
+                  map.setFilter(filterLayer.replace("Labels", "s"), baseFilter);
                 }
                 if (layer.type === "circle" && layer.id != "wellpoints") {
                   if (layer.source.includes("_filter")) {
@@ -2959,12 +3024,15 @@ function Map() {
           "Tags Filter",
           //"permits",
           "recent_submitted_permits",
+          "recent_submitted_permit_laterals",
           "rigs",
         ];
         filterLayers.forEach((filterLayer) => {
+          const baseFilter = getLayerBaseFilters(filterLayer);
+
           const layer = map.getLayer(filterLayer);
           if (layer) {
-            map.setFilter(filterLayer, null);
+            map.setFilter(filterLayer, baseFilter);
             if (layer.type === "circle") {
               if (layer.source.includes("_filter")) {
                 const clusterSource = layer.source.replace("_filter", "");
@@ -3361,7 +3429,7 @@ function Map() {
           [point.x + 10, point.y + 10],
         ];
         let features = map.queryRenderedFeatures(bbox, {
-          layers: ["recent_submitted_permits"],
+          layers: ["recent_submitted_permits", "recent_submitted_permit_laterals"],
         });
 
         let currentFeature = features.find(
@@ -3372,6 +3440,17 @@ function Map() {
         if (!currentFeature) {
           features = map.querySourceFeatures("composite", {
             sourceLayer: "recent_submitted_permits",
+            filter: ["in", "id", stateApp.selectedPermitId],
+          });
+          currentFeature = features.find(
+            (element) =>
+              element.properties.Id.toLowerCase() == stateApp.selectedPermitId
+          );
+        }
+
+        if (!currentFeature) {
+          features = map.querySourceFeatures("composite", {
+            sourceLayer: "recent_submitted_permit_laterals",
             filter: ["in", "id", stateApp.selectedPermitId],
           });
           currentFeature = features.find(
@@ -3788,9 +3867,15 @@ function Map() {
       stateNavRef.current?.filterDrawing[1]) {
 
       // console.time(`querySourceFeatures`);
-      var features = map.querySourceFeatures("composite", {
-        sourceLayer: "wellLines",
-      });
+      let features = [];
+      features = [
+        ...features,
+        ...map.querySourceFeatures("composite", { sourceLayer: "wellLines" })
+      ];
+      features = [
+        ...features,
+        ...map.querySourceFeatures("recentsub_permits_source")
+      ];
       // console.timeEnd(`querySourceFeatures`);
 
       setStateNav((stateNav) => ({
