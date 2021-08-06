@@ -1303,7 +1303,10 @@ function Search() {
 
         // handle change also acts like onClick here 
         onChange={(event, newValue) => {
-          handleChange(newValue);
+          if (event.key === 'Enter')
+            handleChange(options[0])
+          else
+            handleChange(newValue);
         }}
 
         onInputChange={(event, newInputValue, reason) => {
