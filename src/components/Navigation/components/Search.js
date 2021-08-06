@@ -1296,7 +1296,8 @@ function Search() {
             )
           );
         }}
-        autoComplete
+        freeSolo
+        // autoComplete
         includeInputInList
         value={value}
 
