@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../../AppContext";
 import { Button, Grid } from "@material-ui/core";
-import { CSVReader,CSVDownloader } from "react-papaparse";
+import { CSVReader, CSVDownloader } from "react-papaparse";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -27,13 +27,13 @@ const useStyles = makeStyles({
       borderRadius: "0 !important",
     },
   },
-  linkStyle:{
+  linkStyle: {
     fontSize: "15px",
-    cursor:'pointer',
+    cursor: 'pointer',
     "&:hover": {
-     textDecorationLine: "underline",
+      textDecorationLine: "underline",
     },
-   color: "rgba(23, 170, 221, 1)"
+    color: "rgba(23, 170, 221, 1)"
   }
 });
 
@@ -188,7 +188,7 @@ export default function CSVFileReader(props) {
 
   let handleOnDrop = (data) => {
     if (!unmounted.current) {
-      if (data && data.length <= 1001) {
+      if (data && data.length <= 10001) {
         mapped_headers_from_CSV(data);
         setStateApp((state) => ({
           ...state,
@@ -198,7 +198,7 @@ export default function CSVFileReader(props) {
       } else {
         dispatch(
           showErrorMessage(
-            "The file you have uploaded contains more than 1,000 rows of data. Please upload a new file with less than 1,000 rows of data."
+            "The file you have uploaded contains more than 10,000 rows of data. Please upload a new file with less than 10,000 rows of data."
           )
         );
       }
@@ -209,7 +209,7 @@ export default function CSVFileReader(props) {
     if (data.length > 0) {
       var uniqueKeys = Object.keys(data[0].data);
       // uniqueKeys = uniqueKeys.sort();
-      let matchedKeys = [ ...stateApp.m1neralHeaders ]
+      let matchedKeys = [...stateApp.m1neralHeaders]
       for (let index in uniqueKeys) {
         const matchedKey = matchedKeys.find(el => el?.label === uniqueKeys[index])
 
@@ -242,7 +242,7 @@ export default function CSVFileReader(props) {
   return (
     <div style={main_div}>
       <div style={{ ...big_text, ...padding_div_top }}>
-        Select a File to Import (Max 1,000 rows)
+        Select a File to Import (Max 10,000 rows)
       </div>
       <div style={{ ...text_grey, ...padding_div }}>
         Don't forget to upload CSV with first row containing the column headers
@@ -286,7 +286,7 @@ export default function CSVFileReader(props) {
           >
             Click this link to download sample CSV template
           </CSVDownloader>
-         </div>
+        </div>
 
         <div style={{ ...padding_div_top, ...padding_div_bottom }}>
           <TableContainer component={Paper} style={style_papaer}>
