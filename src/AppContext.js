@@ -146,6 +146,7 @@ const AppProvider = (props) => {
     viewDoc: null,
     pdfView: null,
     selectedAgreement: null,
+    bulkUpload: false,
 
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {

@@ -29,6 +29,7 @@ import StudioProvider from "./components/Studio/StudioProvider";
 import BulkUpload from "./components/BulkUpload/BulkUpload";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
+import ContactBulkProgress from "./components/BulkUpload/ContactBulkProgress";
 
 // pick a date util library
 import MomentUtils from "@date-io/moment";
@@ -193,7 +194,7 @@ function App() {
 
   const updateApolloClient = (endpoint, token) => {
     // uncomment to run against local
-    endpoint = "http://localhost:7071/api/m1graph";
+    // endpoint = "http://localhost:7071/api/m1graph";
 
     if (!apolloClient) {
       let client = new ApolloClient({
@@ -253,6 +254,7 @@ function App() {
           <ApolloProvider client={apolloClient}>
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
+                <ContactBulkProgress />
                 <ConnectedRouter history={history}>
                   <Switch>
                     <NavigationProvider>

@@ -197,6 +197,10 @@ export default function CustomizedSteppers(props) {
 
   useEffect(() => {
     if(contactUploadUri?.getUploadContactUri?.success){
+      setStateApp((state) => ({
+        ...state,
+        bulkUpload: !stateApp.bulkUpload,
+      }));
       const uri = contactUploadUri.getUploadContactUri.job.uri;
       const id = contactUploadUri.getUploadContactUri.job.id;
 			const interal_key = contactUploadUri.getUploadContactUri.job.internalKey;
@@ -216,12 +220,11 @@ export default function CustomizedSteppers(props) {
         .then((res) => {
           console.log(res);
           if (res?.status === 201) {
-            debugger
-            createJob({
-              variables: {
-                jobId: id,
-              },
-            })
+              createJob({
+                variables: {
+                  jobId: id,
+                },
+              })
           } else {
             dispatch(showErrorMessage("Upload failed"));
           }
@@ -276,10 +279,10 @@ export default function CustomizedSteppers(props) {
         activeStepNumber: stateApp.activeStepNumber + 1,
       }));
     }
-    // if (stateApp.activeStepNumber === steps.length - 1) {
-    //   handleReset();
-    //   routeChange("/contacts");
-    // }
+    if (stateApp.activeStepNumber === steps.length - 1) {
+      handleReset();
+      routeChange("/contacts");
+    }
   };
 
   const handleBack = () => {
