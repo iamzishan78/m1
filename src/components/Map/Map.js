@@ -1223,7 +1223,8 @@ function Map() {
         feature = selectedUserDefinedLayer;
         setStateApp(state => ({
           ...state,
-          selectedUserDefinedLayer
+          selectedUserDefinedLayer,
+          selectedParcel: null
         }));
       }
       createUDPopUp(feature.properties);
