@@ -4583,6 +4583,7 @@ function Map() {
 
         setStateApp((state) => ({
           ...state,
+          searchLoader: false,
           fitBounds: findBounds(formatIt(stateApp.wellListFromSearch)),
         }));
       } else {
@@ -4590,7 +4591,7 @@ function Map() {
           stateApp.wellListFromSearch[0] &&
           stateApp.wellListFromSearch[0].latitude &&
           stateApp.wellListFromSearch[0].longitude
-        )
+        ) {
           map.flyTo({
             center: {
               lng: stateApp.wellListFromSearch[0].longitude,
@@ -4598,6 +4599,12 @@ function Map() {
             },
             zoom: 12,
           });
+          setStateApp((state) => ({
+            ...state,
+            searchLoader: false,
+          }));
+        }
+
       }
     }
   }, [map, stateApp.wellListFromSearch]);
