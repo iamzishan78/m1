@@ -303,7 +303,6 @@ export default function DrawShapes() {
           setStateApp((state) => {
             return {
               ...state,
-              // currentFeature: undefined, // for allowing toolbar and filters if we off click shape
               editDraw: false,
             }
           });
@@ -379,12 +378,12 @@ export default function DrawShapes() {
       )}
       {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
         stateApp.currentFeature !== undefined &&
-        !stateApp.currentFeature.id.includes("draw_polygon") &&
-        !stateApp.currentFeature.id.includes("drag_circle") &&
-        !stateApp.currentFeature.id.includes("draw_rectangle") &&
-        !stateApp.currentFeature.id.includes("edit_polygon") ? (
+        !stateApp.currentFeature.id?.includes("draw_polygon") &&
+        !stateApp.currentFeature.id?.includes("drag_circle") &&
+        !stateApp.currentFeature.id?.includes("draw_rectangle") &&
+        !stateApp.currentFeature.id?.includes("edit_polygon") ? (
         <Fragment>
-          {showSpatialDataCard && ( // for edit/create AOI
+          {showSpatialDataCard && stateApp.currentFeature.source === 'interests_source' && ( // for edit/create AOI
             <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} user={user} toggleSpatialDataCard={toggleSpatialDataCard} />
           )}
           <div className={classes.mapOverlay}>

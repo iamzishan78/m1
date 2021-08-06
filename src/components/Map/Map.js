@@ -1217,7 +1217,8 @@ function Map() {
             ...feature.properties,
             shapeCenter
           },
-          layer: featureLayer
+          layer: featureLayer,
+          geometry: feature.geometry || feature._geometry
         }
         feature = selectedUserDefinedLayer;
         setStateApp(state => ({
