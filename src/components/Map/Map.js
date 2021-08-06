@@ -21,6 +21,7 @@ import { ParcelCardContext } from "../ParcelsDetailCard/ParcelCardContext";
 import MapControlsProvider from "../MapControls/MapControlsProvider";
 import WellCardProvider from "../WellCard/WellCardProvider";
 import PermitCardProvider from "../PermitCard/PermitCardProvider";
+import UdLayerCardProvider from '../UdLayerCard/UdLayerCardProvider';
 import ExpandableCardProvider from "../ExpandableCard/ExpandableCardProvider";
 import PortalD from "./components/Portal";
 import Coordinates from "./components/Coordinates";
@@ -45,6 +46,7 @@ import { setMainMapState, showErrorMessage } from "../../actions";
 import mapboxgl from "mapbox-gl";
 import * as turf from "@turf/turf";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import polylabel from "polylabel";
 import {
   CircleMode,
   DragCircleMode,
@@ -137,12 +139,8 @@ function Map() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
-  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
-  const [stateParcelCard, setStateParcelCard] = useContext(ParcelCardContext);
-
 
   // function states
-  const [flyVar1, setFlyVar1] = useState([null]);
   const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
 
   // styles
@@ -163,22 +161,17 @@ function Map() {
   const [filtersDefault, FiltersDefault] = useState(
     stateApp.user.defaultFilters ? stateApp.user.defaultFilters : []
   );
-  const setFiltersDefault = (state) => {
-    if (filtersDefault !== state) {
-      FiltersDefault(state);
-    }
-  };
 
   const [lng, Lng] = useState();
   const [lat, Lat] = useState();
 
   const setLng = (state) => {
-    if (lng != state) {
+    if (lng !== state) {
       Lng(state);
     }
   };
   const setLat = (state) => {
-    if (lat != state) {
+    if (lat !== state) {
       Lat(state);
     }
   };
@@ -752,7 +745,7 @@ function Map() {
       }
 
 
-      if (sourceId == "parcels_source" || sourceId == "interests_source") {
+      if (sourceId === "parcels_source" || sourceId === "interests_source") {
 
         let pointSource = geoJson.features.map(feature => {
 
@@ -802,9 +795,8 @@ function Map() {
       // }
 
       // -> add layer
-      const layerId = config.layerType == "file layer" ? config.identifier : prop.id;
-      const visible =
-        layerSettings.showable && layerSettings.visiable !== false;
+      const layerId = config.layerType === "file layer" ? config.identifier : prop.id;
+      const visible = layerSettings.showable && layerSettings.visiable !== false;
 
       if (prop.paintProps) {
         Object.keys(prop.paintProps).forEach((key) => {
@@ -1150,8 +1142,8 @@ function Map() {
         expandedCard: false,
         popupOpen: false,
       }));
-      const filteredLayer = customLayerData.allCustomLayers.find(cl => cl._id === feature.properties.id);
-      let selectedUserDefinedLayer
+      const filteredLayer = customLayerData?.allCustomLayers?.find(cl => cl._id === feature.properties.id);
+      let selectedUserDefinedLayer;
       if (filteredLayer)
         selectedUserDefinedLayer = {
           ...feature,
@@ -1169,8 +1161,7 @@ function Map() {
           }
         });
       }
-      if (feature.source === "interests_source" && !drawMode.includes('draw') && !drawMode.includes('drag')) {
-
+      else if (feature.source === "interests_source" && !drawMode.includes('draw') && !drawMode.includes('drag')) {
         setStateApp((state) => {
           if (state.isDrawing) return state
           state = {
@@ -1201,12 +1192,42 @@ function Map() {
           }
           return state
         });
+      } else {
+        // For user defined layers details popup
+        let shapeCenter,
+          featureLayer = { ...feature.layer, ...stateApp.layers.find(l => l.identifier === feature.layer.id) };
+        if (
+          (featureLayer.layerGeometry === 'LineString' && feature.geometry.type === 'LineString')
+          || (featureLayer.layerGeometry === 'MultiLineString' && feature.geometry.type === 'LineString')
+        ) {
+          const lineLength = turf.length(feature.geometry, { units: 'miles' });
+          const lineCenterGeometry = turf.along(feature.geometry, lineLength / 2, { units: 'miles' })
+          shapeCenter = lineCenterGeometry.geometry.coordinates;
+        } else if (
+          (featureLayer.layerGeometry === 'Circle' && feature.geometry.type === 'MultiPolygon')
+          || (featureLayer.layerGeometry === 'Point' && feature.geometry.coordinates.length === 2)
+        ) {
+          shapeCenter = feature.geometry.coordinates;
+        } else {
+          shapeCenter = polylabel(feature.geometry.coordinates);
+        }
+        selectedUserDefinedLayer = {
+          ...feature,
+          properties: {
+            ...feature.properties,
+            shapeCenter
+          },
+          layer: featureLayer
+        }
+        feature = selectedUserDefinedLayer;
+        setStateApp(state => ({
+          ...state,
+          selectedUserDefinedLayer
+        }));
       }
       createUDPopUp(feature.properties);
       map.resize();
     };
-
-
 
     const clusterClickHandler = (feature, map) => {
       if (feature && feature.properties && feature.properties.cluster_id) {
@@ -1223,7 +1244,6 @@ function Map() {
           });
       }
     };
-
 
     /// FUNCTION FOR CTRL KEY PRESSED
     const isCtrlKeyPressed = () => {
@@ -1248,8 +1268,8 @@ function Map() {
         const visible =
           layer.layerSettings.showable &&
           layer.layerSettings.visiable !== false;
-        if (interaction && visible) {
-          if (layer.layerCategory == "UD layer") {
+        if ((interaction && visible) || (interaction && layer.layerType === 'file layer')) {
+          if (layer.layerCategory === "UD layer") {
             layer.layerPaintProps.forEach((paintProps) => {
               const layerId = paintProps.id;
               if (paintProps.clusterProps) {
@@ -1279,6 +1299,10 @@ function Map() {
                 ) {
                   udLayers.push(layerId);
                 }
+              }
+              if (map.getLayer(layer.identifier) && layer.layerType === 'file layer') {
+                layers.push(layer.identifier);
+                udLayers.push(layer.identifier);
               }
             });
           } else {
@@ -1364,9 +1388,19 @@ function Map() {
           default:
             break;
         }
+      } else if (isNormalClick && features && features.length === 0) {
+        switch (true) {
+          case stateApp.selectedUserDefinedLayer !== null:
+            setStateApp(stateApp => ({
+              ...stateApp,
+              selectedUserDefinedLayer: null
+            }));
+            break;
+          default:
+            break;
+        }
       }
     };
-
     if (map) {
       if (mapClick && mapClick.mapClickHandler) {
         map.off("click", mapClick.mapClickHandler);
@@ -1374,7 +1408,7 @@ function Map() {
       map.on("click", mapClickHandler);
       setMapClick({ mapClickHandler });
     }
-  }, [map, stateApp.layers, customLayerData]);
+  }, [map, stateApp.layers, customLayerData, stateApp.selectedUserDefinedLayer]);
 
   useEffect(() => {
     let beforeLayer = null;
@@ -5229,7 +5263,6 @@ function Map() {
         {stateApp.popupOpen === true ? (
           <div>
             {stateApp.selectedWell !== null &&
-              // && stateApp.popupOpen==true
               showExpandableCard && (
                 <PortalD id="popupContainer">
                   {!stateApp.expandedCard && (
@@ -5250,10 +5283,24 @@ function Map() {
                       cardHeightExpanded="calc(100vh - 64px)"
                       targetSourceId={stateApp.selectedWell.id}
                       targetLabel="well"
-                    ></ExpandableCardProvider>
+                    />
                   )}
                 </PortalD>
               )}
+            {stateApp.selectedUserDefinedLayer !== null && (
+              <PortalD id="popupContainer">
+                <UdLayerCardProvider
+                  parent="map"
+                  handleCloseExpandableCard={handleCloseExpandableCard}
+                  selectedUserDefinedLayer={stateApp.selectedUserDefinedLayer}
+                  zIndex={3000}
+                  cardWidth="350px"
+                  mouseX={0}
+                  mouseY={0}
+                  position="relative"
+                />
+              </PortalD>
+            )}
             {stateApp.selectedParcel && (
               <PortalD id="popupContainer">
                 {!stateApp.expandedCard && (
