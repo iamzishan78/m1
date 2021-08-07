@@ -3,20 +3,13 @@ import { WellCardContextProvider } from './WellCardContext'
 
 import WellCard from './WellCard'
 
-
 function WellCardProvider(props) {
-  const handleCloseWellCard = () => {
-    props.closeWellCard()
-  }
 
   return (
     <WellCardContextProvider>
-     
-        <WellCard
-          closeWellCard={handleCloseWellCard}
-          selectedWell={props.selectedWell}
-        />
-     
+      <WellCard
+        selectedWell={props.selectedWell}
+      />
     </WellCardContextProvider>
   )
 }
