@@ -374,6 +374,22 @@ function WellCard() {
                         : "--"}
                     </TableCell>
                   </TableRow>
+                  <TableRow className={classes.rowWhite}>
+                    <TableCell className={classes.cell1} align="left">
+                      Lease Name
+                    </TableCell>
+                    <TableCell className={classes.cell2} align="right">
+                      {summary?.Lease || "--"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className={classes.rowWhite}>
+                    <TableCell className={classes.cell1} align="left">
+                      Lease Number
+                    </TableCell>
+                    <TableCell className={classes.cell2} align="right">
+                      {summary?.LeaseId || "--"}
+                    </TableCell>
+                  </TableRow>
                   <TableRow className={classes.rowGrey}>
                     <TableCell className={classes.cell1} align="left">
                       Permit Date
