@@ -276,7 +276,7 @@ function WellCard() {
                     className={classes.text1}
                     variant="subtitle2"
                   >
-                    Last 12 Prod
+                    Last 12
                   </Typography>
                   <Typography
                     align="center"
@@ -354,6 +354,16 @@ function WellCard() {
                 aria-label="well table"
               >
                 <TableBody>
+                  <TableRow className={classes.rowWhite}>
+                    <TableCell className={classes.cell1} align="left">
+                      County
+                    </TableCell>
+                    <TableCell className={classes.cell2} align="right">
+                      {stateApp.selectedWell.county
+                        ? stateApp.selectedWell.county
+                        : "--"}
+                    </TableCell>
+                  </TableRow>
                   <TableRow className={classes.rowGrey}>
                     <TableCell className={classes.cell1} align="left">
                       Operator
