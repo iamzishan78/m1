@@ -275,7 +275,7 @@ export default function ParcelCard(props) {
             </Button>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails(2) }}
+              onClick={() => { handleOpenDetails(3) }}
             >
               <div className={classes.iconContainer}>
                 <DescriptionIcon
