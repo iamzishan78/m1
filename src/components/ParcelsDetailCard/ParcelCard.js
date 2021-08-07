@@ -222,7 +222,7 @@ export default function ParcelCard(props) {
           <CardActions classes={{ root: classes.cardAction }}>
             <Button
               className={classes.button}
-              onClick={() => { handleOpenDetails(1) }}
+              onClick={() => { handleOpenDetails(2) }}
             >
               <div className={classes.iconContainer}>
                 <WellIcon
