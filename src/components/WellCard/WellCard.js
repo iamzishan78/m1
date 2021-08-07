@@ -246,7 +246,7 @@ function WellCard() {
                     className={classes.text1}
                     variant="subtitle2"
                   >
-                    Well Status
+                    Status
 
                   </Typography>
                   <Typography
