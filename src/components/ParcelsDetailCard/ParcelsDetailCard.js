@@ -352,7 +352,7 @@ export default function ParcelsDetailCard(props) {
     <TabButtons
       labels={[
         "Parcel Ownership",
-        "Suggested Ownership",
+        "Potential Ownership",
       ]}
       value={selectedTab}
       setValue={(n) => {
