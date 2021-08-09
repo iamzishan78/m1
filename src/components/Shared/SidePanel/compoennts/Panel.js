@@ -39,6 +39,7 @@ import {
 	MarketplaceDropdown, Dropdown,
 } from './style'
 import SortableLayer from "./SortableLayer";
+import _ from "lodash";
 
 
 function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
@@ -85,6 +86,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 			fetch(req, { signal: signal })
 				.then((results) => results.json())
 				.then((data) => {
+					data = _.uniqBy(data, 'name');
 					setMapStyles(data.slice(0, 5));
 				});
 
@@ -161,7 +163,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 								</Grid>
 
 								<Grid item>
-									<ListItemText primary={style.name} style={{paddingLeft: '25px'}} />
+									<ListItemText primary={style.name} style={{ paddingLeft: '25px' }} />
 								</Grid>
 							</Grid>
 
@@ -169,7 +171,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					))}
 				</div>
 
-				<StyledListItem2 
+				<StyledListItem2
 				>
 					<ListItemIcon>
 						<LayersIcon />
