@@ -40,6 +40,7 @@ import {
 } from './style'
 import SortableLayer from "./SortableLayer";
 import _ from "lodash";
+import { CircularProgress } from "@material-ui/core";
 
 
 function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
@@ -257,10 +258,18 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					{type === "base" && getBasemapImageBox()}
 
 					{
-						type === "layer" && layerMap && layerMap[0]?.type ?
+						type === "layer" ?
 
 							(
-								<SortableLayer layerMap={layerMap} />
+								layerMap && layerMap[0]?.type ?
+									<SortableLayer layerMap={layerMap} />
+									: <Box height='calc(100vh - 50px - 64px)' bgcolor="#040e24" display='flex' justifyContent='center'>
+										<CircularProgress
+											style={{ top: "50%", position: "absolute" }}
+											size={40}
+											color="secondary"
+										/>
+									</Box>
 							)
 							: type === "base" ? (
 								<Collapse in={open} timeout="auto" unmountOnExit>
@@ -288,7 +297,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 				</div>
 				{/* // </ClickAwayListener> */}
 			</div>
-		</div>
+		</div >
 	);
 }
 
