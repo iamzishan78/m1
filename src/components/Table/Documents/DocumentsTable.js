@@ -6,13 +6,14 @@ import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 
 // QUERIES 
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 
 // Header Schemas 
 import TableHeader from 'components/Table/constants/documents-header-schema.js'
 import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
+import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -30,6 +31,7 @@ function DocumentsTable(props) {
 
   // queries 
   const [getESDocuments, { data: DocumentsData, loading }] = useLazyQuery(GET_ES_DOCUMENTS, { fetchPolicy: "no-cache" });
+  const [updateDocument, { loading: updateFileloading }] = useMutation(UPDATE_DOCUMENT);
 
   const tableData = DocumentsData?.getESFiles
 
@@ -48,6 +50,15 @@ function DocumentsTable(props) {
       },
     });
   }, [getESDocuments]);
+
+  useEffect(() => {
+    getESDocuments({
+      variables: {
+        pagination: {},
+        search: props.documentSearchQuery ? props.documentSearchQuery : ""
+      }
+    })
+  }, [getESDocuments, props.parent, props.documentSearchQuery])
 
 
   useEffect(() => {
@@ -87,6 +98,25 @@ function DocumentsTable(props) {
     }
   }
 
+  const deleteFunc = (documentIdsToDelete) => {
+    if (documentIdsToDelete) {
+      for (let i = 0; i < documentIdsToDelete.length; i++) {
+        updateDocument({
+          variables: {
+            document: {
+              fileId: documentIdsToDelete[i],
+              isDeleted: true,
+            }
+          },
+          refetchQueries: [
+            "getESDocuments",
+          ],
+          awaitRefetchQueries: true,
+        });
+      }
+    }
+  }
+
   return (
     <>
       <Container
@@ -112,6 +142,7 @@ function DocumentsTable(props) {
           options={options}
           parent={props.parent}
           setColumnsBase={[]}
+          deleteFunc={deleteFunc}
           onTableChange={onTableChange}
         />
       </Container>

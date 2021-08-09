@@ -61,6 +61,7 @@ export default function DocumentComponent() {
 
 
 
+
   return (
     <div className={classes.root}>
       {/* <Container 
@@ -69,7 +70,7 @@ export default function DocumentComponent() {
         height: 'calc(100vh - 64px)'
     }}> */}
 
-      <DocumentsTable parent="Documents" />
+      <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} />
       {/* <M1nTable dense parent="Documents"></M1nTable> */}
       <Drawer data={true}></Drawer>
 
