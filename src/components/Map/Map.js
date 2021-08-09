@@ -1217,12 +1217,14 @@ function Map() {
             ...feature.properties,
             shapeCenter
           },
-          layer: featureLayer
+          layer: featureLayer,
+          geometry: feature.geometry || feature._geometry
         }
         feature = selectedUserDefinedLayer;
         setStateApp(state => ({
           ...state,
-          selectedUserDefinedLayer
+          selectedUserDefinedLayer,
+          selectedParcel: null
         }));
       }
       createUDPopUp(feature.properties);
@@ -5287,20 +5289,22 @@ function Map() {
                   )}
                 </PortalD>
               )}
-            {stateApp.selectedUserDefinedLayer !== null && (
-              <PortalD id="popupContainer">
-                <UdLayerCardProvider
-                  parent="map"
-                  handleCloseExpandableCard={handleCloseExpandableCard}
-                  selectedUserDefinedLayer={stateApp.selectedUserDefinedLayer}
-                  zIndex={3000}
-                  cardWidth="350px"
-                  mouseX={0}
-                  mouseY={0}
-                  position="relative"
-                />
-              </PortalD>
-            )}
+            {stateApp.selectedUserDefinedLayer !== null &&
+              stateApp.currentFeature?.source !== 'parcels_source' &&
+              stateApp.currentFeature?.source !== 'interests_source' && (
+                <PortalD id="popupContainer">
+                  <UdLayerCardProvider
+                    parent="map"
+                    handleCloseExpandableCard={handleCloseExpandableCard}
+                    selectedUserDefinedLayer={stateApp.selectedUserDefinedLayer}
+                    zIndex={3000}
+                    cardWidth="350px"
+                    mouseX={0}
+                    mouseY={0}
+                    position="relative"
+                  />
+                </PortalD>
+              )}
             {stateApp.selectedParcel && (
               <PortalD id="popupContainer">
                 {!stateApp.expandedCard && (
