@@ -196,25 +196,6 @@ export const TableHOC = (Component) => {
                 },
                 searchData: () => {
                     let searchRows = []
-                    if (tableState.searchText) {
-                        for (let i = 0; i < rows.length; i++) {
-                            for (const key of Object.keys(rows[i])) {
-                                const col = columns.find(column => column.name === key)
-                                if (col && (!col.options || col.options.searchable !== false)) {
-                                    if (typeof rows[i][key] === 'string') {
-                                        console.log(rows[i][key], key)
-                                        const value = rows[i][key].toLowerCase()
-                                        if (value.includes(tableState.searchText.toLowerCase())) {
-                                            rows.push(rows[i])
-                                            break
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        searchRows = rows
-                    }
                     searchRows = JSON.parse(JSON.stringify(rows));
                     for (let j = 0; j < tableState.filterList.length; j++) {
                         if (tableState.filterList[j].length > 0) {

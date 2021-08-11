@@ -19,6 +19,9 @@ const DocumentsHeadCells = [
     sortKey: 'name.keyword',
     dbName: "name",
     label: "File Name",
+    options: {
+      filter: true,
+    }
   },
   // {
   //   name: "fileState",
