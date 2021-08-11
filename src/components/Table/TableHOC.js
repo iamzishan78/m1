@@ -161,7 +161,8 @@ export const TableHOC = (Component) => {
                                 [columns.find(el => el.name === tableState.sortOrder?.name)?.sortKey ||
                                     columns.find(el => el.name === tableState.sortOrder?.name)?.name]: {
                                     order: tableState.sortOrder?.direction,
-                                    unmapped_type: "keyword"
+                                    // unmapped_type: "null",
+                                    missing: "_last"
                                 }
                             }]
                     },
