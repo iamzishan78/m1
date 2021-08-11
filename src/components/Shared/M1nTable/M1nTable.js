@@ -2321,14 +2321,14 @@ function M1nTable(props) {
           });
 
           let availableTags = [];
-          dataTagSamples.tagSamples.map((sample) => {
+          dataTagSamples.tagSamples.forEach((sample) => {
             availableTags = [...availableTags, ...sample.tags];
           });
           const cleanAvailableTags = [...new Set(availableTags)];
 
           wells.forEach(element => {
             if (stateApp.trackedWells) {
-              const found = stateApp.trackedWells.find((x) => x.id == element.wellId);
+              const found = stateApp.trackedWells.find((x) => x.id === element.wellId);
               if (found) {
                 element.isTracked = true;
               } else {

@@ -237,10 +237,6 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiPaper-root > .MuiToolbar-gutters": {
       paddingLeft: '11px !important'
     },
-    // "& .MuiPaper-root": {
-    //   zIndex: 99999,
-    // },
-
     "& .MUIDataTableToolbar": {
       zIndex: '999999 !important',
     },
@@ -268,6 +264,20 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiToolbar-regular > div:nth-child(2)": {
       flex: '0 1 auto',
+    },
+    "& .MUIDataTable-responsiveBase": {
+      overflow: "auto",
+      "&::-webkit-scrollbar": {
+        height: "0.4em",
+        width: "0.4em"
+      },
+      "&::-webkit-scrollbar-track": {
+        "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+      },
+      "&::-webkit-scrollbar-thumb": {
+        backgroundColor: "#929292",
+        borderRadius: 5,
+      },
     },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
@@ -2985,7 +2995,7 @@ function SubTable(props) {
               <Button
                 color="secondary"
                 className={classes.multiSelectionTopBarButtons}
-                onClick={()=>  props.onClickAdd()}
+                onClick={() => props.onClickAdd()}
               >
                 {buttonLabel}
               </Button>
@@ -3665,7 +3675,7 @@ function SubTable(props) {
           columns={columns ? columns : []}
 
           components={{
-            TableFilterList: props.header == 'Tax Roll Ownership' && !isSearchOpen ? TableFilterList : null,
+            TableFilterList: props.header === 'Tax Roll Ownership' && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,
               ViewColumnIcon,
@@ -3683,7 +3693,7 @@ function SubTable(props) {
 
             filter:
               //  props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
-              props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+              props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
@@ -3692,7 +3702,7 @@ function SubTable(props) {
 
             viewColumns:
               // props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search 
-              props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+              props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
@@ -3706,14 +3716,14 @@ function SubTable(props) {
                 || props.header === 'Activities'
                 || props.header === 'Monthly Production'
                 // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
-                || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
               )
 
-                ? false : props.parent != "search",
+                ? false : props.parent !== "search",
             // have to use props.parent here for initial value
             searchOpen: props.parent === "Contacts" ? true : null,
             //download: false,
@@ -4205,7 +4215,7 @@ function SubTable(props) {
         {showExpandableCard &&
           targetLabelToExpand !== "well" &&
           targetLabelToExpand !== "contact" &&
-          multipleExpandableCard == false && (
+          multipleExpandableCard === false && (
             <Dialog
               className={classes.dialogExpCard}
               fullWidth

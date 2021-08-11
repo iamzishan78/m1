@@ -151,25 +151,20 @@ function ExpandableCard(props) {
       fontSize: "11px",
     },
     content: {
-      backgroundColor: "#fffff",
       transition: "height 0.1s",
       background: "#fff",
       padding: "0 !important",
-      overflowY: "auto",
+      overflow: "auto",
 
       "&::-webkit-scrollbar": {
-        width: "0.75em",
+        width: "0.4em",
       },
-      // "&:hover::-webkit-scrollbar": {
-      //     width: "1.0em",
-      // },
-      // "&::-webkit-scrollbar-track": {
-      //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-      // },
-
+      "&::-webkit-scrollbar-track": {
+        "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+      },
       "&::-webkit-scrollbar-thumb": {
         backgroundColor: "#929292",
-        borderRadius: 10,
+        borderRadius: 5,
       },
       height: stateExpandableCard.expanded
         ? "calc(100% - 72px)"

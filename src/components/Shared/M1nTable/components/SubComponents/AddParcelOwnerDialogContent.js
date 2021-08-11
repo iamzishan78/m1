@@ -90,7 +90,6 @@ export default function AddParcelOwnerDialogContent({
   setSelectedRow,
   ...props
 }) {
-  console.log('customLayer', props.customLayer)
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [newOwner, setNewOwner] = useState({
