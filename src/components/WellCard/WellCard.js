@@ -589,7 +589,7 @@ function WellCard() {
               </Table>
 
               <div   >
-                {stateApp.selectedWell.state == 'TX'
+                {stateApp.selectedWell.state === 'TX'
                   ?
                   <Link href="http://webapps2.rrc.texas.gov/EWA/drillingPermitsQueryAction.do"
                     // doesnt work yet but starting point for customized permit link for all RRC wells
