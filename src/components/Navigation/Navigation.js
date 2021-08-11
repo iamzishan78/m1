@@ -1692,7 +1692,7 @@ export default function Navigation(props) {
           </ListItem>
 
           {/* TEMP REMOVAL */}
-          <ListItem
+          {/* <ListItem
             classes={{
               root: classes.menuListItem,
               selected: classes.menuListItemSelected,
@@ -1721,7 +1721,7 @@ export default function Navigation(props) {
                 </Button>
               </ListItemSecondaryAction>
             </div>
-          </ListItem>
+          </ListItem> */}
 
         </List>
 

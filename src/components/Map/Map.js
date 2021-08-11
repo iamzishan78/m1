@@ -443,7 +443,7 @@ function Map() {
   const [
     getRecentPermitDetail,
     { loading: loadingPermitSummary, data: dataPermitSummary },
-  ] = useLazyQuery(PERMITDETAILQUERY);
+  ] = useLazyQuery(PERMITDETAILQUERY, { fetchPolicy: "network-only", });
 
 
   useEffect(() => {
