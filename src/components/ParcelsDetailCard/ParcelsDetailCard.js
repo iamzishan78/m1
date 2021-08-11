@@ -433,7 +433,7 @@ export default function ParcelsDetailCard(props) {
                   onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: true }) }}
                   onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: false }) }}
                   InputProps={{
-                    endAdornment: (onChangeFooterLabel.parcelName == true &&
+                    endAdornment: (onChangeFooterLabel.parcelName === true &&
                       <p className={classes.foodText}>
                         <span>Return</span> to save
                       </p>)
@@ -455,7 +455,7 @@ export default function ParcelsDetailCard(props) {
                   onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: true }) }}
                   onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: false }) }}
                   InputProps={{
-                    endAdornment: (onChangeFooterLabel.grossAcres == true &&
+                    endAdornment: (onChangeFooterLabel.grossAcres === true &&
                       <p className={classes.foodText}>
                         <span>Return</span> to save
                       </p>)
