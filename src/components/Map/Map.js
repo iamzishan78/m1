@@ -5082,10 +5082,15 @@ function Map() {
         linear: true,
       });
 
-      setStateApp((state) => ({
-        ...state,
-        wellDetailCardOpen: false
-      }));
+      // setStateApp((state) => ({
+      //   ...state,
+      //   wellDetailCardOpen: false
+      // }));
+      // super fucked up because this depends on overwriting other context updates to work
+      setStateApp({
+        ...stateApp,
+        wellDetailCardOpen: false,
+      });
     }
   }, [stateApp.wellDetailCardOpen]);
 
