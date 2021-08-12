@@ -41,33 +41,33 @@ export default function ParcelDetailsMap(props) {
   const mapEl = useRef(null);
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
-  useEffect(() => {
-    const req = new Request(
-      "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
-      {
-        method: "GET",
-        mode: "cors",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  //   useEffect(() => {
+  //     const req = new Request(
+  //       "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
+  //       {
+  //         method: "GET",
+  //         mode: "cors",
+  //         headers: {
+  //           Accept: "application/json",
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
 
-    const abortController = new AbortController();
-    const signal = abortController.signal;
+  //     const abortController = new AbortController();
+  //     const signal = abortController.signal;
 
-    fetch(req, { signal: signal })
-      .then((results) => results.json())
-      .then((data) => {
-        setMapStyles(data.slice(0, 5));
-      });
+  //     fetch(req, { signal: signal })
+  //       .then((results) => results.json())
+  //       .then((data) => {
+  //         setMapStyles(data.slice(0, 5));
+  //       });
 
-    //clean up
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, []);
+  //     //clean up
+  //     return function cleanup() {
+  //       abortController.abort();
+  //     };
+  //   }, []);
 
   function getIndex(value, arr, prop) {
     for (var i = 0; i < arr.length; i++) {

@@ -22,8 +22,9 @@ import {
   faFileExcel,
   faFileArchive,
   faFileCode,
-  faFileImage,
+  faFileImage
 } from "@fortawesome/free-solid-svg-icons";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import ViewDocuments from "../ViewDocuments/ViewDocuments";
 import { useDropzone } from "react-dropzone";
@@ -38,10 +39,8 @@ import { useDispatch } from "react-redux";
 import UploadZone from "./UploadZone";
 import CardMedia from "@material-ui/core/CardMedia";
 
-
 // functions
 import get_file_icon from "../../components/Shared/functions/get_file_icon.js";
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,15 +48,15 @@ const useStyles = makeStyles((theme) => ({
   },
   timelineItemRight: {
     "&:before": {
-      content: "none",
-    },
+      content: "none"
+    }
   },
   forImage: {
     width: "80px",
     height: "80px",
     backgroundColor: "transparent !important",
     border: "1px solid #999",
-    borderRadius: "12px",
+    borderRadius: "12px"
   },
   viewAll: {
     textDecoration: "underline",
@@ -67,20 +66,20 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     fontWeight: "normal",
     "&:hover": { color: "#757575" },
-    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms"
   },
   timelineText: {
     "& .MuiTypography-body1": { fontSize: "0.85rem" },
     "& .MuiTypography-body2": { fontSize: "0.7rem" },
     "&  p": {
-      margin: "0",
-    },
+      margin: "0"
+    }
   },
   blue: {
-    color: theme.palette.secondary.main,
+    color: theme.palette.secondary.main
   },
   todayDot: {
-    fontSize: "8px",
+    fontSize: "8px"
   },
 
   fileUploadSection: {
@@ -88,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     flexDirection: "column",
-    width: "100%",
+    width: "100%"
   },
   fileUploadTopSection: {
     minHeight: "50px",
@@ -96,28 +95,28 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    marginBottom: "23px",
+    marginBottom: "23px"
   },
   flexIcon: {
-    display: "flex",
+    display: "flex"
   },
   uploadTitle: {
     margin: "0",
     color: "#757575",
     fontWeight: "normal",
-    marginBottom: "8px",
+    marginBottom: "8px"
   },
   uploadSubtext: {
     color: "rgb(176, 176, 176)",
     margin: "0",
-    fontWeight: "normal",
+    fontWeight: "normal"
   },
   IconSection: {
     minHeight: "35px",
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
-    width: "fit-content",
+    width: "fit-content"
   },
   fileDrop: {
     minHeight: "125px",
@@ -131,17 +130,17 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     border: "2px dashed rgb(176, 176, 176)",
-    marginBottom: "30px",
+    marginBottom: "30px"
   },
   fileDropError: {
-    color: "red",
+    color: "red"
   },
   forImage: {
     width: "80px !important",
     height: "80px !important",
     backgroundColor: "transparent !important",
     // border: "1px solid #999",
-    borderRadius: "10px !important",
+    borderRadius: "10px !important"
   },
   forImageContainer: {
     // width: "100px !important",
@@ -171,16 +170,16 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "10px",
 
     "& svg": {
-      fill: "#999 !important",
-    },
+      fill: "#999 !important"
+    }
   },
   disabledDownload: {
     cursor: "auto !important",
     backgroundColor: "#e9e9e978 !important",
     "& svg": {
-      fill: "#d3d3d3ab !important",
-    },
-  },
+      fill: "#d3d3d3ab !important"
+    }
+  }
 }));
 
 export default function Documents(props) {
@@ -200,7 +199,7 @@ export default function Documents(props) {
     else return ["Contact", 2];
   }, [props.isTransactPage]);
 
-  const [getRecentFiles, { data: files }] = useLazyQuery(
+  const [getRecentFiles, { data: files, loading }] = useLazyQuery(
     GETRECENTCONTACTFILES,
     {
       fetchPolicy: "cache-and-network",
@@ -224,8 +223,8 @@ export default function Documents(props) {
                 variables: {
                   relatedObjectId: props.id,
                   relatedObjectType,
-                  limit,
-                },
+                  limit
+                }
               });
               clearTimeout(waitBeforeRequestAgain);
             }, 1000);
@@ -238,7 +237,7 @@ export default function Documents(props) {
             // );
           }
         } else setFileRequestCounter(1);
-      },
+      }
     }
   );
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
@@ -260,7 +259,7 @@ export default function Documents(props) {
   //   }
   // );
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "no-cache",
+    fetchPolicy: "no-cache"
   });
 
   // const [viewFile, { data: viewFileData }] = useLazyQuery(VIEWFILEQUERY, {
@@ -271,17 +270,15 @@ export default function Documents(props) {
       variables: {
         relatedObjectId: props.id,
         relatedObjectType,
-        limit,
-      },
+        limit
+      }
     });
   }, [props.id]);
 
-  const [
-    viewFiles,
-    { data: viewFileResultt, loading: viewFileLoading },
-  ] = useLazyQuery(VIEWFILESQUERY, {
-    fetchPolicy: "no-cache",
-  });
+  const [viewFiles, { data: viewFileResultt, loading: viewFileLoading }] =
+    useLazyQuery(VIEWFILESQUERY, {
+      fetchPolicy: "no-cache"
+    });
   useEffect(() => {
     if (files && files?.getFileDescriptors?.length > 0) {
       let ID = [];
@@ -291,7 +288,7 @@ export default function Documents(props) {
       }
 
       viewFiles({
-        variables: { fileIds: ID },
+        variables: { fileIds: ID }
       });
     }
   }, [files]);
@@ -310,7 +307,6 @@ export default function Documents(props) {
     }
   }, [viewFileResult?.viewFile]);
 
-
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
@@ -321,10 +317,10 @@ export default function Documents(props) {
     if (fileIdToDelete) {
       deleteFile({
         variables: {
-          id: fileIdToDelete,
+          id: fileIdToDelete
         },
         refetchQueries: ["getRecentContactFiles", "getContactFiles"],
-        awaitRefetchQueries: true,
+        awaitRefetchQueries: true
       });
       setFileIdToDelete(null);
       setOpenDeleteConfirmDialog(false);
@@ -354,26 +350,26 @@ export default function Documents(props) {
     );
 
     let filteredMerged = filtered?.map((doc) => {
-      let fileDescriptor = files?.getFileDescriptors?.find((file) => file.fileId === doc.id);
+      let fileDescriptor = files?.getFileDescriptors?.find(
+        (file) => file.fileId === doc.id
+      );
       return {
         ...doc,
         descriptorId: fileDescriptor?.descriptorId,
         state: fileDescriptor?.fileState,
         dateTime: fileDescriptor?.dateTime
-      }
+      };
     });
     setFilteredDocuments(filteredMerged);
   }, [documentSearch, viewFileResultt?.viewFiles]);
 
   const ExtenstionGetter = (name) => {
-    let fileExtension = name
-      ?.slice(name.lastIndexOf(".") + 1)
-      ?.toLowerCase();
+    let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
 
-    return fileExtension
-  }
+    return fileExtension;
+  };
   return (
-    <div className={classes.root} variant="outlined" >
+    <div className={classes.root} variant="outlined">
       {!props.isTransactPage && (
         <CardActions style={{ padding: "23px 23px 8px 23px" }}>
           <Grid item xs={12} style={{ minHeight: "35px" }}>
@@ -382,15 +378,14 @@ export default function Documents(props) {
             </h4>
             <h4
               className={classes.viewAll}
-
               // onClick={(e) => {
               //   e.preventDefault();
               //   props.viewAll("comments");
               // }}
 
               onClick={() => {
-                history.push(`/contact/details/${props.id}/documents`)
-                setStateApp({ ...stateApp, viewDoc: null })
+                history.push(`/contact/details/${props.id}/documents`);
+                setStateApp({ ...stateApp, viewDoc: null });
               }}
             >
               View All
@@ -399,18 +394,15 @@ export default function Documents(props) {
         </CardActions>
       )}
 
-          {!props.isTransactPage && (
+      {!props.isTransactPage && (
+        <UploadZone
+          relatedObjectId={props.id}
+          userId={userId}
+          relatedObjectType={relatedObjectType} //Contact or Deal
+        />
+      )}
 
-            <UploadZone
-              relatedObjectId={props.id}
-              userId={userId}
-              relatedObjectType={relatedObjectType} //Contact or Deal
-            />
-          )}
-
-
-      <CardContent  >
-
+      <CardContent>
         {props.isTransactPage && (
           <UploadZone
             relatedObjectId={props.id}
@@ -420,8 +412,7 @@ export default function Documents(props) {
         )}
 
         {props.isTransactPage && (
-          <div style={{ marginBottom: "20px" }}
-          >
+          <div style={{ marginBottom: "20px" }}>
             <TextField
               fullWidth
               value={documentSearch}
@@ -433,35 +424,38 @@ export default function Documents(props) {
                   <InputAdornment position="start">
                     <SearchIcon />
                   </InputAdornment>
-                ),
+                )
               }}
               labelWidth={70}
             />
           </div>
         )}
         <div className={classes.fileUploadSection}>
-
           {/* this is for view all */}
           {filteredDocuments?.map((file, key) => {
+            if (file.state === "pending")
+              return (
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <CircularProgress size="20px" />
+                </div>
+              );
 
             let fileExtension = file?.name
               ?.slice(file.name.lastIndexOf(".") + 1)
               ?.toLowerCase();
 
             return (
-              <div key={file.id}
-
-              >
+              <div key={file.id}>
                 <div className={classes.fileUploadTopSection}>
                   <div className={classes.flexIcon}>
                     {
                       <div
                         className={`${classes.greySquare} 
-                        // ${file.state !== "active"
-                        //   ? classes.disabledDownload
-                        //   : ""
-                          }`
-                        }
+                        // ${
+                          file.state !== "active"
+                          //   ? classes.disabledDownload
+                          //   : ""
+                        }`}
                       >
                         {new RegExp(
                           ["jpg", "jpeg", "png", "bmp"].join("|")
@@ -472,29 +466,29 @@ export default function Documents(props) {
                             className={classes.forImage}
                           ></img>
                         ) : (
-                          <div className={classes.forImageContainer} 
-                          
-                          onClick={() => {
+                          <div
+                            className={classes.forImageContainer}
+                            onClick={() => {
+                              if (file.state !== "active") return;
 
-                            if (file.state !== "active") return;
-
-                            if (fileExtension === 'pdf') {
-                              setStateApp({ ...stateApp, viewDoc: { uri: file.uri, name: file.name } })
-                            }
-                            else {
-                              handleViewFile(file.id)
-                            }
-  
-
-                          }}>
+                              if (fileExtension === "pdf") {
+                                setStateApp({
+                                  ...stateApp,
+                                  viewDoc: { uri: file.uri, name: file.name }
+                                });
+                              } else {
+                                handleViewFile(file.id);
+                              }
+                            }}
+                          >
                             {/* {fileExtension} */}
                             {get_file_icon(fileExtension)}
                           </div>
-                        )
-                        }
+                        )}
                       </div>
                     }
-                    <div className='DocumentTitle'
+                    <div
+                      className="DocumentTitle"
                       // onClick={() => {
 
                       //   viewFileResultt?.viewFiles.map((value) => {
@@ -508,31 +502,31 @@ export default function Documents(props) {
 
                       //   })
 
-                        onClick={() => {
+                      onClick={() => {
+                        if (file.state !== "active") return;
 
-                          if (file.state !== "active") return;
-
-                          if (fileExtension === 'pdf') {
-                            setStateApp({ ...stateApp, viewDoc: { uri: file.uri, name: file.name } })
-                          }
-                          else {
-                            handleViewFile(file.id)
-                          }
-
-
-                        }}>
-
+                        if (fileExtension === "pdf") {
+                          setStateApp({
+                            ...stateApp,
+                            viewDoc: { uri: file.uri, name: file.name }
+                          });
+                        } else {
+                          handleViewFile(file.id);
+                        }
+                      }}
+                    >
                       {/* }}> */}
 
-                      
-                      <h4 className={classes.uploadTitle} >
+                      <h4 className={classes.uploadTitle}>
                         {file?.name?.length > 22
                           ? file?.name?.slice(0, 20) + "..."
                           : file?.name}
                       </h4>
                       {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
                       <h5 className={classes.uploadSubtext}>
-                        {moment.utc(file.dateTime).format("MMM DD, YYYY")}
+                        {moment
+                          .unix(file.dateTime / 1000)
+                          .format("MMM DD, YYYY")}
                       </h5>
                     </div>
                   </div>
@@ -569,7 +563,6 @@ export default function Documents(props) {
               handleDeleteAccept();
             }}
           />
-
         </div>
       </CardContent>
     </div>
