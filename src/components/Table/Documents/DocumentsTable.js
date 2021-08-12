@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
-
+import { AutoCompleteFilter } from "../AutoCompleteFilter";
 // QUERIES 
 import { useLazyQuery, useMutation } from "@apollo/client";
 
@@ -16,10 +16,6 @@ import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
 import { GET_ES_DOCUMENTS_FILTER } from "graphQL/useQueryESDocumentsFilter";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import CircularProgress from '@material-ui/core/CircularProgress';
-
 
 
 const useStyles = makeStyles((theme) => ({
@@ -27,92 +23,6 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 !important"
   },
 }));
-
-
-function Asynchronous({ filterList, onChange, label, filterKey, index, column }) {
-  console.log("column.filterKey", label)
-  const [open, setOpen] = React.useState(false);
-  const [options, setOptions] = React.useState([]);
-
-  const [getESDocumentsFilter, { data: DocumentsData, loading }] = useLazyQuery(GET_ES_DOCUMENTS_FILTER, { fetchPolicy: "no-cache" });
-
-
-  React.useEffect(() => {
-    getESDocumentsFilter({
-      variables: {
-        filterKey,
-        search: "",
-        size: 50
-      },
-    });
-  }, []);
-
-  React.useEffect(() => {
-    if (DocumentsData?.getESFilesFilter?.hits)
-      setOptions(DocumentsData.getESFilesFilter.hits)
-  }, [DocumentsData]);
-
-
-  const handleChange = (search) => {
-    getESDocumentsFilter({
-      variables: {
-        filterKey,
-        search,
-        size: 50,
-      },
-    });
-  }
-
-
-  return (
-    <Autocomplete
-      id="asynchronous-demo"
-      // style={{ width: 300 }}
-      open={open}
-      onOpen={() => {
-        setOpen(true);
-      }}
-      onClose={() => {
-        setOpen(false);
-      }}
-      getOptionSelected={(option, value) => option.key === value.key}
-      getOptionLabel={(option) => option.key}
-      onChange={(e, value, reason) => {
-        if (value?.key) {
-          filterList[index][0] = value.key
-          onChange(filterList[index], index, column);
-        }
-
-        // if (reason === 'clear') {
-        //   onChange('All', index, column);
-        // } else {
-        //   onChange(value?.key || 'All', index, column);
-        // }
-
-      }}
-      options={options}
-      loading={loading}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label={label}
-          onChange={(e) => handleChange(e.target.value)}
-          // variant="outlined"
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: (
-              <React.Fragment>
-                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                {params.InputProps.endAdornment}
-              </React.Fragment>
-            ),
-          }}
-        />
-      )}
-    />
-  );
-}
-
 
 function DocumentsTable(props) {
   const classes = useStyles();
@@ -156,36 +66,24 @@ function DocumentsTable(props) {
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
       props.setRows(tableData?.hits);
-
-      TableHeader[1].options = {
-        ...TableHeader[1].options,
-        filter: true,
-        filterType: 'custom',
-        customFilterListOptions: {
-          // render: v => v.map(l => l.toUpperCase()),
-
-          // update: (filterList, filterPos, index) => {
-          //   console.log('update');
-          //   console.log(filterList, filterPos, index);
-          //   filterList[index].splice(filterPos, 1);
-          //   return filterList;
-          // }
-        },
-        filterOptions: {
-          names: [],
-          logic: (location, filters, row) => {
-            console.log('filterOptions');
-            if (filters.length) return !filters.includes(location);
-            return false;
-          },
-          display: (filterList, onChange, index, column) => {
-            const filterKey = TableHeader.find(el => el.name === column.name)?.sortKey;
-            return (
-              <Asynchronous filterList={filterList} label={column.label} column={column} index={index} filterKey={filterKey} onChange={onChange} />
-            );
+      TableHeader.forEach((column) => {
+        if (column?.options?.filter) {
+          column.options = {
+            ...column.options,
+            filter: true,
+            filterType: 'custom',
+            filterOptions: {
+              display: (filterList, onChange, index, column) => {
+                column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
+                return (
+                  <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange} query={GET_ES_DOCUMENTS_FILTER} />
+                );
+              }
+            }
           }
         }
-      }
+      })
+
       setColumns(TableHeader);
       props.setLoading(false);
     }
@@ -206,19 +104,16 @@ function DocumentsTable(props) {
   ////////////-----Add your code section here-----///////////////////////
   const onTableChange = (action, tableState, rows, meta) => {
     const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESDocuments)
-
     switch (action) {
       case "search":
       case "sort":
+      case "filterChange":
       case "changeRowsPerPage":
         tableActions.genericESAction();
         break;
       case "changePage":
         tableActions.changeESPage();
         break;
-      // case "filterChange":
-      //   tableActions.searchData()
-      //   break
       default:
     }
   }

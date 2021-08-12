@@ -158,7 +158,7 @@ export const TableHOC = (Component) => {
                     ...(!isEmpty(tableState.sortOrder)) && {
                         sort:
                             [{
-                                [columns.find(el => el.name === tableState.sortOrder?.name)?.sortKey ||
+                                [columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
                                     columns.find(el => el.name === tableState.sortOrder?.name)?.name]: {
                                     order: tableState.sortOrder?.direction,
                                     // unmapped_type: "null",
@@ -167,9 +167,14 @@ export const TableHOC = (Component) => {
                             }]
                     },
 
-                    filters: {},
+                    filters: [],
                 },
             };
+            tableState.filterList.forEach((val, index) => {
+                if (val.length > 0) {
+                    pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
+                }
+            })
             return {
                 pageESVariables,
                 genericESAction: () => {
@@ -194,7 +199,7 @@ export const TableHOC = (Component) => {
                         },
                     });
                 },
-                searchData: () => {
+                searchClientSide: () => {
                     let searchRows = []
                     searchRows = JSON.parse(JSON.stringify(rows));
                     for (let j = 0; j < tableState.filterList.length; j++) {

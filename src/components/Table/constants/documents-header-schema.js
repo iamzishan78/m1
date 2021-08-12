@@ -16,7 +16,7 @@ const DocumentsHeadCells = [
   },
   {
     name: "fileName",
-    sortKey: 'name.keyword',
+    esKey: 'name.keyword',
     dbName: "name",
     label: "File Name",
     options: {
@@ -33,23 +33,35 @@ const DocumentsHeadCells = [
   // },
   {
     name: "documentNumber",
-    sortKey: 'documentNumber.keyword',
+    esKey: 'documentNumber.keyword',
     label: "Document Number",
+    options: {
+      filter: true,
+    }
   },
   {
     name: "documentName",
-    sortKey: 'documentName.keyword',
+    esKey: 'documentName.keyword',
     label: "Document Name",
+    options: {
+      filter: true,
+    }
   },
   {
     name: "documentType",
-    sortKey: 'documentType.keyword',
+    esKey: 'documentType.keyword',
     label: "Document Type",
+    options: {
+      filter: true,
+    }
   },
   {
     name: "documentDate",
-    sortKey: 'documentDate.keyword',
+    esKey: 'documentDate.keyword',
     label: "Document Date",
+    options: {
+      filter: false,
+    }
   },
   {
     name: "uploadedDate",
@@ -77,8 +89,11 @@ const DocumentsHeadCells = [
 
   {
     name: "recordingInfo",
-    sortKey: 'recordingInfo.keyword',
+    esKey: 'recordingInfo.keyword',
     label: "Recording Info",
+    options: {
+      filter: true,
+    }
   },
   {
     name: " ",
