@@ -53,6 +53,9 @@ const useStyles = makeStyles((theme) => {
         WebkitTransition:
           "transform 0.3s ease-out, width 0.3s ease-out, height 0.3s ease-out",
       },
+      "& .MuiInput-inputTypeSearch": {
+        width: "96%"
+      }
     },
     rootList: {
       width: ({ mapGridCardActivated }) =>

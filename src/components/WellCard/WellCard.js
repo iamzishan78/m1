@@ -246,7 +246,7 @@ function WellCard() {
                     className={classes.text1}
                     variant="subtitle2"
                   >
-                    Well Status
+                    Status
 
                   </Typography>
                   <Typography
@@ -276,7 +276,7 @@ function WellCard() {
                     className={classes.text1}
                     variant="subtitle2"
                   >
-                    Last 12 Prod
+                    Last 12
                   </Typography>
                   <Typography
                     align="center"
@@ -354,6 +354,16 @@ function WellCard() {
                 aria-label="well table"
               >
                 <TableBody>
+                  <TableRow className={classes.rowWhite}>
+                    <TableCell className={classes.cell1} align="left">
+                      County
+                    </TableCell>
+                    <TableCell className={classes.cell2} align="right">
+                      {stateApp.selectedWell.county
+                        ? stateApp.selectedWell.county
+                        : "--"}
+                    </TableCell>
+                  </TableRow>
                   <TableRow className={classes.rowGrey}>
                     <TableCell className={classes.cell1} align="left">
                       Operator
@@ -372,6 +382,22 @@ function WellCard() {
                       {stateApp.selectedWell.wellType
                         ? stateApp.selectedWell.wellType
                         : "--"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className={classes.rowWhite}>
+                    <TableCell className={classes.cell1} align="left">
+                      Lease Name
+                    </TableCell>
+                    <TableCell className={classes.cell2} align="right">
+                      {summary?.Lease || "--"}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className={classes.rowWhite}>
+                    <TableCell className={classes.cell1} align="left">
+                      Lease Number
+                    </TableCell>
+                    <TableCell className={classes.cell2} align="right">
+                      {summary?.LeaseId || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowGrey}>
@@ -563,7 +589,7 @@ function WellCard() {
               </Table>
 
               <div   >
-                {stateApp.selectedWell.state == 'TX'
+                {stateApp.selectedWell.state === 'TX'
                   ?
                   <Link href="http://webapps2.rrc.texas.gov/EWA/drillingPermitsQueryAction.do"
                     // doesnt work yet but starting point for customized permit link for all RRC wells

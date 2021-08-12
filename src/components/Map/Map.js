@@ -87,7 +87,7 @@ import { PERMITDETAILQUERY } from "../../graphQL/useQueryRecentPermitDetails";
 import { drawShapeStyles } from "components/MapControls/commonHelper";
 import _ from "lodash";
 
-
+import parseLinkHeader from 'parse-link-header';
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -443,7 +443,7 @@ function Map() {
   const [
     getRecentPermitDetail,
     { loading: loadingPermitSummary, data: dataPermitSummary },
-  ] = useLazyQuery(PERMITDETAILQUERY);
+  ] = useLazyQuery(PERMITDETAILQUERY, { fetchPolicy: "network-only", });
 
 
   useEffect(() => {
@@ -467,10 +467,10 @@ function Map() {
   useEffect(() => {
     if (layerStates && layerStates.allLayerSettingsByUser) {
 
-      setStateApp({
-        ...stateApp,
+      setStateApp((state) => ({
+        ...state,
         layers: [...layerStates.allLayerSettingsByUser],
-      });
+      }));
 
       if (layerStates.allLayerSettingsByUser.length > 0) {
         setLayersData(layerStates.allLayerSettingsByUser);
@@ -1217,12 +1217,14 @@ function Map() {
             ...feature.properties,
             shapeCenter
           },
-          layer: featureLayer
+          layer: featureLayer,
+          geometry: feature.geometry || feature._geometry
         }
         feature = selectedUserDefinedLayer;
         setStateApp(state => ({
           ...state,
-          selectedUserDefinedLayer
+          selectedUserDefinedLayer,
+          selectedParcel: null
         }));
       }
       createUDPopUp(feature.properties);
@@ -3535,33 +3537,67 @@ function Map() {
     })();
   }, [loading, stateApp.permitSelectedCoordinates]);
 
-  useEffect(() => {
-    const req = new Request(
-      "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
-      {
-        method: "GET",
-        mode: "cors",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "Cache-Control": "max-age=0",
-        },
-      }
-    );
+  const fetchStyles = async (abortController) => {
+    const token = '&access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw'
+    let link = 'https://api.mapbox.com/styles/v1/m1neral?&sortby=modified'
+    const reqOptions = {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "Cache-Control": "max-age=0",
+      },
+    };
 
-    const abortController = new AbortController();
     const signal = abortController.signal;
+
+    const styleTypes = [
+      'Satellite',
+      'Basic',
+      'Dark',
+      'Light',
+      'Outdoors',
+    ]
+    let recurseLimit = 5;
+
+    let styles = (await styleTypes.reduce(
+      async function reduceFunction(styles, styleType) {
+        styles = (await styles)
+        if (!styles.find(style => style.name === styleType) &&
+          recurseLimit > 0) {
+          return new Promise((resolve, reject) => {
+            --recurseLimit;
+            fetch(new Request(link + token, reqOptions), { signal: signal })
+              .then((results) => {
+                link = parseLinkHeader(results.headers.get('Link')).next.url;
+                return results.json()
+              })
+              .then(async (data) => {
+                styles.push(..._.uniqBy(data.filter(style => styleTypes.includes(style.name) && !styles.includes(style.name)), 'name'));
+                await reduceFunction(styles, styleType)
+                resolve(styles);
+              })
+              .catch((err) => reject(err))
+          })
+        } else return styles
+      }, []
+    ))
+
+    setMapStyles(styles);
+    setStateApp((state) => ({
+      ...state,
+      mapStyles: styles
+    }));
+  }
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    fetchStyles(abortController);
 
     //getPermits({});
     getRecentSubmittedPermits({});
     getRigs({});
-
-    fetch(req, { signal: signal })
-      .then((results) => results.json())
-      .then((data) => {
-        data = _.uniqBy(data, 'name');
-        setMapStyles(data.slice(0, 5));
-      });
 
     setStateApp((state) => ({
       ...state,
@@ -4096,7 +4132,11 @@ function Map() {
           shapeFilterControl(e.target);
         });
 
-        setStateApp({ ...stateApp, map: newMap, draw: Draw });
+        // omg please use the updater pattern!
+        setStateApp((state) => ({
+          ...state,
+          map: newMap, draw: Draw
+        }));
 
         newMap.on("load", function (e) {
           newMap.loadImage(MarkerIcon, function (error, image) {
@@ -4581,6 +4621,7 @@ function Map() {
 
         setStateApp((state) => ({
           ...state,
+          searchLoader: false,
           fitBounds: findBounds(formatIt(stateApp.wellListFromSearch)),
         }));
       } else {
@@ -4588,7 +4629,7 @@ function Map() {
           stateApp.wellListFromSearch[0] &&
           stateApp.wellListFromSearch[0].latitude &&
           stateApp.wellListFromSearch[0].longitude
-        )
+        ) {
           map.flyTo({
             center: {
               lng: stateApp.wellListFromSearch[0].longitude,
@@ -4596,6 +4637,12 @@ function Map() {
             },
             zoom: 12,
           });
+          setStateApp((state) => ({
+            ...state,
+            searchLoader: false,
+          }));
+        }
+
       }
     }
   }, [map, stateApp.wellListFromSearch]);
@@ -4840,11 +4887,11 @@ function Map() {
             return !shape_properties.id || !shape_properties.id.includes(id);
           }
         );
-        setStateApp({
-          ...stateApp,
+        setStateApp((state) => ({
+          ...state,
           selectedUserDefinedLayer: null,
-          editingUserDefinedLayers: updated_layers,
-        });
+          editingUserDefinedLayers: updated_layers
+        }));
         handleCloseSpatialDataCardEdit();
       }
       const customLayerId = update_layers[0]._id;
@@ -4897,10 +4944,10 @@ function Map() {
             return !shape_properties.id || !shape_properties.id.includes(id);
           });
           stateApp.draw.delete(`edit_polygon_${id}`);
-          setStateApp({
-            ...stateApp,
-            editingUserDefinedLayers: updated_layers,
-          });
+          setStateApp((state) => ({
+            ...state,
+            editingUserDefinedLayers: updated_layers
+          }));
           handleCloseSpatialDataCardEdit();
         } else if (customLayers.length > 0) {
           const delete_layers = customLayers.filter((layer) => {
@@ -4920,10 +4967,10 @@ function Map() {
               const shape_properties = JSON.parse(layer.shape).properties;
               return !shape_properties.id || !shape_properties.id.includes(id);
             });
-            setStateApp({
-              ...stateApp,
-              customLayers: updated_layers,
-            });
+            setStateApp((state) => ({
+              ...state,
+              customLayers: updated_layers
+            }));
           }
           handleCloseSpatialDataCard();
         }
@@ -4946,10 +4993,10 @@ function Map() {
               const shape_properties = JSON.parse(layer.shape).properties;
               return !shape_properties.id || !shape_properties.id.includes(id);
             });
-            setStateApp({
-              ...stateApp,
-              customLayers: updated_layers,
-            });
+            setStateApp((state) => ({
+              ...state,
+              customLayers: updated_layers
+            }));
           }
           handleCloseSpatialDataCard();
         }
@@ -4991,20 +5038,20 @@ function Map() {
       map.on("draw.selectionchange", ({ features }) => {
         const [feature] = features;
         if (feature && feature.id.includes("edit_polygon")) {
-          setStateApp({
-            ...stateApp,
+          setStateApp((state) => ({
+            ...state,
             selectedUserDefinedLayer: feature,
             editLayer: true,
-            editDraw: true,
-          });
+            editDraw: true
+          }));
         } else {
-          setStateApp({
-            ...stateApp,
+          setStateApp((state) => ({
+            ...state,
             popupOpen: false,
             selectedUserDefinedLayer: undefined,
             editLayer: false,
-            editDraw: false,
-          });
+            editDraw: false
+          }));
         }
       });
     }
@@ -5035,6 +5082,11 @@ function Map() {
         linear: true,
       });
 
+      // setStateApp((state) => ({
+      //   ...state,
+      //   wellDetailCardOpen: false
+      // }));
+      // super fucked up because this depends on overwriting other context updates to work
       setStateApp({
         ...stateApp,
         wellDetailCardOpen: false,
@@ -5078,10 +5130,10 @@ function Map() {
         linear: true,
       });
 
-      setStateApp({
-        ...stateApp,
-        parcelDetailCardOpen: false,
-      });
+      setStateApp((state) => ({
+        ...state,
+        parcelDetailCardOpen: false
+      }));
     }
   }, [stateApp.parcelDetailCardOpen]);
 
@@ -5280,20 +5332,22 @@ function Map() {
                   )}
                 </PortalD>
               )}
-            {stateApp.selectedUserDefinedLayer !== null && (
-              <PortalD id="popupContainer">
-                <UdLayerCardProvider
-                  parent="map"
-                  handleCloseExpandableCard={handleCloseExpandableCard}
-                  selectedUserDefinedLayer={stateApp.selectedUserDefinedLayer}
-                  zIndex={3000}
-                  cardWidth="350px"
-                  mouseX={0}
-                  mouseY={0}
-                  position="relative"
-                />
-              </PortalD>
-            )}
+            {stateApp.selectedUserDefinedLayer !== null &&
+              stateApp.currentFeature?.source !== 'parcels_source' &&
+              stateApp.currentFeature?.source !== 'interests_source' && (
+                <PortalD id="popupContainer">
+                  <UdLayerCardProvider
+                    parent="map"
+                    handleCloseExpandableCard={handleCloseExpandableCard}
+                    selectedUserDefinedLayer={stateApp.selectedUserDefinedLayer}
+                    zIndex={3000}
+                    cardWidth="350px"
+                    mouseX={0}
+                    mouseY={0}
+                    position="relative"
+                  />
+                </PortalD>
+              )}
             {stateApp.selectedParcel && (
               <PortalD id="popupContainer">
                 {!stateApp.expandedCard && (

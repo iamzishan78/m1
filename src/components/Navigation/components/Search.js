@@ -196,7 +196,7 @@ function Search() {
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
   const [value, setValue] = React.useState(null);
   const [inputValue, setInputValue] = React.useState("");
-  const [searchOption, setSearchOption] = React.useState("all");
+  const [searchOption, setSearchOption] = React.useState("wells");
   const [options, setOptions] = React.useState([]);
   const [searchTop, setSearchTop] = React.useState(5);
   const [maxMinWellsScore, setMaxMinWellsScore] = React.useState([0, 0]);
@@ -718,6 +718,7 @@ function Search() {
               ...stateApp,
               selectedWell: null,
               fitBounds: null,
+              searchLoader: false,
               selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
               wellSelectedCoordinates: [
                 dataOwnerWells.ownerLatsLonsArray[0].longitude,
@@ -728,6 +729,7 @@ function Search() {
             : {
               ...stateApp,
               fitBounds: null,
+              searchLoader: false,
               wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
             }
         );
@@ -737,6 +739,7 @@ function Search() {
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
+          searchLoader: false,
           wellListFromSearch: [],
         }));
       }
@@ -755,6 +758,7 @@ function Search() {
               ...stateApp,
               selectedWell: null,
               fitBounds: null,
+              searchLoader: false,
               selectedWellId: dataOperatorWells.operatorLatsLonsArray[0].id.toLowerCase(),
               wellSelectedCoordinates: [
                 dataOperatorWells.operatorLatsLonsArray[0].longitude,
@@ -767,6 +771,7 @@ function Search() {
             : {
               ...stateApp,
               fitBounds: null,
+              searchLoader: false,
               wellListFromSearch: [
                 ...dataOperatorWells.operatorLatsLonsArray,
               ],
@@ -777,6 +782,7 @@ function Search() {
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
+          searchLoader: false,
           wellListFromSearch: [],
         }));
       }
@@ -800,11 +806,13 @@ function Search() {
                 dataLeaseWells.leaseLatsLonsArray[0].longitude,
                 dataLeaseWells.leaseLatsLonsArray[0].latitude,
               ],
+              searchLoader: false,
               wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
             }
             : {
               ...stateApp,
               fitBounds: null,
+              searchLoader: false,
               wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
             }
         );
@@ -813,6 +821,7 @@ function Search() {
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
+          searchLoader: false,
           wellListFromSearch: [],
         }));
       }
@@ -832,19 +841,23 @@ function Search() {
               ...stateApp,
               selectedWell: null,
               fitBounds: null,
+              searchLoader: false,
               wellListFromSearch: [...dataContactWells.contactWells],
             }
             : {
               ...stateApp,
               fitBounds: null,
+              searchLoader: false,
               wellListFromSearch: [...dataContactWells.contactWells],
-            }
+            },
+
         );
         stateApp.toggleLayersActivity("Search", true);
       } else {
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
+          searchLoader: false,
           wellListFromSearch: [],
         }));
       }
@@ -905,7 +918,7 @@ function Search() {
       );
 
       //// setting map loader
-      setStateApp((stateApp) => ({ ...stateApp, mapCircularLoaderAct: true }));
+      setStateApp((stateApp) => ({ ...stateApp, mapCircularLoaderAct: true, searchLoader: true }));
 
       //// if well, with lat long
       if (
@@ -991,7 +1004,6 @@ function Search() {
           },
         });
       }
-
 
       //// if mapboxSearch
       if (newValue && newValue.Source === "mapboxSearch" && newValue.center) {
@@ -1296,13 +1308,17 @@ function Search() {
             )
           );
         }}
-        autoComplete
+        freeSolo
+        // autoComplete
         includeInputInList
         value={value}
 
         // handle change also acts like onClick here 
         onChange={(event, newValue) => {
-          handleChange(newValue);
+          if (event.key === 'Enter')
+            handleChange(options[0])
+          else
+            handleChange(newValue);
         }}
 
         onInputChange={(event, newInputValue, reason) => {

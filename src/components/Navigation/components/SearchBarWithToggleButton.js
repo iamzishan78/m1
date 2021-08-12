@@ -10,6 +10,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived } from "../../../actions";
 import PostAddOutlinedIcon from '@material-ui/icons/PostAddOutlined';
 import { useLocation } from "react-router-dom";
+import { CircularProgress } from "@material-ui/core";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     "& .MuiButtonGroup-root": { width: "100%" },
@@ -68,7 +70,6 @@ function GridIcon() {
   );
 }
 
-
 export default function SearchBarWithToggleButton() {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
@@ -88,7 +89,6 @@ export default function SearchBarWithToggleButton() {
 
             <Button
               className={classes.gridOnIcon}
-
               onClick={() => {
                 console.log(stateApp, 'Add Document')
                 setStateApp({ ...stateApp, DocumentDrawer: true })
@@ -102,6 +102,14 @@ export default function SearchBarWithToggleButton() {
           <GridIcon />
         )}
       </ButtonGroup>
+      {
+        stateApp.searchLoader && <CircularProgress
+          key="loader"
+          style={{ position: "absolute", right: "-38px", top: "8px" }}
+          size={28}
+          color="secondary"
+        />
+      }
     </div>
   );
 }

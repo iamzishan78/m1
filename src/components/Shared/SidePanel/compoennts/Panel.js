@@ -40,6 +40,7 @@ import {
 } from './style'
 import SortableLayer from "./SortableLayer";
 import _ from "lodash";
+import { CircularProgress } from "@material-ui/core";
 
 
 function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
@@ -65,37 +66,42 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	const [open, setOpen] = useState(true);
 	const [mapStyles, setMapStyles] = useState([]);
 
+	// useEffect(() => {
+	// 	if (type === "base") {
+	// 		const req = new Request(
+	// 			"https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
+	// 			{
+	// 				method: "GET",
+	// 				mode: "cors",
+	// 				headers: {
+	// 					Accept: "application/json",
+	// 					"Content-Type": "application/json",
+	// 					"Cache-Control": "max-age=0",
+	// 				},
+	// 			}
+	// 		);
+
+	// 		const abortController = new AbortController();
+	// 		const signal = abortController.signal;
+
+	// 		fetch(req, { signal: signal })
+	// 			.then((results) => results.json())
+	// 			.then((data) => {
+	// 				data = _.uniqBy(data, 'name');
+	// 				setMapStyles(data.slice(0, 5));
+	// 			});
+
+	// 		//clean up
+	// 		return function cleanup() {
+	// 			abortController.abort();
+	// 		};
+	// 	}
+	// }, [type]);
+
 	useEffect(() => {
-		if (type === "base") {
-			const req = new Request(
-				"https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
-				{
-					method: "GET",
-					mode: "cors",
-					headers: {
-						Accept: "application/json",
-						"Content-Type": "application/json",
-						"Cache-Control": "max-age=0",
-					},
-				}
-			);
-
-			const abortController = new AbortController();
-			const signal = abortController.signal;
-
-			fetch(req, { signal: signal })
-				.then((results) => results.json())
-				.then((data) => {
-					data = _.uniqBy(data, 'name');
-					setMapStyles(data.slice(0, 5));
-				});
-
-			//clean up
-			return function cleanup() {
-				abortController.abort();
-			};
-		}
-	}, [type]);
+		if (stateApp.mapStyles && stateApp.mapStyles.length > 0)
+			setMapStyles([...stateApp.mapStyles]);
+	}, [stateApp.mapStyles])
 
 	useEffect(() => {
 
@@ -257,10 +263,18 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 					{type === "base" && getBasemapImageBox()}
 
 					{
-						type === "layer" && layerMap && layerMap[0]?.type ?
+						type === "layer" ?
 
 							(
-								<SortableLayer layerMap={layerMap} />
+								layerMap && layerMap[0]?.type ?
+									<SortableLayer layerMap={layerMap} />
+									: <Box height='calc(100vh - 50px - 64px)' bgcolor="#040e24" display='flex' justifyContent='center'>
+										<CircularProgress
+											style={{ top: "50%", position: "absolute" }}
+											size={40}
+											color="secondary"
+										/>
+									</Box>
 							)
 							: type === "base" ? (
 								<Collapse in={open} timeout="auto" unmountOnExit>
@@ -288,7 +302,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 				</div>
 				{/* // </ClickAwayListener> */}
 			</div>
-		</div>
+		</div >
 	);
 }
 
