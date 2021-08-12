@@ -1996,6 +1996,29 @@ function M1nTable(props) {
         parcelOwner.tags = [[], 0];
         parcelOwner.isTracked = false;
 
+        const interestKeys = [
+          "nra",
+          "surface_interest",
+          "mineral_interest",
+          "royalty_interest",
+          "orri",
+          "record_title",
+          "operating_rights",
+          "nri",
+          "net_acres",
+          'unknown_interest'
+        ];
+
+        Object.keys(o).forEach(key => {
+          if (interestKeys.includes(key)) {
+            if (typeof parcelOwner[key] === 'number' && String(parcelOwner[key]).split('.')[1])
+              parcelOwner[key] = addTrailingZeros(parcelOwner[key]);
+            else if (parcelOwner[key]?.["$numberDecimal"]) {
+              parcelOwner[key] = addTrailingZeros(parcelOwner[key]["$numberDecimal"]);
+            }
+          }
+        });
+
         for (
           let i = 0;
           i < checkIfOwnersAreContactsData.ifAreContacts.length;
@@ -3119,6 +3142,10 @@ function M1nTable(props) {
   ////////////-----Add your code section here-----///////////////////////
   const getWellOwnersByYear = (selectedYear) => {
     setSelectedYear(selectedYear)
+  }
+
+  const addTrailingZeros = (num) => {
+    return num.toLocaleString("en", { useGrouping: false, minimumFractionDigits: 8, maximumFractionDigits: 20 })
   }
   return (
     <Container
