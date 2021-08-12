@@ -3775,6 +3775,7 @@ function Map() {
     }
     setStateApp((state) => ({
       ...state,
+      currentFeature: undefined,
       popupOpen: false,
     }));
     if (action === "add") {
