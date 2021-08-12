@@ -79,7 +79,6 @@ import moment from "moment";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
 import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
-import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
 
 import ButtonDropDown from "./ButtonGroup"
@@ -1725,7 +1724,7 @@ function SubTable(props) {
                                 "makeOwnerAContact"
                               );
                             }
-                            else if (props.targetLabel == "Parcel Ownership") {
+                            else if (props.targetLabel === "Parcel Ownership") {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
