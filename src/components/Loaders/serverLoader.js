@@ -89,7 +89,7 @@ export const createToast = (id, message, progress) => {
 };
 
 export const updateToast = (id, message, progress) => {
-  if (toastMeta[id].isOpen) {
+  if (toastMeta[id]?.isOpen) {
     toast.update(toastMeta[id].toastId, {
       render: (
         <CircularProgressWithLabel

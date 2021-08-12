@@ -12,6 +12,8 @@ const ContactBulkProgress = () => {
     const { data: dataJobs,  startPolling, stopPolling, refetch } = useQuery(GET_JOBS_STATUS, { variables: { userId: stateApp.user?.mongoId} });
   
     useEffect(() => {
+        setPollingStarted(false)
+        stopPolling()
         refetch()
     },[stateApp.bulkUpload])
 
