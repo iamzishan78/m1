@@ -384,7 +384,7 @@ function WellCard() {
                         : "--"}
                     </TableCell>
                   </TableRow>
-                  <TableRow className={classes.rowWhite}>
+                  <TableRow className={classes.rowGrey}>
                     <TableCell className={classes.cell1} align="left">
                       Lease Name
                     </TableCell>

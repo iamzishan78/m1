@@ -230,6 +230,9 @@ const ActivitiesToolbar = ({
         </div>
       )}
       <div className={classes.right}>
+
+      {stateApp.activityDisplayType === "calendar" ? (
+
         <Select
           className={classes.viewSwitcher}
           variant="outlined"
@@ -239,6 +242,9 @@ const ActivitiesToolbar = ({
           <MenuItem value={Views.WEEK}>Week</MenuItem>
           <MenuItem value={Views.MONTH}>Month</MenuItem>
         </Select>
+        
+      ):null}
+
         <div>
           <ButtonGroup>
             <Button
