@@ -62,7 +62,7 @@ export default function RelatedParties({ relatedParties = [] }) {
             defaultValue={party.type}
             // onChange={(value) => handleUpdateAgreement({ agreementType: value })}
             label="Party Type"
-            options={["Lesse", "Lessor"]}
+            options={["Lessee", "Lessor"]}
           />
         </Grid>
         <Grid item xs={3}>
@@ -99,13 +99,13 @@ export default function RelatedParties({ relatedParties = [] }) {
           <Tooltip
             title={!party.comments || party.comments?.length === 0 ? "Add Comments" : "Comments"}
             placement="top"
-            style={{ marginRight: "10px" }}
+            style={{ marginRight: "10px", paddingLeft: "10px" }}
           >
             <Badge badgeContent={party.comments?.length || null} color="secondary">
               <IconButton
                 id={party._id}
                 size="small"
-                color="primary"
+                color="grey"
                 // className={`${classes.icons} ${!value || value === 0 ? classes.noCommentsIcon : ""} ${
                 //   colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex ? classes.iconSelected : ""
                 // }`}
