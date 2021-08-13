@@ -44,19 +44,13 @@ function DocumentsTable(props) {
   const dense = true
   const total = false
   const orderByTracks = false
-
-  useEffect(() => {
-    getESDocuments({
-      variables: {
-        pagination: {}
-      },
-    });
-  }, [getESDocuments]);
+  const startPaginationAt = 25
 
   useEffect(() => {
     getESDocuments({
       variables: {
         pagination: {
+          first: startPaginationAt,
           keep_alive: "1micros"
         },
         search: props.documentSearchQuery ? props.documentSearchQuery : ""
@@ -158,7 +152,7 @@ function DocumentsTable(props) {
           uploadIcon={uploadIcon}
           dense={dense}
           orderByTracks={orderByTracks}
-          startPaginationAt={10}
+          startPaginationAt={startPaginationAt}
           // onClickAdd={onClickAdd}
           contactId={props.contactId}
           options={options}
