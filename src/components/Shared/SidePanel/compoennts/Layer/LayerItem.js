@@ -168,11 +168,15 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
             >
                 <Checkbox
                     icon={
+
                         <CancelOutlinedIcon
                             htmlColor={
                                 !ifLayerHaveData(layer) ? "rgb(127, 149, 199)" : "#12abe0"
                             }
                         />
+
+
+
                     }
                     checkedIcon={
                         <ClickIcon

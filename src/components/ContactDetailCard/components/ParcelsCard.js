@@ -13,7 +13,8 @@ import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: "23px 23px 0 23px",
+    padding: "23px 23px 0 23px",
+    width: "100%"
   },
 
   cardContent: { width: "100%", display: "flex" },
@@ -91,12 +92,13 @@ export default function ParcelsCard(props) {
       className={classes.button}
       fullWidth={true}
       variant='outlined'
+      onClick={() => {
+        history.push(`/contact/details/${props.contactData._id}/parcels`)
+      }}
     // style={{justifyContent: "flex-start"}}
     >
 
-      <div className={classes.root} onClick={() => {
-        history.push(`/contact/details/${props.contactData._id}/parcels`)
-      }}>
+      <div className={classes.root} >
         <div>
           <h4 style={{ marginTop: "0", float: "left" }}>Parcels ({count})</h4>
           {/* <IconButton

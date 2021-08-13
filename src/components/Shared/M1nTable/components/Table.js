@@ -3433,7 +3433,10 @@ function SubTable(props) {
               />
             )} */}
               {openDialog === "addParcelInterestsToEntity" && (
-                <AddParcelToEntityDialogContent onClose={handleCloseDialog} entityId={props.addAble.entityId} />
+                <AddParcelToEntityDialogContent
+                  onClose={handleCloseDialog}
+                  entityId={props.addAble.entityId}
+                />
               )}
               {openDialog === "deleteOwnersFromContact" && (
                 <DeleteConfirmationDialogContent
@@ -3443,7 +3446,11 @@ function SubTable(props) {
                   m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
-                  {`Do you want to permanently delete the owner${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
+                  {`Do you want to permanently delete the owner${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                     } from  this contact?`}
                 </DeleteConfirmationDialogContent>
               )}
@@ -3455,19 +3462,27 @@ function SubTable(props) {
                   m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
-                  {`Do you want to permanently delete the well interest${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
+                  {`Do you want to permanently delete the well interest${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                     } from  this contact?`}
                 </DeleteConfirmationDialogContent>
               )}
               {openDialog === "deleteParcelDocument" && (
                 <DeleteConfirmationDialogContent
-                  header="Delete Parcel Documents(s)"
+                  header="Delete Parcel Document(s)"
                   onClose={handleCloseDialog}
                   deleteFunc={props.deleteFunc}
                   m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
-                  {`Do you want to permanently delete the document${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
+                  {`Do you want to permanently delete the document${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                     } from  this parcel?`}
                 </DeleteConfirmationDialogContent>
               )}
@@ -3479,7 +3494,11 @@ function SubTable(props) {
                   m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
-                  {`Do you want to permanently delete the instrument${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
+                  {`Do you want to permanently delete the instrument${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                     } from  this parcel?`}
                 </DeleteConfirmationDialogContent>
               )}
@@ -3492,11 +3511,19 @@ function SubTable(props) {
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
                   {props.header === "Owner's Contacts" &&
-                    `Do you want to remove the contact${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
+                    `Do you want to remove the contact${m1nSelectedRowsIds &&
+                      m1nSelectedRowsIds.length > 1 &&
+                      removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                      ? "s"
+                      : ""
                     } from this owner?`}
 
                   {props.header === "Contacts" &&
-                    `Do you want to delete the selected contact${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
+                    `Do you want to delete the selected contact${m1nSelectedRowsIds &&
+                      m1nSelectedRowsIds.length > 1 &&
+                      removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                      ? "s"
+                      : ""
                     }?`}
                 </DeleteConfirmationDialogContent>
               )}
@@ -3509,32 +3536,46 @@ function SubTable(props) {
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
                   {props.header === "Documents" &&
-                    `Do you want to delete the selected documents${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
+                    `Do you want to delete the selected document${m1nSelectedRowsIds &&
+                      m1nSelectedRowsIds.length > 1 &&
+                      removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                      ? "s"
+                      : ""
                     }?`}
                 </DeleteConfirmationDialogContent>
               )}
               {openDialog === "deleteParcelOwnership" && (
                 <DeleteConfirmationDialogContent
-                  header={`Delete Owner${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
+                  header={`Delete Owner${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                     }`}
                   onClose={handleCloseDialog}
                   deleteFunc={props.deleteFunc}
                   m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
-                  {`Do you want to delete the owner${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
+                  {`Do you want to delete the owner${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
                     }?`}
                 </DeleteConfirmationDialogContent>
               )}
               {openDialog === "deleteParcelInterest" && (
                 <DeleteConfirmationDialogContent
-                  header={`Delete Parcel Interest${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""}`}
+                  header={`Delete Parcel Interest${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                    }`}
                   onClose={handleCloseDialog}
                   deleteFunc={props.deleteFunc}
                   m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
-                  {`Do you want to delete the Parcel Interest${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""}?`}
+                  {`Do you want to delete the Parcel Interest${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""
+                    }?`}
                 </DeleteConfirmationDialogContent>
               )}
 

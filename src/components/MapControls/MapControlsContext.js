@@ -25,7 +25,7 @@ const MapControlsContextProvider = (props) => {
     map: null,
     Draw: null,
     mapStyleList: [],
-    expandedPanel: null,
+    expandedPanel: true,
     openDrawShapesControl: false,
   });
   return (

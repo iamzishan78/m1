@@ -3,73 +3,73 @@ import React, {
   useEffect,
   useContext,
   useRef,
-  useCallback,
-} from 'react';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Select from '@material-ui/core/Select';
-import Grid from '@material-ui/core/Grid';
-import { AppContext } from '../../../AppContext';
-import { CONTACT } from '../../../graphQL/useQueryContact';
-import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
-import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
-import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
-import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+  useCallback
+} from "react";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Select from "@material-ui/core/Select";
+import Grid from "@material-ui/core/Grid";
+import { AppContext } from "../../../AppContext";
+import { CONTACT } from "../../../graphQL/useQueryContact";
+import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
+import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
+import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
+import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   CircularProgress,
   Dialog,
   Typography,
-  Avatar,
-} from '@material-ui/core';
-import RightDialog from './RightDialog';
-import moment from 'moment';
+  Avatar
+} from "@material-ui/core";
+import RightDialog from "./RightDialog";
+import moment from "moment";
 import {
   deepEqual,
   deepEqualObjects,
-  setStateIfDeepEqual,
-} from '../../Shared/functions';
-import TrackToggleButton from '../../Shared/TrackToggleButton';
-import { TRACKBYOBJECTID } from '../../../graphQL/useQueryTrackByObjectId';
-import TaggerWithIcon from '../../Shared/TaggerWithIcon';
-import CommentsWithIcon from '../../Shared/CommentsWithIcon';
-import DeleteConfirmationDialogContent from '../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import { useDispatch, useSelector } from 'react-redux';
-import { ADDDEAL } from 'graphQL/useMutationAddDeal';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { UPDATEDEAL } from 'graphQL/useMutationUpdateDeal';
-import { UPSERTDEALDESCRIPTOR } from 'graphQL/useMutationUpsertDealDescriptor';
-import { REMOVEDEALDESCRIPTOR } from '../../../graphQL/useMutationRemoveDealDescriptor';
-import { UPDATESTAGEDEALDESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
+  setStateIfDeepEqual
+} from "../../Shared/functions";
+import TrackToggleButton from "../../Shared/TrackToggleButton";
+import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
+import TaggerWithIcon from "../../Shared/TaggerWithIcon";
+import CommentsWithIcon from "../../Shared/CommentsWithIcon";
+import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { useDispatch, useSelector } from "react-redux";
+import { ADDDEAL } from "graphQL/useMutationAddDeal";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import { UPDATEDEAL } from "graphQL/useMutationUpdateDeal";
+import { UPSERTDEALDESCRIPTOR } from "graphQL/useMutationUpsertDealDescriptor";
+import { REMOVEDEALDESCRIPTOR } from "../../../graphQL/useMutationRemoveDealDescriptor";
+import { UPDATESTAGEDEALDESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
 import {
   setFlowState,
   showErrorMessage,
-  showSuccessMessage,
-} from '../../../actions';
-import { GETPIPELINES } from 'graphQL/useQueryPipelines';
-import PropTypes from 'prop-types';
-import NumberFormat from 'react-number-format';
-import Documents from '../../Shared/Documents';
-import AddDialogeUploadZone from './AddDialogUploadZone';
-import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
-import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-import { GETDEAL } from 'graphQL/useQueryDeal';
-import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider';
-import Contacts from 'components/FlowDrawer/Contacts';
-import EventIcon from '@material-ui/icons/Event';
-import './style/dialog.css';
-import { faCloudShowersHeavy } from '@fortawesome/free-solid-svg-icons';
+  showSuccessMessage
+} from "../../../actions";
+import { GETPIPELINES } from "graphQL/useQueryPipelines";
+import PropTypes from "prop-types";
+import NumberFormat from "react-number-format";
+import Documents from "../../Shared/Documents";
+import AddDialogeUploadZone from "./AddDialogUploadZone";
+import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
+import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
+import { GETDEAL } from "graphQL/useQueryDeal";
+import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
+import Contacts from "components/FlowDrawer/Contacts";
+import EventIcon from "@material-ui/icons/Event";
+import "./style/dialog.css";
+import { faCloudShowersHeavy } from "@fortawesome/free-solid-svg-icons";
 
-// mui icons 
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-
+// mui icons
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import { CustomAvatar } from "components/Transact/Transact";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -82,8 +82,8 @@ function NumberFormatCustom(props) {
         onChange({
           target: {
             name: props.name,
-            value: values.value,
-          },
+            value: values.value
+          }
         });
       }}
       thousandSeparator
@@ -96,7 +96,7 @@ function NumberFormatCustom(props) {
 NumberFormatCustom.propTypes = {
   inputRef: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -109,61 +109,61 @@ const useStyles = makeStyles((theme) => ({
     // },
   },
   dialogTitle: {
-    textAlign: "center",
+    textAlign: "center"
   },
   dialogContentText: {
-    textAlign: "center",
+    textAlign: "center"
   },
   inputFieldOwner: {
-    marginBottom: '7px',
+    marginBottom: "7px"
   },
   inputFieldDate: {
-    marginBottom: '7px',
+    marginBottom: "7px"
   },
   inputFieldFlowline: {
-    marginBottom: '7px',
+    marginBottom: "7px"
   },
   inputFieldFlowStage: {
-    marginBottom: '7px',
+    marginBottom: "7px"
   },
   inputFieldCustomTextInput: {
-    marginBottom: '7px',
+    marginBottom: "7px"
   },
   inputFieldDealName: {
-    marginBottom: '10px',
-    width: '405px',
+    marginBottom: "10px",
+    width: "405px"
   },
   dateLabel: {
-    transform: 'translate(10px, 2px) scale(0.75) !important',
-    backgroundColor: '#fff !important',
-    padding: '0 6px',
+    transform: "translate(10px, 2px) scale(0.75) !important",
+    backgroundColor: "#fff !important",
+    padding: "0 6px"
   },
   shrinkLabel: {
     backgroundColor: "#fff !important",
-    padding: "0 6px",
+    padding: "0 6px"
   },
   inputFieldDateRoot: {
-    '& .MuiDialog-root': {},
+    "& .MuiDialog-root": {}
   },
   progress: {
     marginLeft: "30px",
-    verticalAlign: "middle",
+    verticalAlign: "middle"
   },
 
   label: {
-    backgroundColor: "white",
+    backgroundColor: "white"
   },
 
   closeIcon: {
     fill: theme.palette.secondary.main,
     "&:hover": {
-      fill: "red",
-    },
+      fill: "red"
+    }
   },
   topBtnGroup: {},
   inputField: {
-    // marginBottom: "30px",  
-    outline: "none",
+    // marginBottom: "30px",
+    outline: "none"
   },
   dealStateOpenWon: {
     padding: "8px 16px",
@@ -174,8 +174,8 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#a6e5c3",
       // borderStyle: "solid",
       fontWeight: "bold",
-      color: "#54a83c",
-    },
+      color: "#54a83c"
+    }
   },
   dealStateOpenLost: {
     padding: "8px 16px",
@@ -186,35 +186,35 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#ffa8a8",
       // borderStyle: "solid",
       fontWeight: "bold",
-      color: "#f96060",
-    },
+      color: "#f96060"
+    }
   },
   dealStateClosed: {
     padding: "8px 16px",
-    borderRadius: 18,
+    borderRadius: 18
 
     // color: "#fff",
   },
   gridStyle: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center"
   },
   dealStateReopen: {
     padding: "2px 10px",
     cursor: "pointer",
     borderRadius: 5,
-    border: "1px solid gray",
+    border: "1px solid gray"
   },
   originationDate: {
     paddingBottom: "12px",
     paddingTop: "4px",
     fontSize: 12,
     letterSpacing: 2,
-    textAlign: 'center',
+    textAlign: "center"
   },
   dialog: {
-    zIndex: "9999999999 !important",
+    zIndex: "9999999999 !important"
   },
   notes: {
     backgroundColor: "#FFFCDC",
@@ -222,131 +222,131 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     marginTop: 25,
 
-    '& .MuiOutlinedInput-root': {
-      width: '100%',
-      '& fieldset': {
-        borderColor: 'white',
-      },
-    },
+    "& .MuiOutlinedInput-root": {
+      width: "100%",
+      "& fieldset": {
+        borderColor: "white"
+      }
+    }
   },
   dialogExpCard: {
-    zIndex: "9999999999999999999 !important",
+    zIndex: "9999999999999999999 !important"
   },
   dateRoot: {
-    border: '1px solid #EBEBEB',
+    border: "1px solid #EBEBEB",
 
-    '&.Mui-focused fieldset': {
-      border: '1px solid black',
-      backgroundColor: 'transparent',
+    "&.Mui-focused fieldset": {
+      border: "1px solid black",
+      backgroundColor: "transparent"
     },
-    '&:hover': {
-      backgroundColor: '#EBEBEB',
+    "&:hover": {
+      backgroundColor: "#EBEBEB"
     },
-    '&:active': {
-      border: '1px solid black',
-      backgroundColor: '#fff',
-    },
+    "&:active": {
+      border: "1px solid black",
+      backgroundColor: "#fff"
+    }
   },
 
   flowlineRoot: {
-    '&:hover': {
-      backgroundColor: '#EBEBEB',
-      '& .MuiOutlinedInput-notchedOutline': {
-        border: 0,
+    "&:hover": {
+      backgroundColor: "#EBEBEB",
+      "& .MuiOutlinedInput-notchedOutline": {
+        border: 0
       },
-      '& .MuiSelect-icon': {
-        display: 'inline-block',
-      },
+      "& .MuiSelect-icon": {
+        display: "inline-block"
+      }
     },
-    '&:active': {
-      border: '1px solid black',
-      backgroundColor: '#EBEBEB',
-    },
+    "&:active": {
+      border: "1px solid black",
+      backgroundColor: "#EBEBEB"
+    }
   },
   notchedOutlineFlow: {
-    border: '0.2px solid #EBEBEB',
+    border: "0.2px solid #EBEBEB"
   },
   notchedOutlineFlowFocused: {
-    '& .MuiOutlinedInput-notchedOutline': {
-      border: '1px solid black',
-    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "1px solid black"
+    }
   },
   icon: {
-    display: 'none',
+    display: "none"
   },
   dealNameRoot: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     paddingLeft: 0,
-    textAlign: 'left',
-    fontSize: '1.2rem',
-    '&.Mui-focused fieldset': {
-      border: '1px solid black',
-      backgroundColor: 'transparent',
+    textAlign: "left",
+    fontSize: "1.2rem",
+    "&.Mui-focused fieldset": {
+      border: "1px solid black",
+      backgroundColor: "transparent"
     },
-    '&:hover': {
-      border: '1px solid black',
-    },
+    "&:hover": {
+      border: "1px solid black"
+    }
   },
   customDataTextInputRoot: {
-    border: '1px solid #EBEBEB',
-    '&.Mui-focused fieldset': {
-      border: '1px solid black',
-      backgroundColor: 'transparent',
+    border: "1px solid #EBEBEB",
+    "&.Mui-focused fieldset": {
+      border: "1px solid black",
+      backgroundColor: "transparent"
     },
-    '&:hover': {
-      backgroundColor: '#EBEBEB',
-    },
+    "&:hover": {
+      backgroundColor: "#EBEBEB"
+    }
   },
   notchedOutline: {
-    border: 0,
+    border: 0
   },
 
   dealOwnerRoot: {
-    border: '1px solid #EBEBEB',
+    border: "1px solid #EBEBEB",
 
     // This matches the specificity of the default styles at https://github.com/mui-org/material-ui/blob/v4.11.3/packages/material-ui-lab/src/Autocomplete/Autocomplete.js#L90
     '&[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input:first-child': {
       // Default left padding is 6px
-      paddingLeft: 26,
+      paddingLeft: 26
     },
 
-    '& .MuiOutlinedInput-notchedOutline': {
-      border: 0,
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: 0
     },
-    '&:hover.MuiOutlinedInput-root': {
-      backgroundColor: '#EBEBEB',
+    "&:hover.MuiOutlinedInput-root": {
+      backgroundColor: "#EBEBEB"
     },
-    '&:hover .MuiAutocomplete-popupIndicator': {
-      visibility: 'visible',
-      padding: '2px',
-      marginRight: '-2px',
-    },
+    "&:hover .MuiAutocomplete-popupIndicator": {
+      visibility: "visible",
+      padding: "2px",
+      marginRight: "-2px"
+    }
   },
   dealOwnerRootFocused: {
-    '& .MuiOutlinedInput-notchedOutline': {
-      border: '1px solid black',
-    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "1px solid black"
+    }
   },
   dealOwnerAvatar: {
     width: theme.spacing(3),
     height: theme.spacing(3),
-    color: '#fff',
-    fontSize: '0.6rem',
-    backgroundColor: '#4880F6',
-    padding: '0.5em',
+    color: "#fff",
+    fontSize: "0.6rem",
+    backgroundColor: "#4880F6",
+    padding: "0.5em"
   },
   dealOwnerLabel: {
-    marginLeft: 4,
+    marginLeft: 4
     // marginTOP: -2,
   },
   popupIndicator: {
-    visibility: 'hidden',
-    padding: '2px',
-    marginRight: '-2px',
-    '&:hover': {
-      visibility: 'visible',
-    },
-  },
+    visibility: "hidden",
+    padding: "2px",
+    marginRight: "-2px",
+    "&:hover": {
+      visibility: "visible"
+    }
+  }
 }));
 
 const newContact = {
@@ -359,26 +359,28 @@ const newContact = {
   city: "",
   country: "",
   state: "",
-  zip: "",
+  zip: ""
 };
 
 function AddDealDialog(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const { selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
+  const { selectedPipe, pipelines, pipeToShow } = useSelector(
+    ({ Flow }) => Flow
+  );
   const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [titleFocus, setTitleFocus] = useState(false);
-  const [label, setLabel] = useState('');
+  const [label, setLabel] = useState("");
   const [stageId, setStageId] = useState(null);
   const [dealPosition, setDealPosition] = useState(null);
   const [dealState, setDealState] = useState(null);
   const [description, setDescription] = useState("");
   const [pipelineId, setPipelineId] = useState(selectedPipe?._id);
   const [stagesToChoose, setStagesToChoose] = useState([]);
-  const [ownerId, setOwnerId] = useState('');
-  const [cardId, setCardId] = useState('');
+  const [ownerId, setOwnerId] = useState("");
+  const [cardId, setCardId] = useState("");
   const [users, setUsers] = useState([]);
   const [closeDate, setCloseDate] = useState(new Date());
   const [colaborators, setColaborators] = useState([]);
@@ -397,14 +399,23 @@ function AddDealDialog(props) {
   const [pageVariables, setPageVariables] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-  let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
+  let [transactData, setTransactData] = useState(
+    props.transactData ? { ...props.transactData } : null
+  );
 
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
-  const [addContact, { data: addContactData, called: addContactCalled, loading: addContactLoading }] = useMutation(ADDCONTACT);
+  const [
+    addContact,
+    {
+      data: addContactData,
+      called: addContactCalled,
+      loading: addContactLoading
+    }
+  ] = useMutation(ADDCONTACT);
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-    fetchPolicy: "no-cache",
+    fetchPolicy: "no-cache"
   });
 
   const [addDeal, { data: dealData }] = useMutation(ADDDEAL);
@@ -414,18 +425,18 @@ function AddDealDialog(props) {
   const [updateStageDealDescriptor] = useMutation(UPDATESTAGEDEALDESCRIPTOR);
 
   const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-and-network"
   });
 
   // CONTACT
 
-  const [getPaginatedContacts, { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-      nextFetchPolicy: "cache-first",
-    }
-  );
+  const [
+    getPaginatedContacts,
+    { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts }
+  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first"
+  });
 
   const [contact, setContact] = useState({});
 
@@ -434,14 +445,11 @@ function AddDealDialog(props) {
   }, []);
 
   useEffect(() => {
+    console.log("===========");
+    console.log("FLOW TRANSACT BAR VIEW", stateApp.transactBarView);
 
-    console.log('===========')
-    console.log('FLOW TRANSACT BAR VIEW', stateApp.transactBarView)
-
-    
     if (stateApp.transactBarView !== "") {
       // handleValidate();
-
 
       if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
         addUpdateDeal(null, false);
@@ -451,10 +459,9 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (dealData) {
-
       setStateApp((stateApp) => ({
         ...stateApp,
-        activeDeal: dealData?.addDeal?.deal,
+        activeDeal: dealData?.addDeal?.deal
       }));
     }
   }, [dealData]);
@@ -464,14 +471,18 @@ function AddDealDialog(props) {
       //// select first one as default
       if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
         let activePipeline = {};
-        const isExist = !!pipelinesData.pipelines.find(p => p._id === selectedPipe?._id);
+        const isExist = !!pipelinesData.pipelines.find(
+          (p) => p._id === selectedPipe?._id
+        );
         if (selectedPipe && isExist) {
-          activePipeline = pipelinesData.pipelines.find((p) => p._id === selectedPipe._id);
+          activePipeline = pipelinesData.pipelines.find(
+            (p) => p._id === selectedPipe._id
+          );
         } else activePipeline = pipelinesData.pipelines[0];
         dispatch(
           setFlowState({
             selectedPipe: activePipeline,
-            pipelines: pipelinesData.pipelines,
+            pipelines: pipelinesData.pipelines
           })
         );
       } else
@@ -479,17 +490,25 @@ function AddDealDialog(props) {
           setFlowState({
             selectedPipe: null,
             pipelines: [],
-            pipeToShow: false,
+            pipeToShow: false
           })
         );
     }
   }, [pipelinesData]);
 
-  const settingNewStageAndFindNextAvailablePosition = (stageId, findPosition, localPipelineId = pipelineId) => {
+  const settingNewStageAndFindNextAvailablePosition = (
+    stageId,
+    findPosition,
+    localPipelineId = pipelineId
+  ) => {
     setStageId(stageId);
 
     if (findPosition) {
-      if (stateApp.activeDeal?.laneId && stateApp.activeDeal?.descriptorId === localPipelineId && stateApp.activeDeal?.laneId === stageId)
+      if (
+        stateApp.activeDeal?.laneId &&
+        stateApp.activeDeal?.descriptorId === localPipelineId &&
+        stateApp.activeDeal?.laneId === stageId
+      )
         setDealPosition(stateApp.activeDeal?.position);
       else {
         if (pipeToShow?._id === localPipelineId) {
@@ -500,7 +519,8 @@ function AddDealDialog(props) {
               const lane = pipeToShow.lanes[i];
               if (lane.id === stageId && lane.cards) {
                 lane.cards.map((card) => {
-                  if (card.metadata?.position > position) position = card.metadata.position;
+                  if (card.metadata?.position > position)
+                    position = card.metadata.position;
                 });
 
                 break;
@@ -525,13 +545,23 @@ function AddDealDialog(props) {
       if (i >= 0 && pipelines[i] && pipelines[i].stages) {
         setStagesToChoose(pipelines[i].stages);
 
-        if (defaultStage) settingNewStageAndFindNextAvailablePosition(pipelines[i].stages[0]?._id, true, pipelineId);
+        if (defaultStage)
+          settingNewStageAndFindNextAvailablePosition(
+            pipelines[i].stages[0]?._id,
+            true,
+            pipelineId
+          );
       }
     }
   };
 
   useEffect(() => {
-    if (stateApp.dealDialog && !stateApp.activeDeal?.cardId && selectedPipe?._id) settingNewPipeWithDefaultStage(selectedPipe._id, true);
+    if (
+      stateApp.dealDialog &&
+      !stateApp.activeDeal?.cardId &&
+      selectedPipe?._id
+    )
+      settingNewPipeWithDefaultStage(selectedPipe._id, true);
   }, [selectedPipe, stateApp.dealDialog, stateApp.activeDeal]);
 
   useEffect(() => {
@@ -540,7 +570,9 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray(allContacts?.paginatedContacts?.edges?.map((el) => el.node));
+      setMongoEntitiesArray(
+        allContacts?.paginatedContacts?.edges?.map((el) => el.node)
+      );
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
       setIsNextPageLoading(false);
     }
@@ -552,8 +584,8 @@ function AddDealDialog(props) {
       setIsNextPageLoading(true);
       getPaginatedContacts({
         variables: {
-          search: nameAutInputValue,
-        },
+          search: nameAutInputValue
+        }
       });
     }
   }, [nameAutInputValue]);
@@ -565,7 +597,11 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (cData?.contact) {
-      setNameAutValue(cData?.contact ? { name: cData.contact.name, _id: cData.contact._id } : {});
+      setNameAutValue(
+        cData?.contact
+          ? { name: cData.contact.name, _id: cData.contact._id }
+          : {}
+      );
     }
   }, [cData]);
 
@@ -578,14 +614,15 @@ function AddDealDialog(props) {
   // CONTACT END
 
   // TRACK
-  const [trackByObjectId, { loading: loadingTrack, data: dataTrack }] = useLazyQuery(TRACKBYOBJECTID);
+  const [trackByObjectId, { loading: loadingTrack, data: dataTrack }] =
+    useLazyQuery(TRACKBYOBJECTID);
 
   const [target, setTarget] = useState({});
 
   useEffect(() => {
     if (dataTrack) {
       setTarget({
-        isTracked: dataTrack.trackByObjectId ? true : false,
+        isTracked: dataTrack.trackByObjectId ? true : false
       });
     }
   }, [dataTrack]);
@@ -597,6 +634,7 @@ function AddDealDialog(props) {
         userLists.allMongoUsers.map((user) => ({
           value: user._id,
           text: user.name,
+          email: user.email
         }))
       );
     }
@@ -606,8 +644,8 @@ function AddDealDialog(props) {
     if (props.contactId) {
       getContact({
         variables: {
-          contactId: props.contactId,
-        },
+          contactId: props.contactId
+        }
       });
     }
   }, [props.contactId]);
@@ -624,8 +662,8 @@ function AddDealDialog(props) {
       trackByObjectId({
         variables: {
           userId: stateApp.user.mongoId,
-          objectId: cardId.toLowerCase(),
-        },
+          objectId: cardId.toLowerCase()
+        }
       });
 
       const card = stateApp.activeDeal;
@@ -634,10 +672,17 @@ function AddDealDialog(props) {
       setLabel(card.offerPrice ? card.offerPrice : "");
       setDescription(card.notes ? card.notes : "");
       // setPipelineId
-      settingNewPipeWithDefaultStage(card.pipeline ? card.pipeline : null, false);
+      settingNewPipeWithDefaultStage(
+        card.pipeline ? card.pipeline : null,
+        false
+      );
       // setStageId
       settingNewStageAndFindNextAvailablePosition(laneId, false);
-      setCloseDate(card.closeDate ? moment.parseZone(card.closeDate).format("yyyy-MM-DD") : "");
+      setCloseDate(
+        card.closeDate
+          ? moment.parseZone(card.closeDate).format("yyyy-MM-DD")
+          : ""
+      );
       setDealPosition(card.position ? card.position : null);
       // setColaborators(card.colaborators ? card.colaborators : []);
       setOriginationDate(card.ts ? card.ts : null);
@@ -648,7 +693,7 @@ function AddDealDialog(props) {
         // setting contact
         setNameAutValue({
           name: card.contacts[0]?.relatedObject?.entity?.name,
-          _id: card.contacts[0]?.relatedObject?._id,
+          _id: card.contacts[0]?.relatedObject?._id
         });
       else setNameAutValue(null);
     } else if (props.contact) {
@@ -656,12 +701,11 @@ function AddDealDialog(props) {
     } else if (props.contactId) {
       getContact({
         variables: {
-          contactId: props.contactId,
-        },
+          contactId: props.contactId
+        }
       });
     }
   }, [stateApp.activeDeal, props.contact, stateApp.dealDialog, stateApp.user]);
-
 
   const handleClose = () => {
     // handleValidate();
@@ -684,10 +728,10 @@ function AddDealDialog(props) {
     if (props.isTransactPage) setContact({});
     setStateApp((stateApp) => ({
       ...stateApp,
-      dealDialog: false, 
+      dealDialog: false,
       activeDeal: { cardId: null, laneId: null },
       transactBarView: "",
-      viewDoc: null,
+      viewDoc: null
     }));
     // setValid({title: false});
   };
@@ -708,13 +752,13 @@ function AddDealDialog(props) {
     if (cardId)
       await updateDeal({
         variables: {
-          deal: { _id: cardId, IsDeleted: true },
+          deal: { _id: cardId, IsDeleted: true }
         },
         refetchQueries: ["getPipeline", "getContactDeals"],
-        awaitRefetchQueries: true,
+        awaitRefetchQueries: true
       }).then((result) => {
         const {
-          data: { updateDeal },
+          data: { updateDeal }
         } = result;
         if (updateDeal?.success === true) {
           dispatch(showSuccessMessage("The Deal was successfully deleted."));
@@ -738,7 +782,10 @@ function AddDealDialog(props) {
         offerPrice: label,
         notes: description ? description.trim() : null,
         status: dealState ? dealState : "open",
-        closeDate: closeDate && closeDate !== "" ? new Date(`${closeDate}T08:00`).toUTCString() : null,
+        closeDate:
+          closeDate && closeDate !== ""
+            ? new Date(`${closeDate}T08:00`).toUTCString()
+            : null
       };
 
       if (cardId) {
@@ -749,7 +796,9 @@ function AddDealDialog(props) {
         //// checking where it change
         if (
           contactId &&
-          ((stateApp.activeDeal?.contacts?.length > 0 && stateApp.activeDeal?.contacts[0]?.relatedObject?._id !== contactId) ||
+          ((stateApp.activeDeal?.contacts?.length > 0 &&
+            stateApp.activeDeal?.contacts[0]?.relatedObject?._id !==
+              contactId) ||
             !stateApp.activeDeal.contacts ||
             stateApp.activeDeal.contacts.length <= 0)
         ) {
@@ -761,13 +810,13 @@ function AddDealDialog(props) {
                   dealId: cardId,
                   relatedObject: [contactId], // HERE
                   relatedObjectType: "Contact",
-                  userId: stateApp.user.mongoId,
+                  userId: stateApp.user.mongoId
                 },
                 refetchQueries: ["getPipeline", "getContactDeals"],
-                awaitRefetchQueries: true,
+                awaitRefetchQueries: true
               }).then((result) => {
                 const {
-                  data: { upsertDealDescriptor },
+                  data: { upsertDealDescriptor }
                 } = result;
                 if (upsertDealDescriptor?.success === false) success = false;
                 resolve();
@@ -777,8 +826,8 @@ function AddDealDialog(props) {
         }
 
         if (
-          (stateApp.activeDeal?.owners?.length > 0 && stateApp.activeDeal?.owners[0]?.relatedObject?._id !== ownerId) ||
-
+          (stateApp.activeDeal?.owners?.length > 0 &&
+            stateApp.activeDeal?.owners[0]?.relatedObject?._id !== ownerId) ||
           !stateApp.activeDeal.owners ||
           stateApp.activeDeal.owners.length <= 0
         ) {
@@ -791,14 +840,14 @@ function AddDealDialog(props) {
                     dealId: cardId,
                     relatedObject: [ownerId],
                     relatedObjectType: "User",
-                    userId: stateApp.user.mongoId,
+                    userId: stateApp.user.mongoId
                   },
                   refetchQueries: ["getPipeline", "getContactDeals"],
 
-                  awaitRefetchQueries: true,
+                  awaitRefetchQueries: true
                 }).then((result) => {
                   const {
-                    data: { upsertDealDescriptor },
+                    data: { upsertDealDescriptor }
                   } = result;
                   if (upsertDealDescriptor?.success === false) success = false;
                   resolve();
@@ -813,15 +862,14 @@ function AddDealDialog(props) {
                 removeDealDescriptor({
                   variables: {
                     id: stateApp.activeDeal?.owners[0]?._id,
-                    relatedObjectType: "User",
-
+                    relatedObjectType: "User"
                   },
                   refetchQueries: ["getPipeline", "getContactDeals"],
 
-                  awaitRefetchQueries: true,
+                  awaitRefetchQueries: true
                 }).then((result) => {
                   const {
-                    data: { removeDealDescriptor },
+                    data: { removeDealDescriptor }
                   } = result;
                   if (removeDealDescriptor?.success === false) success = false;
                   resolve();
@@ -833,7 +881,8 @@ function AddDealDialog(props) {
 
         //// checking if stage or pipe changed
         if (
-          (stateApp.activeDeal?.laneId !== stageId || stateApp.activeDeal?.pipeline !== pipelineId) &&
+          (stateApp.activeDeal?.laneId !== stageId ||
+            stateApp.activeDeal?.pipeline !== pipelineId) &&
           stateApp.activeDeal?.descriptorId
         ) {
           //// updating the stageDealDescriptor
@@ -844,15 +893,19 @@ function AddDealDialog(props) {
                   descriptorId: stateApp.activeDeal.descriptorId,
                   relatedObject: stageId,
                   position: dealPosition ? dealPosition : 0,
-                  pipeline: stateApp.activeDeal?.pipeline !== pipelineId ? pipelineId : null,
+                  pipeline:
+                    stateApp.activeDeal?.pipeline !== pipelineId
+                      ? pipelineId
+                      : null
                 },
                 refetchQueries: ["getPipeline", "getContactDeals"],
-                awaitRefetchQueries: true,
+                awaitRefetchQueries: true
               }).then((result) => {
                 const {
-                  data: { updateStageDealDescriptor },
+                  data: { updateStageDealDescriptor }
                 } = result;
-                if (updateStageDealDescriptor?.success === false) success = false;
+                if (updateStageDealDescriptor?.success === false)
+                  success = false;
                 resolve();
               });
             })
@@ -874,13 +927,13 @@ function AddDealDialog(props) {
             new Promise((resolve, reject) => {
               updateDeal({
                 variables: {
-                  deal,
+                  deal
                 },
                 refetchQueries: ["getPipeline", "getContactDeals"],
-                awaitRefetchQueries: true,
+                awaitRefetchQueries: true
               }).then((result) => {
                 const {
-                  data: { updateDeal },
+                  data: { updateDeal }
                 } = result;
                 if (updateDeal?.success === false) success = false;
                 resolve();
@@ -916,16 +969,20 @@ function AddDealDialog(props) {
           // contactId,
           // contactName,
           position: dealPosition,
-          userId: stateApp.user.mongoId,
+          userId: stateApp.user.mongoId
         };
 
         if (ownerId) {
           let user = users.find((user) => user.value === ownerId);
-          variables = user?.text ? { ...variables, ownerId, ownerName: user.text } : { ...variables, ownerId };
+          variables = user?.text
+            ? { ...variables, ownerId, ownerName: user.text }
+            : { ...variables, ownerId };
         }
 
         if (contactId) {
-          variables = tempContact?.name ? { ...variables, contactId, contactName: tempContact.name } : { ...variables, contactId };
+          variables = tempContact?.name
+            ? { ...variables, contactId, contactName: tempContact.name }
+            : { ...variables, contactId };
         }
 
         addDeal({
@@ -937,9 +994,9 @@ function AddDealDialog(props) {
             "getAllActivities",
             "getAllActivitiesForSearch",
             "getOpenDeals",
-            "openDeals",
+            "openDeals"
           ],
-          awaitRefetchQueries: true,
+          awaitRefetchQueries: true
         });
       }
     }
@@ -953,11 +1010,15 @@ function AddDealDialog(props) {
             ...newContact,
             name: contact.name,
             createBy: stateApp.user.mongoId,
-            lastUpdateBy: stateApp.user.mongoId,
-          },
+            lastUpdateBy: stateApp.user.mongoId
+          }
         },
-        refetchQueries: ["getPaginatedContacts", "getContact", "getCustomLayer"],
-        awaitRefetchQueries: true,
+        refetchQueries: [
+          "getPaginatedContacts",
+          "getContact",
+          "getCustomLayer"
+        ],
+        awaitRefetchQueries: true
       });
     } else {
       await addUpdateDeal();
@@ -994,13 +1055,14 @@ function AddDealDialog(props) {
     return comparison;
   });
 
-  const [getDeal, { data: getDealResult, loading: getDealLoading }] = useLazyQuery(GETDEAL, {
-    fetchPolicy: "no-cache",
-  });
+  const [getDeal, { data: getDealResult, loading: getDealLoading }] =
+    useLazyQuery(GETDEAL, {
+      fetchPolicy: "no-cache"
+    });
 
   const refetchDeal = () => {
     getDeal({
-      variables: { id: stateApp.activeDeal.cardId },
+      variables: { id: stateApp.activeDeal.cardId }
     });
   };
 
@@ -1011,13 +1073,13 @@ function AddDealDialog(props) {
         dealId: cardId,
         relatedObject: [contact._id],
         relatedObjectType: "Contact",
-        userId: stateApp.user.mongoId,
+        userId: stateApp.user.mongoId
       },
       refetchQueries: ["getPipeline", "getContactDeals"],
-      awaitRefetchQueries: true,
+      awaitRefetchQueries: true
     }).then((result) => {
       const {
-        data: { upsertDealDescriptor },
+        data: { upsertDealDescriptor }
       } = result;
 
       // if (upsertDealDescriptor?.success === false) success = false;
@@ -1037,69 +1099,84 @@ function AddDealDialog(props) {
           contacts: [
             ...getDealResult.deal.deal.contacts.map((c) => ({
               _id: c.descriptorId,
-              name: c.name,
-            })),
-          ],
-        },
+              name: c.name
+            }))
+          ]
+        }
       }));
     }
-
   }, [getDealResult]);
 
   const getView = () => {
     if (stateApp.transactBarView === "Documents") {
-      return <Documents id={stateApp.activeDeal?.cardId} user_id={stateApp.user.email} isTransactPage={true} />;
+      return (
+        <Documents
+          id={stateApp.activeDeal?.cardId}
+          user_id={stateApp.user.email}
+          isTransactPage={true}
+        />
+      );
     }
     if (stateApp.transactBarView === "Contacts") {
-      return <Contacts addSelectedContact={addSelectedContactToDeal} loading={getDealLoading} getDeal={refetchDeal} />;
+      return (
+        <Contacts
+          addSelectedContact={addSelectedContactToDeal}
+          loading={getDealLoading}
+          getDeal={refetchDeal}
+        />
+      );
     }
   };
 
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
 
-  const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
-    fetchPolicy: "cache-and-network",
-    onCompleted: ({ getFileDescriptors }) => {
-      let allActive = true;
+  const [getRecentFiles, { data: files }] = useLazyQuery(
+    GETRECENTCONTACTFILES,
+    {
+      fetchPolicy: "cache-and-network",
+      onCompleted: ({ getFileDescriptors }) => {
+        let allActive = true;
 
-      if (getFileDescriptors)
-        for (let i = 0; i < getFileDescriptors.length; i++) {
-          if (getFileDescriptors[i].fileState !== "active") {
-            allActive = false;
-            break;
+        if (getFileDescriptors)
+          for (let i = 0; i < getFileDescriptors.length; i++) {
+            if (getFileDescriptors[i].fileState !== "active") {
+              allActive = false;
+              break;
+            }
           }
-        }
 
-      if (!allActive) {
-        if (fileRequestCounter <= 40) {
-          let waitBeforeRequestAgain = setTimeout(() => {
-            setFileRequestCounter(fileRequestCounter + 1);
-            getRecentFiles({
-              variables: {
-                relatedObjectId: stateApp.activeDeal?.cardId,
-                relatedObjectType: "Deal",
-                limit: 2,
-              },
-            });
-            clearTimeout(waitBeforeRequestAgain);
-          }, 1000);
-        } else {
-          setFileRequestCounter(1);
-        }
-      } else setFileRequestCounter(1);
-    },
-  });
-  const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
-    fetchPolicy: "no-cache",
-  });
+        if (!allActive) {
+          if (fileRequestCounter <= 40) {
+            let waitBeforeRequestAgain = setTimeout(() => {
+              setFileRequestCounter(fileRequestCounter + 1);
+              getRecentFiles({
+                variables: {
+                  relatedObjectId: stateApp.activeDeal?.cardId,
+                  relatedObjectType: "Deal",
+                  limit: 2
+                }
+              });
+              clearTimeout(waitBeforeRequestAgain);
+            }, 1000);
+          } else {
+            setFileRequestCounter(1);
+          }
+        } else setFileRequestCounter(1);
+      }
+    }
+  );
+  const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] =
+    useLazyQuery(VIEWFILESQUERY, {
+      fetchPolicy: "no-cache"
+    });
 
   useEffect(() => {
     getRecentFiles({
       variables: {
         relatedObjectId: stateApp.activeDeal?.cardId,
         relatedObjectType: "Deal",
-        limit: 2,
-      },
+        limit: 2
+      }
     });
   }, [stateApp.activeDeal?.cardId]);
 
@@ -1110,12 +1187,13 @@ function AddDealDialog(props) {
     }
 
     viewFiles({
-      variables: { fileIds: ID },
+      variables: { fileIds: ID }
     });
   }, [files]);
 
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
-  const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
+  const [expCardSubComponentTitle, setExpCardSubComponentTitle] =
+    useState(null);
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const handleOpenExpandableCard = (subComponent, subComponentTitle) => {
     setExpCardSubComponent(subComponent);
@@ -1126,12 +1204,11 @@ function AddDealDialog(props) {
     setShowExpandableCard(false);
     setStateApp((state) => ({
       ...state,
-      contactUpdated: null,
+      contactUpdated: null
     }));
   };
   return (
     <>
-
       {deleteDialogOpen && (
         <Dialog
           className={classes.dialog}
@@ -1145,14 +1222,16 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
 
-      {props.isTransactPage && stateApp.transactBarView !== "" && (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
+      {props.isTransactPage &&
+      stateApp.transactBarView !== "" &&
+      (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
         <RightDialog
           open={props.open}
           width={props.width}
@@ -1163,12 +1242,11 @@ function AddDealDialog(props) {
                 dealDialog: false,
                 activeDeal: { cardId: null, laneId: null },
                 transactBarView: "",
-                viewDoc: null,
+                viewDoc: null
               }));
               handleClose();
             }
           }}
-
           isTransactPage={props.isTransactPage}
         >
           <div style={{ padding: "30px" }}>
@@ -1177,7 +1255,7 @@ function AddDealDialog(props) {
                 style={{
                   float: "left",
                   fontSize: "1.1rem",
-                  marginTop: '0px'
+                  marginTop: "0px"
                 }}
               >
                 {stateApp.transactBarView}
@@ -1190,7 +1268,7 @@ function AddDealDialog(props) {
                     setStateApp((stateApp) => ({
                       ...stateApp,
                       transactBarView: "",
-                      viewDoc: null,
+                      viewDoc: null
                     }))
                   }
                   size="small"
@@ -1211,7 +1289,7 @@ function AddDealDialog(props) {
               setStateApp((stateApp) => ({
                 ...stateApp,
                 dealDialog: false,
-                activeDeal: { cardId: null, laneId: null },
+                activeDeal: { cardId: null, laneId: null }
               }));
               handleClose();
             }
@@ -1220,20 +1298,16 @@ function AddDealDialog(props) {
           isTransactPage={props.isTransactPage}
           className={classes.mainRoot}
         >
-          <div 
-          
-          style={{ padding: "30px" }}
-          
-          >
-
+          <div style={{ padding: "30px" }}>
             <Grid
               item
               container
               xs={12}
               style={{
-                margin: 0, padding: 0,
+                margin: 0,
+                padding: 0,
 
-                marginBottom: '1em'
+                marginBottom: "1em"
               }}
               alignItems="center"
             >
@@ -1249,43 +1323,46 @@ function AddDealDialog(props) {
               </Grid> */}
 
               <Grid container spacing={2} className={classes.gridStyle}>
-                <Grid item xs={6} style={{ minHeight: '35px' }}>
+                <Grid item xs={6} style={{ minHeight: "35px" }}>
+                  <Typography
+                    variant="h5"
+                    style={{
+                      // margin: '0 0 0 0',
 
-                  <Typography variant="h5" style={{
+                      float: "left",
 
-                    // margin: '0 0 0 0',
-
-                    float: 'left',
-
-                    fontSize: '1.3rem',
-
-                  }}>
-
+                      fontSize: "1.3rem"
+                    }}
+                  >
                     Deal Information
                   </Typography>
                 </Grid>
 
-                <Grid item xs={6} style={{ minHeight: '35px' }}>
+                <Grid item xs={6} style={{ minHeight: "35px" }}>
                   {!titleFocus && (
-                    <Grid item xs style={{
-                      flexGrow: 0, padding: 2,
-                      // marginTop: 2 
-                    }}>
-
+                    <Grid
+                      item
+                      xs
+                      style={{
+                        flexGrow: 0,
+                        padding: 2
+                        // marginTop: 2
+                      }}
+                    >
                       <div
                         style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          float: 'right',
+                          display: "flex",
+                          alignItems: "center",
+                          float: "right"
                         }}
                       >
-                        {(dealState === null || dealState === 'open') && (
+                        {(dealState === null || dealState === "open") && (
                           <>
                             <div
                               className={classes.dealStateOpenWon}
-                              onClick={() => setDealState('won')}
+                              onClick={() => setDealState("won")}
                               style={{
-                                marginRight: 8,
+                                marginRight: 8
                               }}
                             >
                               Won
@@ -1293,21 +1370,21 @@ function AddDealDialog(props) {
 
                             <div
                               className={classes.dealStateOpenLost}
-                              onClick={() => setDealState('lost')}
+                              onClick={() => setDealState("lost")}
                             >
                               Lost
                             </div>
                           </>
                         )}
-                        {dealState === 'won' && (
+                        {dealState === "won" && (
                           <>
                             <div
                               className={classes.dealStateClosed}
                               style={{
-                                backgroundColor: '#a6e5c3',
-                                fontWeight: 'bold',
-                                color: '#54a83c',
-                                marginRight: 8,
+                                backgroundColor: "#a6e5c3",
+                                fontWeight: "bold",
+                                color: "#54a83c",
+                                marginRight: 8
                               }}
                             >
                               Won
@@ -1320,16 +1397,16 @@ function AddDealDialog(props) {
                             </div>
                           </>
                         )}
-                        {dealState === 'lost' && (
+                        {dealState === "lost" && (
                           <>
                             <div
                               className={classes.dealStateClosed}
                               style={{
-                                backgroundColor: '#ffa8a8',
+                                backgroundColor: "#ffa8a8",
                                 // borderStyle: "solid",
-                                fontWeight: 'bold',
-                                color: '#f96060',
-                                marginRight: 8,
+                                fontWeight: "bold",
+                                color: "#f96060",
+                                marginRight: 8
                               }}
                             >
                               Lost
@@ -1342,20 +1419,21 @@ function AddDealDialog(props) {
                             </div>
                           </>
                         )}
-                        {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) &&
-
+                        {(stateApp.activeDeal?.cardId ||
+                          stateApp.activeDeal?.id) &&
                           stateApp.activeDeal?.laneId && (
                             <>
                               <IconButton
-                                disabled={updateDealLoading || addContactLoading}
-
+                                disabled={
+                                  updateDealLoading || addContactLoading
+                                }
                                 onClick={openConfirmationDialog}
                                 size="small"
                                 component="span"
                                 style={{
-                                  background: 'transparent',
-                                  paddingLeft: '10px',
-                                  align: 'center'
+                                  background: "transparent",
+                                  paddingLeft: "10px",
+                                  align: "center"
                                 }}
                               >
                                 <DeleteIcon
@@ -1397,11 +1475,9 @@ function AddDealDialog(props) {
                 variant="outlined"
                 className={classes.inputFieldDealName}
                 style={{ marginLeft: "-15px" }}
-
                 fullWidth
                 size="small"
               >
-
                 <TextField
                   margin="dense"
                   value={title}
@@ -1409,13 +1485,13 @@ function AddDealDialog(props) {
                   placeholder="Click to enter deal name"
                   required
                   fullWidth
-
-                  // error text that will prevent things 
-                  error={(title && title !== '') ? false : true}
+                  // error text that will prevent things
+                  error={title && title !== "" ? false : true}
                   helperText={
-                    (title && title !== '') ? '' : 'Enter a deal name to get started' 
+                    title && title !== ""
+                      ? ""
+                      : "Enter a deal name to get started"
                   }
-
                   //   required
                   onChange={(e) => {
                     setTitle(e.target.value);
@@ -1424,21 +1500,15 @@ function AddDealDialog(props) {
                     classes: {
                       root: classes.dealNameRoot,
                       focused: classes.focused,
-                      notchedOutline: classes.notchedOutline,
-                    },
+                      notchedOutline: classes.notchedOutline
+                    }
                   }}
                   onBlur={() => setTitleFocus(false)}
                 />
               </FormControl>
 
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-              >
-                <Grid container
-                  className={classes.gridStyle}
-                >
+              <FormControl variant="outlined" fullWidth size="small">
+                <Grid container className={classes.gridStyle}>
                   <Grid item xs={3}>
                     <div>Owner</div>
                   </Grid>
@@ -1448,13 +1518,15 @@ function AddDealDialog(props) {
                       onChange={(e, user) => {
                         setOwnerId(user?.value);
                       }}
-                      value={users.find((user) => user?.value === ownerId) || null}
+                      value={
+                        users.find((user) => user?.value === ownerId) || null
+                      }
                       getOptionLabel={(option) => option.text}
                       getOptionSelected={(option) => option.value === ownerId}
                       classes={{
                         inputRoot: classes.dealOwnerRoot,
                         focused: classes.dealOwnerRootFocused,
-                        popupIndicator: classes.popupIndicator,
+                        popupIndicator: classes.popupIndicator
                       }}
                       renderInput={(params) => (
                         <TextField
@@ -1466,8 +1538,8 @@ function AddDealDialog(props) {
                             ...params.InputLabelProps,
                             shrink: true,
                             classes: {
-                              root: classes.dealOwnerLabel,
-                            },
+                              root: classes.dealOwnerLabel
+                            }
                           }}
                           placeholder="Assign Owner"
                           InputProps={{
@@ -1476,30 +1548,68 @@ function AddDealDialog(props) {
                               <>
                                 <InputAdornment position="start">
                                   <Avatar className={classes.dealOwnerAvatar}>
-                                    {users.find((user) => user?.value === ownerId)
+                                    {users.find(
+                                      (user) => user?.value === ownerId
+                                    ) ? (
+                                      <CustomAvatar
+                                        diglog={true}
+                                        email={
+                                          users.find(
+                                            (user) => user?.value === ownerId
+                                          ).email
+                                        }
+                                        text={
+                                          users
+                                            .find(
+                                              (user) => user?.value === ownerId
+                                            )
+                                            .text.toString()
+                                            .toUpperCase()
+                                            .split(" ").length > 1
+                                            ? users
+                                                .find(
+                                                  (user) =>
+                                                    user?.value === ownerId
+                                                )
+                                                .text.toString()
+                                            : "Add Owner"
+                                        }
+                                      />
+                                    ) : (
+                                      "AO"
+                                    )}
+                                    {/* {users.find(
+                                      (user) => user?.value === ownerId
+                                    )
                                       ? users
-                                        .find((user) => user?.value === ownerId)
-                                        .text.toString()
-                                        .toUpperCase()
-                                        .split(' ').length > 1
+                                          .find(
+                                            (user) => user?.value === ownerId
+                                          )
+                                          .text.toString()
+                                          .toUpperCase()
+                                          .split(" ").length > 1
                                         ? users
-                                          .find((user) => user?.value === ownerId)
-                                          .text.toString()
-                                          .toUpperCase()
-                                          .split(' ')[0][0] +
-                                        '' +
-                                        users
-                                          .find((user) => user?.value === ownerId)
-                                          .text.toString()
-                                          .toUpperCase()
-                                          .split(' ')[1][0]
-                                        : 'AO'
-                                      : 'AO'}
+                                            .find(
+                                              (user) => user?.value === ownerId
+                                            )
+                                            .text.toString()
+                                            .toUpperCase()
+                                            .split(" ")[0][0] +
+                                          "" +
+                                          users
+                                            .find(
+                                              (user) => user?.value === ownerId
+                                            )
+                                            .text.toString()
+                                            .toUpperCase()
+                                            .split(" ")[1][0]
+                                        : "AO"
+                                      : "AO"} */}
                                   </Avatar>
                                 </InputAdornment>
                                 {params.InputProps.startAdornment}
                               </>
-                            ),
+                            )
                           }}
                         />
                       )}
@@ -1508,14 +1618,8 @@ function AddDealDialog(props) {
                 </Grid>
               </FormControl>
 
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-              >
-                <Grid container
-                  className={classes.gridStyle}
-                >
+              <FormControl variant="outlined" fullWidth size="small">
+                <Grid container className={classes.gridStyle}>
                   <Grid item xs={3}>
                     <div>Close Date</div>
                   </Grid>
@@ -1532,28 +1636,22 @@ function AddDealDialog(props) {
                         setCloseDate(e.target.value);
                       }}
                       InputLabelProps={{
-                        shrink: true,
+                        shrink: true
                       }}
                       InputProps={{
                         classes: {
                           root: classes.dateRoot,
                           focused: classes.focused,
-                          notchedOutline: classes.notchedOutline,
-                        },
+                          notchedOutline: classes.notchedOutline
+                        }
                       }}
                     />
                   </Grid>
                 </Grid>
               </FormControl>
 
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-              >
-                <Grid container
-                  className={classes.gridStyle}
-                >
+              <FormControl variant="outlined" fullWidth size="small">
+                <Grid container className={classes.gridStyle}>
                   <Grid item xs={3}>
                     <div>Flowline</div>
                   </Grid>
@@ -1561,13 +1659,13 @@ function AddDealDialog(props) {
                   <Grid item xs={9}>
                     <TextField
                       variant="outlined"
-                      margin='dense'
+                      margin="dense"
                       select
                       SelectProps={{
                         native: true,
                         classes: {
-                          icon: classes.icon,
-                        },
+                          icon: classes.icon
+                        }
                       }}
                       size="small"
                       value={pipelineId}
@@ -1579,8 +1677,8 @@ function AddDealDialog(props) {
                         classes: {
                           root: classes.flowlineRoot,
                           notchedOutline: classes.notchedOutlineFlow,
-                          focused: classes.notchedOutlineFlowFocused,
-                        },
+                          focused: classes.notchedOutlineFlowFocused
+                        }
                       }}
                       fullWidth
                     >
@@ -1599,34 +1697,26 @@ function AddDealDialog(props) {
                         );
                       })}
                     </TextField>
-
                   </Grid>
                 </Grid>
               </FormControl>
 
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-              >
-                <Grid container
-                  className={classes.gridStyle}
-                >
+              <FormControl variant="outlined" fullWidth size="small">
+                <Grid container className={classes.gridStyle}>
                   <Grid item xs={3}>
                     <div>Flow Stage</div>
                   </Grid>
 
                   <Grid item xs={9}>
-
                     <TextField
-                      margin='dense'
+                      margin="dense"
                       variant="outlined"
                       select
                       SelectProps={{
                         native: true,
                         classes: {
-                          icon: classes.icon,
-                        },
+                          icon: classes.icon
+                        }
                       }}
                       size="small"
                       value={stageId}
@@ -1641,11 +1731,10 @@ function AddDealDialog(props) {
                         classes: {
                           root: classes.flowlineRoot,
                           notchedOutline: classes.notchedOutlineFlow,
-                          focused: classes.notchedOutlineFlowFocused,
-                        },
+                          focused: classes.notchedOutlineFlowFocused
+                        }
                       }}
                       fullWidth
-
                     >
                       {stagesToChoose &&
                         stagesToChoose.map((stage, i) => (
@@ -1653,20 +1742,13 @@ function AddDealDialog(props) {
                             {stage.name}
                           </option>
                         ))}
-
                     </TextField>
                   </Grid>
                 </Grid>
               </FormControl>
 
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-              >
-                <Grid container
-                  className={classes.gridStyle}
-                >
+              <FormControl variant="outlined" fullWidth size="small">
+                <Grid container className={classes.gridStyle}>
                   <Grid item xs={3}>
                     <div>Offer Price</div>
                   </Grid>
@@ -1677,7 +1759,7 @@ function AddDealDialog(props) {
                       value={label}
                       error={isNaN(label)}
                       helperText={
-                        isNaN(label) ? 'Offer Price must be a valid number' : ''
+                        isNaN(label) ? "Offer Price must be a valid number" : ""
                       }
                       className={classes.inputFieldCustomTextInput}
                       fullWidth
@@ -1689,14 +1771,13 @@ function AddDealDialog(props) {
                         classes: {
                           root: classes.customDataTextInputRoot,
                           focused: classes.focused,
-                          notchedOutline: classes.notchedOutline,
-                        },
+                          notchedOutline: classes.notchedOutline
+                        }
                       }}
                     />
                   </Grid>
                 </Grid>
               </FormControl>
-
 
               <TextField
                 //   autoFocus
@@ -1716,7 +1797,10 @@ function AddDealDialog(props) {
               />
 
               {originationDate && (
-                <div className={classes.originationDate}>Deal Creation Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
+                <div className={classes.originationDate}>
+                  Deal Creation Date:{" "}
+                  {moment(originationDate).format("M/DD/YYYY, hh:mmA")}
+                </div>
               )}
               <div>
                 <AddDialogeUploadZone
