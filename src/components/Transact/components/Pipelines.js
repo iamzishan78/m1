@@ -5,8 +5,11 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import SettingsIcon from "@material-ui/icons/Settings";
+
+//icons 
 import IconButton from "@material-ui/core/IconButton";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
 import Dialog from "@material-ui/core/Dialog";
 import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "../../../actions";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -587,7 +590,7 @@ export default function Pipelines(props) {
             );
           }}
         >
-          <SettingsIcon />
+          <ExpandMoreIcon />
         </IconButton>
       </div>
 

@@ -225,7 +225,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
                   }`}
                 onClick={() => setDealFilter("won")}
               >
-                Won
+                WON
               </Button>
 
               <Button
@@ -234,7 +234,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
                   }`}
                 onClick={() => setDealFilter("lost")}
               >
-                Lost
+                LOST
               </Button>
             </ButtonGroup>
           </div>
