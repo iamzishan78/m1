@@ -59,9 +59,6 @@ export default function DocumentComponent() {
     setNumPages(numPages);
   }
 
-
-
-
   return (
     <div className={classes.root}>
       {/* <Container 

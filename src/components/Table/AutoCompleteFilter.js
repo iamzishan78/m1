@@ -29,7 +29,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query 
     useEffect(() => {
         if (filtersData) {
             const keys = Object.keys(filtersData)
-            if (filtersData[keys[0]] && filtersData[keys[0]]?.hits)
+            if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits)
                 setOptions(filtersData[keys[0]].hits)
         }
 

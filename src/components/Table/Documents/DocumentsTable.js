@@ -56,7 +56,9 @@ function DocumentsTable(props) {
   useEffect(() => {
     getESDocuments({
       variables: {
-        pagination: {},
+        pagination: {
+          keep_alive: "1micros"
+        },
         search: props.documentSearchQuery ? props.documentSearchQuery : ""
       }
     })
@@ -94,7 +96,7 @@ function DocumentsTable(props) {
 
   const count = tableData?.total || 0
   const options = {
-    rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
+    rowsPerPageOptions: [10, 25, 50, 100],
     count: count,
     serverSide: true,
     search: false,
@@ -156,7 +158,7 @@ function DocumentsTable(props) {
           uploadIcon={uploadIcon}
           dense={dense}
           orderByTracks={orderByTracks}
-          startPaginationAt={null}
+          startPaginationAt={10}
           // onClickAdd={onClickAdd}
           contactId={props.contactId}
           options={options}
