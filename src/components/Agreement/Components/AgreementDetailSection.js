@@ -168,7 +168,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
               <AutoComplete
                 classes={classes}
                 label="Agreement Status"
-                options={["Active", "DeActive"]}
+                options={["Active", "Inactive"]}
                 onChange={(value) => {
                   setStatus(value);
                   handleUpdateAgreement({ status: value });
@@ -183,7 +183,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
                   handleUpdateAgreement({ rights: value });
                 }}
                 label="Rights"
-                options={["Oil & gas"]}
+                options={["Oil & Gas"]}
               />
             </Grid>
             <Grid item style={{ minWidth: "14%" }} className={classes.detailFieldsRow2}>
