@@ -169,7 +169,7 @@ const Activities = () => {
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [activityFilterByType, setActivityFilterByType] = useState("all");
   const [activityFilterByTime, setActivityFilterByTime] = useState("all");
-  const [view, setView] = React.useState(Views.WEEK);
+  const [view, setView] = React.useState(Views.MONTH);
   const [selectedActivity, setSelectedActivity] = useState(null);
 
   useEffect(() => {
