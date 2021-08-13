@@ -42,33 +42,33 @@ export default function CardDetailsMap() {
   const [flyVar1, setFlyVar1] = useState([null]);
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
 
-  useEffect(() => {
-    const req = new Request(
-      "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
-      {
-        method: "GET",
-        mode: "cors",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  // useEffect(() => {
+  //   const req = new Request(
+  //     "https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
+  //     {
+  //       method: "GET",
+  //       mode: "cors",
+  //       headers: {
+  //         Accept: "application/json",
+  //         "Content-Type": "application/json",
+  //       },
+  //     }
+  //   );
 
-    const abortController = new AbortController();
-    const signal = abortController.signal;
+  //   const abortController = new AbortController();
+  //   const signal = abortController.signal;
 
-    fetch(req, { signal: signal })
-      .then((results) => results.json())
-      .then((data) => {
-        setMapStyles(data.slice(0, 5));
-      });
+  //   fetch(req, { signal: signal })
+  //     .then((results) => results.json())
+  //     .then((data) => {
+  //       setMapStyles(data.slice(0, 5));
+  //     });
 
-    //clean up
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, []);
+  //   //clean up
+  //   return function cleanup() {
+  //     abortController.abort();
+  //   };
+  // }, []);
 
   function getIndex(value, arr, prop) {
     for (var i = 0; i < arr.length; i++) {
@@ -80,47 +80,47 @@ export default function CardDetailsMap() {
   }
 
   useEffect(() => {
-      map.flyTo({
-        center: [
-          stateApp.selectedWell.longitude,
-          stateApp.selectedWell.latitude,
-        ],
-        zoom: 16,
-        speed: 0.4,
-        bearing: -10,
-        //duration: 10000,
-        easing: function (t) {
-          return Math.sin((t * Math.PI) / 2);
-        },
-      });
+    map.flyTo({
+      center: [
+        stateApp.selectedWell.longitude,
+        stateApp.selectedWell.latitude,
+      ],
+      zoom: 16,
+      speed: 0.4,
+      bearing: -10,
+      //duration: 10000,
+      easing: function (t) {
+        return Math.sin((t * Math.PI) / 2);
+      },
+    });
 
-      setFlyVar1(false);
+    setFlyVar1(false);
 
-      map.on("moveend", function (e) {
-        if (
-          map.getBearing() === -10 &&
-          map.getZoom() === 16
-          // && map.getCenter()===[
-          //                       stateApp.selectedWell.longitude,
-          //                       stateApp.selectedWell.latitude,
-          //                     ]
-        ) {
-          map.flyTo({
-            center: [
-              stateApp.selectedWell?.longitude,
-              stateApp.selectedWell?.latitude,
-            ],
-            zoom: 16,
-            //speed: 0.4,
-            bearing: 540,
-            duration: 100000,
-            easing: function (t) {
-              return Math.sin((t * Math.PI) / 2);
-            },
-          });
-        }
-      });
-  
+    map.on("moveend", function (e) {
+      if (
+        map.getBearing() === -10 &&
+        map.getZoom() === 16
+        // && map.getCenter()===[
+        //                       stateApp.selectedWell.longitude,
+        //                       stateApp.selectedWell.latitude,
+        //                     ]
+      ) {
+        map.flyTo({
+          center: [
+            stateApp.selectedWell?.longitude,
+            stateApp.selectedWell?.latitude,
+          ],
+          zoom: 16,
+          //speed: 0.4,
+          bearing: 540,
+          duration: 100000,
+          easing: function (t) {
+            return Math.sin((t * Math.PI) / 2);
+          },
+        });
+      }
+    });
+
   }, [stateApp.selectedWell]);
 
   useEffect(() => {

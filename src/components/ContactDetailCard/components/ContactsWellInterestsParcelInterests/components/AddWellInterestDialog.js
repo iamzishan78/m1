@@ -295,8 +295,8 @@ function AddWellInterestDialog(props) {
 
   const formatRoyaltyAcres = (royaltyAcres) => {
     const decimals = royaltyAcres.toString().split('.')
-    if (decimals[1] && decimals[1].length > 6)
-      royaltyAcres = royaltyAcres.toFixed(6)
+    if (decimals[1] && decimals[1].length > 8)
+      royaltyAcres = royaltyAcres.toFixed(8)
     return Number(royaltyAcres)
   }
 

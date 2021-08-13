@@ -70,6 +70,7 @@ const AppProvider = (props) => {
 
 
     // MAP CONTEXT vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+    mapStyles: [],
     mapVars: {
       zoom: 4.88,
       center: { lng: -98.8, lat: 38 },
