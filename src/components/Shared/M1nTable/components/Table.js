@@ -707,19 +707,19 @@ function SubTable(props) {
 
   const handleClickFlyToIcon = (entityType, searchTarget) => {
 
-    if (entityType == "well") {
+    if (entityType === "well") {
       handleWellFlyTo(searchTarget)
     }
-    if (entityType == "owner") {
+    if (entityType === "owner") {
       handleOwnerFlyTo(searchTarget)
     }
-    if (entityType == "operator") {
+    if (entityType === "operator") {
       handleOperatorFlyTo(searchTarget)
     }
-    if (entityType == "lease") {
+    if (entityType === "lease") {
       handleLeaseFlyTo(searchTarget)
     }
-    if (entityType == "location") {
+    if (entityType === "location") {
       handleLocationFlyTo(searchTarget)
     }
   };
@@ -759,7 +759,7 @@ function SubTable(props) {
     if (
       props.parent &&
       (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests" || props.parent === "wells") &&
-      props.targetLabel == "well" &&
+      props.targetLabel === "well" &&
       dataWell &&
       dataWell.well
     ) {
@@ -772,20 +772,20 @@ function SubTable(props) {
       //// temporary to fix the ticks dates fields comming from the rest api
       if (
         selectedWell.permitApprovedDate &&
-        selectedWell.permitApprovedDate != "null"
+        selectedWell.permitApprovedDate !== "null"
       )
         selectedWell.permitApprovedDate = ticksToDateString(
           selectedWell.permitApprovedDate
         );
-      if (selectedWell.spudDate && selectedWell.spudDate != "null")
+      if (selectedWell.spudDate && selectedWell.spudDate !== "null")
         selectedWell.spudDate = ticksToDateString(selectedWell.spudDate);
-      if (selectedWell.completionDate && selectedWell.completionDate != "null")
+      if (selectedWell.completionDate && selectedWell.completionDate !== "null")
         selectedWell.completionDate = ticksToDateString(
           selectedWell.completionDate
         );
       if (
         selectedWell.firstProductionDate &&
-        selectedWell.firstProductionDate != "null"
+        selectedWell.firstProductionDate !== "null"
       )
         selectedWell.firstProductionDate = ticksToDateString(
           selectedWell.firstProductionDate
@@ -1710,7 +1710,7 @@ function SubTable(props) {
 
                           } else {
                             // Code is not used as we are opening different model from above
-                            if (props.targetLabel == "owner") {
+                            if (props.targetLabel === "owner") {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
@@ -1934,7 +1934,6 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  let id = props.targetLabel + tableMeta.columnIndex;
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]

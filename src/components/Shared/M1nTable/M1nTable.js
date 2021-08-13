@@ -3145,7 +3145,7 @@ function M1nTable(props) {
   }
 
   const addTrailingZeros = (num) => {
-    return num.toLocaleString("en", { useGrouping: false, minimumFractionDigits: 8, maximumFractionDigits: 20 })
+    return num.toLocaleString("en", { useGrouping: false, minimumFractionDigits: 8, maximumFractionDigits: 20 });
   }
   return (
     <Container

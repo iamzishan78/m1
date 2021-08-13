@@ -11,7 +11,6 @@ const ParcelOwnershipStyles = makeStyles((theme) => ({
     "& .MUIDataTableToolbar": {
       zIndex: "99999 !important",
     },
-
     "& .MuiTableHead-root": {
       "& th": {
         backgroundColor: "#F2F2F2",
