@@ -48,7 +48,8 @@ function Agreement(props) {
 
   useEffect(() => {
     if (addedAgreement?.addAgreement) {
-      setNewAgreement(addedAgreement.addAgreement);
+      const { addAgreement: { agreement } } = addedAgreement
+      setNewAgreement(agreement);
     }
   }, [addedAgreement]);
 

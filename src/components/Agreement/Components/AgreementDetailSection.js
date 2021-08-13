@@ -16,7 +16,7 @@ import AutoComplete from "components/Shared/components/Fields/AutoComplete";
 import { useMutation } from "@apollo/client";
 import { UPDATE_AGREEMENT } from "graphQL/useMutatioAgreement";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   accordionRoot: {
     color: "black",
     "&.MuiAccordion-root.Mui-expanded": {
@@ -50,7 +50,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
   const [extensionExpirationDate, setExtensionDate] = useState("");
   const [isExtendable, setExtendable] = useState(false);
 
-  const [updateAgreement, { data: updatedAgreement }] = useMutation(UPDATE_AGREEMENT);
+  const [updateAgreement] = useMutation(UPDATE_AGREEMENT);
 
   useEffect(() => {
     if (!title.number && title.name) {
@@ -65,12 +65,6 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
   }, [title, setTitle]);
 
   useEffect(() => {
-    if (updatedAgreement) {
-      console.log(updatedAgreement);
-    }
-  }, [updatedAgreement]);
-
-  useEffect(() => {
     if (dates.effectiveDate) {
       let addedDate = moment(dates.effectiveDate).add(dates.term, "M");
       addedDate = moment(addedDate, "DD MM YYYY hh:mm:ss").toDate();
@@ -79,7 +73,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
     }
   }, [dates.effectiveDate, dates.term]);
 
-  useEffect(() => {}, [dates.expirationDate]);
+  useEffect(() => { }, [dates.expirationDate]);
 
   const handleUpdateAgreement = (agreementKey) => {
     updateAgreement({
