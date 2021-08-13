@@ -6,7 +6,7 @@ import { KeyboardDatePicker } from "@material-ui/pickers";
 import StateCard from "components/ParcelsDetailCard/components/StateCard";
 import CountyCard from "components/ParcelsDetailCard/components/CountyCard";
 import StatusCard from "components/Shared/components/Cards/StatusCard";
-import HBPCard from "components/Shared/components/Cards/HBPCard";
+import PropStatusCard from "components/Shared/components/Cards/PropStatusCard";
 import SurveyCard from "components/ParcelsDetailCard/components/SurveyCard";
 import BlockCard from "components/ParcelsDetailCard/components/BlockCard";
 import SectionCard from "components/ParcelsDetailCard/components/SectionCard";
@@ -41,7 +41,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
   const classes = useStyles();
   const [title, setHeaderTitle] = useState({ name: "", number: "" });
   const [status, setStatus] = useState("");
-  const [hbp, setHbp] = useState("");
+  const [hbp, setPropStatus] = useState("");
   const [dates, setDates] = useState({
     effectiveDate: "",
     term: 0,
@@ -118,7 +118,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
               <StatusCard status={status} label="Agreement" />
             </Grid>
             <Grid item>
-              <HBPCard status={hbp} label="Property" />
+              <PropStatusCard status={hbp} label="Property" />
             </Grid>
             <Grid item></Grid>
             <Grid item></Grid>
@@ -179,7 +179,6 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
               <AutoComplete
                 classes={classes}
                 onChange={(value) => {
-                  setHbp(value);
                   handleUpdateAgreement({ rights: value });
                 }}
                 label="Rights"
@@ -189,7 +188,10 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
             <Grid item style={{ minWidth: "14%" }} className={classes.detailFieldsRow2}>
               <AutoComplete
                 classes={classes}
-                onChange={(value) => handleUpdateAgreement({ propertyStatus: value })}
+                onChange={(value) => {
+                  setPropStatus(value);
+                  handleUpdateAgreement({ propertyStatus: value });
+                }}
                 label="Property Status"
                 options={["Active - Held By Production", "Active - Undeveloped", "Inactive"]}
               />
