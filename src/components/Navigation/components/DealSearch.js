@@ -122,10 +122,6 @@ const DealSearch = () => {
               <Grid container item xs={12} alignItems="center">
                 <Grid item xs>
                   <span style={{ fontWeight: 400 }}>{option.name}</span>
-
-                  <Typography variant="body2" color="textSecondary">
-                    {option.notes}
-                  </Typography>
                 </Grid>
               </Grid>
             </Grid>
