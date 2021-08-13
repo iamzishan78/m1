@@ -247,6 +247,8 @@ export default function MapControls(props) {
         if (!stateApp.editDraw) {
           setStateApp((state) => ({
             ...state,
+            popupOpen: false,
+            currentFeature: undefined,
             showDrawShapesPopup: true,
             editDraw: true,
           }));
