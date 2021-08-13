@@ -90,7 +90,6 @@ export default function AddParcelOwnerDialogContent({
   setSelectedRow,
   ...props
 }) {
-  console.log('customLayer', props.customLayer)
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [newOwner, setNewOwner] = useState({
@@ -334,6 +333,10 @@ export default function AddParcelOwnerDialogContent({
     }
   };
 
+  const retainTrailingZeros = (value) => {
+    return parseFloat(value).toFixed(value.split('.')[1]?.length);
+  }
+
   const classes = useStyles();
   const modalClass = Modals();
   return (
@@ -420,7 +423,7 @@ export default function AddParcelOwnerDialogContent({
                     setNewOwner({
                       ...newOwner,
                       surface_interest: value
-                        ? parseFloat(e.target.value)
+                        ? retainTrailingZeros(e.target.value)
                         : null,
                     });
                   }}
@@ -438,7 +441,7 @@ export default function AddParcelOwnerDialogContent({
                     setNewOwner({
                       ...newOwner,
                       mineral_interest: value
-                        ? parseFloat(e.target.value)
+                        ? retainTrailingZeros(e.target.value)
                         : null,
                     });
                   }}
@@ -456,7 +459,7 @@ export default function AddParcelOwnerDialogContent({
                     setNewOwner({
                       ...newOwner,
                       royalty_interest: value
-                        ? parseFloat(e.target.value)
+                        ? retainTrailingZeros(e.target.value)
                         : null,
                     });
                   }}
@@ -473,7 +476,7 @@ export default function AddParcelOwnerDialogContent({
                     const value = e.target.value;
                     setNewOwner({
                       ...newOwner,
-                      orri: value ? parseFloat(e.target.value) : null,
+                      orri: value ? retainTrailingZeros(e.target.value) : null,
                     });
                   }}
                 />
@@ -489,7 +492,7 @@ export default function AddParcelOwnerDialogContent({
                     const value = e.target.value;
                     setNewOwner({
                       ...newOwner,
-                      unknown_interest: value ? parseFloat(e.target.value) : null,
+                      unknown_interest: value ? retainTrailingZeros(e.target.value) : null,
                     });
                   }}
                 />
@@ -505,7 +508,7 @@ export default function AddParcelOwnerDialogContent({
                     const value = e.target.value;
                     setNewOwner({
                       ...newOwner,
-                      record_title: value ? parseFloat(e.target.value) : null,
+                      record_title: value ? retainTrailingZeros(e.target.value) : null,
                     });
                   }}
                 />
@@ -521,7 +524,7 @@ export default function AddParcelOwnerDialogContent({
                     const value = e.target.value;
                     setNewOwner({
                       ...newOwner,
-                      operating_rights: value ? parseFloat(e.target.value) : null,
+                      operating_rights: value ? retainTrailingZeros(e.target.value) : null,
                     });
                   }}
                 />
@@ -537,7 +540,7 @@ export default function AddParcelOwnerDialogContent({
                     const value = e.target.value;
                     setNewOwner({
                       ...newOwner,
-                      nri: value ? parseFloat(e.target.value) : null,
+                      nri: value ? retainTrailingZeros(e.target.value) : null,
                     });
                   }}
                 />
@@ -553,7 +556,7 @@ export default function AddParcelOwnerDialogContent({
                     const value = e.target.value;
                     setNewOwner({
                       ...newOwner,
-                      net_acres: value ? parseFloat(e.target.value) : null,
+                      net_acres: value ? retainTrailingZeros(e.target.value) : null,
                     });
                   }}
                 />
@@ -570,7 +573,7 @@ export default function AddParcelOwnerDialogContent({
                     const value = e.target.value;
                     setNewOwner({
                       ...newOwner,
-                      nra: value ? parseFloat(value) : null,
+                      nra: value ? retainTrailingZeros(value) : null,
                     });
                   }}
                 />

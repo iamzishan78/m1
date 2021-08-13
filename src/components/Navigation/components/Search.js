@@ -65,7 +65,7 @@ import { useLocation } from "react-router-dom";
 
 const leaseIndexName = 'lease-index-v2';
 const operatorIndexName = 'operator-index';
-const wellCogIndexName = "wellheader-index-en-ms";
+const wellCogIndexName = "wellheader-index";
 const ownerCogIndexName = "globalowner-index";
 const contactIndexName = 'contacts-index';
 

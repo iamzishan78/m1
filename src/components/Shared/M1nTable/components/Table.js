@@ -219,10 +219,6 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiPaper-root > .MuiToolbar-gutters": {
       paddingLeft: "11px !important",
     },
-    // "& .MuiPaper-root": {
-    //   zIndex: 99999,
-    // },
-
     "& .MUIDataTableToolbar": {
       zIndex: "999999 !important",
     },
@@ -250,6 +246,20 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiToolbar-regular > div:nth-child(2)": {
       flex: "0 1 auto",
+    },
+    "& .MUIDataTable-responsiveBase": {
+      overflow: "auto",
+      "&::-webkit-scrollbar": {
+        height: "0.4em",
+        width: "0.4em"
+      },
+      "&::-webkit-scrollbar-track": {
+        "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+      },
+      "&::-webkit-scrollbar-thumb": {
+        backgroundColor: "#929292",
+        borderRadius: 5,
+      },
     },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
@@ -698,20 +708,21 @@ function SubTable(props) {
   };
 
   const handleClickFlyToIcon = (entityType, searchTarget) => {
-    if (entityType == "well") {
-      handleWellFlyTo(searchTarget);
+
+    if (entityType === "well") {
+      handleWellFlyTo(searchTarget)
     }
-    if (entityType == "owner") {
-      handleOwnerFlyTo(searchTarget);
+    if (entityType === "owner") {
+      handleOwnerFlyTo(searchTarget)
     }
-    if (entityType == "operator") {
-      handleOperatorFlyTo(searchTarget);
+    if (entityType === "operator") {
+      handleOperatorFlyTo(searchTarget)
     }
-    if (entityType == "lease") {
-      handleLeaseFlyTo(searchTarget);
+    if (entityType === "lease") {
+      handleLeaseFlyTo(searchTarget)
     }
-    if (entityType == "location") {
-      handleLocationFlyTo(searchTarget);
+    if (entityType === "location") {
+      handleLocationFlyTo(searchTarget)
     }
   };
 
@@ -746,11 +757,8 @@ function SubTable(props) {
   useEffect(() => {
     if (
       props.parent &&
-      (props.parent === "search" ||
-        props.parent === "owner_WellInterests" ||
-        props.parent === "assocTaxRollInterests" ||
-        props.parent === "wells") &&
-      props.targetLabel == "well" &&
+      (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests" || props.parent === "wells") &&
+      props.targetLabel === "well" &&
       dataWell &&
       dataWell.well
     ) {
@@ -761,13 +769,26 @@ function SubTable(props) {
 
       selectedWell = { ...selectedWell, ...dataWell.well };
       //// temporary to fix the ticks dates fields comming from the rest api
-      if (selectedWell.permitApprovedDate && selectedWell.permitApprovedDate != "null")
-        selectedWell.permitApprovedDate = ticksToDateString(selectedWell.permitApprovedDate);
-      if (selectedWell.spudDate && selectedWell.spudDate != "null") selectedWell.spudDate = ticksToDateString(selectedWell.spudDate);
-      if (selectedWell.completionDate && selectedWell.completionDate != "null")
-        selectedWell.completionDate = ticksToDateString(selectedWell.completionDate);
-      if (selectedWell.firstProductionDate && selectedWell.firstProductionDate != "null")
-        selectedWell.firstProductionDate = ticksToDateString(selectedWell.firstProductionDate);
+      if (
+        selectedWell.permitApprovedDate &&
+        selectedWell.permitApprovedDate !== "null"
+      )
+        selectedWell.permitApprovedDate = ticksToDateString(
+          selectedWell.permitApprovedDate
+        );
+      if (selectedWell.spudDate && selectedWell.spudDate !== "null")
+        selectedWell.spudDate = ticksToDateString(selectedWell.spudDate);
+      if (selectedWell.completionDate && selectedWell.completionDate !== "null")
+        selectedWell.completionDate = ticksToDateString(
+          selectedWell.completionDate
+        );
+      if (
+        selectedWell.firstProductionDate &&
+        selectedWell.firstProductionDate !== "null"
+      )
+        selectedWell.firstProductionDate = ticksToDateString(
+          selectedWell.firstProductionDate
+        );
       //// temporary end
       if (selectedWell) {
         setSelectedRow(selectedWell);
@@ -1510,7 +1531,7 @@ function SubTable(props) {
                             // handleOpenExpandableCard();
                           } else {
                             // Code is not used as we are opening different model from above
-                            if (props.targetLabel == "owner") {
+                            if (props.targetLabel === "owner") {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
@@ -1520,7 +1541,8 @@ function SubTable(props) {
                                 },
                                 "makeOwnerAContact"
                               );
-                            } else if (props.targetLabel == "Parcel Ownership") {
+                            }
+                            else if (props.targetLabel === "Parcel Ownership") {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
@@ -1671,7 +1693,6 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  let id = props.targetLabel + tableMeta.columnIndex;
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -2611,8 +2632,12 @@ function SubTable(props) {
                 {buttonLabel}
               </Button>
             )}
-            {props.addAble.type === "parcelRunsheet" && (
-              <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={() => props.onClickAdd()}>
+            {(props.addAble.type === "parcelRunsheet") && (
+              <Button
+                color="secondary"
+                className={classes.multiSelectionTopBarButtons}
+                onClick={() => props.onClickAdd()}
+              >
                 {buttonLabel}
               </Button>
             )}
@@ -3200,7 +3225,7 @@ function SubTable(props) {
 
           columns={columns ? columns : []}
           components={{
-            TableFilterList: props.header === "Tax Roll Ownership" && !isSearchOpen ? TableFilterList : null,
+            TableFilterList: props.header === 'Tax Roll Ownership' && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,
               ViewColumnIcon,
@@ -3215,35 +3240,38 @@ function SubTable(props) {
             // resizableColumns: true,
 
             filter:
-              //  props.parent === 'ownersPerParcel'               /// will need to build a backend for this search
-              props.parent === "suggestedOwnersPerParcel" || /// will need to build a backend for this search
-                props.parent === "associatedWellsPerParcel" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_wells" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_owners" /// will need to build a backend for this search
-                ? false
-                : null,
+              //  props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
+              props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+
+                ? false : null,
 
             viewColumns:
-              // props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search
-              props.parent === "suggestedOwnersPerParcel" || /// will need to build a backend for this search
-                props.parent === "associatedWellsPerParcel" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_wells" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_owners" /// will need to build a backend for this search
-                ? false
-                : null,
+              // props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search 
+              props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+
+                ? false : null,
 
             search:
-              props.header === "Contacts" ||
-                props.header === "Deals" ||
-                props.header === "Activities" ||
-                props.header === "Monthly Production" ||
-                // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search
-                props.parent === "suggestedOwnersPerParcel" || /// will need to build a backend for this search
-                props.parent === "associatedWellsPerParcel" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_wells" || /// will need to build a backend for this search
-                props.parent === "boundary_grid_owners" /// will need to build a backend for this search
-                ? false
-                : props.parent != "search",
+              (
+                props.header === 'Contacts'
+                || props.header === 'Deals'
+                || props.header === 'Activities'
+                || props.header === 'Monthly Production'
+                // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
+                || props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
+                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+
+              )
+
+                ? false : props.parent !== "search",
             // have to use props.parent here for initial value
             searchOpen: props.parent === "Contacts" ? true : null,
             //download: false,
@@ -3731,6 +3759,53 @@ function SubTable(props) {
             />
           </Dialog>
         )}
+        {showExpandableCard &&
+          targetLabelToExpand !== "well" &&
+          targetLabelToExpand !== "contact" &&
+          multipleExpandableCard === false && (
+            <Dialog
+              className={classes.dialogExpCard}
+              fullWidth
+              maxWidth="xl"
+              open={showExpandableCard}
+              onClose={handleCloseExpandableCard}
+            >
+              <ExpandableCardProvider
+                expanded={true}
+                handleCloseExpandableCard={handleCloseExpandableCard}
+                component={subComponent}
+                title={title}
+                subTitle={subTitle}
+                parent="table"
+                mouseX={0}
+                mouseY={0}
+                position="relative"
+                cardLeft={"0"}
+                cardTop={"0"}
+                zIndex={1201}
+                cardWidthExpanded="100%"
+                cardHeightExpanded="100%"
+                targetSourceId={
+                  targetLabelToExpand === "owner" ||
+                    targetLabelToExpand === "well" ||
+                    (!targetLabelToExpand &&
+                      (props.targetLabel === "owner" ||
+                        props.targetLabel === "well"))
+                    ? selectedRow.id
+                    : selectedRow._id
+                }
+                targetLabel={
+                  targetLabelToExpand ? targetLabelToExpand : props.targetLabel
+                }
+                noTrackAvailable={
+                  targetLabelToExpand === "contact" ||
+                    (!targetLabelToExpand && props.targetLabel === "contact")
+                    ? true
+                    : false
+                }
+              />
+            </Dialog>
+          )}
       </div>
 
       {props.loading && (

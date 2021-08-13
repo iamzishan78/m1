@@ -74,18 +74,14 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "calc(100% - 88px)",
     overflow: "auto",
     "&::-webkit-scrollbar": {
-      width: "0.75em",
-      height: "0.75em",
+      height: "0.4em",
     },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "1.0em",
-    // },
-    // "&::-webkit-scrollbar-track": {
-    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    // },
+    "&::-webkit-scrollbar-track": {
+      "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    },
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
-      borderRadius: 10,
+      borderRadius: 5,
     },
   },
   card: {
