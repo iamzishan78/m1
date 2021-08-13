@@ -2015,7 +2015,7 @@ function M1nTable(props) {
             if (typeof parcelOwner[key] === 'number')
               parcelOwner[key] = addTrailingZeros(parcelOwner[key]);
             else if (parcelOwner[key]?.["$numberDecimal"]) {
-              parcelOwner[key] = addTrailingZeros(parcelOwner[key]["$numberDecimal"]);
+              parcelOwner[key] = addTrailingZeros(Number(parcelOwner[key]["$numberDecimal"]));
             }
           }
         });

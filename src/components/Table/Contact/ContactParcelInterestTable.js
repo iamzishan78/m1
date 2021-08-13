@@ -120,7 +120,7 @@ function ContactParcelInterestTable(props) {
             if (typeof well[key] === 'number')
               well[key] = addTrailingZeros(well[key]);
             else if (well[key]?.["$numberDecimal"]) {
-              well[key] = addTrailingZeros(well[key]["$numberDecimal"]);
+              well[key] = addTrailingZeros(Number(well[key]["$numberDecimal"]));
             }
           }
         });
