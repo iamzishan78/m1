@@ -105,7 +105,7 @@ const DocumentSearch = () => {
         className={classes.contactSearchField}
         margin="dense"
         variant="outlined"
-        placeholder="Search for documents by name"
+        placeholder="Search for documents"
         InputProps={{
           startAdornment: (
             <InputAdornment>
