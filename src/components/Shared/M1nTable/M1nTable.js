@@ -72,6 +72,7 @@ import ContactWellHeadCells from '../constants/contactperwell-header-schema.js'
 
 // import value formatters 
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
+import { addTrailingZeros } from 'components/Shared/functions'
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -2011,7 +2012,7 @@ function M1nTable(props) {
 
         Object.keys(o).forEach(key => {
           if (interestKeys.includes(key)) {
-            if (typeof parcelOwner[key] === 'number' && String(parcelOwner[key]).split('.')[1])
+            if (typeof parcelOwner[key] === 'number')
               parcelOwner[key] = addTrailingZeros(parcelOwner[key]);
             else if (parcelOwner[key]?.["$numberDecimal"]) {
               parcelOwner[key] = addTrailingZeros(parcelOwner[key]["$numberDecimal"]);
@@ -3144,9 +3145,6 @@ function M1nTable(props) {
     setSelectedYear(selectedYear)
   }
 
-  const addTrailingZeros = (num) => {
-    return num.toLocaleString("en", { useGrouping: false, minimumFractionDigits: 8, maximumFractionDigits: 20 });
-  }
   return (
     <Container
       maxWidth={false}

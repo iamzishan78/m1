@@ -117,7 +117,7 @@ function ContactParcelInterestTable(props) {
 
         Object.keys(well).forEach(key => {
           if (interestKeys.includes(key)) {
-            if (typeof well[key] === 'number' && String(well[key]).split('.')[1])
+            if (typeof well[key] === 'number')
               well[key] = addTrailingZeros(well[key]);
             else if (well[key]?.["$numberDecimal"]) {
               well[key] = addTrailingZeros(well[key]["$numberDecimal"]);
