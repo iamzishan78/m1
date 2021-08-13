@@ -80,14 +80,14 @@ export default function RelatedParties({ relatedParties = [] }) {
             label="Address"
             fullWidth
             defaultValue={party.address}
-            // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
-            // onKeyDown={(event) => {
-            //   if (event.key === "Enter") {
-            //     event.preventDefault();
-            //     handleUpdateAgreement({ name: event.target.value });
-            //   }
-            // }}
-            // onBlur={(event) => handleUpdateAgreement({ name: event.target.value })}
+          // onChange={({ target }) => setHeaderTitle({ ...title, name: target.value })}
+          // onKeyDown={(event) => {
+          //   if (event.key === "Enter") {
+          //     event.preventDefault();
+          //     handleUpdateAgreement({ name: event.target.value });
+          //   }
+          // }}
+          // onBlur={(event) => handleUpdateAgreement({ name: event.target.value })}
           />
         </Grid>
         <Grid item xs={1} style={{ margin: "20px 20px 0px 0px" }}>
@@ -114,15 +114,15 @@ export default function RelatedParties({ relatedParties = [] }) {
                 //   handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
                 // }}
                 aria-label="show comments"
-                // onMouseOver={() => {
-                //   console.log("hover Effect Table");
-                //   if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                //     multiSelectMouseHoverColor(id, "#dadbde");
-                // }}
-                // onMouseOut={() => {
-                //   if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                //     multiSelectMouseHoverColor(id, "#efefef");
-                // }}
+              // onMouseOver={() => {
+              //   console.log("hover Effect Table");
+              //   if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+              //     multiSelectMouseHoverColor(id, "#dadbde");
+              // }}
+              // onMouseOut={() => {
+              //   if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+              //     multiSelectMouseHoverColor(id, "#efefef");
+              // }}
               >
                 <ChatIcon />
               </IconButton>
@@ -134,7 +134,7 @@ export default function RelatedParties({ relatedParties = [] }) {
   };
 
   return (
-    <Accordion className={classes.accordionRoot}>
+    <Accordion className={classes.accordionRoot} defaultExpanded="true" >
       <AccordionSummary
         aria-controls="panel1a-content"
         id="panel1a-header"

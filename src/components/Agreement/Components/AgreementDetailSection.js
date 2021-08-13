@@ -85,7 +85,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
 
   return (
     <>
-      <Accordion className={classes.accordionRoot}>
+      <Accordion className={classes.accordionRoot} defaultExpanded="true">
         <AccordionSummary
           aria-controls="panel1a-content"
           id="panel1a-header"
