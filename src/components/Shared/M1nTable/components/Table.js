@@ -2271,7 +2271,7 @@ function SubTable(props) {
                     }}
                   >
                     + ADD TO PARCEL
-                    </Button>
+                  </Button>
                 </div>
               </div>
             );
@@ -2410,7 +2410,7 @@ function SubTable(props) {
                         }}
                       >
                         Assign
-                        </Button>
+                      </Button>
 
                       <Button
                         color="secondary"
@@ -2422,7 +2422,7 @@ function SubTable(props) {
                         }}
                       >
                         Merge
-                        </Button>
+                      </Button>
 
                       {/* )} */}
 
@@ -2451,7 +2451,7 @@ function SubTable(props) {
                         }}
                       >
                         Mailers
-                        </Button>
+                      </Button>
 
                       <Divider orientation="vertical" flexItem />
                     </>
@@ -2556,7 +2556,7 @@ function SubTable(props) {
       }
       if (props.addAble.type === "document") {
         buttonLabel = "ADD DOCUMENT";
-        menuOptions = { text: "Add New Aggrement", isShow: true, action: () => routeChange("/agreement") };
+        menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
       }
 
       const addAction = (e) => {
