@@ -66,37 +66,42 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 	const [open, setOpen] = useState(true);
 	const [mapStyles, setMapStyles] = useState([]);
 
+	// useEffect(() => {
+	// 	if (type === "base") {
+	// 		const req = new Request(
+	// 			"https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
+	// 			{
+	// 				method: "GET",
+	// 				mode: "cors",
+	// 				headers: {
+	// 					Accept: "application/json",
+	// 					"Content-Type": "application/json",
+	// 					"Cache-Control": "max-age=0",
+	// 				},
+	// 			}
+	// 		);
+
+	// 		const abortController = new AbortController();
+	// 		const signal = abortController.signal;
+
+	// 		fetch(req, { signal: signal })
+	// 			.then((results) => results.json())
+	// 			.then((data) => {
+	// 				data = _.uniqBy(data, 'name');
+	// 				setMapStyles(data.slice(0, 5));
+	// 			});
+
+	// 		//clean up
+	// 		return function cleanup() {
+	// 			abortController.abort();
+	// 		};
+	// 	}
+	// }, [type]);
+
 	useEffect(() => {
-		if (type === "base") {
-			const req = new Request(
-				"https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
-				{
-					method: "GET",
-					mode: "cors",
-					headers: {
-						Accept: "application/json",
-						"Content-Type": "application/json",
-						"Cache-Control": "max-age=0",
-					},
-				}
-			);
-
-			const abortController = new AbortController();
-			const signal = abortController.signal;
-
-			fetch(req, { signal: signal })
-				.then((results) => results.json())
-				.then((data) => {
-					data = _.uniqBy(data, 'name');
-					setMapStyles(data.slice(0, 5));
-				});
-
-			//clean up
-			return function cleanup() {
-				abortController.abort();
-			};
-		}
-	}, [type]);
+		if (stateApp.mapStyles && stateApp.mapStyles.length > 0)
+			setMapStyles([...stateApp.mapStyles]);
+	}, [stateApp.mapStyles])
 
 	useEffect(() => {
 

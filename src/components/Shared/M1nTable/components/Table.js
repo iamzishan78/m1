@@ -79,7 +79,6 @@ import moment from "moment";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
 import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
-import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
 
 import ButtonDropDown from "./ButtonGroup"
@@ -708,19 +707,19 @@ function SubTable(props) {
 
   const handleClickFlyToIcon = (entityType, searchTarget) => {
 
-    if (entityType == "well") {
+    if (entityType === "well") {
       handleWellFlyTo(searchTarget)
     }
-    if (entityType == "owner") {
+    if (entityType === "owner") {
       handleOwnerFlyTo(searchTarget)
     }
-    if (entityType == "operator") {
+    if (entityType === "operator") {
       handleOperatorFlyTo(searchTarget)
     }
-    if (entityType == "lease") {
+    if (entityType === "lease") {
       handleLeaseFlyTo(searchTarget)
     }
-    if (entityType == "location") {
+    if (entityType === "location") {
       handleLocationFlyTo(searchTarget)
     }
   };
@@ -760,7 +759,7 @@ function SubTable(props) {
     if (
       props.parent &&
       (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests" || props.parent === "wells") &&
-      props.targetLabel == "well" &&
+      props.targetLabel === "well" &&
       dataWell &&
       dataWell.well
     ) {
@@ -773,20 +772,20 @@ function SubTable(props) {
       //// temporary to fix the ticks dates fields comming from the rest api
       if (
         selectedWell.permitApprovedDate &&
-        selectedWell.permitApprovedDate != "null"
+        selectedWell.permitApprovedDate !== "null"
       )
         selectedWell.permitApprovedDate = ticksToDateString(
           selectedWell.permitApprovedDate
         );
-      if (selectedWell.spudDate && selectedWell.spudDate != "null")
+      if (selectedWell.spudDate && selectedWell.spudDate !== "null")
         selectedWell.spudDate = ticksToDateString(selectedWell.spudDate);
-      if (selectedWell.completionDate && selectedWell.completionDate != "null")
+      if (selectedWell.completionDate && selectedWell.completionDate !== "null")
         selectedWell.completionDate = ticksToDateString(
           selectedWell.completionDate
         );
       if (
         selectedWell.firstProductionDate &&
-        selectedWell.firstProductionDate != "null"
+        selectedWell.firstProductionDate !== "null"
       )
         selectedWell.firstProductionDate = ticksToDateString(
           selectedWell.firstProductionDate
@@ -1711,7 +1710,7 @@ function SubTable(props) {
 
                           } else {
                             // Code is not used as we are opening different model from above
-                            if (props.targetLabel == "owner") {
+                            if (props.targetLabel === "owner") {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
@@ -1725,7 +1724,7 @@ function SubTable(props) {
                                 "makeOwnerAContact"
                               );
                             }
-                            else if (props.targetLabel == "Parcel Ownership") {
+                            else if (props.targetLabel === "Parcel Ownership") {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
@@ -1935,7 +1934,6 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  let id = props.targetLabel + tableMeta.columnIndex;
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -3968,7 +3966,7 @@ function SubTable(props) {
             )}
             {openDialog === "deleteParcelDocument" && (
               <DeleteConfirmationDialogContent
-                header="Delete Parcel Documents(s)"
+                header="Delete Parcel Document(s)"
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
                 m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
@@ -4032,7 +4030,7 @@ function SubTable(props) {
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {props.header === "Documents" &&
-                  `Do you want to delete the selected documents${m1nSelectedRowsIds &&
+                  `Do you want to delete the selected document${m1nSelectedRowsIds &&
                     m1nSelectedRowsIds.length > 1 &&
                     removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                     ? "s"

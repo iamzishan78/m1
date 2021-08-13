@@ -174,7 +174,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
         <div className={classes.top} style={{ marginTop: 15 }}>
           <Pipelines />
 
-          <div className={classes.right}>
+          {/* <div className={classes.right}>
             <div className={classes.activeDeals}>
               <OfflineBolt />
               <span>
@@ -199,7 +199,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
                 {lostDeals.amount}
               </span>
             </div>
-          </div>
+          </div> */}
 
           <div className={classes.left}>
             <ButtonGroup style={{ minHeight: 36 }}>
@@ -225,7 +225,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
                   }`}
                 onClick={() => setDealFilter("won")}
               >
-                Won
+                WON
               </Button>
 
               <Button
@@ -234,7 +234,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
                   }`}
                 onClick={() => setDealFilter("lost")}
               >
-                Lost
+                LOST
               </Button>
             </ButtonGroup>
           </div>

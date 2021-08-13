@@ -1427,21 +1427,6 @@ export default function Navigation(props) {
                     aria-label="production"
                   />
                   <Tab
-                    value={4}
-                    classes={{ root: classes.tab }}
-                    aria-label="Value"
-                    icon={
-                      <Badge
-                        badgeContent={stateNav.valuationFilterCount}
-                        color="secondary"
-                      >
-                        <ValuationIcon color="#fff" opacity="1" />
-                      </Badge>
-                    }
-                    aria-label="value"
-                  />
-
-                  <Tab
                     value={5}
                     classes={{ root: classes.tab }}
                     icon={
@@ -1896,34 +1881,6 @@ export default function Navigation(props) {
               </Card>
             </ClickAwayListener>
           </TabPanel>
-
-          <TabPanel value={value} index={4} dir={theme.direction}>
-            <ClickAwayListener onClickAway={handleClickAway}>
-              <Card className={classes.card}>
-                <CardHeader
-                  classes={{
-                    title: classes.cardTitle,
-                    subheader: classes.subheader,
-                  }}
-                  action={
-                    <div>
-                      <IconButton
-                        color="secondary"
-                        onClick={handleFilterCardClose}
-                      >
-                        <CloseIcon />
-                      </IconButton>
-                    </div>
-                  }
-                  title="Filter"
-                  subheader="Value"
-                />
-                <CardContent className={classes.cardContent}>
-                  <FilterFormValue />
-                </CardContent>
-              </Card>
-            </ClickAwayListener>
-          </TabPanel>
           <TabPanel value={value} index={5} dir={theme.direction}>
             <ClickAwayListener onClickAway={handleClickAway}>
               <Card className={classes.card}>
@@ -1947,61 +1904,6 @@ export default function Navigation(props) {
                 />
                 <CardContent className={classes.cardContent}>
                   <FilterFormTags />
-                </CardContent>
-              </Card>
-            </ClickAwayListener>
-          </TabPanel>
-          <TabPanel value={value} index={6} dir={theme.direction}>
-            <ClickAwayListener onClickAway={handleClickAway}>
-              <Card className={classes.card}>
-                <CardHeader
-                  classes={{
-                    title: classes.cardTitle,
-                    subheader: classes.subheader,
-                  }}
-                  action={
-                    <div>
-                      <IconButton
-                        color="secondary"
-                        onClick={handleFilterCardClose}
-                      >
-                        <CloseIcon />
-                      </IconButton>
-                    </div>
-                  }
-                  title="Filter"
-                  subheader="Artificial Intelligence"
-                />
-
-                <CardContent className={classes.cardContent}>
-                  <FilterFormAI />
-                </CardContent>
-              </Card>
-            </ClickAwayListener>
-          </TabPanel>
-          <TabPanel value={value} index={7} dir={theme.direction}>
-            <ClickAwayListener onClickAway={handleClickAway}>
-              <Card className={classes.card}>
-                <CardHeader
-                  classes={{
-                    title: classes.cardTitle,
-                    subheader: classes.subheader,
-                  }}
-                  action={
-                    <div>
-                      <IconButton
-                        color="secondary"
-                        onClick={handleFilterCardClose}
-                      >
-                        <CloseIcon />
-                      </IconButton>
-                    </div>
-                  }
-                  title="Filter"
-                  subheader="Advanced Search"
-                />
-                <CardContent className={classes.cardContent}>
-                  <FilterDefaults />
                 </CardContent>
               </Card>
             </ClickAwayListener>

@@ -9,13 +9,15 @@ import {
     BiLinkExternal
 } from "react-icons/bi";
 import { Grid, IconButton, Box } from "@material-ui/core";
+import Tooltip from "@material-ui/core/Tooltip";
+
 
 const DockIcons = {
     bottom: BiDockBottom,
-    full: BiLinkExternal,
     left: BiDockLeft,
     right: BiDockRight,
-    top: BiDockTop
+    top: BiDockTop,
+    full: BiLinkExternal,
 };
 
 const DockIconsArray = Object.keys(DockIcons);
@@ -72,12 +74,16 @@ export default function DockMenu({ setSelectedDockMenu }) {
                             const Icon = DockIcons[dockName];
                             return (
                                 <Grid item key={dockName}>
-                                    <IconButton onClick={() => { onIconSelect(dockName) }}>
-                                        <Icon
-                                            fontSize="medium"
-                                            color={`${selectedDock === dockName ? "rgba(23, 170, 221, 1)" : ""}`}
-                                        />
-                                    </IconButton>
+                                    <Tooltip title={dockName} placement="top">
+
+                                        <IconButton onClick={() => { onIconSelect(dockName) }}>
+                                            <Icon
+                                                fontSize="medium"
+                                                color={`${selectedDock === dockName ? "rgba(23, 170, 221, 1)" : ""}`}
+                                            />
+                                        </IconButton>
+                                        
+                                    </Tooltip>
                                 </Grid>
                             );
                         })}

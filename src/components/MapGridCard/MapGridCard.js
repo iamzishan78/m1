@@ -408,18 +408,6 @@ function MapGridCard(props) {
                 label={`Tracked (${trackedDataCount})`}
                 {...a11yProps(1)}
               />
-
-              {/* {
-                stateApp.gridPolygonString && <Tab
-                  className="cancelDraggableEffect"
-                  label={`Boundary${stateApp.shapeGridWellsCount
-                    ? " (" + Number((stateApp.shapeGridWellsCount || '') + (stateApp.shapeGridOwnersCount || '')) + ")"
-                    : ""
-                    }`}
-                  {...a11yProps(1)}
-                >
-                </Tab>
-              } */}
               <Tab
                 className="cancelDraggableEffect"
                 disabled={!stateApp.gridPolygonString}
@@ -432,56 +420,10 @@ function MapGridCard(props) {
               </Tab>
             </Tabs>
 
-            {/* {
-              mapGridCardActiveTap === 2 && stateApp.gridPolygonString && <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                className={classes.selectBoundary}
-                value={selectedBoundary}
-                onChange={(e) => { setSelectedBoundary(e.target.value) }}
-              >
-                <MenuItem value={'Shape Filter'}>Shape Filter</MenuItem>
-                <MenuItem value={'Viewport'}>Viewport</MenuItem>
-              </Select>
-            }
-            <div style={{ flexGrow: 1 }}></div> */}
-
-            {/* {
-              mapGridCardActiveTap === 2 && 
-               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                className={classes.selectBoundary}
-                value={selectedBoundary}
-                onChange={(e) => { setSelectedBoundary(e.target.value) }}
-              >
-                <MenuItem value={'Shape Filter'}>Shape Filter</MenuItem>
-                <MenuItem value={'Viewport'}>Viewport</MenuItem>
-              </Select>
-            } */}
-
             <div style={{ flexGrow: 1 }}></div>
 
             <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
 
-            {/* <IconButton
-              className="cancelDraggableEffect"
-              onClick={(e) => {
-                e.stopPropagation();
-                dispatch(
-                  setMapGridCardState({
-                    mapGridCardActivated:
-                      mapGridCardActivated === "exp" ? true : "exp",
-                  })
-                );
-              }}
-            >
-              {mapGridCardActivated === "exp" ? (
-                <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
-              ) : (
-                <ExpandIcon viewBox="0 0 64 64" color="secondary" />
-              )}
-            </IconButton> */}
             <IconButton
               className="cancelDraggableEffect"
               onClick={(e) => {
