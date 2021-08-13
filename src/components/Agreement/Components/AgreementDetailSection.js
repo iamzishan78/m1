@@ -235,7 +235,7 @@ function AgreementDetailSection({ setTitle, newAgreement }) {
             <Grid item className={classes.detailFieldsRow2} style={{ maxWidth: "5%" }}>
               <TextField
                 margin="dense"
-                label="Term"
+                label="Term (mo.)"
                 fullWidth
                 type="number"
                 value={dates.term}

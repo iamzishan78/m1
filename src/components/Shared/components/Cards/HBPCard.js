@@ -1,6 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Button } from "@material-ui/core/";
+import QuestionIcon from "@material-ui/icons/Help";
 
 const useStyles = makeStyles((theme) => ({
     iconContainer: {
@@ -24,7 +25,7 @@ export default function HBPCard(props) {
     const { status, label } = props;
 
     const Icon = () => (
-        <Button>HBP</Button>
+        <Button><QuestionIcon fontSize="large" /></Button>
     );
 
     return (
@@ -37,7 +38,7 @@ export default function HBPCard(props) {
                 variant="subtitle2"
             >
                 {label} Status
-      </Typography>
+            </Typography>
             <Typography
                 align="center"
                 //className={classes.text2}

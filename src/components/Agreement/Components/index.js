@@ -77,9 +77,11 @@ function Agreement(props) {
         <Grid item className={classes.headerIcon}>
           <CommentsWithIcon objectId={newAgreement._id} targetLabel="agreement" iconZiseSmall={false} />
           <TaggerWithIcon objectId={newAgreement._id} targetLabel="agreement" iconZiseSmall={false} />
-          <IconButton>
+
+          {/* <IconButton>
             <PrintIcon />
-          </IconButton>
+          </IconButton> */}
+
         </Grid>
       </Grid>
 

@@ -24,10 +24,10 @@ export default function StatusCard(props) {
     const StatusIcon = () => {
         if (status.toUpperCase() === "ACTIVE") {
             return <CheckCircleIcon fontSize="large" />;
-        } else if (status.toUpperCase() === "UNKNOWN") {
-            return <QuestionIcon fontSize="large" />;
-        } else {
+        } else if (status.toUpperCase() === "INACTIVE") {
             return <XIcon fontSize="large" />;
+        } else {
+            return <QuestionIcon fontSize="large" />;
         }
     };
 
@@ -41,7 +41,7 @@ export default function StatusCard(props) {
                 variant="subtitle2"
             >
                 {label} Status
-      </Typography>
+            </Typography>
             <Typography
                 align="center"
                 //className={classes.text2}
