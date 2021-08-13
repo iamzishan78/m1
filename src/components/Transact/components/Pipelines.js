@@ -578,20 +578,25 @@ export default function Pipelines(props) {
             {selectedPipe.name}
           </Typography>
         )}
-        <IconButton
-          disabled={!selectedPipe}
-          size="medium"
-          style={{ marginLeft: 10, marginRight: 10 }}
-          onClick={() => {
-            dispatch(
-              setFlowState({
-                openPipeDialog: true,
-              })
-            );
-          }}
+
+        <Tooltip title={"Flowline Actions"} 
         >
-          <ExpandMoreIcon />
-        </IconButton>
+          <IconButton
+            disabled={!selectedPipe}
+            size="medium"
+            style={{ marginLeft: 10, marginRight: 10 }}
+            onClick={() => {
+              dispatch(
+                setFlowState({
+                  openPipeDialog: true,
+                })
+              );
+            }}
+          >
+            <ExpandMoreIcon />
+          </IconButton>
+        </Tooltip>
+
       </div>
 
       {/* //// pipelines dialog //// */}
