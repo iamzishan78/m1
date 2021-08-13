@@ -1221,13 +1221,21 @@ function Map() {
           geometry: feature.geometry || feature._geometry
         }
         feature = selectedUserDefinedLayer;
-        setStateApp(state => ({
-          ...state,
-          selectedUserDefinedLayer,
-          selectedParcel: null
-        }));
+        setStateApp((state) => {
+          if (state.showDrawShapesPopup) return state
+          state = {
+            ...state,
+            selectedUserDefinedLayer,
+            selectedParcel: null
+          }
+          return state
+        })
       }
-      createUDPopUp(feature.properties);
+      setStateApp((state) => {
+        if (!state.showDrawShapesPopup || feature.source === "parcels_source" || feature.source === "interests_source")
+          createUDPopUp(feature.properties);
+        return state
+      })
       map.resize();
     };
 
