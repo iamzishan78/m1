@@ -3958,7 +3958,7 @@ function SubTable(props) {
             )}
             {openDialog === "deleteParcelDocument" && (
               <DeleteConfirmationDialogContent
-                header="Delete Parcel Documents(s)"
+                header="Delete Parcel Document(s)"
                 onClose={handleCloseDialog}
                 deleteFunc={props.deleteFunc}
                 m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
