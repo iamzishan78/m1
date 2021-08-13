@@ -79,7 +79,6 @@ import moment from "moment";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
 import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
-import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
 
 import ButtonDropDown from "./ButtonGroup"
@@ -237,10 +236,6 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiPaper-root > .MuiToolbar-gutters": {
       paddingLeft: '11px !important'
     },
-    // "& .MuiPaper-root": {
-    //   zIndex: 99999,
-    // },
-
     "& .MUIDataTableToolbar": {
       zIndex: '999999 !important',
     },
@@ -268,6 +263,20 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiToolbar-regular > div:nth-child(2)": {
       flex: '0 1 auto',
+    },
+    "& .MUIDataTable-responsiveBase": {
+      overflow: "auto",
+      "&::-webkit-scrollbar": {
+        height: "0.4em",
+        width: "0.4em"
+      },
+      "&::-webkit-scrollbar-track": {
+        "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+      },
+      "&::-webkit-scrollbar-thumb": {
+        backgroundColor: "#929292",
+        borderRadius: 5,
+      },
     },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
@@ -698,19 +707,19 @@ function SubTable(props) {
 
   const handleClickFlyToIcon = (entityType, searchTarget) => {
 
-    if (entityType == "well") {
+    if (entityType === "well") {
       handleWellFlyTo(searchTarget)
     }
-    if (entityType == "owner") {
+    if (entityType === "owner") {
       handleOwnerFlyTo(searchTarget)
     }
-    if (entityType == "operator") {
+    if (entityType === "operator") {
       handleOperatorFlyTo(searchTarget)
     }
-    if (entityType == "lease") {
+    if (entityType === "lease") {
       handleLeaseFlyTo(searchTarget)
     }
-    if (entityType == "location") {
+    if (entityType === "location") {
       handleLocationFlyTo(searchTarget)
     }
   };
@@ -750,7 +759,7 @@ function SubTable(props) {
     if (
       props.parent &&
       (props.parent === "search" || props.parent === "owner_WellInterests" || props.parent === "assocTaxRollInterests" || props.parent === "wells") &&
-      props.targetLabel == "well" &&
+      props.targetLabel === "well" &&
       dataWell &&
       dataWell.well
     ) {
@@ -763,20 +772,20 @@ function SubTable(props) {
       //// temporary to fix the ticks dates fields comming from the rest api
       if (
         selectedWell.permitApprovedDate &&
-        selectedWell.permitApprovedDate != "null"
+        selectedWell.permitApprovedDate !== "null"
       )
         selectedWell.permitApprovedDate = ticksToDateString(
           selectedWell.permitApprovedDate
         );
-      if (selectedWell.spudDate && selectedWell.spudDate != "null")
+      if (selectedWell.spudDate && selectedWell.spudDate !== "null")
         selectedWell.spudDate = ticksToDateString(selectedWell.spudDate);
-      if (selectedWell.completionDate && selectedWell.completionDate != "null")
+      if (selectedWell.completionDate && selectedWell.completionDate !== "null")
         selectedWell.completionDate = ticksToDateString(
           selectedWell.completionDate
         );
       if (
         selectedWell.firstProductionDate &&
-        selectedWell.firstProductionDate != "null"
+        selectedWell.firstProductionDate !== "null"
       )
         selectedWell.firstProductionDate = ticksToDateString(
           selectedWell.firstProductionDate
@@ -1701,7 +1710,7 @@ function SubTable(props) {
 
                           } else {
                             // Code is not used as we are opening different model from above
-                            if (props.targetLabel == "owner") {
+                            if (props.targetLabel === "owner") {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
@@ -1715,7 +1724,7 @@ function SubTable(props) {
                                 "makeOwnerAContact"
                               );
                             }
-                            else if (props.targetLabel == "Parcel Ownership") {
+                            else if (props.targetLabel === "Parcel Ownership") {
                               handleExpandClick(
                                 tableMeta.columnIndex,
                                 tableMeta.rowIndex,
@@ -1925,7 +1934,6 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  let id = props.targetLabel + tableMeta.columnIndex;
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -2985,7 +2993,7 @@ function SubTable(props) {
               <Button
                 color="secondary"
                 className={classes.multiSelectionTopBarButtons}
-                onClick={()=>  props.onClickAdd()}
+                onClick={() => props.onClickAdd()}
               >
                 {buttonLabel}
               </Button>
@@ -3665,7 +3673,7 @@ function SubTable(props) {
           columns={columns ? columns : []}
 
           components={{
-            TableFilterList: props.header == 'Tax Roll Ownership' && !isSearchOpen ? TableFilterList : null,
+            TableFilterList: props.header === 'Tax Roll Ownership' && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,
               ViewColumnIcon,
@@ -3683,7 +3691,7 @@ function SubTable(props) {
 
             filter:
               //  props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
-              props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+              props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
@@ -3692,7 +3700,7 @@ function SubTable(props) {
 
             viewColumns:
               // props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search 
-              props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+              props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
@@ -3706,14 +3714,14 @@ function SubTable(props) {
                 || props.header === 'Activities'
                 || props.header === 'Monthly Production'
                 // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
-                || props.parent === 'suggestedOwnersPerParcel'       /// will need to build a backend for this search 
+                || props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
                 || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
 
               )
 
-                ? false : props.parent != "search",
+                ? false : props.parent !== "search",
             // have to use props.parent here for initial value
             searchOpen: props.parent === "Contacts" ? true : null,
             //download: false,
@@ -4205,7 +4213,7 @@ function SubTable(props) {
         {showExpandableCard &&
           targetLabelToExpand !== "well" &&
           targetLabelToExpand !== "contact" &&
-          multipleExpandableCard == false && (
+          multipleExpandableCard === false && (
             <Dialog
               className={classes.dialogExpCard}
               fullWidth

@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const UPDATEPARCELOWNER = gql`
-  mutation updateParcelOwner($parcelOwner: ParcelOwnerInput) {
+  mutation updateParcelOwner($parcelOwner: JSON) {
     updateParcelOwner(parcelOwner: $parcelOwner) {
       success
       message
