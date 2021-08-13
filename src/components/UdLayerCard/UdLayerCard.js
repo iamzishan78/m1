@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiCardHeader-action": {
       alignSelf: "left",
     },
-    zIndex: 1250,
+    zIndex: 1250
     // "&.MuiCard-root": {
     //     maxWidth: props => props.width
     // }
@@ -113,6 +113,9 @@ function UdLayerCard(props) {
         selectedParcel: null,
         selectedPermit: null,
         expandedCard: false,
+        currentFeature: undefined,
+        // editDraw: false,
+        // showShapeActionsPopup: false,
         viewDoc: null,
       }));
     }
