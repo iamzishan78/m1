@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     width: "100%"
   },
-
   cardContent: { width: "100%", display: "flex" },
   leftColumn: {
     textAlign: "left",
@@ -54,8 +53,6 @@ const useStyles = makeStyles((theme) => ({
   },
   h5: { color: "#757575", marginTop: "0", textAlign: "left", },
 }));
-
-
 
 export default function Deals({ contact, ...props }) {
   const classes = useStyles();
