@@ -4022,7 +4022,7 @@ function SubTable(props) {
                 setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
               >
                 {props.header === "Documents" &&
-                  `Do you want to delete the selected documents${m1nSelectedRowsIds &&
+                  `Do you want to delete the selected document${m1nSelectedRowsIds &&
                     m1nSelectedRowsIds.length > 1 &&
                     removeDuplicatesIds(m1nSelectedRowsIds).length > 1
                     ? "s"
