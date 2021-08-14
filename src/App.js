@@ -90,6 +90,23 @@ const theme = createMuiTheme({
   typography: {
     fontFamily: "Poppins",
   },
+  overrides: {
+    MuiCssBaseline: {
+      '@global': {
+        '*::-webkit-scrollbar': {
+          height: "0.4em",
+          width: "0.4em"
+        },
+        '*::-webkit-scrollbar-track': {
+          "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+        },
+        '*::-webkit-scrollbar-thumb': {
+          backgroundColor: "#929292",
+          borderRadius: 5,
+        }
+      },
+    },
+  },
 });
 
 const SetApolloClient = (props) => {

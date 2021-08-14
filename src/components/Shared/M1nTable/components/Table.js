@@ -264,20 +264,6 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiToolbar-regular > div:nth-child(2)": {
       flex: '0 1 auto',
     },
-    "& .MUIDataTable-responsiveBase": {
-      overflow: "auto",
-      "&::-webkit-scrollbar": {
-        height: "0.4em",
-        width: "0.4em"
-      },
-      "&::-webkit-scrollbar-track": {
-        "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-      },
-      "&::-webkit-scrollbar-thumb": {
-        backgroundColor: "#929292",
-        borderRadius: 5,
-      },
-    },
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
     },
