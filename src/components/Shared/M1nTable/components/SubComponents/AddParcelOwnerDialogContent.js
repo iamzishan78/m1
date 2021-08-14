@@ -263,6 +263,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
 
   const handleClickDialogClose = () => {
+    debugger;
     props.onClose();
     emptyStates();
   };
@@ -331,12 +332,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   return (
     <div className={classes.move}>
       <React.Fragment>
-        <RightDialog open={true} handleClickDialogClose={() => { }} width={"450px"}>
+        <RightDialog open={true} handleClickDialogClose={props.onClose} width={"450px"}>
           <DialogTitle id="customized-dialog-title" style={{ fontWeight: "bold" }}>
             {selectedRow ? "Update" : "Add"} Parcel Ownership
-            <IconButton style={{ float: "right" }} onClick={props.onClose} className={modalClass.titleClose} size="small">
-              <CloseIcon fontSize="small" />
-            </IconButton>
             {selectedRow && (
               <IconButton
                 style={{ float: "right", marginRight: "5px" }}
