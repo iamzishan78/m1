@@ -380,7 +380,7 @@ export default function ParcelsDetailCard(props) {
           <Grid item sm={12} className={classes.gridItemGrey}>
             <StateCard state={originalProperties.state} />
             <CountyCard county={originalProperties.county} />
-            {originalProperties.state == "TX" ? (
+            {originalProperties.state === "TX" ? (
               [<SurveyCard survey={originalProperties.survey} />,
               <BlockCard block={originalProperties.block} />,
               <SectionCard section={originalProperties.section} />,
