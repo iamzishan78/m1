@@ -444,6 +444,7 @@ export default function ParcelsDetailCard(props) {
                 <p className={classes.parcelSummmary}>Gross Acres</p>
                 <TextField
                   size="small"
+                  type="number"
                   value={grossAcres}
                   variant="outlined"
                   onChange={(e) => {
