@@ -12,9 +12,17 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 export function AutoCompleteFilter({ filterList, onChange, index, column, query }) {
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
+    const [value, setValue] = useState({ key: filterList[index][0] });
     const [search, setSearch] = useState(filterList[index][0]);
     const { label, filterKey } = column
     const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: "no-cache" });
+
+    useEffect(() => {
+        setSearch(filterList[index][0])
+        if (!filterList[index][0]) {
+            setValue(null)
+        }
+    }, [filterList[index][0]]);
 
     useEffect(() => {
         getFilters({
@@ -57,6 +65,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query 
             onClose={() => {
                 setOpen(false);
             }}
+            value={value}
             inputValue={search}
             getOptionSelected={(option, value) => option.key === value.key}
             getOptionLabel={(option) => option.key}
@@ -64,9 +73,11 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query 
                 if (reason === 'clear' || !value?.key) {
                     filterList[index].pop()
                     setSearch('')
+                    setValue(null)
                 } else {
                     filterList[index][0] = value.key
                     setSearch(value.key)
+                    setValue(value)
                 }
                 onChange(filterList[index], index, column);
             }}

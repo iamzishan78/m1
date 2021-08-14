@@ -104,6 +104,7 @@ function DocumentsTable(props) {
       case "search":
       case "sort":
       case "filterChange":
+      case "resetFilters":
       case "changeRowsPerPage":
         tableActions.genericESAction();
         break;

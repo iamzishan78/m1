@@ -57,7 +57,7 @@ const DocumentsHeadCells = [
   },
   {
     name: "dateTime",
-    esKey: 'documentDate.keyword',
+    esKey: 'documentDate',
     label: "Document Date",
     options: {
       filter: false,
