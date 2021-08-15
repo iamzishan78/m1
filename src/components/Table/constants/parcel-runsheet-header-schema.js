@@ -48,7 +48,7 @@ const DocumentsHeadCells = [
   },
   {
     name: "volume",
-    label: "Volumn",
+    label: "Volume",
   },
   {
     name: "page",

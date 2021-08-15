@@ -15,7 +15,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
 import { CONTACT_PARCEL_INTERESTS } from "graphQL/useQueryContactParcelInterest";
 
-import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
+import { deepEqualObjects, setStateIfDeepEqual, addTrailingZeros } from "components/Shared/functions";
 import AddWellInterestDialog from "components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 
 // Header Schemas 
@@ -44,16 +44,16 @@ function ContactParcelInterestTable(props) {
 
   // queries 
   const [getContactParcelInterests, { data: dataContactParcels, loading }] = useLazyQuery(CONTACT_PARCEL_INTERESTS, { fetchPolicy: "cache-and-network", skip: true });
-  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: [ "getContactWells", "getContactParcelInterests" ], awaitRefetchQueries: true });
+  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: ["getContactWells", "getContactParcelInterests"], awaitRefetchQueries: true });
   const tableData = dataContactParcels?.contactParcelInterest
 
   const addAble = { type: "parcelInterest" }
   const total = false
   const orderByTracks = false
 
-  useEffect(()=>{
+  useEffect(() => {
     setSearchedRows(props.rows)
-  },[props.rows])
+  }, [props.rows])
 
   useEffect(() => {
     if (props.parent && props.parent === "assocTaxRollInterests") {
@@ -80,7 +80,7 @@ function ContactParcelInterestTable(props) {
       let wells = dataContactParcels.contactParcelInterest
 
       wells = wells.map((w) => {
-        let well = { ...w }; 
+        let well = { ...w };
         const parcel = JSON.parse(well.parcel.shape).properties
         const original_properties = getParcelOriginalProperties(parcel);
         well.parcelName = well.parcel.name
@@ -91,7 +91,7 @@ function ContactParcelInterestTable(props) {
         well.section = original_properties.state === 'TX' ? original_properties.section : original_properties.range
         well.abstract = original_properties.state === 'TX' ? original_properties.abstract : original_properties.section
         well.grantee = original_properties.altSurvey
-        if(well.qtr){
+        if (well.qtr) {
           well.qtr_calls = `${well.qtr[0] ? well.qtr[0] : ''} ${well.qtr[1] ? well.qtr[1] : ''} ${well.qtr[2] ? well.qtr[2] : ''} ${well.qtr[3] ? well.qtr[3] : ''}`
         }
         well.detailCard = well.wellId;
@@ -101,6 +101,29 @@ function ContactParcelInterestTable(props) {
         well.parcelId = well.parcel._id;
 
         well = props.setGenricData(well, well.parcel._id, ['comments', 'tracks', 'tags'])
+
+        const interestKeys = [
+          "nra",
+          "surface_interest",
+          "mineral_interest",
+          "royalty_interest",
+          "orri",
+          "record_title",
+          "operating_rights",
+          "nri",
+          "net_acres",
+          'unknown_interest'
+        ];
+
+        Object.keys(well).forEach(key => {
+          if (interestKeys.includes(key)) {
+            if (typeof well[key] === 'number')
+              well[key] = addTrailingZeros(well[key]);
+            else if (well[key]?.["$numberDecimal"]) {
+              well[key] = addTrailingZeros(Number(well[key]["$numberDecimal"]));
+            }
+          }
+        });
 
         return well;
       });
@@ -126,8 +149,8 @@ function ContactParcelInterestTable(props) {
     setSelectedYear(selectedYear)
   }
 
-  const deleteFunc = (ids)=> {
-    for(let i=0; i< ids.length;  i++){
+  const deleteFunc = (ids) => {
+    for (let i = 0; i < ids.length; i++) {
       updateWellInterest({
         variables: {
           wellInterest: {
@@ -147,18 +170,18 @@ function ContactParcelInterestTable(props) {
   const showParcelDetails = (parcel) => {
     history.push(`/contact/details/${props.contactId}/parcels/${parcel.descriptorObject}`)
   }
-  
+
   const searchData = (searchText) => {
     const rows = []
-    if(searchText){ 
-      for(let i=0; i< props.rows.length; i++){
-        for( const key of Object.keys(props.rows[i])){
+    if (searchText) {
+      for (let i = 0; i < props.rows.length; i++) {
+        for (const key of Object.keys(props.rows[i])) {
           const col = columns.find(column => column.name === key)
-          if(col && (!col.options || col.options.searchable !== false)) {
-            if(typeof props.rows[i][key] === 'string'){
+          if (col && (!col.options || col.options.searchable !== false)) {
+            if (typeof props.rows[i][key] === 'string') {
               console.log(props.rows[i][key], key)
               const value = props.rows[i][key].toLowerCase()
-              if(value.includes(searchText.toLowerCase())){
+              if (value.includes(searchText.toLowerCase())) {
                 rows.push(props.rows[i])
                 break
               }
@@ -167,7 +190,7 @@ function ContactParcelInterestTable(props) {
         }
       }
       setSearchedRows(rows)
-    }else{
+    } else {
       setSearchedRows(props.rows)
     }
   }

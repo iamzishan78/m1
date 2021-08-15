@@ -72,6 +72,7 @@ import ContactWellHeadCells from '../constants/contactperwell-header-schema.js'
 
 // import value formatters 
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
+import { addTrailingZeros } from 'components/Shared/functions'
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -1996,6 +1997,29 @@ function M1nTable(props) {
         parcelOwner.tags = [[], 0];
         parcelOwner.isTracked = false;
 
+        const interestKeys = [
+          "nra",
+          "surface_interest",
+          "mineral_interest",
+          "royalty_interest",
+          "orri",
+          "record_title",
+          "operating_rights",
+          "nri",
+          "net_acres",
+          'unknown_interest'
+        ];
+
+        Object.keys(o).forEach(key => {
+          if (interestKeys.includes(key)) {
+            if (typeof parcelOwner[key] === 'number')
+              parcelOwner[key] = addTrailingZeros(parcelOwner[key]);
+            else if (parcelOwner[key]?.["$numberDecimal"]) {
+              parcelOwner[key] = addTrailingZeros(Number(parcelOwner[key]["$numberDecimal"]));
+            }
+          }
+        });
+
         for (
           let i = 0;
           i < checkIfOwnersAreContactsData.ifAreContacts.length;
@@ -2321,14 +2345,14 @@ function M1nTable(props) {
           });
 
           let availableTags = [];
-          dataTagSamples.tagSamples.map((sample) => {
+          dataTagSamples.tagSamples.forEach((sample) => {
             availableTags = [...availableTags, ...sample.tags];
           });
           const cleanAvailableTags = [...new Set(availableTags)];
 
           wells.forEach(element => {
             if (stateApp.trackedWells) {
-              const found = stateApp.trackedWells.find((x) => x.id == element.wellId);
+              const found = stateApp.trackedWells.find((x) => x.id === element.wellId);
               if (found) {
                 element.isTracked = true;
               } else {
@@ -3120,6 +3144,7 @@ function M1nTable(props) {
   const getWellOwnersByYear = (selectedYear) => {
     setSelectedYear(selectedYear)
   }
+
   return (
     <Container
       maxWidth={false}

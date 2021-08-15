@@ -51,12 +51,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     height: "100%",
   },
-  gridPortion: {
-    flexGrow: 1,
-    display: "flex",
-    height: "100%",
-    justifyContent: 'center'
-  },
   gridPacelDetails: {
     flexGrow: 1,
     display: "flex",
@@ -80,18 +74,15 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "calc(100% - 88px)",
     overflow: "auto",
     "&::-webkit-scrollbar": {
-      width: "0.75em",
-      height: "0.75em",
+      height: "0.4em",
+      width: "0.4em"
     },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "1.0em",
-    // },
-    // "&::-webkit-scrollbar-track": {
-    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    // },
+    "&::-webkit-scrollbar-track": {
+      "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    },
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
-      borderRadius: 10,
+      borderRadius: 5,
     },
   },
   gridItemGrey: {
@@ -389,7 +380,7 @@ export default function ParcelsDetailCard(props) {
           <Grid item sm={12} className={classes.gridItemGrey}>
             <StateCard state={originalProperties.state} />
             <CountyCard county={originalProperties.county} />
-            {originalProperties.state == "TX" ? (
+            {originalProperties.state === "TX" ? (
               [<SurveyCard survey={originalProperties.survey} />,
               <BlockCard block={originalProperties.block} />,
               <SectionCard section={originalProperties.section} />,
@@ -442,7 +433,7 @@ export default function ParcelsDetailCard(props) {
                   onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: true }) }}
                   onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: false }) }}
                   InputProps={{
-                    endAdornment: (onChangeFooterLabel.parcelName == true &&
+                    endAdornment: (onChangeFooterLabel.parcelName === true &&
                       <p className={classes.foodText}>
                         <span>Return</span> to save
                       </p>)
@@ -464,7 +455,7 @@ export default function ParcelsDetailCard(props) {
                   onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: true }) }}
                   onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: false }) }}
                   InputProps={{
-                    endAdornment: (onChangeFooterLabel.grossAcres == true &&
+                    endAdornment: (onChangeFooterLabel.grossAcres === true &&
                       <p className={classes.foodText}>
                         <span>Return</span> to save
                       </p>)
@@ -537,7 +528,7 @@ export default function ParcelsDetailCard(props) {
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <SuggestedTaxOwnersTable
                     customLayer={parcelObj}
-                    parent="suggestedOwnersPerParcel"
+                    parent="potentialOwnersPerParcel"
                     targetLabel="well"
                     header={<Header />}
                     setSelectedTab={setSelectedTab}

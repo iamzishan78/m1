@@ -14,7 +14,7 @@ import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
 import { PAGINATED_CONTACT_WELLINTERESTS_QUERY } from "graphQL/useQueryPaginatedContactWellInterests";
 import { CONTACTWELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryContactWellInterestsFilterOptions";
 
-import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
+import { deepEqualObjects, setStateIfDeepEqual, addTrailingZeros } from "components/Shared/functions";
 import AddWellInterestDialog from "components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 
 // Header Schemas 
@@ -100,14 +100,14 @@ function ContactWellInterestTable(props) {
         well.isTracked = false;
         well.commentsCounter = 0;
         well.tags = [[], 0];
+        well.amount = addTrailingZeros(well.amount);
+        well.nra = addTrailingZeros(well.nra);
 
         well = props.setGenricData(well, well.wellId, ['comments', 'tracks', 'tags'])
 
         return well;
       });
       props.setRows(wells);
-      const cleanAvailableTags = filterData?.tags?.map((tag) => tag._id) || []; // get from backend
-      // const columns = handleTagColumn(TableHeader, cleanAvailableTags);
       const columns = handleCustomFilterColumns(TableHeader, filterData);
       setColumns(columns);
       props.setLoading(false);

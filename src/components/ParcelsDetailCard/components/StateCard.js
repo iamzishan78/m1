@@ -1,24 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { makeStyles,useTheme } from "@material-ui/core/styles";
+import React from 'react';
+import { makeStyles } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography'
-import QuestionIcon from "@material-ui/icons/Help";
 import StateIcon from "../svgIcons/StateIcon";
-import moment from 'moment'
 
 const useStyles = makeStyles(theme => ({
     iconContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
     },
     tex1: {
-      colorPrimary: 'white'
+        colorPrimary: 'white'
     }
-  }))
+}))
 
 function StateCard(props) {
     let classes = useStyles();
-    const [state, setState] = useState(null);
 
     return (
         <div className={classes.iconContainer}>
@@ -33,7 +30,7 @@ function StateCard(props) {
                 align="center"
                 variant="caption"
             >
-                {props.state == "" ? "--" : props.state }
+                {props.state === "" ? "--" : props.state}
             </Typography>
         </div>
     );
