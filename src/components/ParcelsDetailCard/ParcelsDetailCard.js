@@ -284,12 +284,10 @@ export default function ParcelsDetailCard(props) {
   }, [dataCustomLayer]);
 
   useEffect(() => {
-    if (updatedParcel) {
-      if (updatedParcel.updateCustomLayer.success) {
-        dispatch(showSuccessMessage("Successfully updated the parcel"));
-      } else {
-        dispatch(showErrorMessage("Failed to update parcel"));
-      }
+    if (updatedParcel?.updateCustomLayer?.success) {
+      dispatch(showSuccessMessage("Successfully updated the parcel"));
+    } else {
+      dispatch(showErrorMessage("Failed to update parcel"));
     }
   }, [updatedParcel]);
 

@@ -263,7 +263,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
 
   const handleClickDialogClose = () => {
-    debugger;
     props.onClose();
     emptyStates();
   };
@@ -426,7 +425,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     setNewOwner({
                       ...newOwner,
                       royalty_interest: value ? addTrailingZeros(e.target.value) : null,
-                      nra: calculateNetAcres(newOwner.mineral_interest) * (parseFloat(value) + parseFloat(newOwner.orri))
+                      nra: calculateNetAcres(newOwner.mineral_interest) * (parseFloat(value || 0) + parseFloat(newOwner.orri || 0)) * 8
                     });
                   }}
                 />
@@ -443,7 +442,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     setNewOwner({
                       ...newOwner,
                       orri: value ? addTrailingZeros(e.target.value) : null,
-                      nra: calculateNetAcres(newOwner.mineral_interest) * (parseFloat(value) + parseFloat(newOwner.orri))
+                      nra: calculateNetAcres(newOwner.mineral_interest) * (parseFloat(value || 0) + parseFloat(newOwner.royalty_interest || 0)) * 8
                     });
                   }}
                 />
