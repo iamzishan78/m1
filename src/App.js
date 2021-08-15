@@ -30,6 +30,7 @@ import BulkUpload from "./components/BulkUpload/BulkUpload";
 import AgreementProvider from "./components/Agreement/AgreementProvider";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
+import ContactBulkProgress from "./components/BulkUpload/ContactBulkProgress";
 
 // pick a date util library
 import MomentUtils from "@date-io/moment";
@@ -271,6 +272,7 @@ function App() {
           <ApolloProvider client={apolloClient}>
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
+                <ContactBulkProgress />
                 <ConnectedRouter history={history}>
                   <Switch>
                     <NavigationProvider>

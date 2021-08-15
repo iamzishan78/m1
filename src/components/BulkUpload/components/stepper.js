@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Radio, Checkbox } from "@material-ui/core";
@@ -16,8 +16,12 @@ import ReviewCSV from "./ReviewCSV";
 import UploadStepperComponent from "./UploadStepperComponent";
 import { AppContext } from "../../../AppContext";
 import { useHistory } from "react-router-dom";
-import { useMutation } from "@apollo/client";
+import { useMutation, useLazyQuery } from "@apollo/client";
+import { showErrorMessage } from "actions";
 import { ADDBULKCONTACT } from "../../../graphQL/useMutationAddBulkContacts";
+import { CREATE_JOB } from "graphQL/useMutationCreateJob";
+import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
+import { GET_UPLOAD_CONTACT_URI } from "graphQL/useQueryGetUploadContactUri";
 import { showSuccessMessage } from "../../../actions";
 
 const QontoConnector = withStyles({
@@ -165,41 +169,105 @@ const stepper_style = {
 export default function CustomizedSteppers(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const [contactList, setContactList] = useState(null);
+  const [jobId, setJobId] = useState(null);
+
   const steps = getSteps();
   const dispatch = useDispatch();
-  const [createBulkContacts] = useMutation(ADDBULKCONTACT);
+  // const [createBulkContacts] = useMutation(ADDBULKCONTACT);
+  const [getUploadContactUri, { data: contactUploadUri }] = useLazyQuery(GET_UPLOAD_CONTACT_URI);
+  const [createJob, { data: createJobData }] = useMutation(CREATE_JOB);
+  const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB);
+
   const userID = stateApp.user.mongoId;
   let data_to_send = stateApp.csvContactsListToSend;
+
+  useEffect(() => {
+    if(createJobData?.createJob){
+      updateJob({
+        variables: {
+          job:{
+            _id: jobId,
+            createJobResponse: createJobData?.createJob.body,
+          }
+        }
+      })
+    }
+  },[createJobData])
+
+  useEffect(() => {
+    if(contactUploadUri?.getUploadContactUri?.success){
+      setStateApp((state) => ({
+        ...state,
+        bulkUpload: !stateApp.bulkUpload,
+      }));
+      const uri = contactUploadUri.getUploadContactUri.job.uri;
+      const id = contactUploadUri.getUploadContactUri.job.id;
+			const interal_key = contactUploadUri.getUploadContactUri.job.internalKey;
+
+      setJobId(id)
+      
+      fetch(uri, {
+        headers: {
+          "X-Ms-Blob-Content-Disposition": `attachment; filename="${id}"`,
+          "X-Ms-Blob-Type": "BlockBlob",
+          "X-Ms-Meta-Internalkey": interal_key,
+          "X-Ms-Version": "2015-02-21",
+        },
+        method: "PUT",
+        body: contactList,
+      })
+        .then((res) => {
+          console.log(res);
+          if (res?.status === 201) {
+              createJob({
+                variables: {
+                  jobId: id,
+                },
+              })
+          } else {
+            dispatch(showErrorMessage("Upload failed"));
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+
+  },[contactUploadUri])
+  
   const handleNext = () => {
     if (stateApp.activeStepNumber === steps.length - 2) {
       data_to_send.forEach((element) => {
         element.createBy = userID;
         element.lastUpdateBy = userID;
-        // delete element.first_name;
-        // delete element.last_name;
         delete element.tableData;
       });
-      let ret_val = createBulkContacts({
+      getUploadContactUri({
         variables: {
-          contactList: data_to_send,
+          userId: userID,
         },
-        refetchQueries: ["getPaginatedContacts", "getContact"],
-        awaitRefetchQueries: true,
       });
+      setContactList(JSON.stringify(data_to_send))
+      // let ret_val = createBulkContacts({
+      //   variables: {
+      //     contactList: data_to_send,
+      //   },
+      //   refetchQueries: ["getPaginatedContacts", "getContact"],
+      //   awaitRefetchQueries: true,
+      // });
 
-      ret_val.then((result) => {
-        const {
-          data: {
-            createBulkContacts: { success },
-          },
-        } = result;
+      // ret_val.then((result) => {
+      //   const {
+      //     data: {
+      //       createBulkContacts: { success },
+      //     },
+      //   } = result;
 
-        if (success === true) {
-          dispatch(
-            showSuccessMessage("All records have been uploaded successfully")
-          );
-        }
-      });
+      //   if (success === true) {
+      //     dispatch(
+      //       showSuccessMessage("All records have been uploaded successfully")
+      //     );
+      //   }
+      // });
 
       setStateApp((state) => ({
         ...state,
