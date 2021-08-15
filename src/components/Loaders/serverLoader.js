@@ -56,10 +56,15 @@ function CircularProgressWithLabel(props) {
 }
 const toastMeta = {};
 
-const getOptions = (id, className) => {
+const getOptions = (id, className, onClose) => {
   return {
     onClose: () => {
-      if (toastMeta[id]) toastMeta[id].isOpen = false;
+      if (toastMeta[id]){
+        toastMeta[id].isOpen = false;
+        if(onClose){
+          onClose(id)
+        }
+      } 
     },
     hideProgressBar: true,
     pauseOnHover: true,
@@ -69,7 +74,7 @@ const getOptions = (id, className) => {
   };
 };
 
-export const createToast = (id, message, progress) => {
+export const createToast = (id, message, progress, onClose) => {
   if (toastMeta[id] && toastMeta[id].isOpen) {
     return false;
   }
@@ -81,7 +86,7 @@ export const createToast = (id, message, progress) => {
       type="inprogress"
       message={message}
     />,
-    getOptions(id)
+    getOptions(id, "", onClose)
   );
 
   toastMeta[id] = { message, toastId, progress, isOpen: true };
@@ -103,7 +108,7 @@ export const updateToast = (id, message, progress) => {
   }
 };
 
-export const successToast = (id, newMessage) => {
+export const successToast = (id, newMessage, onClose) => {
   if (toastMeta[id]) {
     const { message, isOpen } = toastMeta[id];
     let { toastId } = toastMeta[id];
@@ -128,7 +133,7 @@ export const successToast = (id, newMessage) => {
           type="success"
           message={newMessage || message}
         />,
-        getOptions(id, "Toastify__toast_success")
+        getOptions(id, "Toastify__toast_success", onClose)
       );
       toastMeta[id].toastId = toastId;
       toastMeta[id].isOpen = true;
@@ -140,7 +145,7 @@ export const successToast = (id, newMessage) => {
   }
 };
 
-export const errorToast = (id, newMessage) => {
+export const errorToast = (id, newMessage, onClose) => {
   if (toastMeta[id]) {
     const { message, progress, isOpen } = toastMeta[id];
     let { toastId } = toastMeta[id];
@@ -165,7 +170,7 @@ export const errorToast = (id, newMessage) => {
           type="error"
           message={newMessage || message}
         />,
-        getOptions(id, "Toastify__toast_error")
+        getOptions(id, "Toastify__toast_error", onClose)
       );
       toastMeta[id].toastId = toastId;
       toastMeta[id].isOpen = true;

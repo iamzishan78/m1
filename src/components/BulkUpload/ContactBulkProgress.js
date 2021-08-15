@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "AppContext";
 import { useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 
+import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_JOBS_STATUS } from "graphQL/useQueryGetJobStatus";
 import Loader from "components/Loaders/serverLoader";
 
@@ -9,7 +11,9 @@ const ContactBulkProgress = () => {
     const [stateApp] = useContext(AppContext);
     const [pollingStarted,  setPollingStarted] = useState(false);
   
-    const { data: dataJobs,  startPolling, stopPolling, refetch } = useQuery(GET_JOBS_STATUS, { variables: { userId: stateApp.user?.mongoId} });
+    const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB);
+
+    const { data: dataJobs,  startPolling, stopPolling, refetch } = useQuery(GET_JOBS_STATUS, { variables: { userId: stateApp.user?.mongoId, showProgress: true} });
   
     useEffect(() => {
         setPollingStarted(false)
@@ -34,6 +38,17 @@ const ContactBulkProgress = () => {
         stopPolling()
       }
     },[dataJobs?.getJobsStatus])
+
+    const onCloseToast = (jobId) => {
+      updateJob({
+        variables: {
+          job:{
+            _id: jobId,
+            closeToast: true,
+          }
+        }
+      })
+    }  
   
     const createOrUpdateToast = (state) => {
       for(let i = 0; i < dataJobs.getJobsStatus.jobs.length; i++){
@@ -51,14 +66,14 @@ const ContactBulkProgress = () => {
   
         if(state === 'create'){
           if(dataJobs.getJobsStatus.jobs[i].status !== 'Completed' && dataJobs.getJobsStatus.jobs[i].status !== 'Failed'){
-            Loader.createToast(dataJobs.getJobsStatus.jobs[i]._id, message, progress)  
+            Loader.createToast(dataJobs.getJobsStatus.jobs[i]._id, message, progress, onCloseToast)  
           }
         }else{
           if(dataJobs.getJobsStatus.jobs[i].status === 'Completed'){
-            Loader.successToast(dataJobs.getJobsStatus.jobs[i]._id, message)
+            Loader.successToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast)
           }
           else if(dataJobs.getJobsStatus.jobs[i].status === 'Failed'){
-            Loader.errorToast(dataJobs.getJobsStatus.jobs[i]._id, message)
+            Loader.errorToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast)
           }else{
             Loader.updateToast(dataJobs.getJobsStatus.jobs[i]._id, message, progress)
           }
