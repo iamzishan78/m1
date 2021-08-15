@@ -286,6 +286,17 @@ export default function ParcelsDetailCard(props) {
   useEffect(() => {
     if (updatedParcel?.updateCustomLayer?.success) {
       dispatch(showSuccessMessage("Successfully updated the parcel"));
+
+      // Updating stateapp parcel object
+      const customLayer = updatedParcel.updateCustomLayer.customLayer;
+      const feature = JSON.parse(customLayer.shape);
+      feature.id = customLayer._id;
+      feature.properties.id = customLayer._id;
+      feature.layer = { id: 'parcel' }
+      setStateApp((state) => ({
+        ...state,
+        selectedParcel: { ...feature.properties, feature },
+      }));
     } else {
       dispatch(showErrorMessage("Failed to update parcel"));
     }
