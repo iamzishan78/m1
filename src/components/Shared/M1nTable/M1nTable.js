@@ -1058,12 +1058,11 @@ function M1nTable(props) {
 
 
         // setLoading(true);
-        const objectsIdsArray = dataWellOwners.wellOwners.map(
-          (wellOwner) => wellOwner.globalOwnerId
-        );
-        const gLodIdsArray = dataWellOwners.wellOwners.map(
-          (wellOwner) => wellOwner.id
-        );
+        const [objectsIdsArray, gLodIdsArray] = [[], []];
+        dataWellOwners.wellOwners.forEach(wellOwner => {
+          objectsIdsArray.push(wellOwner.globalOwnerId);
+          gLodIdsArray.push(wellOwner.id);
+        });
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
@@ -1082,9 +1081,6 @@ function M1nTable(props) {
         setRows([]);
         setLoading(false);
       }
-
-
-
     }
   }, [dataWellOwners]);
 
@@ -1166,7 +1162,7 @@ function M1nTable(props) {
       });
 
       let availableTags = [];
-      dataTagSamples.tagSamples.map((sample) => {
+      dataTagSamples.tagSamples.forEach((sample) => {
         availableTags = [...availableTags, ...sample.tags];
       });
       const cleanAvailableTags = [...new Set(availableTags)];
@@ -1214,25 +1210,6 @@ function M1nTable(props) {
     checkIfOwnersAreContactsData,
     dataTracks,
   ]);
-
-  ////////////Owners Per Well end///////////////////////////////////////////////
-
-
-
-
-
-
-
-  ////////////"detail-well-card-contact-ties" begin///////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
   ////////////Contacts begin///////////////////////////////////////////////
 
   useEffect(() => {
@@ -1293,9 +1270,6 @@ function M1nTable(props) {
   }, [props.parent,
   stateGrid.gridSearchTarget]);
 
-
-
-
   useEffect(() => {
     if (props.parent && props.parent === "detail-well-card-contact-ties") {
       setLoading(true);
@@ -1311,11 +1285,6 @@ function M1nTable(props) {
       setColumnsBase(ContactsHeadCells);
     }
   }, [props.selectedWell, selectedYear]);
-
-
-
-
-
 
   useEffect(() => {
     if (
@@ -1378,10 +1347,7 @@ function M1nTable(props) {
       }
 
     }
-  }, [
-    constDataContacts,
-  ]);
-
+  }, [constDataContacts]);
 
   useEffect(() => {
     if (
@@ -1407,9 +1373,6 @@ function M1nTable(props) {
       });
     }
   }, [dataContacts]);
-
-
-
 
   useEffect(() => {
     if (
@@ -1648,19 +1611,6 @@ function M1nTable(props) {
   }, [props.parent, stateApp.user]);
 
   ////////////Contacts end///////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   //////////// Search begin///////////////////////////////////////////////
   useEffect(() => {
@@ -2150,7 +2100,6 @@ function M1nTable(props) {
     }
   }, [abstractWellData]);
 
-
   useEffect(() => {
     if (props.parent && props.parent === "ownersPerParcelWells") {
       setHeader("Associated Wells");
@@ -2191,14 +2140,14 @@ function M1nTable(props) {
           });
 
           let availableTags = [];
-          dataTagSamples.tagSamples.map((sample) => {
+          dataTagSamples.tagSamples.forEach((sample) => {
             availableTags = [...availableTags, ...sample.tags];
           });
           const cleanAvailableTags = [...new Set(availableTags)];
 
           wells.forEach(element => {
             if (stateApp.trackedWells) {
-              const found = stateApp.trackedWells.find((x) => x.id == element.wellId);
+              const found = stateApp.trackedWells.find((x) => x.id === element.wellId);
               if (found) {
                 element.isTracked = true;
               } else {
@@ -2248,8 +2197,6 @@ function M1nTable(props) {
     }
 
   }, [abstractWellData, dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData])
-
-
 
   //////////// SELECTED POLYGON WELL //////////////////////////////////////
 
@@ -2403,10 +2350,6 @@ function M1nTable(props) {
 
   }, [abstractWellData, dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData])
   //////////// SELECTED POLYGON WELL //////////////////////////////////////
-
-
-
-
 
   ////////////Owners Per Parcel begin//////////Delete//////////////////////////////
 
