@@ -320,11 +320,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     }
   };
 
-  const calculateNetAcres = interest => {
-    return addTrailingZeros(
-      stateApp.selectedParcel.sdGrossAcres ? (stateApp.selectedParcel.sdGrossAcres * interest).toFixed(8) : null
-    );
-  }
+  const calculateNetAcres = (interest) => {
+    return addTrailingZeros(stateApp.selectedParcel.sdGrossAcres ? (stateApp.selectedParcel.sdGrossAcres * interest).toFixed(8) : null);
+  };
 
   const classes = useStyles();
   const modalClass = Modals();
@@ -425,7 +423,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     setNewOwner({
                       ...newOwner,
                       royalty_interest: value ? addTrailingZeros(e.target.value) : null,
-                      nra: calculateNetAcres(newOwner.mineral_interest) * (parseFloat(value || 0) + parseFloat(newOwner.orri || 0)) * 8
+                      nra: addTrailingZeros(
+                        (calculateNetAcres(newOwner.mineral_interest) * (parseFloat(value || 0) + parseFloat(newOwner.orri || 0)) * 8)?.toFixed(8)
+                      )
                     });
                   }}
                 />
@@ -442,7 +442,10 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     setNewOwner({
                       ...newOwner,
                       orri: value ? addTrailingZeros(e.target.value) : null,
-                      nra: calculateNetAcres(newOwner.mineral_interest) * (parseFloat(value || 0) + parseFloat(newOwner.royalty_interest || 0)) * 8
+                      nra: addTrailingZeros(
+                        (calculateNetAcres(newOwner.mineral_interest) *
+                          (parseFloat(value || 0) + parseFloat(newOwner.royalty_interest || 0)) * 8)?.toFixed(8)
+                      )
                     });
                   }}
                 />
