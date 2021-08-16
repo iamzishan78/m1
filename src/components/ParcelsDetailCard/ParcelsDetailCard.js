@@ -552,6 +552,7 @@ export default function ParcelsDetailCard(props) {
                 parent="associatedWellsPerParcel"
                 targetLabel="well"
                 header={<WellHeader />}
+                showTracks
                 dense
               />
             </div>,
