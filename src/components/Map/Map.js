@@ -2246,8 +2246,9 @@ function Map() {
         if (
           stateApp.wellListFromTagsFilter &&
           stateApp.wellListFromTagsFilter.length > 0
-        )
+        ) {
           fitBounds = findBounds(formatIt(stateApp.wellListFromTagsFilter));
+        }
       }
 
       const setLayerSource = (layerId, source, sourceLayer = null) => {
@@ -3151,7 +3152,7 @@ function Map() {
     stateNav.filterDrawing,
     stateNav.filterTags,
     stateNav.filterTVD,
-    stateNav.selectedTags,
+    // stateNav.selectedTags,
     stateApp.trackedOwnerWells,
     stateApp.trackedwells,
     stateApp.customLayers,

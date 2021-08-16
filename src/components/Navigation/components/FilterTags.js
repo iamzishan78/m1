@@ -1,18 +1,16 @@
-import React, { useContext, useEffect } from "react";
+import React, { useState,useContext, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
 import { USERAVAILABLEFILTERTAGSQUERY } from "../../../graphQL/useQueryUserAvailableFilterTags";
-import { OBJECTSFROMTAGSARRAY } from "../../../graphQL/useQueryObjectsFromTagsArray";
 import { useLazyQuery } from "@apollo/client";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "../../../AppContext";
-import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 
 export default function FilterTags() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [ownersWells, setOwnersWells] = React.useState(null);
+  const [filterLoading, setFilterLoading] = useState(false);
 
   const [
     getUserAvailableFilterTags,
@@ -20,26 +18,6 @@ export default function FilterTags() {
   ] = useLazyQuery(USERAVAILABLEFILTERTAGSQUERY, {
     fetchPolicy: "cache-and-network",
   });
-
-  const [getWellsIdsFromTagsArray, { data: dataWellsIds }] = useLazyQuery(
-    OBJECTSFROMTAGSARRAY,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
-  const [getOwnersIdsFromTagsArray, { data: dataOwnersIds }] = useLazyQuery(
-    OBJECTSFROMTAGSARRAY,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
-
-  const [getOwnersWells, { data: dataOwnersWells }] = useLazyQuery(
-    OWNERSWELLSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
 
   ////All User Available Tags For The DropDown
   useEffect(() => {
@@ -52,77 +30,15 @@ export default function FilterTags() {
     }
   }, [stateApp.user]);
 
-  useEffect(() => {
-    if (dataOwnersIds && dataOwnersIds.objectsFromTagsArray) {
-      if (dataOwnersIds.objectsFromTagsArray.length > 0) {
-        ////Fetching all well ids from owners
-        getOwnersWells({
-          variables: {
-            ownersIds: dataOwnersIds.objectsFromTagsArray,
-          },
-        });
-      } else {
-        if (dataWellsIds && dataWellsIds.objectsFromTagsArray)
-          setStateNav((stateNav) => ({
-            ...stateNav,
-            wellsIdsFromTags: dataWellsIds.objectsFromTagsArray.map((well) =>
-              well.toUpperCase()
-            ),
-          }));
-      }
-    }
-  }, [dataOwnersIds, dataWellsIds]);
-
-  useEffect(() => {
-    if (dataOwnersWells && dataOwnersWells.ownersWells)
-      if (dataOwnersWells.ownersWells.length <= 0) {
-        setOwnersWells([]);
-      } else {
-        let wellsIdsArray = [];
-        for (let i = 0; i < dataOwnersWells.ownersWells.length; i++) {
-          wellsIdsArray = [
-            ...wellsIdsArray,
-            ...dataOwnersWells.ownersWells[i].wells.map((well) =>
-              well.wellId.toUpperCase()
-            ),
-          ];
-        }
-        setOwnersWells(wellsIdsArray);
-      }
-  }, [dataOwnersWells]);
-
-  useEffect(() => {
-    if (dataWellsIds && dataWellsIds.objectsFromTagsArray && ownersWells) {
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        wellsIdsFromTags: [
-          ...dataWellsIds.objectsFromTagsArray.map((well) =>
-            well.toUpperCase()
-          ),
-          ...ownersWells,
-        ],
-      }));
-    }
-  }, [dataWellsIds, ownersWells]);
 
   const handleChange = (value) => {
-    setOwnersWells(null);
     if (value && value.length) {
-      setStateNav((stateNav) => ({ ...stateNav, selectedTags: [...value] }));
-      getWellsIdsFromTagsArray({
-        variables: {
-          objectType: "well",
-          tagsArray: [...value],
-          userId: stateApp.user.mongoId,
-        },
-      });
-      getOwnersIdsFromTagsArray({
-        variables: {
-          objectType: "owner",
-          tagsArray: [...value],
-          userId: stateApp.user.mongoId,
-        },
-      });
+      setFilterLoading(true);
+      setStateNav((stateNav) => ({ 
+        ...stateNav, 
+        selectedTags: [...value],
+        filterTagsLoading: setFilterLoading,
+      }));
     } else {
       if (!stateNav.filterTrackedWells && !stateNav.filterTrackedOwners)
         stateApp.toggleLayersActivity("Wells", true);
@@ -132,11 +48,14 @@ export default function FilterTags() {
         ...stateNav,
         selectedTags: [],
         wellsIdsFromTags: [],
+        filterTags: null,
+        filterTagsLoading: () => {},
       }));
       setStateApp((stateApp) => ({
         ...stateApp,
         wellListFromTagsFilter: [],
       }));
+      setFilterLoading(false);
     }
   };
 
@@ -168,6 +87,17 @@ export default function FilterTags() {
           label="Tags"
           placeholder=""
           fullWidth={true}
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {filterLoading ? (
+                  <CircularProgress color="secondary" size={20} />
+                ) : null}
+                {params.InputProps.endAdornment}
+              </>
+            ),
+          }}
         />
       )}
       disableListWrap

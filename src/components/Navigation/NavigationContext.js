@@ -62,6 +62,7 @@ const NavigationContextProvider = (props) => {
     filterOwnerConfidence: null,
     filterHasOwners: null,
     filterTags: null,
+    filterTagsLoading: () => {},
     filterAllInterestTypes: null,
     filterAllOwnershipTypes: null,
     filterGeography: null,
