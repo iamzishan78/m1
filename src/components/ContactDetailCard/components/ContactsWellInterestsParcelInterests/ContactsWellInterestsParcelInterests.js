@@ -16,7 +16,6 @@ function ContactsWellInterestsParcelInterests(props) {
 
   const [selectedTab, setSelectedTab] = useState(type === 'wells' ? 0 : type === 'parcels' ? 2 : 1);
 
-
   const Header = () => (
     <TabButtons
       labels={["Tax Roll Interests", "Well Interests", "Parcel Interests"]}
