@@ -86,6 +86,13 @@ const useStyles = makeStyles((theme) => ({
   move: {
     zIndex: 10000,
   },
+  baseValueChanged: {
+    width: "100%",
+    '& .MuiInputBase-input': {
+      color: 'dodgerblue',
+      fontWeight: 'bold'
+    }
+  }
 }));
 
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
@@ -328,6 +335,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
 
   const calculateNRA = (interest1, interest2) => {
+    if (!interest1 && !interest2) return null;
     return addTrailingZeros(
       (
         calculateNetAcres(newOwner.mineral_interest) *
@@ -533,7 +541,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 <TextField
                   type="number"
                   size="small"
-                  className={classes.maxWidth}
+                  className={isNetAcresChanged() ? classes.baseValueChanged : classes.maxWidth}
                   value={newOwner.net_acres}
                   onChange={(e) => {
                     const value = e.target.value;
@@ -569,7 +577,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   id="standard-number"
                   type="number"
                   size="small"
-                  className={classes.maxWidth}
+                  className={isNRAChanged() ? classes.baseValueChanged : classes.maxWidth}
                   value={newOwner.nra}
                   onChange={(e) => {
                     const value = e.target.value;
