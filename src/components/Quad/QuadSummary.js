@@ -7,8 +7,9 @@ import {
   makeStyles,
   emphasize,
   withStyles,
+  MuiThemeProvider,
+  createMuiTheme
 } from "@material-ui/core/styles";
-import {MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Skeleton from "@material-ui/lab/Skeleton";
@@ -97,9 +98,9 @@ const useStyles = makeStyles((theme) => ({
     // margin: theme.spacing(1),
     minWidth: "100%",
     // padding: "0px 16px",
-    marginBottom:0,
+    marginBottom: 0,
   },
-  
+
   divider: {
     backgroundColor: "#d4d4d4",
     padding: "2px 0",
@@ -110,7 +111,7 @@ const useStyles = makeStyles((theme) => ({
 
 const toggleTheme = createMuiTheme({
   overrides: {
-    MuiToggleButton:{
+    MuiToggleButton: {
       root: {
         "&.Mui-selected": {
           backgroundColor: '#1fabda',
@@ -122,28 +123,19 @@ const toggleTheme = createMuiTheme({
         },
         "&.Mui-disabled": {
           backgroundColor: '#dedede',
-          color:'inherit',
+          color: 'inherit',
         },
       },
     },
   },
 });
 
-const StyledBreadcrumb = withStyles((theme) => ({
-  root: {
-    backgroundColor: theme.palette.grey[100],
-    height: theme.spacing(3),
-    color: theme.palette.grey[800],
-    fontWeight: theme.typography.fontWeightRegular,
-    "&:hover, &:focus": {
-      backgroundColor: theme.palette.grey[300],
-    },
-    "&:active": {
-      boxShadow: theme.shadows[1],
-      backgroundColor: emphasize(theme.palette.grey[300], 0.12),
-    },
-  },
-}))(Chip);
+const DROPDOWN_ENUMS = {
+  CUMULATIVE: 'Cumulative',
+  LAST_MONTH: 'Last Month',
+  LAST_6_MONTHS: 'Last 6 Months',
+  LAST_12_MONTHS: 'Last 12 Months'
+}
 
 function formatDecimal(number) {
   let hasDecimal = false;
@@ -151,34 +143,62 @@ function formatDecimal(number) {
   if (number && mod !== 0) hasDecimal = true;
   const formatted = new Intl.NumberFormat("en-US").format(
     hasDecimal ? number.toFixed(1) : number);
-  return formatted ;
+  return formatted;
 };
 
 export default function QuadSummary(props) {
   const [stateApp] = useContext(AppContext);
   const [stateQuad, setStateQuad] = useContext(QuadContext);
   const classes = useStyles();
-  const [dropDownValue, setDropDownValue] = useState({ value: "Cumulative" });
+  const [dropDownValue, setDropDownValue] = useState({ value: DROPDOWN_ENUMS.CUMULATIVE });
   const [toggleAlignment, setToggleAlignment] = useState('cumulative');
   const [daily, setDaily] = useState(false);
-  
-  const handleChangeRange = (range) => {
-    const newRange = parseInt(range.target.value);
-    switch(newRange) {
-      case 0:
-        setDropDownValue({ value: "Cumulative" });
-        break;
-      case 1:
-        setDropDownValue({ value: "Last Month" });
-        break;
-      case 6:
-        setDropDownValue({ value: "Last 6 Months" });
-        break;
-      case 12:
-        setDropDownValue({ value: "Last 12 Months" });
+
+  useEffect(() => {
+    switch (dropDownValue.value) {
+      case DROPDOWN_ENUMS.LAST_MONTH:
+      case DROPDOWN_ENUMS.LAST_6_MONTHS:
+      case DROPDOWN_ENUMS.LAST_12_MONTHS:
+        setToggleAlignment('daily');
+        setDaily(true);
         break;
       default:
-        setDropDownValue({ value: "Cumulative" });
+        setToggleAlignment('cumulative');
+        setDaily(false);
+    }
+  }, [dropDownValue]);
+
+  //graphQL
+  const { data, loading } = useQueryQuadChart(stateApp.selectedWell.id);
+
+  useEffect(() => {
+    if (!stateQuad.quadChart) {
+      if (data) {
+        let quadChart = data.quadChart;
+        setStateQuad((state) => ({ ...state, quadChart: quadChart }));
+      }
+    }
+  }, [stateQuad.quadChart, data]);
+  //graphQL
+
+
+  const handleChangeRange = (range) => {
+    const newRange = parseInt(range.target.value);
+    switch (newRange) {
+      case 0:
+        setDropDownValue({ value: DROPDOWN_ENUMS.CUMULATIVE });
+        break;
+      case 1:
+        setDropDownValue({ value: DROPDOWN_ENUMS.LAST_MONTH });
+        break;
+      case 6:
+        setDropDownValue({ value: DROPDOWN_ENUMS.LAST_6_MONTHS });
+        break;
+      case 12:
+        setDropDownValue({ value: DROPDOWN_ENUMS.LAST_12_MONTHS });
+        break;
+      default:
+        setDropDownValue({ value: DROPDOWN_ENUMS.CUMULATIVE });
         break;
     }
     setStateQuad((state) => ({ ...state, selectedRange: newRange }));
@@ -194,20 +214,6 @@ export default function QuadSummary(props) {
     value === "daily" ? setDaily(true) : setDaily(false);
     setToggleAlignment(value);
   }
-
-  //graphQL
-  const { data, loading } = useQueryQuadChart(stateApp.selectedWell.id);
-
-  useEffect(() => {
-    if (!stateQuad.quadChart) {
-      if (data) {
-        let quadChart = data.quadChart;
-        setStateQuad((state) => ({ ...state, quadChart: quadChart }));
-      }
-    }
-  }, [stateQuad.quadChart, data]);
-  //graphQL
-
   return data && stateQuad.quadChart ? (
     <div className={classes.gridContainer}>
       <Grid container spacing={1}>
@@ -227,27 +233,27 @@ export default function QuadSummary(props) {
         </Grid>
         {
           stateQuad.quadChart.map((tile) => {
-            return(
+            return (
               <Grid item xs={6}>
                 <Card className={classes.card}>
                   <CardContent className={classes.content}>
-                    <Typography align="center" variant="h5"  style={{fontWeight:"bold"}}       >
+                    <Typography align="center" variant="h5" style={{ fontWeight: "bold" }}       >
                       {tile.metric.toUpperCase()}
                     </Typography>
                     <Divider className={classes.divider} />
-                    <Typography 
+                    <Typography
                       align="center" variant="inherit" component="h5"
-                      style={{fontSize:20}}
-                      >
+                      style={{ fontSize: 20 }}
+                    >
                       {stateQuad.selectedRange === 12
-                        ? formatDecimal( daily ? tile.value12 / (30 * 12) : tile.value12)
+                        ? formatDecimal(daily ? tile.value12 / (30 * 12) : tile.value12)
                         : stateQuad.selectedRange === 6
-                        ? formatDecimal(daily ? tile.value6 / (30 * 6) : tile.value6)
-                        : stateQuad.selectedRange === 1
-                        ? formatDecimal(daily ? tile.value1 / (30) : tile.value1)
-                        : stateQuad.selectedRange === 0
-                        ? formatDecimal(tile.cumulative)
-                        : "--"}
+                          ? formatDecimal(daily ? tile.value6 / (30 * 6) : tile.value6)
+                          : stateQuad.selectedRange === 1
+                            ? formatDecimal(daily ? tile.value1 / (30) : tile.value1)
+                            : stateQuad.selectedRange === 0
+                              ? formatDecimal(tile.cumulative)
+                              : "--"}
                     </Typography>
                     <Typography align="center" variant="h6">
                       {tile.units}
@@ -258,30 +264,32 @@ export default function QuadSummary(props) {
             )
           })
         }
-        <Grid item xs={12}>
-          <MuiThemeProvider theme={toggleTheme} >
-          <ToggleButtonGroup exclusive style={{width: "100%"}} value={toggleAlignment} >
-              <ToggleButton
-                selected={!daily}
-                disabled={stateQuad.selectedRange === 0} 
-                onClick={() => handleToggleChange("cumulative")}
-                style={{width: "100%"}}
-                size="medium"
-              >
-                Cumulative
+        {dropDownValue.value !== DROPDOWN_ENUMS.CUMULATIVE && (
+          <Grid item xs={12}>
+            <MuiThemeProvider theme={toggleTheme} >
+              <ToggleButtonGroup exclusive style={{ width: "100%" }} value={toggleAlignment} >
+                <ToggleButton
+                  selected={!daily}
+                  disabled={stateQuad.selectedRange === 0}
+                  onClick={() => handleToggleChange("cumulative")}
+                  style={{ width: "100%" }}
+                  size="medium"
+                >
+                  Cumulative
               </ToggleButton>
-              <ToggleButton 
-                selected={daily}
-                disabled={stateQuad.selectedRange === 0} 
-                onClick={() => handleToggleChange("daily")}
-                style={{width: "100%"}}
-                size="medium"
-              >
-                Daily
+                <ToggleButton
+                  selected={daily}
+                  disabled={stateQuad.selectedRange === 0}
+                  onClick={() => handleToggleChange("daily")}
+                  style={{ width: "100%" }}
+                  size="medium"
+                >
+                  Daily
               </ToggleButton>
-          </ToggleButtonGroup>
-        </MuiThemeProvider>
-        </Grid>
+              </ToggleButtonGroup>
+            </MuiThemeProvider>
+          </Grid>
+        )}
       </Grid>
       {/* <FormControl variant="outlined" className={classes.formControl}>
         <Select
@@ -362,11 +370,11 @@ export default function QuadSummary(props) {
       </GridList> */}
     </div>
   ) : // </div>
-  loading ? (
-    <Skeleton variant="rect" height={325}/>
-  ) : (
-    <Skeleton variant="rect" height={325}>
-      <Typography variant="button">Not Available</Typography>
-    </Skeleton>
-  );
+    loading ? (
+      <Skeleton variant="rect" height={325} />
+    ) : (
+      <Skeleton variant="rect" height={325}>
+        <Typography variant="button">Not Available</Typography>
+      </Skeleton>
+    );
 }
