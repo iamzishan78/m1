@@ -151,7 +151,7 @@ export const TableHOC = (Component) => {
                 variables: {
                     search: tableState.searchText,
                     pagination: {
-                        pit: tableData?.before_pit,
+                        // pit: tableData?.before_pit,
                         first: tableState.rowsPerPage,
                         after: null,
                     },
