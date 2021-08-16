@@ -5,11 +5,13 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import InputAdornment from "@material-ui/core/InputAdornment";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
+import AutorenewIcon from "@material-ui/icons/Autorenew";
 import { Grid } from "@material-ui/core";
 import get from "lodash/get";
 
@@ -321,8 +323,25 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
 
   const calculateNetAcres = (interest) => {
+    if (!interest) return null;
     return addTrailingZeros(stateApp.selectedParcel.sdGrossAcres ? (stateApp.selectedParcel.sdGrossAcres * interest).toFixed(8) : null);
   };
+
+  const calculateNRA = (interest1, interest2) => {
+    return addTrailingZeros(
+      (
+        calculateNetAcres(newOwner.mineral_interest) *
+        (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) *
+        8
+      )?.toFixed(8));
+  };
+
+  const isNetAcresChanged = () => calculateNetAcres(newOwner.mineral_interest) !== newOwner.net_acres;
+  const isNRAChanged = () => {
+    let nra = calculateNRA(newOwner.royalty_interest, newOwner.orri);
+    if (nra === 'NaN') nra = null;
+    return nra !== newOwner.nra;
+  }
 
   const classes = useStyles();
   const modalClass = Modals();
@@ -423,9 +442,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     setNewOwner({
                       ...newOwner,
                       royalty_interest: value ? addTrailingZeros(e.target.value) : null,
-                      nra: addTrailingZeros(
-                        (calculateNetAcres(newOwner.mineral_interest) * (parseFloat(value || 0) + parseFloat(newOwner.orri || 0)) * 8)?.toFixed(8)
-                      )
+                      nra: calculateNRA(value, newOwner.orri)
                     });
                   }}
                 />
@@ -442,10 +459,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     setNewOwner({
                       ...newOwner,
                       orri: value ? addTrailingZeros(e.target.value) : null,
-                      nra: addTrailingZeros(
-                        (calculateNetAcres(newOwner.mineral_interest) *
-                          (parseFloat(value || 0) + parseFloat(newOwner.royalty_interest || 0)) * 8)?.toFixed(8)
-                      )
+                      nra: calculateNRA(value, newOwner.royalty_interest)
                     });
                   }}
                 />
@@ -528,6 +542,25 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       net_acres: value ? addTrailingZeros(e.target.value) : null,
                     });
                   }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        {isNetAcresChanged() && (
+                          <IconButton
+                            aria-label="toggle royality-acres"
+                            onClick={() => {
+                              setNewOwner({
+                                ...newOwner,
+                                net_acres: calculateNetAcres(newOwner.mineral_interest)
+                              });
+                            }}
+                          >
+                            <AutorenewIcon />
+                          </IconButton>
+                        )}
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -544,6 +577,25 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       ...newOwner,
                       nra: value ? addTrailingZeros(value) : null,
                     });
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        {isNRAChanged() && (
+                          <IconButton
+                            aria-label="toggle royality-acres"
+                            onClick={() => {
+                              setNewOwner({
+                                ...newOwner,
+                                nra: calculateNRA(newOwner.royalty_interest, newOwner.orri)
+                              })
+                            }}
+                          >
+                            <AutorenewIcon />
+                          </IconButton>
+                        )}
+                      </InputAdornment>
+                    ),
                   }}
                 />
               </Grid>
