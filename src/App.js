@@ -27,8 +27,10 @@ import AlertsProvider from "./components/Alerts/AlertsProvider";
 import DashboardProvider from "./components/Dashboard/DashboardProvider";
 import StudioProvider from "./components/Studio/StudioProvider";
 import BulkUpload from "./components/BulkUpload/BulkUpload";
+import AgreementProvider from "./components/Agreement/AgreementProvider";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
+import ContactBulkProgress from "./components/BulkUpload/ContactBulkProgress";
 
 // pick a date util library
 import MomentUtils from "@date-io/moment";
@@ -229,7 +231,7 @@ function App() {
           ...state.link.options,
           uri: endpoint,
           cache: state.cache,
-          defaultOptions: state.defaultOptions
+          defaultOptions: state.defaultOptions,
         });
       });
     }
@@ -253,6 +255,7 @@ function App() {
           <ApolloProvider client={apolloClient}>
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
+                <ContactBulkProgress />
                 <ConnectedRouter history={history}>
                   <Switch>
                     <NavigationProvider>
@@ -274,11 +277,16 @@ function App() {
                       <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/wells" component={ContactWellInterestProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/parcels" component={ContactParcelsInterestProvider} />
-                      <PrivateRoute exact path="/contact/details/:contactId/parcels/:parcelId" component={ContactParcelsInterestDetailsProvider} />
+                      <PrivateRoute
+                        exact
+                        path="/contact/details/:contactId/parcels/:parcelId"
+                        component={ContactParcelsInterestDetailsProvider}
+                      />
                       <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} />
                       <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
                       <PrivateRoute exact path="/studio" component={StudioProvider} />
                       <PrivateRoute exact path="/bulkupload" component={BulkUpload} />
+                      <PrivateRoute exact path="/agreement" component={AgreementProvider} />
                       {/* <Route component={NotFoundRedirect} /> */}
                     </NavigationProvider>
                   </Switch>
