@@ -261,11 +261,13 @@ export default function Contacts(props) {
                   color="primary"
                   className={classes.button}
                   onClick={() => {
+                    if (nameAutValue != '') {
                     props.addSelectedContact(nameAutValue) 
                      GettingContacts() 
                      setMutationLoading(true)
                      setAddContact(false)
-                     }}
+                     }
+                    }}
                 >
                   <AddIcon />
                 </Button>
