@@ -18,6 +18,7 @@ import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 import ChatIcon from "@material-ui/icons/Chat";
+import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import M1nTable from "../M1nTable";
 import WellIcon from "../../svgIcons/well";
@@ -308,6 +309,14 @@ const useStyles = makeStyles((theme) => ({
   icons: {
     backgroundColor: (props) => (props.dense ? "transparent" : "#efefef"),
     marginLeft: "auto",
+    "&:hover": {
+      backgroundColor: "#dadbde !important",
+    },
+  },
+  colorIcon: {
+    backgroundColor: (props) => (props.dense ? "transparent" : "#efefef"),
+    marginLeft: "auto",
+    color: `${theme.palette.secondary.main} !important`,
     "&:hover": {
       backgroundColor: "#dadbde !important",
     },
@@ -1400,6 +1409,55 @@ function SubTable(props) {
                           <ChatIcon />
                         </IconButton>
                       </Badge>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
+          case "address":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
+                  let targetSourceId =
+                    props.parent === "OwnersPerWell"
+                      ? tableMeta.rowData[2]
+                      : props.parent === "owner_WellInterests"
+                        ? tableMeta.rowData[1]
+                        : props.parent === "ownersPerParcel"
+                          ? tableMeta.rowData[1]
+                          : tableMeta.rowData[0];
+                  if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
+                    targetSourceId = tableMeta.rowData[15];
+                  }
+
+                  return (
+                    //add download and search icons here
+                    <Tooltip title='Show Address' placement="top" style={{ marginRight: "10px" }}>
+                      <IconButton
+                        id={id + targetSourceId + tableMeta.rowIndex}
+                        color="primary"
+                        className={classes.colorIcon}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(value, '_blank', 'noopener,noreferrer');
+                          // handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
+                        }}
+                        aria-label="show address"
+                        onMouseOver={() => {
+                          console.log("hover Effect Table");
+                          if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                            multiSelectMouseHoverColor(id, "#dadbde");
+                        }}
+                        onMouseOut={() => {
+                          if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                            multiSelectMouseHoverColor(id, "#efefef");
+                        }}
+                      >
+                        <HomeOutlinedIcon size="large" />
+                      </IconButton>
                     </Tooltip>
                   );
                 },
