@@ -2196,17 +2196,17 @@ function SubTable(props) {
     filterType: "dropdown",
     rowsPerPage: rowsPerPage ? rowsPerPage : 25,
     rowsPerPageOptions: props.rows && props.rows.length > 25 ? [10, 25, 50, 100] : props.rows && props.rows.length > 10 ? [10, 25] : [],
-    selectableRows: props.targetLabel == "production_detail" ? false : "multiple",
+    selectableRows: props.targetLabel === "production_detail" ? false : "multiple",
     print: false,
     download: props.parent === "OwnersPerWell" ? true : false,
     viewColumns: props.targetLabel !== "usermanagement",
 
     onColumnViewChange: (changedColumn, action) => {
-      if (props.parent === "Contacts" && columns && (action == "add" || action == "remove") && changedColumn)
+      if (props.parent === "Contacts" && columns && (action === "add" || action === "remove") && changedColumn)
         props.setColumnsBase([
           ...columns.map((column) => {
-            if (column.name == changedColumn)
-              if (action == "add")
+            if (column.name === changedColumn)
+              if (action === "add")
                 return {
                   ...column,
                   options: column.options
