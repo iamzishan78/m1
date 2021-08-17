@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useRef, useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../NavigationContext";
 import FilterTags from "./FilterTags";
@@ -7,7 +7,7 @@ import FilterTrackedWells from "./FilterTrackedWells";
 import Grid from "@material-ui/core/Grid";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { AppContext } from "../../../AppContext";
-import { WELLSQUERY } from "../../../graphQL/useQueryWells";
+import { ALLTAGGEDWELLSQUERY } from "../../../graphQL/useQueryAllTaggedWells";
 // import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSettings";
 
 const useStyles = makeStyles((theme) => ({
@@ -18,51 +18,53 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function FilterFormProduction() {
+  const isMounted = useRef(false);
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  // const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
-  const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY, {
+  const [getAllTaggedWells, { loading, data: dataAllTaggedWells }] = useLazyQuery(ALLTAGGEDWELLSQUERY, {
     fetchPolicy: "cache-and-network",
   });
 
   useEffect(() => {
-    let filter = null;
-    if (stateNav.wellsIdsFromTags) {
-      let IdsArray = [];
-      for (let i = 0; i < stateNav.wellsIdsFromTags.length; i++) {
-        if (IdsArray.indexOf(stateNav.wellsIdsFromTags[i]) === -1)
-          IdsArray.push(stateNav.wellsIdsFromTags[i]);
+    if(isMounted.current) {
+      if(stateNav.selectedTags?.length > 0) {
+        getAllTaggedWells({
+          variables: {
+            tagsArray: [...stateNav.selectedTags],
+            userId: stateApp.user.mongoId,
+          },
+        })
       }
-
-      getWells({
-        variables: {
-          wellIdArray: IdsArray
-        },
-      });
-
-      if (stateNav.wellsIdsFromTags.length > 0)
-        filter = ["match", ["get", "id"], IdsArray, true, false];
+    } else {
+      isMounted.current = true;
     }
-
-    setStateNav((stateNav) => ({ ...stateNav, filterTags: filter }));
-  }, [stateNav.wellsIdsFromTags]);
+  }, [stateNav.selectedTags]);
 
   useEffect(() => {
-    if (
-      dataWells &&
-      dataWells.wells &&
-      dataWells.wells.results &&
-      dataWells.wells.results.length !== 0
-    ) {
+    if(dataAllTaggedWells?.allTaggedWells) {
+      const IdsArray = [ ...new Set(dataAllTaggedWells?.allTaggedWells?.map(taggedWell => taggedWell.id)) ];
+
+      let filter = null;
+
+      if (IdsArray?.length > 0) {
+        filter = ["match", ["get", "id"], IdsArray, true, false];
+      }
+
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        filterTags: filter,
+      }));
       setStateApp((stateApp) => ({
         ...stateApp,
-        wellListFromTagsFilter: [...dataWells.wells.results],
+        wellListFromTagsFilter: [...(dataAllTaggedWells?.allTaggedWells || [])],
       }));
       stateApp.toggleLayersActivity("User Tags", true);
+
+      stateNav.filterTagsLoading(false);
     }
-  }, [dataWells]);
+  }, [dataAllTaggedWells?.allTaggedWells])
 
   return (
     <Grid
