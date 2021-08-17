@@ -1904,8 +1904,8 @@ function M1nTable(props) {
       props.parent === "ownersPerParcel" &&
       dataParcelOwners
     ) {
-      if (dataParcelOwners.parcelOwners && dataParcelOwners.parcelOwners.length > 0 && !parcelOwnerLoading) {
-        setLoading(true);
+      setLoading(parcelOwnerLoading);
+      if (dataParcelOwners.parcelOwners && dataParcelOwners.parcelOwners.length > 0) {
         const objectsIdsArray = dataParcelOwners.parcelOwners.map(
           (owner) => owner.ownerEntity
         );
@@ -1919,7 +1919,6 @@ function M1nTable(props) {
           variables: { idsArray: objectsIdsArray },
         });
       } else {
-        setLoading(false);
         setRows([]);
       }
     }
@@ -1939,6 +1938,19 @@ function M1nTable(props) {
       dataParcelOwners?.parcelOwners
     ) {
 
+      const interestKeys = [
+        "nra",
+        "surface_interest",
+        "mineral_interest",
+        "royalty_interest",
+        "orri",
+        "record_title",
+        "operating_rights",
+        "nri",
+        "net_acres",
+        'unknown_interest'
+      ];
+
       const parcelOwners = dataParcelOwners.parcelOwners.map((o) => {
         let parcelOwner = { ...o };
         if (parcelOwner.qtr) {
@@ -1947,19 +1959,6 @@ function M1nTable(props) {
         parcelOwner.commentsCounter = 0;
         parcelOwner.tags = [[], 0];
         parcelOwner.isTracked = false;
-
-        const interestKeys = [
-          "nra",
-          "surface_interest",
-          "mineral_interest",
-          "royalty_interest",
-          "orri",
-          "record_title",
-          "operating_rights",
-          "nri",
-          "net_acres",
-          'unknown_interest'
-        ];
 
         Object.keys(o).forEach(key => {
           if (interestKeys.includes(key)) {
@@ -2071,6 +2070,13 @@ function M1nTable(props) {
                   filter: false,
                 },
               };
+            } else if (interestKeys.includes(column.name)) {
+              return {
+                ...column,
+                options: {
+                  setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } })
+                }
+              }
             }
             return column;
           }));
