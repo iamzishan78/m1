@@ -1058,12 +1058,11 @@ function M1nTable(props) {
 
 
         // setLoading(true);
-        const objectsIdsArray = dataWellOwners.wellOwners.map(
-          (wellOwner) => wellOwner.globalOwnerId
-        );
-        const gLodIdsArray = dataWellOwners.wellOwners.map(
-          (wellOwner) => wellOwner.id
-        );
+        const [objectsIdsArray, gLodIdsArray] = [[], []];
+        dataWellOwners.wellOwners.forEach(wellOwner => {
+          objectsIdsArray.push(wellOwner.globalOwnerId);
+          gLodIdsArray.push(wellOwner.id);
+        });
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
@@ -1082,9 +1081,6 @@ function M1nTable(props) {
         setRows([]);
         setLoading(false);
       }
-
-
-
     }
   }, [dataWellOwners]);
 
@@ -1112,6 +1108,7 @@ function M1nTable(props) {
         wellOwner.tags = [[], 0];
         wellOwner.wellsCounter = [];
         wellOwner.isTracked = false;
+        wellOwner.address = getWellOwnerAddressUrl(o);
 
         for (
           let i = 0;
@@ -1166,7 +1163,7 @@ function M1nTable(props) {
       });
 
       let availableTags = [];
-      dataTagSamples.tagSamples.map((sample) => {
+      dataTagSamples.tagSamples.forEach((sample) => {
         availableTags = [...availableTags, ...sample.tags];
       });
       const cleanAvailableTags = [...new Set(availableTags)];
@@ -1214,25 +1211,6 @@ function M1nTable(props) {
     checkIfOwnersAreContactsData,
     dataTracks,
   ]);
-
-  ////////////Owners Per Well end///////////////////////////////////////////////
-
-
-
-
-
-
-
-  ////////////"detail-well-card-contact-ties" begin///////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
   ////////////Contacts begin///////////////////////////////////////////////
 
   useEffect(() => {
@@ -1293,9 +1271,6 @@ function M1nTable(props) {
   }, [props.parent,
   stateGrid.gridSearchTarget]);
 
-
-
-
   useEffect(() => {
     if (props.parent && props.parent === "detail-well-card-contact-ties") {
       setLoading(true);
@@ -1311,11 +1286,6 @@ function M1nTable(props) {
       setColumnsBase(ContactsHeadCells);
     }
   }, [props.selectedWell, selectedYear]);
-
-
-
-
-
 
   useEffect(() => {
     if (
@@ -1378,10 +1348,7 @@ function M1nTable(props) {
       }
 
     }
-  }, [
-    constDataContacts,
-  ]);
-
+  }, [constDataContacts]);
 
   useEffect(() => {
     if (
@@ -1407,9 +1374,6 @@ function M1nTable(props) {
       });
     }
   }, [dataContacts]);
-
-
-
 
   useEffect(() => {
     if (
@@ -1648,19 +1612,6 @@ function M1nTable(props) {
   }, [props.parent, stateApp.user]);
 
   ////////////Contacts end///////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   //////////// Search begin///////////////////////////////////////////////
   useEffect(() => {
@@ -1953,8 +1904,8 @@ function M1nTable(props) {
       props.parent === "ownersPerParcel" &&
       dataParcelOwners
     ) {
-      if (dataParcelOwners.parcelOwners && dataParcelOwners.parcelOwners.length > 0 && !parcelOwnerLoading) {
-        setLoading(true);
+      setLoading(parcelOwnerLoading);
+      if (dataParcelOwners.parcelOwners && dataParcelOwners.parcelOwners.length > 0) {
         const objectsIdsArray = dataParcelOwners.parcelOwners.map(
           (owner) => owner.ownerEntity
         );
@@ -1968,7 +1919,6 @@ function M1nTable(props) {
           variables: { idsArray: objectsIdsArray },
         });
       } else {
-        setLoading(false);
         setRows([]);
       }
     }
@@ -1988,6 +1938,19 @@ function M1nTable(props) {
       dataParcelOwners?.parcelOwners
     ) {
 
+      const interestKeys = [
+        "nra",
+        "surface_interest",
+        "mineral_interest",
+        "royalty_interest",
+        "orri",
+        "record_title",
+        "operating_rights",
+        "nri",
+        "net_acres",
+        'unknown_interest'
+      ];
+
       const parcelOwners = dataParcelOwners.parcelOwners.map((o) => {
         let parcelOwner = { ...o };
         if (parcelOwner.qtr) {
@@ -1996,19 +1959,6 @@ function M1nTable(props) {
         parcelOwner.commentsCounter = 0;
         parcelOwner.tags = [[], 0];
         parcelOwner.isTracked = false;
-
-        const interestKeys = [
-          "nra",
-          "surface_interest",
-          "mineral_interest",
-          "royalty_interest",
-          "orri",
-          "record_title",
-          "operating_rights",
-          "nri",
-          "net_acres",
-          'unknown_interest'
-        ];
 
         Object.keys(o).forEach(key => {
           if (interestKeys.includes(key)) {
@@ -2120,6 +2070,13 @@ function M1nTable(props) {
                   filter: false,
                 },
               };
+            } else if (interestKeys.includes(column.name)) {
+              return {
+                ...column,
+                options: {
+                  setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } })
+                }
+              }
             }
             return column;
           }));
@@ -2149,7 +2106,6 @@ function M1nTable(props) {
       });
     }
   }, [abstractWellData]);
-
 
   useEffect(() => {
     if (props.parent && props.parent === "ownersPerParcelWells") {
@@ -2191,14 +2147,14 @@ function M1nTable(props) {
           });
 
           let availableTags = [];
-          dataTagSamples.tagSamples.map((sample) => {
+          dataTagSamples.tagSamples.forEach((sample) => {
             availableTags = [...availableTags, ...sample.tags];
           });
           const cleanAvailableTags = [...new Set(availableTags)];
 
           wells.forEach(element => {
             if (stateApp.trackedWells) {
-              const found = stateApp.trackedWells.find((x) => x.id == element.wellId);
+              const found = stateApp.trackedWells.find((x) => x.id === element.wellId);
               if (found) {
                 element.isTracked = true;
               } else {
@@ -2248,8 +2204,6 @@ function M1nTable(props) {
     }
 
   }, [abstractWellData, dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData])
-
-
 
   //////////// SELECTED POLYGON WELL //////////////////////////////////////
 
@@ -2403,10 +2357,6 @@ function M1nTable(props) {
 
   }, [abstractWellData, dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData])
   //////////// SELECTED POLYGON WELL //////////////////////////////////////
-
-
-
-
 
   ////////////Owners Per Parcel begin//////////Delete//////////////////////////////
 
@@ -3143,6 +3093,15 @@ function M1nTable(props) {
   ////////////-----Add your code section here-----///////////////////////
   const getWellOwnersByYear = (selectedYear) => {
     setSelectedYear(selectedYear)
+  }
+
+  const getWellOwnerAddressUrl = (owner) => {
+    let address = 'https://www.google.com/maps/search/';
+    if (owner.StreetAddress) address = `${address}${owner.StreetAddress.replace(/ /g, '+')}`;
+    if (owner.City) address = `${address},+${owner.City.replace(/ /g, '+')}`;
+    if (owner.State) address = `${address},+${owner.State}`;
+    if (owner.Zip) address = `${address}+${owner.Zip}`;
+    return address;
   }
 
   return (

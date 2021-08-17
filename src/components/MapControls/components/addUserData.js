@@ -341,7 +341,7 @@ export default function AddUserData(props) {
               endAdornment: (
                 <InputAdornment position="end">
                   <Button
-                    disabled={!url || url == "" ? true : false}
+                    disabled={!url || url === "" ? true : false}
                     variant="contained"
                     size="small"
                     color="secondary"

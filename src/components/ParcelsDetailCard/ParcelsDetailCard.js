@@ -222,7 +222,6 @@ export default function ParcelsDetailCard(props) {
   const dispatch = useDispatch();
   const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
   const [parcelObj, setParcelObj] = useState();
-  const [parcelWells, setParcelWells] = useState();
   const [parcelProperties, setProperties] = useState();
   const [originalProperties, setOriginalProperties] = useState(null);
   const [parcelName, setParcelName] = useState();
@@ -235,7 +234,7 @@ export default function ParcelsDetailCard(props) {
     UPDATECUSTOMLAYER,
   );
 
-  const [getCustomLayer, { data: dataCustomLayer, loading }] = useLazyQuery(
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
     CUSTOMLAYER,
   );
 
@@ -287,8 +286,19 @@ export default function ParcelsDetailCard(props) {
 
   useEffect(() => {
     if (updatedParcel) {
-      if (updatedParcel.updateCustomLayer.success) {
+      if (updatedParcel.updateCustomLayer?.success) {
         dispatch(showSuccessMessage("Successfully updated the parcel"));
+
+        // Updating stateapp parcel object
+        const customLayer = updatedParcel.updateCustomLayer.customLayer;
+        const feature = JSON.parse(customLayer.shape);
+        feature.id = customLayer._id;
+        feature.properties.id = customLayer._id;
+        feature.layer = { id: 'parcel' }
+        setStateApp((state) => ({
+          ...state,
+          selectedParcel: { ...feature.properties, feature },
+        }));
       } else {
         dispatch(showErrorMessage("Failed to update parcel"));
       }
@@ -446,6 +456,7 @@ export default function ParcelsDetailCard(props) {
                 <p className={classes.parcelSummmary}>Gross Acres</p>
                 <TextField
                   size="small"
+                  type="number"
                   value={grossAcres}
                   variant="outlined"
                   onChange={(e) => {
