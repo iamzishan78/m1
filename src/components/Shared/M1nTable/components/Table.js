@@ -1770,7 +1770,7 @@ function SubTable(props) {
                           : tableMeta.rowData[0];
 
                   return (
-                    <div>
+                    <div className="fileName">
                       <Grid container spacing={2} direction="row">
                         <Grid
                           item
