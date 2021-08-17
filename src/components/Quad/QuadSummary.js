@@ -264,19 +264,19 @@ export default function QuadSummary(props) {
             )
           })
         }
-        {dropDownValue.value !== DROPDOWN_ENUMS.CUMULATIVE && (
-          <Grid item xs={12}>
-            <MuiThemeProvider theme={toggleTheme} >
-              <ToggleButtonGroup exclusive style={{ width: "100%" }} value={toggleAlignment} >
-                <ToggleButton
-                  selected={!daily}
-                  disabled={stateQuad.selectedRange === 0}
-                  onClick={() => handleToggleChange("cumulative")}
-                  style={{ width: "100%" }}
-                  size="medium"
-                >
-                  Cumulative
+        <Grid item xs={12}>
+          <MuiThemeProvider theme={toggleTheme} >
+            <ToggleButtonGroup exclusive style={{ width: "100%" }} value={toggleAlignment} >
+              <ToggleButton
+                selected={!daily}
+                disabled={stateQuad.selectedRange === 0}
+                onClick={() => handleToggleChange("cumulative")}
+                style={{ width: "100%" }}
+                size="medium"
+              >
+                Cumulative
               </ToggleButton>
+              {dropDownValue.value !== DROPDOWN_ENUMS.CUMULATIVE && (
                 <ToggleButton
                   selected={daily}
                   disabled={stateQuad.selectedRange === 0}
@@ -285,11 +285,11 @@ export default function QuadSummary(props) {
                   size="medium"
                 >
                   Daily
-              </ToggleButton>
-              </ToggleButtonGroup>
-            </MuiThemeProvider>
-          </Grid>
-        )}
+                </ToggleButton>
+              )}
+            </ToggleButtonGroup>
+          </MuiThemeProvider>
+        </Grid>
       </Grid>
       {/* <FormControl variant="outlined" className={classes.formControl}>
         <Select
