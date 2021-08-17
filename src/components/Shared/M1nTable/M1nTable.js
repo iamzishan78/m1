@@ -1108,6 +1108,7 @@ function M1nTable(props) {
         wellOwner.tags = [[], 0];
         wellOwner.wellsCounter = [];
         wellOwner.isTracked = false;
+        wellOwner.address = getWellOwnerAddressUrl(o);
 
         for (
           let i = 0;
@@ -3086,6 +3087,15 @@ function M1nTable(props) {
   ////////////-----Add your code section here-----///////////////////////
   const getWellOwnersByYear = (selectedYear) => {
     setSelectedYear(selectedYear)
+  }
+
+  const getWellOwnerAddressUrl = (owner) => {
+    let address = 'https://www.google.com/maps/search/';
+    if (owner.StreetAddress) address = `${address}${owner.StreetAddress.replace(/ /g, '+')}`;
+    if (owner.City) address = `${address},+${owner.City.replace(/ /g, '+')}`;
+    if (owner.State) address = `${address},+${owner.State}`;
+    if (owner.Zip) address = `${address}+${owner.Zip}`;
+    return address;
   }
 
   return (
