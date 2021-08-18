@@ -22,6 +22,7 @@ import { ADDCONTACT } from "graphQL/useMutationAddContact";
 import { AppContext } from "../../AppContext";
 import { useLazyQuery,useMutation } from "@apollo/client";
 import DeleteIcon from '@material-ui/icons/Delete';
+import ContactMail from '@material-ui/icons/ContactMail';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import { GETPIPELINES } from "../../graphQL/useQueryPipelines";
@@ -188,26 +189,27 @@ export default function Contacts(props) {
                       round
                     />
                   </ListItemIcon>
-                  <Link
-                    style={{
-                      cursor: "pointer",
+                  <ListItemText
+                    primary={c}
+                    primaryTypographyProps={{
+                      color: "primary",
                     }}
-                    color="primary"
-                    onClick={() => history.push(`/contact/details/${stateApp.activeDeal?.contacts[i]?._id}`)}
-                  >
-                    {c}
-                  </Link>
-                  
+                      />
                   {mutationLoading === stateApp.activeDeal?.contacts[i]?._id  ? (
                      <ListItemSecondaryAction >
-                     <IconButton edge="end" aria-label="delete">
+                     <IconButton aria-label="delete">
                      <CircularProgress></CircularProgress>
                      </IconButton>
                    </ListItemSecondaryAction>
-                  ) : ( <ListItemSecondaryAction onClick={() => { 
+                  ) : ( <ListItemSecondaryAction >
+                    <IconButton  aria-label="contact" onClick={() => { 
+                    history.push(`/contact/details/${stateApp.activeDeal?.contacts[i]?._id}`)}}>
+                      <ContactMail />
+                    </IconButton>
+                    <IconButton  aria-label="delete" onClick={() => { 
                     DeleteContact(stateApp.activeDeal?.contacts[i]?._id); 
-                    setMutationLoading(stateApp.activeDeal?.contacts[i]?._id)}}>
-                    <IconButton edge="end" aria-label="delete">
+                    setMutationLoading(stateApp.activeDeal?.contacts[i]?._id)
+                    }}>
                       <DeleteIcon />
                     </IconButton>
                   </ListItemSecondaryAction>)}
