@@ -2621,7 +2621,7 @@ function SubTable(props) {
       }
       if (props.addAble.type === "document") {
         buttonLabel = "ADD DOCUMENT";
-        menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
+        // menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
       }
 
       const addAction = (e) => {
@@ -2718,11 +2718,25 @@ function SubTable(props) {
             {props.addAble.type === "contact" && <ButtonDropDown options={options} />}
 
             {props.header === "Documents" && (
-              <ButtonDropDown options={options} onClick={() => {
-                setStateApp({ ...stateApp, DocumentDrawer: true, selectedDocument: {} })
-              }}>
-                <PostAddIcon></PostAddIcon>
-              </ButtonDropDown>
+              // <ButtonDropDown options={options} onClick={() => {
+              //   setStateApp({ ...stateApp, DocumentDrawer: true, selectedDocument: {} })
+              // }}>
+              //   <PostAddIcon></PostAddIcon>
+              // </ButtonDropDown>
+              <ButtonGroup variant="contained" style={{ height: '40px' }} color="primary" aria-label="split button">
+                <Button
+                  color="primary"
+                  size="small"
+                  aria-label="select merge strategy"
+                  aria-haspopup="menu"
+                  onClick={() => {
+                    setStateApp({ ...stateApp, DocumentDrawer: true, selectedDocument: {} })
+                  }}
+                >
+                  <PostAddIcon></PostAddIcon>
+                Add Document
+              </Button>
+              </ButtonGroup>
             )}
 
             {props.addAble.type === "contact" && (
