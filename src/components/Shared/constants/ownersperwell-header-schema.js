@@ -1,40 +1,25 @@
+const defaultOptions = {
+  display: false,
+  filter: false,
+  searchable: false,
+  sort: false,
+  download: false,
+  print: false,
+  viewColumns: false,
+}
 
 const OwnersPerWellHeadCells = [
   {
     name: "id",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
+    options: defaultOptions,
   },
   {
     name: "entity",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
+    options: defaultOptions,
   },
   {
     name: "globalOwnerId",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
+    options: defaultOptions,
   },
 
   {
@@ -70,7 +55,7 @@ const OwnersPerWellHeadCells = [
         names: [],
         logic(rowVal, pickedTags) {
           let containIts = true;
-          pickedTags.map((pickedTag) => {
+          pickedTags.forEach((pickedTag) => {
             if (rowVal[0].indexOf(pickedTag) === -1) {
               containIts = false;
             }
@@ -96,6 +81,18 @@ const OwnersPerWellHeadCells = [
 
   {
     name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "address",
     label: " ",
     options: {
       filter: false,

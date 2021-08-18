@@ -779,8 +779,8 @@ export default function ParcelInstrument(props) {
                 style={{
                   paddingLeft: "50px",
                 }}
-                relatedObjectId={props.parcelId}
-                relatedObjectType="Parcel"
+                // relatedObjectId={props.parcelId}
+                // relatedObjectType="Parcel"
                 userId={stateApp.user.mongoId}
                 setFileData={setFileData}
               />

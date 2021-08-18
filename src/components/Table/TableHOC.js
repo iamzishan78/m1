@@ -4,7 +4,7 @@ import { AppContext } from "AppContext";
 
 import { setStateIfDeepEqual } from "components/Shared/functions";
 
-import { useApolloClient, useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { TAGSAMPLES } from "graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "graphQL/useQueryCommentsCounter";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
@@ -25,45 +25,75 @@ export const TableHOC = (Component) => {
         const [dataTracks, DataTracks] = useState(null);
         const setDataTracks = (newState) => { setStateIfDeepEqual(DataTracks, newState) };
 
+        const [tracksByObjectType, { data: constDataTracks }] = useLazyQuery(TRACKSBYOBJECTTYPE, { fetchPolicy: "cache-and-network", });
         const [getCommentsCounter, { data: dataCommentsCounter }] = useLazyQuery(COMMENTSCOUNTER, { fetchPolicy: "cache-and-network", });
         const [getTagSamples, { data: dataTagSamples }] = useLazyQuery(TAGSAMPLES, { fetchPolicy: "cache-and-network", });
         const [checkIfOwnersAreContacts, { data: checkIfOwnersAreContactsData },] = useLazyQuery(IFARECONTACTS, { fetchPolicy: "cache-and-network", });
 
         const [dependencyUpdate, SetDependencyUpdate] = useState(false);
 
-        const client = useApolloClient();
         const [stateApp, setStateApp] = useContext(AppContext);
 
-        useEffect(() => {
-            const tracksByObjectType = async () => {
-                if (
-                    props.targetLabel &&
-                    stateApp.user &&
-                    stateApp.user.mongoId &&
-                    props.showTracks &&
-                    props.targetLabel !== "contact" &&
-                    !dataTracks
-                ) {
-                    const { data: constDataTracks } = await client.query({
-                        query: TRACKSBYOBJECTTYPE,
-                        variables: {
-                            objectType:
-                                props.targetLabel === "Parcel Interest"
-                                    ? "Parcel Ownership"
-                                    : props.targetLabel,
-                        },
-                    })
-                    const tracksIdArray = constDataTracks.tracksByObjectType.map((track) => track.trackOn);
-                    setDataTracksIds(tracksIdArray);
-                    setDataTracks(constDataTracks);
-                }
+        // useEffect(() => {
+        //     const tracksByObjectType = async () => {
+        //         if (
+        //             props.targetLabel &&
+        //             stateApp.user &&
+        //             stateApp.user.mongoId &&
+        //             props.showTracks &&
+        //             props.targetLabel !== "contact" &&
+        //             !dataTracks
+        //         ) {
+        //             const { data: constDataTracks } = await client.query({
+        //                 query: TRACKSBYOBJECTTYPE,
+        //                 variables: {
+        //                     objectType:
+        //                         props.targetLabel === "Parcel Interest"
+        //                             ? "Parcel Ownership"
+        //                             : props.targetLabel,
+        //                 },
+        //             })
+        //             const tracksIdArray = constDataTracks.tracksByObjectType.map((track) => track.trackOn);
+        //             setDataTracksIds(tracksIdArray);
+        //             setDataTracks(constDataTracks);
+        //         }
+        //     }
+        //     tracksByObjectType()
+        // }, [stateApp.user, props.targetLabel, props.showTracks]);
+
+
+        useEffect (() => {
+            if(constDataTracks?.tracksByObjectType){
+                const tracksIdArray = constDataTracks.tracksByObjectType.map((track) => track.trackOn);
+                setDataTracksIds(tracksIdArray);
+                setDataTracks(constDataTracks);
             }
-            tracksByObjectType()
+        },[constDataTracks])
+
+        useEffect(() => {
+            if (
+                props.targetLabel &&
+                stateApp.user &&
+                stateApp.user.mongoId &&
+                props.showTracks &&
+                props.targetLabel !== "contact" &&
+                !dataTracks
+            ) {
+                tracksByObjectType({
+                    variables: {
+                        objectType:
+                            props.targetLabel === "Parcel Interest"
+                                ? "Parcel Ownership"
+                                : props.targetLabel,
+                    }
+                })
+            }
         }, [stateApp.user, props.targetLabel, props.showTracks]);
+
 
         useEffect(() => {
             SetDependencyUpdate(!dependencyUpdate)
-        }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData])
+        }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
         const initializeGenericData = (ids, actions) => {
             if (actions.includes("comments")) {

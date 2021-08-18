@@ -18,6 +18,7 @@ import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 import ChatIcon from "@material-ui/icons/Chat";
+import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
 import M1nTable from "../M1nTable";
 import WellIcon from "../../svgIcons/well";
@@ -308,6 +309,14 @@ const useStyles = makeStyles((theme) => ({
   icons: {
     backgroundColor: (props) => (props.dense ? "transparent" : "#efefef"),
     marginLeft: "auto",
+    "&:hover": {
+      backgroundColor: "#dadbde !important",
+    },
+  },
+  colorIcon: {
+    backgroundColor: (props) => (props.dense ? "transparent" : "#efefef"),
+    marginLeft: "auto",
+    color: `${theme.palette.secondary.main} !important`,
     "&:hover": {
       backgroundColor: "#dadbde !important",
     },
@@ -1406,6 +1415,55 @@ function SubTable(props) {
               };
             }
             break;
+          case "address":
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  let id = props.targetLabel + tableMeta.columnIndex;
+                  let targetSourceId =
+                    props.parent === "OwnersPerWell"
+                      ? tableMeta.rowData[2]
+                      : props.parent === "owner_WellInterests"
+                        ? tableMeta.rowData[1]
+                        : props.parent === "ownersPerParcel"
+                          ? tableMeta.rowData[1]
+                          : tableMeta.rowData[0];
+                  if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
+                    targetSourceId = tableMeta.rowData[15];
+                  }
+
+                  return (
+                    //add download and search icons here
+                    <Tooltip title='Show Address' placement="top" style={{ marginRight: "10px" }}>
+                      <IconButton
+                        id={id + targetSourceId + tableMeta.rowIndex}
+                        color="primary"
+                        className={classes.colorIcon}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(value, '_blank', 'noopener,noreferrer');
+                          // handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
+                        }}
+                        aria-label="show address"
+                        onMouseOver={() => {
+                          console.log("hover Effect Table");
+                          if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                            multiSelectMouseHoverColor(id, "#dadbde");
+                        }}
+                        onMouseOut={() => {
+                          if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                            multiSelectMouseHoverColor(id, "#efefef");
+                        }}
+                      >
+                        <HomeOutlinedIcon size="large" />
+                      </IconButton>
+                    </Tooltip>
+                  );
+                },
+              };
+            }
+            break;
           case "wellsCounter":
             {
               column.options = {
@@ -1696,7 +1754,7 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           console.log("modell download");
-                          handleViewFile(props.addAble.type === "parcelRunsheet" ? row_line.fileId : row_line?._id);
+                          handleViewFile(props.addAble.type === "parcelRunsheet" || props.addAble.type === "parcelDocument" ? row_line.fileId : row_line?._id);
                         }}
                       >
                         <GetAppIcon />
@@ -1756,7 +1814,7 @@ function SubTable(props) {
                           : tableMeta.rowData[0];
 
                   return (
-                    <div>
+                    <div className="fileName">
                       <Grid container spacing={2} direction="row">
                         <Grid
                           item
@@ -2196,17 +2254,17 @@ function SubTable(props) {
     filterType: "dropdown",
     rowsPerPage: rowsPerPage ? rowsPerPage : 25,
     rowsPerPageOptions: props.rows && props.rows.length > 25 ? [10, 25, 50, 100] : props.rows && props.rows.length > 10 ? [10, 25] : [],
-    selectableRows: props.targetLabel == "production_detail" ? false : "multiple",
+    selectableRows: props.targetLabel === "production_detail" ? false : "multiple",
     print: false,
     download: props.parent === "OwnersPerWell" ? true : false,
     viewColumns: props.targetLabel !== "usermanagement",
 
     onColumnViewChange: (changedColumn, action) => {
-      if (props.parent === "Contacts" && columns && (action == "add" || action == "remove") && changedColumn)
+      if (props.parent === "Contacts" && columns && (action === "add" || action === "remove") && changedColumn)
         props.setColumnsBase([
           ...columns.map((column) => {
-            if (column.name == changedColumn)
-              if (action == "add")
+            if (column.name === changedColumn)
+              if (action === "add")
                 return {
                   ...column,
                   options: column.options
@@ -2563,7 +2621,7 @@ function SubTable(props) {
       }
       if (props.addAble.type === "document") {
         buttonLabel = "ADD DOCUMENT";
-        menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
+        // menuOptions = { text: "Add New Agreement", isShow: true, action: () => routeChange("/agreement") };
       }
 
       const addAction = (e) => {
@@ -2660,11 +2718,25 @@ function SubTable(props) {
             {props.addAble.type === "contact" && <ButtonDropDown options={options} />}
 
             {props.header === "Documents" && (
-              <ButtonDropDown options={options} onClick={() => {
-                setStateApp({ ...stateApp, DocumentDrawer: true, selectedDocument: {} })
-              }}>
-                <PostAddIcon></PostAddIcon>
-              </ButtonDropDown>
+              // <ButtonDropDown options={options} onClick={() => {
+              //   setStateApp({ ...stateApp, DocumentDrawer: true, selectedDocument: {} })
+              // }}>
+              //   <PostAddIcon></PostAddIcon>
+              // </ButtonDropDown>
+              <ButtonGroup variant="contained" style={{ height: '40px' }} color="primary" aria-label="split button">
+                <Button
+                  color="primary"
+                  size="small"
+                  aria-label="select merge strategy"
+                  aria-haspopup="menu"
+                  onClick={() => {
+                    setStateApp({ ...stateApp, DocumentDrawer: true, selectedDocument: {} })
+                  }}
+                >
+                  <PostAddIcon></PostAddIcon>
+                Add Document
+              </Button>
+              </ButtonGroup>
             )}
 
             {props.addAble.type === "contact" && (

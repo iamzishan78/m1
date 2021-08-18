@@ -208,8 +208,10 @@ const useStyles = makeStyles((theme) => ({
   },
   parcelDocument: {
     "& .MuiTableRow-root": {
-      "&>:nth-child(2) > span": {
-        width: "336px !important"
+      "&>:nth-child(2) ": {
+        "& .fileName":{
+          width: "375px !important"
+        }
       }
     }
   }
@@ -220,7 +222,6 @@ export default function ParcelsDetailCard(props) {
   const dispatch = useDispatch();
   const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
   const [parcelObj, setParcelObj] = useState();
-  const [parcelWells, setParcelWells] = useState();
   const [parcelProperties, setProperties] = useState();
   const [originalProperties, setOriginalProperties] = useState(null);
   const [parcelName, setParcelName] = useState();
@@ -233,7 +234,7 @@ export default function ParcelsDetailCard(props) {
     UPDATECUSTOMLAYER,
   );
 
-  const [getCustomLayer, { data: dataCustomLayer, loading }] = useLazyQuery(
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
     CUSTOMLAYER,
   );
 
@@ -564,10 +565,11 @@ export default function ParcelsDetailCard(props) {
                 parent="associatedWellsPerParcel"
                 targetLabel="well"
                 header={<WellHeader />}
+                showTracks
                 dense
               />
             </div>,
-            <div className={showSummary ? classes.subContent : classes.subContent2}>
+            <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
               <ParcelDetailsDocumentTable
                 customLayer={parcelObj}
                 parent="associatedDocumentsPerParcel"
