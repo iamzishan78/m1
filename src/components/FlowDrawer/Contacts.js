@@ -15,7 +15,7 @@ import get from 'lodash/get'
 import Avatar from "react-avatar";
 import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
-
+import { useHistory } from "react-router-dom";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "graphQL/useMutationAddContact";
@@ -27,6 +27,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { GETPIPELINES } from "../../graphQL/useQueryPipelines";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { REMOVEDEALDESCRIPTOR } from "../../graphQL/useMutationRemoveDealDescriptor";
+import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Contacts(props) {
+  let history = useHistory();
   const classes = useStyles();
   const [search, setSearch] = useState("");
   const [contacts, setContacts] = useState();
@@ -168,6 +170,7 @@ export default function Contacts(props) {
         <List aria-label="contacts list">
           {filteredContacts && filteredContacts.length > 0 ? (
             filteredContacts.map((c, i) => (
+              
               <>
                 <ListItem key={i}>
                   <ListItemIcon>
@@ -185,12 +188,16 @@ export default function Contacts(props) {
                       round
                     />
                   </ListItemIcon>
-                  <ListItemText
-                    primary={c}
-                    primaryTypographyProps={{
-                      color: "primary",
+                  <Link
+                    style={{
+                      cursor: "pointer",
                     }}
-                  />
+                    color="primary"
+                    onClick={() => history.push(`/contact/details/${stateApp.activeDeal?.contacts[i]?._id}`)}
+                  >
+                    {c}
+                  </Link>
+                  
                   {mutationLoading === stateApp.activeDeal?.contacts[i]?._id  ? (
                      <ListItemSecondaryAction >
                      <IconButton edge="end" aria-label="delete">
