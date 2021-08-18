@@ -149,7 +149,7 @@ export default function Contacts(props) {
   return (
     <div>
       <h1>{stateApp.activeDeal.name}</h1>
-      <TextField
+      {filteredContacts && filteredContacts.length > 0  > 0  && <TextField
         fullWidth
         placeholder="Search contacts..."
         InputProps={{
@@ -165,7 +165,7 @@ export default function Contacts(props) {
         onChange={(event) => {
           setSearch(event.target.value);
         }}
-      />
+      />}
       <div className={classes.root}>
         <List aria-label="contacts list">
           {filteredContacts && filteredContacts.length > 0 ? (
