@@ -29,6 +29,17 @@ const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important"
   },
+  multiSelectionTopBarButtons: {
+    margin: "0px 5px",
+    fontWeight: "600",
+    backgroundColor: "rgba(1, 17, 51, 1)",
+    color: "#fff",
+    border: "1px solid #B3B3B3",
+    "&:hover": {
+      backgroundColor: "#263451",
+      color: "#fff",
+    },
+  },
 }));
 
 function ContactTaxRollInterestTable(props) {
@@ -58,7 +69,7 @@ function ContactTaxRollInterestTable(props) {
   const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: ["getContactWells", "getPaginatedContactWellInterests"], awaitRefetchQueries: true });
   const tableData = dataContactTaxRollInterst?.contactTaxRollInterests
 
-  const addAble = {}
+  const addAble = { type: "taxrollInterest"}
   const total = false
   const orderByTracks = false
 
