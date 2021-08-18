@@ -73,11 +73,22 @@ function ParcelDetailsRunsheetTable(props) {
   useEffect(() => {
     if (dataParcelAgreement?.getParcelAgreement?.length > 0) {
       let wells = dataParcelAgreement.getParcelAgreement
+      const objectsIdsArray = wells.map((well) => well._id);
+      props.initializeGenericData(objectsIdsArray, ['comments', 'tags'])
+    }
+
+  }, [tableData, props.dependencyUpdate])
+
+  useEffect(() => {
+    if (dataParcelAgreement?.getParcelAgreement?.length > 0) {
+      let wells = dataParcelAgreement.getParcelAgreement
       wells = wells.map((w) => {
         let well = { ...w };
         well.effectiveDate = well.effectiveDate ? moment(well.effectiveDate).format('MM/DD/YYYY') : ''
         well.executionDate = well.executionDate ? moment(well.executionDate).format('MM/DD/YYYY') : ''
         well.fileDate = well.fileDate ? moment(well.fileDate).format('MM/DD/YYYY') : ''
+
+        well = props.setGenricData(well, well._id, ['comments', 'tracks', 'tags'])
         return { ...well, _id: w._id }; 
       })
       props.setRows(wells);

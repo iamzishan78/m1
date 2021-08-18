@@ -25,7 +25,19 @@ function Search({ contactId }) {
   const dispatch = useDispatch();
   const [wells, setWells] = useState([])
   let rowsSelected = []
-  const [getWellsBySearchType, { data }] = useLazyQuery(OWNER_WELLS_BY_SEARCHTYPE, { fetchPolicy: "cache-and-network", });
+  const [getWellsBySearchType, { data }] = useLazyQuery(OWNER_WELLS_BY_SEARCHTYPE, {
+    fetchPolicy: "cache-and-network",
+    onCompleted: (data) => {
+      if (data?.wellsBySearchType) {
+        const wells = JSON.parse(JSON.stringify(data?.wellsBySearchType))
+        setWells(wells.map((well) => {
+          well.apiNumber = well.apiNumber || well.api
+          well.type = well.wellType || well.type
+          return well
+        }))
+      }
+    }
+  });
   const [addMultiWellInterestToContact] = useMutation(ADD_MULTI_WELLINTEREST_TO_CONTACT);
   const fetchSelectedWells = (searchType, searchIds) => {
     setWells([])
@@ -35,17 +47,6 @@ function Search({ contactId }) {
       },
     });
   }
-
-  useEffect(() => {
-    if (data?.wellsBySearchType) {
-      const wells = JSON.parse(JSON.stringify(data?.wellsBySearchType))
-      setWells(wells.map((well) => {
-        well.apiNumber = well.apiNumber || well.api
-        well.type = well.wellType || well.type
-        return well
-      }))
-    }
-  }, [data?.wellsBySearchType])
 
   const addWellInterestToContact = () => {
     const selectedWells = []

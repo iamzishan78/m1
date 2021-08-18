@@ -208,8 +208,10 @@ const useStyles = makeStyles((theme) => ({
   },
   parcelDocument: {
     "& .MuiTableRow-root": {
-      "&>:nth-child(2) > span": {
-        width: "336px !important"
+      "&>:nth-child(2) ": {
+        "& .fileName":{
+          width: "375px !important"
+        }
       }
     }
   }
@@ -563,10 +565,11 @@ export default function ParcelsDetailCard(props) {
                 parent="associatedWellsPerParcel"
                 targetLabel="well"
                 header={<WellHeader />}
+                showTracks
                 dense
               />
             </div>,
-            <div className={showSummary ? classes.subContent : classes.subContent2}>
+            <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
               <ParcelDetailsDocumentTable
                 customLayer={parcelObj}
                 parent="associatedDocumentsPerParcel"
