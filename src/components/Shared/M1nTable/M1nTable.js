@@ -2057,6 +2057,13 @@ function M1nTable(props) {
                   },
                 },
               };
+            } else if (interestKeys.includes(column.name)) {
+              return {
+                ...column,
+                options: {
+                  setCellProps: () => ({ style: { minWidth: "130px", maxWidth: "140px" } })
+                }
+              }
             }
             return column;
           })
