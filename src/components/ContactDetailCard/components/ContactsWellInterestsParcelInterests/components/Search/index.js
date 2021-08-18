@@ -107,7 +107,7 @@ function Search({ contactId }) {
                     columns={AssociateContactWellHeadCells}
                     options={{
                       ...AssociateContactWellHeadCells[0].options,
-                      customToolbarSelect: () => <Button color="secondary" startIcon={<AddCircleOutlineRoundedIcon />} className={classes.multiSelectionTopBarButtons} onClick={addWellInterestToContact} > Add to contact</Button>,
+                      customToolbarSelect: () => <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addWellInterestToContact} > + Add to contact</Button>,
                       customToolbar: () => <span className={classes.addIcon}>
                         {
                           wells.length > 0 && <Tooltip title='Clear'>
