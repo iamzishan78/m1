@@ -18,10 +18,18 @@ const DocumentsHeadCells = [
     name: "fileName",
     label: "File Name",
   },
-  // {
-  //   name: "fileState",
-  //   label: "FILE STATE",
-  // },
+  {
+    name: "fileId",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
   // {
   //   name: "dateTime",
   //   label: "DATE & TIME",

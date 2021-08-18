@@ -187,7 +187,7 @@ function ParcelDetailsDocumentTable(props) {
       id={props.id ? props.id : props.parent}
     >
       {showDocumentSlider && (
-        <ParcelFile getAllFiles={getAllFiles} parcelId={props.customLayer._id} setShowDocumentSlider={setShowDocumentSlider} />
+        <ParcelFile getAllFiles={(variables) => getAllFiles(variables)} parcelId={props.customLayer._id} setShowDocumentSlider={setShowDocumentSlider} />
       )}
       <Table
         style={{ backgroundColor: "#fff" }}

@@ -1754,7 +1754,7 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           console.log("modell download");
-                          handleViewFile(props.addAble.type === "parcelRunsheet" ? row_line.fileId : row_line?._id);
+                          handleViewFile(props.addAble.type === "parcelRunsheet" || props.addAble.type === "parcelDocument" ? row_line.fileId : row_line?._id);
                         }}
                       >
                         <GetAppIcon />
@@ -1814,7 +1814,7 @@ function SubTable(props) {
                           : tableMeta.rowData[0];
 
                   return (
-                    <div>
+                    <div className="fileName">
                       <Grid container spacing={2} direction="row">
                         <Grid
                           item
