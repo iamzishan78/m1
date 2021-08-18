@@ -94,7 +94,20 @@ export default function TableSummary(props) {
           {console.log('summary',summary)}
           
           <TableBody>
-
+          <TableRow className={classes.tableRow}>
+          <TableCell scope="row" className={classes.rowName}>
+                ApiNumber
+              </TableCell>
+              <TableCell className={classes.rowCell}>
+                {summary.ApiNumber ? summary.ApiNumber : "--"}
+              </TableCell>
+              <TableCell scope="row" className={classes.rowName}>
+                Well Name/Number
+              </TableCell>
+              <TableCell className={classes.rowCell}>
+                {summary.WellName ? summary.WellName : "--"}
+                </TableCell>
+            </TableRow>
           <TableRow className={classes.tableRow}>
           <TableCell scope="row" className={classes.rowName}>
                 Lease
