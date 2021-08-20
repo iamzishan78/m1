@@ -2776,7 +2776,7 @@ function SubTable(props) {
         }));
       }
 
-      if (props.parent === "assocTaxRollInterests" && props.targetLabel === "well") {
+      if (props.parent === "assocTaxRollInterests" && props.targetLabel === "well" && props.addAble.type !== 'taxrollInterest') {
         let card = { ...rows[dataIndex] };
         setStateApp((stateApp) => ({
           ...stateApp,

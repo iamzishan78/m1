@@ -157,7 +157,7 @@ function Search({ fetchSelectedWells }) {
   }
 
   return (
-    <Grid container direction="column" spacing={1} >
+    <Grid className={classes.grid} container direction="column" spacing={1} >
 
       <Grid item >
         <Typography className={classes.heading}>1. Search by interest owner or well name to associate interests to contacts</Typography>
@@ -202,11 +202,10 @@ function Search({ fetchSelectedWells }) {
           </Button>
           <Button
             className={[classes.multiSelectionTopBarButtons, classes.floatRight]}
-            //variant="contained"
+            color="secondary"
             startIcon={<SearchIcon />}
             size="medium"
             fontWeight="bold"
-            color="#082768"
             disabled={selectedIds.length === 0}
             onClick={() => fetchSelectedWells(searchOption, selectedIds)}
           >
