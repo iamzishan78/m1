@@ -100,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
   },
   addressLink: {
     textDecoration: "none",
-    color: "#0309ee",
+    color: "black",
     "&:hover": {
       textDecoration: "underline"
     }
