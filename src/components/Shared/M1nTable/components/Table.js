@@ -1443,7 +1443,6 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           window.open(value, '_blank', 'noopener,noreferrer');
-                          // handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
                         }}
                         aria-label="show address"
                         onMouseOver={() => {
@@ -1906,6 +1905,8 @@ function SubTable(props) {
                       }}
                       targetLabel={props.targetLabel}
                       nonEditable={!column.editable}
+                      isLinked
+                      toLink={value}
                     />
                   );
                 },

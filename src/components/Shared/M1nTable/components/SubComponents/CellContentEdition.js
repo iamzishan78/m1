@@ -20,9 +20,7 @@ import $ from "jquery";
 const useStyles = makeStyles((theme) => ({
   fieldContentP: {
     visibility: ({ loading, edit, fieldsCount, dropDownOptions }) =>
-      loading || (edit && fieldsCount <= 1 && !dropDownOptions)
-        ? "hidden"
-        : "visible",
+      loading || (edit && fieldsCount <= 1 && !dropDownOptions) ? "hidden" : "visible",
     margin: "0",
     width: ({ noMargin }) => {
       if (noMargin) return "fit-content";
@@ -35,13 +33,11 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "22px",
   },
   editTextField: {
-    position: ({ fieldsCount, dropDownOptions }) =>
-      fieldsCount > 1 || dropDownOptions ? null : "absolute",
+    position: ({ fieldsCount, dropDownOptions }) => (fieldsCount > 1 || dropDownOptions ? null : "absolute"),
     top: "0",
     left: "0",
     zIndex: "50",
-    paddingRight: ({ fieldsCount, dropDownOptions }) =>
-      fieldsCount > 1 || dropDownOptions ? null : "20px",
+    paddingRight: ({ fieldsCount, dropDownOptions }) => (fieldsCount > 1 || dropDownOptions ? null : "20px"),
     "& .MuiInputBase-root": {
       backgroundColor: "#fff",
       fontSize: "0.875rem",
@@ -102,15 +98,16 @@ const useStyles = makeStyles((theme) => ({
     top: "Calc(50% - 13px)",
     visibility: "hidden",
   },
+  addressLink: {
+    textDecoration: "none",
+    color: "black",
+    "&:hover": {
+      textDecoration: "underline"
+    }
+  }
 }));
 
-function PencilEditIcon({
-  onClick,
-  anchorEl,
-  setAnchorEl,
-  content,
-  handleUpdating,
-}) {
+function PencilEditIcon({ onClick, anchorEl, setAnchorEl, content, handleUpdating }) {
   const classes = useStyles();
   return (
     <React.Fragment>
@@ -175,28 +172,8 @@ function PencilEditIcon({
 }
 
 const textFieldLabels = (field) => {
-  const fieldsOpt = [
-    "companyName",
-    "jobTitle",
-    "address2Alt",
-    "address1Alt",
-    "cityAlt",
-    "stateAlt",
-    "zipAlt",
-    "countryAlt",
-    "zip",
-  ];
-  const labelsOpt = [
-    "Company Name",
-    "Job Title",
-    "Address2",
-    "Address1",
-    "City",
-    "State",
-    "ZipCode",
-    "Country",
-    "ZipCode",
-  ];
+  const fieldsOpt = ["companyName", "jobTitle", "address2Alt", "address1Alt", "cityAlt", "stateAlt", "zipAlt", "countryAlt", "zip"];
+  const labelsOpt = ["Company Name", "Job Title", "Address2", "Address1", "City", "State", "ZipCode", "Country", "ZipCode"];
 
   if (fieldsOpt.indexOf(field) !== -1) {
     return labelsOpt[fieldsOpt.indexOf(field)];
@@ -217,6 +194,8 @@ export default function CellContentEdition({
   dropDownOptions,
   entityId,
   nonEditable,
+  isLinked,
+  toLink,
 }) {
   //////////// id - brings the object id //////////////////////////////////////////////////////////////////////////
   //////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
@@ -235,12 +214,8 @@ export default function CellContentEdition({
   const [cellId, setCellId] = useState(0);
   const [fieldsCount, setFieldsCount] = useState(0);
 
-  const [updateContact, { loading: loadingUpdContact }] = useMutation(
-    UPDATECONTACT
-  );
-  const [updateParcelOwner, { loading: loadingUpdPOwner }] = useMutation(
-    UPDATEPARCELOWNER
-  );
+  const [updateContact, { loading: loadingUpdContact }] = useMutation(UPDATECONTACT);
+  const [updateParcelOwner, { loading: loadingUpdPOwner }] = useMutation(UPDATEPARCELOWNER);
   const classes = useStyles({
     loading: loadingUpdContact || loadingUpdPOwner,
     fieldsCount,
@@ -283,11 +258,7 @@ export default function CellContentEdition({
       //// resize height to fit its content, using jQuery
       if (edit === false) {
         $(document).ready(function () {
-          if (
-            $("#" + id + fieldName) &&
-            $("#fieldContentInput" + id + fieldName) &&
-            !$("#fieldContentInput" + id + fieldName).height()
-          ) {
+          if ($("#" + id + fieldName) && $("#fieldContentInput" + id + fieldName) && !$("#fieldContentInput" + id + fieldName).height()) {
             $("#" + id + fieldName).css({
               height: "auto",
             });
@@ -321,28 +292,17 @@ export default function CellContentEdition({
           variables: {
             contact: trimmedEditContent,
           },
-          refetchQueries: [
-            "getPaginatedContacts",
-            "getContact",
-            "getparcelOwners",
-          ],
+          refetchQueries: ["getPaginatedContacts", "getContact", "getparcelOwners"],
           awaitRefetchQueries: true,
         });
       }
-      if (
-        targetLabel === "Parcel Ownership" ||
-        targetLabel === "Parcel Interest"
-      ) {
+      if (targetLabel === "Parcel Ownership" || targetLabel === "Parcel Interest") {
         trimmedEditContent.ownerEntity = entityId;
         updateParcelOwner({
           variables: {
             parcelOwner: trimmedEditContent,
           },
-          refetchQueries: [
-            "getparcelOwners",
-            "getContactParcelInterests",
-            "getAllEntityNamesToAddAsParcelOwner",
-          ],
+          refetchQueries: ["getparcelOwners", "getContactParcelInterests", "getAllEntityNamesToAddAsParcelOwner"],
           awaitRefetchQueries: true,
         });
       }
@@ -368,9 +328,7 @@ export default function CellContentEdition({
               fullWidth
               label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
               multiline
-              value={
-                editContent[fieldName] === null ? "" : editContent[fieldName]
-              }
+              value={editContent[fieldName] === null ? "" : editContent[fieldName]}
               onChange={(e) => {
                 e.persist();
                 setEditContent((editContent) => ({
@@ -418,9 +376,7 @@ export default function CellContentEdition({
               className={classes.editTextField}
               options={dropDownOptions}
               getOptionLabel={(option) => option}
-              value={
-                editContent[fieldName] === null ? "" : editContent[fieldName]
-              }
+              value={editContent[fieldName] === null ? "" : editContent[fieldName]}
               onChange={(e, newInputValue) => {
                 setEditContent((editContent) => ({
                   ...editContent,
@@ -447,11 +403,7 @@ export default function CellContentEdition({
   //// ajusting the main div height to the input heigth, using jQuery
   if (fieldsCount <= 1 && !dropDownOptions) {
     $(document).ready(function () {
-      if (
-        $("#" + id + cellId) &&
-        $("#fieldContentInput" + id + cellId) &&
-        $("#fieldContentInput" + id + cellId).height()
-      ) {
+      if ($("#" + id + cellId) && $("#fieldContentInput" + id + cellId) && $("#fieldContentInput" + id + cellId).height()) {
         $("#" + id + cellId).css({
           height: $("#fieldContentInput" + id + cellId).height() + 20,
         });
@@ -463,12 +415,7 @@ export default function CellContentEdition({
   let textArray = [];
   for (const key in content) {
     if (content.hasOwnProperty(key) && content[key] && content[key] !== "") {
-      if (
-        key === "zip" ||
-        key === "country" ||
-        key === "zipAlt" ||
-        key === "countryAlt"
-      ) {
+      if (key === "zip" || key === "country" || key === "zipAlt" || key === "countryAlt") {
         textArray = [[textArray.join(", "), content[key]].join(" ")];
       } else if (key === "jobTitle") {
         textArray = [[textArray.join(", "), content[key]].join(" - ")];
@@ -495,32 +442,31 @@ export default function CellContentEdition({
       id={id + cellId}
       className={classes.cellDataDiv}
       onClick={(e) => {
-        e.preventDefault();
+        if (!isLinked || !toLink)
+          e.preventDefault();
         e.stopPropagation();
       }}
     >
       {edit && !dropDownOptions && fieldsCount <= 1 && inputsArrayWithFooter()}
-      <p
-        className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${
-          classes.fieldContentP
-        }`}
-      >
+      <p className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP}`}>
         {childrenLeft && !onlyChildren && children ? children : ""}
-        {textArray.length > 0
-          ? onlyChildren
-            ? children
-              ? children
-              : ""
-            : textArray.join(", ")
-          : `${name ? name + " " : ""} ${targetLabel == "production_detail" ? ' - ': 'N/A'}`}
+        {textArray.length > 0 ? (
+          onlyChildren ? (
+            children || ""
+          ) : isLinked ? (
+            <a className={classes.addressLink} href={toLink} rel="noopener noreferrer" target="_blank">
+              {textArray.join(", ")}
+            </a>
+          ) : (
+            textArray.join(", ")
+          )
+        ) : (
+          `${name ? name + " " : ""} ${targetLabel === "production_detail" ? " - " : "N/A"}`
+        )}
         {!nonEditable && (
           <PencilEditIcon
             handleUpdating={handleUpdating}
-            anchorEl={
-              (edit && fieldsCount > 1) || (edit && dropDownOptions)
-                ? edit
-                : null
-            }
+            anchorEl={(edit && fieldsCount > 1) || (edit && dropDownOptions) ? edit : null}
             setAnchorEl={(e) => {
               setEdit(e);
               toStart();
@@ -533,11 +479,7 @@ export default function CellContentEdition({
       </p>
       {(loadingUpdContact || loadingUpdPOwner) && (
         <div style={{ height: "0", width: "0" }}>
-          <CircularProgress
-            className={classes.loader}
-            size={22}
-            color="secondary"
-          ></CircularProgress>
+          <CircularProgress className={classes.loader} size={22} color="secondary"></CircularProgress>
         </div>
       )}
     </div>
