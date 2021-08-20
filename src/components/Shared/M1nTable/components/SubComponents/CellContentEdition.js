@@ -98,6 +98,13 @@ const useStyles = makeStyles((theme) => ({
     top: "Calc(50% - 13px)",
     visibility: "hidden",
   },
+  addressLink: {
+    textDecoration: "none",
+    color: "#0309ee",
+    "&:hover": {
+      textDecoration: "underline"
+    }
+  }
 }));
 
 function PencilEditIcon({ onClick, anchorEl, setAnchorEl, content, handleUpdating }) {
@@ -447,7 +454,7 @@ export default function CellContentEdition({
           onlyChildren ? (
             children || ""
           ) : isLinked ? (
-            <a href={toLink} rel="noopener noreferrer" target="_blank">
+            <a className={classes.addressLink} href={toLink} rel="noopener noreferrer" target="_blank">
               {textArray.join(", ")}
             </a>
           ) : (

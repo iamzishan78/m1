@@ -216,7 +216,7 @@ function ExpandableCard(props) {
     // if (parent === "map" && $("#popupContainer").length) {
     // }
 
-    if (toggleExpand == false) {
+    if (toggleExpand === false) {
       setToggleExpand(true);
       setExpanded(false);
       setWidth(cardWidthExpanded);
@@ -229,7 +229,7 @@ function ExpandableCard(props) {
     setHeight(cardHeightExpanded);
 
 
-    if (props.targetLabel == "well" || props.targetLabel == "expandedWell") {
+    if (props.targetLabel === "well" || props.targetLabel === "expandedWell") {
       setStateApp((state) => ({
         ...state,
         wellDetailCardOpen: true,
@@ -237,7 +237,7 @@ function ExpandableCard(props) {
       }));
 
 
-    } else if (props.targetLabel == "parcel" || props.targetLabel == "expandedParcel") {
+    } else if (props.targetLabel === "parcel" || props.targetLabel === "expandedParcel") {
       setStateApp((state) => ({
         ...state,
         parcelDetailCardOpen: true,
@@ -307,17 +307,17 @@ function ExpandableCard(props) {
           marginRight: "48px",
         }}
       >
-        {(targetLabel != "contact"
+        {(targetLabel !== "contact"
         ) &&
           <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
         }
 
         {(targetLabel === "contact"
-          && parent != 'table'
+          && parent !== 'table'
         ) && <ContactSearch />}
 
         {(targetLabel === "contact"
-          && parent != 'table'
+          && parent !== 'table'
         ) &&
           <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
         }
@@ -415,7 +415,7 @@ function ExpandableCard(props) {
           maxWidth="sm"
         >
           <DeleteConfirmationDialogContent
-            header={`Delete ${targetLabel == "expandedParcel" ? "parcel" : targetLabel}`}
+            header={`Delete ${targetLabel === "expandedParcel" ? "parcel" : targetLabel}`}
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
@@ -475,7 +475,7 @@ function ExpandableCard(props) {
                   />
                 )}
 
-              {targetLabel == "contact" &&
+              {targetLabel === "contact" &&
                 parent !== "table" && (
                   <LinkWithIcon
                     objectId={targetSourceId.toLowerCase()}
@@ -558,7 +558,7 @@ function ExpandableCard(props) {
                         <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
                       </IconButton>
                     </Tooltip>
-                  ) : (isExpanded == false && targetLabel !== "activity") ? (
+                  ) : (isExpanded === false && targetLabel !== "activity") ? (
                     <Tooltip title={"Expand"} placement="top">
                       <IconButton
                         size="small"
