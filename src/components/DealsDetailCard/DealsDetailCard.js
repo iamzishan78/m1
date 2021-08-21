@@ -5,7 +5,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import DealDisplay from "./components/DealDisplay";
-import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { CONTACTDEALS } from "../../graphQL/useQueryContactDeals";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
 
@@ -32,9 +31,8 @@ const sumDeals = (deals) => {
   let sum = 0;
   deals.forEach((card) => {
     if (card.offerPrice && !isNaN(card.offerPrice)) sum += card.offerPrice;
-    // sum += parseFloat(card.label.split("$").join("").split(",").join(""))
   });
-  if (sum != 0) {
+  if (sum !== 0) {
     return vf_currency(sum);
 
   }
@@ -50,7 +48,6 @@ export default function DealsDetailCard(props) {
   const [activeDeals, setActiveDeals] = useState([]); // all other deals
   const [allDeals, setAllDeals] = useState([]); // all other deals
   const [stateApp, setStateApp] = useContext(AppContext);
-  // const [getTransactionData, { data, loading }] = useLazyQuery(TRANSACTIONDATA);
   const [getContactDeals, { data, loading }] = useLazyQuery(CONTACTDEALS, {
     fetchPolicy: "cache-and-network",
   });
