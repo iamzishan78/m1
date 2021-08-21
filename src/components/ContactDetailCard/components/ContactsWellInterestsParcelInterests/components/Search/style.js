@@ -1,6 +1,16 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
+  table:{
+    "& .MuiPaper-elevation1": {
+      flexDirection: "row !important",
+      height: "65px !important",
+      width: "100% !important",
+      display: "flex !important",
+      flex: "auto",
+      alignItems: "center !important",
+    },
+  },
   grid:{
     "& .Mui-disabled": {
       backgroundColor: "transparent",

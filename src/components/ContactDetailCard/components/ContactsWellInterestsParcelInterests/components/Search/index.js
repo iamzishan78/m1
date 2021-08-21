@@ -103,12 +103,19 @@ function Search({ contactId }) {
                 <Grid item md={12}>
 
                   <MUIDataTable
+                    className={classes.table}
                     title={'Tax Roll Interests'}
                     data={wells}
                     columns={AssociateContactWellHeadCells}
                     options={{
                       ...AssociateContactWellHeadCells[0].options,
-                      customToolbarSelect: () => <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addWellInterestToContact} > + Add to contact</Button>,
+                      customToolbarSelect: () => (
+                        <div style={{ height: "48px", display: "flex" }} >
+                          <div style={{ marginTop: "6px", height: "35px", display: "flex", marginRight: "20px" }} >
+                            <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addWellInterestToContact} > + Add to contact</Button>
+                          </div>
+                        </div>
+                      ),
                       customToolbar: () => <span className={classes.addIcon}>
                         {
                           wells.length > 0 && <Tooltip title='Clear'>
