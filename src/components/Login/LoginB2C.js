@@ -20,6 +20,7 @@ import {
 } from "./AADB2CAuthConfig";
 
 import * as msalB2C from "@azure/msal";
+import { GET_LOGGED_IN_USER } from "graphQL/useMutationLoggedInUser";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -58,7 +59,7 @@ const localStyles = makeStyles((theme) => ({
     textAlign: "center",
     display: "flex",
     height: "100%",
-    flexDirection: "column",
+    flexDirection: "column"
     // "&::-webkit-scrollbar": {
     //   width: "0 !important",
     // },
@@ -137,7 +138,7 @@ const LoginB2C = (props) => {
 
           if (error.errorMessage.includes("AADB2C90118")) {
             stateApp.myMSALB2CObj.loginRedirect(B2CPolicies.authorities.forgotPassword);
-            
+
             return;
           }
           else {
@@ -163,7 +164,7 @@ const LoginB2C = (props) => {
         // "acr" claim in the token tells us what policy is used (NOTE: for new policies (v2.0), use "tfp" instead of "acr")
         // To learn more about b2c tokens, visit https://docs.microsoft.com/en-us/azure/active-directory-b2c/tokens-overview
         if (stateApp.myMSALB2CObj.account.idTokenClaims && stateApp.myMSALB2CObj.account.idTokenClaims.acr === B2CPolicies.names.forgotPassword) {
-          
+
           stateApp.myMSALB2CObj.clearCache();
           stateApp.myMSALB2CObj.account = null;
           // // window.alert("Password has been reset successfully. \nPlease sign-in with your new password.");
@@ -246,7 +247,7 @@ const LoginB2C = (props) => {
         setLoadingSigInButton(false);
       }
     } else if (signInType === "loginRedirect") {
-      if( queryString.parse(props.location.search).id_token_hint ) {
+      if (queryString.parse(props.location.search).id_token_hint) {
         loginRequestB2C.extraQueryParameters = { id_token_hint: queryString.parse(props.location.search).id_token_hint }
       }
       myMSALB2CObj.loginRedirect(loginRequestB2C);
@@ -339,27 +340,14 @@ const LoginB2C = (props) => {
 
     history.replace(
       window.location.pathname === "/loginb2c"
-      ? "/"
-      : window.location.pathname
+        ? "/"
+        : window.location.pathname
     );
 
     // setLoading(false);
   }
 
   async function getMongoDBUser(user, accessToken) {
-    const mutation = `
-      mutation getFindOrCreateUser($user: UserInput) {
-        findOrCreateUser(user: $user) {
-          success
-          message
-          user {
-            _id
-            email
-            name
-            }
-          }
-        }
-       `;
 
     var options = {
       method: "POST",
@@ -367,7 +355,7 @@ const LoginB2C = (props) => {
         "Content-Type": "application/json",
         "X-ZUMO-AUTH": accessToken,
       },
-      body: JSON.stringify({ query: mutation, variables: { user } }),
+      body: JSON.stringify({ query: GET_LOGGED_IN_USER, variables: { user } }),
     };
 
     return await fetch(stateApp.apolloClientEndpoint, options)
@@ -375,9 +363,9 @@ const LoginB2C = (props) => {
       .then((response) => {
         return response &&
           response.data &&
-          response.data.findOrCreateUser &&
-          response.data.findOrCreateUser.success
-          ? response.data.findOrCreateUser.user
+          response.data.loggedInUser &&
+          response.data.loggedInUser.success
+          ? response.data.loggedInUser.user
           : null;
       })
       .catch((error) => console.log(error));
@@ -397,7 +385,7 @@ const LoginB2C = (props) => {
       return loginResponse;
     }
   }
-  
+
   async function ssoSilent(request) {
     console.log("request made to ssoSilent at: " + new Date().toString());
     console.log("scopes requested: " + request.scopes);
@@ -531,9 +519,9 @@ const LoginB2C = (props) => {
           handleAADB2CSignIn={handledAADB2CSignIn}
           errorText={loginErrorText}
           tenant={
-            !stateApp.myMSALB2CObj 
-            ? queryString.parse(props.location.search).tenant 
-            : undefined}
+            !stateApp.myMSALB2CObj
+              ? queryString.parse(props.location.search).tenant
+              : undefined}
         />
       }
 
@@ -583,7 +571,7 @@ const LoginB2C = (props) => {
                   disableElevation
                   type="submit"
                   style={{
-                    float: "left",
+                    cssFloat: "left",
                     marginTop: "35px",
                     marginLeft: "65px",
                   }}
