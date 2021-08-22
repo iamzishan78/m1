@@ -98,6 +98,7 @@ function ParcelDetailsRunsheetTable(props) {
       props.setLoading(false);
     }
     else if (dataParcelAgreement?.getParcelAgreement?.length === 0) {
+      props.setRows([]);
       props.setLoading(false);
     }
   }, [tableData, props.dependencyUpdate]);
