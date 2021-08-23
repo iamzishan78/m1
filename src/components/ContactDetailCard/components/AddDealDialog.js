@@ -5,6 +5,7 @@ import React, {
   useRef,
   useCallback
 } from "react";
+import { useHistory } from "react-router-dom";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
@@ -364,6 +365,7 @@ const newContact = {
 
 function AddDealDialog(props) {
   const dispatch = useDispatch();
+  let history = useHistory();
   const classes = useStyles();
   const { selectedPipe, pipelines, pipeToShow } = useSelector(
     ({ Flow }) => Flow
@@ -469,16 +471,27 @@ function AddDealDialog(props) {
   useEffect(() => {
     if (pipelinesData) {
       //// select first one as default
+      const pipelineId = history.location.pathname.split("/")[2]
+
       if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
         let activePipeline = {};
-        const isExist = !!pipelinesData.pipelines.find(
-          (p) => p._id === selectedPipe?._id
-        );
-        if (selectedPipe && isExist) {
+
+        if(pipelineId){
           activePipeline = pipelinesData.pipelines.find(
-            (p) => p._id === selectedPipe._id
+            (p) => p._id === pipelineId
           );
-        } else activePipeline = pipelinesData.pipelines[0];
+        }
+        if(!activePipeline){
+          const isExist = !!pipelinesData.pipelines.find(
+            (p) => p._id === selectedPipe?._id
+          );
+          if (selectedPipe && isExist) {
+            activePipeline = pipelinesData.pipelines.find(
+              (p) => p._id === selectedPipe._id
+            );
+          } else activePipeline = pipelinesData.pipelines[0];
+        }
+        history.push(`/flow/${activePipeline._id}`)
         dispatch(
           setFlowState({
             selectedPipe: activePipeline,

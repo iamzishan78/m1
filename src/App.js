@@ -282,6 +282,7 @@ function App() {
                       <Route exact path="/forgotpassword" component={ForgotPassword} />
                       <PrivateRoute exact path="/track" component={TrackProvider} />
                       <PrivateRoute exact path="/flow" component={TransactProvider} />
+                      <PrivateRoute exact path="/flow/:pipelineId" component={TransactProvider} />
                       <PrivateRoute exact path="/documents" component={DocumentProvider} />
                       <PrivateRoute exact path="/activities" component={ActivitiesProvider} />
                       <PrivateRoute exact path="/title" component={TitleOpinionProvider} />
