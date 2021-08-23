@@ -485,7 +485,7 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (isProgressDetail) {
-      setStateApp((stateApp) => ({ ...stateApp, transactBarView: "Flow Lane Progress" }));
+      setStateApp((stateApp) => ({ ...stateApp, transactBarView: "Task Progress" }));
     }
   }, [isProgressDetail]);
 
@@ -1050,7 +1050,7 @@ function AddDealDialog(props) {
       return <Documents id={stateApp.activeDeal?.cardId} user_id={stateApp.user.email} isTransactPage={true} />;
     } else if (stateApp.transactBarView === "Contacts") {
       return <Contacts addSelectedContact={addSelectedContactToDeal} loading={getDealLoading} getDeal={refetchDeal} />;
-    } else if (stateApp.transactBarView === "Flow Lane Progress") {
+    } else if (stateApp.transactBarView === "Task Progress") {
       return (
         <LaneProgressDetail
           users={users}
