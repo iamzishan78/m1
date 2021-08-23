@@ -363,9 +363,9 @@ const LoginB2C = (props) => {
       .then((response) => {
         return response &&
           response.data &&
-          response.data.loggedInUser &&
-          response.data.loggedInUser.success
-          ? response.data.loggedInUser.user
+          response.data.login &&
+          response.data.login.success
+          ? response.data.login.user
           : null;
       })
       .catch((error) => console.log(error));

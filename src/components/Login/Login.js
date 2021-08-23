@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
-import { AppContext } from "../../AppContext";
+import { AppContext, apolloClientEndpointDev, isDev, setApolloHeaders } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import SignInCard from "./SignInCard";
@@ -273,7 +273,6 @@ const Login = (props) => {
         myMSALObj = new msal.PublicClientApplication(
           msalConfig(tenant)
         );
-
         setStateApp({
           ...stateApp,
           myMSALObj,
@@ -340,7 +339,7 @@ const Login = (props) => {
     }
 
     const authGraphQLResponse = await callAuthGraphQL(
-      `${new URL(stateApp.apolloClientEndpoint).origin}/.auth/login/aad`,
+      `${new URL(stateApp.apolloOriginalClientEndpoint).origin}/.auth/login/aad`,
       authGraphQLToken.idToken,
       authGraphQLToken.accessToken
     ).catch((error) => {
@@ -353,7 +352,7 @@ const Login = (props) => {
     }
 
     const graphQLProfileResponse = await callProfileGraphQL(
-      `${new URL(stateApp.apolloClientEndpoint).origin}/.auth/me`,
+      `${new URL(stateApp.apolloOriginalClientEndpoint).origin}/.auth/me`,
       authGraphQLResponse.authenticationToken
     ).catch((error) => {
       //do some error stuff
@@ -381,7 +380,7 @@ const Login = (props) => {
     authUser.roles = graphQLProfileResponse.user_claims.filter(({ typ }) => { return typ === 'roles' })
     if (authUser.roles) { authUser.roles = authUser.roles.map(role => role.val) }
 
-    const mongoUser = await getMongoDBUser(
+    const mongoUser = await loginUser(
       {
         // issuerUserId: authUser.issuerUserId,
         // issuerTenantId: authUser.issuerTenantId,
@@ -389,7 +388,7 @@ const Login = (props) => {
         name: authUser.b2cName ?? authUser.b2bName
       },
       authGraphQLResponse.authenticationToken,
-      authGraphQLToken.accessToken,
+      authGraphQLToken.idToken,
     ).catch((error) => {
       //do some error stuff
       console.log(error);
@@ -408,7 +407,7 @@ const Login = (props) => {
         name: mongoUser.name,
         roles: authUser.roles,
         authToken: authGraphQLResponse.authenticationToken,
-        accessToken: authGraphQLToken.accessToken,
+        accessToken: authGraphQLToken.idToken,
         authTokenExpires: new Date(
           authGraphQLToken.expiresOn.setDate(
             authGraphQLToken.expiresOn.getDate() + 14
@@ -433,29 +432,22 @@ const Login = (props) => {
     //setLoading(false);
   }
 
-  async function getMongoDBUser(user, authenticationToken, accessToken) {
+  async function loginUser(user, authToken, idToken) {
 
     var options = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-ZUMO-AUTH": authenticationToken,
       },
       body: JSON.stringify({ query: GET_LOGGED_IN_USER, variables: { user } }),
     };
     let endpoint = stateApp.apolloClientEndpoint
-    if (process.env.NODE_ENV === 'development') {
-      options.headers["X-MS-TOKEN-AAD-ID-TOKEN"] = accessToken
-      endpoint = "http://localhost:7071/api/m1graph";
-    }
+    options = setApolloHeaders(options, authToken, idToken)
     return await fetch(endpoint, options)
       .then((response) => response.json())
       .then((response) => {
-        return response &&
-          response.data &&
-          response.data.loggedInUser &&
-          response.data.loggedInUser.success
-          ? response.data.loggedInUser.user
+        return response?.data?.login?.success
+          ? response.data.login.user
           : null;
       })
       .catch((error) => console.log(error));

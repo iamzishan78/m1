@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-import { AppProvider, AppContext } from "./AppContext";
+import { AppProvider, AppContext, setApolloHeaders } from "./AppContext";
 import { Switch, Route } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 //components
@@ -196,34 +196,26 @@ const PrivateRoute = ({ component, ...options }) => {
 function App() {
   const [apolloClient, setApolloClient] = useState(null);
   const [apolloClientToken, setApolloClientToken] = useState(null);
-  const [apolloClientAccessToken, setApolloAccessClientToken] = useState(null);
+  const [apolloClientIdToken, setApolloIdClientToken] = useState(null);
   const [apolloClientEndpoint, setApolloClientEndpoint] = useState(null);
   //const apolloDevEndpoint = "https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA==";
   //set default to core until login is complete and we can get the tenant's endpoint
   //const apolloEndpoint = "https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA==";
   const updateApolloClientEndpoint = (endpoint) => {
     setApolloClientEndpoint(endpoint);
-    updateApolloClient(endpoint, apolloClientToken, apolloClientAccessToken);
+    updateApolloClient(endpoint, apolloClientToken, apolloClientIdToken);
   };
 
-  const updateApolloClientToken = (token, accessToken) => {
+  const updateApolloClientToken = (token, idToken) => {
     setApolloClientToken(token);
-    setApolloAccessClientToken(accessToken);
-    updateApolloClient(apolloClientEndpoint, token, accessToken);
+    setApolloIdClientToken(idToken);
+    updateApolloClient(apolloClientEndpoint, token, idToken);
   };
 
-  const updateApolloClient = (endpoint, token, accessToken) => {
-    // uncomment to run against local
-    if (process.env.NODE_ENV === 'development') {
-      endpoint = "http://localhost:7071/api/m1graph";
-    }
+  const updateApolloClient = (endpoint, token, idToken) => {
 
     if (apolloClient && token) {
-      apolloClient.link.options.headers = { "X-ZUMO-AUTH": token };
-
-      if (process.env.NODE_ENV === 'development') {
-        apolloClient.link.options.headers["X-MS-TOKEN-AAD-ID-TOKEN"] = accessToken;
-      }
+      apolloClient.link.options = setApolloHeaders(apolloClient.link.options, token, idToken)
     }
 
     if (!apolloClient) {
