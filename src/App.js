@@ -194,6 +194,7 @@ const PrivateRoute = ({ component, ...options }) => {
 };
 
 function App() {
+  const [stateApp] = useContext(AppContext);
   const [apolloClient, setApolloClient] = useState(null);
   const [apolloClientToken, setApolloClientToken] = useState(null);
   const [apolloClientIdToken, setApolloIdClientToken] = useState(null);
@@ -272,7 +273,9 @@ function App() {
           <ApolloProvider client={apolloClient}>
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
-                <ContactBulkProgress />
+                {stateApp.user?.mongoId && (
+                  <ContactBulkProgress />
+                )}
                 <ConnectedRouter history={history}>
                   <Switch>
                     <NavigationProvider>
