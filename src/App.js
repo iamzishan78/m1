@@ -5,7 +5,6 @@ import { Switch, Route } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 //components
 import Login from "./components/Login/Login";
-import LoginB2C from "./components/Login/LoginB2C";
 import SignUpCard from "./components/Login/SignUpCard";
 import ForgotPassword from "./components/Login/ForgotPassword";
 import NavigationProvider from "./components/Navigation/NavigationProvider";
@@ -183,7 +182,7 @@ const PrivateRoute = ({ component, ...options }) => {
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now() && apolloClient?.link?.options?.headers?.["X-ZUMO-AUTH"]
       ? component
       : (() => {
-        return stateApp.myMSALB2CObj ? LoginB2C : Login;
+        return Login;
       })();
 
   return (
@@ -281,7 +280,6 @@ function App() {
                     <NavigationProvider>
                       <PrivateRoute exact path="/" component={MapProvider} />
                       <Route exact path="/signup" component={SignUpCard} />
-                      <Route exact path="/loginb2c" component={LoginB2C} />
                       <Route exact path="/forgotpassword" component={ForgotPassword} />
                       <PrivateRoute exact path="/track" component={TrackProvider} />
                       <PrivateRoute exact path="/flow" component={TransactProvider} />
