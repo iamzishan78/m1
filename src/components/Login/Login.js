@@ -380,7 +380,7 @@ const Login = (props) => {
     authUser.roles = graphQLProfileResponse.user_claims.filter(({ typ }) => { return typ === 'roles' })
     if (authUser.roles) { authUser.roles = authUser.roles.map(role => role.val) }
 
-    const mongoUser = await loginUser(
+    const { user: mongoUser, sessionData } = await loginUser(
       {
         // issuerUserId: authUser.issuerUserId,
         // issuerTenantId: authUser.issuerTenantId,
@@ -402,6 +402,7 @@ const Login = (props) => {
       ...state,
       user: {
         id: accountObj.sub,
+        features: sessionData.features,
         mongoId: mongoUser._id,
         email: mongoUser.email,
         name: mongoUser.name,
@@ -447,7 +448,7 @@ const Login = (props) => {
       .then((response) => response.json())
       .then((response) => {
         return response?.data?.login?.success
-          ? response.data.login.user
+          ? { user: response.data.login.user, sessionData: response.data.login.sessionData }
           : null;
       })
       .catch((error) => console.log(error));
