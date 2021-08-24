@@ -28,25 +28,6 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-  rootSearch: {
-    "& div": {
-      "&>.MuiPaper-root": {
-        display: "flex",
-        "flex-direction": "column",
-        height: "calc(100vh - 375px)",
-        "align-items": "stretch",
-        "&>.MuiPaper-root": { 
-          display: "contents",
-        },
-        "&>:nth-child(3)": { 
-          height: "inherit !important",
-        },
-        "&> table": {
-          bottom: 0,
-        }
-      },
-    },
-  }
 }));
 
 function ContactsWellInterestsParcelInterests(props) {
@@ -72,9 +53,7 @@ function ContactsWellInterestsParcelInterests(props) {
   return (
     <div>
       {/* temporarily comment search out until we have a chance to build it out fully */}
-      <div className={classes.rootSearch}>
-        <Search contactId={props.contactData._id} />
-      </div>
+      <Search contactId={props.contactData._id} />
       
 
       <div className={classes.root} style={{ position: "relative" }}>
