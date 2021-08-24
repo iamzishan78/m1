@@ -1,16 +1,15 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { Fragment, useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../AppContext";
 import Board from "react-trello";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { UPDATESTAGEDEALDESCRIPTORS } from "../../graphQL/useMutationUpdateStageDealDescriptors";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
 import "./index.css";
 import TransactAppBar from "./components/TransactAppBar";
-import TransactTable from "./components/TransactTable";
 import SidePanel from "./components/SidePanel";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import Drawer from "./components/Drawer";
@@ -19,7 +18,6 @@ import vf_currency from "../Shared/valueformatters/vf_currency.js";
 import DocViewer from "../Shared/DocViewer";
 import { validateEmail } from "components/Login/loginHelpers";
 import { GETPROFILEIMAGE } from "graphQL/useQueryGetProfile";
-import { Avatar } from "material-ui";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -143,7 +141,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const CustomAvatar = ({ text = "", email = "", diglog }) => {
+export const CustomAvatar = React.memo(({ text = "", email = "", diglog }) => {
   const classes = useStyles();
   const [profileImage, setProfileImage] = useState(null);
   const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE, {
@@ -152,7 +150,6 @@ export const CustomAvatar = ({ text = "", email = "", diglog }) => {
 
   useEffect(() => {
     if (email) {
-      setProfileImage(null);
       getProfileImage({
         variables: { email }
       });
@@ -174,6 +171,8 @@ export const CustomAvatar = ({ text = "", email = "", diglog }) => {
         }
       } = profiledata;
       setProfileImage(profileImage);
+    } else {
+      setProfileImage(false);
     }
   }, [profiledata]);
 
@@ -188,27 +187,27 @@ export const CustomAvatar = ({ text = "", email = "", diglog }) => {
     return initials.toUpperCase();
   };
 
-  if (email && profileImage) {
-    return (
-      <img
-        className={classes.customAvatarImg}
-        src={profileImage}
-        alt="owner img"
-      />
-    );
-  }
-
   return (
-    <span
-      className={diglog ? "" : classes.customAvatar}
-      style={{
-        backgroundColor: diglog ? "" : getRandomColor(text)
-      }}
-    >
-      {getInitials(text)}
-    </span>
+    <Fragment>
+      {email && profileImage ? (
+        <img
+          className={classes.customAvatarImg}
+          src={profileImage}
+          alt="owner img"
+        />
+      ) : profileImage === false && (
+        <span
+          className={diglog ? "" : classes.customAvatar}
+          style={{
+            backgroundColor: diglog ? "" : getRandomColor(text)
+          }}
+        >
+          {getInitials(text)}
+        </span>
+      )}
+    </Fragment>
   );
-};
+});
 
 const defaultColors = [
   "#d73d32",
@@ -254,7 +253,6 @@ export function getRandomColor(value, colors = defaultColors) {
 
 export default function Transact() {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const { pipeToShow, pipeToShowTab } = useSelector(({ Flow }) => Flow);
   console.log("PIPETOSHOW: ", pipeToShow);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -284,7 +282,7 @@ export default function Transact() {
 
         default:
           cards = cards.filter(
-            (card) => card.metadata.status == filter && !card.metadata.IsDeleted
+            (card) => card.metadata.status === filter && !card.metadata.IsDeleted
           );
           break;
       }
@@ -332,7 +330,7 @@ export default function Transact() {
           return card.IsDeleted; // get deleted cards
 
         default:
-          return card.status == filter && !card.IsDeleted;
+          return card.status === filter && !card.IsDeleted;
       }
     });
   };
@@ -345,9 +343,9 @@ export default function Transact() {
     }
   }, [pipeToShowTab, dealFilter]);
 
-  useEffect(() => {}, [filteredTabTransactData]);
+  useEffect(() => { }, [filteredTabTransactData]);
 
-  const handleDataChange = (newData) => {};
+  const handleDataChange = (newData) => { };
 
   const handleCardClick = (cardId, metadata, laneId) => {
     setStateApp((stateApp) => ({
@@ -377,9 +375,6 @@ export default function Transact() {
       (lane) => lane?.id === targetLaneId
     );
 
-    let filteredSourceLane = filteredBoardTransactData.lanes.find(
-      (lane) => lane?.id === sourceLaneId
-    );
     let filteredTargetLane = filteredBoardTransactData.lanes.find(
       (lane) => lane?.id === targetLaneId
     );
@@ -449,7 +444,7 @@ export default function Transact() {
           ...unfilteredTargetLaneDescriptors
         ]
       },
-      refetchQueries: ["getPipeline"]
+      // refetchQueries: ["getPipeline"]
       // awaitRefetchQueries: true,
     });
 
@@ -462,7 +457,7 @@ export default function Transact() {
       if (
         unfilteredTargetLane?.metadata?.dealsStatus &&
         unfilteredTargetLane.metadata.dealsStatus.toLowerCase() !==
-          cardDetails?.metadata?.status?.toLowerCase()
+        cardDetails?.metadata?.status?.toLowerCase()
       )
         updatedDeal = {
           ...updatedDeal,
@@ -473,7 +468,7 @@ export default function Transact() {
         variables: {
           deal: { ...updatedDeal }
         },
-        refetchQueries: ["getPipeline", "getContactDeals"]
+        refetchQueries: ["getContactDeals"]
         // awaitRefetchQueries: true,
       });
     }
@@ -500,7 +495,8 @@ export default function Transact() {
     return cardColor;
   };
 
-  const getCard = ({ metadata, title, description, id, laneId }) => {
+  const GetCard = React.memo(({ cardProps }) => {
+    const { metadata, title, description, id, laneId } = cardProps;
     const cardPrice = metadata && metadata.offerPrice ? metadata.offerPrice : 0;
     const formattedPrice = vf_currency(cardPrice);
 
@@ -576,7 +572,7 @@ export default function Transact() {
         <div className={classes.cardDescStyle}>{desc}</div>
       </article>
     );
-  };
+  });
 
   const getLaneHeader = ({ title, id, metadata }) => {
     const lane = filteredBoardTransactData?.lanes?.find(
@@ -589,10 +585,10 @@ export default function Transact() {
     lane &&
       lane.cards.forEach(
         (card) =>
-          (priceSum +=
-            card && card.metadata && card.metadata.offerPrice
-              ? card.metadata.offerPrice
-              : 0)
+        (priceSum +=
+          card && card.metadata && card.metadata.offerPrice
+            ? card.metadata.offerPrice
+            : 0)
       );
 
     const formattedTotal = vf_currency(priceSum);
@@ -682,25 +678,25 @@ export default function Transact() {
                 }}
                 components={{
                   LaneHeader: (laneProps) => getLaneHeader(laneProps),
-                  Card: (cardProps) => getCard(cardProps)
+                  Card: (cardProps) => <GetCard cardProps={cardProps} />
                 }}
 
-                //onCardAdd = {handleCardAdd}
-                //onCardDelete = {handleCardDelete}
-                // handleDragStart = {}
-                // handleDragEnd={}
-                // handleLaneDragStart
-                // onDataChange
-                // onCardAdd
-                // onBeforeCardDelete
-                // onCardDelete
-                // onCardMoveAcrossLanes
-                // onLaneAdd
-                // onLaneDelete
-                // onLaneUpdate
-                // onLaneClick
-                // onLaneScroll
-                //onCardMoveAcrossLanes
+              //onCardAdd = {handleCardAdd}
+              //onCardDelete = {handleCardDelete}
+              // handleDragStart = {}
+              // handleDragEnd={}
+              // handleLaneDragStart
+              // onDataChange
+              // onCardAdd
+              // onBeforeCardDelete
+              // onCardDelete
+              // onCardMoveAcrossLanes
+              // onLaneAdd
+              // onLaneDelete
+              // onLaneUpdate
+              // onLaneClick
+              // onLaneScroll
+              //onCardMoveAcrossLanes
               />
             )}
             {stateApp.dealDisplayType === "table" && (

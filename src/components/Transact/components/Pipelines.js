@@ -304,7 +304,7 @@ export default function Pipelines(props) {
   };
 
   const removeStage = (stage, index) => {
-    if (stages.length == 1) dispatch(showWarningMessage("The stage can't be deleted, the pipeline needs at least one stage."));
+    if (stages.length === 1) dispatch(showWarningMessage("The stage can't be deleted, the pipeline needs at least one stage."));
     else {
       if (stage?._id && selectedPipe) {
         setStateApp((state) => ({
@@ -389,7 +389,7 @@ export default function Pipelines(props) {
   const handleSaveOrUpdate = () => {
     //// check validations
     let valid = true;
-    stages.map((stage) => {
+    stages.forEach((stage) => {
       if (!stage.name || stage.name === "") valid = false;
     });
 
@@ -567,9 +567,6 @@ export default function Pipelines(props) {
     return false;
   };
 
-  //// setting the add new button header /////
-  let optionsWithHeader = ["header", ...pipelines];
-
   return (
     <React.Fragment>
       <div className={classes.settingsButton}>
@@ -579,7 +576,7 @@ export default function Pipelines(props) {
           </Typography>
         )}
 
-        <Tooltip title={"Flowline Actions"} 
+        <Tooltip title={"Flowline Actions"}
         >
           <IconButton
             disabled={!selectedPipe}
