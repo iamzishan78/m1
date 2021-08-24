@@ -1766,6 +1766,9 @@ function SubTable(props) {
                             e.stopPropagation();
                             const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1];
                             if (type === "pdf") {
+                              if(props.addAble.type === 'document'){
+                                window.history.pushState('', '', `/documents/${row_line._id}/view`);
+                              }
                               setStateApp((state) => ({
                                 ...state,
                                 pdfView: rows.find((row) => row._id === row_line._id),
