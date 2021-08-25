@@ -344,6 +344,7 @@ export default function ParcelInstrument(props) {
             volume: newInstrument.volume,
             fileId: fileId,
             fileName: fileData?.addFileDescriptor?.file?.name,
+            parcelId: props.parcelId
           },
         },
         refetchQueries: ["getParcelAgreement"],
