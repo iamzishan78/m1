@@ -1766,6 +1766,9 @@ function SubTable(props) {
                             e.stopPropagation();
                             const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1];
                             if (type === "pdf") {
+                              if(props.addAble.type === 'document'){
+                                window.history.pushState('', '', `/documents/${row_line._id}/view`);
+                              }
                               setStateApp((state) => ({
                                 ...state,
                                 pdfView: rows.find((row) => row._id === row_line._id),
@@ -2786,12 +2789,14 @@ function SubTable(props) {
       }
 
       if (props.targetLabel === "activity") {
-        if (rows[dataIndex]?._id)
+        if (rows[dataIndex]?._id){
+          window.history.pushState('', '', `/activities/${rows[dataIndex]._id}`);
           setStateApp((stateApp) => ({
             ...stateApp,
             selectedActivityId: rows[dataIndex]._id,
             activityDialog: true,
           }));
+        }
       }
 
       if ((props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") || props.targetLabel === "Parcel Ownership") {
