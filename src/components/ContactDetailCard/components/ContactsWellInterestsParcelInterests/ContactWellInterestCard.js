@@ -21,10 +21,10 @@ const useStyles = makeStyles((theme) => ({
         "flex-direction": "column",
         height: "calc(100vh - 176px)",
         "align-items": "stretch",
-        "&>.MuiPaper-root": { 
+        "&>.MuiPaper-root": {
           display: "contents",
         },
-        "&>:nth-child(3)": { 
+        "&>:nth-child(3)": {
           height: "inherit !important",
         },
         "&> table": {
@@ -44,7 +44,7 @@ export default function ContactDocumentsCard(props) {
 
   const contactId =
     history.location.pathname.split("/")[
-      history.location.pathname.split("/").length - 2
+    history.location.pathname.split("/").length - 2
     ];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
@@ -70,7 +70,7 @@ export default function ContactDocumentsCard(props) {
   };
 
   return contactData ? (
-    <div className={classes.root}>
+    <div>
       <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
         <Breadcrumbs
           separator={<NavigateNextIcon fontSize="small" />}

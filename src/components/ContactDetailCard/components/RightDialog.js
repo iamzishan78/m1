@@ -26,6 +26,9 @@ export default function AlertDialogSlide(props) {
         borderTopRightRadius: "0 !important",
         overflowX: "hidden",
       },
+      "& .MuiDialog-paper": {
+        overflowY: props.hiddenOverflow ? "hidden" : "auto"
+      },
       "& .MuiListItem-container": {
         borderBottom: "1px solid #c7c7c7",
       },
@@ -44,7 +47,7 @@ export default function AlertDialogSlide(props) {
     },
   }));
 
-  const classes = useStyles();
+  const classes = useStyles(props);
   return (
     <Dialog
       className={classes.dialog}

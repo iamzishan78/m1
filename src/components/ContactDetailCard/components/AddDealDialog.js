@@ -1295,6 +1295,7 @@ function AddDealDialog(props) {
             }
           }}
           isTransactPage={props.isTransactPage}
+          hiddenOverflow
         >
           <div style={{ padding: "30px" }}>
             <Grid item xs={12} style={{ minHeight: "35px" }}>
@@ -1344,6 +1345,7 @@ function AddDealDialog(props) {
           width={props.width}
           isTransactPage={props.isTransactPage}
           className={classes.mainRoot}
+          hiddenOverflow
         >
           <div>
             <Grid
