@@ -41,6 +41,7 @@ const AppProvider = (props) => {
 
     // should be in a draw context 
     editDraw: false,
+    isDrawing: false,
     shapeEdit: false,
     showDrawShapesPopup: false,
     showShapeActionsPopup: false,
@@ -69,6 +70,7 @@ const AppProvider = (props) => {
 
 
     // MAP CONTEXT vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+    mapStyles: [],
     mapVars: {
       zoom: 4.88,
       center: { lng: -98.8, lat: 38 },
@@ -144,6 +146,8 @@ const AppProvider = (props) => {
     isContactSearching: false,
     viewDoc: null,
     pdfView: null,
+    selectedAgreement: null,
+    bulkUpload: false,
 
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {

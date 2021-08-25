@@ -24,23 +24,26 @@ const OwnersPerParcelHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "name", 
+  {
+    name: "name",
     label: "Owner Name",
-    options:{ setCellProps: () => ({ style: { minWidth: "270px"}})} 
+    options: { setCellProps: () => ({ style: { minWidth: "270px" } }) }
   },
   { name: "surface_interest", label: "Surface Interest" },
   { name: "mineral_interest", label: "Mineral Interest" },
   { name: "royalty_interest", label: "Royalty Interest" },
   { name: "orri", label: "ORRI" },
+  { name: "unknown_interest", label: "Unknown Interest" },
   { name: "record_title", label: "Record Title" },
   { name: "operating_rights", label: "Operating Rights" },
   { name: "nri", label: "NRI" },
   { name: "net_acres", label: "Net Acres" },
-  { name: "nra", label: "NRA", editable: true, options:{ setCellProps: () => ({ style: { maxWidth: "70px"}})} },
+  { name: "nra", label: "NRA", editable: true, options: { setCellProps: () => ({ style: { maxWidth: "70px" } }) } },
   { name: "depthFrom", label: "Depth From", editabe: true },
   { name: "depthTo", label: "Depth To", editabe: true },
   { name: "qtr_calls", label: "QTR Calls" },
-  { name: "qtr", label: "QTR", 
+  {
+    name: "qtr", label: "QTR",
     options: {
       display: false,
       filter: false,
@@ -49,7 +52,7 @@ const OwnersPerParcelHeadCells = [
       download: false,
       print: false,
       viewColumns: false,
-    }, 
+    },
   },
   {
     name: "tags",

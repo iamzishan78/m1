@@ -25,7 +25,19 @@ function Search({ contactId }) {
   const dispatch = useDispatch();
   const [wells, setWells] = useState([])
   let rowsSelected = []
-  const [getWellsBySearchType, { data }] = useLazyQuery(OWNER_WELLS_BY_SEARCHTYPE, { fetchPolicy: "cache-and-network", });
+  const [getWellsBySearchType, { data }] = useLazyQuery(OWNER_WELLS_BY_SEARCHTYPE, {
+    fetchPolicy: "cache-and-network",
+    onCompleted: (data) => {
+      if (data?.wellsBySearchType) {
+        const wells = JSON.parse(JSON.stringify(data?.wellsBySearchType))
+        setWells(wells.map((well) => {
+          well.apiNumber = well.apiNumber || well.api
+          well.type = well.wellType || well.type
+          return well
+        }))
+      }
+    }
+  });
   const [addMultiWellInterestToContact] = useMutation(ADD_MULTI_WELLINTEREST_TO_CONTACT);
   const fetchSelectedWells = (searchType, searchIds) => {
     setWells([])
@@ -36,17 +48,6 @@ function Search({ contactId }) {
     });
   }
 
-  useEffect(() => {
-    if (data?.wellsBySearchType) {
-      const wells = JSON.parse(JSON.stringify(data?.wellsBySearchType))
-      setWells(wells.map((well) => {
-        well.apiNumber = well.apiNumber || well.api
-        well.type = well.wellType || well.type
-        return well
-      }))
-    }
-  }, [data?.wellsBySearchType])
-
   const addWellInterestToContact = () => {
     const selectedWells = []
     rowsSelected.forEach((row) => {
@@ -56,7 +57,8 @@ function Search({ contactId }) {
       variables: { wells: selectedWells, contactId, userId: stateApp.user.mongoId, },
       refetchQueries: [
         "getContactWells",
-        "getPaginatedContactWellInterests"
+        "getPaginatedContactWellInterests",
+        "getContactWellInterestsFilterOptions"
       ],
       awaitRefetchQueries: true
     }).then(
@@ -101,12 +103,19 @@ function Search({ contactId }) {
                 <Grid item md={12}>
 
                   <MUIDataTable
+                    className={classes.table}
                     title={'Tax Roll Interests'}
                     data={wells}
                     columns={AssociateContactWellHeadCells}
                     options={{
                       ...AssociateContactWellHeadCells[0].options,
-                      customToolbarSelect: () => <Button color="secondary" startIcon={<AddCircleOutlineRoundedIcon />} className={classes.multiSelectionTopBarButtons} onClick={addWellInterestToContact} > Add to contact</Button>,
+                      customToolbarSelect: () => (
+                        <div style={{ height: "48px", display: "flex" }} >
+                          <div style={{ marginTop: "6px", height: "35px", display: "flex", marginRight: "20px" }} >
+                            <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addWellInterestToContact} > + Add to contact</Button>
+                          </div>
+                        </div>
+                      ),
                       customToolbar: () => <span className={classes.addIcon}>
                         {
                           wells.length > 0 && <Tooltip title='Clear'>

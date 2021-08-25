@@ -169,178 +169,178 @@ export default function PermitCard() {
       });
     }
   }, [stateApp.user, source]);
-  
+
   return stateApp.selectedPermit ? (
     !stateApp.expandedCard ? (
-	<div>
-	<Card className={classes.card}>
-	<CardActions
-      classes={{
-	root: classes.cardAction
-      }}
-	>
-	<div className={classes.iconContainer}>
-	<WellIcon htmlColor="black" viewBox="0 0 32 31" fontSize="large" />
+      <div>
+        <Card className={classes.card}>
+          <CardActions
+            classes={{
+              root: classes.cardAction
+            }}
+          >
+            <div className={classes.iconContainer}>
+              <WellIcon htmlColor="black" viewBox="0 0 32 31" fontSize="large" />
 
-	<Typography
-      align="center"
-      className={classes.text1}
-      variant="subtitle2"
-	>
-	Well Status
-      </Typography>
-	<Typography
-      align="center"
-      className={classes.text2}
-      variant="caption"
-	>
-	 {'PERMIT - NEW DRILL'}
-      </Typography>
-	</div>
-
-
-	<div className={classes.iconContainer}>
-	<Avatar variant="circle" className={classes.avatar}>
-	{stateApp.selectedPermit.WellBoreProfile
-	 ? stateApp.selectedPermit.WellBoreProfile.substring(0, 1)
-	 : 'H'}{' '}
-      </Avatar>
-	<Typography
-      align="center"
-      className={classes.text1}
-      variant="subtitle2"
-	>
-	Profile
-      </Typography>
-	<Typography
-      align="center"
-      className={classes.text2}
-      variant="caption"
-	>
-	{stateApp.selectedPermit.WellBoreProfile
-	 ? stateApp.selectedPermit.WellBoreProfile
-	 : '--'}
-      </Typography>
-	</div>
-	</CardActions>
-	<CardContent className={classes.content}>
-	<Table className={classes.table} size="small" aria-label="well table">
-	<TableBody>
-    
-	<TableRow className={classes.rowGray}>
-	<TableCell className={classes.cell1} align="left">
-	API #
-  </TableCell>
-	<TableCell className={classes.cell2} align="right">
-	{stateApp.selectedPermit.ApiNumber
-	 ? stateApp.selectedPermit.ApiNumber
-	 : '--'}
-      </TableCell>
-	</TableRow>
-
-	<TableRow className={classes.rowGrey}>
-	<TableCell className={classes.cell1} align="left">
-	Permit #
-  </TableCell>
-	<TableCell className={classes.cell2} align="right">
-	{stateApp.selectedPermit.PermitId
-	 ? stateApp.selectedPermit.PermitId
-	 : '--'}
-      </TableCell>
-	</TableRow>
-
-	<TableRow className={classes.rowWhite}>
-	<TableCell className={classes.cell1} align="left">
-	Operator
-      </TableCell>
-	<TableCell className={classes.cell2} align="right">
-	{stateApp.selectedPermit.OperatorName
-	 ? stateApp.selectedPermit.OperatorName
-	 : '--'}
-      </TableCell>
-	</TableRow>
-
-	<TableRow className={classes.rowGrey}>
-	<TableCell className={classes.cell1} align="left">
-	Well Type
-      </TableCell>
-	<TableCell className={classes.cell2} align="right">
-	{stateApp.selectedPermit.WellType
-	 ? stateApp.selectedPermit.WellType
-	 : 'UNKOWN'}
-      </TableCell>
-	</TableRow>
-
-	<TableRow className={classes.rowWhite}>
-	<TableCell className={classes.cell1} align="left">
-	Submitted Date
-      </TableCell>
-	<TableCell className={classes.cell2} align="right">
-	{convert_date(stateApp.selectedPermit.SubmittedDate)}
-      </TableCell>
-	</TableRow>
-
-	<TableRow className={classes.rowGrey}>
-	<TableCell className={classes.cell1} align="left">
-	Total Depth [ft]
-      </TableCell>
-	<TableCell className={classes.cell2} align="right">
-	{stateApp.selectedPermit.TotalDepth
-	 ? formatBOE(stateApp.selectedPermit.TotalDepth)
-	 : '--'}
-      </TableCell>
-	</TableRow>
-
-	<TableRow className={classes.rowWhite}>
-	<TableCell className={classes.cell1} align="left">
-	Completion Depth [ft]
-      </TableCell>
-	<TableCell className={classes.cell2} align="right">
-	{stateApp.selectedPermit.CompletionDepth
-	 ? formatBOE(stateApp.selectedPermit.CompletionDepth)
-	 : '--'}
-      </TableCell>
-	</TableRow>
+              <Typography
+                align="center"
+                className={classes.text1}
+                variant="subtitle2"
+              >
+                Well Status
+              </Typography>
+              <Typography
+                align="center"
+                className={classes.text2}
+                variant="caption"
+              >
+                {'PERMIT - NEW DRILL'}
+              </Typography>
+            </div>
 
 
+            <div className={classes.iconContainer}>
+              <Avatar variant="circle" className={classes.avatar}>
+                {stateApp.selectedPermit.WellBoreProfile
+                  ? stateApp.selectedPermit.WellBoreProfile.substring(0, 1)
+                  : 'H'}{' '}
+              </Avatar>
+              <Typography
+                align="center"
+                className={classes.text1}
+                variant="subtitle2"
+              >
+                Profile
+              </Typography>
+              <Typography
+                align="center"
+                className={classes.text2}
+                variant="caption"
+              >
+                {stateApp.selectedPermit.WellBoreProfile
+                  ? stateApp.selectedPermit.WellBoreProfile
+                  : '--'}
+              </Typography>
+            </div>
+          </CardActions>
+          <CardContent className={classes.content}>
+            <Table className={classes.table} size="small" aria-label="well table">
+              <TableBody>
 
-      </TableBody>
-	</Table>
-	<div>
-	<Link href=
-  
-  {"http://webapps2.rrc.texas.gov/EWA/drillingPermitDetailAction.do?methodToCall=searchByUniversalDocNo&universalDocNo="+stateApp.selectedPermit.UniversalDocNumber+"&rrcActionMan=H4sIAAAAAAAAAL1Qu27DMAz8mnQUJPkBLxyMop37CJrByKDYhCNAtgxK7gPQx5d2USB1OmfS8Y4ij5eUlKCTkgrUHVFbt9H68aWlrpFHWPkPPJlpClqwLCJ-miB6_77L6kqyrmGnHx8ONcNsgR1Z5-zYPyENNobnGenrZ6joPDflMGA8-27v741zTBRAGGca9_4VDbVnpiqQV16asKo19UFMhszwZtyMq0X2WJVZLqsFF3DC3o7hYOMyimf9qZXe1Jf9m6XqVgGE38NLmEyPdHHgv2moY7PtW6yCShqUTBmDHGQq-C2ZuP59gyy_AXdh05tZAgAA"}
+                <TableRow className={classes.rowGray}>
+                  <TableCell className={classes.cell1} align="left">
+                    API #
+                  </TableCell>
+                  <TableCell className={classes.cell2} align="right">
+                    {stateApp.selectedPermit.ApiNumber
+                      ? stateApp.selectedPermit.ApiNumber
+                      : '--'}
+                  </TableCell>
+                </TableRow>
+
+                <TableRow className={classes.rowGrey}>
+                  <TableCell className={classes.cell1} align="left">
+                    Permit #
+                  </TableCell>
+                  <TableCell className={classes.cell2} align="right">
+                    {stateApp.selectedPermit.PermitId
+                      ? stateApp.selectedPermit.PermitId
+                      : '--'}
+                  </TableCell>
+                </TableRow>
+
+                <TableRow className={classes.rowWhite}>
+                  <TableCell className={classes.cell1} align="left">
+                    Operator
+                  </TableCell>
+                  <TableCell className={classes.cell2} align="right">
+                    {stateApp.selectedPermit.OperatorName
+                      ? stateApp.selectedPermit.OperatorName
+                      : '--'}
+                  </TableCell>
+                </TableRow>
+
+                <TableRow className={classes.rowGrey}>
+                  <TableCell className={classes.cell1} align="left">
+                    Well Type
+                  </TableCell>
+                  <TableCell className={classes.cell2} align="right">
+                    {stateApp.selectedPermit.WellType
+                      ? stateApp.selectedPermit.WellType
+                      : 'UNKNOWN'}
+                  </TableCell>
+                </TableRow>
+
+                <TableRow className={classes.rowWhite}>
+                  <TableCell className={classes.cell1} align="left">
+                    Submitted Date
+                  </TableCell>
+                  <TableCell className={classes.cell2} align="right">
+                    {convert_date(stateApp.selectedPermit.SubmittedDate)}
+                  </TableCell>
+                </TableRow>
+
+                <TableRow className={classes.rowGrey}>
+                  <TableCell className={classes.cell1} align="left">
+                    Total Depth [ft]
+                  </TableCell>
+                  <TableCell className={classes.cell2} align="right">
+                    {stateApp.selectedPermit.TotalDepth
+                      ? formatBOE(stateApp.selectedPermit.TotalDepth)
+                      : '--'}
+                  </TableCell>
+                </TableRow>
+
+                <TableRow className={classes.rowWhite}>
+                  <TableCell className={classes.cell1} align="left">
+                    Completed Depth [ft]
+                  </TableCell>
+                  <TableCell className={classes.cell2} align="right">
+                    {stateApp.selectedPermit.CompletionDepth
+                      ? formatBOE(stateApp.selectedPermit.CompletionDepth)
+                      : '--'}
+                  </TableCell>
+                </TableRow>
 
 
-      onClick={() => {
-	console.info("I'm a button.");
-      }}                
-      variant="body2"
-      target="_blank"
 
-	>
-	<Typography
-      align="center"
-      variant="subtitle2"
-      className={classes.link_permit}
-	>
-	RRC Permit Search Tool
+              </TableBody>
+            </Table>
+            <div>
+              <Link href=
 
-      </Typography>
-	</Link>
-	</div>
-	</CardContent>
-	</Card>
-	</div>
+                {"http://webapps2.rrc.texas.gov/EWA/drillingPermitDetailAction.do?methodToCall=searchByUniversalDocNo&universalDocNo=" + stateApp.selectedPermit.UniversalDocNumber + "&rrcActionMan=H4sIAAAAAAAAAL1Qu27DMAz8mnQUJPkBLxyMop37CJrByKDYhCNAtgxK7gPQx5d2USB1OmfS8Y4ij5eUlKCTkgrUHVFbt9H68aWlrpFHWPkPPJlpClqwLCJ-miB6_77L6kqyrmGnHx8ONcNsgR1Z5-zYPyENNobnGenrZ6joPDflMGA8-27v741zTBRAGGca9_4VDbVnpiqQV16asKo19UFMhszwZtyMq0X2WJVZLqsFF3DC3o7hYOMyimf9qZXe1Jf9m6XqVgGE38NLmEyPdHHgv2moY7PtW6yCShqUTBmDHGQq-C2ZuP59gyy_AXdh05tZAgAA"}
+
+
+                onClick={() => {
+                  console.info("I'm a button.");
+                }}
+                variant="body2"
+                target="_blank"
+
+              >
+                <Typography
+                  align="center"
+                  variant="subtitle2"
+                  className={classes.link_permit}
+                >
+                  RRC Permit Search Tool
+
+                </Typography>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     ) : (
-	<div style={{ height: "100%" }}>
-	<Card className={classes.card}>
-	<CardContent className={classes.content}>
-	</CardContent>
-	</Card>
-	</div>
-    )  
+      <div style={{ height: "100%" }}>
+        <Card className={classes.card}>
+          <CardContent className={classes.content}>
+          </CardContent>
+        </Card>
+      </div>
+    )
   ) : (
-      <CircularProgress color="secondary" />
+    <CircularProgress color="secondary" />
   )
 }

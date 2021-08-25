@@ -20,7 +20,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@mapbox/geojson-merge": "^1.1.1",
-    "@mapbox/mapbox-gl-draw": "^1.2.2",
+    "@mapbox/mapbox-gl-draw": "^1.3.0",
     "@mapbox/mapbox-gl-draw-static-mode": "^1.0.1",
     "@mapbox/mapbox-gl-geocoder": "^4.7.0",
     "@material-ui/core": "^4.11.4",
@@ -61,6 +61,8 @@
     "material-ui-popup-state": "^1.8.4",
     "moment": "^2.29.1",
     "mui-datatables": "^3.7.7",
+    "npm": "^7.20.1",
+    "parse-link-header": "^1.0.1",
     "polylabel": "^1.1.0",
     "proj4": "^2.7.2",
     "prop-types": "^15.7.2",
@@ -105,6 +107,7 @@
     "redux-saga": "^1.1.3",
     "shapefile": "^0.6.6",
     "shpjs": "^3.6.3",
+    "start": "^5.1.0",
     "styled-components": "^5.2.1",
     "typescript": "^4.2.3",
     "uid": "^2.0.0",
@@ -112,7 +115,7 @@
     "viewport-mercator-project": "^7.0.2"
   },
   "scripts": {
-    "start": "react-scripts start --profile",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

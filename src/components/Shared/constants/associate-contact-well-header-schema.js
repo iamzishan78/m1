@@ -18,6 +18,11 @@ const AssociateContactWellHeadCells = [
   },
   { name: "wellName", label: "Well" },
   { name: "apiNumber", label: "API" },
+  {
+    name: "propertyName", label: "Property Name", options: {
+      // setCellProps: () => ({ style: { minWidth: "200px" } })
+    }
+  },
   { name: "leaseId", label: "Lease" },
   { name: "leaseAcres", label: "Lease Acres" },
   { name: "interestOwner", label: "Interest Owner" },

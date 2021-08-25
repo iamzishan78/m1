@@ -13,7 +13,6 @@ import {
   Typography,
   TextField,
   IconButton,
-  Avatar,
   InputAdornment,
   Popover,
   List,

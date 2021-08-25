@@ -157,7 +157,7 @@ function Search({ fetchSelectedWells }) {
   }
 
   return (
-    <Grid container direction="column" spacing={1} >
+    <Grid className={classes.grid} container direction="column" spacing={1} >
 
       <Grid item >
         <Typography className={classes.heading}>1. Search by interest owner or well name to associate interests to contacts</Typography>
@@ -190,7 +190,7 @@ function Search({ fetchSelectedWells }) {
             onClick={() => handleSearchOption("wells")}
           >
             Wells
-         </Button>
+          </Button>
           <Button
             className={classes.headerButtons}
             variant={searchOption === "owners" ? "contained" : "outlined"}
@@ -199,19 +199,18 @@ function Search({ fetchSelectedWells }) {
             onClick={() => handleSearchOption("owners")}
           >
             Tax owners
-            </Button>
+          </Button>
           <Button
-            className={[classes.multiSelectionTopBarButtons, classes.floatRight] }
-            //variant="contained"
+            className={[classes.multiSelectionTopBarButtons, classes.floatRight]}
+            color="secondary"
             startIcon={<SearchIcon />}
             size="medium"
-            fontWeight = "bold"
-            color="#082768"
+            fontWeight="bold"
             disabled={selectedIds.length === 0}
             onClick={() => fetchSelectedWells(searchOption, selectedIds)}
           >
             View Interests
-         </Button>
+          </Button>
         </Grid>
       </Grid>
 
@@ -289,7 +288,7 @@ function Search({ fetchSelectedWells }) {
                       {option.Source === "globalowner-index" && (
                         <PersonIcon className={classes.icon} />
                       )}
-                      {option.Source === "wellheader-index-en-ms" && (
+                      {option.Source === "wellheader-index" && (
                         <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
                       )}
                     </Grid>

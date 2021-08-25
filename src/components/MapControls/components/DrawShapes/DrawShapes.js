@@ -282,6 +282,7 @@ export default function DrawShapes() {
         setStateApp((state) => ({ ...state, editDraw: false, showShapeActionsPopup: true }));
         setTimeout(() => {
           draw.changeMode("static");
+          setStateApp((state) => ({ ...state, isDrawing: false }));
         })
 
       });
@@ -302,7 +303,6 @@ export default function DrawShapes() {
           setStateApp((state) => {
             return {
               ...state,
-              // currentFeature: undefined, // for allowing toolbar and filters if we off click shape
               editDraw: false,
             }
           });
@@ -310,12 +310,13 @@ export default function DrawShapes() {
         setStateApp((stateApp) => {
           if (!stateApp.shapeEdit) {
             stateApp.draw.changeMode("static");
-          } else if (stateApp.currentFeature || stateApp.featureOrMapShape) {
+          } else if (stateApp.draw.get(stateApp.currentFeature?.id) || stateApp.draw.get(stateApp.featureOrMapShape?.id)) {
             stateApp.draw.changeMode("direct_select", {
-              featureId: stateApp.currentFeature.id || stateApp.featureOrMapShape.id,
+              featureId: stateApp?.currentFeature?.id || stateApp?.featureOrMapShape?.id,
             });
           }
-          drawShapeLayerToggle(stateApp, stateApp.shapeEdit ? "visible" : "none")
+          const { features } = stateApp.draw.getAll()
+          drawShapeLayerToggle(stateApp, stateApp.shapeEdit || !features || features.length === 0 ? "visible" : "none")
           return stateApp
         })
       });
@@ -377,12 +378,12 @@ export default function DrawShapes() {
       )}
       {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
         stateApp.currentFeature !== undefined &&
-        !stateApp.currentFeature.id.includes("draw_polygon") &&
-        !stateApp.currentFeature.id.includes("drag_circle") &&
-        !stateApp.currentFeature.id.includes("draw_rectangle") &&
-        !stateApp.currentFeature.id.includes("edit_polygon") ? (
+        !stateApp.currentFeature.id?.includes("draw_polygon") &&
+        !stateApp.currentFeature.id?.includes("drag_circle") &&
+        !stateApp.currentFeature.id?.includes("draw_rectangle") &&
+        !stateApp.currentFeature.id?.includes("edit_polygon") ? (
         <Fragment>
-          {showSpatialDataCard && ( // for edit/create AOI
+          {showSpatialDataCard && stateApp.currentFeature.source === 'interests_source' && ( // for edit/create AOI
             <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} user={user} toggleSpatialDataCard={toggleSpatialDataCard} />
           )}
           <div className={classes.mapOverlay}>

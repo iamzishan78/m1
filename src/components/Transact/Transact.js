@@ -17,14 +17,17 @@ import Drawer from "./components/Drawer";
 import moment from "moment";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
 import DocViewer from "../Shared/DocViewer";
+import { validateEmail } from "components/Login/loginHelpers";
+import { GETPROFILEIMAGE } from "graphQL/useQueryGetProfile";
+import { Avatar } from "material-ui";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    textAlign: "center",
+    textAlign: "center"
   },
   list: {
     overflowX: "auto !important",
-    height: "100%",
+    height: "100%"
   },
   cardStyle: {
     position: "relative",
@@ -37,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     maxWidth: "250px",
     minWidth: "250px",
-    maxHeight: "150px",
+    maxHeight: "150px"
   },
   cardHeaderStyle: {
     display: "flex",
@@ -46,42 +49,42 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px",
     textAlign: "left",
     whiteSpace: "pre-wrap",
-    maxWidth: "245px",
+    maxWidth: "245px"
   },
   cardDescStyle: {
     color: "#2e4451",
     padding: "10px",
     whiteSpace: "pre-wrap",
     textAlign: "left",
-    fontSize: "12px",
+    fontSize: "12px"
   },
   cardTitle: {
     color: "#1CB6DA",
-    textTransform: "uppercase",
+    textTransform: "uppercase"
   },
   cardSubheading: {
-    fontSize: "12px",
+    fontSize: "12px"
   },
   laneHeaderStyle: {
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
     padding: "0px 5px",
-    marginBottom: "0px",
+    marginBottom: "0px"
   },
   laneHeaderSpanStyle: {
     color: "#2e4451",
     fontWeight: "bold",
     fontSize: "18px",
-    marginBottom: "5px",
+    marginBottom: "5px"
   },
   laneHeaderNotBold: {
     fontSize: "14px !important",
-    fontWeight: "normal !important",
+    fontWeight: "normal !important"
   },
   laneHeaderTotalStyle: {
     fontSize: "14px !important",
-    fontWeight: "bold !important",
+    fontWeight: "bold !important"
   },
   boardAndTable: {
     marginTop: "8px",
@@ -129,10 +132,10 @@ const useStyles = makeStyles((theme) => ({
     },
     "& div": {
       "&>.MuiPaper-root": {
-        "&>:nth-child(3)": { minHeight: "calc(100vh - 258px) !important" },
-      },
+        "&>:nth-child(3)": { minHeight: "calc(100vh - 258px) !important" }
+      }
     },
-    "& .MuiToolbar-root": { textAlign: "initial" },
+    "& .MuiToolbar-root": { textAlign: "initial" }
   },
   customAvatar: {
     borderRadius: "50%",
@@ -142,16 +145,63 @@ const useStyles = makeStyles((theme) => ({
     width: "25px",
     height: "25px",
     fontSize: "0.7rem",
-    textAlign: "center",
+    textAlign: "center"
+  },
+  customAvatarImg: {
+    borderRadius: "50%",
+    color: "#fff",
+    width: "25px",
+    height: "25px",
+    fontSize: "0.7rem",
+    textAlign: "center"
+  },
+  dealOwnerAvatar: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    color: "#fff",
+    fontSize: "0.6rem",
+    backgroundColor: "#4880F6",
+    padding: "0.5em"
   },
   content: {
     flexGrow: 1,
-    marginLeft: "315px",
-  },
+    marginLeft: "315px"
+  }
 }));
 
-const CustomAvatar = ({ text = "" }) => {
+export const CustomAvatar = ({ text = "", email = "", diglog }) => {
   const classes = useStyles();
+  const [profileImage, setProfileImage] = useState(null);
+  const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE, {
+    fetchPolicy: "cache-first"
+  });
+
+  useEffect(() => {
+    if (email) {
+      setProfileImage(null);
+      getProfileImage({
+        variables: { email }
+      });
+    }
+  }, [email, getProfileImage, text]);
+
+  useEffect(() => {
+    if (
+      profiledata &&
+      profiledata.data &&
+      profiledata.data.profileByEmail &&
+      profiledata.data.profileByEmail.profile
+    ) {
+      const {
+        data: {
+          profileByEmail: {
+            profile: { profileImage }
+          }
+        }
+      } = profiledata;
+      setProfileImage(profileImage);
+    }
+  }, [profiledata]);
 
   const getInitials = (name) => {
     if (!name || name.length === 0) return "--";
@@ -164,11 +214,21 @@ const CustomAvatar = ({ text = "" }) => {
     return initials.toUpperCase();
   };
 
+  if (email && profileImage) {
+    return (
+      <img
+        className={classes.customAvatarImg}
+        src={profileImage}
+        alt="owner img"
+      />
+    );
+  }
+
   return (
     <span
-      className={classes.customAvatar}
+      className={diglog ? "" : classes.customAvatar}
       style={{
-        backgroundColor: getRandomColor(text),
+        backgroundColor: diglog ? "" : getRandomColor(text)
       }}
     >
       {getInitials(text)}
@@ -176,7 +236,14 @@ const CustomAvatar = ({ text = "" }) => {
   );
 };
 
-const defaultColors = ["#d73d32", "#7e3794", "#4285f4", "#67ae3f", "#d61a7f", "#ff4080"];
+const defaultColors = [
+  "#d73d32",
+  "#7e3794",
+  "#4285f4",
+  "#67ae3f",
+  "#d61a7f",
+  "#ff4080"
+];
 
 function _stringAsciiPRNG(value, m) {
   // Xn+1 = (a * Xn + c) % m
@@ -218,7 +285,7 @@ export default function Transact() {
   console.log("PIPETOSHOW: ", pipeToShow);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [filteredBoardTransactData, setFilteredBoardTransactData] = useState({
-    lanes: [],
+    lanes: []
   });
   const [filteredTabTransactData, setFilteredTabTransactData] = useState([]);
   const [dealFilter, setDealFilter] = useState("all");
@@ -253,7 +320,7 @@ export default function Transact() {
   useEffect(() => {
     if (pipeToShow?.lanes && dealFilter) {
       setFilteredBoardTransactData({
-        lanes: [...filterBoardCards(pipeToShow.lanes, dealFilter)],
+        lanes: [...filterBoardCards(pipeToShow.lanes, dealFilter)]
       });
 
       filteredBoardTransactData.lanes &&
@@ -265,7 +332,7 @@ export default function Transact() {
               if (!(ownerId in cardColors.current)) {
                 cardColors.current = {
                   ...cardColors.current,
-                  [ownerId]: getRandomColor(ownerId),
+                  [ownerId]: getRandomColor(ownerId)
                 };
               }
               // card.metadata.owners[0].id
@@ -291,13 +358,15 @@ export default function Transact() {
 
   useEffect(() => {
     if (pipeToShowTab && dealFilter) {
-      setFilteredTabTransactData([...filterTabCards(pipeToShowTab, dealFilter)]);
+      setFilteredTabTransactData([
+        ...filterTabCards(pipeToShowTab, dealFilter)
+      ]);
     }
   }, [pipeToShowTab, dealFilter]);
 
-  useEffect(() => {}, [filteredTabTransactData]);
+  useEffect(() => { }, [filteredTabTransactData]);
 
-  const handleDataChange = (newData) => {};
+  const handleDataChange = (newData) => { };
 
   const handleCardClick = (cardId, metadata, laneId) => {
     setStateApp((stateApp) => ({
@@ -306,8 +375,8 @@ export default function Transact() {
       activeDeal: {
         cardId,
         laneId,
-        ...metadata,
-      },
+        ...metadata
+      }
     }));
   };
 
@@ -337,7 +406,7 @@ export default function Transact() {
     let movedCardDescriptor = {
       _id: cardDetails.metadata.descriptorId,
       relatedObject: targetLaneId,
-      position: unfilteredTargetPosition,
+      position: unfilteredTargetPosition
     };
 
     // update unfilteredSourceLane descriptors
@@ -345,12 +414,14 @@ export default function Transact() {
     let sourceSliceStart = unfilteredSourcePosition + 1;
     let sourceSliceEnd = sourceLaneId === targetLaneId ? unfilteredTargetPosition + 1 : undefined;
     let unfilteredSourceLaneDescriptors = [
-      ...unfilteredSourceLane.cards.slice(sourceSliceStart, sourceSliceEnd).map((card, index) => {
-        return {
-          _id: card.metadata.descriptorId,
-          position: unfilteredSourcePosition + index,
-        };
-      }),
+      ...unfilteredSourceLane.cards
+        .slice(sourceSliceStart, sourceSliceEnd)
+        .map((card, index) => {
+          return {
+            _id: card.metadata.descriptorId,
+            position: unfilteredSourcePosition + index
+          };
+        })
     ];
 
     // update unfilteredTargetLane descriptors
@@ -358,26 +429,32 @@ export default function Transact() {
     let targetSliceStart = unfilteredTargetPosition;
     let targetSliceEnd = sourceLaneId === targetLaneId ? unfilteredSourcePosition : undefined;
     let unfilteredTargetLaneDescriptors = [
-      ...unfilteredTargetLane.cards.slice(targetSliceStart, targetSliceEnd).map((card, index) => {
-        return {
-          _id: card.metadata.descriptorId,
-          position: unfilteredTargetPosition + index + 1,
-        };
-      }),
+      ...unfilteredTargetLane.cards
+        .slice(targetSliceStart, targetSliceEnd)
+        .map((card, index) => {
+          return {
+            _id: card.metadata.descriptorId,
+            position: unfilteredTargetPosition + index + 1
+          };
+        })
     ];
 
     updateStageDealDescriptors({
       variables: {
-        stageDealDescriptors: [movedCardDescriptor, ...unfilteredSourceLaneDescriptors, ...unfilteredTargetLaneDescriptors],
+        stageDealDescriptors: [
+          movedCardDescriptor,
+          ...unfilteredSourceLaneDescriptors,
+          ...unfilteredTargetLaneDescriptors
+        ]
       },
-      refetchQueries: ["getPipeline"],
+      refetchQueries: ["getPipeline"]
       // awaitRefetchQueries: true,
     });
 
     if (sourceLaneId !== targetLaneId) {
       let updatedDeal = {
         _id: cardId,
-        stageChangeDate: new Date().toUTCString(),
+        stageChangeDate: new Date().toUTCString()
       };
 
       if (
@@ -386,14 +463,14 @@ export default function Transact() {
       )
         updatedDeal = {
           ...updatedDeal,
-          status: unfilteredTargetLane.metadata.dealsStatus.toLowerCase(),
+          status: unfilteredTargetLane.metadata.dealsStatus.toLowerCase()
         };
 
       updateDeal({
         variables: {
-          deal: { ...updatedDeal },
+          deal: { ...updatedDeal }
         },
-        refetchQueries: ["getPipeline", "getContactDeals"],
+        refetchQueries: ["getPipeline", "getContactDeals"]
         // awaitRefetchQueries: true,
       });
     }
@@ -430,11 +507,16 @@ export default function Transact() {
 
     let owner = null;
     let ownerId = null;
+    let ownerEmail = null;
     let ownerObject = metadata?.owners[0] ? metadata?.owners[0] : null;
 
     if (ownerObject && ownerObject.relatedObject?.name) {
       owner = ownerObject.relatedObject.name;
       ownerId = ownerObject.relatedObject.id;
+
+      if (validateEmail(ownerObject.relatedObject.email)) {
+        ownerEmail = ownerObject.relatedObject.email;
+      }
     }
 
     let desc = description;
@@ -454,13 +536,19 @@ export default function Transact() {
         className={classes.cardStyle}
         onClick={() => handleCardClick(id, metadata, laneId)}
         style={{
-          borderLeft: `4px solid ${cardColor}`,
+          borderLeft: `4px solid ${cardColor}`
         }}
       >
         <header className={classes.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span className={classes.cardTitle}>{title}</span>
-            {owner && <CustomAvatar text={owner} color={cardColors[ownerId]} />}
+            {owner && (
+              <CustomAvatar
+                email={ownerEmail}
+                text={owner}
+                color={cardColors[ownerId]}
+              />
+            )}
           </div>
           <div className={classes.cardSubheading}>
             <span>{formattedPrice}</span>
@@ -525,7 +613,7 @@ export default function Transact() {
           setStateApp((stateApp) => ({
             ...stateApp,
             dealDialog: false,
-            activeDeal: { cardId: null, laneId: null },
+            activeDeal: { cardId: null, laneId: null }
           }))
         }
       />
@@ -560,35 +648,35 @@ export default function Transact() {
                   backgroundColor: "#fff",
                   color: "#011133",
                   fontWeight: "bold",
-                  textAlign: "left",
+                  textAlign: "left"
                 }}
                 cardStyle={{
                   boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
                   backgroundColor: "#F2F2F2",
                   textAlign: "center",
-                  marginBottom: "10px",
+                  marginBottom: "10px"
                 }}
                 components={{
                   LaneHeader: (laneProps) => getLaneHeader(laneProps),
-                  Card: (cardProps) => getCard(cardProps),
+                  Card: (cardProps) => getCard(cardProps)
                 }}
 
-                //onCardAdd = {handleCardAdd}
-                //onCardDelete = {handleCardDelete}
-                // handleDragStart = {}
-                // handleDragEnd={}
-                // handleLaneDragStart
-                // onDataChange
-                // onCardAdd
-                // onBeforeCardDelete
-                // onCardDelete
-                // onCardMoveAcrossLanes
-                // onLaneAdd
-                // onLaneDelete
-                // onLaneUpdate
-                // onLaneClick
-                // onLaneScroll
-                //onCardMoveAcrossLanes
+              //onCardAdd = {handleCardAdd}
+              //onCardDelete = {handleCardDelete}
+              // handleDragStart = {}
+              // handleDragEnd={}
+              // handleLaneDragStart
+              // onDataChange
+              // onCardAdd
+              // onBeforeCardDelete
+              // onCardDelete
+              // onCardMoveAcrossLanes
+              // onLaneAdd
+              // onLaneDelete
+              // onLaneUpdate
+              // onLaneClick
+              // onLaneScroll
+              //onCardMoveAcrossLanes
               />
             )}
             {stateApp.dealDisplayType === "table" && (

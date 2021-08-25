@@ -1,6 +1,13 @@
 export const clearMapAndCloseShapeActionsPopup = (stateApp, setStateApp) => {
     const { draw, map, currentFeature } = stateApp;
-    draw.delete(currentFeature?.id);
+    drawShapeLayerToggle(stateApp, "visible")
+
+    if (currentFeature?.id) {
+        setFeatureProperty(stateApp.draw, currentFeature.id, 'shapeEdit', true)
+        draw.delete(currentFeature?.id);
+    }
+    draw.deleteAll();
+
     draw.changeMode('simple_select');
     setStateApp((state) => ({
         ...state,
@@ -23,10 +30,13 @@ export const clearMapAndCloseShapeActionsPopup = (stateApp, setStateApp) => {
 };
 
 export const setFeatureProperty = (draw, drawFeatureID, field, value) => {
-    if (drawFeatureID !== '' && typeof draw === 'object') {
-        draw.setFeatureProperty(drawFeatureID, field, value);
+    if (drawFeatureID !== '' && typeof draw === 'object' && draw.setFeatureProperty) {
         var feat = draw.get(drawFeatureID);
-        draw.add(feat)
+        if (feat) {
+            draw.setFeatureProperty(drawFeatureID, field, value);
+            var feat = draw.get(drawFeatureID);
+            draw.add(feat)
+        }
     }
 }
 

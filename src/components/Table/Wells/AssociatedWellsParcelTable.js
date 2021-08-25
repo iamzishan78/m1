@@ -22,30 +22,11 @@ import isEmpty from "lodash/isEmpty";
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
 import { getPolygonString } from "components/Shared/functions";
 import { handleTagColumn } from "../helpers/index.js";
-
+import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount.js";
 
 const useStyles = makeStyles((theme) => ({
-    root:{
-        "& div": {
-          "&>.MuiPaper-root": {
-            display: "flex",
-            "flex-direction": "column",
-            height: "calc(100vh - 65px)",
-            "align-items": "stretch",
-            "&>.MuiPaper-root": { 
-              display: "contents",
-            },
-            "&>:nth-child(3)": { 
-              height: "inherit !important",
-            },
-            "&> table": {
-              bottom: 0,
-            }
-          },
-        },
-      },
     container: {
-        padding: "0 !important",
+        padding: "0 !important"
     },
 }));
 
@@ -54,7 +35,7 @@ function ShapeGridWellsTable(props) {
 
     // contexts
     const [stateApp, setStateApp] = useContext(AppContext);
-
+    const [count, setCount] = useState(0)
     // function states 
     const [columns, Columns] = useState([]);
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
@@ -64,7 +45,27 @@ function ShapeGridWellsTable(props) {
     // i have no idea why skip works, but if we dont use it, a query variable change during pagination will
     // rerun the new query but also the "first" query https://github.com/apollographql/apollo-client/issues/5912#issuecomment-803013814
     // may not have needed for paginatedContacts due to relayStylePagination type policy
-    const [getPaginatedShapeWells, { data: dataShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true });
+    const [getPaginatedShapeWells, { data: dataShapeWells, variables: variablesShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true,
+    onCompleted: (dataShapeWells) => {
+    setCount((state, props) => {
+        let newState = state || dataShapeWells?.paginatedShapeWells?.edges?.length;
+        let newStateIncrement = !variablesShapeWells?.pagination?.before &&
+          dataShapeWells?.paginatedShapeWells?.pageInfo?.hasNextPage
+            ? 1
+            : 0;
+
+        return newState + newStateIncrement
+        })
+      },
+    });
+    const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true,
+    onCompleted: (dataShapeWellsCount) => {
+      setStateApp((state) => ({
+          ...state,
+          shapeGridWellsCount: dataShapeWellsCount?.shapeWellsCount,
+        }));
+      }, 
+    });
     const tableData = dataShapeWells?.paginatedShapeWells
 
     const addAble = false
@@ -74,11 +75,16 @@ function ShapeGridWellsTable(props) {
     ////////////Contact Wells begin///////////////////////////////////////////////
     useEffect(() => {
         getPaginatedShapeWells({
-            variables: {
-                polygon: getPolygonString(props.customLayer?.shape),
-                userId: stateApp.user.mongoId,
-            },
+          variables: {
+            polygon: getPolygonString(props.customLayer?.shape),
+            userId: stateApp.user.mongoId,
+          },
         });
+        getShapeWellsCount({
+          variables: {
+            polygon: getPolygonString(props.customLayer?.shape)
+          },
+      });
     }, [props.parent]);
 
     useEffect(() => {
@@ -135,10 +141,6 @@ function ShapeGridWellsTable(props) {
             setColumns(columns);
             props.setLoading(false);
 
-            setStateApp((state) => ({
-                ...state,
-                shapeGridWellsCount: tableData.totalCount,
-            }));
         }
         else if (tableData?.edges?.length === 0) {
             props.setLoading(false);
@@ -186,6 +188,11 @@ function ShapeGridWellsTable(props) {
                 break;
             case "changePage":
                 props.setLoading(true);
+                if (tableState.page > meta.pageInd) {
+                  setCount((state, props) => {
+                    return (tableState.page + 1) * tableState.rowsPerPage
+                  })
+                }
                 getPaginatedShapeWells({
                     ...pageVariables,
                     variables: {
@@ -226,10 +233,10 @@ function ShapeGridWellsTable(props) {
         }
     }
 
-    const count = tableData?.totalCount || 0
+
     const options = {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
-        count: count,
+        count: stateApp.shapeGridWellsCount || count || 0,
         serverSide: true,
         // search: false, 
         filter: false,
@@ -242,32 +249,32 @@ function ShapeGridWellsTable(props) {
     return (
 
         <div className={classes.root}>
-        <Container
-            maxWidth={false}
-            className={classes.container}
-            id={props.id ? props.id : props.parent}
-        >
-            <Table
-                style={{ backgroundColor: "#fff" }}
-                header={props.header}
-                columns={columns}
-                rows={props.rows}
-                total={total}
-                loading={props.loading}
-                addAble={addAble}
-                targetLabel={props.targetLabel}
-                deleteFunc={null}
-                uploadIcon={null}
-                dense={props.dense ? props.dense : undefined}
-                orderByTracks={orderByTracks}
-                startPaginationAt={null}
-                onTableChange={onTableChange}
-                options={options}
-                parent={props.parent}
-                setColumnsBase={[]}
-                getWellOwnersByYear={getWellOwnersByYear}
-            />
-        </Container>
+            <Container
+                maxWidth={false}
+                className={classes.container}
+                id={props.id ? props.id : props.parent}
+            >
+                <Table
+                    style={{ backgroundColor: "#fff" }}
+                    header={props.header}
+                    columns={columns}
+                    rows={props.rows}
+                    total={total}
+                    loading={props.loading}
+                    addAble={addAble}
+                    targetLabel={props.targetLabel}
+                    deleteFunc={null}
+                    uploadIcon={null}
+                    dense={props.dense ? props.dense : undefined}
+                    orderByTracks={orderByTracks}
+                    startPaginationAt={null}
+                    onTableChange={onTableChange}
+                    options={options}
+                    parent={props.parent}
+                    setColumnsBase={[]}
+                    getWellOwnersByYear={getWellOwnersByYear}
+                />
+            </Container>
         </div>
     );
 }

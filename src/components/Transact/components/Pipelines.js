@@ -5,8 +5,11 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import SettingsIcon from "@material-ui/icons/Settings";
+
+//icons 
 import IconButton from "@material-ui/core/IconButton";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
 import Dialog from "@material-ui/core/Dialog";
 import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "../../../actions";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -585,20 +588,25 @@ export default function Pipelines(props) {
             {selectedPipe.name}
           </Typography>
         )}
-        <IconButton
-          disabled={!selectedPipe}
-          size="medium"
-          style={{ marginLeft: 10, marginRight: 10 }}
-          onClick={() => {
-            dispatch(
-              setFlowState({
-                openPipeDialog: true,
-              })
-            );
-          }}
+
+        <Tooltip title={"Flowline Actions"} 
         >
-          <SettingsIcon />
-        </IconButton>
+          <IconButton
+            disabled={!selectedPipe}
+            size="medium"
+            style={{ marginLeft: 10, marginRight: 10 }}
+            onClick={() => {
+              dispatch(
+                setFlowState({
+                  openPipeDialog: true,
+                })
+              );
+            }}
+          >
+            <ExpandMoreIcon />
+          </IconButton>
+        </Tooltip>
+
       </div>
 
       {/* //// pipelines dialog //// */}

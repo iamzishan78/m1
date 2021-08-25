@@ -27,8 +27,10 @@ import AlertsProvider from "./components/Alerts/AlertsProvider";
 import DashboardProvider from "./components/Dashboard/DashboardProvider";
 import StudioProvider from "./components/Studio/StudioProvider";
 import BulkUpload from "./components/BulkUpload/BulkUpload";
+import AgreementProvider from "./components/Agreement/AgreementProvider";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
+import ContactBulkProgress from "./components/BulkUpload/ContactBulkProgress";
 
 // pick a date util library
 import MomentUtils from "@date-io/moment";
@@ -90,6 +92,23 @@ const theme = createMuiTheme({
   typography: {
     fontFamily: "Poppins",
   },
+  overrides: {
+    MuiCssBaseline: {
+      '@global': {
+        '*::-webkit-scrollbar': {
+          height: "0.4em",
+          width: "0.4em"
+        },
+        '*::-webkit-scrollbar-track': {
+          "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+        },
+        '*::-webkit-scrollbar-thumb': {
+          backgroundColor: "#929292",
+          borderRadius: 5,
+        }
+      },
+    },
+  },
 });
 
 const SetApolloClient = (props) => {
@@ -113,7 +132,7 @@ const SetApolloClient = (props) => {
 
   useEffect(() => {
     let draggableArea = document.getElementById("root");
-    if (window.location.pathname == "/") {
+    if (window.location.pathname === "/") {
       draggableArea.style.overflow = "hidden";
     } else {
       draggableArea.style.overflow = "visible";
@@ -175,6 +194,7 @@ const PrivateRoute = ({ component, ...options }) => {
 };
 
 function App() {
+  const [stateApp] = useContext(AppContext);
   const [apolloClient, setApolloClient] = useState(null);
   const [apolloClientToken, setApolloClientToken] = useState(null);
   const [apolloClientEndpoint, setApolloClientEndpoint] = useState(null);
@@ -253,6 +273,9 @@ function App() {
           <ApolloProvider client={apolloClient}>
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
+                {stateApp.user?.mongoId && (
+                  <ContactBulkProgress />
+                )}
                 <ConnectedRouter history={history}>
                   <Switch>
                     <NavigationProvider>
@@ -283,6 +306,7 @@ function App() {
                       <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
                       <PrivateRoute exact path="/studio" component={StudioProvider} />
                       <PrivateRoute exact path="/bulkupload" component={BulkUpload} />
+                      <PrivateRoute exact path="/agreement" component={AgreementProvider} />
                       {/* <Route component={NotFoundRedirect} /> */}
                     </NavigationProvider>
                   </Switch>

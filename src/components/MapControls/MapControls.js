@@ -238,7 +238,6 @@ export default function MapControls(props) {
 
 
       if (action === "draw") {
-
         setStateMapControls({
           ...stateMapControls,
           selectedMapControl: action,
@@ -248,12 +247,12 @@ export default function MapControls(props) {
         if (!stateApp.editDraw) {
           setStateApp((state) => ({
             ...state,
-            showDrawShapesPopup: !state.showDrawShapesPopup,
+            popupOpen: false,
+            currentFeature: undefined,
+            showDrawShapesPopup: true,
             editDraw: true,
           }));
-        }
-
-        if (stateApp.editDraw) {
+        } else {
           clearMapAndCloseShapeActionsPopup(stateApp, setStateApp)
         }
       }

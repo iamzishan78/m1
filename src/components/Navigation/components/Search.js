@@ -33,6 +33,10 @@ import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHis
 import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
+import { PAGINATEDWELLSQUERY } from "graphQL/useQueryPaginatedWells";
+import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
+import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
+import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
 
 // custom components 
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
@@ -61,7 +65,7 @@ import { useLocation } from "react-router-dom";
 
 const leaseIndexName = 'lease-index-v2';
 const operatorIndexName = 'operator-index';
-const wellCogIndexName = "wellheader-index-en-ms";
+const wellCogIndexName = "wellheader-index";
 const ownerCogIndexName = "globalowner-index";
 const contactIndexName = 'contacts-index';
 
@@ -120,9 +124,11 @@ const useStyles = makeStyles((theme) => ({
       color: "#ffffffc9",
       height: "5px",
       minWidth: "0 !important",
-      visibility: ({ mapGridCardActivated }) =>
-        mapGridCardActivated ? "hidden" : "unset",
-      opacity: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : "1"),
+      visibility: "unset",
+      opacity: "1",
+      // visibility: ({ mapGridCardActivated }) =>
+      //   mapGridCardActivated ? "hidden" : "unset",
+      // opacity: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : "1"),
       transition: "opacity 0.5s linear",
     },
     // "& .MuiInputAdornment-root": {
@@ -134,10 +140,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   endAdornmentIcon: {
-    opacity: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : "1"),
+    opacity: "1",
+    // opacity: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : "1"),
     transition: "opacity 1.2s linear",
     "& button": {
-      width: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : ""),
+      width: "",
+      // width: ({ mapGridCardActivated }) => (mapGridCardActivated ? "0" : ""),
       transition: "width 1s ",
     },
   },
@@ -188,7 +196,7 @@ function Search() {
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
   const [value, setValue] = React.useState(null);
   const [inputValue, setInputValue] = React.useState("");
-  const [searchOption, setSearchOption] = React.useState("all");
+  const [searchOption, setSearchOption] = React.useState("wells");
   const [options, setOptions] = React.useState([]);
   const [searchTop, setSearchTop] = React.useState(5);
   const [maxMinWellsScore, setMaxMinWellsScore] = React.useState([0, 0]);
@@ -272,14 +280,14 @@ function Search() {
           },
         });
       }
-      else if (lastSearch?.Source === contactIndexName  && lastSearch?._id) {
-          getContactsWells({
-            variables: {
-              contactId: lastSearch._id,
-            },
-          });
+      else if (lastSearch?.Source === contactIndexName && lastSearch?._id) {
+        getContactsWells({
+          variables: {
+            contactId: lastSearch._id,
+          },
+        });
       }
-  }
+    }
   }, []);
 
   useEffect(() => {
@@ -305,37 +313,40 @@ function Search() {
     }
   }, [searchHistoryList]);
 
+  const [getPaginatedWells, { data: constDataWells }] = useLazyQuery(
+    PAGINATEDWELLSQUERY,
+    { fetchPolicy: "network-only", skip: true }
+  );
+
+  const [getPaginatedOwners, { data: constDataOwners }] = useLazyQuery(
+    PAGINATEDOWNERSQUERY,
+    { fetchPolicy: "network-only", skip: true }
+  );
+
+  const [getPaginatedOperators, { data: constDataOperators }] = useLazyQuery(
+    PAGINATEDOPERATORSQUERY,
+    { fetchPolicy: "network-only", skip: true }
+  );
+
+  const [getPaginatedLeases, { data: constDataLeases }] = useLazyQuery(
+    PAGINATEDLEASESQUERY,
+    { fetchPolicy: "network-only", skip: true }
+  );
+
   //////////// Search History End//////////////////
 
 
   const callWellSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const endpoint =
-          "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&top=" +
-          top +
-          "&search=" +
-          encodeURIComponent(
-            request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~")
-          );
 
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
+        getPaginatedWells({
+          variables: {
+            search: request.input,
+            pageOverride: top
+          }
+        })
 
-        const options = {
-          method: "GET",
-          headers: headers,
-        };
-
-        fetch(endpoint, options)
-          .then((response) => response.json())
-          .then((response) => {
-            callback(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
       }, 500),
     []
   );
@@ -343,31 +354,12 @@ function Search() {
   const callOwnerSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const endpoint =
-          "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName&top=" +
-          top +
-          "&search=" +
-          encodeURIComponent(
-            request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~")
-          );
-
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
-
-        const options = {
-          method: "GET",
-          headers: headers,
-        };
-
-        fetch(endpoint, options)
-          .then((response) => response.json())
-          .then((response) => {
-            callback(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        getPaginatedOwners({
+          variables: {
+            search: request.input,
+            pageOverride: top
+          }
+        })
       }, 500),
     []
   );
@@ -375,31 +367,13 @@ function Search() {
   const callOperatorSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const endpoint =
-          "https://m1search.search.windows.net/indexes/"+operatorIndexName+"/docs?api-version=2020-06-30&queryType=full&ount=true&searchFields=Operator&top=" +
-          top +
-          "&search=" +
-          encodeURIComponent(
-            request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~")
-          );
 
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
-
-        const options = {
-          method: "GET",
-          headers: headers,
-        };
-
-        fetch(endpoint, options)
-          .then((response) => response.json())
-          .then((response) => {
-            callback(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        getPaginatedOperators({
+          variables: {
+            search: request.input,
+            pageOverride: top
+          }
+        })
       }, 500),
     []
   );
@@ -407,38 +381,22 @@ function Search() {
   const callLeaseSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const endpoint =
-          "https://m1search.search.windows.net/indexes/"+leaseIndexName+"/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=Lease%2CLeaseId&top=" +
-          top +
-          "&search=" +
-          encodeURIComponent(
-            request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~")
-          );
 
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
 
-        const options = {
-          method: "GET",
-          headers: headers,
-        };
+        getPaginatedLeases({
+          variables: {
+            search: request.input,
+            pageOverride: top
+          }
+        })
 
-        fetch(endpoint, options)
-          .then((response) => response.json())
-          .then((response) => {
-            callback(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
       }, 500),
     []
   );
 
 
 
-///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
+  ///////// CALLING DATA FOR CONTACTS SEARCH VIA MONGO ////////
 
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(
     PAGINATEDCONTACTSQUERY,
@@ -448,26 +406,125 @@ function Search() {
 
   const callContactsSearch = React.useMemo(
     () =>
-    debounce((request, top, callback) => {
+      debounce((request, top, callback) => {
 
-      /// this function takes the search request and sends it to gql
-      getPaginatedContacts({
-        variables: {
-          search: request.input,
-        },
-      });
+        /// this function takes the search request and sends it to gql
+        getPaginatedContacts({
+          variables: {
+            search: request.input,
+          },
+        });
 
-    }, 500),
+      }, 500),
     []
   );
+
+  useEffect(() => {
+    let newOptions = []
+    if (constDataOperators) {
+
+      newOptions = [
+        ...constDataOperators.paginatedOperators.edges.map((result) => {
+          return {
+            ...result,
+            Source: operatorIndexName,
+            Primary: result.Operator,
+            Secondary: null,
+          };
+        }),
+      ];
+
+      setMaxMinOperatosScore(maxMinScore(constDataOperators.paginatedOperators.edges));
+
+      setOptions(newOptions);
+      setLoadingOperators(false);
+    }
+
+  }, [constDataOperators])
+
+  useEffect(() => {
+
+    if (constDataWells) {
+
+      let newOptions = [];
+      newOptions = [
+        ...constDataWells.paginatedWells.edges.map((well) => {
+          return {
+            ...well,
+            Source: wellCogIndexName,
+            Primary: well.WellName,
+            Secondary: well.ApiNumber,
+          };
+        })
+      ]
+      setMaxMinWellsScore(maxMinScore(constDataWells.paginatedWells.edges));
+
+      setOptions(newOptions);
+      setLoadingWells(false);
+
+    }
+  }, [constDataWells])
+  useEffect(() => {
+    if (constDataLeases) {
+      let newOptions = []
+
+      newOptions = [
+        ...constDataLeases.paginatedLeases.edges.map((result) => {
+          return {
+            ...result,
+            Source: leaseIndexName,
+            Primary:
+              result.Lease &&
+                (result.Lease === "" ||
+                  result.Lease === "N/A" ||
+                  result.Lease === "(N/A)")
+                ? "--"
+                : result.Lease,
+            Secondary:
+              result.LeaseId &&
+                (result.LeaseId === "" ||
+                  result.LeaseId === "N/A" ||
+                  result.LeaseId === "(N/A)")
+                ? null
+                : result.LeaseId,
+          };
+        }),
+      ];
+      setMaxMinLeasesScore(maxMinScore(constDataLeases.paginatedLeases.edges));
+
+      setOptions(newOptions);
+      setLoadingLeases(false);
+    }
+
+  }, [constDataLeases])
+
+  useEffect(() => {
+
+    if (constDataOwners) {
+      let newOptions
+      newOptions = [
+        ...constDataOwners.paginatedOwners.edges.map((result) => {
+          return {
+            ...result,
+            Source: ownerCogIndexName,
+            Primary: result.OwnerName,
+            Secondary: `${result.StreetAddress}\n${result.City}\n${result.State}\n${result.Zip}`,
+          };
+        }),
+      ];
+
+      setMaxMinOwnersScore(maxMinScore(constDataOwners.paginatedOwners.edges));
+      setOptions(newOptions);
+      setLoadingOwners(false);
+    }
+  }, [constDataOwners])
 
   useEffect(() => {
     // this use effect takes the contactdata once it comes in from the gql query
     // and flattens things into an array 
     // that presents options up to the search menu bar (called newOptions)
-
     if (
-      constDataContacts 
+      constDataContacts
     ) {
       var newOptions = [];
       var newOptions = [
@@ -476,21 +533,21 @@ function Search() {
 
           result = { ...result.node };
           result.Source = contactIndexName;
-          
-          if(result.name){
+
+          if (result.name) {
             result.Primary = result.name
           } else {
             result.Primary = "--"
-          }; 
+          };
 
-          if(result.address1 || result.city || result.state){
-            result.Secondary = result.address1 + ' ' + result.city+ ', ' + result.state+ ' ' + result.zip
+          if (result.address1 || result.city || result.state) {
+            result.Secondary = result.address1 + ' ' + result.city + ', ' + result.state + ' ' + result.zip
           } else {
             result.Secondary = "--"
-          }; 
+          };
 
           return result
-          
+
         }),
         ...newOptions,
       ];
@@ -500,7 +557,7 @@ function Search() {
 
     }
   }, [
-    constDataContacts,
+    constDataContacts
   ]);
 
   //////// >>>>>>>>> END 
@@ -513,11 +570,9 @@ function Search() {
   const callMapboxSearch = React.useMemo(
     () =>
       debounce((request, top, callback) => {
-        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${
-          request.input
-        }.json?access_token=${
-          stateApp.mapboxglAccessToken
-        }&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
+        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${request.input
+          }.json?access_token=${stateApp.mapboxglAccessToken
+          }&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -539,7 +594,7 @@ function Search() {
     []
   );
 
-  
+
 
   React.useEffect(() => {
 
@@ -550,161 +605,47 @@ function Search() {
         setStateApp((state) => ({ ...state, wellListFromSearch: [] }));
         return undefined;
       }
-
       (async () => {
         let newOptions = [];
 
         Promise.all([
           searchOption == "all" || searchOption == "wells"
             ? callWellSearch(
-                { input: searchInputValue },
-                searchTop,
-                (results) => {
-                  if (results) {
-                    const indexSource = results["@odata.context"].substring(
-                      results["@odata.context"].indexOf("('") + 2,
-                      results["@odata.context"].indexOf("')")
-                    );
+              { input: searchInputValue },
+              searchTop,
 
-                    newOptions = [
-                      ...results.value.map((result) => {
-                        result.Score = result["@search.score"];
-                        delete result["@search.score"];
-                        return {
-                          ...result,
-                          Source: indexSource,
-                          Primary: result.WellName,
-                          Secondary: result.ApiNumber,
-                        };
-                      }),
-                      ...newOptions,
-                    ];
-
-                    setMaxMinWellsScore(maxMinScore(results.value));
-                  }
-
-                  setOptions(newOptions);
-                  setLoadingWells(false);
-                }
-              )
+            )
             : null,
           searchOption == "all" || searchOption == "owners"
             ? callOwnerSearch(
-                { input: searchInputValue },
-                searchTop,
-                (results) => {
-                  if (results) {
-                    const indexSource = results["@odata.context"].substring(
-                      results["@odata.context"].indexOf("('") + 2,
-                      results["@odata.context"].indexOf("')")
-                    );
-                    newOptions = [
-                      ...results.value.map((result) => {
-                        result.Score = result["@search.score"];
-                        delete result["@search.score"];
-                        return {
-                          ...result,
-                          Source: indexSource,
-                          Primary: result.OwnerName,
-                          Secondary: `${result.StreetAddress}\n${result.City}\n${result.State}\n${result.Zip}`,
-                        };
-                      }),
-                      ...newOptions,
-                    ];
+              { input: searchInputValue },
+              searchTop,
 
-                    setMaxMinOwnersScore(maxMinScore(results.value));
-                  }
-
-                  setOptions(newOptions);
-                  setLoadingOwners(false);
-                }
-              )
+            )
             : null,
           searchOption == "all" || searchOption == "operators"
             ? callOperatorSearch(
-                { input: searchInputValue },
-                searchTop,
-                (results) => {
-                  if (results) {
-                    const indexSource = results["@odata.context"].substring(
-                      results["@odata.context"].indexOf("('") + 2,
-                      results["@odata.context"].indexOf("')")
-                    );
-                    newOptions = [
-                      ...results.value.map((result) => {
-                        result.Score = result["@search.score"];
-                        delete result["@search.score"];
-                        return {
-                          ...result,
-                          Source: indexSource,
-                          Primary: result.Operator,
-                          Secondary: null,
-                        };
-                      }),
-                      ...newOptions,
-                    ];
+              { input: searchInputValue },
+              searchTop,
 
-                    setMaxMinOperatosScore(maxMinScore(results.value));
-                  }
-
-                  setOptions(newOptions);
-                  setLoadingOperators(false);
-                }
-              )
+            )
             : null,
           searchOption == "all" || searchOption == "leases"
             ? callLeaseSearch(
-                { input: searchInputValue },
-                searchTop,
-                (results) => {
-                  if (results) {
-                    const indexSource = results["@odata.context"].substring(
-                      results["@odata.context"].indexOf("('") + 2,
-                      results["@odata.context"].indexOf("')")
-                    );
-                    newOptions = [
-                      ...results.value.map((result) => {
-                        result.Score = result["@search.score"];
-                        delete result["@search.score"];
+              { input: searchInputValue },
+              searchTop,
 
-                        return {
-                          ...result,
-                          Source: indexSource,
-                          Primary:
-                            result.Lease &&
-                            (result.Lease === "" ||
-                              result.Lease === "N/A" ||
-                              result.Lease === "(N/A)")
-                              ? "--"
-                              : result.Lease,
-                          Secondary:
-                            result.LeaseId &&
-                            (result.LeaseId === "" ||
-                              result.LeaseId === "N/A" ||
-                              result.LeaseId === "(N/A)")
-                              ? null
-                              : result.LeaseId,
-                        };
-                      }),
-                      ...newOptions,
-                    ];
-                    setMaxMinLeasesScore(maxMinScore(results.value));
-                  }
-
-                  setOptions(newOptions);
-                  setLoadingLeases(false);
-                }
-              )
+            )
             : null,
 
           searchOption == "all" || searchOption == "contacts"
             ? callContactsSearch(
-                { input: searchInputValue },
-                searchTop,
-              )
+              { input: searchInputValue },
+              searchTop,
+            )
             : null,
 
-          
+
           // searchOption == "all" || searchOption == "parcels"
           //   ? callParcelSearch(
           //       { input: searchInputValue },
@@ -714,40 +655,40 @@ function Search() {
 
           searchOption == "all" || searchOption == "locations"
             ? callMapboxSearch(
-                { input: searchInputValue },
-                searchTop,
-                (results) => {
-                  if (results) {
-                    let resultsMod = results.features
-                      ? results.features.map((result) => {
-                          return {
-                            ...result,
-                            Id: result.id,
-                            Source: "mapboxSearch",
-                            Score: result.relevance ? result.relevance : 0,
-                            Primary: result.text ? result.text : "",
-                            Secondary: result.place_name
-                              ? result.place_name.indexOf(
-                                  result.text + ", "
-                                ) === 0
-                                ? result.place_name.slice(
-                                    result.place_name.indexOf(", ") + 2,
-                                    result.place_name.length
-                                  )
-                                : result.place_name
-                              : "",
-                          };
-                        })
-                      : [];
+              { input: searchInputValue },
+              searchTop,
+              (results) => {
+                if (results) {
+                  let resultsMod = results.features
+                    ? results.features.map((result) => {
+                      return {
+                        ...result,
+                        Id: result.id,
+                        Source: "mapboxSearch",
+                        Score: result.relevance ? result.relevance : 0,
+                        Primary: result.text ? result.text : "",
+                        Secondary: result.place_name
+                          ? result.place_name.indexOf(
+                            result.text + ", "
+                          ) === 0
+                            ? result.place_name.slice(
+                              result.place_name.indexOf(", ") + 2,
+                              result.place_name.length
+                            )
+                            : result.place_name
+                          : "",
+                      };
+                    })
+                    : [];
 
-                    newOptions = [...newOptions, ...resultsMod];
-                    setMaxMinMapboxSearchScore(maxMinScore(resultsMod));
-                  }
-
-                  setOptions(newOptions);
-                  setLoadingMapboxSearch(false);
+                  newOptions = [...newOptions, ...resultsMod];
+                  setMaxMinMapboxSearchScore(maxMinScore(resultsMod));
                 }
-              )
+
+                setOptions(newOptions);
+                setLoadingMapboxSearch(false);
+              }
+            )
             : null,
         ]);
       })();
@@ -774,21 +715,23 @@ function Search() {
         setStateApp((stateApp) =>
           dataOwnerWells.ownerLatsLonsArray.length === 1
             ? {
-                ...stateApp,
-                selectedWell: null,
-                fitBounds: null,
-                selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
-                wellSelectedCoordinates: [
-                  dataOwnerWells.ownerLatsLonsArray[0].longitude,
-                  dataOwnerWells.ownerLatsLonsArray[0].latitude,
-                ],
-                wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
-              }
+              ...stateApp,
+              selectedWell: null,
+              fitBounds: null,
+              searchLoader: false,
+              selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
+              wellSelectedCoordinates: [
+                dataOwnerWells.ownerLatsLonsArray[0].longitude,
+                dataOwnerWells.ownerLatsLonsArray[0].latitude,
+              ],
+              wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
+            }
             : {
-                ...stateApp,
-                fitBounds: null,
-                wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
-              }
+              ...stateApp,
+              fitBounds: null,
+              searchLoader: false,
+              wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
+            }
         );
 
         stateApp.toggleLayersActivity("Search", true);
@@ -796,6 +739,7 @@ function Search() {
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
+          searchLoader: false,
           wellListFromSearch: [],
         }));
       }
@@ -811,31 +755,34 @@ function Search() {
         setStateApp((stateApp) =>
           dataOperatorWells.operatorLatsLonsArray.length === 1
             ? {
-                ...stateApp,
-                selectedWell: null,
-                fitBounds: null,
-                selectedWellId: dataOperatorWells.operatorLatsLonsArray[0].id.toLowerCase(),
-                wellSelectedCoordinates: [
-                  dataOperatorWells.operatorLatsLonsArray[0].longitude,
-                  dataOperatorWells.operatorLatsLonsArray[0].latitude,
-                ],
-                wellListFromSearch: [
-                  ...dataOperatorWells.operatorLatsLonsArray,
-                ],
-              }
+              ...stateApp,
+              selectedWell: null,
+              fitBounds: null,
+              searchLoader: false,
+              selectedWellId: dataOperatorWells.operatorLatsLonsArray[0].id.toLowerCase(),
+              wellSelectedCoordinates: [
+                dataOperatorWells.operatorLatsLonsArray[0].longitude,
+                dataOperatorWells.operatorLatsLonsArray[0].latitude,
+              ],
+              wellListFromSearch: [
+                ...dataOperatorWells.operatorLatsLonsArray,
+              ],
+            }
             : {
-                ...stateApp,
-                fitBounds: null,
-                wellListFromSearch: [
-                  ...dataOperatorWells.operatorLatsLonsArray,
-                ],
-              }
+              ...stateApp,
+              fitBounds: null,
+              searchLoader: false,
+              wellListFromSearch: [
+                ...dataOperatorWells.operatorLatsLonsArray,
+              ],
+            }
         );
         stateApp.toggleLayersActivity("Search", true);
       } else {
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
+          searchLoader: false,
           wellListFromSearch: [],
         }));
       }
@@ -851,27 +798,30 @@ function Search() {
         setStateApp((stateApp) =>
           dataLeaseWells.leaseLatsLonsArray.length === 1
             ? {
-                ...stateApp,
-                selectedWell: null,
-                fitBounds: null,
-                selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
-                wellSelectedCoordinates: [
-                  dataLeaseWells.leaseLatsLonsArray[0].longitude,
-                  dataLeaseWells.leaseLatsLonsArray[0].latitude,
-                ],
-                wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
-              }
+              ...stateApp,
+              selectedWell: null,
+              fitBounds: null,
+              selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
+              wellSelectedCoordinates: [
+                dataLeaseWells.leaseLatsLonsArray[0].longitude,
+                dataLeaseWells.leaseLatsLonsArray[0].latitude,
+              ],
+              searchLoader: false,
+              wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
+            }
             : {
-                ...stateApp,
-                fitBounds: null,
-                wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
-              }
+              ...stateApp,
+              fitBounds: null,
+              searchLoader: false,
+              wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
+            }
         );
         stateApp.toggleLayersActivity("Search", true);
       } else {
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
+          searchLoader: false,
           wellListFromSearch: [],
         }));
       }
@@ -881,34 +831,38 @@ function Search() {
 
 
   //// getting wells data from contacts ////
-    useEffect(() => {
-      if (dataContactWells && dataContactWells.contactWells) {
-        if (dataContactWells.contactWells.length !== 0) {
-  
-          setStateApp((stateApp) =>
+  useEffect(() => {
+    if (dataContactWells && dataContactWells.contactWells) {
+      if (dataContactWells.contactWells.length !== 0) {
+
+        setStateApp((stateApp) =>
           dataContactWells.contactWells.length === 1
-              ? {
-                  ...stateApp,
-                  selectedWell: null,
-                  fitBounds: null,
-                  wellListFromSearch: [...dataContactWells.contactWells],
-                }
-              : {
-                  ...stateApp,
-                  fitBounds: null,
-                  wellListFromSearch: [...dataContactWells.contactWells],
-                }
-          );
-          stateApp.toggleLayersActivity("Search", true);
-        } else {
-          stateApp.toggleLayersActivity("Search", false);
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            wellListFromSearch: [],
-          }));
-        }
+            ? {
+              ...stateApp,
+              selectedWell: null,
+              fitBounds: null,
+              searchLoader: false,
+              wellListFromSearch: [...dataContactWells.contactWells],
+            }
+            : {
+              ...stateApp,
+              fitBounds: null,
+              searchLoader: false,
+              wellListFromSearch: [...dataContactWells.contactWells],
+            },
+
+        );
+        stateApp.toggleLayersActivity("Search", true);
+      } else {
+        stateApp.toggleLayersActivity("Search", false);
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          searchLoader: false,
+          wellListFromSearch: [],
+        }));
       }
-    }, [dataContactWells]);
+    }
+  }, [dataContactWells]);
 
 
 
@@ -957,14 +911,14 @@ function Search() {
           searchInputValue: newValue.Primary
             ? newValue.Primary
             : newValue.Secondary
-            ? newValue.Secondary
-            : "",
-          lastSearch: newValue  
+              ? newValue.Secondary
+              : "",
+          lastSearch: newValue
         })
       );
 
       //// setting map loader
-      setStateApp((stateApp) => ({ ...stateApp, mapCircularLoaderAct: true }));
+      setStateApp((stateApp) => ({ ...stateApp, mapCircularLoaderAct: true, searchLoader: true }));
 
       //// if well, with lat long
       if (
@@ -1041,16 +995,15 @@ function Search() {
       // if contact
       if (
         newValue &&
-        newValue.Source === contactIndexName 
+        newValue.Source === contactIndexName
         && newValue._id
       ) {
-          getContactsWells({
-            variables: {
-              contactId: newValue._id,
-            },
-          });
+        getContactsWells({
+          variables: {
+            contactId: newValue._id,
+          },
+        });
       }
-      
 
       //// if mapboxSearch
       if (newValue && newValue.Source === "mapboxSearch" && newValue.center) {
@@ -1086,7 +1039,7 @@ function Search() {
     Primary: "",
     Secondary: "",
   };
-  
+
   let optionsWithHeader = [header, ...options];
   //// adding loader ////
   if (
@@ -1109,33 +1062,34 @@ function Search() {
   console.log("orig optionsWithHeader", optionsWithHeader)
 
   return (
-    <div className={classes.root} style={{display:'flex',justifyContent:'center',alignContent:'center'}}>
-      
-      {location.pathname === '/documents' && ( 
-      <Accordion style={{width:'40px',backgroundColor:'transparent',display:'flex',flexDirection:'column',padding:'0px',}}>
-        <AccordionSummary
-          // expandIcon={<SearchIcon style={{color:'white',backgroundColor:'transparent'}}></SearchIcon>}
-        
-           style={{ maxHeight:'43px',backgroundColor:'transparent',marginTop:'0px !important'}}
-        >
-          <SearchIcon style={{color:'white',backgroundColor:'transparent',padding:'0px'}}></SearchIcon>
-        </AccordionSummary>
-        <AccordionDetails style={{width:'300px',backgroundColor:'white',display:'flex',flexDirection:'column',padding:'0px',border:'2px solid #d1cfcf',    marginTop: '-11px'}}>
-         
-          <Typography style={{padding:'9px',color:'rgb(24, 170, 221)', cursor:'pointer'}} variant='subtitle2'>
+    <div className={classes.root} style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
+
+      {/* {location.pathname === '/documents' && (
+        <Accordion style={{ width: '40px', backgroundColor: 'transparent', display: 'flex', flexDirection: 'column', padding: '0px', }}>
+
+          <AccordionSummary
+            // expandIcon={<SearchIcon style={{color:'white',backgroundColor:'transparent'}}></SearchIcon>}
+
+            style={{ maxHeight: '43px', backgroundColor: 'transparent', marginTop: '0px !important' }}
+          >
+            <SearchIcon style={{ color: 'white', backgroundColor: 'transparent', padding: '0px' }}></SearchIcon>
+          </AccordionSummary>
+          <AccordionDetails style={{ width: '300px', backgroundColor: 'white', display: 'flex', flexDirection: 'column', padding: '0px', border: '2px solid #d1cfcf', marginTop: '-11px' }}>
+
+            <Typography style={{ padding: '9px', color: 'rgb(24, 170, 221)', cursor: 'pointer' }} variant='subtitle2'>
               All Documents
-          </Typography>
-          
-          <Typography style={{padding:'6px',paddingLeft:'9px',backgroundColor:'#f2f2f2',width:'100%',borderTop:'1px solid #d1cfcf'}} variant='subtitle2'>
+            </Typography>
+
+            <Typography style={{ padding: '6px', paddingLeft: '9px', backgroundColor: '#f2f2f2', width: '100%', borderTop: '1px solid #d1cfcf' }} variant='subtitle2'>
               Agreements
-          </Typography>
-          <Typography style={{padding:'9px',cursor:'pointer'}} variant='subtitle2'>
-             Shapefiles
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
+            </Typography>
+            <Typography style={{ padding: '9px', cursor: 'pointer' }} variant='subtitle2'>
+              Shapefiles
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
       )
-      }
+      } */}
       <Autocomplete
         id="cognitive-search-autocomplete"
         getOptionLabel={(option, value) => option.Primary || searchInputValue}
@@ -1152,7 +1106,7 @@ function Search() {
           if (option.Source === "loader") return "loader";
           return "header";
         }}
-       
+
         // leftIconButton={<SearchIcon />}
         renderGroup={(option) => {
           if (option.group === "loader")
@@ -1165,96 +1119,98 @@ function Search() {
               />
             );
 
-          return (option.group === "header" && location.pathname !=='/documents')  ? (
+          return (option.group === "header" && location.pathname !== '/documents') ? (
             <div >
-            <Grid
-              key={option.group}
-              container
-              item
-              spacing={0}
-              style={{
-                position: "relative",
-                top: "0",
-                backgroundColor: "#ffffff",
-                paddingBottom:
-                  (searchOption === "all" &&
-                    (loadingWells ||
-                      loadingOwners ||
-                      loadingOperators ||
-                      loadingLeases ||
-                      loadingContacts ||
-                      loadingMapboxSearch)) ||
-                  (searchOption === "wells" && loadingWells) ||
-                  (searchOption === "owners" && loadingOwners) ||
-                  (searchOption === "operators" && loadingOperators) ||
-                  (searchOption === "leases" && loadingLeases) ||
-                  (searchOption === "contacts" && loadingContacts) ||
-                  (searchOption === "locations" && loadingMapboxSearch) ||
-                  options.length === 0
-                    ? "0"
-                    : "9px",
-              }}
-            >
               <Grid
+                key={option.group}
+                container
                 item
-                xs={12}
+                spacing={0}
                 style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  margin: "0 4px",
+                  position: "relative",
+                  top: "0",
+                  backgroundColor: "#ffffff",
+                  paddingBottom:
+                    (searchOption === "all" &&
+                      (loadingWells ||
+                        loadingOwners ||
+                        loadingOperators ||
+                        loadingLeases ||
+                        loadingContacts ||
+                        loadingMapboxSearch)) ||
+                      (searchOption === "wells" && loadingWells) ||
+                      (searchOption === "owners" && loadingOwners) ||
+                      (searchOption === "operators" && loadingOperators) ||
+                      (searchOption === "leases" && loadingLeases) ||
+                      (searchOption === "contacts" && loadingContacts) ||
+                      (searchOption === "locations" && loadingMapboxSearch) ||
+                      options.length === 0
+                      ? "0"
+                      : "9px",
                 }}
               >
-                <Button
-                  className={classes.headerButtons}
-                  variant={searchOption === "all" ? "contained" : "outlined"}
-                  size="small"
-                  color={searchOption === "all" ? "secondary" : "primary"}
-                  onClick={() => {
-                    // setSearchTop(5);
-                    setSearchOption("all");
+                <Grid
+                  item
+                  xs={12}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    margin: "0 4px",
                   }}
                 >
-                  All
-                </Button>
-                <Button
-                  className={classes.headerButtons}
-                  variant={searchOption === "wells" ? "contained" : "outlined"}
-                  size="small"
-                  color={searchOption === "wells" ? "secondary" : "primary"}
-                  onClick={() => {
-                    // setSearchTop(5);
-                    setSearchOption("wells");
-                  }}
-                >
-                  Wells
-                </Button>
-                <Button
-                  className={classes.headerButtons}
-                  variant={searchOption === "owners" ? "contained" : "outlined"}
-                  size="small"
-                  color={searchOption === "owners" ? "secondary" : "primary"}
-                  onClick={() => {
-                    // setSearchTop(5);
-                    setSearchOption("owners");
-                  }}
-                >
-                  Tax Owners
-                </Button>
-                <Button
-                  className={classes.headerButtons}
-                  variant={
-                    searchOption === "operators" ? "contained" : "outlined"
-                  }
-                  size="small"
-                  color={searchOption === "operators" ? "secondary" : "primary"}
-                  onClick={() => {
-                    // setSearchTop(5);
-                    setSearchOption("operators");
-                  }}
-                >
-                  Operators
-                </Button>
-                <Button
+                  {/* <Button
+
+                    className={classes.headerButtons}
+                    variant={searchOption === "all" ? "contained" : "outlined"}
+                    size="small"
+                    color={searchOption === "all" ? "secondary" : "primary"}
+                    onClick={() => {
+                      // setSearchTop(5);
+                      setSearchOption("all");
+                    }}
+                  >
+                    All
+                  </Button> */}
+
+                  <Button
+                    className={classes.headerButtons}
+                    variant={searchOption === "wells" ? "contained" : "outlined"}
+                    size="small"
+                    color={searchOption === "wells" ? "secondary" : "primary"}
+                    onClick={() => {
+                      // setSearchTop(5);
+                      setSearchOption("wells");
+                    }}
+                  >
+                    Wells
+                  </Button>
+                  <Button
+                    className={classes.headerButtons}
+                    variant={searchOption === "owners" ? "contained" : "outlined"}
+                    size="small"
+                    color={searchOption === "owners" ? "secondary" : "primary"}
+                    onClick={() => {
+                      // setSearchTop(5);
+                      setSearchOption("owners");
+                    }}
+                  >
+                    Tax Owners
+                  </Button>
+                  <Button
+                    className={classes.headerButtons}
+                    variant={
+                      searchOption === "operators" ? "contained" : "outlined"
+                    }
+                    size="small"
+                    color={searchOption === "operators" ? "secondary" : "primary"}
+                    onClick={() => {
+                      // setSearchTop(5);
+                      setSearchOption("operators");
+                    }}
+                  >
+                    Operators
+                  </Button>
+                  {/* <Button
                   className={classes.headerButtons}
                   variant={searchOption === "leases" ? "contained" : "outlined"}
                   size="small"
@@ -1265,36 +1221,36 @@ function Search() {
                   }}
                 >
                   Leases
-                </Button>
-                <Button
-                  className={classes.headerButtons}
-                  variant={
-                    searchOption === "contacts" ? "contained" : "outlined"
-                  }
-                  size="small"
-                  color={searchOption === "contacts" ? "secondary" : "primary"}
-                  onClick={() => {
-                    setSearchOption("contacts");
-                  }}
-                >
-                  Contacts
-                </Button>
-                <Button
-                  className={classes.headerButtons}
-                  variant={
-                    searchOption === "locations" ? "contained" : "outlined"
-                  }
-                  size="small"
-                  color={searchOption === "locations" ? "secondary" : "primary"}
-                  onClick={() => {
-                    setSearchTop(5);
-                    setSearchOption("locations");
-                  }}
-                >
-                  Locations
-                </Button>
+                </Button> */}
+                  <Button
+                    className={classes.headerButtons}
+                    variant={
+                      searchOption === "contacts" ? "contained" : "outlined"
+                    }
+                    size="small"
+                    color={searchOption === "contacts" ? "secondary" : "primary"}
+                    onClick={() => {
+                      setSearchOption("contacts");
+                    }}
+                  >
+                    Contacts
+                  </Button>
+                  <Button
+                    className={classes.headerButtons}
+                    variant={
+                      searchOption === "locations" ? "contained" : "outlined"
+                    }
+                    size="small"
+                    color={searchOption === "locations" ? "secondary" : "primary"}
+                    onClick={() => {
+                      setSearchTop(5);
+                      setSearchOption("locations");
+                    }}
+                  >
+                    Locations
+                  </Button>
+                </Grid>
               </Grid>
-            </Grid>
             </div>
           ) : (
             (searchOption === "all" ||
@@ -1317,16 +1273,16 @@ function Search() {
                             option.group === "Owners"
                               ? "owners"
                               : option.group === "Wells"
-                              ? "wells"
-                              : option.group === "Operators"
-                              ? "operators"
-                              : option.group === "Leases"
-                              ? "leases"
-                              : option.group === "Contacts"
-                              ? "contacts"
-                              : option.group === "Locations"
-                              ? "locations"
-                              : "all"
+                                ? "wells"
+                                : option.group === "Operators"
+                                  ? "operators"
+                                  : option.group === "Leases"
+                                    ? "leases"
+                                    : option.group === "Contacts"
+                                      ? "contacts"
+                                      : option.group === "Locations"
+                                        ? "locations"
+                                        : "all"
                           );
                         }}
                       >
@@ -1352,15 +1308,19 @@ function Search() {
             )
           );
         }}
-        autoComplete
+        freeSolo
+        // autoComplete
         includeInputInList
         value={value}
 
         // handle change also acts like onClick here 
         onChange={(event, newValue) => {
-          handleChange(newValue);
+          if (event.key === 'Enter')
+            handleChange(options[0])
+          else
+            handleChange(newValue);
         }}
-        
+
         onInputChange={(event, newInputValue, reason) => {
           if (reason == "input") {
 
@@ -1407,242 +1367,243 @@ function Search() {
         renderInput={(params) => (
 
           <div>
-           {location.pathname === '/documents' ? (
-              <div style={{display:'flex',justifyContent:"center",alignItems:'center',backgroundColor:'transparent'}}>
-              {/* <IconButton>
+            {location.pathname === '/documents' ? (
+              <div style={{ display: 'flex', justifyContent: "center", alignItems: 'center', backgroundColor: 'transparent' }}>
+                {/* <IconButton>
               <SearchIcon style={{color:'white'}}></SearchIcon>
               </IconButton> */}
-            
+
                 <TextField
-              {...params}
-              variant="outlined"
-             fullWidth
-             placeholder={"Search for documents by name"}
-             className={classes.textF}
-             >
-             </TextField></div>
-           ) : (
-             <TextField
-             {...params}
-             variant="outlined"
-             fullWidth
-             placeholder="Search by well name, API, owner, operator, lease or a location"
-             InputProps={{
-               ...params.InputProps,
-               startAdornment: (
-                 <InputAdornment className={classes.startAdornmentIcon}>
-                   <Button
-                     style={{ minWidth: "0", height: "42px" }}
-                     onClick={() => {
-                       if (mapGridCardActivated)
-                         dispatch(toggleMapGridCardAtived());
-                     }}
-                   >
-                     <SearchIcon htmlColor="#fff" />
-                   </Button>
-                 </InputAdornment>
-               ),
-               endAdornment: !mapGridCardActivated && (
-                 <InputAdornment className={classes.endAdornmentIcon}>
-                   <div>
-                     {((searchInputValue && searchInputValue !== "") ||
-                       (stateApp.wellListFromSearch &&
-                         stateApp.wellListFromSearch.length > 0)) && (
-                       <Tooltip title="Clear" placement="top">
-                         <IconButton
-                           size="small"
-                           onClick={() => {
-                             dispatch(
-                               setMapGridCardState({
-                                 searchInputValue: "",
-                                 searchResultData: [],
-                               })
-                             );
-                             setStateApp((state) => ({
-                               ...state,
-                               wellListFromSearch: [],
-                             }));
-                           }}
-                         >
-                           <ClearIcon htmlColor="#fff" />
-                         </IconButton>
-                       </Tooltip>
-                     )}
-                     <Tooltip title="Search History" placement="top">
-                       <IconButton
-                         size="small"
-                         onClick={(event) => {
-                           setAnchorEl(event.currentTarget);
-                         }}
-                       >
-                         <ArrowDropDownIcon htmlColor="#fff" />
-                       </IconButton>
-                     </Tooltip>
- 
-                     <Popover
-                       onBlur={() => {
-                         setAnchorEl(null);
-                       }}
-                       open={Boolean(anchorEl)}
-                       anchorEl={anchorEl}
-                       onClose={() => {
-                         setAnchorEl(null);
-                       }}
-                       anchorOrigin={{
-                         vertical: "bottom",
-                         horizontal: "right",
-                       }}
-                       transformOrigin={{
-                         vertical: "top",
-                         horizontal: "right",
-                       }}
-                       style={{
-                         width: document.getElementById("searchBarDivParent")
-                           ? document.getElementById("searchBarDivParent")
-                               .offsetWidth
-                           : "400px",
-                       }}
-                       className={classes.historyPopover}
-                     >
-                       {searchHistoryList && searchHistoryList.length > 0 ? (
-                         searchHistoryList.map((search, i) => {
-                           let option = search.searchData;
-                           const parts = parse(option.Primary, Array());
- 
-                           /// THIS IS THEI LIST FOR THE SEARCH HISTORY 
-                           return (
-                             <div>
-                             <Box
-                               p={1}
-                               key={i}
-                               className={classes.historyRow}
-                               onClick={() => {
-                                 setSearchTop(5);
-                                 setSearchOption(
-                                   option.Source === ownerCogIndexName
-                                     ? "owners"
-                                     : option.Source === wellCogIndexName
-                                     ? "wells"
-                                     : option.Source === operatorIndexName
-                                     ? "operators"
-                                     : option.Source === leaseIndexName
-                                     ? "leases"
-                                     : option.Source === contactIndexName
-                                     ? "contacts"
-                                     : option.group === "mapboxSearch"
-                                     ? "locations"
-                                     : "all"
-                                 );
- 
-                                 dispatch(
-                                   setMapGridCardState({
-                                     mapGridCardActiveTap: 0,
-                                     searchInputValue: option.Primary
-                                       ? option.Primary
-                                       : option.Secondary,
-                                   })
-                                 );
-                                 handleChange({
-                                   ...option,
-                                   searchId: search._id,
-                                 });
-                               }}
-                             >
-                               <Grid container spacing={0}>
-                                 <Grid container item xs={9} alignItems="center">
-                                   <Grid item>
-                                     {option.Source === ownerCogIndexName && (
-                                       <PersonIcon className={classes.icon} />
-                                     )}
-                                     {option.Source === contactIndexName && (
-                                       //will need to change this to something different 
-                                       <PersonIcon className={classes.icon} />
-                                     )}
-                                     {option.Source === operatorIndexName && (
-                                       <OperatorIcon
-                                         className={classes.icon}
-                                         color={"#757575"}
-                                       />
-                                     )}
-                                     {option.Source ===
-                                       wellCogIndexName && (
-                                       <WellIcon
-                                         className={classes.icon}
-                                         color={"#757575"}
-                                         opacity="1.0"
-                                         small
-                                       />
-                                     )}
-                                     {option.Source === leaseIndexName && (
-                                       <LeaseIcon
-                                         className={classes.icon}
-                                         color={"#757575"}
-                                       />
-                                     )}
-                                     {option.Source === "mapboxSearch" && (
-                                       <LocationOnIcon
-                                         className={classes.icon}
-                                       />
-                                     )}
-                                   </Grid>
-                                   <Grid item xs>
-                                     {parts.map((part, index) => (
-                                       <span
-                                         key={index}
-                                         style={{
-                                           fontWeight: part.highlight
-                                             ? 700
-                                             : 400,
-                                         }}
-                                       >
-                                         {part.text}
-                                       </span>
-                                     ))}
- 
-                                     {option && option.Secondary && (
-                                       <Typography
-                                         variant="body2"
-                                         color="textSecondary"
-                                       >
-                                         {option.Secondary}
-                                       </Typography>
-                                     )}
-                                   </Grid>
-                                 </Grid>
-                                 <Grid container item xs={3} alignItems="center">
-                                   <Grid item>
-                                     <Typography
-                                       variant="body2"
-                                       style={{ color: "rgb(80, 187, 223)" }}
-                                     >
-                                       {new Intl.DateTimeFormat("en-US", {
-                                         year: "2-digit",
-                                         month: "2-digit",
-                                         day: "2-digit",
-                                         hour: "2-digit",
-                                         minute: "2-digit",
-                                       }).format(search.ts)}
-                                     </Typography>
-                                   </Grid>
-                                 </Grid>
-                               </Grid>
-                             </Box>
-                             </div>
-                           );
-                         })
-                       ) : (
-                         <Box p={1}>
-                           <Typography>There is no history yet.</Typography>
-                         </Box>
-                       )}
-                     </Popover>
-                   </div>
-                 </InputAdornment>
-               ),
-             }}
-             className={classes.textF}
-           />
-           )}
+                  {...params}
+                  variant="outlined"
+                  fullWidth
+                  placeholder={"Search for documents by name"}
+                  className={classes.textF}
+                >
+                </TextField></div>
+            ) : (
+              <TextField
+                {...params}
+                variant="outlined"
+                fullWidth
+                placeholder="Search by well name, API, owner, operator or a location"
+
+                InputProps={{
+                  ...params.InputProps,
+                  startAdornment: (
+                    <InputAdornment className={classes.startAdornmentIcon}>
+                      <Button
+                        style={{ minWidth: "0", height: "42px" }}
+                        onClick={() => {
+                          if (mapGridCardActivated)
+                            dispatch(toggleMapGridCardAtived());
+                        }}
+                      >
+                        <SearchIcon htmlColor="#fff" />
+                      </Button>
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment className={classes.endAdornmentIcon}>
+                      <div>
+                        {((searchInputValue && searchInputValue !== "") ||
+                          (stateApp.wellListFromSearch &&
+                            stateApp.wellListFromSearch.length > 0)) && (
+                            <Tooltip title="Clear" placement="top">
+                              <IconButton
+                                size="small"
+                                onClick={() => {
+                                  dispatch(
+                                    setMapGridCardState({
+                                      searchInputValue: "",
+                                      searchResultData: [],
+                                    })
+                                  );
+                                  setStateApp((state) => ({
+                                    ...state,
+                                    wellListFromSearch: [],
+                                  }));
+                                }}
+                              >
+                                <ClearIcon htmlColor="#fff" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        <Tooltip title="Search History" placement="top">
+                          <IconButton
+                            size="small"
+                            onClick={(event) => {
+                              setAnchorEl(event.currentTarget);
+                            }}
+                          >
+                            <ArrowDropDownIcon htmlColor="#fff" />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Popover
+                          onBlur={() => {
+                            setAnchorEl(null);
+                          }}
+                          open={Boolean(anchorEl)}
+                          anchorEl={anchorEl}
+                          onClose={() => {
+                            setAnchorEl(null);
+                          }}
+                          anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "right",
+                          }}
+                          transformOrigin={{
+                            vertical: "top",
+                            horizontal: "right",
+                          }}
+                          style={{
+                            width: document.getElementById("searchBarDivParent")
+                              ? document.getElementById("searchBarDivParent")
+                                .offsetWidth
+                              : "400px",
+                          }}
+                          className={classes.historyPopover}
+                        >
+                          {searchHistoryList && searchHistoryList.length > 0 ? (
+                            searchHistoryList.map((search, i) => {
+                              let option = search.searchData;
+                              const parts = parse(option.Primary, Array());
+
+                              /// THIS IS THEI LIST FOR THE SEARCH HISTORY 
+                              return (
+                                <div>
+                                  <Box
+                                    p={1}
+                                    key={i}
+                                    className={classes.historyRow}
+                                    onClick={() => {
+                                      setSearchTop(5);
+                                      setSearchOption(
+                                        option.Source === ownerCogIndexName
+                                          ? "owners"
+                                          : option.Source === wellCogIndexName
+                                            ? "wells"
+                                            : option.Source === operatorIndexName
+                                              ? "operators"
+                                              : option.Source === leaseIndexName
+                                                ? "leases"
+                                                : option.Source === contactIndexName
+                                                  ? "contacts"
+                                                  : option.group === "mapboxSearch"
+                                                    ? "locations"
+                                                    : "all"
+                                      );
+
+                                      dispatch(
+                                        setMapGridCardState({
+                                          mapGridCardActiveTap: 0,
+                                          searchInputValue: option.Primary
+                                            ? option.Primary
+                                            : option.Secondary,
+                                        })
+                                      );
+                                      handleChange({
+                                        ...option,
+                                        searchId: search._id,
+                                      });
+                                    }}
+                                  >
+                                    <Grid container spacing={0}>
+                                      <Grid container item xs={9} alignItems="center">
+                                        <Grid item>
+                                          {option.Source === ownerCogIndexName && (
+                                            <PersonIcon className={classes.icon} />
+                                          )}
+                                          {option.Source === contactIndexName && (
+                                            //will need to change this to something different 
+                                            <PersonIcon className={classes.icon} />
+                                          )}
+                                          {option.Source === operatorIndexName && (
+                                            <OperatorIcon
+                                              className={classes.icon}
+                                              color={"#757575"}
+                                            />
+                                          )}
+                                          {option.Source ===
+                                            wellCogIndexName && (
+                                              <WellIcon
+                                                className={classes.icon}
+                                                color={"#757575"}
+                                                opacity="1.0"
+                                                small
+                                              />
+                                            )}
+                                          {option.Source === leaseIndexName && (
+                                            <LeaseIcon
+                                              className={classes.icon}
+                                              color={"#757575"}
+                                            />
+                                          )}
+                                          {option.Source === "mapboxSearch" && (
+                                            <LocationOnIcon
+                                              className={classes.icon}
+                                            />
+                                          )}
+                                        </Grid>
+                                        <Grid item xs>
+                                          {parts.map((part, index) => (
+                                            <span
+                                              key={index}
+                                              style={{
+                                                fontWeight: part.highlight
+                                                  ? 700
+                                                  : 400,
+                                              }}
+                                            >
+                                              {part.text}
+                                            </span>
+                                          ))}
+
+                                          {option && option.Secondary && (
+                                            <Typography
+                                              variant="body2"
+                                              color="textSecondary"
+                                            >
+                                              {option.Secondary}
+                                            </Typography>
+                                          )}
+                                        </Grid>
+                                      </Grid>
+                                      <Grid container item xs={3} alignItems="center">
+                                        <Grid item>
+                                          <Typography
+                                            variant="body2"
+                                            style={{ color: "rgb(80, 187, 223)" }}
+                                          >
+                                            {new Intl.DateTimeFormat("en-US", {
+                                              year: "2-digit",
+                                              month: "2-digit",
+                                              day: "2-digit",
+                                              hour: "2-digit",
+                                              minute: "2-digit",
+                                            }).format(search.ts)}
+                                          </Typography>
+                                        </Grid>
+                                      </Grid>
+                                    </Grid>
+                                  </Box>
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <Box p={1}>
+                              <Typography>There is no history yet.</Typography>
+                            </Box>
+                          )}
+                        </Popover>
+                      </div>
+                    </InputAdornment>
+                  ),
+                }}
+                className={classes.textF}
+              />
+            )}
           </div>
         )}
         renderOption={(option) => {
@@ -1670,8 +1631,8 @@ function Search() {
                     />
                   )}
                   {option.Source === leaseIndexName && (
-                    <div>   
-                    <LeaseGrayIcon className={classes.icon} />
+                    <div>
+                      <LeaseGrayIcon className={classes.icon} />
                     </div>
                   )}
                   {option.Source === contactIndexName && (
@@ -1718,14 +1679,14 @@ function Search() {
                         option.Source === ownerCogIndexName
                           ? maxMinOwnersScore
                           : option.Source === wellCogIndexName
-                          ? maxMinWellsScore
-                          : option.Source === operatorIndexName
-                          ? maxMinOperatosScore
-                          : option.Source === leaseIndexName
-                          ? maxMinLeasesScore
-                          : option.Source === contactIndexName
-                          ? maxMinContactsScore
-                          : maxMinMapboxSearchScore,
+                            ? maxMinWellsScore
+                            : option.Source === operatorIndexName
+                              ? maxMinOperatosScore
+                              : option.Source === leaseIndexName
+                                ? maxMinLeasesScore
+                                : option.Source === contactIndexName
+                                  ? maxMinContactsScore
+                                  : maxMinMapboxSearchScore,
                         option.Score
                       ).toString(),
                     }}
