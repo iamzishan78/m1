@@ -64,7 +64,7 @@ export default function LaneProgressZone(props) {
     <div className={classes.root} variant="outlined">
       <CardActions style={{ padding: "23px 0px 0px 0px", borderBottom: "1px solid lightgray" }}>
         <Grid item xs={12} style={{ minHeight: "35px" }}>
-          <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Lane Progress</h4>
+          <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Overall Progress</h4>
           <h4 className={classes.details} onClick={() => toggleProgressDetail(true)}>
             Details
           </h4>

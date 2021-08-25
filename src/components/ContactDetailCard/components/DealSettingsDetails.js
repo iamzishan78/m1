@@ -367,14 +367,17 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
             <ProgressBar value={settings.progress} isNumeric />
           </div>
         </Grid>
-        <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
+
+        {/* TEMP COMMMENT FOR EFFICIENC */}
+        {/* <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
           <Typography variant="body2" color="textSecondary">
             Efficiency
           </Typography>
           <div style={{ minWidth: "200px" }}>
             <ProgressBar value={settings.efficiency} isNumeric />
           </div>
-        </Grid>
+        </Grid> */}
+
         <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
           <Typography variant="body2" color="textSecondary">
             Approver
@@ -483,10 +486,10 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
       <CardActions style={{ padding: 0 }}>
         <Grid container direction="row" justify="space-between" alignItems="center">
           <Grid item xs={6}>
-            <h4 style={{ height: "8px" }}>Lane Progress</h4>
+            <h4 style={{ height: "8px" }}>Overall Progress</h4>
             <ProgressBar value={50} isNumeric />
           </Grid>
-          <Grid item xs={6} style={{ textAlign: "right" }}>
+          {/* <Grid item xs={6} style={{ textAlign: "right" }}>
             <div className={classes.popOver}>
               <Button aria-controls="laneProgressMenu" aria-haspopup="true" onClick={handleClick}>
                 All
@@ -498,10 +501,10 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
                 <MenuItem onClick={handleClose}>Option 3</MenuItem>
               </Menu>
             </div>
-          </Grid>
-          <Grid item xs={12} className={classes.newLaneProgress}>
+          </Grid> */}
+          {/* <Grid item xs={12} className={classes.newLaneProgress}>
             <div className={classes.newFlowLane}>+ Add New Lane</div>
-          </Grid>
+          </Grid> */}
         </Grid>
       </CardActions>
       <CardContent style={{ padding: 0 }}>
