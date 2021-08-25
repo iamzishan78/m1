@@ -534,7 +534,7 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (isProgressDetail) {
-      setStateApp((stateApp) => ({ ...stateApp, transactBarView: "Flow Lane Progress" }));
+      setStateApp((stateApp) => ({ ...stateApp, transactBarView: "Task Progress" }));
     }
   }, [isProgressDetail]);
 

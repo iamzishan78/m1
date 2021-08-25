@@ -80,7 +80,7 @@ export default function Drawer() {
         <IdentityIcon {...props} />
       </Badge>
     ),
-    "Flow Lane Progress": (props) => (
+    "Task Progress": (props) => (
       <Badge
         anchorOrigin={{
           vertical: "top",
