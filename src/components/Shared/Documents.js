@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     padding: "30px",
     overflowY: "auto",
-    maxHeight: "60vh"
+    maxHeight: "61vh"
   },
   fileUploadTopSection: {
     minHeight: "50px",

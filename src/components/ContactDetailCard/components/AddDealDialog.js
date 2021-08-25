@@ -6,6 +6,7 @@ import React, {
   useCallback
 } from "react";
 import { get } from "lodash";
+import { useHistory } from "react-router-dom";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
@@ -377,6 +378,7 @@ const newContact = {
 
 function AddDealDialog(props) {
   const dispatch = useDispatch();
+  let history = useHistory();
   const classes = useStyles();
   const { selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
   const [isProgressDetail, toggleProgressDetail] = useState(null);
@@ -409,8 +411,6 @@ function AddDealDialog(props) {
   let [transactData, setTransactData] = useState(
     props.transactData ? { ...props.transactData } : null
   );
-
-  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
   const [
     addContact,
@@ -451,10 +451,6 @@ function AddDealDialog(props) {
   const [contact, setContact] = useState({});
 
   useEffect(() => {
-    getPipelines();
-  }, [getPipelines]);
-
-  useEffect(() => {
     console.log("===========");
     console.log("FLOW TRANSACT BAR VIEW", stateApp.transactBarView);
 
@@ -477,48 +473,6 @@ function AddDealDialog(props) {
       }));
     }
   }, [dealData]);
-
-  useEffect(() => {
-    if (stateApp.activeDeal && pipelineId) {
-      // fetching deal settings
-      getDealSettings({
-        variables: {
-          dealId: stateApp.activeDeal._id,
-          pipelineId: pipelineId,
-        },
-      });
-    }
-  }, [pipelineId, stateApp.activeDeal]);
-
-  useEffect(() => {
-    if (pipelinesData) {
-      //// select first one as default
-      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
-        let activePipeline = {};
-        const isExist = !!pipelinesData.pipelines.find(
-          (p) => p._id === selectedPipe?._id
-        );
-        if (selectedPipe && isExist) {
-          activePipeline = pipelinesData.pipelines.find(
-            (p) => p._id === selectedPipe._id
-          );
-        } else activePipeline = pipelinesData.pipelines[0];
-        dispatch(
-          setFlowState({
-            selectedPipe: activePipeline,
-            pipelines: pipelinesData.pipelines
-          })
-        );
-      } else
-        dispatch(
-          setFlowState({
-            selectedPipe: null,
-            pipelines: [],
-            pipeToShow: false
-          })
-        );
-    }
-  }, [pipelinesData]);
 
   useEffect(() => {
     if (stateApp.activeDeal && pipelineId) {
@@ -1333,6 +1287,7 @@ function AddDealDialog(props) {
           open={props.open}
           handleClickDialogClose={() => {
             if (!updateDealLoading && !addContactLoading) {
+              history.push(`${history.location.pathname.split("/lane")[0]}`)
               setStateApp((stateApp) => ({
                 ...stateApp,
                 dealDialog: false,

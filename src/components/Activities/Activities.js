@@ -6,6 +6,8 @@ import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
 import { uniqueId } from "lodash";
 import { useLazyQuery } from "@apollo/client";
+import { useHistory } from "react-router-dom";
+
 import { GETALLACTIVITIES } from "../../graphQL/useQueryGetAllActivities";
 import ActivitiesToolbar from "./components/ActivitiesToolbar";
 import ActivitiesEvent from "./components/ActivitiesEvent";
@@ -125,23 +127,6 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
     case "closed":
       filterByTimeCondition = e.isClosed;
       break;
-      // case "todo":
-      //   filterByTimeCondition = moment(e.end).isSameOrAfter(today);
-      //   break;
-      // case "today":
-      //   filterByTimeCondition = moment(e.end).isSame(today, "day");
-      //   break;
-      // case "tomorrow":
-      //   filterByTimeCondition = moment(e.end).isSame(tomorrow, "day");
-      //   break;
-      // case "this-week":
-      //   filterByTimeCondition = moment(e.end).isSame(today, "week");
-
-      //   break;
-      // case "next-week":
-      //   filterByTimeCondition = moment(e.end).isSame(nextWeekDay, "week");
-
-      break;
     default:
       filterByTimeCondition = true;
   }
@@ -151,7 +136,7 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime) => {
 
 const Activities = () => {
   const classes = useStyles();
-
+  let history = useHistory();
   const [
     getAllActivities,
     {
@@ -176,6 +161,15 @@ const Activities = () => {
     getAllActivities();
   }, []);
 
+  useEffect(() => {
+    if(events.length > 0 ){
+      const eventId = history.location.pathname.split('/')[2]
+      if(eventId){
+        setSelectedActivityId(eventId);
+        onModalOpen();
+      }
+    }
+  }, [events])
   useEffect(() => {
     if (activitiesData) {
       setEvents(
@@ -242,6 +236,7 @@ const Activities = () => {
   }, [stateApp.selectedActivityId]);
 
   const onEventClick = (event) => {
+    window.history.pushState('', '', `/activities/${event._id}`);
     setSelectedActivityId(event._id);
     onModalOpen();
   };

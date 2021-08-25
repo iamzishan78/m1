@@ -75,6 +75,7 @@ export default function DocumentComponent() {
         maxWidth="xl"
         open={stateApp.pdfView ? true : false}
         onClose={() => {
+          window.history.pushState('', '', `/documents`);
           setStateApp((state) => ({
             ...state,
             pdfView: null,
@@ -98,6 +99,7 @@ export default function DocumentComponent() {
                 className="float-right"
                 color="inherit"
                 onClick={() => {
+                  window.history.pushState('', '', `/documents`);
                   setStateApp((state) => ({
                     ...state,
                     pdfView: null,

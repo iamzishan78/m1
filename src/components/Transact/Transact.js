@@ -1,5 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
+import { useHistory } from "react-router-dom";
+
 import { AppContext } from "../../AppContext";
 import Board from "react-trello";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
@@ -280,6 +282,7 @@ export function getRandomColor(value, colors = defaultColors) {
 
 export default function Transact() {
   const classes = useStyles();
+  let history = useHistory();
   const dispatch = useDispatch();
   const { pipeToShow, pipeToShowTab } = useSelector(({ Flow }) => Flow);
   console.log("PIPETOSHOW: ", pipeToShow);
@@ -369,6 +372,7 @@ export default function Transact() {
   const handleDataChange = (newData) => { };
 
   const handleCardClick = (cardId, metadata, laneId) => {
+    history.push(`${history.location.pathname}/lane/${laneId}/card/${cardId}`)
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,

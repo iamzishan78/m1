@@ -1,5 +1,7 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
+
 import { List } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useMutation } from "@apollo/client";
@@ -32,6 +34,7 @@ const useStyles = makeStyles(() => ({
 
 function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, setMultiSelection, userId }) {
   const dispatch = useDispatch();
+  let history = useHistory();
   const classes = useStyles();
   const [items, setItems] = useState([]);
   const itemsRef = React.useRef([]);
@@ -122,6 +125,7 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
     } else {
       setMultiSelection([selectedPipe?._id]);
     }
+    history.push(`/flow/${newPipeline._id}`)
   };
 
   const handleChange = (newItems) => {
