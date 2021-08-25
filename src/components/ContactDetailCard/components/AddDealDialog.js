@@ -1133,7 +1133,6 @@ function AddDealDialog(props) {
         ...stateApp,
         activeDeal: {
           ...stateApp.activeDeal,
-          // contacts: [...getDealResult.deal.deal.contacts],
           contacts: [
             ...getDealResult.deal.deal.contacts.map((c) => ({
               _id: c.descriptorId,
@@ -1297,8 +1296,8 @@ function AddDealDialog(props) {
           isTransactPage={props.isTransactPage}
           hiddenOverflow
         >
-          <div style={{ padding: "30px" }}>
-            <Grid item xs={12} style={{ minHeight: "35px" }}>
+          <div>
+            <Grid item xs={12} style={{ minHeight: "35px", padding: "30px 30px" }}>
               <h4
                 style={{
                   float: "left",

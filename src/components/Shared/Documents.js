@@ -1,8 +1,7 @@
 import React, { useMemo, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import gql from "graphql-tag";
 import moment from "moment";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import TextField from "@material-ui/core/TextField";
@@ -82,12 +81,15 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "8px"
   },
 
-  fileUploadSection: {
+  fileList: {
     minHeight: "50px",
     display: "flex",
     justifyContent: "space-between",
     flexDirection: "column",
-    width: "100%"
+    width: "100%",
+    padding: "30px",
+    overflowY: "auto",
+    maxHeight: "60vh"
   },
   fileUploadTopSection: {
     minHeight: "50px",
@@ -135,13 +137,13 @@ const useStyles = makeStyles((theme) => ({
   fileDropError: {
     color: "red"
   },
-  forImage: {
-    width: "80px !important",
-    height: "80px !important",
-    backgroundColor: "transparent !important",
-    // border: "1px solid #999",
-    borderRadius: "10px !important"
-  },
+  // forImage: {
+  //   width: "80px !important",
+  //   height: "80px !important",
+  //   backgroundColor: "transparent !important",
+  //   // border: "1px solid #999",
+  //   borderRadius: "10px !important"
+  // },
   forImageContainer: {
     // width: "100px !important",
     // height: "100px !important",
@@ -178,6 +180,14 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#e9e9e978 !important",
     "& svg": {
       fill: "#d3d3d3ab !important"
+    }
+  },
+  rootPadding: {
+    padding: "10px 30px"
+  },
+  cardContent: {
+    "& .MuiCardContent-root": {
+      padding: 0
     }
   }
 }));
@@ -360,6 +370,10 @@ export default function Documents(props) {
         dateTime: fileDescriptor?.dateTime
       };
     });
+    if (filteredMerged)
+      for (let i = 0; i < 5; i += 1) {
+        filteredMerged.push(...filteredMerged);
+      }
     setFilteredDocuments(filteredMerged);
   }, [documentSearch, viewFileResultt?.viewFiles]);
 
@@ -401,170 +415,157 @@ export default function Documents(props) {
           relatedObjectType={relatedObjectType} //Contact or Deal
         />
       )}
+      <div className={classes.cardContent}>
+        <CardContent>
+          <div className={classes.rootPadding}>
+            {props.isTransactPage && (
+              <UploadZone
+                relatedObjectId={props.id}
+                userId={userId}
+                relatedObjectType={relatedObjectType} //Contact or Deal
+              />
+            )}
 
-      <CardContent>
-        {props.isTransactPage && (
-          <UploadZone
-            relatedObjectId={props.id}
-            userId={userId}
-            relatedObjectType={relatedObjectType} //Contact or Deal
-          />
-        )}
-
-        {props.isTransactPage && (
-          <div style={{ marginBottom: "20px" }}>
-            <TextField
-              fullWidth
-              value={documentSearch}
-              onChange={(e) => setDocumentSearch(e.target.value)}
-              variant="outlined"
-              label={"Search Documents"}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                )
-              }}
-              labelWidth={70}
-            />
+            {props.isTransactPage && (
+              <TextField
+                fullWidth
+                value={documentSearch}
+                onChange={(e) => setDocumentSearch(e.target.value)}
+                variant="outlined"
+                label={"Search Documents"}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  )
+                }}
+                labelWidth={70}
+              />
+            )}
           </div>
-        )}
-        <div className={classes.fileUploadSection}>
-          {/* this is for view all */}
-          {filteredDocuments?.map((file, key) => {
-            if (file.state === "pending")
+          <div className={classes.fileList}>
+            {/* this is for view all */}
+            {filteredDocuments?.map((file, key) => {
+              if (file.state === "pending")
+                return (
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <CircularProgress size="20px" />
+                  </div>
+                );
+
+              let fileExtension = file?.name
+                ?.slice(file.name.lastIndexOf(".") + 1)
+                ?.toLowerCase();
+
               return (
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                  <CircularProgress size="20px" />
-                </div>
-              );
+                <div key={file.id}>
+                  <div className={classes.fileUploadTopSection}>
+                    <div className={classes.flexIcon}>
+                      {
+                        <div
+                          className={`${classes.greySquare} 
+                        // ${file.state !== "active"
+                            //   ? classes.disabledDownload
+                            //   : ""
+                            }`}
+                        >
+                          {new RegExp(
+                            ["jpg", "jpeg", "png", "bmp"].join("|")
+                          ).test(fileExtension) ? (
+                            <img
+                              src={file.uri}
+                              alt={file.name}
+                              className={classes.forImage}
+                            ></img>
+                          ) : (
+                            <div
+                              className={classes.forImageContainer}
+                              onClick={() => {
+                                if (file.state !== "active") return;
 
-            let fileExtension = file?.name
-              ?.slice(file.name.lastIndexOf(".") + 1)
-              ?.toLowerCase();
-
-            return (
-              <div key={file.id}>
-                <div className={classes.fileUploadTopSection}>
-                  <div className={classes.flexIcon}>
-                    {
+                                if (fileExtension === "pdf") {
+                                  setStateApp({
+                                    ...stateApp,
+                                    viewDoc: { uri: file.uri, name: file.name }
+                                  });
+                                } else {
+                                  handleViewFile(file.id);
+                                }
+                              }}
+                            >
+                              {/* {fileExtension} */}
+                              {get_file_icon(fileExtension)}
+                            </div>
+                          )}
+                        </div>
+                      }
                       <div
-                        className={`${classes.greySquare} 
-                        // ${
-                          file.state !== "active"
-                          //   ? classes.disabledDownload
-                          //   : ""
-                        }`}
+                        className="DocumentTitle"
+                        onClick={() => {
+                          if (file.state !== "active") return;
+
+                          if (fileExtension === "pdf") {
+                            setStateApp({
+                              ...stateApp,
+                              viewDoc: { uri: file.uri, name: file.name }
+                            });
+                          } else {
+                            handleViewFile(file.id);
+                          }
+                        }}
                       >
-                        {new RegExp(
-                          ["jpg", "jpeg", "png", "bmp"].join("|")
-                        ).test(fileExtension) ? (
-                          <img
-                            src={file.uri}
-                            alt={file.name}
-                            className={classes.forImage}
-                          ></img>
-                        ) : (
-                          <div
-                            className={classes.forImageContainer}
-                            onClick={() => {
-                              if (file.state !== "active") return;
+                        {/* }}> */}
 
-                              if (fileExtension === "pdf") {
-                                setStateApp({
-                                  ...stateApp,
-                                  viewDoc: { uri: file.uri, name: file.name }
-                                });
-                              } else {
-                                handleViewFile(file.id);
-                              }
-                            }}
-                          >
-                            {/* {fileExtension} */}
-                            {get_file_icon(fileExtension)}
-                          </div>
-                        )}
+                        <h4 className={classes.uploadTitle}>
+                          {file?.name?.length > 22
+                            ? file?.name?.slice(0, 20) + "..."
+                            : file?.name}
+                        </h4>
+                        {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
+                        <h5 className={classes.uploadSubtext}>
+                          {moment
+                            .unix(file.dateTime / 1000)
+                            .format("MMM DD, YYYY")}
+                        </h5>
                       </div>
-                    }
-                    <div
-                      className="DocumentTitle"
-                      // onClick={() => {
+                    </div>
+                    <div className={classes.IconSection}>
+                      <IconButton
+                        size="small"
+                        style={{ marginBottom: "8px" }}
+                        onClick={() => {
+                          setOpenDeleteConfirmDialog(true);
+                          setFileIdToDelete(file.descriptorId);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
 
-                      //   viewFileResultt?.viewFiles.map((value) => {
-
-                      //     if (value.id === file.id && ExtenstionGetter(file.name) === 'pdf') {
-                      //       setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: file.name } })
-                      //     }
-                      //     else {
-                      //       handleViewFile(file.id)
-                      //     }
-
-                      //   })
-
-                      onClick={() => {
-                        if (file.state !== "active") return;
-
-                        if (fileExtension === "pdf") {
-                          setStateApp({
-                            ...stateApp,
-                            viewDoc: { uri: file.uri, name: file.name }
-                          });
-                        } else {
-                          handleViewFile(file.id);
-                        }
-                      }}
-                    >
-                      {/* }}> */}
-
-                      <h4 className={classes.uploadTitle}>
-                        {file?.name?.length > 22
-                          ? file?.name?.slice(0, 20) + "..."
-                          : file?.name}
-                      </h4>
-                      {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
-                      <h5 className={classes.uploadSubtext}>
-                        {moment
-                          .unix(file.dateTime / 1000)
-                          .format("MMM DD, YYYY")}
-                      </h5>
+                      {/* {!props.isTransactPage && ( */}
+                      <IconButton
+                        disabled={file.state !== "active"}
+                        size="small"
+                        onClick={() => handleViewFile(file.id)}
+                      >
+                        <GetAppIcon />
+                      </IconButton>
+                      {/* )} */}
                     </div>
                   </div>
-                  <div className={classes.IconSection}>
-                    <IconButton
-                      size="small"
-                      style={{ marginBottom: "8px" }}
-                      onClick={() => {
-                        setOpenDeleteConfirmDialog(true);
-                        setFileIdToDelete(file.descriptorId);
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-
-                    {/* {!props.isTransactPage && ( */}
-                    <IconButton
-                      disabled={file.state !== "active"}
-                      size="small"
-                      onClick={() => handleViewFile(file.id)}
-                    >
-                      <GetAppIcon />
-                    </IconButton>
-                    {/* )} */}
-                  </div>
                 </div>
-              </div>
-            );
-          })}
-          <DeleteDocumentConfirmation
-            open={openDeleteConfirmDialog}
-            handleClose={handleDeleteCancel}
-            handleAccept={() => {
-              handleDeleteAccept();
-            }}
-          />
-        </div>
-      </CardContent>
+              );
+            })}
+            <DeleteDocumentConfirmation
+              open={openDeleteConfirmDialog}
+              handleClose={handleDeleteCancel}
+              handleAccept={() => {
+                handleDeleteAccept();
+              }}
+            />
+          </div>
+        </CardContent>
+      </div>
     </div>
   );
 }

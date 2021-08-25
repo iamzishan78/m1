@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import {
   Grid,
   InputAdornment,
@@ -29,13 +29,19 @@ import { REMOVEDEALDESCRIPTOR } from "../../graphQL/useMutationRemoveDealDescrip
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "&  .MuiList-padding": {
+    overflowY: "auto",
+    maxHeight: "85vh",
+    padding: "0px 30px 10px 30px",
+    "& .MuiList-padding": {
       padding: "23px 0px !important",
     },
   },
   button: {
     width: "100%",
   },
+  actionGrid: {
+    margin: "0px 0px 10px 0px"
+  }
 }));
 
 export default function Contacts(props) {
@@ -53,13 +59,13 @@ export default function Contacts(props) {
   const [mutationLoading, setMutationLoading] = useState(false)
   const [
     getPaginatedContacts,
-    { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts },
+    { data: allContacts, fetchMore: fetchMorePaginatedContacts },
   ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
   const [addNewContact, { data: addContactData }] = useMutation(ADDCONTACT);
-  const [removeDealDescriptor, { loading: DealLoading, error: DealError }] = useMutation(REMOVEDEALDESCRIPTOR);
+  const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
 
   useEffect(() => {
     //will also run during initial mount
@@ -69,7 +75,7 @@ export default function Contacts(props) {
         search: nameAutInputValue,
       },
     });
-  }, [nameAutInputValue]);
+  }, [getPaginatedContacts, nameAutInputValue]);
 
   useEffect(() => {
     if (get(addContactData, 'addContact.contact')) {
@@ -100,7 +106,7 @@ export default function Contacts(props) {
 
   }, [search, contacts]);
 
-  const GettingContacts = () => {
+  const GettingContacts = useCallback(() => {
     let contactnames = stateApp.activeDeal?.contacts?.map((value) => {
       if (value.relatedObject?.entity?.name !== undefined) {
         return value.relatedObject?.entity?.name
@@ -113,11 +119,11 @@ export default function Contacts(props) {
       }
     })
     setContacts(contactnames)
-  }
+  }, [stateApp.activeDeal?.contacts]);
 
   useEffect(() => {
     GettingContacts()
-  }, [search, props]);
+  }, [search, props, GettingContacts]);
 
   useEffect(() => {
     if (!props.loading) { setMutationLoading(false) }
@@ -141,24 +147,26 @@ export default function Contacts(props) {
   }
   return (
     <div>
-      <h1>{stateApp.activeDeal.name}</h1>
-      <TextField
-        fullWidth
-        placeholder="Search contacts..."
-        InputProps={{
-          startAdornment: (
-            <>
-              <InputAdornment position="start">
-                <SearchIcon htmlColor="#757575" />
-              </InputAdornment>
-            </>
-          ),
-        }}
-        value={search}
-        onChange={(event) => {
-          setSearch(event.target.value);
-        }}
-      />
+      <div style={{ padding: "0px 30px" }}>
+        <h1>{stateApp.activeDeal.name}</h1>
+        <TextField
+          fullWidth
+          placeholder="Search contacts..."
+          InputProps={{
+            startAdornment: (
+              <>
+                <InputAdornment position="start">
+                  <SearchIcon htmlColor="#757575" />
+                </InputAdornment>
+              </>
+            ),
+          }}
+          value={search}
+          onChange={(event) => {
+            setSearch(event.target.value);
+          }}
+        />
+      </div>
       <div className={classes.root}>
         <List aria-label="contacts list">
           {filteredContacts && filteredContacts.length > 0 ? (
@@ -216,10 +224,7 @@ export default function Contacts(props) {
             </ListItem>
           )}
         </List>
-      </div>
-
-      <div>
-        <Grid container>
+        <Grid container className={classes.actionGrid}>
           <Grid item xs={12}>
             {addContact ? (
               <>
