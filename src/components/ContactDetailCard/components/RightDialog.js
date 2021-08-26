@@ -15,10 +15,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function AlertDialogSlide(props) {
   const useStyles = makeStyles((theme) => ({
     dialog: {
-      "&  .MuiPaper-root": {
+      "& .MuiPaper-root": {
         position: "fixed",
         top: "0 !important",
-        right: props.isTransactPage ? "60px !important" : "0px !important",
+        right: "0px !important",
         width: props.width ? String(props.width) : null,
         maxWidth: "100% !important",
         minHeight: "100vh !important",

@@ -188,22 +188,22 @@ export default function Pipelines(props) {
       const pipelineId = history.location.pathname.split("/")[2]
       let laneId = ''
       let cardId = ''
-      if(history.location.pathname.includes('lane')){
+      if (history.location.pathname.includes('lane')) {
         laneId = history.location.pathname.split("/")[4]
       }
-      if(history.location.pathname.includes('card')){
+      if (history.location.pathname.includes('card')) {
         cardId = history.location.pathname.split("/")[6]
       }
 
       if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
         let activePipeline = {};
 
-        if(pipelineId){
+        if (pipelineId) {
           activePipeline = pipelinesData.pipelines.find(
             (p) => p._id === pipelineId
           );
         }
-        if(!activePipeline){
+        if (!activePipeline) {
           const isExist = !!pipelinesData.pipelines.find(
             (p) => p._id === selectedPipe?._id
           );
@@ -213,12 +213,12 @@ export default function Pipelines(props) {
             );
           } else activePipeline = pipelinesData.pipelines[0];
         }
-        if(laneId && cardId){
+        if (laneId && cardId) {
           history.push(`/flow/${activePipeline._id}/lane/${laneId}/card/${cardId}`);
-        }else{
+        } else {
           history.push(`/flow/${activePipeline._id}`)
         }
-        
+
         dispatch(
           setFlowState({
             selectedPipe: activePipeline,
@@ -285,23 +285,24 @@ export default function Pipelines(props) {
       if (pipelineData.pipeline) {
         let laneId = ''
         let cardId = ''
-        if(history.location.pathname.includes('lane')){
+        if (history.location.pathname.includes('lane')) {
           laneId = history.location.pathname.split("/")[4]
         }
-        if(history.location.pathname.includes('card')){
+        if (history.location.pathname.includes('card')) {
           cardId = history.location.pathname.split("/")[6]
         }
-  
+
         let deals = [];
         let pipe = {
           ...pipelineData.pipeline,
           lanes: pipelineData.pipeline.lanes?.map((lane) => ({
             ...lane,
             cards: lane.cards?.map((card) => {
-              if (!card.metadata.IsDeleted){
-                if(lane.id === laneId && cardId === card.id){ 
+              if (!card.metadata.IsDeleted) {
+                if (lane.id === laneId && cardId === card.id) {
                   setStateApp((stateApp) => ({
                     ...stateApp,
+                    transactBarView: "Deal",
                     dealDialog: true,
                     activeDeal: {
                       cardId,
@@ -632,7 +633,7 @@ export default function Pipelines(props) {
             if (success === true) dispatch(showSuccessMessage("The Pipeline was successfully updated."));
             else dispatch(showErrorMessage("An error occurred during the update."));
           })
-          .catch((reason) => {});
+          .catch((reason) => { });
       }
 
       handleClose();
@@ -673,7 +674,7 @@ export default function Pipelines(props) {
           </Typography>
         )}
 
-        <Tooltip title={"Flowline Actions"} 
+        <Tooltip title={"Flowline Actions"}
         >
           <IconButton
             disabled={!selectedPipe}
@@ -892,9 +893,9 @@ export default function Pipelines(props) {
           <DeleteConfirmationDialogContent
             header={deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`}
             onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => {}}
+            deleteFunc={deleteFunc ? deleteFunc : () => { }}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the Flowline?" : "Are you sure you want to delete the stage?"}
           </DeleteConfirmationDialogContent>

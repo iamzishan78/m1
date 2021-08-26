@@ -183,7 +183,7 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   rootPadding: {
-    padding: "10px 30px"
+    padding: "15px 15px 0px"
   },
   cardContent: {
     "& .MuiCardContent-root": {

@@ -5,6 +5,7 @@ import DescriptionIcon from "@material-ui/icons/DescriptionSharp";
 import CheckmarkIcon from "@material-ui/icons/CheckBoxOutlined";
 import ShareIcon from "@material-ui/icons/Share";
 import FolderIcon from "@material-ui/icons/Folder";
+import HomeIcon from '@material-ui/icons/HomeOutlined';
 import IdentityIcon from "@material-ui/icons/PermIdentity";
 import FlowIcon from "@material-ui/icons/Repeat";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px",
     position: "absolute",
     right: 0,
-    top: 0,
+    top: '108px',
     zIndex: 1223,
     backgroundColor: "rgb(240,245,248)",
   },
@@ -53,6 +54,17 @@ export default function Drawer() {
 
   const drawerIcons = {
     // Comments: (props) => <MessageIcon {...props} />,
+    Deal: (props) => (
+      <Badge
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        color="primary"
+      >
+        <HomeIcon {...props} />
+      </Badge>
+    ),
     Documents: (props) => (
       <Badge
         anchorOrigin={{

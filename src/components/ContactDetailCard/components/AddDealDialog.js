@@ -3,13 +3,15 @@ import React, {
   useEffect,
   useContext,
   useRef,
-  useCallback
+  useCallback,
+  Fragment
 } from "react";
 import { get } from "lodash";
 import { useHistory } from "react-router-dom";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
+import Divider from "@material-ui/core/Divider";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -32,6 +34,7 @@ import {
   Avatar
 } from "@material-ui/core";
 import RightDialog from "./RightDialog";
+import Drawer from "components/Transact/components/Drawer";
 import moment from "moment";
 import {
   deepEqual,
@@ -101,7 +104,9 @@ NumberFormatCustom.propTypes = {
 };
 
 const useStyles = makeStyles((theme) => ({
-  mainRoot: {},
+  mainRoot: {
+    width: "485px"
+  },
   dialogTitle: {
     textAlign: "center"
   },
@@ -156,9 +161,10 @@ const useStyles = makeStyles((theme) => ({
   },
   inputFieldRoot: {
     "& .MuiDialog-root": {},
-    padding: "0px 30px 10px 30px",
+    padding: "15px 25px 0px",
     overflowY: "auto",
-    maxHeight: "86vh"
+    maxHeight: "89vh",
+    marginRight: "60px"
   },
   progress: {
     marginLeft: "30px",
@@ -442,7 +448,7 @@ function AddDealDialog(props) {
 
   const [
     getPaginatedContacts,
-    { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts }
+    { data: allContacts, fetchMore: fetchMorePaginatedContacts }
   ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first"
@@ -454,7 +460,7 @@ function AddDealDialog(props) {
     console.log("===========");
     console.log("FLOW TRANSACT BAR VIEW", stateApp.transactBarView);
 
-    if (stateApp.transactBarView !== "") {
+    if (stateApp.transactBarView !== "Deal") {
       // handleValidate();
 
       if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
@@ -726,7 +732,7 @@ function AddDealDialog(props) {
       ...stateApp,
       dealDialog: false,
       activeDeal: { cardId: null, laneId: null },
-      transactBarView: "",
+      transactBarView: "Deal",
       viewDoc: null
     }));
     // setValid({title: false});
@@ -1200,15 +1206,185 @@ function AddDealDialog(props) {
     setExpCardSubComponentTitle(subComponentTitle);
     setShowExpandableCard(true);
   };
-  const handleCloseExpandableCard = () => {
-    setShowExpandableCard(false);
-    setStateApp((state) => ({
-      ...state,
-      contactUpdated: null
-    }));
-  };
+
+  const StickyHeader = () => (
+    <div>
+      <Grid
+        item
+        container
+        xs={12}
+        style={{ padding: "10px 14px 5px 25px" }}
+      >
+        {!titleFocus && (
+          <>
+            <Grid item xs={6} style={{ minHeight: "35px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  float: "left"
+                }}
+              >
+                {(dealState === null || dealState === "open") && (
+                  <>
+                    <div
+                      className={classes.dealStateOpenWon}
+                      onClick={() => setDealState("won")}
+                      style={{
+                        marginRight: 8
+                      }}
+                    >
+                      Won
+                            </div>
+
+                    <div
+                      className={classes.dealStateOpenLost}
+                      onClick={() => setDealState("lost")}
+                    >
+                      Lost
+                            </div>
+                  </>
+                )}
+                {dealState === "won" && (
+                  <>
+                    <div
+                      className={classes.dealStateClosed}
+                      style={{
+                        backgroundColor: "#a6e5c3",
+                        fontWeight: "bold",
+                        color: "#54a83c",
+                        marginRight: 8
+                      }}
+                    >
+                      Won
+                            </div>
+                    <div
+                      className={classes.dealStateReopen}
+                      onClick={() => setDealState(null)}
+                    >
+                      Re-open
+                            </div>
+                  </>
+                )}
+                {dealState === "lost" && (
+                  <>
+                    <div
+                      className={classes.dealStateClosed}
+                      style={{
+                        backgroundColor: "#ffa8a8",
+                        // borderStyle: "solid",
+                        fontWeight: "bold",
+                        color: "#f96060",
+                        marginRight: 8
+                      }}
+                    >
+                      Lost
+                            </div>
+                    <div
+                      className={classes.dealStateReopen}
+                      onClick={() => setDealState(null)}
+                    >
+                      Re-open
+                            </div>
+                  </>
+                )}
+              </div>
+            </Grid>
+            <Grid item xs={6} style={{ minHeight: "35px" }}>
+
+              {(stateApp.activeDeal?.cardId ||
+                stateApp.activeDeal?.id) &&
+                stateApp.activeDeal?.laneId && (
+                  <>
+                    <IconButton
+                      disabled={
+                        updateDealLoading || addContactLoading
+                      }
+                      onClick={openConfirmationDialog}
+                      size="small"
+                      component="span"
+                      style={{
+                        background: "transparent",
+                        paddingLeft: "10px",
+                        align: "center",
+                        float: "right"
+                      }}
+                    >
+                      <DeleteIcon
+                        size="medium"
+                        className={classes.closeIcon}
+                      />
+                    </IconButton>
+                  </>
+                )}
+            </Grid>
+          </>
+        )}
+      </Grid>
+      <Grid item
+        container
+        xs={12}
+        style={{ padding: "0px 30px" }}
+        alignItems="center"
+      >
+        {!(
+          (Object.keys(contact).length === 0 &&
+            contact.constructor === Object) ||
+          contact === null
+        ) && !props.isTransactPage && (
+            <TextField
+              variant="outlined"
+              margin="dense"
+              value={contact?.name}
+              label="Contact Name"
+              fullWidth
+              disabled
+              className={classes.inputField}
+            />
+          )}
+
+        <FormControl
+          variant="outlined"
+          className={classes.inputFieldDealName}
+          style={{ marginLeft: "-15px" }}
+          fullWidth
+          size="small"
+        >
+          <TextField
+            margin="dense"
+            value={title}
+            variant="outlined"
+            placeholder="Click to enter deal name"
+            required
+            fullWidth
+            // error text that will prevent things
+            error={title && title !== "" ? false : true}
+            helperText={
+              title && title !== ""
+                ? ""
+                : "Enter a deal name to get started"
+            }
+            //   required
+            onChange={(e) => {
+              setTitle(e.target.value);
+            }}
+            InputProps={{
+              classes: {
+                root: classes.dealNameRoot,
+                focused: classes.focused,
+                notchedOutline: classes.notchedOutline
+              }
+            }}
+            onBlur={() => setTitleFocus(false)}
+          />
+        </FormControl>
+      </Grid>
+      <Divider />
+    </div>
+  )
+
   return (
-    <div className={classes.dealDetailRoot}>
+    <>
       {deleteDialogOpen && (
         <Dialog
           className={classes.dialog}
@@ -1228,61 +1404,7 @@ function AddDealDialog(props) {
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
-
-      {props.isTransactPage &&
-        stateApp.transactBarView !== "" &&
-        (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
-        <RightDialog
-          open={props.open}
-          width={props.width}
-          handleClickDialogClose={() => {
-            if (!updateDealLoading && !addContactLoading) {
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                dealDialog: false,
-                activeDeal: { cardId: null, laneId: null },
-                transactBarView: "",
-                viewDoc: null
-              }));
-              handleClose();
-            }
-          }}
-          isTransactPage={props.isTransactPage}
-          hiddenOverflow
-        >
-          <div>
-            <Grid item xs={12} style={{ minHeight: "35px", padding: "30px 30px" }}>
-              <h4
-                style={{
-                  float: "left",
-                  fontSize: "1.1rem",
-                  marginTop: "0px"
-                }}
-              >
-                {stateApp.transactBarView}
-              </h4>
-
-              <div style={{ float: "right" }}>
-                <IconButton
-                  disabled={updateDealLoading || addContactLoading}
-                  onClick={() =>
-                    setStateApp((stateApp) => ({
-                      ...stateApp,
-                      transactBarView: "",
-                      viewDoc: null
-                    }))
-                  }
-                  size="small"
-                >
-                  <ArrowBackIcon />
-                </IconButton>
-              </div>
-            </Grid>
-
-            {getView()}
-          </div>
-        </RightDialog>
-      ) : (
+      <div className={classes.dealDetailRoot}>
         <RightDialog
           open={props.open}
           handleClickDialogClose={() => {
@@ -1296,544 +1418,311 @@ function AddDealDialog(props) {
               handleClose();
             }
           }}
-          width={props.width}
+          width="485px"
           isTransactPage={props.isTransactPage}
-          className={classes.mainRoot}
           hiddenOverflow
         >
-          <div>
-            <Grid
-              item
-              container
-              xs={12}
-              style={{
-                margin: 0,
-                padding: "30px 30px 0px 30px",
-                marginBottom: "1em"
-              }}
-              alignItems="center"
-            >
-              {/* <Grid
-                item
-                xs
-                style={{
-                  flexGrow: 1,
-                  padding: 0,
-                  marginRight: titleFocus ? 0 : '5px',
-                }}
-              >
-              </Grid> */}
-
-              <Grid container spacing={2} className={classes.gridStyle}>
-                <Grid item xs={6} style={{ minHeight: "35px" }}>
-                  <Typography
-                    variant="h5"
-                    style={{
-                      // margin: '0 0 0 0',
-
-                      float: "left",
-
-                      fontSize: "1.3rem"
-                    }}
-                  >
-                    Deal Information
-                  </Typography>
-                </Grid>
-
-                <Grid item xs={6} style={{ minHeight: "35px" }}>
-                  {!titleFocus && (
-                    <Grid
-                      item
-                      xs
-                      style={{
-                        flexGrow: 0,
-                        padding: 2
-                        // marginTop: 2
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          float: "right"
-                        }}
-                      >
-                        {(dealState === null || dealState === "open") && (
-                          <>
-                            <div
-                              className={classes.dealStateOpenWon}
-                              onClick={() => setDealState("won")}
-                              style={{
-                                marginRight: 8
-                              }}
-                            >
-                              Won
-                            </div>
-
-                            <div
-                              className={classes.dealStateOpenLost}
-                              onClick={() => setDealState("lost")}
-                            >
-                              Lost
-                            </div>
-                          </>
-                        )}
-                        {dealState === "won" && (
-                          <>
-                            <div
-                              className={classes.dealStateClosed}
-                              style={{
-                                backgroundColor: "#a6e5c3",
-                                fontWeight: "bold",
-                                color: "#54a83c",
-                                marginRight: 8
-                              }}
-                            >
-                              Won
-                            </div>
-                            <div
-                              className={classes.dealStateReopen}
-                              onClick={() => setDealState(null)}
-                            >
-                              Re-open
-                            </div>
-                          </>
-                        )}
-                        {dealState === "lost" && (
-                          <>
-                            <div
-                              className={classes.dealStateClosed}
-                              style={{
-                                backgroundColor: "#ffa8a8",
-                                // borderStyle: "solid",
-                                fontWeight: "bold",
-                                color: "#f96060",
-                                marginRight: 8
-                              }}
-                            >
-                              Lost
-                            </div>
-                            <div
-                              className={classes.dealStateReopen}
-                              onClick={() => setDealState(null)}
-                            >
-                              Re-open
-                            </div>
-                          </>
-                        )}
-                        {(stateApp.activeDeal?.cardId ||
-                          stateApp.activeDeal?.id) &&
-                          stateApp.activeDeal?.laneId && (
-                            <>
-                              <IconButton
-                                disabled={
-                                  updateDealLoading || addContactLoading
-                                }
-                                onClick={openConfirmationDialog}
-                                size="small"
-                                component="span"
-                                style={{
-                                  background: "transparent",
-                                  paddingLeft: "10px",
-                                  align: "center"
-                                }}
-                              >
-                                <DeleteIcon
-                                  size="medium"
-                                  className={classes.closeIcon}
-                                />
-                              </IconButton>
-                            </>
-                          )}
-                      </div>
+          <StickyHeader />
+          <Drawer />
+          <div className={classes.inputFieldRoot}>
+            {props.isTransactPage &&
+              stateApp.transactBarView !== "Deal" &&
+              (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
+              <Fragment>
+                {getView()}
+              </Fragment>
+            ) : (
+              <Fragment>
+                <FormControl variant="outlined" fullWidth size="small">
+                  <Grid container className={classes.gridStyle}>
+                    <Grid item xs={3}>
+                      <div>Owner</div>
                     </Grid>
-                  )}
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item
-              container
-              xs={12}
-              style={{
-                margin: 0,
-                padding: "0px 30px",
-                marginBottom: "1em"
-              }}
-              alignItems="center"
-            >
-              {!(
-                (Object.keys(contact).length === 0 &&
-                  contact.constructor === Object) ||
-                contact === null
-              ) && !props.isTransactPage ? (
-                <TextField
-                  variant="outlined"
-                  margin="dense"
-                  value={contact?.name}
-                  label="Contact Name"
-                  fullWidth
-                  disabled
-                  className={classes.inputField}
-                />
-              ) : (
-                <></>
-              )}
-
-              <FormControl
-                variant="outlined"
-                className={classes.inputFieldDealName}
-                style={{ marginLeft: "-15px" }}
-                fullWidth
-                size="small"
-              >
-                <TextField
-                  margin="dense"
-                  value={title}
-                  variant="outlined"
-                  placeholder="Click to enter deal name"
-                  required
-                  fullWidth
-                  // error text that will prevent things
-                  error={title && title !== "" ? false : true}
-                  helperText={
-                    title && title !== ""
-                      ? ""
-                      : "Enter a deal name to get started"
-                  }
-                  //   required
-                  onChange={(e) => {
-                    setTitle(e.target.value);
-                  }}
-                  InputProps={{
-                    classes: {
-                      root: classes.dealNameRoot,
-                      focused: classes.focused,
-                      notchedOutline: classes.notchedOutline
-                    }
-                  }}
-                  onBlur={() => setTitleFocus(false)}
-                />
-              </FormControl>
-            </Grid>
-
-            <div className={classes.inputFieldRoot}>
-
-              <FormControl variant="outlined" fullWidth size="small">
-                <Grid container className={classes.gridStyle}>
-                  <Grid item xs={3}>
-                    <div>Owner</div>
-                  </Grid>
-                  <Grid item xs={9}>
-                    <Autocomplete
-                      options={users}
-                      onChange={(e, user) => {
-                        setOwnerId(user?.value);
-                      }}
-                      value={
-                        users.find((user) => user?.value === ownerId) || null
-                      }
-                      getOptionLabel={(option) => option.text}
-                      getOptionSelected={(option) => option.value === ownerId}
-                      classes={{
-                        inputRoot: classes.dealOwnerRoot,
-                        focused: classes.dealOwnerRootFocused,
-                        popupIndicator: classes.popupIndicator
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          margin="dense"
-                          {...params}
-                          variant="outlined"
-                          className={classes.inputFieldOwner}
-                          InputLabelProps={{
-                            ...params.InputLabelProps,
-                            shrink: true,
-                            classes: {
-                              root: classes.dealOwnerLabel
-                            }
-                          }}
-                          placeholder="Assign Owner"
-                          InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                              <>
-                                <InputAdornment position="start">
-                                  <Avatar className={classes.dealOwnerAvatar}>
-                                    {users.find(
-                                      (user) => user?.value === ownerId
-                                    ) ? (
-                                      <CustomAvatar
-                                        diglog={true}
-                                        email={
-                                          users.find(
-                                            (user) => user?.value === ownerId
-                                          ).email
-                                        }
-                                        text={
-                                          users
-                                            .find(
+                    <Grid item xs={9}>
+                      <Autocomplete
+                        options={users}
+                        onChange={(e, user) => {
+                          setOwnerId(user?.value);
+                        }}
+                        value={
+                          users.find((user) => user?.value === ownerId) || null
+                        }
+                        getOptionLabel={(option) => option.text}
+                        getOptionSelected={(option) => option.value === ownerId}
+                        classes={{
+                          inputRoot: classes.dealOwnerRoot,
+                          focused: classes.dealOwnerRootFocused,
+                          popupIndicator: classes.popupIndicator
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            margin="dense"
+                            {...params}
+                            variant="outlined"
+                            className={classes.inputFieldOwner}
+                            InputLabelProps={{
+                              ...params.InputLabelProps,
+                              shrink: true,
+                              classes: {
+                                root: classes.dealOwnerLabel
+                              }
+                            }}
+                            placeholder="Assign Owner"
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment: (
+                                <>
+                                  <InputAdornment position="start">
+                                    <Avatar className={classes.dealOwnerAvatar}>
+                                      {users.find(
+                                        (user) => user?.value === ownerId
+                                      ) ? (
+                                        <CustomAvatar
+                                          diglog={true}
+                                          email={
+                                            users.find(
                                               (user) => user?.value === ownerId
-                                            )
-                                            .text.toString()
-                                            .toUpperCase()
-                                            .split(" ").length > 1
-                                            ? users
+                                            ).email
+                                          }
+                                          text={
+                                            users
                                               .find(
-                                                (user) =>
-                                                  user?.value === ownerId
+                                                (user) => user?.value === ownerId
                                               )
                                               .text.toString()
-                                            : "Add Owner"
-                                        }
-                                      />
-                                    ) : (
-                                      "AO"
-                                    )}
-                                    {/* {users.find(
-                                      (user) => user?.value === ownerId
-                                    )
-                                      ? users
-                                          .find(
-                                            (user) => user?.value === ownerId
-                                          )
-                                          .text.toString()
-                                          .toUpperCase()
-                                          .split(" ").length > 1
-                                        ? users
-                                            .find(
-                                              (user) => user?.value === ownerId
-                                            )
-                                            .text.toString()
-                                            .toUpperCase()
-                                            .split(" ")[0][0] +
-                                          "" +
-                                          users
-                                            .find(
-                                              (user) => user?.value === ownerId
-                                            )
-                                            .text.toString()
-                                            .toUpperCase()
-                                            .split(" ")[1][0]
-                                        : "AO"
-                                      : "AO"} */}
-                                  </Avatar>
-                                </InputAdornment>
-                                {params.InputProps.startAdornment}
-                              </>
-                            )
-                          }}
-                        />
-                      )}
-                    />
+                                              .toUpperCase()
+                                              .split(" ").length > 1
+                                              ? users
+                                                .find(
+                                                  (user) =>
+                                                    user?.value === ownerId
+                                                )
+                                                .text.toString()
+                                              : "Add Owner"
+                                          }
+                                        />
+                                      ) : (
+                                        "AO"
+                                      )}
+                                    </Avatar>
+                                  </InputAdornment>
+                                  {params.InputProps.startAdornment}
+                                </>
+                              )
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
                   </Grid>
-                </Grid>
-              </FormControl>
+                </FormControl>
 
-              <FormControl variant="outlined" fullWidth size="small">
-                <Grid container className={classes.gridStyle}>
-                  <Grid item xs={3}>
-                    <div>Close Date</div>
+                <FormControl variant="outlined" fullWidth size="small">
+                  <Grid container className={classes.gridStyle}>
+                    <Grid item xs={3}>
+                      <div>Close Date</div>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <TextField
+                        margin="dense"
+                        type="date"
+                        variant="outlined"
+                        value={closeDate}
+                        placeholder=""
+                        fullWidth
+                        className={classes.inputFieldDate}
+                        onChange={(e) => {
+                          setCloseDate(e.target.value);
+                        }}
+                        InputLabelProps={{
+                          shrink: true
+                        }}
+                        InputProps={{
+                          classes: {
+                            root: classes.dateRoot,
+                            focused: classes.focused,
+                            notchedOutline: classes.notchedOutline
+                          }
+                        }}
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item xs={9}>
-                    <TextField
-                      margin="dense"
-                      type="date"
-                      variant="outlined"
-                      value={closeDate}
-                      placeholder=""
-                      fullWidth
-                      className={classes.inputFieldDate}
-                      onChange={(e) => {
-                        setCloseDate(e.target.value);
-                      }}
-                      InputLabelProps={{
-                        shrink: true
-                      }}
-                      InputProps={{
-                        classes: {
-                          root: classes.dateRoot,
-                          focused: classes.focused,
-                          notchedOutline: classes.notchedOutline
-                        }
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-              </FormControl>
+                </FormControl>
 
-              <FormControl variant="outlined" fullWidth size="small">
-                <Grid container className={classes.gridStyle}>
-                  <Grid item xs={3}>
-                    <div>Flowline</div>
-                  </Grid>
+                <FormControl variant="outlined" fullWidth size="small">
+                  <Grid container className={classes.gridStyle}>
+                    <Grid item xs={3}>
+                      <div>Flowline</div>
+                    </Grid>
 
-                  <Grid item xs={9}>
-                    <TextField
-                      variant="outlined"
-                      margin="dense"
-                      select
-                      SelectProps={{
-                        native: true,
-                        classes: {
-                          icon: classes.icon
-                        }
-                      }}
-                      size="small"
-                      value={pipelineId}
-                      className={classes.inputFieldFlowline}
-                      onChange={(e) => {
-                        settingNewPipeWithDefaultStage(e.target.value, true);
-                      }}
-                      InputProps={{
-                        classes: {
-                          root: classes.flowlineRoot,
-                          notchedOutline: classes.notchedOutlineFlow,
-                          focused: classes.notchedOutlineFlowFocused
-                        }
-                      }}
-                      fullWidth
-                    >
-                      {selectedPipe && (
-                        <option value={selectedPipe._id}>
-                          {selectedPipe.name}
-                        </option>
-                      )}
-                      {sortedPipelines?.map((pipeline, i) => {
-                        if (selectedPipe && selectedPipe._id === pipeline._id)
-                          return;
-                        return (
-                          <option value={pipeline._id} key={i}>
-                            {pipeline.name}
+                    <Grid item xs={9}>
+                      <TextField
+                        variant="outlined"
+                        margin="dense"
+                        select
+                        SelectProps={{
+                          native: true,
+                          classes: {
+                            icon: classes.icon
+                          }
+                        }}
+                        size="small"
+                        value={pipelineId}
+                        className={classes.inputFieldFlowline}
+                        onChange={(e) => {
+                          settingNewPipeWithDefaultStage(e.target.value, true);
+                        }}
+                        InputProps={{
+                          classes: {
+                            root: classes.flowlineRoot,
+                            notchedOutline: classes.notchedOutlineFlow,
+                            focused: classes.notchedOutlineFlowFocused
+                          }
+                        }}
+                        fullWidth
+                      >
+                        {selectedPipe && (
+                          <option value={selectedPipe._id}>
+                            {selectedPipe.name}
                           </option>
-                        );
-                      })}
-                    </TextField>
+                        )}
+                        {sortedPipelines?.map((pipeline, i) => {
+                          if (selectedPipe && selectedPipe._id === pipeline._id)
+                            return;
+                          return (
+                            <option value={pipeline._id} key={i}>
+                              {pipeline.name}
+                            </option>
+                          );
+                        })}
+                      </TextField>
+                    </Grid>
                   </Grid>
-                </Grid>
-              </FormControl>
+                </FormControl>
 
-              <FormControl variant="outlined" fullWidth size="small">
-                <Grid container className={classes.gridStyle}>
-                  <Grid item xs={3}>
-                    <div>Flow Stage</div>
+                <FormControl variant="outlined" fullWidth size="small">
+                  <Grid container className={classes.gridStyle}>
+                    <Grid item xs={3}>
+                      <div>Flow Stage</div>
+                    </Grid>
+
+                    <Grid item xs={9}>
+                      <TextField
+                        margin="dense"
+                        variant="outlined"
+                        select
+                        SelectProps={{
+                          native: true,
+                          classes: {
+                            icon: classes.icon
+                          }
+                        }}
+                        size="small"
+                        value={stageId}
+                        className={classes.inputFieldFlowStage}
+                        onChange={(e) => {
+                          settingNewStageAndFindNextAvailablePosition(
+                            e.target.value,
+                            true
+                          );
+                        }}
+                        InputProps={{
+                          classes: {
+                            root: classes.flowlineRoot,
+                            notchedOutline: classes.notchedOutlineFlow,
+                            focused: classes.notchedOutlineFlowFocused
+                          }
+                        }}
+                        fullWidth
+                      >
+                        {stagesToChoose &&
+                          stagesToChoose.map((stage, i) => (
+                            <option value={stage._id} key={i}>
+                              {stage.name}
+                            </option>
+                          ))}
+                      </TextField>
+                    </Grid>
                   </Grid>
+                </FormControl>
 
-                  <Grid item xs={9}>
-                    <TextField
-                      margin="dense"
-                      variant="outlined"
-                      select
-                      SelectProps={{
-                        native: true,
-                        classes: {
-                          icon: classes.icon
+                <FormControl variant="outlined" fullWidth size="small">
+                  <Grid container className={classes.gridStyle}>
+                    <Grid item xs={3}>
+                      <div>Offer Price</div>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <TextField
+                        margin="dense"
+                        variant="outlined"
+                        value={label}
+                        error={isNaN(label)}
+                        helperText={
+                          isNaN(label) ? "Offer Price must be a valid number" : ""
                         }
-                      }}
-                      size="small"
-                      value={stageId}
-                      className={classes.inputFieldFlowStage}
-                      onChange={(e) => {
-                        settingNewStageAndFindNextAvailablePosition(
-                          e.target.value,
-                          true
-                        );
-                      }}
-                      InputProps={{
-                        classes: {
-                          root: classes.flowlineRoot,
-                          notchedOutline: classes.notchedOutlineFlow,
-                          focused: classes.notchedOutlineFlowFocused
-                        }
-                      }}
-                      fullWidth
-                    >
-                      {stagesToChoose &&
-                        stagesToChoose.map((stage, i) => (
-                          <option value={stage._id} key={i}>
-                            {stage.name}
-                          </option>
-                        ))}
-                    </TextField>
+                        className={classes.inputFieldCustomTextInput}
+                        fullWidth
+                        onChange={(e) => {
+                          setLabel(e.target.value);
+                        }}
+                        InputProps={{
+                          inputComponent: NumberFormatCustom,
+                          classes: {
+                            root: classes.customDataTextInputRoot,
+                            focused: classes.focused,
+                            notchedOutline: classes.notchedOutline
+                          }
+                        }}
+                      />
+                    </Grid>
                   </Grid>
-                </Grid>
-              </FormControl>
+                </FormControl>
 
-              <FormControl variant="outlined" fullWidth size="small">
-                <Grid container className={classes.gridStyle}>
-                  <Grid item xs={3}>
-                    <div>Offer Price</div>
-                  </Grid>
-                  <Grid item xs={9}>
-                    <TextField
-                      margin="dense"
-                      variant="outlined"
-                      value={label}
-                      error={isNaN(label)}
-                      helperText={
-                        isNaN(label) ? "Offer Price must be a valid number" : ""
-                      }
-                      className={classes.inputFieldCustomTextInput}
-                      fullWidth
-                      onChange={(e) => {
-                        setLabel(e.target.value);
-                      }}
-                      InputProps={{
-                        inputComponent: NumberFormatCustom,
-                        classes: {
-                          root: classes.customDataTextInputRoot,
-                          focused: classes.focused,
-                          notchedOutline: classes.notchedOutline
-                        }
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-              </FormControl>
+                <TextField
+                  //   autoFocus
+                  margin="dense"
+                  variant="outlined"
+                  multiline
+                  rows={8}
+                  value={description}
+                  label="Description"
+                  fullWidth
+                  multiline
+                  //   required
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                  }}
+                  className={classes.notes}
+                />
 
-              <TextField
-                //   autoFocus
-                margin="dense"
-                variant="outlined"
-                multiline
-                rows={8}
-                value={description}
-                label="Description"
-                fullWidth
-                multiline
-                //   required
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                }}
-                className={classes.notes}
-              />
-
-              {originationDate && (
-                <div className={classes.originationDate}>
-                  Deal Creation Date:{" "}
-                  {moment(originationDate).format("M/DD/YYYY, hh:mmA")}
+                {originationDate && (
+                  <div className={classes.originationDate}>
+                    Deal Creation Date:{" "}
+                    {moment(originationDate).format("M/DD/YYYY, hh:mmA")}
+                  </div>
+                )}
+                <div>
+                  <AddDialogeUploadZone
+                    isTransactPage={true}
+                    filesData={viewFileResult}
+                    id={stateApp.activeDeal?.cardId}
+                    loading={viewFileLoading}
+                    disabled={!stateApp.activeDeal?.cardId}
+                    handleOpenExpandableCard={handleOpenExpandableCard}
+                  />
+                  {/* Here is flow lane form */}
+                  <LaneProgressZone
+                    toggleProgressDetail={toggleProgressDetail}
+                    dealSettings={get(dealSettings, "dealSettings", [])}
+                    users={users}
+                  />
                 </div>
-              )}
-              <div>
-                <AddDialogeUploadZone
-                  isTransactPage={true}
-                  filesData={viewFileResult}
-                  id={stateApp.activeDeal?.cardId}
-                  loading={viewFileLoading}
-                  disabled={!stateApp.activeDeal?.cardId}
-                  handleOpenExpandableCard={handleOpenExpandableCard}
-                />
-                {/* Here is flow lane form */}
-                <LaneProgressZone
-                  toggleProgressDetail={toggleProgressDetail}
-                  dealSettings={get(dealSettings, "dealSettings", [])}
-                  users={users}
-                />
-              </div>
-            </div>
+              </Fragment>
+            )}
           </div>
         </RightDialog>
-      )}
-    </div>
+      </div>
+    </>
   );
 }
 
