@@ -398,6 +398,7 @@ function AddDealDialog(props) {
   const [dealInfoFocus, setDealInfoFocus] = useState(false);
   const [pageVariables, setPageVariables] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   let [transactData, setTransactData] = useState(
     props.transactData ? { ...props.transactData } : null
@@ -985,6 +986,14 @@ function AddDealDialog(props) {
             : { ...variables, contactId };
         }
 
+        const ID = []
+        for (let i = 0; i < uploadedFiles.length; i++) {
+          ID.push({id: uploadedFiles[i].addFileDescriptor.file.id, name: uploadedFiles[i].addFileDescriptor.file.name});
+        }
+
+        if(ID.length > 0){
+          variables = { ...variables, files: ID }
+        }
         addDeal({
           variables,
           refetchQueries: [
@@ -1000,6 +1009,7 @@ function AddDealDialog(props) {
         });
       }
     }
+    setUploadedFiles([])
   };
 
   const handleUpdate = async () => {
@@ -1185,11 +1195,13 @@ function AddDealDialog(props) {
     for (let i = 0; i < files?.getFileDescriptors.length; i++) {
       ID.push(files?.getFileDescriptors[i].fileId);
     }
-
+    for (let i = 0; i < uploadedFiles.length; i++) {
+      ID.push(uploadedFiles[i].addFileDescriptor.file.id);
+    }
     viewFiles({
       variables: { fileIds: ID }
     });
-  }, [files]);
+  }, [files, uploadedFiles]);
 
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] =
@@ -1207,6 +1219,11 @@ function AddDealDialog(props) {
       contactUpdated: null
     }));
   };
+
+  const setUploadedFileData = (uploadedfile) => {
+    setUploadedFiles([ ...uploadedFiles, uploadedfile])
+  }
+
   return (
     <>
       {deleteDialogOpen && (
@@ -1808,7 +1825,8 @@ function AddDealDialog(props) {
                   filesData={viewFileResult}
                   id={stateApp.activeDeal?.cardId}
                   loading={viewFileLoading}
-                  disabled={!stateApp.activeDeal?.cardId}
+                  setUploadedFileData={setUploadedFileData}
+                  // disabled={!stateApp.activeDeal?.cardId}
                   handleOpenExpandableCard={handleOpenExpandableCard}
                 ></AddDialogeUploadZone>
               </div>
