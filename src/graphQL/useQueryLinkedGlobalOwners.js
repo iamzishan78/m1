@@ -5,3 +5,9 @@ export const LINKED_GLOBAL_OWNERS = gql`
     linkedGlobalOwners(contactId: $contactId)
   }
 `;
+
+export const UNLINK_GLOBAL_OWNER = gql`
+  mutation unlinkGlobalOwners($contactId: ID, $globalOwner: String) {
+    unlinkGlobalOwners(contactId: $contactId, globalOwner: $globalOwner)
+  }
+`
