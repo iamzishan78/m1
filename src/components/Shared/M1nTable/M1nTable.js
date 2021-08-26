@@ -2,6 +2,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import findIndex from 'lodash/findIndex'
+import { useHistory } from "react-router-dom";
 // context
 import { AppContext } from "../../../AppContext";
 import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
@@ -84,6 +85,7 @@ const useStyles = makeStyles((theme) => ({
 function M1nTable(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -2595,6 +2597,13 @@ function M1nTable(props) {
       props.parent === "Documents" &&
       DocumentsData?.getFiles
     ) {
+      const documentId = history.location.pathname.split('/')[2]
+      if(documentId){
+        setStateApp((state) => ({
+          ...state,
+          pdfView: DocumentsData.getFiles.find((row) => row._id === documentId),
+        }));
+      }
       setTargetLabel("documents");
       setRows([...DocumentsData.getFiles]);
       setColumns([...DocumentsHeadCells]);
