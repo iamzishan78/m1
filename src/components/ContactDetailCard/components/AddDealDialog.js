@@ -105,7 +105,6 @@ NumberFormatCustom.propTypes = {
 
 const useStyles = makeStyles((theme) => ({
   mainRoot: {
-    width: "485px"
   },
   dialogTitle: {
     textAlign: "center"
@@ -159,12 +158,14 @@ const useStyles = makeStyles((theme) => ({
       overflowY: "hidden"
     }
   },
+  contentRoot: {
+    overflowY: "auto",
+    maxHeight: "90vh",
+    marginRight: "60px"
+  },
   inputFieldRoot: {
     "& .MuiDialog-root": {},
     padding: "15px 25px 0px",
-    overflowY: "auto",
-    maxHeight: "89vh",
-    marginRight: "60px"
   },
   progress: {
     marginLeft: "30px",
@@ -1418,13 +1419,13 @@ function AddDealDialog(props) {
               handleClose();
             }
           }}
-          width="485px"
+          width="495px"
           isTransactPage={props.isTransactPage}
           hiddenOverflow
         >
           <StickyHeader />
           <Drawer />
-          <div className={classes.inputFieldRoot}>
+          <div className={classes.contentRoot}>
             {props.isTransactPage &&
               stateApp.transactBarView !== "Deal" &&
               (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
@@ -1432,7 +1433,7 @@ function AddDealDialog(props) {
                 {getView()}
               </Fragment>
             ) : (
-              <Fragment>
+              <div className={classes.inputFieldRoot}>
                 <FormControl variant="outlined" fullWidth size="small">
                   <Grid container className={classes.gridStyle}>
                     <Grid item xs={3}>
@@ -1717,7 +1718,7 @@ function AddDealDialog(props) {
                     users={users}
                   />
                 </div>
-              </Fragment>
+              </div>
             )}
           </div>
         </RightDialog>

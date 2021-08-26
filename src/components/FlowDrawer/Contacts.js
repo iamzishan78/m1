@@ -30,8 +30,8 @@ import { REMOVEDEALDESCRIPTOR } from "../../graphQL/useMutationRemoveDealDescrip
 const useStyles = makeStyles((theme) => ({
   root: {
     overflowY: "auto",
-    maxHeight: "85vh",
-    padding: "15px 15px 0px",
+    maxHeight: "79vh",
+    padding: "0px 30px",
     "& .MuiList-padding": {
       padding: "23px 0px !important",
     },
