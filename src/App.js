@@ -194,6 +194,7 @@ const PrivateRoute = ({ component, ...options }) => {
 };
 
 function App() {
+  const [stateApp] = useContext(AppContext);
   const [apolloClient, setApolloClient] = useState(null);
   const [apolloClientToken, setApolloClientToken] = useState(null);
   const [apolloClientEndpoint, setApolloClientEndpoint] = useState(null);
@@ -272,7 +273,9 @@ function App() {
           <ApolloProvider client={apolloClient}>
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
-                <ContactBulkProgress />
+                {stateApp.user?.mongoId && (
+                  <ContactBulkProgress />
+                )}
                 <ConnectedRouter history={history}>
                   <Switch>
                     <NavigationProvider>
@@ -282,8 +285,12 @@ function App() {
                       <Route exact path="/forgotpassword" component={ForgotPassword} />
                       <PrivateRoute exact path="/track" component={TrackProvider} />
                       <PrivateRoute exact path="/flow" component={TransactProvider} />
+                      <PrivateRoute exact path="/flow/:pipelineId" component={TransactProvider} />
+                      <PrivateRoute exact path="/flow/:pipelineId/lane/:laneId/card/:cardId/" component={TransactProvider} />
                       <PrivateRoute exact path="/documents" component={DocumentProvider} />
+                      <PrivateRoute exact path="/documents/:documentId/view" component={DocumentProvider} />
                       <PrivateRoute exact path="/activities" component={ActivitiesProvider} />
+                      <PrivateRoute exact path="/activities/:eventId" component={ActivitiesProvider} />
                       <PrivateRoute exact path="/title" component={TitleOpinionProvider} />
                       <PrivateRoute exact path="/alerts" component={AlertsProvider} />
                       <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider} />

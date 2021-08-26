@@ -11,32 +11,8 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { NavigationContext } from "components/Navigation/NavigationContext";
 import ContactsWellInterestsParcelInterests from "./ContactsWellInterestsParcelInterests";
 import { CONTACT } from "graphQL/useQueryContact";
-import { makeStyles } from "@material-ui/core/styles";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& div": {
-      "&>.MuiPaper-root": {
-        display: "flex",
-        "flex-direction": "column",
-        height: "calc(100vh - 176px)",
-        "align-items": "stretch",
-        "&>.MuiPaper-root": { 
-          display: "contents",
-        },
-        "&>:nth-child(3)": { 
-          height: "inherit !important",
-        },
-        "&> table": {
-          bottom: 0,
-        }
-      },
-    },
-  },
-}));
 
 export default function ContactDocumentsCard(props) {
-  const classes = useStyles();
   let history = useHistory();
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
@@ -70,7 +46,7 @@ export default function ContactDocumentsCard(props) {
   };
 
   return contactData ? (
-    <div className={classes.root}>
+    <div>
       <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
         <Breadcrumbs
           separator={<NavigateNextIcon fontSize="small" />}
