@@ -160,7 +160,7 @@ function WellCard() {
 
   // function state
   const [target, setTarget] = useState(null);
-  const [summary, setSummary] = useState(null);
+  const [wellData, setWellData] = useState(null);
   const [source, setSource] = useState(null);
 
   // theme / styles 
@@ -196,9 +196,10 @@ function WellCard() {
 
   useEffect(() => {
     if (dataWellSummary) {
-      setSummary(dataWellSummary.wellSummaryDetail[0]);
+      setWellData(dataWellSummary.wellSummaryDetail[0]);
+      console.log('SUMMARY DETAIL',dataWellSummary )
     } else {
-      setSummary(null);
+      setWellData(null);
     }
   }, [dataWellSummary]);
 
@@ -254,9 +255,8 @@ function WellCard() {
                     className={classes.text2}
                     variant="caption"
                   >
-                    {stateApp.selectedWell.wellStatus
-                      ? stateApp.selectedWell.wellStatus
-                      : "--"}
+                        {wellData?.WellStatus || "--"}
+
                   </Typography>
                 </div>
               </Button>
@@ -323,8 +323,8 @@ function WellCard() {
               >
                 <div className={classes.iconContainer}>
                   <Avatar variant="circle" className={classes.avatar}>
-                    {stateApp.selectedWell.wellBoreProfile
-                      ? stateApp.selectedWell.wellBoreProfile.substring(0, 1)
+                    {wellData?.WellBoreProfile
+                      ? wellData?.WellBoreProfile.substring(0, 1)
                       : "H"}{" "}
                   </Avatar>
                   <Typography
@@ -339,9 +339,8 @@ function WellCard() {
                     className={classes.text2}
                     variant="caption"
                   >
-                    {stateApp.selectedWell.wellBoreProfile
-                      ? stateApp.selectedWell.wellBoreProfile
-                      : "--"}
+                        {wellData?.WellBoreProfile || "--"}
+
                   </Typography>
                 </div>
               </Button>
@@ -359,9 +358,7 @@ function WellCard() {
                       County
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.county
-                        ? stateApp.selectedWell.county
-                        : "--"}
+                        {wellData?.County || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowGrey}>
@@ -369,9 +366,7 @@ function WellCard() {
                       Operator
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.operator
-                        ? stateApp.selectedWell.operator
-                        : "--"}
+                      {wellData?.CurrentOperator || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowWhite}>
@@ -379,9 +374,7 @@ function WellCard() {
                       Well Type
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.wellType
-                        ? stateApp.selectedWell.wellType
-                        : "--"}
+                      {wellData?.WellType || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowGrey}>
@@ -389,7 +382,7 @@ function WellCard() {
                       Lease Name
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {summary?.Lease || "--"}
+                      {wellData?.Lease || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowWhite}>
@@ -397,7 +390,7 @@ function WellCard() {
                       Lease Number
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {summary?.LeaseId || "--"}
+                      {wellData?.LeaseId || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowGrey}>
@@ -406,7 +399,7 @@ function WellCard() {
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
                       {" "}
-                      {convert_date(stateApp.selectedWell.permitApprovedDate)}
+                      {convert_date(wellData?.PermitDate)}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowWhite}>
@@ -415,7 +408,7 @@ function WellCard() {
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
                       {" "}
-                      {convert_date(stateApp.selectedWell.spudDate)}
+                      {convert_date(wellData?.SpudDate)}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowGrey}>
@@ -424,7 +417,7 @@ function WellCard() {
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
                       {" "}
-                      {convert_date(stateApp.selectedWell.completionDate)}
+                      {convert_date(wellData?.CompletionDate)}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowWhite}>
@@ -432,17 +425,17 @@ function WellCard() {
                       First Prod Date
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {convert_date(stateApp.selectedWell.firstProductionDate)}
+                      {convert_date(wellData?.FirstProdDate)}
                     </TableCell>
                   </TableRow>
 
-                  {stateApp.selectedWell.wellStatus == "P&A" ?
+                  {wellData?.WellStatus == "P&A" ?
                     <TableRow className={classes.rowGrey}>
                       <TableCell className={classes.cell1} align="left">
                         Plug Date
                       </TableCell>
                       <TableCell className={classes.cell2} align="right">
-                        {convert_date(stateApp.selectedWell.plugDate)}
+                        {convert_date(wellData?.PlugDate)}
                       </TableCell>
                     </TableRow>
                     : null}
@@ -456,7 +449,7 @@ function WellCard() {
 
           <Card className={classes.card}>
             <CardContent className={classes.content}>
-              <WellCardDetails target={target} summary={summary} />
+              <WellCardDetails target={target} summary={wellData} />
             </CardContent>
           </Card>
         </div>
@@ -490,17 +483,15 @@ function WellCard() {
                   className={classes.text2}
                   variant="caption"
                 >
-                  {stateApp.selectedWell.wellStatus
-                    ? stateApp.selectedWell.wellStatus.toUpperCase()
-                    : '--'}
+                {wellData?.WellStatus || "--"}
                 </Typography>
               </div>
 
 
               <div className={classes.iconContainer}>
                 <Avatar variant="circle" className={classes.avatar}>
-                  {stateApp.selectedWell.wellBoreProfile
-                    ? stateApp.selectedWell.wellBoreProfile.substring(0, 1)
+                  {wellData?.WellBoreProfile
+                    ? wellData?.WellBoreProfile.substring(0, 1)
                     : 'H'}{' '}
                 </Avatar>
                 <Typography
@@ -515,9 +506,7 @@ function WellCard() {
                   className={classes.text2}
                   variant="caption"
                 >
-                  {stateApp.selectedWell.wellBoreProfile
-                    ? stateApp.selectedWell.wellBoreProfile
-                    : '--'}
+                {wellData?.WellBoreProfile || "--"}
                 </Typography>
               </div>
             </CardActions>
@@ -529,9 +518,7 @@ function WellCard() {
                       Permit #
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.permitNumber
-                        ? stateApp.selectedWell.permitNumber
-                        : '--'}
+                    {wellData?.PermitNumber || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowWhite}>
@@ -539,9 +526,7 @@ function WellCard() {
                       Operator
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.operator
-                        ? stateApp.selectedWell.operator
-                        : '--'}
+                    {wellData?.CurrentOperator || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowGrey}>
@@ -549,9 +534,7 @@ function WellCard() {
                       Well Type
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.wellType
-                        ? stateApp.selectedWell.wellType
-                        : '--'}
+                    {wellData?.WellType || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowWhite}>
@@ -559,7 +542,7 @@ function WellCard() {
                       Approved Date
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {convert_date(stateApp.selectedWell.permitApprovedDate)}
+                      {convert_date(wellData?.PermitDate)}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowGrey}>
@@ -567,9 +550,7 @@ function WellCard() {
                       Measured Depth [ft]
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.measuredDepth
-                        ? formatBOE(stateApp.selectedWell.measuredDepth)
-                        : '--'}
+                      {formatBOE(wellData?.MeasuredDepth) || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowWhite}>
@@ -577,19 +558,14 @@ function WellCard() {
                       Lateral Length [ft]
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {stateApp.selectedWell.lateralLength
-                        ? formatBOE(stateApp.selectedWell.lateralLength)
-                        : '--'}
+                      {formatBOE(wellData?.LateralLength) || "--"}
                     </TableCell>
                   </TableRow>
-
-
-
                 </TableBody>
               </Table>
 
               <div   >
-                {stateApp.selectedWell.state === 'TX'
+                {wellData?.State === 'TX'
                   ?
                   <Link href="http://webapps2.rrc.texas.gov/EWA/drillingPermitsQueryAction.do"
                     // doesnt work yet but starting point for customized permit link for all RRC wells
@@ -619,7 +595,7 @@ function WellCard() {
         <div style={{ height: "100%" }}>
           <Card className={classes.card}>
             <CardContent className={classes.content}>
-              <WellCardDetails target={target} summary={summary} />
+              <WellCardDetails target={target} summary={wellData} />
             </CardContent>
           </Card>
         </div>
