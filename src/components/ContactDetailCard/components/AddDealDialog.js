@@ -763,7 +763,7 @@ function AddDealDialog(props) {
           contactId &&
           ((stateApp.activeDeal?.contacts?.length > 0 &&
             stateApp.activeDeal?.contacts[0]?.relatedObject?._id !==
-              contactId) ||
+            contactId) ||
             !stateApp.activeDeal.contacts ||
             stateApp.activeDeal.contacts.length <= 0)
         ) {
@@ -1187,7 +1187,7 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
@@ -1195,8 +1195,8 @@ function AddDealDialog(props) {
       )}
 
       {props.isTransactPage &&
-      stateApp.transactBarView !== "" &&
-      (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
+        stateApp.transactBarView !== "" &&
+        (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
         <RightDialog
           open={props.open}
           width={props.width}
@@ -1417,26 +1417,6 @@ function AddDealDialog(props) {
             </Grid>
 
             <div className={classes.inputFieldDateRoot}>
-              {!(
-                (Object.keys(contact).length === 0 &&
-                  contact.constructor === Object) ||
-                contact === null
-              ) && !props.isTransactPage ? (
-                <div className={classes.inputFieldDateRoot}>
-                  <TextField
-                    variant="outlined"
-                    margin="dense"
-                    value={contact?.name}
-                    label="Contact Name"
-                    fullWidth
-                    disabled
-                    className={classes.inputField}
-                  />
-                </div>
-              ) : (
-                <></>
-              )}
-
               <FormControl
                 variant="outlined"
                 className={classes.inputFieldDealName}
@@ -1472,6 +1452,31 @@ function AddDealDialog(props) {
                   onBlur={() => setTitleFocus(false)}
                 />
               </FormControl>
+              {!(
+                (Object.keys(contact).length === 0 &&
+                  contact.constructor === Object) ||
+                contact === null
+              ) && !props.isTransactPage && (
+                  <FormControl variant="outlined" fullWidth size="small">
+                    <Grid container className={classes.gridStyle}>
+                      <Grid item xs={3}>
+                        Contact Name
+                  </Grid>
+                      <Grid item xs={9}>
+                        <TextField
+                          type="text"
+                          variant="outlined"
+                          margin="dense"
+                          value={contact?.name}
+                          fullWidth
+                          disabled
+                          className={classes.inputField}
+                        />
+
+                      </Grid>
+                    </Grid>
+                  </FormControl>
+                )}
 
               <FormControl variant="outlined" fullWidth size="small">
                 <Grid container className={classes.gridStyle}>
@@ -1533,11 +1538,11 @@ function AddDealDialog(props) {
                                             .toUpperCase()
                                             .split(" ").length > 1
                                             ? users
-                                                .find(
-                                                  (user) =>
-                                                    user?.value === ownerId
-                                                )
-                                                .text.toString()
+                                              .find(
+                                                (user) =>
+                                                  user?.value === ownerId
+                                              )
+                                              .text.toString()
                                             : "Add Owner"
                                         }
                                       />
