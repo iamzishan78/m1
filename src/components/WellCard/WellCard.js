@@ -446,11 +446,7 @@ function WellCard() {
                 {wellData?.State === 'TX'
                   ?
                   <Link 
-                    // href={"http://webapps2.rrc.texas.gov/EWA/leaseDetailAction.do?searchType=apiNo&selTab=4096&apiNo=" + wellData?.ApiNumber.substring(2) + "&methodToCall=displayLeaseDetail&rrcActionMan=H4sIAAAAAAAAALWPS2vDQAyEf016XKRdJ3EOOpjSnPsILcX0sLGFE9hkjdZOWtgfXyUlUPo4lZ40zCDpm4wAZDMCEl6JNFUzbOP-vpG2hhc6-0de-75P1mhsBn71yXTxMHFVCZpbmtjlzVOl0p3kkUNYR-G7keXt45ppo6YF7XjYxHYVr30IakxJeBhlv4oP7KXZqFUSfIOo0zmtpEum9-J3jz6MrGxzcoC5JFe4cpEX9PxlFf-dP124Z3RZu_UdyyfOH0vhX0rVv7061SXMlhCyU1EQ5KnOmRrvJXOTh-cBAAA"}
-                    
-                    
-                    href={"http://webapps2.rrc.texas.gov/EWA/leaseDetailAction.do?searchType=apiNo&selTab=1&apiNo="    + wellData?.ApiNumber.substring(2) + "&distCode=7C&leaseNo=20848&methodToCall=displayLeaseDetail&rrcActionMan=H4sIAAAAAAAAALWPT0vDQBDFP009LjObbRoPcwii51aLIsHDNhlSYdsNs4lV2A_vtFIQ_5zE0zzeY2Z-LyMA2YyAhBcibd2Oz3F_20rXwBOd_ANv_DAkazQ2I7_6ZPr4MivqCjS3NLM31w-1yuIoDxzCJgqvJpa3j2umi5o62vG4jd06XvkQ1JiT8DjJfh3v2Eu7Vasi-AbRpFNaS5_M4MXv7n2YWNkW5ErMFTmEhcuX9PhlFf-dP525SzqvLX3P8onzx1L4l1LNb6-OdQmzJYRcqHAEea6zVOMdFVf0QucBAAA"}
-                    
+                    href={"http://webapps2.rrc.texas.gov/EWA/leaseDetailAction.do?searchType=apiNo&selTab=1&apiNo="    + wellData?.ApiNumber.substring(2) + "&distCode=7C&leaseNo=20848&methodToCall=displayLeaseDetail&rrcActionMan=H4sIAAAAAAAAALWPT0vDQBDFP009LjObbRoPcwii51aLIsHDNhlSYdsNs4lV2A_vtFIQ_5zE0zzeY2Z-LyMA2YyAhBcibd2Oz3F_20rXwBOd_ANv_DAkazQ2I7_6ZPr4MivqCjS3NLM31w-1yuIoDxzCJgqvJpa3j2umi5o62vG4jd06XvkQ1JiT8DjJfh3v2Eu7Vasi-AbRpFNaS5_M4MXv7n2YWNkW5ErMFTmEhcuX9PhlFf-dP525SzqvLX3P8onzx1L4l1LNb6-OdQmzJYRcqHAEea6zVOMdFVf0QucBAAA"}                   
                     onClick={() => {
                       console.info("I'm a button.");
                     }}
@@ -464,6 +460,52 @@ function WellCard() {
                       className={classes.link_permit}
                     >
                       RRC Wellbore Search Tool
+
+                    </Typography>
+                  </Link>
+                  : ''}
+                  
+                  {wellData?.State === 'NM'
+                  ?
+                  <Link 
+
+                    href={"https://wwwapps.emnrd.state.nm.us/ocd/ocdpermitting/data/WellDetails.aspx?api="+ wellData?.ApiNumber.substring(0,2) +"-"+wellData?.ApiNumber.substring(2,5) +"-"+wellData?.ApiNumber.substring(5)}
+                    
+                    onClick={() => {
+                      console.info("https://wwwapps.emnrd.state.nm.us/ocd/ocdpermitting/data/WellDetails.aspx?api="+ wellData?.ApiNumber.substring(0,2) +"-"+wellData?.ApiNumber.substring(2,5) +"-"+wellData?.ApiNumber.substring(5));
+                    }}
+                    variant="body2"
+                    target="_blank"
+
+                  >
+                    <Typography
+                      align="center"
+                      variant="subtitle2"
+                      className={classes.link_permit}
+                    >
+                      EMNRD Wellbore Search Tool
+
+                    </Typography>
+                  </Link>
+                  : ''}
+                  {wellData?.State === 'LA'
+                  ?
+                  <Link 
+
+                    href={"https://sonlite.dnr.state.la.us/pls/apex/f?p=108:2:4277376412912:::::"}
+                    
+                    onClick={() => {
+                    }}
+                    variant="body2"
+                    target="_blank"
+
+                  >
+                    <Typography
+                      align="center"
+                      variant="subtitle2"
+                      className={classes.link_permit}
+                    >
+                      SONRIS Search Tool
 
                     </Typography>
                   </Link>
