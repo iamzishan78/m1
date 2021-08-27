@@ -80,7 +80,7 @@ import SearchBarWithToggleButton from "./components/SearchBarWithToggleButton";
 
 import Avatar from "react-avatar";
 import ContactFormModal from "./components/ContactFormModal";
-import { GETPROFILEIMAGE } from "../../graphQL/useQueryGetProfile";
+import { GET_PROFILE_IMAGE } from "../../graphQL/useQueryGetProfile";
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 
@@ -743,7 +743,7 @@ export default function Navigation(props) {
 
   const [profileImage, setProfileImage] = useState(null);
   const classes = useStyles({ mapGridCardActivated });
-  const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE);
+  const [getProfileImage, profiledata] = useLazyQuery(GET_PROFILE_IMAGE);
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const [openUserManagementModal, setOpenUserManagementModal] = useState(false);
 
