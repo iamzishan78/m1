@@ -3,6 +3,7 @@ import { AppContext } from "../../AppContext";
 import { WellCardContext } from "./WellCardContext";
 import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
 
+
 //material-ui components
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
@@ -154,6 +155,7 @@ function WellCard() {
   // context
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateExpandableCard, setStateExpandableCard] = useContext(ExpandableCardContext);
+  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
 
 
 
@@ -197,6 +199,10 @@ function WellCard() {
   useEffect(() => {
     if (dataWellSummary) {
       setWellData(dataWellSummary.wellSummaryDetail[0]);
+      setStateWellCard((state) => ({
+        ...state,
+        selectedWell: dataWellSummary.wellSummaryDetail[0],
+      }));
       console.log('SUMMARY DETAIL',dataWellSummary )
     } else {
       setWellData(null);
@@ -374,7 +380,12 @@ function WellCard() {
                       Well Type
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                      {wellData?.WellType || "--"}
+                      {/* {wellData?.WellType || "--"} */}
+                      {wellData?.State === 'NM'
+                            ?
+                            wellData?.ReportedWellType.toUpperCase() || "--"
+
+                  : wellData?.WellType || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowGrey}>
@@ -506,6 +517,50 @@ function WellCard() {
                       className={classes.link_permit}
                     >
                       SONRIS Search Tool
+
+                    </Typography>
+                  </Link>
+                  : ''}
+                  {wellData?.State === 'OK'
+                  ?
+                  <Link 
+
+                    href={"https://otcportal.tax.ok.gov/gpx/gp_PublicSearchPUNbyLegal.php"}
+                    
+                    onClick={() => {
+                    }}
+                    variant="body2"
+                    target="_blank"
+
+                  >
+                    <Typography
+                      align="center"
+                      variant="subtitle2"
+                      className={classes.link_permit}
+                    >
+                      OTC Search Tool
+
+                    </Typography>
+                  </Link>
+                  : ''}
+                  {wellData?.State === 'CO'
+                  ?
+                  <Link 
+
+                    href={"https://cogcc.state.co.us/cogisdb/Facility/FacilityDetail?api="+wellData?.ApiNumber.substring(2)}
+                    
+                    onClick={() => {
+                    }}
+                    variant="body2"
+                    target="_blank"
+
+                  >
+                    <Typography
+                      align="center"
+                      variant="subtitle2"
+                      className={classes.link_permit}
+                    >
+                      COGIS Search Tool
 
                     </Typography>
                   </Link>

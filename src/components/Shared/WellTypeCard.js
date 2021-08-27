@@ -2,6 +2,8 @@ import React, { useContext, useState } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { AppContext } from "../../AppContext";
+import { WellCardContext } from "../WellCard/WellCardContext";
+
 import OilDropIcon from "./components/svgIcons/OilDropIcon";
 import GasFlameIcon from "./components/svgIcons/GasFlameIcon";
 import OilGasIcon from "./components/svgIcons/OilGasIcon";
@@ -20,44 +22,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-/* 
-  
-export default function WellStatusCard() {
-    let classes = useStyles();
-    const [stateApp, setStateApp] = useContext(AppContext)
-
-    return (
-      <div className={classes.iconContainer}>
-
-      <WellIcon viewBox="0 0 32 31" fontSize="large" />
-
-      <Typography
-        //classes={classes.text1}
-        align="center"
-        variant="subtitle2"
-      >
-        Well Type
-      </Typography>
-      <Typography
-        align="center"
-        variant="caption"
-      >
-        {stateApp.selectedWell.WellType
-          ? stateApp.selectedWell.WellType.toUpperCase()
-          : '--'}
-      </Typography>
-      </div>
-
-
-    );
-  };
-
- */
 
 export default function WellTypeCard() {
   let classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
+
+
   const WellTypeIcon = () => {
+    console.log('WELL CARD STATE', stateWellCard)
     if (
       stateApp.selectedWell.wellType &&
       stateApp.selectedWell.wellType.toUpperCase() == "OIL"
