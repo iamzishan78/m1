@@ -24,8 +24,8 @@ const ProfileActions = () => {
 
   const [updateProfile] = useMutation(UPSERTPROFILE);
   const history = useHistory();
-  const {isSaving} = stateProfile;
-  const {user} = appContext;
+  const { isSaving } = stateProfile;
+  const { user } = appContext;
 
   const handleClose = () => {
     setStateNav({ ...stateNav, isProfileOpen: false });
@@ -33,12 +33,12 @@ const ProfileActions = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStateProfile({...stateProfile, isSaving: true});
+    setStateProfile({ ...stateProfile, isSaving: true });
     await updateProfile({
-      variables: { profileData: { ...stateProfile.fields, email: user.email} },
+      variables: { profileData: { ...stateProfile.fields, email: user.email } },
     });
     handleClose();
-    setStateProfile({...stateProfile, isSaving: false});
+    setStateProfile({ ...stateProfile, isSaving: false });
   };
 
   return (
@@ -52,16 +52,12 @@ const ProfileActions = () => {
         Cancel
       </Button>
       <Button
-        style={{
-          textTransform: "none",
-          color: "white",
-          background: "#0e5721",
-        }}
-        variant="outlined"
+        style={{ backgroundColor: "#00abed", color: "white" }}
+        variant="contained"
         onClick={handleSubmit}
-        endIcon={isSaving && <CircularProgress style={{width:12, height: 12}}/>}
+        endIcon={isSaving && <CircularProgress style={{ width: 12, height: 12 }} />}
       >
-       {isSaving ? "Saving..." : "Save changes"}
+        {isSaving ? "Saving..." : "Save changes"}
       </Button>
     </DialogActions>
   );

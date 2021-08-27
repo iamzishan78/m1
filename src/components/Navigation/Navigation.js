@@ -1084,7 +1084,9 @@ export default function Navigation(props) {
           My Account
         </Typography>
       </MenuItem>
-      <FeatureFlag feature={FEATURES.USER_MANAGEMENT}>
+      {/* <FeatureFlag feature={FEATURES.USER_MANAGEMENT}>
+      </FeatureFlag> */}
+      {(stateApp?.user?.roles?.includes("Owner") || stateApp?.user?.roles?.includes("Admin")) && (
         <MenuItem
           className={classes.userMenuItem}
           onClick={(e) => openUserManagement(e)}
@@ -1096,10 +1098,7 @@ export default function Navigation(props) {
             User Management
           </Typography>
         </MenuItem>
-      </FeatureFlag>
-      {/* {(stateApp?.user?.roles?.includes("Owner") || stateApp?.user?.roles?.includes("Admin")) && (
-        <></>
-      )} */}
+      )}
       <MenuItem className={classes.userMenuItem} onClick={handleLogout}>
         <Typography variant="inherit">Logout</Typography>
       </MenuItem>

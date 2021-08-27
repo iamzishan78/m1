@@ -448,7 +448,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "0px 30px 10px 10px",
     marginTop: "-10px",
     position: "relative",
-    justifyContent: "flex-end",
+    justifyContent: "flex-end"
     // minWidth: "100px",
     // borderRadius: "7px",
     // color: "#17aadd",
@@ -456,7 +456,7 @@ const useStyles = makeStyles((theme) => ({
     //   textDecoration: "underline",
     // },
     // fontWeight: "bold",
-  },
+  }
   // filenamediv: {
   //   cursor: "pointer",
   //   padding: "10px 30px 10px 10px",
@@ -1054,7 +1054,7 @@ function SubTable(props) {
           <div></div>
         )}
         <MenuItem className={classes.userMenuItem} onClick={(e) => handleExpandClick(null, null, null, "deleteUser")}>
-          Delete User
+          Inactivate User
         </MenuItem>
       </Menu>
     );
@@ -2671,7 +2671,7 @@ function SubTable(props) {
 
       return (
         <>
-          <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
+          <div style={{ display: "inline", cssFloat: "left", marginRight: "15px", marginTop: "5px" }}>
             {props.addAble.type === "parcelInterest" && (
               <Button color="secondary" className={classes.multiSelectionTopBarButtons} disabled={true} onClick={() => { }}>
                 {buttonLabel}
@@ -2735,8 +2735,8 @@ function SubTable(props) {
                   }}
                 >
                   <PostAddIcon></PostAddIcon>
-                Add Document
-              </Button>
+                  Add Document
+                </Button>
               </ButtonGroup>
             )}
 
@@ -3739,7 +3739,7 @@ function SubTable(props) {
               )}
               {openDialog === "deleteUser" && (
                 <DeleteConfirmationDialogContent
-                  header={`Delete User${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""}`}
+                  header={`Inactivate User${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""}`}
                   onClose={handleCloseDialog}
                   deleteFunc={() => {
                     props.deleteFunc(selectedUser.id);
