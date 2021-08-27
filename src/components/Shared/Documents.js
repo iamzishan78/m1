@@ -87,9 +87,10 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     flexDirection: "column",
     width: "100%",
-    padding: "30px",
+    padding: "15px 30px 30px 30px",
     overflowY: "auto",
-    maxHeight: "61vh"
+    maxHeight: "54vh",
+    marginTop: "21px"
   },
   fileUploadTopSection: {
     minHeight: "50px",
@@ -183,12 +184,18 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   rootPadding: {
-    padding: "10px 30px"
+    padding: "15px 25px 0px"
   },
   cardContent: {
     "& .MuiCardContent-root": {
       padding: 0
     }
+  },
+  docUploader: {
+    padding: "15px 25px 0px",
+    bottom: "0px !important",
+    position: "absolute",
+    width: "88%",
   }
 }));
 
@@ -370,18 +377,9 @@ export default function Documents(props) {
         dateTime: fileDescriptor?.dateTime
       };
     });
-    if (filteredMerged)
-      for (let i = 0; i < 5; i += 1) {
-        filteredMerged.push(...filteredMerged);
-      }
     setFilteredDocuments(filteredMerged);
   }, [documentSearch, viewFileResultt?.viewFiles]);
 
-  const ExtenstionGetter = (name) => {
-    let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
-
-    return fileExtension;
-  };
   return (
     <div className={classes.root} variant="outlined">
       {!props.isTransactPage && (
@@ -418,14 +416,6 @@ export default function Documents(props) {
       <div className={classes.cardContent}>
         <CardContent>
           <div className={classes.rootPadding}>
-            {props.isTransactPage && (
-              <UploadZone
-                relatedObjectId={props.id}
-                userId={userId}
-                relatedObjectType={relatedObjectType} //Contact or Deal
-              />
-            )}
-
             {props.isTransactPage && (
               <TextField
                 fullWidth
@@ -556,14 +546,23 @@ export default function Documents(props) {
                 </div>
               );
             })}
-            <DeleteDocumentConfirmation
-              open={openDeleteConfirmDialog}
-              handleClose={handleDeleteCancel}
-              handleAccept={() => {
-                handleDeleteAccept();
-              }}
-            />
           </div>
+          <div className={classes.docUploader}>
+            {props.isTransactPage && (
+              <UploadZone
+                relatedObjectId={props.id}
+                userId={userId}
+                relatedObjectType={relatedObjectType} //Contact or Deal
+              />
+            )}
+          </div>
+          <DeleteDocumentConfirmation
+            open={openDeleteConfirmDialog}
+            handleClose={handleDeleteCancel}
+            handleAccept={() => {
+              handleDeleteAccept();
+            }}
+          />
         </CardContent>
       </div>
     </div>

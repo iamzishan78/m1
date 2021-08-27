@@ -11,9 +11,6 @@ import { Document, Page } from "react-pdf";
 import { AppContext } from "AppContext";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import Drawer from "./components/Drawer";
-import { Container } from "@material-ui/core";
-
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,8 +63,7 @@ export default function DocumentComponent() {
         height: 'calc(100vh - 64px)'
     }}> */}
       <M1nTable dense parent="Documents"></M1nTable>
-      <Drawer data={true}></Drawer>
-
+      <Drawer data={true} />
 
       <Dialog
         className={classes.dialogExpCard}
