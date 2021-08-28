@@ -139,6 +139,7 @@ function Map() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
+  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
 
   // function states
   const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
