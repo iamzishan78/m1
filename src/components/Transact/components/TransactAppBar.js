@@ -128,8 +128,8 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 2,
     borderRadius: 5,
   },
-  headerAction: {
-    margin: "0px 5px",
+  newDealAction: {
+    margin: "0px 30px",
     fontWeight: "600",
     backgroundColor: "rgba(1, 17, 51, 1)",
     color: "#fff",
@@ -187,7 +187,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
           <Pipelines />
           <div className={classes.left}>
             <div>
-              <Button onClick={handleClickAddDeal} color="secondary" className={classes.headerAction} startIcon={<Add />}>
+              <Button onClick={handleClickAddDeal} color="secondary" className={classes.newDealAction} startIcon={<Add />}>
                 New Deal
               </Button>
             </div>
