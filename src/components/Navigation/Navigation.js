@@ -736,7 +736,6 @@ export default function Navigation(props) {
   const [disableApply, setDisableApply] = useState(true);
   const [matchLocation, setMatchLocation] = useState(false);
   const [matchTrack, setMatchTrack] = useState(false);
-  const [matchTransact, setMatchTransact] = useState(false);
   const [matchActivities, setMatchActivities] = useState(false);
   const [matchFind, setMatchFind] = useState(false);
   const [matchDocument, setMatchDocument] = useState(false);
@@ -954,14 +953,6 @@ export default function Navigation(props) {
       setMatchTrack(true);
     } else {
       setMatchTrack(false);
-    }
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (location.pathname.startsWith("/flow")) {
-      setMatchTransact(true);
-    } else {
-      setMatchTransact(false);
     }
   }, [location.pathname]);
 
@@ -1271,26 +1262,6 @@ export default function Navigation(props) {
             ) : null}
 
             <div className={classes.grow1} />
-            {matchTransact && pipelines && pipelines.length > 0 ? (
-              <div>
-                <div
-                  ref={anchorEl}
-                  className={classes.filterTabs}
-                  style={{ paddingRight: "10px" }}
-                >
-                  <Button
-                    onClick={handleClickAddDeal}
-                    color="secondary"
-                    variant="contained"
-                    startIcon={<Add />}
-                  >
-                    New Deal
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div style={{ display: "none" }}></div>
-            )}
 
             {matchActivities ? (
               <div>

@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import OfflineBolt from "@material-ui/icons/OfflineBolt";
-import NotInterested from "@material-ui/icons/NotInterested";
-import CheckBox from "@material-ui/icons/CheckBox";
+import Add from "@material-ui/icons/Add";
 import { makeStyles } from "@material-ui/core/styles";
 import Pipelines from "./Pipelines";
 import { useSelector } from "react-redux";
@@ -130,6 +128,17 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 2,
     borderRadius: 5,
   },
+  headerAction: {
+    margin: "0px 5px",
+    fontWeight: "600",
+    backgroundColor: "rgba(1, 17, 51, 1)",
+    color: "#fff",
+    border: "1px solid #B3B3B3",
+    "&:hover": {
+      backgroundColor: "#263451",
+      color: "#fff",
+    },
+  }
 }));
 
 const sumDeals = (lanes, status) => {
@@ -148,7 +157,7 @@ const sumDeals = (lanes, status) => {
   return { count: sumCount, amount: vf_currency(sumAmount) };
 };
 
-const TransactAppBar = ({ dealFilter, setDealFilter }) => {
+const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
   const classes = useStyles();
   const { pipeToShow } = useSelector(({ Flow }) => Flow);
   const [openDeals, setOpenDeals] = useState({ count: 0, amount: "$0" });
@@ -163,66 +172,43 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
     }
   }, [pipeToShow]);
 
+  const handleClickAddDeal = () => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      dealDialog: true,
+      activeDeal: { cardId: null, laneId: null },
+    }));
+  };
+
   return (
     <>
-      <AppBar
-        elevation={1}
-        className={classes.root}
-        position="static"
-        variant="outlined"
-      >
+      <AppBar elevation={1} className={classes.root} position="static" variant="outlined">
         <div className={classes.top} style={{ marginTop: 15 }}>
           <Pipelines />
-
-          {/* <div className={classes.right}>
-            <div className={classes.activeDeals}>
-              <OfflineBolt />
-              <span>
-                {openDeals.count}{" "}
-                {openDeals.count !== 1 ? "OPEN DEALS" : "OPEN DEAL"} |{" "}
-                {openDeals.amount}
-              </span>
-            </div>
-            <div className={classes.closedDeals}>
-              <CheckBox />
-              <span>
-                {wonDeals.count}{" "}
-                {wonDeals.count !== 1 ? "WON DEALS" : "WON DEAL"} |{" "}
-                {wonDeals.amount}
-              </span>
-            </div>
-            <div className={classes.lostDeals}>
-              <NotInterested />
-              <span>
-                {lostDeals.count}{" "}
-                {lostDeals.count !== 1 ? "LOST DEALS" : "LOST DEAL"} |{" "}
-                {lostDeals.amount}
-              </span>
-            </div>
-          </div> */}
-
           <div className={classes.left}>
+            <div>
+              <Button onClick={handleClickAddDeal} color="secondary" className={classes.headerAction} startIcon={<Add />}>
+                New Deal
+              </Button>
+            </div>
             <ButtonGroup style={{ minHeight: 36 }}>
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${dealFilter === "all" && classes.activeBtn
-                  }`}
+                className={`${classes.filterToggleBtn} ${dealFilter === "all" && classes.activeBtn}`}
                 onClick={() => setDealFilter("all")}
               >
                 ALL
               </Button>
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${dealFilter === "open" && classes.activeBtn
-                  }`}
+                className={`${classes.filterToggleBtn} ${dealFilter === "open" && classes.activeBtn}`}
                 onClick={() => setDealFilter("open")}
               >
                 OPEN
               </Button>
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${dealFilter === "won" && classes.activeBtn
-                  }`}
+                className={`${classes.filterToggleBtn} ${dealFilter === "won" && classes.activeBtn}`}
                 onClick={() => setDealFilter("won")}
               >
                 WON
@@ -230,8 +216,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
 
               <Button
                 size="small"
-                className={`${classes.filterToggleBtn} ${dealFilter === "lost" && classes.activeBtn
-                  }`}
+                className={`${classes.filterToggleBtn} ${dealFilter === "lost" && classes.activeBtn}`}
                 onClick={() => setDealFilter("lost")}
               >
                 LOST
@@ -239,10 +224,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter }) => {
             </ButtonGroup>
           </div>
         </div>
-        <div
-          className={classes.top}
-          style={{ marginBottom: 4, marginTop: 2 }}
-        ></div>
+        <div className={classes.top} style={{ marginBottom: 4, marginTop: 2 }}></div>
       </AppBar>
     </>
   );

@@ -640,7 +640,7 @@ export default function Transact() {
       <SidePanel />
 
       <main className={classes.content}>
-        <TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} />
+        <TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} setStateApp={setStateApp} />
         {pipeToShow ? (
           <div className={classes.boardAndTable}>
             {stateApp.dealDisplayType === "board" && (
