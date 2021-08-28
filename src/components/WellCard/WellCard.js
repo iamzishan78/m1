@@ -565,6 +565,30 @@ function WellCard() {
                     </Typography>
                   </Link>
                   : ''}
+
+                {wellData?.State === 'WY'
+                  ?
+                  <Link 
+
+                    href={"https://pipeline.wyo.gov/Wellapino.cfm?napino="+ wellData?.ApiNumber.substring(3)+"&s1=Y"}
+
+                    onClick={() => {
+                    }}
+                    variant="body2"
+                    target="_blank"
+
+                  >
+                    <Typography
+                      align="center"
+                      variant="subtitle2"
+                      className={classes.link_permit}
+                    >
+                      WYO Search Tool
+
+                    </Typography>
+                  </Link>
+                  : ''}
+
               </div>
 
             </CardContent>
