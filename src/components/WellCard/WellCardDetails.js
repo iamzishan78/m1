@@ -14,7 +14,6 @@ import Paper from "@material-ui/core/Paper";
 
 //custom components
 import Taps from "../Shared/Taps";
-import CardDetailsMap from "./components/CardDetailsMap";
 import TableSummary from "./components/TableSummary";
 
 import QuadProvider from "../Quad/QuadProvider";
@@ -30,7 +29,6 @@ import ProfileCard from "../Shared/ProfileCard";
 import WellTypeCard from "../Shared/WellTypeCard";
 import SpudDateCard from "../Shared/SpudDateCard";
 import PlugDateCard from "../Shared/PlugDateCard";
-import WellApiCard from "../Shared/WellApiCard";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 
