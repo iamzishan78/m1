@@ -589,6 +589,55 @@ function WellCard() {
                   </Link>
                   : ''}
 
+
+                {wellData?.State === 'UT'
+                  ?
+                  <Link 
+
+                    href={"https://dataexplorer.ogm.utah.gov/DataMining.html?EntityType=Well&EntityKeyName=API&EntityKeyValue="+wellData?.ApiNumber+"&DETAILSONLY=True"}
+
+                    onClick={() => {
+                    }}
+                    variant="body2"
+                    target="_blank"
+
+                  >
+                    <Typography
+                      align="center"
+                      variant="subtitle2"
+                      className={classes.link_permit}
+                    >
+                      UDOGM Search Tool
+
+                    </Typography>
+                  </Link>
+                  : ''}
+
+
+                {wellData?.State === 'KS'
+                  ?
+                  <Link 
+
+                    href={"https://chasm.kgs.ku.edu/ords/qualified.well_page.DisplayWell?f_kid="+wellData?.StateWellId}
+
+                    onClick={() => {
+                    }}
+                    variant="body2"
+                    target="_blank"
+
+                  >
+                    <Typography
+                      align="center"
+                      variant="subtitle2"
+                      className={classes.link_permit}
+                    >
+                      KGS Search Tool
+
+                    </Typography>
+                  </Link>
+                  : ''}
+
+
               </div>
 
             </CardContent>
