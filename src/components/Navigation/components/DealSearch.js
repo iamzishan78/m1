@@ -86,6 +86,7 @@ const DealSearch = () => {
   }, [pipeToShowTab]);
 
   const handleSelectDeal = (deal) => {
+    setSearchInputValue(deal.name);
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,
