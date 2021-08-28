@@ -5,7 +5,7 @@ const chartData = JSON.parse("{\"API\":\"fd5037d0-9802-4790-ba07-b0206ec36801\",
 
 const WellCardContextProvider = React.memo((props) => {
   const [stateWellCard, setStateWellCard] = useState({
-    selectedWell: { WellName: '' },
+    selectedWell: null,
     openWellDetails: false,
     chartData: chartData,
     chartToggleOil: true,

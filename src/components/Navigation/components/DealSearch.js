@@ -80,7 +80,7 @@ const DealSearch = () => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [allDeals, setAllDeals] = useState([]);
-  const { pipeToShow, pipeToShowTab } = useSelector(({ Flow }) => Flow);
+  const { pipeToShowTab } = useSelector(({ Flow }) => Flow);
 
   useEffect(() => {
     if (pipeToShowTab) setAllDeals(pipeToShowTab);
@@ -154,10 +154,9 @@ const DealSearch = () => {
                     <IconButton
                       size="small"
                       htmlColor="#fff"
-                      className={`${classes.toggleBtn} ${
-                        stateApp.dealDisplayType === "table" &&
+                      className={`${classes.toggleBtn} ${stateApp.dealDisplayType === "table" &&
                         classes.activeBtn
-                      }`}
+                        }`}
                       //temporarily commenting out until list view exists
                       onClick={() => setDealDisplayType("table")}
                     >
@@ -168,10 +167,9 @@ const DealSearch = () => {
                     <IconButton
                       size="small"
                       htmlColor="#fff"
-                      className={`${classes.toggleBtn} ${
-                        stateApp.dealDisplayType === "board" &&
+                      className={`${classes.toggleBtn} ${stateApp.dealDisplayType === "board" &&
                         classes.activeBtn
-                      }`}
+                        }`}
                       onClick={() => setDealDisplayType("board")}
                     >
                       <TableChartIcon />

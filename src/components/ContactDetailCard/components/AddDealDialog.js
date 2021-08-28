@@ -5,6 +5,7 @@ import React, {
   useRef,
   useCallback
 } from "react";
+import { useHistory } from "react-router-dom";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
@@ -53,7 +54,6 @@ import {
   showErrorMessage,
   showSuccessMessage
 } from "../../../actions";
-import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
 import Documents from "../../Shared/Documents";
@@ -364,6 +364,7 @@ const newContact = {
 
 function AddDealDialog(props) {
   const dispatch = useDispatch();
+  let history = useHistory();
   const classes = useStyles();
   const { selectedPipe, pipelines, pipeToShow } = useSelector(
     ({ Flow }) => Flow
@@ -403,8 +404,6 @@ function AddDealDialog(props) {
     props.transactData ? { ...props.transactData } : null
   );
 
-  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
-
   const [
     addContact,
     {
@@ -441,10 +440,6 @@ function AddDealDialog(props) {
   const [contact, setContact] = useState({});
 
   useEffect(() => {
-    getPipelines();
-  }, []);
-
-  useEffect(() => {
     console.log("===========");
     console.log("FLOW TRANSACT BAR VIEW", stateApp.transactBarView);
 
@@ -465,36 +460,6 @@ function AddDealDialog(props) {
       }));
     }
   }, [dealData]);
-
-  useEffect(() => {
-    if (pipelinesData) {
-      //// select first one as default
-      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
-        let activePipeline = {};
-        const isExist = !!pipelinesData.pipelines.find(
-          (p) => p._id === selectedPipe?._id
-        );
-        if (selectedPipe && isExist) {
-          activePipeline = pipelinesData.pipelines.find(
-            (p) => p._id === selectedPipe._id
-          );
-        } else activePipeline = pipelinesData.pipelines[0];
-        dispatch(
-          setFlowState({
-            selectedPipe: activePipeline,
-            pipelines: pipelinesData.pipelines
-          })
-        );
-      } else
-        dispatch(
-          setFlowState({
-            selectedPipe: null,
-            pipelines: [],
-            pipeToShow: false
-          })
-        );
-    }
-  }, [pipelinesData]);
 
   const settingNewStageAndFindNextAvailablePosition = (
     stageId,
@@ -798,7 +763,7 @@ function AddDealDialog(props) {
           contactId &&
           ((stateApp.activeDeal?.contacts?.length > 0 &&
             stateApp.activeDeal?.contacts[0]?.relatedObject?._id !==
-              contactId) ||
+            contactId) ||
             !stateApp.activeDeal.contacts ||
             stateApp.activeDeal.contacts.length <= 0)
         ) {
@@ -1222,7 +1187,7 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
@@ -1230,8 +1195,8 @@ function AddDealDialog(props) {
       )}
 
       {props.isTransactPage &&
-      stateApp.transactBarView !== "" &&
-      (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
+        stateApp.transactBarView !== "" &&
+        (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
         <RightDialog
           open={props.open}
           width={props.width}
@@ -1286,6 +1251,7 @@ function AddDealDialog(props) {
           open={props.open}
           handleClickDialogClose={() => {
             if (!updateDealLoading && !addContactLoading) {
+              history.push(`${history.location.pathname.split("/lane")[0]}`)
               setStateApp((stateApp) => ({
                 ...stateApp,
                 dealDialog: false,
@@ -1451,26 +1417,6 @@ function AddDealDialog(props) {
             </Grid>
 
             <div className={classes.inputFieldDateRoot}>
-              {!(
-                (Object.keys(contact).length === 0 &&
-                  contact.constructor === Object) ||
-                contact === null
-              ) && !props.isTransactPage ? (
-                <div className={classes.inputFieldDateRoot}>
-                  <TextField
-                    variant="outlined"
-                    margin="dense"
-                    value={contact?.name}
-                    label="Contact Name"
-                    fullWidth
-                    disabled
-                    className={classes.inputField}
-                  />
-                </div>
-              ) : (
-                <></>
-              )}
-
               <FormControl
                 variant="outlined"
                 className={classes.inputFieldDealName}
@@ -1506,6 +1452,31 @@ function AddDealDialog(props) {
                   onBlur={() => setTitleFocus(false)}
                 />
               </FormControl>
+              {!(
+                (Object.keys(contact).length === 0 &&
+                  contact.constructor === Object) ||
+                contact === null
+              ) && !props.isTransactPage && (
+                  <FormControl variant="outlined" fullWidth size="small">
+                    <Grid container className={classes.gridStyle}>
+                      <Grid item xs={3}>
+                        Contact Name
+                  </Grid>
+                      <Grid item xs={9}>
+                        <TextField
+                          type="text"
+                          variant="outlined"
+                          margin="dense"
+                          value={contact?.name}
+                          fullWidth
+                          disabled
+                          className={classes.inputField}
+                        />
+
+                      </Grid>
+                    </Grid>
+                  </FormControl>
+                )}
 
               <FormControl variant="outlined" fullWidth size="small">
                 <Grid container className={classes.gridStyle}>
@@ -1567,11 +1538,11 @@ function AddDealDialog(props) {
                                             .toUpperCase()
                                             .split(" ").length > 1
                                             ? users
-                                                .find(
-                                                  (user) =>
-                                                    user?.value === ownerId
-                                                )
-                                                .text.toString()
+                                              .find(
+                                                (user) =>
+                                                  user?.value === ownerId
+                                              )
+                                              .text.toString()
                                             : "Add Owner"
                                         }
                                       />
