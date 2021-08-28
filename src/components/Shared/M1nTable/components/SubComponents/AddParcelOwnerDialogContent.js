@@ -114,6 +114,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     qtr: [null, null, null, null],
     customLayer: props.customLayerId,
   });
+  const [changedKeys, setChangedKeys] = useState({});
   const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState("true");
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
@@ -344,11 +345,13 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       )?.toFixed(8));
   };
 
-  const isNetAcresChanged = () => calculateNetAcres(newOwner.mineral_interest) !== newOwner.net_acres;
-  const isNRAChanged = () => {
-    let nra = calculateNRA(newOwner.royalty_interest, newOwner.orri);
+  const isNetAcresChanged = (netAcres) => {
+    setChangedKeys({ net_acres: calculateNetAcres(newOwner.mineral_interest) !== netAcres });
+  }
+  const isNRAChanged = (nra) => {
+    let calculatedNRA = calculateNRA(newOwner.royalty_interest, newOwner.orri);
     if (nra === 'NaN') nra = null;
-    return nra !== newOwner.nra;
+    setChangedKeys({ nra: calculatedNRA !== nra });
   }
 
   const classes = useStyles();
@@ -541,26 +544,29 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 <TextField
                   type="number"
                   size="small"
-                  className={isNetAcresChanged() ? classes.baseValueChanged : classes.maxWidth}
+                  className={changedKeys.net_acres ? classes.baseValueChanged : classes.maxWidth}
                   value={newOwner.net_acres}
                   onChange={(e) => {
-                    const value = e.target.value;
+                    const value = addTrailingZeros(e.target.value);
                     setNewOwner({
                       ...newOwner,
-                      net_acres: value ? addTrailingZeros(e.target.value) : null,
+                      net_acres: value || null,
                     });
+                    isNetAcresChanged(value)
                   }}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        {isNetAcresChanged() && (
+                        {changedKeys.net_acres && (
                           <IconButton
                             aria-label="toggle royality-acres"
                             onClick={() => {
+                              const netAcres = calculateNetAcres(newOwner.mineral_interest);
                               setNewOwner({
                                 ...newOwner,
-                                net_acres: calculateNetAcres(newOwner.mineral_interest)
+                                net_acres: netAcres
                               });
+                              isNetAcresChanged(netAcres);
                             }}
                           >
                             <AutorenewIcon />
@@ -577,26 +583,29 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   id="standard-number"
                   type="number"
                   size="small"
-                  className={isNRAChanged() ? classes.baseValueChanged : classes.maxWidth}
+                  className={changedKeys.nra ? classes.baseValueChanged : classes.maxWidth}
                   value={newOwner.nra}
                   onChange={(e) => {
-                    const value = e.target.value;
+                    const value = addTrailingZeros(e.target.value);
                     setNewOwner({
                       ...newOwner,
-                      nra: value ? addTrailingZeros(value) : null,
+                      nra: value || null,
                     });
+                    isNRAChanged(value);
                   }}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        {isNRAChanged() && (
+                        {changedKeys.nra && (
                           <IconButton
                             aria-label="toggle royality-acres"
                             onClick={() => {
+                              const nra = calculateNRA(newOwner.royalty_interest, newOwner.orri);
                               setNewOwner({
                                 ...newOwner,
-                                nra: calculateNRA(newOwner.royalty_interest, newOwner.orri)
-                              })
+                                nra
+                              });
+                              isNRAChanged(nra);
                             }}
                           >
                             <AutorenewIcon />
