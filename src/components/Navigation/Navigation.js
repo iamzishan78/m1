@@ -80,7 +80,7 @@ import SearchBarWithToggleButton from "./components/SearchBarWithToggleButton";
 
 import Avatar from "react-avatar";
 import ContactFormModal from "./components/ContactFormModal";
-import { GETPROFILEIMAGE } from "../../graphQL/useQueryGetProfile";
+import { GET_PROFILE_IMAGE } from "../../graphQL/useQueryGetProfile";
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 
@@ -736,14 +736,13 @@ export default function Navigation(props) {
   const [disableApply, setDisableApply] = useState(true);
   const [matchLocation, setMatchLocation] = useState(false);
   const [matchTrack, setMatchTrack] = useState(false);
-  const [matchTransact, setMatchTransact] = useState(false);
   const [matchActivities, setMatchActivities] = useState(false);
   const [matchFind, setMatchFind] = useState(false);
   const [matchDocument, setMatchDocument] = useState(false);
 
   const [profileImage, setProfileImage] = useState(null);
   const classes = useStyles({ mapGridCardActivated });
-  const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE);
+  const [getProfileImage, profiledata] = useLazyQuery(GET_PROFILE_IMAGE);
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const [openUserManagementModal, setOpenUserManagementModal] = useState(false);
 
@@ -819,7 +818,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0
 
       }));
-    } else if (location.pathname === "/flow") {
+    } else if (location.pathname.startsWith("/flow")) {
       setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
@@ -954,14 +953,6 @@ export default function Navigation(props) {
       setMatchTrack(true);
     } else {
       setMatchTrack(false);
-    }
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (location.pathname === "/flow") {
-      setMatchTransact(true);
-    } else {
-      setMatchTransact(false);
     }
   }, [location.pathname]);
 
@@ -1251,7 +1242,7 @@ export default function Navigation(props) {
             )}
 
             {/*SEARCH UI FOR DEALS */}
-            {location.pathname === "/flow" && <DealSearch />}
+            {location.pathname.startsWith("/flow") && <DealSearch />}
 
             {matchTrack ? (
               <CardHeader
@@ -1271,26 +1262,6 @@ export default function Navigation(props) {
             ) : null}
 
             <div className={classes.grow1} />
-            {matchTransact && pipelines && pipelines.length > 0 ? (
-              <div>
-                <div
-                  ref={anchorEl}
-                  className={classes.filterTabs}
-                  style={{ paddingRight: "10px" }}
-                >
-                  <Button
-                    onClick={handleClickAddDeal}
-                    color="secondary"
-                    variant="contained"
-                    startIcon={<Add />}
-                  >
-                    New Deal
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div style={{ display: "none" }}></div>
-            )}
 
             {matchActivities ? (
               <div>
