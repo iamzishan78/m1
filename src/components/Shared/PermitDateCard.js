@@ -1,9 +1,7 @@
-import React, { useContext,useState } from 'react';
+import React, {useState, useEffect } from "react";
 import { makeStyles,useTheme } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography'
-import { AppContext } from '../../AppContext'
 import PermitIcon from './components/svgIcons/PermitIcon'
-import moment from 'moment'
 
 // value formatters 
 import convert_date from "../Shared/valueformatters/convert_date.js";
@@ -23,11 +21,24 @@ const useStyles = makeStyles(theme => ({
 
 
     
-export default function PermitDateCard() {
+export default function PermitDateCard(props) {
     let classes = useStyles();
-    const [stateApp, setStateApp] = useContext(AppContext)
+    const [summary, setSummary] = useState(null);
+
+    useEffect(() => {
+      if (props.summary) {
+        setSummary(props.summary);
+        ;
+      }
+    }, [props.summary, setSummary]);
+  
 
     return (
+
+      <div >
+    
+      {summary && 
+
       <div className={classes.iconContainer}>
 
       <PermitIcon  viewBox="0 0 256 256" fontSize="large" />
@@ -46,10 +57,14 @@ export default function PermitDateCard() {
         //className={classes.text2}
         variant="caption"
       >
-      {convert_date(stateApp.selectedWell.permitApprovedDate)}
+      {convert_date(summary.PermitApprovedDate)}
 
       </Typography>
       </div>
+
+}
+
+</div>
 
 
     );

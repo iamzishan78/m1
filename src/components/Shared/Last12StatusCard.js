@@ -1,8 +1,7 @@
-import React, { useContext,useState } from 'react';
+import React, {useState, useEffect } from "react";
 import { makeStyles,useTheme } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography'
 import ProductionIcon from './components/svgIcons/ProductionIcon'
-import { AppContext } from '../../AppContext'
 
 // value formatters 
 import formatBOE from "../Shared/valueformatters/format_boe.js"
@@ -21,11 +20,26 @@ const useStyles = makeStyles(theme => ({
   }))
 
 
-export default function Last12StatusCard() {
+export default function Last12StatusCard(props) {
     let classes = useStyles();
-    const [stateApp, setStateApp] = useContext(AppContext)
+    const [summary, setSummary] = useState(null);
+
+    
+    useEffect(() => {
+      if (props.summary) {
+        setSummary(props.summary);
+        ;
+      }
+    }, [props.summary, setSummary]);
+
 
     return (
+
+      <div >
+    
+      {summary && 
+
+
       <div className={classes.iconContainer}>
 
       <ProductionIcon htmlColor='black' viewBox="0 0 32 31" fontSize="large" />
@@ -42,11 +56,14 @@ export default function Last12StatusCard() {
         //className={classes.text2}
         variant="caption"
       >
-        {`${formatBOE(stateApp.selectedWell.lastTwelveMonthBOE)} BOE`}
+        {`${formatBOE(summary.LastTwelveMonthBOE)} BOE`}
 
       </Typography>
       </div>
+    }
 
+    </div>
+    
 
     );
   };

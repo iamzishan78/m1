@@ -53,18 +53,6 @@ const useStyles = makeStyles({
 
 });
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData("Well Type", "Gas"),
-  createData("Well Status", "Active"),
-  createData("Owners", "18"),
-  createData("Profile", "Vertical"),
-  createData("Permit Date", "10/18/2005"),
-];
-
 function formatFT(ft) {
   let ftNum = ft ? ft : 0;
   ftNum = Math.round(ftNum);
@@ -77,6 +65,7 @@ export default function TableSummary(props) {
 
   useEffect(() => {
     if (props.summary) {
+      console.log('WELLDATA9', summary)
       setSummary(props.summary);
       ;
     }
@@ -84,6 +73,7 @@ export default function TableSummary(props) {
 
   return (
     <TableContainer className={classes.tableContainer}>
+
       {summary && (
         <Table
           aria-label="simple table"
