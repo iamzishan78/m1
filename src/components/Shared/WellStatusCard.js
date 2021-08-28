@@ -1,8 +1,6 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import WellIcon from "./components/svgIcons/WellIcon";
-import { AppContext } from "../../AppContext";
 
 import QuestionIcon from "@material-ui/icons/Help";
 import XIcon from "@material-ui/icons/HighlightOff";
@@ -19,18 +17,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function WellStatusCard() {
+export default function WellStatusCard(props) {
   let classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [summary, setSummary] = useState(null);
+
+
+  
   const WellStatusIcon = () => {
     if (
-      stateApp.selectedWell.wellStatus &&
-      stateApp.selectedWell.wellStatus.toUpperCase() == "ACTIVE"
+     summary.WellStatus &&
+     summary.WellStatus.toUpperCase() == "ACTIVE"
     ) {
       return <CheckCircleIcon fontSize="large" />;
     } else if (
-      stateApp.selectedWell.wellStatus &&
-      stateApp.selectedWell.wellStatus.toUpperCase() == "UNKNOWN"
+      summary.WellStatus &&
+      summary.WellStatus.toUpperCase() == "UNKNOWN"
     ) {
       return <QuestionIcon fontSize="large" />;
     } else {
@@ -38,7 +39,21 @@ export default function WellStatusCard() {
     }
   };
 
+  
+  useEffect(() => {
+    if (props.summary) {
+      setSummary(props.summary);
+      ;
+    }
+  }, [props.summary, setSummary]);
+
+
+
   return (
+    <div>
+
+    {summary && 
+
     <div className={classes.iconContainer}>
       <WellStatusIcon />
 
@@ -54,10 +69,14 @@ export default function WellStatusCard() {
         //className={classes.text2}
         variant="caption"
       >
-        {stateApp.selectedWell.wellStatus
-          ? stateApp.selectedWell.wellStatus.toUpperCase()
+        {summary.WellStatus
+          ? summary.WellStatus.toUpperCase()
           : "--"}
       </Typography>
+    </div>
+
+        }
+        
     </div>
   );
 }

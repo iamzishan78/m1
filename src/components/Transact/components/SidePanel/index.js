@@ -126,7 +126,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SidePanel = ({}) => {
+const SidePanel = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { selectedPipe, pipelines } = useSelector(({ Flow }) => Flow);
@@ -387,7 +387,7 @@ const SidePanel = ({}) => {
           onClose={() => setModal(false)}
           deleteFunc={handleDelete}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           {selectedPipelines.length > 1
             ? "Are you sure you want to delete the selected flowlines?"

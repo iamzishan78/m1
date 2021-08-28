@@ -1,7 +1,6 @@
-import React, { useContext,useState } from 'react';
+import React, { useContext,useState,useEffect} from 'react';
 import { makeStyles,useTheme } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography'
-import { AppContext } from '../../AppContext'
 import RigIcon from './components/svgIcons/RigIcon'
 import moment from 'moment'
 
@@ -23,17 +22,29 @@ const useStyles = makeStyles(theme => ({
   }))
 
   
-export default function SpudDateCard() {
+export default function SpudDateCard(props) {
     let classes = useStyles();
-    const [stateApp, setStateApp] = useContext(AppContext)
+    const [summary, setSummary] = useState(null);
+
+    useEffect(() => {
+      if (props.summary) {
+        setSummary(props.summary);
+        ;
+      }
+    }, [props.summary, setSummary]);
+  
 
     return (
+
+      <div>
+
+      {summary && 
+
       <div className={classes.iconContainer}>
 
       <RigIcon htmlColor='black' viewBox="65.8 0 481.7 792" fontSize="large" />
 
       <Typography
-        //classes={classes.text1}
         align="center"
         variant="subtitle2"
       >
@@ -41,12 +52,14 @@ export default function SpudDateCard() {
       </Typography>
       <Typography
         align="center"
-        //className={classes.text2}
         variant="caption"
       >
-      {convert_date(stateApp.selectedWell.spudDate)}
+      {convert_date(summary.SpudDate)}
 
       </Typography>
+      </div>
+      }
+      
       </div>
 
 
