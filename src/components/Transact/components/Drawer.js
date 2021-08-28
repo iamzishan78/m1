@@ -103,17 +103,18 @@ export default function Drawer() {
         <CheckBoxIcon {...props} />
       </Badge>
     ),
-    Progress: (props) => (
-      <Badge
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        color="primary"
-      >
-        <FlowIcon {...props} />
-      </Badge>
-    ),
+    // reserve this for automations potentially
+    // Progress: (props) => (
+    //   <Badge
+    //     anchorOrigin={{
+    //       vertical: "top",
+    //       horizontal: "right",
+    //     }}
+    //     color="primary"
+    //   >
+    //     <FlowIcon {...props} />
+    //   </Badge>
+    // ),
   };
 
   return (
