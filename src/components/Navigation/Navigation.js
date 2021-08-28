@@ -958,7 +958,7 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (location.pathname === "/flow") {
+    if (location.pathname.startsWith("/flow")) {
       setMatchTransact(true);
     } else {
       setMatchTransact(false);
