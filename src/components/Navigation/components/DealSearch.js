@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useLazyQuery } from "@apollo/client";
 import {
   Grid,
   InputAdornment,
@@ -11,11 +10,9 @@ import { fade, makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "react-redux";
 
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import Typography from "@material-ui/core/Typography";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import List from "@material-ui/icons/List";
-import GridOn from "@material-ui/icons/GridOn";
 import TableChartIcon from "@material-ui/icons/TableChart";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
@@ -80,6 +77,7 @@ const DealSearch = () => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [allDeals, setAllDeals] = useState([]);
+  const [searchInputValue, setSearchInputValue] = useState("");
   const { pipeToShowTab } = useSelector(({ Flow }) => Flow);
 
   useEffect(() => {
@@ -106,9 +104,7 @@ const DealSearch = () => {
     <>
       <Autocomplete
         className={classes.search}
-        style={{
-          margin: 0,
-        }}
+        style={{ margin: 0 }}
         options={allDeals}
         onChange={(e, deal) => {
           deal && handleSelectDeal(deal);
@@ -129,57 +125,66 @@ const DealSearch = () => {
             </Grid>
           );
         }}
-        renderInput={(params) => (
-          <TextField
-            style={{
-              margin: 0,
-            }}
-            className={classes.activitySearchField}
-            margin="dense"
-            {...params}
-            variant="outlined"
-            placeholder="Search for deals"
-            InputProps={{
-              ...params.InputProps,
-              startAdornment: (
-                <InputAdornment>
-                  <IconButton size="small">
-                    <SearchIcon htmlColor="#fff" />
-                  </IconButton>
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <ButtonGroup variant="text">
-                  <Tooltip title="List View">
-                    <IconButton
-                      size="small"
-                      htmlColor="#fff"
-                      className={`${classes.toggleBtn} ${stateApp.dealDisplayType === "table" &&
-                        classes.activeBtn
-                        }`}
-                      //temporarily commenting out until list view exists
-                      onClick={() => setDealDisplayType("table")}
-                    >
-                      <List />
+        renderInput={(params) => {
+          const _params = { ...params, inputProps: { ...params.inputProps, value: searchInputValue } }
+          return (
+            <TextField
+              {..._params}
+              style={{ margin: 0 }}
+              className={classes.activitySearchField}
+              margin="dense"
+              variant="outlined"
+              placeholder="Search for deals"
+              onChange={e => setSearchInputValue(e.target.value)}
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <InputAdornment>
+                    <IconButton size="small">
+                      <SearchIcon htmlColor="#fff" />
                     </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Board View">
-                    <IconButton
-                      size="small"
-                      htmlColor="#fff"
-                      className={`${classes.toggleBtn} ${stateApp.dealDisplayType === "board" &&
-                        classes.activeBtn
-                        }`}
-                      onClick={() => setDealDisplayType("board")}
-                    >
-                      <TableChartIcon />
-                    </IconButton>
-                  </Tooltip>
-                </ButtonGroup>
-              ),
-            }}
-          />
-        )}
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <ButtonGroup variant="text">
+                    {searchInputValue && searchInputValue !== "" && (
+                      <Tooltip title="Clear" placement="top">
+                        <IconButton size="small" onClick={() => setSearchInputValue("")}>
+                          <ClearIcon htmlColor="#fff" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                    <Tooltip title="List View">
+                      <IconButton
+                        size="small"
+                        htmlColor="#fff"
+                        className={`${classes.toggleBtn} ${stateApp.dealDisplayType === "table" &&
+                          classes.activeBtn
+                          }`}
+                        //temporarily commenting out until list view exists
+                        onClick={() => setDealDisplayType("table")}
+                      >
+                        <List />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Board View">
+                      <IconButton
+                        size="small"
+                        htmlColor="#fff"
+                        className={`${classes.toggleBtn} ${stateApp.dealDisplayType === "board" &&
+                          classes.activeBtn
+                          }`}
+                        onClick={() => setDealDisplayType("board")}
+                      >
+                        <TableChartIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </ButtonGroup>
+                ),
+              }}
+            />
+          )
+        }}
       />
     </>
   );
