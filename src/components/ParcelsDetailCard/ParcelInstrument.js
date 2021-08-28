@@ -344,6 +344,7 @@ export default function ParcelInstrument(props) {
             volume: newInstrument.volume,
             fileId: fileId,
             fileName: fileData?.addFileDescriptor?.file?.name,
+            parcelId: props.parcelId
           },
         },
         refetchQueries: ["getParcelAgreement"],
@@ -425,11 +426,11 @@ export default function ParcelInstrument(props) {
                   <h3>Add New Instrument</h3>
                 )}
               </ListItemText>
-              <ListItemIcon style={{ cursor: "pointer" }}>
+              {/* <ListItemIcon style={{ cursor: "pointer" }}>
                 <IconButton size="small" onClick={() => handleClose()}>
                   <CloseIcon></CloseIcon>
                 </IconButton>
-              </ListItemIcon>
+              </ListItemIcon> */}
             </ListItem>
             <ListItem
               style={{
