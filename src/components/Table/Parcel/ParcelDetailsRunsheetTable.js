@@ -125,6 +125,8 @@ function ParcelDetailsRunsheetTable(props) {
         deleteParcelRunsheet({
           variables: {
               id: record.descriptorObject,
+              parcelId: props.customLayer._id,
+              fileId: record.fileId
           },
           refetchQueries: [
             "getParcelAgreement",
