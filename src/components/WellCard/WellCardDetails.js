@@ -340,16 +340,18 @@ export default function WellCardDetails(props) {
   return stateApp.selectedWell ? (
     <React.Fragment >
       <Grid item sm={12} className={classes.gridItemGrey}>
-        <WellTypeCard />
-        <WellStatusCard />
-        <Last12StatusCard />
-        <OwnerNumCard />
-        <ProfileCard />
-        <PermitDateCard />
-        <SpudDateCard />
-        <CompletionDateCard />
-        <FirstProdDateCard />
-        <PlugDateCard />
+            
+        <WellTypeCard summary={props.summary}/>
+
+        <WellStatusCard summary={props.summary}/>
+        <Last12StatusCard summary={props.summary}/>
+        <OwnerNumCard summary={props.summary}/>
+        <ProfileCard summary={props.summary}/>
+        <PermitDateCard summary={props.summary}/>
+        <SpudDateCard summary={props.summary}/>
+        <CompletionDateCard summary={props.summary}/>
+        <FirstProdDateCard summary={props.summary}/>
+        <PlugDateCard summary={props.summary}/>
         <Box>
           <IconButton
             onClick={() => setShowSummary(!showSummary)}
