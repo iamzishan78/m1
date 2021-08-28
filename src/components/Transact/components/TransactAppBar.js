@@ -134,6 +134,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "rgba(1, 17, 51, 1)",
     color: "#fff",
     border: "1px solid #B3B3B3",
+    paddingLeft: 10,
+    paddingRight: 20,
     "&:hover": {
       backgroundColor: "#263451",
       color: "#fff",
@@ -187,7 +189,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
           <Pipelines />
           <div className={classes.left}>
             <div>
-              <Button onClick={handleClickAddDeal} color="secondary" className={classes.newDealAction} style={{ paddingLeft:10, paddingRight:20 }} startIcon={<Add />}>
+              <Button onClick={handleClickAddDeal} color="secondary" className={classes.newDealAction} startIcon={<Add />}>
                 New Deal
               </Button>
             </div>
