@@ -437,6 +437,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       ...newOwner,
                       mineral_interest: value ? addTrailingZeros(value) : null,
                       net_acres: calculateNetAcres(value),
+                      nra: calculateNRA(newOwner.royalty_interest, newOwner.orri)
                     });
                   }}
                 />
