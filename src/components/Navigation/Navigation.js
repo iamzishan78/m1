@@ -819,7 +819,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0
 
       }));
-    } else if (location.pathname === "/flow") {
+    } else if (location.pathname.startsWith("/flow")) {
       setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
@@ -1251,7 +1251,7 @@ export default function Navigation(props) {
             )}
 
             {/*SEARCH UI FOR DEALS */}
-            {location.pathname === "/flow" && <DealSearch />}
+            {location.pathname.startsWith("/flow") && <DealSearch />}
 
             {matchTrack ? (
               <CardHeader
