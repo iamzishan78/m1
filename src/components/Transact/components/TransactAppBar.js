@@ -113,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     "& span": {
       marginleft: 2,
-      marginright: 4,
+      marginright: 2,
     },
     backgroundColor: "#011133",
     color: "#fff",
@@ -129,7 +129,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
   },
   newDealAction: {
-    margin: "0px 30px",
+    margin: "0px 15px",
     fontWeight: "600",
     backgroundColor: "rgba(1, 17, 51, 1)",
     color: "#fff",
@@ -187,7 +187,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
           <Pipelines />
           <div className={classes.left}>
             <div>
-              <Button onClick={handleClickAddDeal} color="secondary" className={classes.newDealAction} startIcon={<Add />}>
+              <Button onClick={handleClickAddDeal} color="secondary" className={classes.newDealAction} style={{ paddingLeft:10, paddingRight:20 }} startIcon={<Add />}>
                 New Deal
               </Button>
             </div>
