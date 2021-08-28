@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import CardActions from "@material-ui/core/CardActions";
 import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -75,7 +75,7 @@ export default function LaneProgressZone(props) {
           {/* Show two recent docs */}
 
           {dealSettings.map((stage, index) => (
-            <>
+            <Fragment>
               <Grid key={index} container direction="row" justify="space-between" alignItems="center" className={classes.flowLane}>
                 <Grid item style={{ width: "150px", fontWeight: "normal" }}>
                   {stage.stageName}
@@ -89,21 +89,21 @@ export default function LaneProgressZone(props) {
                       <Avatar className={classes.dealOwnerAvatar}>
                         {users.find((user) => user?.value === stage.stageDealDescriptor.approver)
                           ? users
+                            .find((user) => user?.value === stage.stageDealDescriptor.approver)
+                            .text.toString()
+                            .toUpperCase()
+                            .split(" ").length > 1
+                            ? users
                               .find((user) => user?.value === stage.stageDealDescriptor.approver)
                               .text.toString()
                               .toUpperCase()
-                              .split(" ").length > 1
-                            ? users
-                                .find((user) => user?.value === stage.stageDealDescriptor.approver)
-                                .text.toString()
-                                .toUpperCase()
-                                .split(" ")[0][0] +
-                              "" +
-                              users
-                                .find((user) => user?.value === stage.stageDealDescriptor.approver)
-                                .text.toString()
-                                .toUpperCase()
-                                .split(" ")[1][0]
+                              .split(" ")[0][0] +
+                            "" +
+                            users
+                              .find((user) => user?.value === stage.stageDealDescriptor.approver)
+                              .text.toString()
+                              .toUpperCase()
+                              .split(" ")[1][0]
                             : "AO"
                           : "AO"}
                       </Avatar>
@@ -117,7 +117,7 @@ export default function LaneProgressZone(props) {
                 </Grid>
               </Grid>
               <Divider />
-            </>
+            </Fragment>
           ))}
           <div style={{ margin: "10px 0px 10px 0px" }}>
             <Button size="small" style={{ color: "grey" }}>
