@@ -332,17 +332,17 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   const calculateNetAcres = (interest) => {
     if (!interest) return null;
-    return addTrailingZeros(stateApp.selectedParcel.sdGrossAcres ? (stateApp.selectedParcel.sdGrossAcres * interest).toFixed(8) : null);
+    const netAcres = addTrailingZeros(stateApp.selectedParcel.sdGrossAcres ? (stateApp.selectedParcel.sdGrossAcres * interest).toFixed(8) : null);
+    return netAcres;
   };
 
-  const calculateNRA = (interest1, interest2) => {
+  const calculateNRA = (interest1, interest2, mineralInterest = newOwner.mineral_interest) => {
     if (!interest1 && !interest2) return null;
-    return addTrailingZeros(
-      (
-        calculateNetAcres(newOwner.mineral_interest) *
-        (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) *
-        8
-      )?.toFixed(8));
+    let netAcres = calculateNetAcres(mineralInterest),
+      nra = netAcres * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) * 8;
+    nra = addTrailingZeros(nra.toFixed(8));
+
+    return nra;
   };
 
   const isNetAcresChanged = (netAcres) => {
@@ -437,7 +437,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       ...newOwner,
                       mineral_interest: value ? addTrailingZeros(value) : null,
                       net_acres: calculateNetAcres(value),
-                      nra: calculateNRA(newOwner.royalty_interest, newOwner.orri)
+                      nra: calculateNRA(newOwner.royalty_interest, newOwner.orri, value)
                     });
                   }}
                 />
