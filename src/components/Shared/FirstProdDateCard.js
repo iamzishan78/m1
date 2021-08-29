@@ -53,7 +53,7 @@ export default function FirstProdDateCard(props) {
         //className={classes.text2}
         variant="caption"
       >
-      {convert_date(summary.FirstProductionDate)}
+      {convert_date(summary.FirstProdDate)}
       </Typography>
       </div>
     }

@@ -57,7 +57,7 @@ export default function PermitDateCard(props) {
         //className={classes.text2}
         variant="caption"
       >
-      {convert_date(summary.PermitApprovedDate)}
+      {convert_date(summary.PermitDate)}
 
       </Typography>
       </div>
