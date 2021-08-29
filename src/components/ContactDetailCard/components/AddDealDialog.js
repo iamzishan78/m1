@@ -491,14 +491,14 @@ function AddDealDialog(props) {
   useEffect(()=>{
     if(pipelines.length > 0 && props.contactId){
       let activePipeline = {};
-      const isExist = !!pipelinesData.pipelines.find(
+      const isExist = !!pipelines.find(
         (p) => p._id === selectedPipe?._id
       );
       if (selectedPipe && isExist) {
-        activePipeline = pipelinesData.pipelines.find(
+        activePipeline = pipelines.find(
           (p) => p._id === selectedPipe._id
         );
-      } else activePipeline = pipelinesData.pipelines[0];
+      } else activePipeline = pipelines[0];
       settingNewPipeWithDefaultStage(activePipeline._id, true)
     }
 
