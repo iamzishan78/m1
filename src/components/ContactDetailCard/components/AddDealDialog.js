@@ -784,15 +784,18 @@ function AddDealDialog(props) {
 
     if (pipelineId && stageId && title && title.trim() !== "") {
       const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
-
+      let selectedDate = closeDate;
+      if((closeDate instanceof Date)){
+        selectedDate = moment(closeDate).format('YYYY-MM-DD');
+      }
       const deal = {
         name: title ? title.trim() : null,
         offerPrice: label,
         notes: description ? description.trim() : null,
         status: dealState ? dealState : "open",
         closeDate:
-          closeDate && closeDate !== ""
-            ? new Date(`${closeDate}T08:00`).toUTCString()
+        selectedDate && selectedDate !== ""
+            ? new Date(`${selectedDate}T08:00`).toUTCString()
             : null
       };
 
@@ -1056,6 +1059,7 @@ function AddDealDialog(props) {
     try {
       setIsDeleting(true);
       await deleteDeal();
+      history.push(`${history.location.pathname.split("/lane")[0]}`)
       setIsDeleting(false);
     } catch {
       setIsDeleting(false);
