@@ -54,6 +54,7 @@ import {
   showErrorMessage,
   showSuccessMessage
 } from "../../../actions";
+import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
 import Documents from "../../Shared/Documents";
@@ -378,7 +379,7 @@ function AddDealDialog(props) {
   const [dealPosition, setDealPosition] = useState(null);
   const [dealState, setDealState] = useState(null);
   const [description, setDescription] = useState("");
-  const [pipelineId, setPipelineId] = useState(selectedPipe?._id);
+  const [pipelineId, setPipelineId] = useState("");
   const [stagesToChoose, setStagesToChoose] = useState([]);
   const [ownerId, setOwnerId] = useState("");
   const [cardId, setCardId] = useState("");
@@ -404,6 +405,9 @@ function AddDealDialog(props) {
   let [transactData, setTransactData] = useState(
     props.transactData ? { ...props.transactData } : null
   );
+
+  console.log("pipelineId", pipelineId, selectedPipe)
+  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
   const [
     addContact,
@@ -441,6 +445,10 @@ function AddDealDialog(props) {
   const [contact, setContact] = useState({});
 
   useEffect(() => {
+    getPipelines();
+  }, []);
+
+  useEffect(() => {
     console.log("===========");
     console.log("FLOW TRANSACT BAR VIEW", stateApp.transactBarView);
 
@@ -461,6 +469,40 @@ function AddDealDialog(props) {
       }));
     }
   }, [dealData]);
+
+  useEffect(() => {
+    if (pipelinesData) {
+      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
+        dispatch(
+          setFlowState({
+            pipelines: pipelinesData.pipelines
+          })
+        );
+      } else
+        dispatch(
+          setFlowState({
+            pipelines: [],
+            pipeToShow: false
+          })
+        );
+    }
+  }, [pipelinesData]);
+
+  useEffect(()=>{
+    if(pipelines.length > 0 && props.contactId){
+      let activePipeline = {};
+      const isExist = !!pipelinesData.pipelines.find(
+        (p) => p._id === selectedPipe?._id
+      );
+      if (selectedPipe && isExist) {
+        activePipeline = pipelinesData.pipelines.find(
+          (p) => p._id === selectedPipe._id
+        );
+      } else activePipeline = pipelinesData.pipelines[0];
+      settingNewPipeWithDefaultStage(activePipeline._id, true)
+    }
+
+  },[props.contactId, pipelines])
 
   const settingNewStageAndFindNextAvailablePosition = (
     stageId,
