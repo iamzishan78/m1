@@ -9,6 +9,7 @@ import {
   IconButton,
 } from "@material-ui/core";
 import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
+import debounce from "lodash/debounce";
 
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Typography from "@material-ui/core/Typography";
@@ -82,6 +83,8 @@ const ActivitySearch = () => {
 
   const [activities, setActivities] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
+  const [nameAutInputValue, setNameAutInputValue] = useState("");
 
   const handleSelectActivity = (id) => {
     setStateApp((stateApp) => ({
@@ -117,95 +120,121 @@ const ActivitySearch = () => {
     }));
   };
 
+  const onInputChange = React.useMemo(
+    () =>
+      debounce((event, value, reason) => {
+        setNameAutInputValue(value);
+      }, 500),
+    []
+  );
+
+
   return (
     <>
-      <Autocomplete
-        className={classes.search}
-        style={{
-          margin: 0,
-        }}
-        options={activities}
-        onChange={(e, act) => {
-          handleSelectActivity(act?._id);
-        }}
-        disableClearable={false}
-        forcePopupIcon
-        popupIcon={<ArrowDropDownIcon htmlColor="#fff" />}
-        closeIcon={<ClearIcon htmlColor="#fff" />}
-        getOptionLabel={(option) => option.name}
-        renderOption={(option) => {
-          return (
-            <Grid container spacing={0}>
-              <Grid container item xs={12} alignItems="center">
-                <Grid item xs>
-                  <span style={{ fontWeight: 400 }}>{option.name}</span>
+    <Autocomplete
+      className={classes.search}
+      style={{
+        margin: 0,
+      }}
+      defaultValue={nameAutValue}
+      value={nameAutValue}
+      disableListWrap
+      options={activities}
+      getOptionLabel={(option) => option.name}
+      getOptionSelected={(option, value) => {
+        return option === value;
+      }}
+      renderOption={(option) => {
+        return (
+          <Grid container spacing={0}>
+            <Grid container item xs={12} alignItems="center">
+              <Grid item xs>
+                <span style={{ fontWeight: 400 }}>{option.name}</span>
 
-                  <Typography variant="body2" color="textSecondary">
-                    {option.type}
-                  </Typography>
-                </Grid>
+                <Typography variant="body2" color="textSecondary">
+                  {option.type}
+                </Typography>
               </Grid>
             </Grid>
-          );
-        }}
-        renderInput={(params) => (
-          <TextField
-            // value={searchQuery}
-            // onChange={(e) => setSearchQuery(e.target.value)}
-            style={{
-              margin: 0,
-            }}
-            className={classes.activitySearchField}
-            margin="dense"
-            {...params}
-            variant="outlined"
-            placeholder="Search for activities"
-            InputProps={{
-              ...params.InputProps,
-              startAdornment: (
-                <InputAdornment>
-                  <IconButton size="small">
-                    <SearchIcon htmlColor="#fff" />
-                  </IconButton>
-                </InputAdornment>
-              ),
-
-              endAdornment: (
-                <>
-                  <ButtonGroup variant="text">
-                    <Tooltip title="List View">
-                      <IconButton
-                        size="small"
-                        htmlColor="#fff"
-                        className={`${classes.toggleBtn} ${
-                          stateApp.activityDisplayType === "table" &&
-                          classes.activeBtn
-                        }`}
-                        onClick={() => setActivityDisplayType("table")}
-                      >
-                        <List />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Calendar">
-                      <IconButton
-                        size="small"
-                        htmlColor="#fff"
-                        className={`${classes.toggleBtn} ${
-                          stateApp.activityDisplayType === "calendar" &&
-                          classes.activeBtn
-                        }`}
-                        onClick={() => setActivityDisplayType("calendar")}
-                      >
-                        <EventIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </ButtonGroup>
-                </>
-              ),
-            }}
-          />
-        )}
-      />
+          </Grid>
+        );
+      }}
+      onInputChange={onInputChange}
+      onChange={(e, act) => {
+        handleSelectActivity(act?._id);
+        setNameAutValue(act);
+      }}
+      renderInput={(params) => (
+        <TextField
+          margin="dense"
+          {...params}
+          style={{
+            margin: 0,
+          }}
+          className={classes.activitySearchField}
+          placeholder="Search for activities"
+          variant="outlined"
+          InputProps={{
+            ...params.InputProps,
+            startAdornment: (
+              <InputAdornment>
+                <IconButton size="small">
+                  <SearchIcon htmlColor="#fff" />
+                </IconButton>
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <>
+                <ButtonGroup variant="text">
+                  <Tooltip title="Clear">
+                    <IconButton
+                      size="small"
+                      htmlColor="#fff"
+                      className={`${classes.toggleBtn} ${
+                        stateApp.activityDisplayType === "table" &&
+                        classes.activeBtn
+                      }`}
+                      onClick={() => {
+                        setNameAutValue({ name: "", _id: null });
+                      }}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="List View">
+                    <IconButton
+                      size="small"
+                      htmlColor="#fff"
+                      className={`${classes.toggleBtn} ${
+                        stateApp.activityDisplayType === "table" &&
+                        classes.activeBtn
+                      }`}
+                      onClick={() => setActivityDisplayType("table")}
+                    >
+                      <List />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Calendar">
+                    <IconButton
+                      size="small"
+                      htmlColor="#fff"
+                      className={`${classes.toggleBtn} ${
+                        stateApp.activityDisplayType === "calendar" &&
+                        classes.activeBtn
+                      }`}
+                      onClick={() => setActivityDisplayType("calendar")}
+                    >
+                      <EventIcon />
+                    </IconButton>
+                  </Tooltip>
+                </ButtonGroup>
+              </>
+            ),
+          }}
+          size="small"
+        />
+      )}
+    />
     </>
   );
 };
