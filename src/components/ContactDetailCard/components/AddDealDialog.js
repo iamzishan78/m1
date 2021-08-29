@@ -1502,7 +1502,7 @@ function AddDealDialog(props) {
                   </Grid>
                   <Grid item xs={9}>
                     <Autocomplete
-                      options={users}
+                      options={users.filter(u => u.text)}
                       onChange={(e, user) => {
                         setOwnerId(user?.value);
                       }}

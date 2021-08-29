@@ -1,7 +1,6 @@
-import React, { useContext, useState } from "react";
+import React, {useState, useEffect } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import { AppContext } from "../../AppContext";
 import Avatar from "@material-ui/core/Avatar";
 
 const useStyles = makeStyles((theme) => ({
@@ -22,15 +21,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProfileCard() {
+export default function ProfileCard(props) {
   let classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [summary, setSummary] = useState(null);
+
+  useEffect(() => {
+    if (props.summary) {
+      setSummary(props.summary);
+      ;
+    }
+  }, [props.summary, setSummary]);
+
 
   return (
+
+
+    <div >
+    
+    {summary && 
+
+
     <div className={classes.iconContainer}>
       <Avatar variant="circle" className={classes.avatar}>
-        {stateApp.selectedWell.wellBoreProfile
-          ? stateApp.selectedWell.wellBoreProfile.substring(0, 1)
+        {summary.WellBoreProfile
+          ? summary.WellBoreProfile.substring(0, 1)
           : "H"}{" "}
       </Avatar>
 
@@ -43,11 +57,16 @@ export default function ProfileCard() {
         Profile
       </Typography>
       <Typography align="center" className={classes.text2} variant="caption">
-        {stateApp.selectedWell.wellBoreProfile &&
-        stateApp.selectedWell.wellBoreProfile.toUpperCase()
-          ? stateApp.selectedWell.wellBoreProfile.toUpperCase()
+        {summary.WellBoreProfile &&
+        summary.WellBoreProfile.toUpperCase()
+          ? summary.WellBoreProfile.toUpperCase()
           : "--"}
       </Typography>
     </div>
+
+}
+
+</div>
+
   );
 }
