@@ -14,7 +14,6 @@ import Paper from "@material-ui/core/Paper";
 
 //custom components
 import Taps from "../Shared/Taps";
-import CardDetailsMap from "./components/CardDetailsMap";
 import TableSummary from "./components/TableSummary";
 
 import QuadProvider from "../Quad/QuadProvider";
@@ -30,7 +29,6 @@ import ProfileCard from "../Shared/ProfileCard";
 import WellTypeCard from "../Shared/WellTypeCard";
 import SpudDateCard from "../Shared/SpudDateCard";
 import PlugDateCard from "../Shared/PlugDateCard";
-import WellApiCard from "../Shared/WellApiCard";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 
@@ -340,16 +338,18 @@ export default function WellCardDetails(props) {
   return stateApp.selectedWell ? (
     <React.Fragment >
       <Grid item sm={12} className={classes.gridItemGrey}>
-        <WellTypeCard />
-        <WellStatusCard />
-        <Last12StatusCard />
-        <OwnerNumCard />
-        <ProfileCard />
-        <PermitDateCard />
-        <SpudDateCard />
-        <CompletionDateCard />
-        <FirstProdDateCard />
-        <PlugDateCard />
+            
+        <WellTypeCard summary={props.summary}/>
+
+        <WellStatusCard summary={props.summary}/>
+        <Last12StatusCard summary={props.summary}/>
+        <OwnerNumCard summary={props.summary}/>
+        <ProfileCard summary={props.summary}/>
+        <PermitDateCard summary={props.summary}/>
+        <SpudDateCard summary={props.summary}/>
+        <CompletionDateCard summary={props.summary}/>
+        <FirstProdDateCard summary={props.summary}/>
+        <PlugDateCard summary={props.summary}/>
         <Box>
           <IconButton
             onClick={() => setShowSummary(!showSummary)}

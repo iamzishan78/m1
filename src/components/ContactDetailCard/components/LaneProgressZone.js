@@ -13,7 +13,6 @@ import ProgressBar from "../../Shared/ui/ProgressBar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    // backgroundColor: "#fff",
   },
   details: {
     textDecoration: "underline",

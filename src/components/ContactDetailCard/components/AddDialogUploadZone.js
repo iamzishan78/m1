@@ -415,6 +415,7 @@ export default function Documents(props) {
               <div className={classes.Uploadcomp}>
                 <UploadZone
                   style={{ width: "150px", height: "150px" }}
+                  setUploadedFileData={props.setUploadedFileData}
                   relatedObjectId={props.id}
                   userId={userId}
                   relatedObjectType={relatedObjectType} //Contact or Deal

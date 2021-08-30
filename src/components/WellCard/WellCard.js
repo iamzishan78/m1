@@ -565,6 +565,79 @@ function WellCard() {
                     </Typography>
                   </Link>
                   : ''}
+
+                {wellData?.State === 'WY'
+                  ?
+                  <Link 
+
+                    href={"https://pipeline.wyo.gov/Wellapino.cfm?napino="+ wellData?.ApiNumber.substring(3)+"&s1=Y"}
+
+                    onClick={() => {
+                    }}
+                    variant="body2"
+                    target="_blank"
+
+                  >
+                    <Typography
+                      align="center"
+                      variant="subtitle2"
+                      className={classes.link_permit}
+                    >
+                      WYO Search Tool
+
+                    </Typography>
+                  </Link>
+                  : ''}
+
+
+                {wellData?.State === 'UT'
+                  ?
+                  <Link 
+
+                    href={"https://dataexplorer.ogm.utah.gov/DataMining.html?EntityType=Well&EntityKeyName=API&EntityKeyValue="+wellData?.ApiNumber+"&DETAILSONLY=True"}
+
+                    onClick={() => {
+                    }}
+                    variant="body2"
+                    target="_blank"
+
+                  >
+                    <Typography
+                      align="center"
+                      variant="subtitle2"
+                      className={classes.link_permit}
+                    >
+                      UDOGM Search Tool
+
+                    </Typography>
+                  </Link>
+                  : ''}
+
+
+                {wellData?.State === 'KS'
+                  ?
+                  <Link 
+
+                    href={"https://chasm.kgs.ku.edu/ords/qualified.well_page.DisplayWell?f_kid="+wellData?.StateWellId}
+
+                    onClick={() => {
+                    }}
+                    variant="body2"
+                    target="_blank"
+
+                  >
+                    <Typography
+                      align="center"
+                      variant="subtitle2"
+                      className={classes.link_permit}
+                    >
+                      KGS Search Tool
+
+                    </Typography>
+                  </Link>
+                  : ''}
+
+
               </div>
 
             </CardContent>

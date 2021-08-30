@@ -1,18 +1,17 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { Fragment, useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 
 import { AppContext } from "../../AppContext";
 import Board from "react-trello";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { UPDATESTAGEDEALDESCRIPTORS } from "../../graphQL/useMutationUpdateStageDealDescriptors";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
 import "./index.css";
 import TransactAppBar from "./components/TransactAppBar";
-import TransactTable from "./components/TransactTable";
 import SidePanel from "./components/SidePanel";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import Drawer from "./components/Drawer";
@@ -20,8 +19,7 @@ import moment from "moment";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
 import DocViewer from "../Shared/DocViewer";
 import { validateEmail } from "components/Login/loginHelpers";
-import { GETPROFILEIMAGE } from "graphQL/useQueryGetProfile";
-import { Avatar } from "material-ui";
+import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -171,39 +169,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const CustomAvatar = ({ text = "", email = "", diglog }) => {
+export const CustomAvatar = React.memo(({ text = "", email = "", diglog, imageUrl }) => {
   const classes = useStyles();
-  const [profileImage, setProfileImage] = useState(null);
-  const [getProfileImage, profiledata] = useLazyQuery(GETPROFILEIMAGE, {
-    fetchPolicy: "cache-first"
-  });
-
-  useEffect(() => {
-    if (email) {
-      setProfileImage(null);
-      getProfileImage({
-        variables: { email }
-      });
-    }
-  }, [email, getProfileImage, text]);
-
-  useEffect(() => {
-    if (
-      profiledata &&
-      profiledata.data &&
-      profiledata.data.profileByEmail &&
-      profiledata.data.profileByEmail.profile
-    ) {
-      const {
-        data: {
-          profileByEmail: {
-            profile: { profileImage }
-          }
-        }
-      } = profiledata;
-      setProfileImage(profileImage);
-    }
-  }, [profiledata]);
 
   const getInitials = (name) => {
     if (!name || name.length === 0) return "--";
@@ -216,27 +183,27 @@ export const CustomAvatar = ({ text = "", email = "", diglog }) => {
     return initials.toUpperCase();
   };
 
-  if (email && profileImage) {
-    return (
-      <img
-        className={classes.customAvatarImg}
-        src={profileImage}
-        alt="owner img"
-      />
-    );
-  }
-
   return (
-    <span
-      className={diglog ? "" : classes.customAvatar}
-      style={{
-        backgroundColor: diglog ? "" : getRandomColor(text)
-      }}
-    >
-      {getInitials(text)}
-    </span>
+    <Fragment>
+      {imageUrl ? (
+        <img
+          className={classes.customAvatarImg}
+          src={imageUrl}
+          alt="owner img"
+        />
+      ) : (
+        <span
+          className={diglog ? "" : classes.customAvatar}
+          style={{
+            backgroundColor: diglog ? "" : getRandomColor(text)
+          }}
+        >
+          {getInitials(text)}
+        </span>
+      )}
+    </Fragment>
   );
-};
+});
 
 const defaultColors = [
   "#d73d32",
@@ -283,10 +250,10 @@ export function getRandomColor(value, colors = defaultColors) {
 export default function Transact() {
   const classes = useStyles();
   let history = useHistory();
-  const dispatch = useDispatch();
   const { pipeToShow, pipeToShowTab } = useSelector(({ Flow }) => Flow);
   console.log("PIPETOSHOW: ", pipeToShow);
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [profilesInfo, setProfilesInfo] = useState({});
   const [filteredBoardTransactData, setFilteredBoardTransactData] = useState({
     lanes: []
   });
@@ -297,6 +264,10 @@ export default function Transact() {
 
   const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
   const [updateDeal] = useMutation(UPDATEDEAL);
+
+  const [getProfilesImages, profiledata] = useLazyQuery(GET_PROFILES_IMAGES, {
+    fetchPolicy: "cache-first"
+  });
 
   const filterBoardCards = (lanes, filter) => {
     return lanes.map((lane) => {
@@ -312,7 +283,9 @@ export default function Transact() {
           break;
 
         default:
-          cards = cards.filter((card) => card.metadata.status == filter && !card.metadata.IsDeleted);
+          cards = cards.filter(
+            (card) => card.metadata.status === filter && !card.metadata.IsDeleted
+          );
           break;
       }
 
@@ -325,13 +298,21 @@ export default function Transact() {
       setFilteredBoardTransactData({
         lanes: [...filterBoardCards(pipeToShow.lanes, dealFilter)]
       });
+      // getting deal owners profile images
+      const ownersEmails = [];
 
-      filteredBoardTransactData.lanes &&
-        filteredBoardTransactData.lanes.forEach((lane) => {
+      const cardColorsAndImages = (lanes) => {
+        lanes.forEach((lane) => {
           lane &&
             lane.cards &&
             lane.cards.forEach((card) => {
-              const ownerId = card && card.metadata && card.metadata.owners && card.metadata.owners[0] && card.metadata.owners[0].id;
+              const owner = card &&
+                card.metadata &&
+                card.metadata.owners &&
+                card.metadata.owners[0];
+              const ownerId = owner && card.metadata.owners[0].id;
+              if (owner && validateEmail(owner.relatedObject.email)) ownersEmails.push(owner.relatedObject.email);
+
               if (!(ownerId in cardColors.current)) {
                 cardColors.current = {
                   ...cardColors.current,
@@ -341,8 +322,25 @@ export default function Transact() {
               // card.metadata.owners[0].id
             });
         });
+      }
+
+      if (filteredBoardTransactData.lanes?.length) {
+        cardColorsAndImages(filteredBoardTransactData.lanes);
+      } else {
+        cardColorsAndImages(pipeToShow.lanes);
+      }
+
+      getProfilesImages({
+        variables: { emails: ownersEmails }
+      })
     }
   }, [pipeToShow, dealFilter]);
+
+  useEffect(() => {
+    if (profiledata?.data?.profileByEmail?.profiles) {
+      setProfilesInfo(profiledata.data.profileByEmail.profiles);
+    }
+  }, [profiledata]);
 
   const filterTabCards = (cards, filter) => {
     return cards.filter((card) => {
@@ -354,7 +352,7 @@ export default function Transact() {
           return card.IsDeleted; // get deleted cards
 
         default:
-          return card.status == filter && !card.IsDeleted;
+          return card.status === filter && !card.IsDeleted;
       }
     });
   };
@@ -390,8 +388,9 @@ export default function Transact() {
     let unfilteredSourceLane = pipeToShow.lanes.find((lane) => lane?.id === sourceLaneId);
     let unfilteredTargetLane = pipeToShow.lanes.find((lane) => lane?.id === targetLaneId);
 
-    let filteredSourceLane = filteredBoardTransactData.lanes.find((lane) => lane?.id === sourceLaneId);
-    let filteredTargetLane = filteredBoardTransactData.lanes.find((lane) => lane?.id === targetLaneId);
+    let filteredTargetLane = filteredBoardTransactData.lanes.find(
+      (lane) => lane?.id === targetLaneId
+    );
 
     let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex((card) => card?.id === cardId);
     let unfilteredTargetPosition = (() => {
@@ -463,7 +462,8 @@ export default function Transact() {
 
       if (
         unfilteredTargetLane?.metadata?.dealsStatus &&
-        unfilteredTargetLane.metadata.dealsStatus.toLowerCase() !== cardDetails?.metadata?.status?.toLowerCase()
+        unfilteredTargetLane.metadata.dealsStatus.toLowerCase() !==
+        cardDetails?.metadata?.status?.toLowerCase()
       )
         updatedDeal = {
           ...updatedDeal,
@@ -501,7 +501,8 @@ export default function Transact() {
     return cardColor;
   };
 
-  const getCard = ({ metadata, title, description, id, laneId }) => {
+  const GetCard = React.memo(({ cardProps }) => {
+    const { metadata, title, description, id, laneId } = cardProps;
     const cardPrice = metadata && metadata.offerPrice ? metadata.offerPrice : 0;
     const formattedPrice = vf_currency(cardPrice);
 
@@ -551,6 +552,7 @@ export default function Transact() {
                 email={ownerEmail}
                 text={owner}
                 color={cardColors[ownerId]}
+                imageUrl={profilesInfo[ownerEmail]?.profileImage}
               />
             )}
           </div>
@@ -570,7 +572,7 @@ export default function Transact() {
         <div className={classes.cardDescStyle}>{desc}</div>
       </article>
     );
-  };
+  });
 
   const getLaneHeader = ({ title, id, metadata }) => {
     const lane = filteredBoardTransactData?.lanes?.find((lane) => lane.id === id);
@@ -578,7 +580,14 @@ export default function Transact() {
     if (lane) dealCount = lane?.cards.length;
 
     let priceSum = 0;
-    lane && lane.cards.forEach((card) => (priceSum += card && card.metadata && card.metadata.offerPrice ? card.metadata.offerPrice : 0));
+    lane &&
+      lane.cards.forEach(
+        (card) =>
+        (priceSum +=
+          card && card.metadata && card.metadata.offerPrice
+            ? card.metadata.offerPrice
+            : 0)
+      );
 
     const formattedTotal = vf_currency(priceSum);
 
@@ -627,14 +636,13 @@ export default function Transact() {
       <SidePanel />
 
       <main className={classes.content}>
-        <TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} />
+        <TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} setStateApp={setStateApp} />
         {pipeToShow ? (
           <div className={classes.boardAndTable}>
             {stateApp.dealDisplayType === "board" && (
               <Board
                 className={classes.list}
                 style={{ backgroundColor: "#fff" }}
-                // data={filteredBoardTransactData || transactData}
                 data={filteredBoardTransactData}
                 draggable={true}
                 laneDraggable={false}
@@ -662,7 +670,7 @@ export default function Transact() {
                 }}
                 components={{
                   LaneHeader: (laneProps) => getLaneHeader(laneProps),
-                  Card: (cardProps) => getCard(cardProps)
+                  Card: (cardProps) => <GetCard cardProps={cardProps} />
                 }}
 
               //onCardAdd = {handleCardAdd}

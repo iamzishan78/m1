@@ -31,7 +31,9 @@ import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDeal
 import { ADD_DEAL_SUBTASK, UPDATE_DEAL_SUBTASK } from "graphQL/useMutationDealSubtask";
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
+  root: {
+    padding: "0px 30px"
+  },
   newLaneProgress: {
     margin: "10px 0px 10px 0px",
   },
@@ -449,7 +451,7 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
         </Grid>
         <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
           {settings.tasks.map((task, subtaskIndex) => (
-            <SubtaskComponent task={task} index={subtaskIndex} />
+            <SubtaskComponent task={task} />
           ))}
         </Grid>
         {isNewSubtask.index === index && isNewSubtask.value && (
@@ -479,14 +481,22 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
     </div>
   );
 
+  const evaluateOverallProgress = () => {
+    let progress = 0;
+    dealSettings.forEach(setting => {
+      progress += setting.progress;
+    });
+    progress = ((progress / (100 * dealSettings.length)) * 100).toFixed(2);
+    return progress;
+  }
+
   return (
     <div className={classes.root}>
-      <h1>{stateApp.activeDeal.name}</h1>
-      <CardActions style={{ padding: 0 }}>
+      <CardActions style={{ padding: 0, paddingBottom: 15 }}>
         <Grid container direction="row" justify="space-between" alignItems="center">
-          <Grid item xs={6}>
+          <Grid item xs={8}>
             <h4 style={{ height: "8px" }}>Overall Progress</h4>
-            <ProgressBar value={50} isNumeric />
+            <ProgressBar value={evaluateOverallProgress()} isNumeric />
           </Grid>
           {/* <Grid item xs={6} style={{ textAlign: "right" }}>
             <div className={classes.popOver}>

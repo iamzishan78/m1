@@ -56,6 +56,7 @@ import { UPSERTDEALDESCRIPTOR } from "graphQL/useMutationUpsertDealDescriptor";
 import { REMOVEDEALDESCRIPTOR } from "../../../graphQL/useMutationRemoveDealDescriptor";
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
 import { setFlowState, showErrorMessage, showSuccessMessage } from "../../../actions";
+
 import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
@@ -398,7 +399,7 @@ function AddDealDialog(props) {
   const [dealPosition, setDealPosition] = useState(null);
   const [dealState, setDealState] = useState(null);
   const [description, setDescription] = useState("");
-  const [pipelineId, setPipelineId] = useState(selectedPipe?._id);
+  const [pipelineId, setPipelineId] = useState("");
   const [stagesToChoose, setStagesToChoose] = useState([]);
   const [ownerId, setOwnerId] = useState("");
   const [cardId, setCardId] = useState("");
@@ -414,10 +415,14 @@ function AddDealDialog(props) {
     setStateIfDeepEqual(NameAutInputValue, newState);
   };
   const [hasNextPage, setHasNextPage] = useState(true);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   let [transactData, setTransactData] = useState(
     props.transactData ? { ...props.transactData } : null
   );
+
+  console.log("pipelineId", pipelineId, selectedPipe)
+  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
   const [
     addContact,
@@ -456,6 +461,10 @@ function AddDealDialog(props) {
   });
 
   const [contact, setContact] = useState({});
+
+  useEffect(() => {
+    getPipelines();
+  }, []);
 
   useEffect(() => {
     console.log("===========");
@@ -498,6 +507,40 @@ function AddDealDialog(props) {
       setStateApp((stateApp) => ({ ...stateApp, transactBarView: "Task Progress" }));
     }
   }, [isProgressDetail]);
+
+  useEffect(() => {
+    if (pipelinesData) {
+      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
+        dispatch(
+          setFlowState({
+            pipelines: pipelinesData.pipelines
+          })
+        );
+      } else
+        dispatch(
+          setFlowState({
+            pipelines: [],
+            pipeToShow: false
+          })
+        );
+    }
+  }, [pipelinesData]);
+
+  useEffect(() => {
+    if (pipelines.length > 0 && props.contactId) {
+      let activePipeline = {};
+      const isExist = !!pipelines.find(
+        (p) => p._id === selectedPipe?._id
+      );
+      if (selectedPipe && isExist) {
+        activePipeline = pipelines.find(
+          (p) => p._id === selectedPipe._id
+        );
+      } else activePipeline = pipelines[0];
+      settingNewPipeWithDefaultStage(activePipeline._id, true)
+    }
+
+  }, [props.contactId, pipelines])
 
   const settingNewStageAndFindNextAvailablePosition = (
     stageId,
@@ -775,15 +818,18 @@ function AddDealDialog(props) {
 
     if (pipelineId && stageId && title && title.trim() !== "") {
       const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
-
+      let selectedDate = closeDate;
+      if ((closeDate instanceof Date)) {
+        selectedDate = moment(closeDate).format('YYYY-MM-DD');
+      }
       const deal = {
         name: title ? title.trim() : null,
         offerPrice: label,
         notes: description ? description.trim() : null,
         status: dealState ? dealState : "open",
         closeDate:
-          closeDate && closeDate !== ""
-            ? new Date(`${closeDate}T08:00`).toUTCString()
+          selectedDate && selectedDate !== ""
+            ? new Date(`${selectedDate}T08:00`).toUTCString()
             : null
       };
 
@@ -984,6 +1030,14 @@ function AddDealDialog(props) {
             : { ...variables, contactId };
         }
 
+        const ID = []
+        for (let i = 0; i < uploadedFiles.length; i++) {
+          ID.push({ id: uploadedFiles[i].addFileDescriptor.file.id, name: uploadedFiles[i].addFileDescriptor.file.name });
+        }
+
+        if (ID.length > 0) {
+          variables = { ...variables, files: ID }
+        }
         addDeal({
           variables,
           refetchQueries: [
@@ -999,6 +1053,7 @@ function AddDealDialog(props) {
         });
       }
     }
+    setUploadedFiles([])
   };
 
   const handleUpdate = async () => {
@@ -1038,6 +1093,7 @@ function AddDealDialog(props) {
     try {
       setIsDeleting(true);
       await deleteDeal();
+      history.push(`${history.location.pathname.split("/lane")[0]}`)
       setIsDeleting(false);
     } catch {
       setIsDeleting(false);
@@ -1123,7 +1179,7 @@ function AddDealDialog(props) {
           getDeal={refetchDeal}
         />
       );
-    } else if (stateApp.transactBarView === "Flow Lane Progress") {
+    } else if (stateApp.transactBarView === "Task Progress") {
       return (
         <LaneProgressDetail
           users={users}
@@ -1192,11 +1248,13 @@ function AddDealDialog(props) {
     for (let i = 0; i < files?.getFileDescriptors.length; i++) {
       ID.push(files?.getFileDescriptors[i].fileId);
     }
-
+    for (let i = 0; i < uploadedFiles.length; i++) {
+      ID.push(uploadedFiles[i].addFileDescriptor.file.id);
+    }
     viewFiles({
       variables: { fileIds: ID }
     });
-  }, [files]);
+  }, [files, uploadedFiles]);
 
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] =
@@ -1207,6 +1265,18 @@ function AddDealDialog(props) {
     setExpCardSubComponentTitle(subComponentTitle);
     setShowExpandableCard(true);
   };
+
+  const handleCloseExpandableCard = () => {
+    setShowExpandableCard(false);
+    setStateApp((state) => ({
+      ...state,
+      contactUpdated: null
+    }));
+  };
+
+  const setUploadedFileData = (uploadedfile) => {
+    setUploadedFiles([...uploadedFiles, uploadedfile])
+  }
 
   const StickyHeader = () => (
     <div>
@@ -1441,7 +1511,7 @@ function AddDealDialog(props) {
                     </Grid>
                     <Grid item xs={9}>
                       <Autocomplete
-                        options={users}
+                        options={users.filter(u => u.text)}
                         onChange={(e, user) => {
                           setOwnerId(user?.value);
                         }}
@@ -1484,6 +1554,12 @@ function AddDealDialog(props) {
                                             users.find(
                                               (user) => user?.value === ownerId
                                             ).email
+                                          }
+                                          text={
+                                            users
+                                              .find(
+                                                (user) => user?.value === ownerId
+                                              ).email
                                           }
                                           text={
                                             users
@@ -1680,7 +1756,6 @@ function AddDealDialog(props) {
                 </FormControl>
 
                 <TextField
-                  //   autoFocus
                   margin="dense"
                   variant="outlined"
                   multiline
@@ -1688,7 +1763,6 @@ function AddDealDialog(props) {
                   value={description}
                   label="Description"
                   fullWidth
-                  multiline
                   //   required
                   onChange={(e) => {
                     setDescription(e.target.value);
