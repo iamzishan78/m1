@@ -621,19 +621,20 @@ export default function Transact() {
     <div className={classes.root}>
       {stateApp.dealDialog && <Drawer />}
       <DocViewer></DocViewer>
-
-      <AddDealDialog
-        open={stateApp.dealDialog ? true : false}
-        width="450px"
-        isTransactPage
-        onClose={() =>
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            dealDialog: false,
-            activeDeal: { cardId: null, laneId: null }
-          }))
-        }
-      />
+      {stateApp.dealDialog && (
+        <AddDealDialog
+          open={stateApp.dealDialog ? true : false}
+          width="450px"
+          isTransactPage
+          onClose={() =>
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              dealDialog: false,
+              activeDeal: { cardId: null, laneId: null }
+            }))
+          }
+        />
+      )}
       {/**
        * Here goes the Side Panel for Flowlines
        */}
