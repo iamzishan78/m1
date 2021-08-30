@@ -54,11 +54,6 @@ const useStyles = makeStyles((theme) => ({
       minWidth: "80px !important",
     },
   },
-  formControl: {
-    "& .MuiFormControl-root": {
-      height: "120px !important",
-    },
-  },
   textField: {
     backgroundColor: "#FFFCDC",
     display: "block",
@@ -159,6 +154,19 @@ const useStyles = makeStyles((theme) => ({
       width: "auto",
     },
   },
+  notes: {
+    backgroundColor: "#FFFCDC",
+    display: "block",
+    width: "100%",
+    marginTop: 25,
+
+    "& .MuiOutlinedInput-root": {
+      width: "100%",
+      "& fieldset": {
+        borderColor: "white"
+      }
+    }
+  }
 }));
 
 function FlowLaneDetails({ users, activeDeal, dealSettings }) {
@@ -431,22 +439,19 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
             )}
           />
         </Grid>
-        <Grid item xl={12} sm={12} className={classes.formControl}>
+        <Grid item xl={12} sm={12}>
           <TextField
             margin="dense"
             variant="outlined"
-            // multiline
+            multiline
             rows={8}
-            label="Comment"
             defaultValue={get(settings, "stageDealDescriptor.comment", "")}
-            className={classes.textField}
+            // value={description}
+            label="Comment"
             fullWidth
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleChangeSettings(settings, { comment: e.target.value });
-              }
-            }}
+            //   required
+            onBlur={e => handleChangeSettings(settings, { comment: e.target.value })}
+            className={classes.notes}
           />
         </Grid>
         <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
