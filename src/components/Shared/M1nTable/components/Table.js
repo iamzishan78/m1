@@ -3762,7 +3762,7 @@ function SubTable(props) {
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
                   {selectedUser !== null
-                    ? `Remove '${selectedUser.displayName}' from list?`
+                    ? `Remove system access for '${selectedUser.displayName}' ?`
                     : `Are you sure you want to delete selected user${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""}?`}
                 </DeleteConfirmationDialogContent>
               )}
