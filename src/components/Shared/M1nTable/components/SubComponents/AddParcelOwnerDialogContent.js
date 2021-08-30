@@ -170,9 +170,15 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     }
   }, [selectedRow]);
 
+  useEffect(() => {
+    const netAcresChanged = isNetAcresChanged(newOwner.net_acres, false);
+    const nraChanged = isNRAChanged(newOwner.nra, false);
+    setChangedKeys({ netAcres: netAcresChanged, nra: nraChanged });
+  }, [newOwner.net_acres, newOwner.nra]);
+
   // CONTACT
 
-  const [getPaginatedContacts, { data: allContacts, loading: contactsLoading, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
+  const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
     PAGINATEDCONTACTSQUERY,
     {
       fetchPolicy: "cache-and-network",
@@ -345,13 +351,18 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     return nra;
   };
 
-  const isNetAcresChanged = (netAcres) => {
-    setChangedKeys({ net_acres: calculateNetAcres(newOwner.mineral_interest) !== netAcres });
+  const isNetAcresChanged = (netAcres, stateUpdate = true) => {
+    const isChanged = calculateNetAcres(newOwner.mineral_interest) !== netAcres;
+    if (stateUpdate) {
+      setChangedKeys({ ...changedKeys, netAcres: isChanged });
+    } else return isChanged;
   }
-  const isNRAChanged = (nra) => {
+  const isNRAChanged = (nra, stateUpdate = true) => {
     let calculatedNRA = calculateNRA(newOwner.royalty_interest, newOwner.orri);
     if (nra === 'NaN') nra = null;
-    setChangedKeys({ nra: calculatedNRA !== nra });
+    if (stateUpdate) {
+      setChangedKeys({ ...changedKeys, nra: calculatedNRA !== nra });
+    } else return calculatedNRA !== nra;
   }
 
   const classes = useStyles();
@@ -422,6 +433,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       surface_interest: value ? addTrailingZeros(e.target.value) : null,
                     });
                   }}
+                  onWheel={(e) => e.target.blur()}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -440,6 +452,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       nra: calculateNRA(newOwner.royalty_interest, newOwner.orri, value)
                     });
                   }}
+                  onWheel={(e) => e.target.blur()}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -457,6 +470,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       nra: calculateNRA(value, newOwner.orri)
                     });
                   }}
+                  onWheel={(e) => e.target.blur()}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -474,6 +488,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       nra: calculateNRA(value, newOwner.royalty_interest)
                     });
                   }}
+                  onWheel={(e) => e.target.blur()}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -490,6 +505,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       unknown_interest: value ? addTrailingZeros(e.target.value) : null,
                     });
                   }}
+                  onWheel={(e) => e.target.blur()}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -506,6 +522,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       record_title: value ? addTrailingZeros(e.target.value) : null,
                     });
                   }}
+                  onWheel={(e) => e.target.blur()}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -522,6 +539,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       operating_rights: value ? addTrailingZeros(e.target.value) : null,
                     });
                   }}
+                  onWheel={(e) => e.target.blur()}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -538,6 +556,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       nri: value ? addTrailingZeros(e.target.value) : null,
                     });
                   }}
+                  onWheel={(e) => e.target.blur()}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -545,7 +564,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 <TextField
                   type="number"
                   size="small"
-                  className={changedKeys.net_acres ? classes.baseValueChanged : classes.maxWidth}
+                  className={changedKeys.netAcres ? classes.baseValueChanged : classes.maxWidth}
                   value={newOwner.net_acres}
                   onChange={(e) => {
                     const value = addTrailingZeros(e.target.value);
@@ -553,12 +572,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       ...newOwner,
                       net_acres: value || null,
                     });
-                    isNetAcresChanged(value)
                   }}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        {changedKeys.net_acres && (
+                        {changedKeys.netAcres && (
                           <IconButton
                             aria-label="toggle royality-acres"
                             onClick={() => {
@@ -567,7 +585,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                                 ...newOwner,
                                 net_acres: netAcres
                               });
-                              isNetAcresChanged(netAcres);
                             }}
                           >
                             <AutorenewIcon />
@@ -576,6 +593,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       </InputAdornment>
                     ),
                   }}
+                  onWheel={(e) => e.target.blur()}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -592,7 +610,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       ...newOwner,
                       nra: value || null,
                     });
-                    isNRAChanged(value);
                   }}
                   InputProps={{
                     endAdornment: (
@@ -606,7 +623,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                                 ...newOwner,
                                 nra
                               });
-                              isNRAChanged(nra);
                             }}
                           >
                             <AutorenewIcon />
@@ -615,6 +631,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       </InputAdornment>
                     ),
                   }}
+                  onWheel={(e) => e.target.blur()}
                 />
               </Grid>
               {props?.customLayer?.state !== "TX" && (
