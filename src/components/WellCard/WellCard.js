@@ -525,7 +525,7 @@ function WellCard() {
                   ?
                   <Link 
 
-                    href={"https://otcportal.tax.ok.gov/gpx/gp_PublicSearchPUNbyLegal.php"}
+                    href={"https://occpermit.com/WellBrowse/Home.aspx"}
                     
                     onClick={() => {
                     }}
