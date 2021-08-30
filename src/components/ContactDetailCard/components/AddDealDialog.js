@@ -23,7 +23,6 @@ import Grid from "@material-ui/core/Grid";
 import { AppContext } from "../../../AppContext";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
-import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -41,12 +40,9 @@ import {
   deepEqualObjects,
   setStateIfDeepEqual
 } from "../../Shared/functions";
-import TrackToggleButton from "../../Shared/TrackToggleButton";
 import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
-import TaggerWithIcon from "../../Shared/TaggerWithIcon";
-import CommentsWithIcon from "../../Shared/CommentsWithIcon";
-import LaneProgressZone from "./LaneProgressZone";
-import LaneProgressDetail from "./DealSettingsDetails";
+import DealTasksProgressZone from "./DealTasksProgressZone";
+import LaneProgressDetail from "./DealTasksDetails";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
 import { ADDDEAL } from "graphQL/useMutationAddDeal";
@@ -1786,7 +1782,7 @@ function AddDealDialog(props) {
                     handleOpenExpandableCard={handleOpenExpandableCard}
                   />
                   {/* Here is flow lane form */}
-                  <LaneProgressZone
+                  <DealTasksProgressZone
                     toggleProgressDetail={toggleProgressDetail}
                     dealSettings={get(dealSettings, "dealSettings", [])}
                     users={users}

@@ -76,10 +76,10 @@ export default function LaneProgressZone(props) {
           {dealSettings.map((stage, index) => (
             <Fragment>
               <Grid key={index} container direction="row" justify="space-between" alignItems="center" className={classes.flowLane}>
-                <Grid item style={{ width: "150px", fontWeight: "normal" }}>
+                <Grid item style={{ width: "135px", fontWeight: "normal" }}>
                   {stage.stageName}
                 </Grid>
-                <Grid item style={{ minWidth: "120px" }}>
+                <Grid item style={{ minWidth: "135px" }}>
                   <ProgressBar value={stage.progress} isNumeric />
                 </Grid>
                 <Grid item className={classes.laneActionsGrid} style={{ display: "flex" }}>
