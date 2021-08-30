@@ -1177,6 +1177,19 @@ function SubTable(props) {
             }
             break;
           }
+          case "lastLogin": {
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value) => {
+                  return (
+                    <span style={{ padding: 10 }}>{value ? moment(value).format("MM/DD/YYYY HH:MM A") : ""}</span>
+                  );
+                },
+              };
+            }
+            break;
+          }
           case "partyName1": {
             {
               column.options = {

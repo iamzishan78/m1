@@ -380,7 +380,7 @@ const Login = (props) => {
     authUser.roles = graphQLProfileResponse.user_claims.filter(({ typ }) => { return typ === 'roles' })
     if (authUser.roles) { authUser.roles = authUser.roles.map(role => role.val) }
 
-    const { user: mongoUser, sessionData } = await loginUser(
+    const loginResp = await loginUser(
       {
         // issuerUserId: authUser.issuerUserId,
         // issuerTenantId: authUser.issuerTenantId,
@@ -393,6 +393,11 @@ const Login = (props) => {
       //do some error stuff
       console.log(error);
     });
+    let mongoUser, sessionData;
+    if (loginResp.user) {
+      mongoUser = loginResp.user
+      sessionData = loginResp.sessionData
+    }
     if (!mongoUser) {
       //do some error stuff
       return;
