@@ -209,17 +209,19 @@ export default function Deals({ contact, ...props }) {
           </div>
         </div>
       </Button>
-      <AddDealDialog
-        open={stateApp.dealDialog ? true : false}
-        width="450px"
-        onClose={() =>
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            dealDialog: false,
-          }))
-        }
-        contactId={contact._id}
-      />
+      {stateApp.dealDialog && (
+        <AddDealDialog
+          open={stateApp.dealDialog ? true : false}
+          width="450px"
+          onClose={() =>
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              dealDialog: false,
+            }))
+          }
+          contactId={contact._id}
+        />
+      )}
     </>
   );
 }
