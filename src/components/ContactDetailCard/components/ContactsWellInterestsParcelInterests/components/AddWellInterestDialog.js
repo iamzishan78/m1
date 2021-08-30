@@ -152,6 +152,7 @@ function AddWellInterestDialog(props) {
     },
     refetchQueries: [
       "getContactWells",
+      "getContactWellCardDetail",
       "getPaginatedContactWellInterests",
       "getContactWellInterestsFilterOptions"
     ],
@@ -362,6 +363,7 @@ function AddWellInterestDialog(props) {
         },
         refetchQueries: [
           "getContactWells",
+          "getContactWellCardDetail",
           "getPaginatedContactWellInterests",
           "getContactWellInterestsFilterOptions"
         ],

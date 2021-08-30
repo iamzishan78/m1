@@ -273,9 +273,7 @@ function App() {
           <ApolloProvider client={apolloClient}>
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
-                {stateApp.user?.mongoId && (
-                  <ContactBulkProgress />
-                )}
+                <ContactBulkProgress />
                 <ConnectedRouter history={history}>
                   <Switch>
                     <NavigationProvider>
