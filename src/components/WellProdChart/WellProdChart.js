@@ -58,17 +58,17 @@ export default function WellProdChart(props) {
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
 
   //graphQL
-  const { data, loading, error } = useQueryWellProdHistory(
-    stateApp.selectedWell.id
-  );
+  // const { data, loading, error } = useQueryWellProdHistory(
+  //  stateApp.selectedWell.id
+  // );
   //const {data,loading,error} = useQueryWellProdHistory(stateApp.selectedWellApi)
 
   useEffect(() => {
-    if (!loading && stateWellProdChart.wellProdHistory) {
+    if (stateWellCard) {
       let chart = am4core.create("chartDiv", am4charts.XYChart);
 
-      chart.dateFormatter.inputDateFormat = "yyyy-MM-dd";
-      chart.data = stateWellProdChart.wellProdHistory;
+      chart.dateFormatter.inputDateFormat = "MM/YYYY";
+      chart.data = stateWellCard.wellProdHistory;
 
       // Create common x-asix
       var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
@@ -97,8 +97,8 @@ export default function WellProdChart(props) {
         }
 
         var series = chart.series.push(new am4charts.LineSeries());
-        series.dataFields.valueY = "gas";
-        series.dataFields.dateX = "reportDate";
+        series.dataFields.valueY = "allocatedGas";
+        series.dataFields.dateX = "ReportDate";
         series.strokeWidth = 2;
         series.connect = true;
         series.tensionX = 0.8;
@@ -140,8 +140,8 @@ export default function WellProdChart(props) {
         }
 
         var seriesOil = chart.series.push(new am4charts.LineSeries());
-        seriesOil.dataFields.valueY = "oil";
-        seriesOil.dataFields.dateX = "reportDate";
+        seriesOil.dataFields.valueY = "allocatedOil";
+        seriesOil.dataFields.dateX = "ReportDate";
         seriesOil.strokeWidth = 2;
         seriesOil.connect = true;
         seriesOil.tensionX = 0.8;
@@ -183,8 +183,8 @@ export default function WellProdChart(props) {
         }
 
         var seriesWater = chart.series.push(new am4charts.LineSeries());
-        seriesWater.dataFields.valueY = "water";
-        seriesWater.dataFields.dateX = "reportDate";
+        seriesWater.dataFields.valueY = "allocatedWater";
+        seriesWater.dataFields.dateX = "ReportDate";
         seriesWater.strokeWidth = 2;
         seriesWater.connect = true;
         seriesWater.tensionX = 0.8;
@@ -276,8 +276,8 @@ export default function WellProdChart(props) {
       setChart(chart);
       // Enable export
     } else {
-      if (data) {
-        let wellProdHistory = data.wellProdHistory;
+      if (stateWellCard && stateWellCard.wellProdHistory && stateWellCard.wellProdHistory.length > 0) {
+        let wellProdHistory = stateWellCard.wellProdHistory;
         setStateWellProdChart((state) => ({
           ...state,
           wellProdHistory: wellProdHistory,
@@ -293,16 +293,16 @@ export default function WellProdChart(props) {
     };
   }, [
     stateWellProdChart.wellProdHistory,
-    data,
+    stateWellCard,
     stateWellCard.chartToggleOil,
     stateWellCard.chartToggleGas,
     stateWellCard.chartToggleWater,
     stateWellCard.chartToggleMultiAxis,
   ]);
 
-  return data && stateWellProdChart.wellProdHistory ? (
+  return stateWellCard.wellProdHistory ? (
     <div id="chartDiv" className={classes.root}></div>
-  ) : loading ? (
+    )  : !stateWellCard.wellProdHistory ? (
     <Skeleton variant="rect" height={282}/>
   ) : (
     <Skeleton variant="rect" height={300}>

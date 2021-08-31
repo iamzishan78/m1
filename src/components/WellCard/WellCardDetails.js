@@ -234,31 +234,36 @@ export default function WellCardDetails(props) {
   const [showSummary, setShowSummary] = useState(true)
   let temp_state = useRef(null);
   const [
-    getProductionDetail,
-    { loading: loadingProductionDetail, data: productionDetail },
+    getExternalProductionDetail,
+    { loading: loadingProductionDetail, data: externalProductionDetail },
   ] = useLazyQuery(PRODUCTIONDETAILQUERY);
 
   useEffect(() => {
-    getProductionDetail({
-      variables: { id: stateApp.selectedWell.id },
+    getExternalProductionDetail({
+      variables: { id: stateApp.selectedWell.api, pageSize: "1000" },
     });
   }, []);
 
   useEffect(() => {
-    if (productionDetail) {
+    if (externalProductionDetail) {
       let temp = [];
-      productionDetail.productionDetail.forEach(element => {
+      externalProductionDetail.externalProductionDetail.forEach(element => {
         let temp_row = { ...element };
         temp_row.ReportDate = moment.utc(temp_row.ReportDate).format("MM/YYYY");
         temp.push(temp_row)
       });
       setProduction(temp);
+      setStateWellCard((state) => {
+        return {
+        ...state,
+        wellProdHistory: temp,
+      }});
       if (props.target) {
         setTarget(props.target);
       }
     } else {
     }
-  }, [productionDetail, props.target, setTarget]);
+  }, [externalProductionDetail, props.target, setTarget]);
 
   const handleChangeOil = (event) => {
     setStateWellCard({
