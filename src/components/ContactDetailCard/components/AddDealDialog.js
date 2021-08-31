@@ -42,6 +42,7 @@ import {
 } from "../../Shared/functions";
 import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
 import DealTasksProgressZone from "./DealTasksProgressZone";
+import DealComment from "./DealComment";
 import LaneProgressDetail from "./DealTasksDetails";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
@@ -1786,6 +1787,9 @@ function AddDealDialog(props) {
                     toggleProgressDetail={toggleProgressDetail}
                     dealSettings={get(dealSettings, "dealSettings", [])}
                     users={users}
+                  />
+                  <DealComment
+                    id={stateApp.activeDeal?.cardId}
                   />
                 </div>
               </div>
