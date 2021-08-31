@@ -347,7 +347,7 @@ export default function WellCardDetails(props) {
         <WellTypeCard summary={props.summary}/>
 
         <WellStatusCard summary={props.summary}/>
-        <Last12StatusCard summary={props.summary}/>
+        {/* <Last12StatusCard summary={props.summary}/> */}
         <OwnerNumCard summary={props.summary}/>
         <ProfileCard summary={props.summary}/>
         <PermitDateCard summary={props.summary}/>
