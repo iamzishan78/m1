@@ -503,7 +503,7 @@ function WellCard() {
                   ?
                   <Link 
 
-                    href={"https://sonlite.dnr.state.la.us/pls/apex/f?p=108:2:4277376412912:::::"}
+                    href={"https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn="+wellData?.StateWellId}
                     
                     onClick={() => {
                     }}
@@ -525,7 +525,7 @@ function WellCard() {
                   ?
                   <Link 
 
-                    href={"https://otcportal.tax.ok.gov/gpx/gp_PublicSearchPUNbyLegal.php"}
+                    href={"https://occpermit.com/WellBrowse/Home.aspx"}
                     
                     onClick={() => {
                     }}
@@ -538,7 +538,7 @@ function WellCard() {
                       variant="subtitle2"
                       className={classes.link_permit}
                     >
-                      OTC Search Tool
+                      OCC Search Tool
 
                     </Typography>
                   </Link>

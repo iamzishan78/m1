@@ -400,7 +400,7 @@ function AddDealDialog(props) {
   const [ownerId, setOwnerId] = useState("");
   const [cardId, setCardId] = useState("");
   const [users, setUsers] = useState([]);
-  const [closeDate, setCloseDate] = useState(new Date());
+  const [closeDate, setCloseDate] = useState("");
   const [colaborators, setColaborators] = useState([]);
   const [originationDate, setOriginationDate] = useState(null);
 
