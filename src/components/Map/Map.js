@@ -1383,6 +1383,7 @@ function Map() {
             break;
           case layerId === "wellpoints" ||
             layerId === "welllines" ||
+            layerId === "wellpermitlines" ||
             layerId === "Parcels" ||
             layerId === "Area of Interest" ||
             layerId === "Tracked Wells" ||
@@ -2298,6 +2299,7 @@ function Map() {
             [
               "wellpoints",
               "welllines",
+              "wellpermitlines",
               "Tracked Wells",
               "Tracked Owners",
               "Tags Filter",
@@ -2472,6 +2474,7 @@ function Map() {
           "GLOUnitLabels",
           "wellpoints",
           "welllines",
+          "wellpermitlines",
           "Tracked Wells",
           "Tracked Owners",
           "Tags Filter",
@@ -2522,6 +2525,7 @@ function Map() {
           "GLOUnitLabels",
           "wellpoints",
           "welllines",
+          "wellpermitlines",
           "Tracked Wells",
           "Tracked Owners",
           "Tags Filter",
@@ -2559,6 +2563,7 @@ function Map() {
           "GLOUnitLabels",
           "wellpoints",
           "welllines",
+          "wellpermitlines",
           "Tracked Wells",
           "Tracked Owners",
           "Tags Filter",
@@ -2651,6 +2656,7 @@ function Map() {
           "GLOUnitLabels",
           "wellpoints",
           "welllines",
+          "wellpermitlines",
           "Tracked Wells",
           "Tracked Owners",
           "Tags Filter",
@@ -3015,18 +3021,24 @@ function Map() {
         }
       } else {
         map.setFilter("wellpoints", [
-          // "all",
-          // [
-          //   "match",
-          //   ["geometry-type"],
-          //   ["Point"],
-          //   true,
-          //   false
-          // ]
+          "all",
+          [
+            "match",
+            ["geometry-type"],
+            ["Point"],
+            true,
+            false
+          ]
         ]);
+
         map.setFilter("welllines", 
         
         ["all", ["match", ["geometry-type"], ["LineString"], true,false],
+        [
+          "==",
+          ["get", "isPermit"],
+          false
+        ],
 ["match",["get","id"],["C253B19A-CA83-483B-978C-C1363D6C03A4"],false,true],
 ["match",["get","id"],["D0CC0B42-8790-483E-91D7-230BE725D6BA"],false,true],
 ["match",["get","id"],["876F6D08-65DB-4378-BA08-4C1EE41900E4"],false,true],
@@ -4286,6 +4298,24 @@ function Map() {
         
         
         );
+
+        map.setFilter('wellpermitlines',
+        [
+          "all",
+          [
+            "match",
+            ["geometry-type"],
+            ["LineString"],
+            true,
+            false
+          ],
+          [
+            "==",
+            ["get", "isPermit"],
+            true
+          ]
+        ]
+        )
         map.setFilter("GLOLeases", null);
         map.setFilter("GLOLeaseLabels", null);
         map.setFilter("GLOUnits", null);
