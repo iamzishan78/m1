@@ -538,7 +538,7 @@ function WellCard() {
                       variant="subtitle2"
                       className={classes.link_permit}
                     >
-                      OTC Search Tool
+                      OCC Search Tool
 
                     </Typography>
                   </Link>
