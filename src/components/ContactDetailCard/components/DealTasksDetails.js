@@ -54,18 +54,6 @@ const useStyles = makeStyles((theme) => ({
       minWidth: "80px !important",
     },
   },
-  textField: {
-    backgroundColor: "#FFFCDC",
-    display: "block",
-    width: "100%",
-    "& .MuiOutlinedInput-root": {
-      width: "100%",
-      "& fieldset": {
-        borderColor: "white",
-        height: "127px",
-      },
-    },
-  },
   inputFieldOwner: {
     marginBottom: "7px",
     width: "200px",
@@ -94,14 +82,6 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiOutlinedInput-notchedOutline": {
       border: "1px solid black",
     },
-  },
-  dealOwnerAvatar: {
-    width: theme.spacing(3),
-    height: theme.spacing(3),
-    color: "#fff",
-    fontSize: "0.6rem",
-    backgroundColor: "#4880F6",
-    padding: "0.5em",
   },
   dealOwnerLabel: {
     marginLeft: 4,
@@ -138,16 +118,6 @@ const useStyles = makeStyles((theme) => ({
   },
   addSubTaskButton: {
     marginBottom: "10px",
-  },
-  customAvatar: {
-    borderRadius: "50%",
-    backgroundColor: "red",
-    padding: "4px",
-    color: "#fff",
-    width: "25px",
-    height: "25px",
-    fontSize: "0.7rem",
-    textAlign: "center",
   },
   avatarButton: {
     "& .MuiIconButton-label": {
@@ -231,66 +201,6 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
   function truncate(str, n) {
     return str.length > n ? str.substr(0, n - 1) + "..." : str;
   }
-
-  const defaultColors = ["#d73d32", "#7e3794", "#4285f4", "#67ae3f", "#d61a7f", "#ff4080"];
-
-  function _stringAsciiPRNG(value, m) {
-    // Xn+1 = (a * Xn + c) % m
-    // 0 < a < m
-    // 0 <= c < m
-    // 0 <= X0 < m
-
-    const charCodes = [...value].map((letter) => letter.charCodeAt(0));
-    const len = charCodes.length;
-
-    const a = (len % (m - 1)) + 1;
-    const c = charCodes.reduce((current, next) => current + next) % m;
-
-    let random = charCodes[0] % m;
-    for (let i = 0; i < len; i++) random = (a * random + c) % m;
-
-    return random;
-  }
-
-  function getRandomColor(value, colors = defaultColors) {
-    // if no value is passed, always return transparent color otherwise
-    // a rerender would show a new color which would will
-    // give strange effects when an interface is loading
-    // and gets rerendered a few consequent times
-    if (!value) return "transparent";
-
-    // value based random color index
-    // the reason we don't just use a random number is to make sure that
-    // a certain value will always get the same color assigned given
-    // a fixed set of colors
-    const colorIndex = _stringAsciiPRNG(value, colors.length);
-    return colors[colorIndex];
-  }
-
-  /*const CustomAvatar = ({ text = "", type }) => {
-    const getInitials = (name) => {
-      if (!name || name.length === 0) return "--";
-      const split = name ? name.split(" ") : [""];
-      let initials = "";
-      split.forEach((s) => {
-        if (s[0]) initials += s[0];
-        if (initials.length === 2) return;
-      });
-      return initials.toUpperCase();
-    };
-
-    return (
-      <span
-        className={classes.customAvatar}
-        style={{
-          backgroundColor: getRandomColor(text),
-          paddingTop: type === "subtask" ? "6px" : "4px",
-        }}
-      >
-        {getInitials(text)}
-      </span>
-    );
-  };*/
 
   const SubtaskComponent = ({ task }) => (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.subTaskRoot}>

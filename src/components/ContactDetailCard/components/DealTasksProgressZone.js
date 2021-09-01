@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import { get } from "lodash";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -49,18 +48,6 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiIconButton-root": {
       width: "35px",
       height: "35px",
-    },
-  },
-  newFlowLane: {
-    color: "darkgray",
-    margin: "10px 0px 20px 0px",
-    cursor: "pointer",
-  },
-  avatar: {
-    "& .MuiAvatar-root": {
-      width: "18px !important",
-      height: "18px !important",
-      fontSize: "0.60rem !important",
     },
   },
   avatarButton: {
