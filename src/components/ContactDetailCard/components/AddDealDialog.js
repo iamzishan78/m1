@@ -365,6 +365,9 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       visibility: "visible"
     }
+  },
+  dealContainer:{
+    maxHeight: "calc(100vh - 147px) !important",
   }
 }));
 
@@ -1788,13 +1791,13 @@ function AddDealDialog(props) {
                     dealSettings={get(dealSettings, "dealSettings", [])}
                     users={users}
                   />
-                  <DealComment
-                    id={stateApp.activeDeal?.cardId}
-                  />
                 </div>
-              </div>
+              </div>                 
             )}
           </div>
+          <DealComment
+            targetSourceId={stateApp.activeDeal?.cardId}
+          />
         </RightDialog>
       </div>
     </>
