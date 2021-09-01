@@ -1,8 +1,7 @@
-import React, { Fragment, useContext, useState, useRef, useEffect } from "react";
+import React, { Fragment, useState } from "react";
+import { get } from "lodash";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import { get } from "lodash";
-import { AppContext } from "AppContext";
 import {
   Menu,
   MenuItem,
@@ -26,13 +25,14 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import ArrowDown from "@material-ui/icons/ArrowDropDown";
 import ProgressBar from "../../Shared/ui/ProgressBar";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import CustomAvatar from "components/Shared/ui/CustomAvatar";
 import Checkbox from "@material-ui/core/Checkbox";
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
 import { ADD_DEAL_SUBTASK, UPDATE_DEAL_SUBTASK } from "graphQL/useMutationDealSubtask";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: "0px 30px"
+    padding: "0px 30px",
   },
   newLaneProgress: {
     margin: "10px 0px 10px 0px",
@@ -163,16 +163,15 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiOutlinedInput-root": {
       width: "100%",
       "& fieldset": {
-        borderColor: "white"
-      }
-    }
-  }
+        borderColor: "white",
+      },
+    },
+  },
 }));
 
-function FlowLaneDetails({ users, activeDeal, dealSettings }) {
+function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
   const classes = useStyles();
   const [isNewSubtask, setNewSubtask] = useState({ index: -1, value: false });
-  const [stateApp] = useContext(AppContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
   const [addDealSubtask] = useMutation(ADD_DEAL_SUBTASK);
@@ -196,7 +195,7 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
       pipeline: get(activeDeal, "pipeline", null),
       pipelineType: "Pipeline",
       isDeleted: false,
-      user: stateApp.user.mongoId,
+      user: user.mongoId,
       ...params,
     };
     updateStageDealDescriptor({
@@ -268,7 +267,7 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
     return colors[colorIndex];
   }
 
-  const CustomAvatar = ({ text = "", type }) => {
+  /*const CustomAvatar = ({ text = "", type }) => {
     const getInitials = (name) => {
       if (!name || name.length === 0) return "--";
       const split = name ? name.split(" ") : [""];
@@ -291,7 +290,7 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
         {getInitials(text)}
       </span>
     );
-  };
+  };*/
 
   const SubtaskComponent = ({ task }) => (
     <Grid container direction="row" justify="space-between" alignItems="center" className={classes.subTaskRoot}>
@@ -330,7 +329,7 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
             <>
               <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
                 {task.assignee ? (
-                  <CustomAvatar text={users.find((user) => user?.value === task.assignee).text.toString()} type="subtask" />
+                  <CustomAvatar text={users.find((user) => user?.value === task.assignee).text.toString()} />
                 ) : (
                   <AccountCircle fontSize="default" />
                 )}
@@ -346,7 +345,7 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
                   horizontal: "center",
                 }}
               >
-                <List style={{ maxHeight: 300 }}>
+                <List style={{ maxHeight: 450 }}>
                   {users.map((user) => (
                     <ListItem
                       button
@@ -377,7 +376,7 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
           </div>
         </Grid>
 
-        {/* TEMP COMMMENT FOR EFFICIENC */}
+        {/* TEMP COMMMENT FOR EFFICIENCY */}
         {/* <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
           <Typography variant="body2" color="textSecondary">
             Efficiency
@@ -450,7 +449,7 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
             label="Comment"
             fullWidth
             //   required
-            onBlur={e => handleChangeSettings(settings, { comment: e.target.value })}
+            onBlur={(e) => handleChangeSettings(settings, { comment: e.target.value })}
             className={classes.notes}
           />
         </Grid>
@@ -488,12 +487,12 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
 
   const evaluateOverallProgress = () => {
     let progress = 0;
-    dealSettings.forEach(setting => {
+    dealSettings.forEach((setting) => {
       progress += setting.progress;
     });
     progress = ((progress / (100 * dealSettings.length)) * 100).toFixed(2);
     return progress;
-  }
+  };
 
   return (
     <div className={classes.root}>
@@ -532,4 +531,4 @@ function FlowLaneDetails({ users, activeDeal, dealSettings }) {
   );
 }
 
-export default FlowLaneDetails;
+export default DealTasksDetails;

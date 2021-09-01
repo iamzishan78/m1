@@ -1,19 +1,29 @@
 import React, { Fragment } from "react";
+import { get } from "lodash";
+import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import CardActions from "@material-ui/core/CardActions";
+import {
+  CardActions,
+  Button,
+  Grid,
+  IconButton,
+  CardContent,
+  Divider,
+  Popover,
+  List,
+  ListItem,
+  ListItemText,
+} from "@material-ui/core";
+import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
-import Button from "@material-ui/core/Button";
-import Avatar from "@material-ui/core/Avatar";
-import CardContent from "@material-ui/core/CardContent";
-import IconButton from "@material-ui/core/IconButton";
-import Grid from "@material-ui/core/Grid";
-import Divider from "@material-ui/core/Divider";
-import ProgressBar from "../../Shared/ui/ProgressBar";
+import ProgressBar from "components/Shared/ui/ProgressBar";
+import CustomAvatar from "components/Shared/ui/CustomAvatar";
+
+import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-  },
+  root: {},
   details: {
     textDecoration: "underline",
     margin: "0 0 8px 0",
@@ -53,11 +63,33 @@ const useStyles = makeStyles((theme) => ({
       fontSize: "0.60rem !important",
     },
   },
+  avatarButton: {
+    "& .MuiIconButton-label": {
+      width: "auto",
+      "& span": {
+        paddingTop: "6px"
+      }
+    },
+  },
 }));
 
 export default function LaneProgressZone(props) {
   const classes = useStyles();
-  const { toggleProgressDetail, dealSettings, users } = props;
+  const { toggleProgressDetail, dealSettings, users, activeDeal } = props;
+  const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
+
+  const handleAssignee = (approver, setting) => {
+    const descriptor = {
+      descriptorObject: activeDeal._id,
+      relatedObject: setting._id,
+      approver,
+    };
+    updateStageDealDescriptor({
+      variables: { descriptor },
+      refetchQueries: ["dealSettings"],
+      awaitRefetchQueries: true,
+    });
+  };
 
   return (
     <div className={classes.root} variant="outlined">
@@ -73,43 +105,51 @@ export default function LaneProgressZone(props) {
         <div className={classes.laneProgressSection}>
           {/* Show two recent docs */}
 
-          {dealSettings.map((stage, index) => (
+          {dealSettings.map((settings, index) => (
             <Fragment>
               <Grid key={index} container direction="row" justify="space-between" alignItems="center" className={classes.flowLane}>
                 <Grid item style={{ width: "135px", fontWeight: "normal" }}>
-                  {stage.stageName}
+                  {settings.stageName}
                 </Grid>
                 <Grid item style={{ minWidth: "135px" }}>
-                  <ProgressBar value={stage.progress} isNumeric />
+                  <ProgressBar value={settings.progress} isNumeric />
                 </Grid>
-                <Grid item className={classes.laneActionsGrid} style={{ display: "flex" }}>
-                  <IconButton className={classes.avatar}>
-                    {stage.stageDealDescriptor.approver ? (
-                      <Avatar className={classes.dealOwnerAvatar}>
-                        {users.find((user) => user?.value === stage.stageDealDescriptor.approver)
-                          ? users
-                            .find((user) => user?.value === stage.stageDealDescriptor.approver)
-                            .text.toString()
-                            .toUpperCase()
-                            .split(" ").length > 1
-                            ? users
-                              .find((user) => user?.value === stage.stageDealDescriptor.approver)
-                              .text.toString()
-                              .toUpperCase()
-                              .split(" ")[0][0] +
-                            "" +
-                            users
-                              .find((user) => user?.value === stage.stageDealDescriptor.approver)
-                              .text.toString()
-                              .toUpperCase()
-                              .split(" ")[1][0]
-                            : "AO"
-                          : "AO"}
-                      </Avatar>
-                    ) : (
-                      <AccountCircle fontSize="small" />
+                <Grid item className={classes.laneActionsGrid}>
+                  <PopupState variant="popover" popupId="demo-popup-popover-zone">
+                    {(popupState) => (
+                      <>
+                        <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
+                          {settings.stageDealDescriptor.approver && users.length ? (
+                            <CustomAvatar text={users.find((user) => user?.value === settings.stageDealDescriptor.approver).text.toString()} />
+                          ) : (
+                            <AccountCircle fontSize="default" />
+                          )}
+                        </IconButton>
+                        <Popover
+                          {...bindPopover(popupState)}
+                          anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "center",
+                          }}
+                          transformOrigin={{
+                            vertical: "top",
+                            horizontal: "center",
+                          }}
+                        >
+                          <List style={{ maxHeight: 450 }}>
+                            {users.map((user) => (
+                              <ListItem
+                                button
+                                onClick={() => { handleAssignee(user.value, settings); popupState.close(); }}
+                              >
+                                <ListItemText primary={user.text} />
+                              </ListItem>
+                            ))}
+                          </List>
+                        </Popover>
+                      </>
                     )}
-                  </IconButton>
+                  </PopupState>
                   <IconButton>
                     <ChatBubbleOutlineIcon fontSize="small" />
                   </IconButton>
