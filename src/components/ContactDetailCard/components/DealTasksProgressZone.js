@@ -12,6 +12,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Badge
 } from "@material-ui/core";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -138,7 +139,17 @@ export default function LaneProgressZone(props) {
                     )}
                   </PopupState>
                   <IconButton>
-                    <ChatBubbleOutlineIcon fontSize="small" />
+                    <Badge
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      color="secondary"
+                      opacity="1"
+                      badgeContent={settings.stageDealDescriptor.comment ? 1 : 0}
+                    >
+                      <ChatBubbleOutlineIcon fontSize="medium" />
+                    </Badge>
                   </IconButton>
                 </Grid>
               </Grid>
