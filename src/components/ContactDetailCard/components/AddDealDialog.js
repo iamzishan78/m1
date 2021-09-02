@@ -391,6 +391,7 @@ function AddDealDialog(props) {
   const { selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
   const [isProgressDetail, toggleProgressDetail] = useState(null);
   const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
+  const [newCommentsIds, setNewCommentsIds] = useState([]);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [titleFocus, setTitleFocus] = useState(false);
@@ -1038,6 +1039,10 @@ function AddDealDialog(props) {
         if (ID.length > 0) {
           variables = { ...variables, files: ID }
         }
+        
+        if(newCommentsIds.length > 0){
+          variables = { ...variables, comments: newCommentsIds }
+        }
         addDeal({
           variables,
           refetchQueries: [
@@ -1276,6 +1281,12 @@ function AddDealDialog(props) {
 
   const setUploadedFileData = (uploadedfile) => {
     setUploadedFiles([...uploadedFiles, uploadedfile])
+  }
+
+  const setNewCommentId = (id) => {
+    const comments = JSON.parse(JSON.stringify(newCommentsIds))
+    comments.push(id)
+    setNewCommentsIds(comments);
   }
 
   const StickyHeader = () => (
@@ -1796,6 +1807,7 @@ function AddDealDialog(props) {
             )}
           </div>
           <DealComment
+            setNewCommentId={setNewCommentId}
             targetSourceId={stateApp.activeDeal?.cardId}
           />
         </RightDialog>

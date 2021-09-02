@@ -96,7 +96,7 @@ export default function DealComment(props) {
   const [showActions, setShowActions] = useState(false);
   const [loadingComments, setLoadingComments] = useState(true);
 
-  const [upsertComment] = useMutation(UPSERTCOMMENT);
+  const [upsertComment, { data: newlyAddedComment}] = useMutation(UPSERTCOMMENT);
   const [getProfileImage, profiledata] = useLazyQuery(GET_PROFILE_IMAGE);
   const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
@@ -107,12 +107,14 @@ export default function DealComment(props) {
   );
 
   useEffect(() => {
-    setLoadingComments(true);
-    getCommentsByObjectId({
-      variables: {
-        objectId: targetSourceId,
-      },
-    });
+    if(targetSourceId){
+      setLoadingComments(true);
+      getCommentsByObjectId({
+        variables: {
+          objectId: targetSourceId,
+        },
+      });
+    }
   }, [targetSourceId]);
 
   useEffect(() => {
@@ -124,17 +126,24 @@ export default function DealComment(props) {
         variables: { emails },
       });
       setCommentsArray(
-        sortArrayBasedOnTs([
-          ...dataComments.commentsByObjectId,
-          // ...dataComments.commentsByObjectId,
-          // ...dataComments.commentsByObjectId,
-          // ...dataComments.commentsByObjectId,
-        ])
+        sortArrayBasedOnTs([...dataComments.commentsByObjectId])
       );
     }
     setLoadingComments(false);
   }, [dataComments]);
 
+  useEffect(()=>{
+    setLoadingComments(false);
+    if(!targetSourceId && newlyAddedComment?.upsertComment?.comment){
+      const comments = JSON.parse(JSON.stringify(commentsArray))
+      comments.push({ ...newlyAddedComment.upsertComment.comment, user: { name: stateApp.user.name, email: stateApp.user.email}, isNew: true})
+      props.setNewCommentId(newlyAddedComment.upsertComment.comment._id)
+      setCommentsArray(
+        sortArrayBasedOnTs([...comments])
+      );
+    }
+  },[newlyAddedComment])
+  
   useEffect(() => {
     if (profilesData?.data?.profileByEmail?.profiles) {
       setProfilesInfo(profilesData.data.profileByEmail.profiles);
@@ -200,6 +209,7 @@ export default function DealComment(props) {
           .join("\n")}.`;
 
   const addNewComment = (value) => {
+    setLoadingComments(true);
     upsertComment({
       variables: {
         comment: {
@@ -259,10 +269,10 @@ export default function DealComment(props) {
                     <Grid key={index} container className={classes.gridStyle}>
                       <Grid item xs={1}>
                         <IconButton style={{ top: "3px" }}>
-                          {profilesInfo[comment.user.email]?.profileImage ? (
+                          {(profilesInfo[comment.user.email]?.profileImage || comment.isNew )? (
                             <Avatar
                               src={
-                                profilesInfo[comment.user.email].profileImage
+                                comment.isNew ? profileImage : profilesInfo[comment.user.email].profileImage
                               }
                               size="38"
                               round
