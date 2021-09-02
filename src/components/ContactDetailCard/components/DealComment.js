@@ -24,18 +24,20 @@ TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
 const useStyles = makeStyles((theme) => ({
-  comment: {
-    // maxHeight: "600px",
-    overflow: "auto",
+  container: {
     backgroundColor: "#F6F8F9",
-    padding: "5px 10px",
-    marginRight: "60px",
     "& .MuiFormControl-marginDense": {
       margin: "0px !important",
     },
     "& .MuiIconButton-root": {
       padding: "0px !important",
     },
+  },
+  comment: {
+    maxHeight: "290px",
+    overflow: "auto",
+    padding: "5px 10px",
+    marginRight: "60px",
   },
   noBorder: {
     border: "none",
@@ -50,29 +52,30 @@ const useStyles = makeStyles((theme) => ({
     right: "5px",
     bottom: "5px",
   },
-  paddingLeft10:{
+  paddingLeft10: {
     paddingLeft: "10px !important",
+  },
+  moreComment: {
+    padding: "10px",
+    marginLeft: "35px",
+    display: "flex",
+    color: "#18AADD",
+    cursor: "pointer",
   },
   whiteSpace: {
     whiteSpace: "pre-wrap",
     marginTop: "5px",
   },
   gridStyle: {
-    // borderBottom: "1px solid #EBEBEB",
     padding: "12px 0px",
-  },
-  marginBottom45:{
-    // marginBottom: "45px",
   },
   bold: {
     fontWeight: "bold",
   },
   commentView: {
-    marginTop: "10px",
-    // position: "fixed",
-    // bottom: "0px",
-    // width: "25%",
-    // backgroundColor: "#F6F8F9",
+    padding: "5px 10px",
+    marginRight: "60px",
+    marginBottom: "10px",
   },
   commentTime: {
     marginLeft: "10px",
@@ -86,6 +89,7 @@ export default function DealComment(props) {
   const [stateApp] = useContext(AppContext);
 
   const [comment, setComment] = useState("");
+  const [showAllComments, setShowAllComments] = useState(false);
   const [profilesInfo, setProfilesInfo] = useState({});
   const [profileImage, setProfileImage] = useState(null);
   const [commentsArray, setCommentsArray] = useState([]);
@@ -122,9 +126,9 @@ export default function DealComment(props) {
       setCommentsArray(
         sortArrayBasedOnTs([
           ...dataComments.commentsByObjectId,
-          ...dataComments.commentsByObjectId,
-          ...dataComments.commentsByObjectId,
-          ...dataComments.commentsByObjectId,
+          // ...dataComments.commentsByObjectId,
+          // ...dataComments.commentsByObjectId,
+          // ...dataComments.commentsByObjectId,
         ])
       );
     }
@@ -166,8 +170,8 @@ export default function DealComment(props) {
 
   const sortArrayBasedOnTs = (array) => {
     const compare = (a, b) => {
-      if (a.ts > b.ts) return -1;
-      if (b.ts > a.ts) return 1;
+      if (a.ts < b.ts) return -1;
+      if (b.ts < a.ts) return 1;
 
       return 0;
     };
@@ -217,115 +221,151 @@ export default function DealComment(props) {
     setComment("");
   };
 
+  const getCount = () => {
+    let indexToShow = commentsArray.length > 3 ? commentsArray.length - 3 : 0;
+    return indexToShow;
+  };
+
   return (
-    <div className={classes.comment}>
-      {!loadingComments ? (
-        <>
-        <div className={classes.marginBottom45}>
-          {commentsArray.map((comment, index) => {
-            return (
-              <Grid key={index} container className={classes.gridStyle}>
-                <Grid item xs={1}>
-                  <IconButton style={{ top: "3px" }}>
-                    {profilesInfo[comment.user.email]?.profileImage ? (
-                      <Avatar
-                        src={profilesInfo[comment.user.email].profileImage}
-                        size="38"
-                        round
-                      />
-                    ) : (
-                      <Avatar name={comment.user.name} size="38" round />
-                    )}
-                  </IconButton>
-                </Grid>
-                <Grid item xs={11} className={classes.paddingLeft10}>
-                  <div>
-                    <span className={classes.bold}>{comment.user.name}</span>
-                    <ReactTimeAgo
-                      className={classes.commentTime}
-                      date={
-                        new Date(
-                          new Intl.DateTimeFormat("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "2-digit",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }).format(comment.ts)
-                        )
-                      }
-                      locale="en-US"
-                    />
-                  </div>
-                  <div className={`${classes.whiteSpace} ${classes.bold}`}>
-                    {comment.comment}
-                  </div>
-                </Grid>
-              </Grid>
-            );
-          })}
-          </div>
-          <div className={classes.commentView}>
-            <Grid container>
-              <Grid item xs={1}>
-                <IconButton style={{ top: "3px" }}>
-                  {profileImage ? (
-                    <Avatar src={profileImage} size="38" round />
-                  ) : (
-                    <Avatar name={stateApp.user.name} size="38" round />
-                  )}
-                </IconButton>
-              </Grid>
-              <Grid item xs={11} className={classes.paddingLeft10}>
-                <div
-                  className={classes.border}
+    <div className={classes.container}>
+      <div className={classes.comment}>
+        {!loadingComments ? (
+          <>
+            {!showAllComments && commentsArray.length > 3 && (
+              <div className={classes.moreComment}>
+                <span
                   onClick={() => {
-                    if (!showActions) {
-                      setShowActions(true);
-                    }
-                  }}
-                  onBlur={() => {
-                    if (showActions && !comment) {
-                      setShowActions(false);
-                    }
+                    setShowAllComments(true);
                   }}
                 >
-                  <TextField
-                    margin="dense"
-                    variant="outlined"
-                    value={comment}
-                    fullWidth
-                    rowsMax={3}
-                    multiline
-                    placeholder="Add a question or post an update"
-                    onChange={(e) => {
-                      setComment(e.target.value);
-                    }}
-                    InputProps={{
-                      classes: { notchedOutline: classes.noBorder },
-                    }}
-                  />
-                  {showActions && (
-                    <Button
-                      className={classes.commentBtn}
-                      variant="contained"
-                      color="primary"
-                      onClick={() => {
-                        debugger;
-                        addNewComment(comment);
-                      }}
-                    >
-                      Comment
-                    </Button>
+                  {getCount()} more comments
+                </span>
+              </div>
+            )}
+            {showAllComments && commentsArray.length > 3 && (
+              <div className={classes.moreComment}>
+                <span onClick={() => setShowAllComments(false)}>
+                  Hide Earlier Comments
+                </span>
+              </div>
+            )}
+
+            {commentsArray.map((comment, index) => {
+              let indexToShow =
+                commentsArray.length > 3 ? commentsArray.length - 3 : 0;
+              return (
+                <>
+                  {(showAllComments || index >= indexToShow) && (
+                    <Grid key={index} container className={classes.gridStyle}>
+                      <Grid item xs={1}>
+                        <IconButton style={{ top: "3px" }}>
+                          {profilesInfo[comment.user.email]?.profileImage ? (
+                            <Avatar
+                              src={
+                                profilesInfo[comment.user.email].profileImage
+                              }
+                              size="38"
+                              round
+                            />
+                          ) : (
+                            <Avatar name={comment.user.name} size="38" round />
+                          )}
+                        </IconButton>
+                      </Grid>
+                      <Grid item xs={11} className={classes.paddingLeft10}>
+                        <div>
+                          <span className={classes.bold}>
+                            {comment.user.name}
+                          </span>
+                          <ReactTimeAgo
+                            className={classes.commentTime}
+                            date={
+                              new Date(
+                                new Intl.DateTimeFormat("en-US", {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "2-digit",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }).format(comment.ts)
+                              )
+                            }
+                            locale="en-US"
+                          />
+                        </div>
+                        <div
+                          className={`${classes.whiteSpace} ${classes.bold}`}
+                        >
+                          {comment.comment}
+                        </div>
+                      </Grid>
+                    </Grid>
                   )}
-                </div>
-              </Grid>
-            </Grid>
-          </div>
-        </>
-      ) : (
-        <CircularProgress color="secondary"></CircularProgress>
-      )}
+                </>
+              );
+            })}
+          </>
+        ) : (
+          <CircularProgress color="secondary"></CircularProgress>
+        )}
+      </div>
+      <div className={classes.commentView}>
+        <Grid container>
+          <Grid item xs={1}>
+            <IconButton style={{ top: "3px" }}>
+              {profileImage ? (
+                <Avatar src={profileImage} size="38" round />
+              ) : (
+                <Avatar name={stateApp.user.name} size="38" round />
+              )}
+            </IconButton>
+          </Grid>
+          <Grid item xs={11} className={classes.paddingLeft10}>
+            <div
+              className={classes.border}
+              onClick={() => {
+                if (!showActions) {
+                  setShowActions(true);
+                }
+              }}
+              onBlur={() => {
+                if (showActions && !comment) {
+                  setShowActions(false);
+                }
+              }}
+            >
+              <TextField
+                margin="dense"
+                variant="outlined"
+                value={comment}
+                fullWidth
+                rows={showActions ? 2 : 1}
+                rowsMax={3}
+                multiline
+                placeholder="Add a question or post an update"
+                onChange={(e) => {
+                  setComment(e.target.value);
+                }}
+                InputProps={{
+                  classes: { notchedOutline: classes.noBorder },
+                }}
+              />
+              {showActions && (
+                <Button
+                  className={classes.commentBtn}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    addNewComment(comment);
+                  }}
+                >
+                  Comment
+                </Button>
+              )}
+            </div>
+          </Grid>
+        </Grid>
+      </div>
     </div>
   );
 }
