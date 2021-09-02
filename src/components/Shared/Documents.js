@@ -192,7 +192,6 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   docUploader: {
-    padding: "15px 25px 0px",
     bottom: "0px !important",
     position: "absolute",
     width: "88%",
