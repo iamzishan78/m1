@@ -148,7 +148,6 @@ export default function Contacts(props) {
   return (
     <div>
       <div style={{ padding: "0px 30px" }}>
-        <h1>{stateApp.activeDeal.name}</h1>
         <TextField
           fullWidth
           placeholder="Search contacts..."
