@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, memo } from "react";
 import { get } from "lodash";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
@@ -17,6 +17,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Tooltip
 } from "@material-ui/core";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
@@ -96,6 +97,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   subTaskRightGrid: {
+    alignItems: "right",
     "& .MuiIconButton-root": {
       height: "25px",
       width: "25px",
@@ -138,6 +140,87 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+
+const SubtaskComponent = memo(({ task, handleUpdateSubtask, users }) => {
+  const classes = useStyles();
+
+  function truncate(str, n) {
+    return str.length > n ? str.substr(0, n - 1) + "..." : str;
+  }
+
+  return (
+    <Grid container direction="row" justify="space-between" alignItems="center" className={classes.subTaskRoot}>
+      <Grid item xs={6} className={classes.subTaskLeftGrid}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              name="subtaskCheckbox"
+              value={task.name}
+              onChange={(e) =>
+                handleUpdateSubtask({
+                  ...task,
+                  isCompleted: e.target.checked,
+                  completionDate: e.target.checked ? new Date().toString() : null,
+                })
+              }
+              checked={task.isCompleted}
+            />
+          }
+        />
+        <Tooltip title={task.name} placement="top">
+          <span style={{ fontSize: 'medium' }}>{truncate(task.name, 20)}</span>
+        </Tooltip>
+      </Grid>
+      <Grid item className={classes.subTaskRightGrid}>
+        <KeyboardDatePicker
+          disableToolbar
+          variant="inline"
+          format="MM/DD/YYYY"
+          margin="normal"
+          allowKeyboardControl={false}
+          value={task.dueDate || ""}
+          emptyLabel
+          onChange={(date) => handleUpdateSubtask({ ...task, dueDate: date ? String(date["_d"]) : "" })}
+        />
+        <PopupState variant="popover" popupId="demo-popup-popover">
+          {(popupState) => (
+            <>
+              <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
+                {task.assignee ? (
+                  <CustomAvatar text={users.find((user) => user?.value === task.assignee).text.toString()} />
+                ) : (
+                  <AccountCircle fontSize="default" />
+                )}
+              </IconButton>
+              <Popover
+                {...bindPopover(popupState)}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "center",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "center",
+                }}
+              >
+                <List style={{ maxHeight: 450 }}>
+                  {users.map((user) => (
+                    <ListItem
+                      button
+                      onClick={() => handleUpdateSubtask({ ...task, assignee: user.value, assignedDate: new Date().toString() })}
+                    >
+                      <ListItemText primary={user.text} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Popover>
+            </>
+          )}
+        </PopupState>
+      </Grid>
+    </Grid>
+  )
+});
 
 function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
   const classes = useStyles();
@@ -197,81 +280,6 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
       awaitRefetchQueries: true,
     });
   };
-
-  function truncate(str, n) {
-    return str.length > n ? str.substr(0, n - 1) + "..." : str;
-  }
-
-  const SubtaskComponent = ({ task }) => (
-    <Grid container direction="row" justify="space-between" alignItems="center" className={classes.subTaskRoot}>
-      <Grid item xs={6} className={classes.subTaskLeftGrid}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              name="subtaskCheckbox"
-              value={task.name}
-              onChange={(e) =>
-                handleUpdateSubtask({
-                  ...task,
-                  isCompleted: e.target.checked,
-                  completionDate: e.target.checked ? new Date().toString() : null,
-                })
-              }
-              checked={task.isCompleted}
-            />
-          }
-          label={truncate(task.name, 15)}
-        />
-      </Grid>
-      <Grid item style={{ alignItems: "right" }} className={classes.subTaskRightGrid}>
-        <KeyboardDatePicker
-          disableToolbar
-          variant="inline"
-          format="MM/DD/YYYY"
-          margin="normal"
-          allowKeyboardControl={false}
-          value={task.dueDate || ""}
-          emptyLabel
-          onChange={(date) => handleUpdateSubtask({ ...task, dueDate: date ? String(date["_d"]) : "" })}
-        />
-        <PopupState variant="popover" popupId="demo-popup-popover">
-          {(popupState) => (
-            <>
-              <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
-                {task.assignee ? (
-                  <CustomAvatar text={users.find((user) => user?.value === task.assignee).text.toString()} />
-                ) : (
-                  <AccountCircle fontSize="default" />
-                )}
-              </IconButton>
-              <Popover
-                {...bindPopover(popupState)}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "center",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "center",
-                }}
-              >
-                <List style={{ maxHeight: 450 }}>
-                  {users.map((user) => (
-                    <ListItem
-                      button
-                      onClick={() => handleUpdateSubtask({ ...task, assignee: user.value, assignedDate: new Date().toString() })}
-                    >
-                      <ListItemText primary={user.text} />
-                    </ListItem>
-                  ))}
-                </List>
-              </Popover>
-            </>
-          )}
-        </PopupState>
-      </Grid>
-    </Grid>
-  );
 
   const LaneSettings = ({ settings, index }) => (
     <div style={{ borderTop: "1px solid lightgrey" }}>
@@ -365,7 +373,9 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
         </Grid>
         <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
           {settings.tasks.map((task, subtaskIndex) => (
-            <SubtaskComponent task={task} />
+            <Fragment key={subtaskIndex}>
+              <SubtaskComponent task={task} handleUpdateSubtask={handleUpdateSubtask} users={users} />
+            </Fragment>
           ))}
         </Grid>
         {isNewSubtask.index === index && isNewSubtask.value && (
