@@ -14,8 +14,9 @@ import SidePanel from "./components/SidePanel";
 import { useSelector } from "react-redux";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import M1nTable from "../Shared/M1nTable/M1nTable";
-import Drawer from "./components/Drawer";
+import CustomAvatar from "components/Shared/ui/CustomAvatar";
 import moment from "moment";
+import { getRandomColor } from "components/Shared/functions/ui.js"
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
 import DocViewer from "../Shared/DocViewer";
 import { validateEmail } from "components/Login/loginHelpers";
@@ -137,24 +138,6 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiToolbar-root": { textAlign: "initial" }
   },
-  customAvatar: {
-    borderRadius: "50%",
-    backgroundColor: "red",
-    padding: "5px",
-    color: "#fff",
-    width: "25px",
-    height: "25px",
-    fontSize: "0.7rem",
-    textAlign: "center"
-  },
-  customAvatarImg: {
-    borderRadius: "50%",
-    color: "#fff",
-    width: "25px",
-    height: "25px",
-    fontSize: "0.7rem",
-    textAlign: "center"
-  },
   dealOwnerAvatar: {
     width: theme.spacing(3),
     height: theme.spacing(3),
@@ -168,84 +151,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "315px"
   }
 }));
-
-export const CustomAvatar = React.memo(({ text = "", email = "", diglog, imageUrl }) => {
-  const classes = useStyles();
-
-  const getInitials = (name) => {
-    if (!name || name.length === 0) return "--";
-    const split = name ? name.split(" ") : [""];
-    let initials = "";
-    split.forEach((s) => {
-      if (s[0]) initials += s[0];
-      if (initials.length === 2) return;
-    });
-    return initials.toUpperCase();
-  };
-
-  return (
-    <Fragment>
-      {imageUrl ? (
-        <img
-          className={classes.customAvatarImg}
-          src={imageUrl}
-          alt="owner img"
-        />
-      ) : (
-        <span
-          className={diglog ? "" : classes.customAvatar}
-          style={{
-            backgroundColor: diglog ? "" : getRandomColor(text)
-          }}
-        >
-          {getInitials(text)}
-        </span>
-      )}
-    </Fragment>
-  );
-});
-
-const defaultColors = [
-  "#d73d32",
-  "#7e3794",
-  "#4285f4",
-  "#67ae3f",
-  "#d61a7f",
-  "#ff4080"
-];
-
-function _stringAsciiPRNG(value, m) {
-  // Xn+1 = (a * Xn + c) % m
-  // 0 < a < m
-  // 0 <= c < m
-  // 0 <= X0 < m
-
-  const charCodes = [...value].map((letter) => letter.charCodeAt(0));
-  const len = charCodes.length;
-
-  const a = (len % (m - 1)) + 1;
-  const c = charCodes.reduce((current, next) => current + next) % m;
-
-  let random = charCodes[0] % m;
-  for (let i = 0; i < len; i++) random = (a * random + c) % m;
-
-  return random;
-}
-
-export function getRandomColor(value, colors = defaultColors) {
-  // if no value is passed, always return transparent color otherwise
-  // a rerender would show a new color which would will
-  // give strange effects when an interface is loading
-  // and gets rerendered a few consequent times
-  if (!value) return "transparent";
-
-  // value based random color index
-  // the reason we don't just use a random number is to make sure that
-  // a certain value will always get the same color assigned given
-  // a fixed set of colors
-  const colorIndex = _stringAsciiPRNG(value, colors.length);
-  return colors[colorIndex];
-}
 
 export default function Transact() {
   const classes = useStyles();

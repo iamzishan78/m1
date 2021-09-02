@@ -64,11 +64,11 @@ export default function WellProdChart(props) {
   //const {data,loading,error} = useQueryWellProdHistory(stateApp.selectedWellApi)
 
   useEffect(() => {
-    if (stateWellCard) {
+    if (stateWellProdChart.wellProdHistory) {
       let chart = am4core.create("chartDiv", am4charts.XYChart);
 
       chart.dateFormatter.inputDateFormat = "MM/YYYY";
-      chart.data = stateWellCard.wellProdHistory;
+      chart.data = stateWellProdChart.wellProdHistory;
 
       // Create common x-asix
       var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
