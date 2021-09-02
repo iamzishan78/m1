@@ -304,7 +304,7 @@ export default function DealComment(props) {
                           />
                         </div>
                         <div
-                          className={`${classes.whiteSpace} ${classes.bold}`}
+                          className={`${classes.whiteSpace}`}
                         >
                           {comment.comment}
                         </div>
