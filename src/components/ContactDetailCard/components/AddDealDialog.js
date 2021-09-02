@@ -42,7 +42,7 @@ import {
 } from "../../Shared/functions";
 import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
 import DealTasksProgressZone from "./DealTasksProgressZone";
-import LaneProgressDetail from "./DealTasksDetails";
+import DealTasksDetails from "./DealTasksDetails";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
 import { ADDDEAL } from "graphQL/useMutationAddDeal";
@@ -68,9 +68,7 @@ import EventIcon from "@material-ui/icons/Event";
 import "./style/dialog.css";
 import { faCloudShowersHeavy } from "@fortawesome/free-solid-svg-icons";
 
-// mui icons
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import { CustomAvatar } from "components/Transact/Transact";
+import CustomAvatar from "components/Shared/ui/CustomAvatar";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -608,7 +606,7 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     getAllMongoUsers();
-  }, []);
+  }, [getAllMongoUsers]);
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
@@ -1177,11 +1175,12 @@ function AddDealDialog(props) {
       );
     } else if (stateApp.transactBarView === "Task Progress") {
       return (
-        <LaneProgressDetail
+        <DealTasksDetails
           users={users}
           ownerId={ownerId}
           activeDeal={stateApp.activeDeal}
           dealSettings={get(dealSettings, "dealSettings", [])}
+          user={stateApp.user}
         />
       );
     }
@@ -1424,6 +1423,7 @@ function AddDealDialog(props) {
             placeholder="Click to enter deal name"
             required
             fullWidth
+            // autoFocus
             // error text that will prevent things
             error={title && title !== "" ? false : true}
             helperText={
@@ -1433,6 +1433,7 @@ function AddDealDialog(props) {
             }
             //   required
             onChange={(e) => {
+              e.preventDefault();
               setTitle(e.target.value);
             }}
             InputProps={{
@@ -1555,12 +1556,6 @@ function AddDealDialog(props) {
                                             users
                                               .find(
                                                 (user) => user?.value === ownerId
-                                              ).email
-                                          }
-                                          text={
-                                            users
-                                              .find(
-                                                (user) => user?.value === ownerId
                                               )
                                               .text.toString()
                                               .toUpperCase()
@@ -1661,7 +1656,7 @@ function AddDealDialog(props) {
                         )}
                         {sortedPipelines?.map((pipeline, i) => {
                           if (selectedPipe && selectedPipe._id === pipeline._id)
-                            return;
+                            return <></>;
                           return (
                             <option value={pipeline._id} key={i}>
                               {pipeline.name}
@@ -1786,6 +1781,7 @@ function AddDealDialog(props) {
                     toggleProgressDetail={toggleProgressDetail}
                     dealSettings={get(dealSettings, "dealSettings", [])}
                     users={users}
+                    activeDeal={stateApp.activeDeal}
                   />
                 </div>
               </div>
