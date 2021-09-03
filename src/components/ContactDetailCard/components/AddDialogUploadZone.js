@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
   },
   Uploadcomp: {
     width: "200px !important",
-    height: "200px !important",
+    height: "130px !important",
   },
   forImage: {
     width: "100px !important",
@@ -298,7 +298,7 @@ export default function Documents(props) {
 
   return (
     <div className={classes.root} variant="outlined">
-      <CardActions style={{ padding: "23px 23px 8px 23px" }}>
+      <CardActions style={{ padding: "23px 0px 8px 0px" }}>
         {props.isTransactPage && (
           <Grid item xs={12} style={{ minHeight: "35px" }}>
             <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents ({get(files, 'getFileDescriptors.length', 0)})</h4>
@@ -335,7 +335,7 @@ export default function Documents(props) {
                 ?.slice(value.name.lastIndexOf(".") + 1)
                 ?.toLowerCase();
 
-            console.log( 'VALUE TEST GOOD ONE', value)
+              console.log('VALUE TEST GOOD ONE', value)
 
               if (key <= 1) {
                 return (
@@ -373,35 +373,29 @@ export default function Documents(props) {
                       }
                       interactive
                     >
-
-
                       <div>
                         {new RegExp(
                           ["jpg", "jpeg", "png", "bmp"].join("|")
                         ).test(fileExtension) ? (
-
-
                           <img
                             src={value.uri}
                             alt={value.name}
                             className={classes.forImage}
                           ></img>
-
-
                         ) : (
-                          <div className={classes.forImageContainer} 
-                          
+                          <div className={classes.forImageContainer}
+
                             onClick={() => {
 
-                            if (fileExtension === 'pdf') {
-                              setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } })
-                            }
-                            else {
-                              handleViewFile(
-                                files?.getFileDescriptors[key].fileId
-                              )
-                            }
-                          }}>
+                              if (fileExtension === 'pdf') {
+                                setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } })
+                              }
+                              else {
+                                handleViewFile(
+                                  files?.getFileDescriptors[key].fileId
+                                )
+                              }
+                            }}>
 
                             {get_file_icon(fileExtension)}
                           </div>

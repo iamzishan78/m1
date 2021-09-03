@@ -69,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
   removeIconButton: {
     color: "gray",
+    cursor: "pointer",
     "&:hover": {
       color: "red",
     },
@@ -161,7 +162,7 @@ export default function Pipelines(props) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteFunc, setDeleteFunc] = useState(null);
 
-  const [addPipeline] = useMutation(ADD_PIPELINE);
+  const [addPipeline, { data: pipeline }] = useMutation(ADD_PIPELINE);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
@@ -188,22 +189,22 @@ export default function Pipelines(props) {
       const pipelineId = history.location.pathname.split("/")[2]
       let laneId = ''
       let cardId = ''
-      if(history.location.pathname.includes('lane')){
+      if (history.location.pathname.includes('lane')) {
         laneId = history.location.pathname.split("/")[4]
       }
-      if(history.location.pathname.includes('card')){
+      if (history.location.pathname.includes('card')) {
         cardId = history.location.pathname.split("/")[6]
       }
 
       if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
         let activePipeline = {};
 
-        if(pipelineId){
+        if (pipelineId) {
           activePipeline = pipelinesData.pipelines.find(
             (p) => p._id === pipelineId
           );
         }
-        if(!activePipeline){
+        if (!activePipeline) {
           const isExist = !!pipelinesData.pipelines.find(
             (p) => p._id === selectedPipe?._id
           );
@@ -213,12 +214,12 @@ export default function Pipelines(props) {
             );
           } else activePipeline = pipelinesData.pipelines[0];
         }
-        if(laneId && cardId){
+        if (laneId && cardId) {
           history.push(`/flow/${activePipeline._id}/lane/${laneId}/card/${cardId}`);
-        }else{
+        } else {
           history.push(`/flow/${activePipeline._id}`)
         }
-        
+
         dispatch(
           setFlowState({
             selectedPipe: activePipeline,
@@ -253,6 +254,15 @@ export default function Pipelines(props) {
   }, [dataDealsCountByStage]);
 
   useEffect(() => {
+    if (pipeline)
+      dispatch(
+        setFlowState({
+          selectedPipe: pipeline.addPipeline.pipeline,
+        })
+      );
+  }, [pipeline]);
+
+  useEffect(() => {
     if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
       setStateApp((state) => ({
         ...state,
@@ -276,23 +286,24 @@ export default function Pipelines(props) {
       if (pipelineData.pipeline) {
         let laneId = ''
         let cardId = ''
-        if(history.location.pathname.includes('lane')){
+        if (history.location.pathname.includes('lane')) {
           laneId = history.location.pathname.split("/")[4]
         }
-        if(history.location.pathname.includes('card')){
+        if (history.location.pathname.includes('card')) {
           cardId = history.location.pathname.split("/")[6]
         }
-  
+
         let deals = [];
         let pipe = {
           ...pipelineData.pipeline,
           lanes: pipelineData.pipeline.lanes?.map((lane) => ({
             ...lane,
             cards: lane.cards?.map((card) => {
-              if (!card.metadata.IsDeleted){
-                if(lane.id === laneId && cardId === card.id){ 
+              if (!card.metadata.IsDeleted) {
+                if (lane.id === laneId && cardId === card.id) {
                   setStateApp((stateApp) => ({
                     ...stateApp,
+                    transactBarView: "Deal",
                     dealDialog: true,
                     activeDeal: {
                       cardId,
@@ -715,6 +726,7 @@ export default function Pipelines(props) {
                     setName(event.target.value);
                     if (error) setError(false);
                   }}
+                  style={{ width: '48%' }}
                 />
               </Grid>
               <Grid item xs={12}>

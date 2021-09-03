@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import {
   Grid,
   InputAdornment,
@@ -20,23 +20,28 @@ import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/compon
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "graphQL/useMutationAddContact";
 import { AppContext } from "../../AppContext";
-import { useLazyQuery,useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import DeleteIcon from '@material-ui/icons/Delete';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
-import { GETPIPELINES } from "../../graphQL/useQueryPipelines";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { REMOVEDEALDESCRIPTOR } from "../../graphQL/useMutationRemoveDealDescriptor";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "&  .MuiList-padding": {
+    overflowY: "auto",
+    maxHeight: "79vh",
+    padding: "0px 30px",
+    "& .MuiList-padding": {
       padding: "23px 0px !important",
     },
   },
   button: {
     width: "100%",
   },
+  actionGrid: {
+    margin: "0px 0px 10px 0px"
+  }
 }));
 
 export default function Contacts(props) {
@@ -50,18 +55,18 @@ export default function Contacts(props) {
   const [nameAutValue, setNameAutValue] = useState("");
   const [nameAutInputValue, setNameAutInputValue] = useState("");
   const [addContact, setAddContact] = useState(false);
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp,] = useContext(AppContext);
   const [mutationLoading, setMutationLoading] = useState(false)
   const [
     getPaginatedContacts,
-    { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts },
+    { data: allContacts, fetchMore: fetchMorePaginatedContacts },
   ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
-  const [addNewContact, { data: addContactData} ] = useMutation(ADDCONTACT);
-  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
-  const [removeDealDescriptor, { loading: DealLoading, error: DealError }] = useMutation(REMOVEDEALDESCRIPTOR);
+  const [addNewContact, { data: addContactData }] = useMutation(ADDCONTACT);
+  const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
+
   useEffect(() => {
     //will also run during initial mount
     setIsNextPageLoading(true);
@@ -70,13 +75,13 @@ export default function Contacts(props) {
         search: nameAutInputValue,
       },
     });
-  }, [nameAutInputValue]);
+  }, [getPaginatedContacts, nameAutInputValue]);
 
   useEffect(() => {
-    if(get(addContactData, 'addContact.contact')){
-      setNameAutValue({ name:addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id })
+    if (get(addContactData, 'addContact.contact')) {
+      setNameAutValue({ name: addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id })
     }
-  },[addContactData])
+  }, [addContactData])
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
@@ -98,13 +103,13 @@ export default function Contacts(props) {
       c.toLowerCase().includes(search.toLowerCase())
     );
     setFilteredContacts(filtered);
-    
+
   }, [search, contacts]);
-  const GettingContacts = () => {
+
+  const GettingContacts = useCallback(() => {
     let contactnames = stateApp.activeDeal?.contacts?.map((value) => {
-      if (value.relatedObject?.entity?.name !== undefined)
-      {
-       return value.relatedObject?.entity?.name
+      if (value.relatedObject?.entity?.name !== undefined) {
+        return value.relatedObject?.entity?.name
       }
       else if (value?.name && value?.name !== undefined) {
         return value.name;
@@ -112,58 +117,55 @@ export default function Contacts(props) {
       else {
         return 'Empty'
       }
-   })
-   setContacts(contactnames)
-  }
-  useEffect(() => {
-   GettingContacts()
-  
-  }, [ search, props]);
-
+    })
+    setContacts(contactnames)
+  }, [stateApp.activeDeal?.contacts]);
 
   useEffect(() => {
-    if(!props.loading){ setMutationLoading(false) }
+    GettingContacts()
+  }, [search, props, GettingContacts]);
+
+  useEffect(() => {
+    if (!props.loading) { setMutationLoading(false) }
   }, [props.loading])
- const DeleteContact = async (dealid) => {
-  let result =  await removeDealDescriptor({
-    variables: { id: dealid, relatedObjectType: "Contact"},
-    refetchQueries: ["getPipeline", "getContactDeals"],
-			awaitRefetchQueries: true,
-    
-  });
-  let response = await result.data.removeDealDescriptor.success
-  if(response)
-  {
-    // GettingContacts()
-    props.getDeal()
-    
-  }
-  else {
-    setMutationLoading(false)
+  const DeleteContact = async (dealid) => {
+    let result = await removeDealDescriptor({
+      variables: { id: dealid, relatedObjectType: "Contact" },
+      refetchQueries: ["getPipeline", "getContactDeals"],
+      awaitRefetchQueries: true,
 
+    });
+    let response = await result.data.removeDealDescriptor.success
+    if (response) {
+      // GettingContacts()
+      props.getDeal()
 
+    }
+    else {
+      setMutationLoading(false)
+    }
   }
- }
   return (
     <div>
-      <h1>{stateApp.activeDeal.name}</h1>
-      <TextField
-        fullWidth
-        placeholder="Search contacts..."
-        InputProps={{
-          startAdornment: (
-            <>
-              <InputAdornment position="start">
-                <SearchIcon htmlColor="#757575" />
-              </InputAdornment>
-            </>
-          ),
-        }}
-        value={search}
-        onChange={(event) => {
-          setSearch(event.target.value);
-        }}
-      />
+      <div style={{ padding: "0px 30px" }}>
+        <TextField
+          fullWidth
+          placeholder="Search contacts..."
+          InputProps={{
+            startAdornment: (
+              <>
+                <InputAdornment position="start">
+                  <SearchIcon htmlColor="#757575" />
+                </InputAdornment>
+              </>
+            ),
+          }}
+          value={search}
+          onChange={(event) => {
+            setSearch(event.target.value);
+          }}
+        />
+      </div>
       <div className={classes.root}>
         <List aria-label="contacts list">
           {filteredContacts && filteredContacts.length > 0 ? (
@@ -191,20 +193,21 @@ export default function Contacts(props) {
                       color: "primary",
                     }}
                   />
-                  {mutationLoading === stateApp.activeDeal?.contacts[i]?._id  ? (
-                     <ListItemSecondaryAction >
-                     <IconButton edge="end" aria-label="delete">
-                     <CircularProgress></CircularProgress>
-                     </IconButton>
-                   </ListItemSecondaryAction>
-                  ) : ( <ListItemSecondaryAction onClick={() => { 
-                    DeleteContact(stateApp.activeDeal?.contacts[i]?._id); 
-                    setMutationLoading(stateApp.activeDeal?.contacts[i]?._id)}}>
+                  {mutationLoading === stateApp.activeDeal?.contacts[i]?._id ? (
+                    <ListItemSecondaryAction >
+                      <IconButton edge="end" aria-label="delete">
+                        <CircularProgress></CircularProgress>
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  ) : (<ListItemSecondaryAction onClick={() => {
+                    DeleteContact(stateApp.activeDeal?.contacts[i]?._id);
+                    setMutationLoading(stateApp.activeDeal?.contacts[i]?._id)
+                  }}>
                     <IconButton edge="end" aria-label="delete">
                       <DeleteIcon />
                     </IconButton>
                   </ListItemSecondaryAction>)}
-                  
+
                 </ListItem>
                 <Divider />
               </>
@@ -220,10 +223,7 @@ export default function Contacts(props) {
             </ListItem>
           )}
         </List>
-      </div>
-
-      <div>
-        <Grid container>
+        <Grid container className={classes.actionGrid}>
           <Grid item xs={12}>
             {addContact ? (
               <>
@@ -239,33 +239,33 @@ export default function Contacts(props) {
                   hasNextPage={hasNextPage}
                   isNextPageLoading={isNextPageLoading}
                   loadNextPage={loadNextPage}
-                  disabled ={props.loading}
+                  disabled={props.loading}
                   addNew={true}
-                      addNewOnClick={(value) => {
-                        const contact = {name: value};
-                        addNewContact({
-                            variables: {
-                              contact: {
-                                ...contact,
-                                createBy: stateApp.user.mongoId,
-                                lastUpdateBy: stateApp.user.mongoId,
-                              },
-                            },
-                            refetchQueries: ["getPaginatedContacts", "getContact"],
-                            awaitRefetchQueries: true,
-                          });
-                      }}
+                  addNewOnClick={(value) => {
+                    const contact = { name: value };
+                    addNewContact({
+                      variables: {
+                        contact: {
+                          ...contact,
+                          createBy: stateApp.user.mongoId,
+                          lastUpdateBy: stateApp.user.mongoId,
+                        },
+                      },
+                      refetchQueries: ["getPaginatedContacts", "getContact"],
+                      awaitRefetchQueries: true,
+                    });
+                  }}
                 />
                 <Button
                   variant="contained"
                   color="primary"
                   className={classes.button}
                   onClick={() => {
-                    props.addSelectedContact(nameAutValue) 
-                     GettingContacts() 
-                     setMutationLoading(true)
-                     setAddContact(false)
-                     }}
+                    props.addSelectedContact(nameAutValue)
+                    GettingContacts()
+                    setMutationLoading(true)
+                    setAddContact(false)
+                  }}
                 >
                   <AddIcon />
                 </Button>

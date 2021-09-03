@@ -1,15 +1,17 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import MessageIcon from "@material-ui/icons/Message";
 import DescriptionIcon from "@material-ui/icons/DescriptionSharp";
 import CheckmarkIcon from "@material-ui/icons/CheckBoxOutlined";
 import ShareIcon from "@material-ui/icons/Share";
 import FolderIcon from "@material-ui/icons/Folder";
+import HomeIcon from '@material-ui/icons/HomeOutlined';
 import IdentityIcon from "@material-ui/icons/PermIdentity";
+import FlowIcon from "@material-ui/icons/Repeat";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import Tooltip from "@material-ui/core/Tooltip";
-import Badge from '@material-ui/core/Badge';
+import Badge from "@material-ui/core/Badge";
 import { AppContext } from "../../../AppContext";
-import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,8 +19,8 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px",
     position: "absolute",
     right: 0,
-    top: 0,
-    zIndex: 999999,
+    top: '108px',
+    zIndex: 1223,
     backgroundColor: "rgb(240,245,248)",
   },
   icon: {
@@ -52,6 +54,17 @@ export default function Drawer() {
 
   const drawerIcons = {
     // Comments: (props) => <MessageIcon {...props} />,
+    Deal: (props) => (
+      <Badge
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        color="primary"
+      >
+        <HomeIcon {...props} />
+      </Badge>
+    ),
     Documents: (props) => (
       <Badge
         anchorOrigin={{
@@ -79,18 +92,36 @@ export default function Drawer() {
         <IdentityIcon {...props} />
       </Badge>
     ),
+    "Task Progress": (props) => (
+      <Badge
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        color="primary"
+      >
+        <CheckBoxIcon {...props} />
+      </Badge>
+    ),
+    // reserve this for automations potentially
+    // Progress: (props) => (
+    //   <Badge
+    //     anchorOrigin={{
+    //       vertical: "top",
+    //       horizontal: "right",
+    //     }}
+    //     color="primary"
+    //   >
+    //     <FlowIcon {...props} />
+    //   </Badge>
+    // ),
   };
 
   return (
     <div className={classes.root}>
       {Object.keys(drawerIcons).map((key) => (
         <Tooltip title={key} placement="left">
-          <div
-            className={classes.icon}
-            onClick={() =>
-              setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))
-            }
-          >
+          <div className={classes.icon} onClick={() => setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))}>
             {drawerIcons[key]({
               opacity: "1",
               height: "30",

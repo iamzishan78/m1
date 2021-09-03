@@ -14,7 +14,7 @@ import PipelineCard from "./PipelineCard";
 import { setFlowState } from "actions";
 import { UPDATE_PIPELINES_POSITIONS } from "graphQL/useMutationUpdatePipelinesPositions";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   flowlinesList: {
     margin: "5px 5px 10px 5px",
     overflowY: "auto",
@@ -41,18 +41,6 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
   const currentItem = React.useRef();
   // MUTATIONS
   const [updatePipelinesPositions] = useMutation(UPDATE_PIPELINES_POSITIONS);
-
-  useEffect(() => {
-    if (selectedPipe) {
-      document.removeEventListener("keydown", () => { });
-      document.addEventListener("keydown", (event) => {
-        if (event.keyCode === 27) {
-          // Deselecting all flowwlines on ESC
-          setMultiSelection([selectedPipe._id]);
-        }
-      });
-    }
-  }, [selectedPipe]);
 
   useEffect(() => {
     if (!deepEqual(items, filteredPipelines)) {
