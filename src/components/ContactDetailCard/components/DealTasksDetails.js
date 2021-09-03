@@ -18,7 +18,11 @@ import {
   ListItem,
   ListItemText,
   Tooltip,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from "@material-ui/core";
+import { ExpandMore, ExpandLess, Edit } from "@material-ui/icons";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import { KeyboardDatePicker } from "@material-ui/pickers";
@@ -32,9 +36,7 @@ import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDeal
 import { ADD_DEAL_SUBTASK, UPDATE_DEAL_SUBTASK } from "graphQL/useMutationDealSubtask";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    padding: "0px 30px",
-  },
+  root: {},
   newLaneProgress: {
     margin: "10px 0px 10px 0px",
   },
@@ -63,7 +65,6 @@ const useStyles = makeStyles((theme) => ({
   dealOwnerRoot: {
     border: "1px solid #EBEBEB",
     '&[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input:first-child': {
-      // Default left padding is 6px
       paddingLeft: 26,
     },
 
@@ -125,8 +126,8 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiIconButton-label": {
       width: "auto",
       "& span": {
-        paddingTop: "6px"
-      }
+        paddingTop: "6px",
+      },
     },
   },
   notes: {
@@ -142,6 +143,19 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  accordion: {
+    minHeight: "35px !important",
+    "& .MuiPaper-elevation1": {
+      boxShadow: "none !important",
+    },
+    "& .MuiAccordion-root": {
+      position: "inherit !important",
+      minHeight: "72px !important",
+      maxHeight: "580px !important",
+      borderBottomRightRadius: "0px !important",
+      borderBottomLeftRadius: "0px !important",
+    },
+  },
 }));
 
 const SubtaskComponent = memo(({ task, handleUpdateSubtask, users }) => {
@@ -152,16 +166,8 @@ const SubtaskComponent = memo(({ task, handleUpdateSubtask, users }) => {
   const onHoverTask = (state) => setShow(state);
 
   return (
-    <div
-      className={classes.subTaskRoot}
-      onMouseLeave={() => onHoverTask(false)}
-      onMouseEnter={() => onHoverTask(true)}>
-      <Grid
-        container
-        direction="row"
-        justify="space-between"
-        alignItems="center"
-      >
+    <div className={classes.subTaskRoot} onMouseLeave={() => onHoverTask(false)} onMouseEnter={() => onHoverTask(true)}>
+      <Grid container direction="row" justify="space-between" alignItems="center">
         <Grid item xs={6} className={classes.subTaskLeftGrid}>
           <FormControlLabel
             control={
@@ -299,20 +305,24 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
   };
 
   const LaneSettings = ({ settings, index }) => (
-    <div style={{ borderTop: "1px solid lightgrey" }}>
-      <Typography className={classes.laneName}>{settings.stageName}</Typography>
-      <Grid container className={classes.laneDetail}>
-        <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
-          <Typography variant="body2" color="textSecondary">
-            Progress
-          </Typography>
-          <div style={{ minWidth: "200px" }}>
-            <ProgressBar value={settings.progress} isNumeric />
-          </div>
-        </Grid>
+    <div style={{ borderTop: "1px solid lightgrey", padding: '0px 5px' }}>
+      <Accordion defaultExpanded={index === 0}>
+        <AccordionSummary aria-controls="panel1a-content2" id="panel1a-header2" expandIcon={<ExpandMore />}>
+          <Typography className={classes.laneName}>{settings.stageName}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Grid container className={classes.laneDetail}>
+            <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
+              <Typography variant="body2" color="textSecondary">
+                Progress
+              </Typography>
+              <div style={{ minWidth: "200px" }}>
+                <ProgressBar value={settings.progress} isNumeric />
+              </div>
+            </Grid>
 
-        {/* TEMP COMMMENT FOR EFFICIENCY */}
-        {/* <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
+            {/* TEMP COMMMENT FOR EFFICIENCY */}
+            {/* <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
           <Typography variant="body2" color="textSecondary">
             Efficiency
           </Typography>
@@ -321,104 +331,106 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
           </div>
         </Grid> */}
 
-        <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
-          <Typography variant="body2" color="textSecondary">
-            Approver
-          </Typography>
-          <Autocomplete
-            options={users}
-            onChange={(e, user) => {
-              handleChangeSettings(settings, { approver: user?.value });
-            }}
-            value={users.find((user) => user?.value === settings.stageDealDescriptor.approver) || null}
-            getOptionLabel={(option) => option.text}
-            getOptionSelected={(option) => option.value === settings.stageDealDescriptor.approver}
-            classes={{
-              inputRoot: classes.dealOwnerRoot,
-              focused: classes.dealOwnerRootFocused,
-              popupIndicator: classes.popupIndicator,
-            }}
-            renderInput={(params) => (
+            <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
+              <Typography variant="body2" color="textSecondary">
+                Approver
+              </Typography>
+              <Autocomplete
+                options={users}
+                onChange={(e, user) => {
+                  handleChangeSettings(settings, { approver: user?.value });
+                }}
+                value={users.find((user) => user?.value === settings.stageDealDescriptor.approver) || null}
+                getOptionLabel={(option) => option.text}
+                getOptionSelected={(option) => option.value === settings.stageDealDescriptor.approver}
+                classes={{
+                  inputRoot: classes.dealOwnerRoot,
+                  focused: classes.dealOwnerRootFocused,
+                  popupIndicator: classes.popupIndicator,
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    margin="dense"
+                    {...params}
+                    variant="outlined"
+                    className={classes.inputFieldOwner}
+                    InputLabelProps={{
+                      ...params.InputLabelProps,
+                      shrink: true,
+                      classes: {
+                        root: classes.dealOwnerLabel,
+                      },
+                    }}
+                    placeholder="Assign Owner"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <>
+                          <InputAdornment position="start">
+                            {settings.stageDealDescriptor.approver ? (
+                              <CustomAvatar
+                                text={users.find((user) => user?.value === settings.stageDealDescriptor.approver).text.toString()}
+                              />
+                            ) : (
+                              <AccountCircle fontSize="default" />
+                            )}
+                          </InputAdornment>
+                          {params.InputProps.startAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xl={12} sm={12}>
               <TextField
                 margin="dense"
-                {...params}
                 variant="outlined"
-                className={classes.inputFieldOwner}
-                InputLabelProps={{
-                  ...params.InputLabelProps,
-                  shrink: true,
-                  classes: {
-                    root: classes.dealOwnerLabel,
-                  },
-                }}
-                placeholder="Assign Owner"
-                InputProps={{
-                  ...params.InputProps,
-                  startAdornment: (
-                    <>
-                      <InputAdornment position="start">
-                        {settings.stageDealDescriptor.approver ? (
-                          <CustomAvatar
-                            text={users.find((user) => user?.value === settings.stageDealDescriptor.approver).text.toString()}
-                          />
-                        ) : (
-                          <AccountCircle fontSize="default" />
-                        )}
-                      </InputAdornment>
-                      {params.InputProps.startAdornment}
-                    </>
-                  ),
-                }}
+                multiline
+                rows={8}
+                defaultValue={get(settings, "stageDealDescriptor.comment", "")}
+                // value={description}
+                label="Comment"
+                fullWidth
+                //   required
+                onBlur={(e) => handleChangeSettings(settings, { comment: e.target.value })}
+                className={classes.notes}
               />
+            </Grid>
+            <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
+              {settings.tasks.map((task, subtaskIndex) => (
+                <Fragment key={subtaskIndex}>
+                  <SubtaskComponent task={task} handleUpdateSubtask={handleUpdateSubtask} users={users} />
+                </Fragment>
+              ))}
+            </Grid>
+            {isNewSubtask.index === index && isNewSubtask.value && (
+              <Grid item xs={12} className={classes.addSubTaskButton}>
+                <TextField
+                  margin="dense"
+                  variant="outlined"
+                  label="Enter Subtask Name"
+                  fullWidth
+                  autoFocus
+                  onBlur={() => setNewSubtask({ index: -1, value: !isNewSubtask.value })}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleNewSubtask(settings, { name: e.target.value });
+                    }
+                  }}
+                />
+              </Grid>
             )}
-          />
-        </Grid>
-        <Grid item xl={12} sm={12}>
-          <TextField
-            margin="dense"
-            variant="outlined"
-            multiline
-            rows={8}
-            defaultValue={get(settings, "stageDealDescriptor.comment", "")}
-            // value={description}
-            label="Comment"
-            fullWidth
-            //   required
-            onBlur={(e) => handleChangeSettings(settings, { comment: e.target.value })}
-            className={classes.notes}
-          />
-        </Grid>
-        <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
-          {settings.tasks.map((task, subtaskIndex) => (
-            <Fragment key={subtaskIndex}>
-              <SubtaskComponent task={task} handleUpdateSubtask={handleUpdateSubtask} users={users} />
-            </Fragment>
-          ))}
-        </Grid>
-        {isNewSubtask.index === index && isNewSubtask.value && (
-          <Grid item xs={12} className={classes.addSubTaskButton}>
-            <TextField
-              margin="dense"
-              variant="outlined"
-              label="Enter Subtask Name"
-              fullWidth
-              autoFocus
-              onBlur={() => setNewSubtask({ index: -1, value: !isNewSubtask.value })}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleNewSubtask(settings, { name: e.target.value });
-                }
-              }}
-            />
+            <Grid item xs={12} className={classes.addSubTaskButton}>
+              <Button size="small" style={{ color: "grey" }} onClick={() => setNewSubtask({ index, value: !isNewSubtask.value })}>
+                + Add New Subtask
+              </Button>
+            </Grid>
           </Grid>
-        )}
-        <Grid item xs={12} className={classes.addSubTaskButton}>
-          <Button size="small" style={{ color: "grey" }} onClick={() => setNewSubtask({ index, value: !isNewSubtask.value })}>
-            + Add New Subtask
-          </Button>
-        </Grid>
-      </Grid>
+        </AccordionDetails>
+      </Accordion>
     </div>
   );
 
@@ -433,9 +445,9 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
 
   return (
     <div className={classes.root}>
-      <CardActions style={{ padding: 0, paddingBottom: 15 }}>
+      <CardActions style={{ paddingBottom: 15, padding: "0px 30px" }}>
         <Grid container direction="row" justify="space-between" alignItems="center">
-          <Grid item xs={8}>
+          <Grid item xs={8} style={{ marginBottom: "15px" }}>
             <h4 style={{ height: "8px" }}>Overall Progress</h4>
             <ProgressBar value={evaluateOverallProgress()} isNumeric />
           </Grid>
@@ -457,11 +469,11 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
           </Grid> */}
         </Grid>
       </CardActions>
-      <CardContent style={{ padding: 0 }}>
+      <CardContent style={{ padding: 0, overflowY: "auto", maxHeight: "82vh" }}>
         {dealSettings?.map((settings, index) => (
-          <Fragment key={index}>
+          <div className={classes.accordion}>
             <LaneSettings settings={settings} index={index} />
-          </Fragment>
+          </div>
         ))}
       </CardContent>
     </div>
