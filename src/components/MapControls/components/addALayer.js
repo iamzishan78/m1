@@ -356,9 +356,9 @@ export default function AddLayer(props) {
                 merged.fileNames = allFileNames
                 merged.featureTypes = allLayerTypes
                 merged.groupName = fileName.replace('.zip', '')
-                resolve(merged)
+                resolve({ data: merged, originalData: geojson })
               } else {
-                resolve(singleGeojson(geojson, name));
+                resolve({ data: singleGeojson(geojson, name), originalData: geojson })
               }
             });
           });
@@ -373,7 +373,12 @@ export default function AddLayer(props) {
       ...stateApp,
       universalCircularLoaderAct: true,
     }));
+    let originalData;
     let fileContent = await handleFileAsync(fileObj);
+    if (fileContent.originalData) {
+      originalData = fileContent.originalData
+      fileContent = fileContent.data
+    }
     setStateApp((stateApp) => ({
       ...stateApp,
       universalCircularLoaderAct: false,
@@ -384,6 +389,7 @@ export default function AddLayer(props) {
         ...stateMapControls,
         layerAddControl: fileContent.featureTypes?.length > 1 ? "addGroup" : "add",
         fileUploadedContent: fileContent,
+        fileUploadedOriginalContent: originalData
       });
   }
 

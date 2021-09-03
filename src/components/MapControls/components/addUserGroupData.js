@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { useMutation } from "@apollo/client";
+import { useMutation, useApolloClient } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { MapControlsContext } from "../MapControlsContext";
@@ -23,6 +23,7 @@ import { useDispatch } from "react-redux";
 import { showErrorMessage } from "../../../actions";
 import { getDefaultSettings } from './addUserHelper'
 import Loader from "components/Loaders";
+import { uploadFileData } from "components/Shared/functions";
 
 const Alert = (props) => {
   return <MuiAlert elevation={5} variant="filled" {...props} />;
@@ -60,6 +61,7 @@ export default function AddUserGroupData(props) {
   const [inputFiles, setInputFiles] = useState(
     stateMapControls.fileUploadedContent
   );
+  const [inputOriginalFile, setInputOriginalFile] = useState(stateMapControls.fileUploadedOriginalContent);
   const [layerNames, setLayerNames] = useState([]);
   const [groupName, setGroupName] = useState("");
   const [error, setErrorr] = useState(false);
@@ -68,7 +70,7 @@ export default function AddUserGroupData(props) {
   const [url, setUrl] = useState("");
 
   const [stateApp, setStateApp] = useContext(AppContext);
-
+  const client = useApolloClient();
   const [addFile] = useMutation(ADDFILE);
 
   const [addLayer] = useMutation(ADDLAYER);
@@ -83,10 +85,11 @@ export default function AddUserGroupData(props) {
       })
       setLayerNames([...layerNames])
       setGroupName(stateMapControls.fileUploadedContent.groupName)
+      setInputOriginalFile(stateMapControls.fileUploadedOriginalContent)
 
       setInputFiles(stateMapControls.fileUploadedContent);
     }
-  }, [stateMapControls.fileUploadedContent]);
+  }, [stateMapControls.fileUploadedContent, stateMapControls.fileUploadedOriginalContent]);
 
   const handleCancel = () => {
     setIsOpen(false);
@@ -94,6 +97,7 @@ export default function AddUserGroupData(props) {
       ...stateMapControls,
       layerAddControl: null,
       fileUploadedContent: null,
+      fileUploadedOriginalContent: null,
       // selectedControl: 'layer'
     }));
     setNotReturn(false);
@@ -109,6 +113,7 @@ export default function AddUserGroupData(props) {
       ...stateMapControls,
       layerAddControl: null,
       fileUploadedContent: null,
+      fileUploadedOriginalContent: null,
       // selectedControl: 'layer',
       addLayer: false,
     }));
@@ -149,7 +154,7 @@ export default function AddUserGroupData(props) {
     }
   }
 
-  const uploadFile = (fileData, fileContent, sourceProps) => {
+  const uploadFile = (fileData, fileContent, sourceProps, originalFileId) => {
     const url = fileData.addFile.file.uri;
     const interal_key = fileData.addFile.file.internalKey;
     const file_id = fileData.addFile.file.id;
@@ -185,6 +190,7 @@ export default function AddUserGroupData(props) {
                   public: true,
                   createBy: stateApp.user.mongoId,
                   file: file_id,
+                  originalFile: originalFileId,
                   defaultSettings,
                 },
               },
@@ -230,6 +236,20 @@ export default function AddUserGroupData(props) {
 
       const userId = stateApp.user.mongoId;
       const fileName = groupName.trim().toLowerCase().replace(" ", "_") + ".geojson";
+      let originalFileId = ''
+      if (inputOriginalFile) {
+        const originalFile = await client.mutate({
+          mutation: ADDFILE,
+          variables: {
+            fileName,
+            userId,
+          },
+        })
+        if (originalFile.data.addFile.file.id) {
+          originalFileId = originalFile.data.addFile.file.id
+          uploadFileData(originalFile.data.addFile.file, inputOriginalFile)
+        }
+      }
       const file = await addFile({
         variables: {
           fileName,
@@ -237,7 +257,7 @@ export default function AddUserGroupData(props) {
         },
       });
       if (file?.data?.addFile?.success) {
-        uploadFile(file.data, stateMapControls.fileUploadedContent, groupName + uuid() + "_source")
+        uploadFile(file.data, stateMapControls.fileUploadedContent, groupName + uuid() + "_source", originalFileId)
       }
     }
   };
