@@ -27,7 +27,7 @@ import { ABSTRACTWELLGEOQUERY } from "../../../graphQL/useQueryAbstractWellGeo";
 import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import { GET_DOCUMENTS } from "../../../graphQL/useQueryDocuments";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
-import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
+import { REMOVE_CONTACTS } from "../../../graphQL/useMutationRemoveContact";
 import { REMOVEUSER } from "../../../graphQL/useMutationRemoveUser";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
@@ -163,7 +163,7 @@ function M1nTable(props) {
   const [getContactsFilterOptions, { data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
   const [updateMailerStatuses] = useMutation(UPDATEMAILERSTATUSES);
   const [getContactDeals, { data: dataDeals }] = useLazyQuery(CONTACTDEALS, { fetchPolicy: "cache-and-network", });
-  const [removeContact] = useMutation(REMOVECONTACT);
+  const [removeContact] = useMutation(REMOVE_CONTACTS);
   const [updateContact] = useMutation(UPDATECONTACT);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
@@ -1561,13 +1561,10 @@ function M1nTable(props) {
       setDeleteFunc(() => (contactsIdsToDelete) => {
         if (contactsIdsToDelete) {
           for (let i = 0; i < contactsIdsToDelete.length; i++) {
-            updateContact({
+            removeContact({
               variables: {
-                contact: {
-                  _id: contactsIdsToDelete[i],
-                  lastUpdateBy: stateApp.user.mongoId,
-                  IsDeleted: true,
-                },
+                contactIds: contactsIdsToDelete,
+                userId: stateApp.user.mongoId
               },
               refetchQueries: [
                 "getPaginatedContacts",
@@ -2598,7 +2595,7 @@ function M1nTable(props) {
       DocumentsData?.getFiles
     ) {
       const documentId = history.location.pathname.split('/')[2]
-      if(documentId){
+      if (documentId) {
         setStateApp((state) => ({
           ...state,
           pdfView: DocumentsData.getFiles.find((row) => row._id === documentId),
