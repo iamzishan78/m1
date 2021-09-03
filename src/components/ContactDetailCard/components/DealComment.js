@@ -4,10 +4,11 @@ import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress, Menu, MenuItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import { useMutation, useLazyQuery } from "@apollo/client";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
 import { AppContext } from "AppContext";
 import { GET_PROFILE_IMAGE } from "graphQL/useQueryGetProfile";
@@ -81,6 +82,12 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "10px",
     fontSize: "12px",
   },
+  floatRight: {
+    float: "right",
+  },
+  cursorPointer: {
+    cursor: "pointer",
+  },
 }));
 
 export default function DealComment(props) {
@@ -89,6 +96,7 @@ export default function DealComment(props) {
   const [stateApp] = useContext(AppContext);
 
   const [comment, setComment] = useState("");
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const [showAllComments, setShowAllComments] = useState(false);
   const [profilesInfo, setProfilesInfo] = useState({});
   const [profileImage, setProfileImage] = useState(null);
@@ -96,7 +104,8 @@ export default function DealComment(props) {
   const [showActions, setShowActions] = useState(false);
   const [loadingComments, setLoadingComments] = useState(true);
 
-  const [upsertComment, { data: newlyAddedComment}] = useMutation(UPSERTCOMMENT);
+  const [upsertComment, { data: newlyAddedComment }] =
+    useMutation(UPSERTCOMMENT);
   const [getProfileImage, profiledata] = useLazyQuery(GET_PROFILE_IMAGE);
   const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
@@ -107,7 +116,7 @@ export default function DealComment(props) {
   );
 
   useEffect(() => {
-    if(targetSourceId){
+    if (targetSourceId) {
       setLoadingComments(true);
       getCommentsByObjectId({
         variables: {
@@ -116,6 +125,14 @@ export default function DealComment(props) {
       });
     }
   }, [targetSourceId]);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   useEffect(() => {
     if (dataComments && dataComments.commentsByObjectId) {
@@ -132,18 +149,20 @@ export default function DealComment(props) {
     setLoadingComments(false);
   }, [dataComments]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoadingComments(false);
-    if(!targetSourceId && newlyAddedComment?.upsertComment?.comment){
-      const comments = JSON.parse(JSON.stringify(commentsArray))
-      comments.push({ ...newlyAddedComment.upsertComment.comment, user: { name: stateApp.user.name, email: stateApp.user.email}, isNew: true})
-      props.setNewCommentId(newlyAddedComment.upsertComment.comment._id)
-      setCommentsArray(
-        sortArrayBasedOnTs([...comments])
-      );
+    if (!targetSourceId && newlyAddedComment?.upsertComment?.comment) {
+      const comments = JSON.parse(JSON.stringify(commentsArray));
+      comments.push({
+        ...newlyAddedComment.upsertComment.comment,
+        user: { name: stateApp.user.name, email: stateApp.user.email },
+        isNew: true,
+      });
+      props.setNewCommentId(newlyAddedComment.upsertComment.comment._id);
+      setCommentsArray(sortArrayBasedOnTs([...comments]));
     }
-  },[newlyAddedComment])
-  
+  }, [newlyAddedComment]);
+
   useEffect(() => {
     if (profilesData?.data?.profileByEmail?.profiles) {
       setProfilesInfo(profilesData.data.profileByEmail.profiles);
@@ -269,10 +288,14 @@ export default function DealComment(props) {
                     <Grid key={index} container className={classes.gridStyle}>
                       <Grid item xs={1}>
                         <IconButton style={{ top: "3px" }}>
-                          {(profilesInfo[comment.user.email]?.profileImage || comment.isNew )? (
+                          {profilesInfo[comment.user.email]?.profileImage ||
+                          comment.isNew ? (
                             <Avatar
                               src={
-                                comment.isNew ? profileImage : profilesInfo[comment.user.email].profileImage
+                                comment.isNew
+                                  ? profileImage
+                                  : profilesInfo[comment.user.email]
+                                      .profileImage
                               }
                               size="38"
                               round
@@ -302,6 +325,23 @@ export default function DealComment(props) {
                             }
                             locale="en-US"
                           />
+                          <div className={`${classes.floatRight} ${classes.cursorPointer}`}>
+                            <ArrowDropDownIcon
+                              aria-controls="simple-menu"
+                              aria-haspopup="true"
+                              onClick={handleClick}
+                            />
+                            <Menu
+                              id="simple-menu"
+                              anchorEl={anchorEl}
+                              keepMounted
+                              open={Boolean(anchorEl)}
+                              onClose={handleClose}
+                            >
+                              <MenuItem onClick={handleClose}>Edit</MenuItem>
+                              <MenuItem onClick={handleClose}>Delete</MenuItem>
+                            </Menu>
+                          </div>
                         </div>
                         <div
                           className={`${classes.whiteSpace} ${classes.bold}`}
