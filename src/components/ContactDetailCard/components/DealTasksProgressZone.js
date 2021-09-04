@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -15,6 +15,7 @@ import {
   Badge
 } from "@material-ui/core";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
+import ArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
 import ProgressBar from "components/Shared/ui/ProgressBar";
@@ -59,12 +60,19 @@ const useStyles = makeStyles((theme) => ({
       }
     },
   },
+  commentButton: {
+    "&:hover": {
+      color: 'transparent !important',
+      backgroundColor: 'transparent !important'
+    }
+  }
 }));
 
 export default function LaneProgressZone(props) {
   const classes = useStyles();
   const { toggleProgressDetail, dealSettings, users, activeDeal } = props;
   const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
+  const [showNext, setShowNext] = useState(-1);
 
   const handleAssignee = (approver, setting) => {
     const descriptor = {
@@ -94,7 +102,7 @@ export default function LaneProgressZone(props) {
           {/* Show two recent docs */}
 
           {dealSettings.map((settings, index) => (
-            <Fragment>
+            <div onMouseEnter={() => setShowNext(index)} onMouseLeave={() => setShowNext(-1)}>
               <Grid key={index} container direction="row" justify="space-between" alignItems="center" className={classes.flowLane}>
                 <Grid item style={{ width: "135px", fontWeight: "normal" }}>
                   {settings.stageName}
@@ -138,7 +146,7 @@ export default function LaneProgressZone(props) {
                       </>
                     )}
                   </PopupState>
-                  <IconButton>
+                  <IconButton className={classes.commentButton}>
                     <Badge
                       anchorOrigin={{
                         vertical: "top",
@@ -148,13 +156,14 @@ export default function LaneProgressZone(props) {
                       opacity="1"
                       badgeContent={settings.stageDealDescriptor.comment ? 1 : 0}
                     >
-                      <ChatBubbleOutlineIcon fontSize="medium" />
+                      <ChatBubbleOutlineIcon fontSize="small" />
                     </Badge>
+                    {showNext === index && <ArrowRightIcon fontSize="small" />}
                   </IconButton>
                 </Grid>
               </Grid>
               <Divider />
-            </Fragment>
+            </div>
           ))}
           <div style={{ margin: "10px 0px 10px 0px" }}>
             <Button size="small" style={{ color: "grey" }}>
