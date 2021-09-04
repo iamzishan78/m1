@@ -44,6 +44,7 @@ import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/Su
 import { DEALSCOUNTINANSTAGE } from "../../../graphQL/useQueryNonDeletedDealsCountInAnStageByPipeline";
 import { DEALSCOUNTINAPIPE } from "../../../graphQL/useQueryNonDeletedDealsCountInAPipeline";
 import DeleteIcon from "@material-ui/icons/Delete";
+import FlowLineAction from "./FlowLineAction";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -661,6 +662,21 @@ export default function Pipelines(props) {
 
     return false;
   };
+  
+  const handleEditFlowLine = () =>
+    dispatch(
+      setFlowState({
+        openPipeDialog: true,
+      })
+    );
+
+  const handleDuplicateFlowLine = () => {
+    // Duplicate Flowline
+  }
+
+  const handleDeleteFlowLine = () => {
+    // Delete Flowline
+  }
 
   return (
     <React.Fragment>
@@ -670,25 +686,11 @@ export default function Pipelines(props) {
             {selectedPipe.name}
           </Typography>
         )}
-
-        <Tooltip title={"Flowline Actions"}
-        >
-          <IconButton
-            disabled={!selectedPipe}
-            size="medium"
-            style={{ marginLeft: 10, marginRight: 10 }}
-            onClick={() => {
-              dispatch(
-                setFlowState({
-                  openPipeDialog: true,
-                })
-              );
-            }}
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </Tooltip>
-
+        <FlowLineAction 
+          onDelete={handleDeleteFlowLine} 
+          onEdit={handleEditFlowLine} 
+          onDuplicate={handleDuplicateFlowLine}
+        />
       </div>
 
       {/* //// pipelines dialog //// */}
