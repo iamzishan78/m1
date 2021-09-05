@@ -8,7 +8,7 @@ import { CircularProgress, Menu, MenuItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { AppContext } from "AppContext";
 import { GET_PROFILE_IMAGE } from "graphQL/useQueryGetProfile";
@@ -104,6 +104,7 @@ export default function DealComment(props) {
   const [profileImage, setProfileImage] = useState(null);
   const [commentsArray, setCommentsArray] = useState([]);
   const [showActions, setShowActions] = useState(false);
+  const [showCommentActionId, setShowCommentActionId] = useState(null);
   const [loadingComments, setLoadingComments] = useState(true);
 
   const [removeComment] = useMutation(REMOVECOMMENT);
@@ -229,6 +230,7 @@ export default function DealComment(props) {
         comment: {
           comment: newCommentCleaner(value),
           _id: editCommentId,
+          isEdited: true
         },
       },
       refetchQueries: [
@@ -316,12 +318,13 @@ export default function DealComment(props) {
             )}
 
             {commentsArray.map((eachComment, index) => {
+              debugger
               let indexToShow =
                 commentsArray.length > 3 ? commentsArray.length - 3 : 0;
               return (
                 <Fragment key={index}>
                   {(showAllComments || index >= indexToShow) && (
-                    <Grid container className={classes.gridStyle}>
+                    <Grid container className={classes.gridStyle} onMouseOver={() => setShowCommentActionId(eachComment._id)} onMouseLeave={() => setShowCommentActionId(null)}>
                       <Grid item xs={1}>
                         <IconButton style={{ top: "3px" }}>
                           {profilesInfo[eachComment.user.email]?.profileImage ||
@@ -365,7 +368,10 @@ export default function DealComment(props) {
                             }
                             locale="en-US"
                           />
-                          {eachComment.user.email === stateApp.user.email && (
+                          {eachComment.isEdited && (
+                            <span className={classes.commentTime} >(Edited)</span>
+                          )}
+                          {(eachComment.user.email === stateApp.user.email && showCommentActionId === eachComment._id ) && (
                             <div
                               className={`${classes.floatRight} ${classes.cursorPointer}`}
                             >
@@ -402,6 +408,16 @@ export default function DealComment(props) {
                                 classes: { notchedOutline: classes.noBorder },
                               }}
                             />
+                            <Button
+                              className={classes.commentBtn}
+                              variant="contained"
+                              onClick={() => {
+                                setEditComment("");
+                                setEditCommentId("");
+                              }}
+                            >
+                              Cancel
+                            </Button>
                             <Button
                               className={classes.commentBtn}
                               variant="contained"
@@ -499,7 +515,7 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
 
   return (
     <>
-      <ArrowDropDownIcon
+      <ExpandMoreIcon
         aria-controls={eachComment._id}
         aria-haspopup="true"
         onClick={handleClick}
