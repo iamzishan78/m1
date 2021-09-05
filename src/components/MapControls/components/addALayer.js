@@ -299,10 +299,14 @@ export default function AddLayer(props) {
 
   async function handleFileAsync(file) {
     let inputFile = null;
+    let fileData = null;
     let fileName = null;
+    let fileType = null
     if (Array.isArray(file)) {
       inputFile = file[0].data;
+      fileData = file[0].file;
       fileName = file[0].file.name;
+      fileType = file[0].file.type;
     } else {
       inputFile = file;
       fileName = file.split("?")[0].split("/");
@@ -356,9 +360,9 @@ export default function AddLayer(props) {
                 merged.fileNames = allFileNames
                 merged.featureTypes = allLayerTypes
                 merged.groupName = fileName.replace('.zip', '')
-                resolve({ data: merged, originalData: geojson })
+                resolve({ data: merged, originalData: { file: fileData, fileName, fileType } })
               } else {
-                resolve({ data: singleGeojson(geojson, name), originalData: geojson })
+                resolve({ data: singleGeojson(geojson, name), originalData: { file: fileData, fileName, fileType } })
               }
             });
           });

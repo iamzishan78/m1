@@ -241,7 +241,7 @@ export default function AddUserGroupData(props) {
         const originalFile = await client.mutate({
           mutation: ADDFILE,
           variables: {
-            fileName,
+            fileName: inputOriginalFile.fileName,
             userId,
           },
         })

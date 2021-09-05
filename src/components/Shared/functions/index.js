@@ -15,17 +15,17 @@ export function addTrailingZeros(num) {
 export function uploadFileData(file, fileContent) {
     const url = file.uri;
     const interal_key = file.internalKey;
-    const content = JSON.stringify(fileContent);
+    // const content = JSON.stringify(fileContent.file);
     return new Promise((resolve, reject) => {
         fetch(url, {
             headers: {
-                "Content-Type": "text/plain; charset=UTF-8",
+                "X-Ms-Blob-Content-Disposition": `attachment; filename="${fileContent.fileName}"`,
                 "X-Ms-Blob-Type": "BlockBlob",
                 "X-Ms-Meta-Internalkey": interal_key,
                 "X-Ms-Version": "2015-02-21",
             },
             method: "PUT",
-            body: content,
+            body: fileContent.file,
         })
             .then((response) => response.text())
             .then((response) => {
