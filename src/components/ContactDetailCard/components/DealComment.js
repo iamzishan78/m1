@@ -408,16 +408,7 @@ export default function DealComment(props) {
                                 classes: { notchedOutline: classes.noBorder },
                               }}
                             />
-                            <Button
-                              className={classes.commentBtn}
-                              variant="contained"
-                              onClick={() => {
-                                setEditComment("");
-                                setEditCommentId("");
-                              }}
-                            >
-                              Cancel
-                            </Button>
+
                             <Button
                               className={classes.commentBtn}
                               variant="contained"
@@ -427,6 +418,17 @@ export default function DealComment(props) {
                               }}
                             >
                               Save Changes
+                            </Button>
+
+                            <Button
+                              className={classes.commentBtn}
+                              variant="contained"
+                              onClick={() => {
+                                setEditComment("");
+                                setEditCommentId("");
+                              }}
+                            >
+                              Cancel
                             </Button>
                           </div>
                         )}
@@ -534,9 +536,9 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
             handleClose();
           }}
         >
-          Edit
+          Edit Comment
         </MenuItem>
-        <MenuItem onClick={() => deleteComment(eachComment._id)}>Delete</MenuItem>
+        <MenuItem textcolor="red"   onClick={() => deleteComment(eachComment._id)}>Delete Comment</MenuItem>
       </Menu>
     </>
   );
