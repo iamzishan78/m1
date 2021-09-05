@@ -186,7 +186,7 @@ const SubtaskComponent = memo(({ task, handleUpdateSubtask, users }) => {
             }
           />
           <Tooltip title={task.name} placement="top">
-            <span style={{ fontSize: "medium" }}>{truncate(task.name, 20)}</span>
+            <span style={{ fontSize: "medium" }}>{truncate(task.name, 18)}</span>
           </Tooltip>
         </Grid>
         <Grid item className={classes.subTaskRightGrid}>
