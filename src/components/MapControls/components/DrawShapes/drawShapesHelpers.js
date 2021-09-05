@@ -76,3 +76,54 @@ export const createShapeLabelLayer = feature => {
     }
   };
 };
+
+export const drawBoundary = (map, selectedUserDefinedLayer) => {
+  // let mapSourceData = map.getSource(source)._data;
+  // const idx = mapSourceData.features.findIndex(feature => feature.id === featureId)
+  if (selectedUserDefinedLayer?.geometry) {
+    const geoJson = {
+      type: "Feature",
+      properties: {},
+      geometry: {
+        type: "LineString",
+        coordinates: selectedUserDefinedLayer.geometry.coordinates[0],
+      },
+    };
+
+    if (map.getSource('BoundarySource')) {
+      map.getSource('BoundarySource').setData(geoJson);
+      if (map.getLayer('Boundary')) {
+        map.removeLayer('Boundary')
+      }
+    } else {
+      map.addSource("BoundarySource", {
+        type: "geojson",
+        data: geoJson
+      });
+    }
+
+    // setStateParcelCard({
+    //   ...stateParcelCard,
+    //   selectedParcelGeom: mapSourceData.features[idx].geometry.coordinates[0],
+    // });
+
+
+    map.addLayer({
+      id: "Boundary",
+      type: "line",
+      source: "BoundarySource",
+      layout: {
+        "line-join": "round",
+        "line-cap": "round",
+      },
+      paint: {
+        "line-color": "#FFFF00",
+        "line-width": 8,
+      },
+    });
+  } else {
+    if (map.getLayer('Boundary')) {
+      map.removeLayer('Boundary')
+    }
+  }
+}

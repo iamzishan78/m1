@@ -73,6 +73,7 @@ import ContactWellHeadCells from '../constants/contactperwell-header-schema.js'
 // import value formatters 
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
 import { addTrailingZeros } from 'components/Shared/functions'
+import Loader from "components/Loaders";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -1559,22 +1560,29 @@ function M1nTable(props) {
       stateApp.user.mongoId
     ) {
       setDeleteFunc(() => (contactsIdsToDelete) => {
-        if (contactsIdsToDelete) {
-          for (let i = 0; i < contactsIdsToDelete.length; i++) {
-            removeContact({
-              variables: {
-                contactIds: contactsIdsToDelete,
-                userId: stateApp.user.mongoId
-              },
-              refetchQueries: [
-                "getPaginatedContacts",
-                "getContact",
-                "checkIfOwnersAreContacts",
-              ],
-              awaitRefetchQueries: true,
-            });
-          }
-        }
+        Loader.createToast('contact-deletion', 'Contact Deletion in Progress')
+        removeContact({
+          variables: {
+            contactIds: contactsIdsToDelete,
+            userId: stateApp.user.mongoId
+          },
+          refetchQueries: [
+            "getPaginatedContacts",
+            "getContact",
+            "checkIfOwnersAreContacts",
+          ],
+          awaitRefetchQueries: true,
+        }).then(
+          res => {
+            if (res.data && res.data.removeContact) {
+              const { success, message } = res.data.removeContact
+              if (success) Loader.successToast('contact-deletion', message)
+              else Loader.errorToast('contact-deletion', message)
+
+            } else Loader.errorToast('contact-deletion', "Failed to convert to contact")
+          },
+          err => { console.log(err); Loader.errorToast('contact-deletion', "Failed to convert to contact") }
+        );;
       });
     }
   }, [props.parent, stateApp.user]);
