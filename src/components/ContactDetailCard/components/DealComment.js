@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, Fragment } from "react";
 
 import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
@@ -14,6 +14,7 @@ import { AppContext } from "AppContext";
 import { GET_PROFILE_IMAGE } from "graphQL/useQueryGetProfile";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 import { UPSERTCOMMENT } from "graphQL/useMutationUpsertComment";
+import { REMOVECOMMENT } from "graphQL/useMutationRemoveComment";
 import { COMMENTSBYOBJECTIDQUERY } from "graphQL/useQueryCommentsByObjectId";
 
 import ReactTimeAgo from "react-time-ago";
@@ -96,7 +97,8 @@ export default function DealComment(props) {
   const [stateApp] = useContext(AppContext);
 
   const [comment, setComment] = useState("");
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [editCommentId, setEditCommentId] = useState("");
+  const [editComment, setEditComment] = useState("");
   const [showAllComments, setShowAllComments] = useState(false);
   const [profilesInfo, setProfilesInfo] = useState({});
   const [profileImage, setProfileImage] = useState(null);
@@ -104,6 +106,7 @@ export default function DealComment(props) {
   const [showActions, setShowActions] = useState(false);
   const [loadingComments, setLoadingComments] = useState(true);
 
+  const [removeComment] = useMutation(REMOVECOMMENT);
   const [upsertComment, { data: newlyAddedComment }] =
     useMutation(UPSERTCOMMENT);
   const [getProfileImage, profiledata] = useLazyQuery(GET_PROFILE_IMAGE);
@@ -125,14 +128,6 @@ export default function DealComment(props) {
       });
     }
   }, [targetSourceId]);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   useEffect(() => {
     if (dataComments && dataComments.commentsByObjectId) {
@@ -227,6 +222,47 @@ export default function DealComment(props) {
           })
           .join("\n")}.`;
 
+  const updateComment = (value) => {
+    setLoadingComments(true);
+    upsertComment({
+      variables: {
+        comment: {
+          comment: newCommentCleaner(value),
+          _id: editCommentId,
+        },
+      },
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
+      awaitRefetchQueries: true,
+    });
+    setShowActions(false);
+    setComment("");
+    setEditComment("");
+    setEditCommentId("");
+  };
+
+  const deleteComment = (id) => {
+    setLoadingComments(true);
+    removeComment({
+      variables: {
+          commentId: id,
+      },
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
+      awaitRefetchQueries: true,
+    });
+    setShowActions(false);
+    setComment("");
+    setEditComment("");
+    setEditCommentId("");
+  };
+
   const addNewComment = (value) => {
     setLoadingComments(true);
     upsertComment({
@@ -279,36 +315,40 @@ export default function DealComment(props) {
               </div>
             )}
 
-            {commentsArray.map((comment, index) => {
+            {commentsArray.map((eachComment, index) => {
               let indexToShow =
                 commentsArray.length > 3 ? commentsArray.length - 3 : 0;
               return (
-                <>
+                <Fragment key={index}>
                   {(showAllComments || index >= indexToShow) && (
-                    <Grid key={index} container className={classes.gridStyle}>
+                    <Grid container className={classes.gridStyle}>
                       <Grid item xs={1}>
                         <IconButton style={{ top: "3px" }}>
-                          {profilesInfo[comment.user.email]?.profileImage ||
-                          comment.isNew ? (
+                          {profilesInfo[eachComment.user.email]?.profileImage ||
+                          eachComment.isNew ? (
                             <Avatar
                               src={
-                                comment.isNew
+                                eachComment.isNew
                                   ? profileImage
-                                  : profilesInfo[comment.user.email]
+                                  : profilesInfo[eachComment.user.email]
                                       .profileImage
                               }
                               size="38"
                               round
                             />
                           ) : (
-                            <Avatar name={comment.user.name} size="38" round />
+                            <Avatar
+                              name={eachComment.user.name}
+                              size="38"
+                              round
+                            />
                           )}
                         </IconButton>
                       </Grid>
                       <Grid item xs={11} className={classes.paddingLeft10}>
                         <div>
                           <span className={classes.bold}>
-                            {comment.user.name}
+                            {eachComment.user.name}
                           </span>
                           <ReactTimeAgo
                             className={classes.commentTime}
@@ -320,38 +360,64 @@ export default function DealComment(props) {
                                   day: "2-digit",
                                   hour: "2-digit",
                                   minute: "2-digit",
-                                }).format(comment.ts)
+                                }).format(eachComment.ts)
                               )
                             }
                             locale="en-US"
                           />
-                          <div className={`${classes.floatRight} ${classes.cursorPointer}`}>
-                            <ArrowDropDownIcon
-                              aria-controls="simple-menu"
-                              aria-haspopup="true"
-                              onClick={handleClick}
-                            />
-                            <Menu
-                              id="simple-menu"
-                              anchorEl={anchorEl}
-                              keepMounted
-                              open={Boolean(anchorEl)}
-                              onClose={handleClose}
+                          {eachComment.user.email === stateApp.user.email && (
+                            <div
+                              className={`${classes.floatRight} ${classes.cursorPointer}`}
                             >
-                              <MenuItem onClick={handleClose}>Edit</MenuItem>
-                              <MenuItem onClick={handleClose}>Delete</MenuItem>
-                            </Menu>
+                              <ActionMenu
+                                eachComment={eachComment}
+                                setEditCommentId={setEditCommentId}
+                                setEditComment={setEditComment}
+                                deleteComment={deleteComment}
+                              />
+                            </div>
+                          )}
+                        </div>
+                        {editCommentId !== eachComment._id ? (
+                          <div
+                            className={`${classes.whiteSpace} ${classes.bold}`}
+                          >
+                            {eachComment.comment}
                           </div>
-                        </div>
-                        <div
-                          className={`${classes.whiteSpace} ${classes.bold}`}
-                        >
-                          {comment.comment}
-                        </div>
+                        ) : (
+                          <div className={classes.border}>
+                            <TextField
+                              margin="dense"
+                              variant="outlined"
+                              value={editComment}
+                              fullWidth
+                              rows={2}
+                              rowsMax={3}
+                              multiline
+                              placeholder="Add a question or post an update"
+                              onChange={(e) => {
+                                setEditComment(e.target.value);
+                              }}
+                              InputProps={{
+                                classes: { notchedOutline: classes.noBorder },
+                              }}
+                            />
+                            <Button
+                              className={classes.commentBtn}
+                              variant="contained"
+                              color="primary"
+                              onClick={() => {
+                                updateComment(editComment);
+                              }}
+                            >
+                              Save Changes
+                            </Button>
+                          </div>
+                        )}
                       </Grid>
                     </Grid>
                   )}
-                </>
+                </Fragment>
               );
             })}
           </>
@@ -419,3 +485,43 @@ export default function DealComment(props) {
     </div>
   );
 }
+
+const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <>
+      <ArrowDropDownIcon
+        aria-controls={eachComment._id}
+        aria-haspopup="true"
+        onClick={handleClick}
+      />
+      <Menu
+        id={eachComment._id}
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem
+          onClick={(event) => {
+            setEditCommentId(eachComment._id);
+            setEditComment(eachComment.comment);
+            handleClose();
+          }}
+        >
+          Edit
+        </MenuItem>
+        <MenuItem onClick={() => deleteComment(eachComment._id)}>Delete</MenuItem>
+      </Menu>
+    </>
+  );
+};
