@@ -10,6 +10,8 @@ import Avatar from "react-avatar";
 import Badge from "@material-ui/core/Badge";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery, useMutation } from "@apollo/client";
+import { useHistory } from "react-router-dom";
+
 import { AppContext } from "../../../AppContext";
 import Dialog from "@material-ui/core/Dialog";
 import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
@@ -413,6 +415,7 @@ export default function ActivitiesModal({
   }, [dealsData]);
 
   const onModalClose = () => {
+    window.history.pushState('', '', `/activities`);
     clearFields();
     setSelectedActivityId(null);
     setStateApp((stateApp) => ({

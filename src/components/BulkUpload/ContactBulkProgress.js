@@ -13,7 +13,7 @@ const ContactBulkProgress = () => {
   
     const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB);
 
-    const { data: dataJobs,  startPolling, stopPolling, refetch } = useQuery(GET_JOBS_STATUS, { variables: { userId: stateApp.user?.mongoId, showProgress: true} });
+    const { data: dataJobs,  startPolling, stopPolling, refetch } = useQuery(GET_JOBS_STATUS, { variables: { userId: stateApp.user?.mongoId, showProgress: true}, skip: stateApp.user?.mongoId ? false : true  });
   
     useEffect(() => {
         setPollingStarted(false)

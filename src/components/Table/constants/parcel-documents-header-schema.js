@@ -47,7 +47,7 @@ const DocumentsHeadCells = [
     label: "Document Type",
   },
   {
-    name: "dateTime",
+    name: "documentDate",
     label: "Document Date",
   },
   {

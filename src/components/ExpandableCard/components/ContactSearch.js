@@ -1,5 +1,4 @@
 import { useLazyQuery } from "@apollo/client";
-import { propertiesContainsFilter } from "@turf/clusters";
 import LinkWithIcon from "components/Shared/LinkWithIcon";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";

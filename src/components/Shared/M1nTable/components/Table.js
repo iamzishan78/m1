@@ -1443,7 +1443,6 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           window.open(value, '_blank', 'noopener,noreferrer');
-                          // handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
                         }}
                         aria-label="show address"
                         onMouseOver={() => {
@@ -1767,6 +1766,9 @@ function SubTable(props) {
                             e.stopPropagation();
                             const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1];
                             if (type === "pdf") {
+                              if(props.addAble.type === 'document'){
+                                window.history.pushState('', '', `/documents/${row_line._id}/view`);
+                              }
                               setStateApp((state) => ({
                                 ...state,
                                 pdfView: rows.find((row) => row._id === row_line._id),
@@ -1906,6 +1908,8 @@ function SubTable(props) {
                       }}
                       targetLabel={props.targetLabel}
                       nonEditable={!column.editable}
+                      isLinked
+                      toLink={value}
                     />
                   );
                 },
@@ -2775,7 +2779,7 @@ function SubTable(props) {
         }));
       }
 
-      if (props.parent === "assocTaxRollInterests" && props.targetLabel === "well") {
+      if (props.parent === "assocTaxRollInterests" && props.targetLabel === "well" && props.addAble.type !== 'taxrollInterest') {
         let card = { ...rows[dataIndex] };
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -2785,12 +2789,14 @@ function SubTable(props) {
       }
 
       if (props.targetLabel === "activity") {
-        if (rows[dataIndex]?._id)
+        if (rows[dataIndex]?._id){
+          window.history.pushState('', '', `/activities/${rows[dataIndex]._id}`);
           setStateApp((stateApp) => ({
             ...stateApp,
             selectedActivityId: rows[dataIndex]._id,
             activityDialog: true,
           }));
+        }
       }
 
       if ((props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") || props.targetLabel === "Parcel Ownership") {
@@ -2854,6 +2860,9 @@ function SubTable(props) {
       let temp_rows = [];
       let temp_rows_per_page = rowsPerPage ? rowsPerPage : 25;
       let temp = data.filter((item) => item.data[1] !== "Cumulative");
+      let insertInBetween = temp_rows_per_page - 1;
+      let cumulative_array = Object.values(cumulative);
+      let temp_cumulative_array = [];
       if (props.parent === "production_WellDetails") {
         if (colIndex === 1) {
           temp_rows = temp.sort((a, b) => {
@@ -2871,40 +2880,17 @@ function SubTable(props) {
           });
         }
 
-        let insertInBetween = temp_rows_per_page - 1;
-        let cumulative_array = Object.values(cumulative);
-        let temp_cumulative_array = [];
+        temp_rows.splice(insertInBetween, 0, {data:cumulative_array})
 
-        for (let counter = 0; counter < cumulative_array.length; counter++) {
-          if (counter !== 0 && counter !== 9 && counter !== 10 && counter !== 11 && counter !== 12) {
-            temp_cumulative_array.push(cumulative_array[counter]);
-          }
-        }
-
-        if (Object.entries(cumulative).length !== 0) {
-          let multiplier = temp_rows.length / insertInBetween;
-
-          for (let counter = 1; counter <= multiplier; counter++) {
-            let insert_index = 0;
-            if (counter !== 1) {
-              insert_index = counter * temp_rows_per_page;
-              temp_rows.splice(insert_index - 1, 0, {
-                data: temp_cumulative_array,
-              });
-            } else {
-              temp_rows.splice(insertInBetween, 0, {
-                data: temp_cumulative_array,
-              });
-            }
-          }
-        }
-
-        temp_rows.push({ data: temp_cumulative_array });
         return temp_rows;
       } else {
-        return data.sort((a, b) => {
+        const result_data =  data.sort((a, b) => {
           return (a.data[colIndex] < b.data[colIndex] ? -1 : 1) * (order === "desc" ? 1 : -1);
         });
+
+        result_data.splice(insertInBetween,0,{ data: cumulative_array })
+
+        return result_data
       }
     },
     onChangeRowsPerPage: (numberOfRows) => {

@@ -2,6 +2,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import findIndex from 'lodash/findIndex'
+import { useHistory } from "react-router-dom";
 // context
 import { AppContext } from "../../../AppContext";
 import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
@@ -59,7 +60,6 @@ import TrackedOwnersHeadCells from '../constants/track-owners-header-schema.js'
 import CustomWellsHeadCells from '../constants/custom-wells-header-schema.js'
 import OwnersPerWellHeadCells from '../constants/ownersperwell-header-schema.js'
 import SearchsHeadCells from '../constants/search-header-schema.js'
-import OwnersPerContactsHeadCells from '../constants/ownerspercontacts-header-schema.js'
 import OwnersPerParcelHeadCells from '../constants/ownersperparcel-header-schema.js'
 import UserManagementHeadCells from '../constants/user-management-header-schema.js'
 import DealsHeadCells from '../constants/deals-header-schema.js'
@@ -85,6 +85,7 @@ const useStyles = makeStyles((theme) => ({
 function M1nTable(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -1108,7 +1109,7 @@ function M1nTable(props) {
         wellOwner.tags = [[], 0];
         wellOwner.wellsCounter = [];
         wellOwner.isTracked = false;
-        wellOwner.address = getWellOwnerAddressUrl(o);
+        wellOwner.address = getAddressUrl(o);
 
         for (
           let i = 0;
@@ -1338,9 +1339,9 @@ function M1nTable(props) {
         // this initial load is to make the grid appear more performantly 
         // the descriptors come in a later use effect 
         setDataContacts(tmpDataContacts);
-        setRows([
-          ...tmpDataContacts.paginatedContacts.edges.map((el) => ({ ...el.node, cursor: el.cursor })),
-        ]);
+        let rows = tmpDataContacts.paginatedContacts.edges.map((el) => ({ ...el.node, cursor: el.cursor }));
+        rows = getContactsAddress(rows);
+        setRows(rows);
         setLoading(false);
       } else {
         setLoading(false);
@@ -1536,10 +1537,9 @@ function M1nTable(props) {
           node.melissaRowsCount = foundMelissaRowsCount.total;
         }
       });
-
-      setRows([
-        ...tmpDataContacts.paginatedContacts.edges.map((el) => ({ ...el.node, cursor: el.cursor })),
-      ]);
+      let rows = tmpDataContacts.paginatedContacts.edges.map((el) => ({ ...el.node, cursor: el.cursor }));
+      rows = getContactsAddress(rows);
+      setRows(rows);
       setLoading(false);
     }
   }, [
@@ -2597,6 +2597,13 @@ function M1nTable(props) {
       props.parent === "Documents" &&
       DocumentsData?.getFiles
     ) {
+      const documentId = history.location.pathname.split('/')[2]
+      if(documentId){
+        setStateApp((state) => ({
+          ...state,
+          pdfView: DocumentsData.getFiles.find((row) => row._id === documentId),
+        }));
+      }
       setTargetLabel("documents");
       setRows([...DocumentsData.getFiles]);
       setColumns([...DocumentsHeadCells]);
@@ -3102,7 +3109,22 @@ function M1nTable(props) {
     setSelectedYear(selectedYear)
   }
 
-  const getWellOwnerAddressUrl = (owner) => {
+  const getContactsAddress = (contacts) => {
+    const addressedContacts = contacts.map(contact => {
+      let address = 'https://www.google.com/maps/search/';
+      if (contact.address1) address = `${address}${contact.address1.replace(/ /g, '+')}`;
+      if (contact.city) address = `${address},+${contact.city.replace(/ /g, '+')}`;
+      if (contact.state) address = `${address},+${contact.state}`;
+      if (contact.zip) address = `${address}+${contact.zip}`;
+      return {
+        ...contact,
+        fullContactAddress: address
+      }
+    });
+    return addressedContacts;
+  }
+
+  const getAddressUrl = (owner) => {
     let address = 'https://www.google.com/maps/search/';
     if (owner.StreetAddress) address = `${address}${owner.StreetAddress.replace(/ /g, '+')}`;
     if (owner.City) address = `${address},+${owner.City.replace(/ /g, '+')}`;
@@ -3117,7 +3139,7 @@ function M1nTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
-      {props.parent && props.parent === "Deals" && (
+      {props.parent && props.parent === "Deals" && stateApp.dealDialog && (
         <AddDealDialog
           open={stateApp.dealDialog ? true : false}
           width="450px"

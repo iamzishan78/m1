@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import moment from "moment";
 
 import Grid from "@material-ui/core/Grid";
 import Dialog from "@material-ui/core/Dialog";
@@ -74,7 +75,7 @@ function ParcelDetailsDocumentTable(props) {
     if (dataParcelFiles?.getParcelFiles?.length > 0) {
       let wells = dataParcelFiles.getParcelFiles
       wells = wells.map((w) => {
-        return { ...w, _id: w.descriptorId }; 
+        return { ...w, _id: w.descriptorId, documentDate: w.dateTime ? moment(w.dateTime).format('MM/DD/YYYY') : '' }; 
       })
       props.setRows(wells);
       const cleanAvailableTags = [];

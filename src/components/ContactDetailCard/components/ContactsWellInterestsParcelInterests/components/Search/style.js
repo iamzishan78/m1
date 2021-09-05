@@ -1,6 +1,21 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
+  table:{
+    "& .MuiPaper-elevation1": {
+      flexDirection: "row !important",
+      height: "65px !important",
+      width: "100% !important",
+      display: "flex !important",
+      flex: "auto",
+      alignItems: "center !important",
+    },
+  },
+  grid:{
+    "& .Mui-disabled": {
+      backgroundColor: "transparent",
+    },
+  },
   icon: {
     color: theme.palette.text.secondary,
     marginRight: theme.spacing(2),
@@ -11,9 +26,15 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiCollapse-container": { background: 'white' }
   },
   multiSelectionTopBarButtons: {
-    margin: "6px 12px",
+    margin: "0px 5px",
     fontWeight: "600",
-    color: "#082768",
+    backgroundColor: "rgba(1, 17, 51, 1)",
+    color: "#fff",
+    border: "1px solid #B3B3B3",
+    "&:hover": {
+      backgroundColor: "#263451",
+      color: "#fff",
+    },
   },
   groupsHeadersText: {
     margin: "0",
