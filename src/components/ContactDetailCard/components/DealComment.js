@@ -380,7 +380,7 @@ export default function DealComment(props) {
                         </div>
                         {editCommentId !== eachComment._id ? (
                           <div
-                            className={`${classes.whiteSpace} ${classes.bold}`}
+                            className={`${classes.whiteSpace}`}
                           >
                             {eachComment.comment}
                           </div>
