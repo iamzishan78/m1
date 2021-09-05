@@ -342,7 +342,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
                   Approver
               </Typography>
                 <Autocomplete
-                  options={users}
+                  options={users.filter(u => u.text)}
                   onChange={(e, user) => {
                     handleChangeSettings(settings, { approver: user?.value });
                   }}
@@ -352,7 +352,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
                   classes={{
                     inputRoot: classes.dealOwnerRoot,
                     focused: classes.dealOwnerRootFocused,
-                    popupIndicator: classes.popupIndicator,
+                    popupIndicator: classes.popupIndicator
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -364,8 +364,8 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
                         ...params.InputLabelProps,
                         shrink: true,
                         classes: {
-                          root: classes.dealOwnerLabel,
-                        },
+                          root: classes.dealOwnerLabel
+                        }
                       }}
                       placeholder="Assign Owner"
                       InputProps={{
@@ -384,7 +384,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
                             </InputAdornment>
                             {params.InputProps.startAdornment}
                           </>
-                        ),
+                        )
                       }}
                     />
                   )}
