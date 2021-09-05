@@ -15,7 +15,7 @@ import get from 'lodash/get'
 import Avatar from "react-avatar";
 import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
-
+import { useHistory } from "react-router-dom";
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "graphQL/useMutationAddContact";
@@ -26,6 +26,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { REMOVEDEALDESCRIPTOR } from "../../graphQL/useMutationRemoveDealDescriptor";
+import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Contacts(props) {
+  let history = useHistory();
   const classes = useStyles();
   const [search, setSearch] = useState("");
   const [contacts, setContacts] = useState();
@@ -147,29 +149,29 @@ export default function Contacts(props) {
   }
   return (
     <div>
-      <div style={{ padding: "0px 30px" }}>
-        <TextField
-          fullWidth
-          placeholder="Search contacts..."
-          InputProps={{
-            startAdornment: (
-              <>
-                <InputAdornment position="start">
-                  <SearchIcon htmlColor="#757575" />
-                </InputAdornment>
-              </>
-            ),
-          }}
-          value={search}
-          onChange={(event) => {
-            setSearch(event.target.value);
-          }}
-        />
-      </div>
+      <h1>{stateApp.activeDeal.name}</h1>
+      {filteredContacts && filteredContacts.length > 0 > 0 && <TextField
+        fullWidth
+        placeholder="Search contacts..."
+        InputProps={{
+          startAdornment: (
+            <>
+              <InputAdornment position="start">
+                <SearchIcon htmlColor="#757575" />
+              </InputAdornment>
+            </>
+          ),
+        }}
+        value={search}
+        onChange={(event) => {
+          setSearch(event.target.value);
+        }}
+      />}
       <div className={classes.root}>
         <List aria-label="contacts list">
           {filteredContacts && filteredContacts.length > 0 ? (
             filteredContacts.map((c, i) => (
+
               <>
                 <ListItem key={i}>
                   <ListItemIcon>
@@ -187,12 +189,16 @@ export default function Contacts(props) {
                       round
                     />
                   </ListItemIcon>
-                  <ListItemText
-                    primary={c}
-                    primaryTypographyProps={{
-                      color: "primary",
+                  <Link
+                    style={{
+                      cursor: "pointer",
                     }}
-                  />
+                    color="primary"
+                    onClick={() => history.push(`/contact/details/${stateApp.activeDeal?.contacts[i]?._id}`)}
+                  >
+                    {c}
+                  </Link>
+
                   {mutationLoading === stateApp.activeDeal?.contacts[i]?._id ? (
                     <ListItemSecondaryAction >
                       <IconButton edge="end" aria-label="delete">
@@ -261,10 +267,12 @@ export default function Contacts(props) {
                   color="primary"
                   className={classes.button}
                   onClick={() => {
-                    props.addSelectedContact(nameAutValue)
-                    GettingContacts()
-                    setMutationLoading(true)
-                    setAddContact(false)
+                    if (nameAutValue != '') {
+                      props.addSelectedContact(nameAutValue)
+                      GettingContacts()
+                      setMutationLoading(true)
+                      setAddContact(false)
+                    }
                   }}
                 >
                   <AddIcon />
