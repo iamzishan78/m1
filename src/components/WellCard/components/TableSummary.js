@@ -84,20 +84,34 @@ export default function TableSummary(props) {
           {console.log('summary',summary)}
           
           <TableBody>
-
           <TableRow className={classes.tableRow}>
           <TableCell scope="row" className={classes.rowName}>
-                Lease
+                API Number
               </TableCell>
               <TableCell className={classes.rowCell}>
-                {summary.Lease ? summary.Lease : "--"}
+                {summary.ApiNumber ? summary.ApiNumber : "--"}
               </TableCell>
+              <TableCell scope="row" className={classes.rowName}>
+                Well Name
+              </TableCell>
+              <TableCell className={classes.rowCell}>
+                {summary.WellName ? summary.WellName : "--"}
+                </TableCell>
+            </TableRow>
+          <TableRow className={classes.tableRow}>
+
               <TableCell scope="row" className={classes.rowName}>
                 Lease Number
               </TableCell>
               <TableCell className={classes.rowCell}>
                 {summary.LeaseId ? summary.LeaseId : "--"}
                 </TableCell>
+                <TableCell scope="row" className={classes.rowName}>
+                Lease Name
+              </TableCell>
+              <TableCell className={classes.rowCell}>
+                {summary.Lease ? summary.Lease : "--"}
+              </TableCell>
             </TableRow>
 
             <TableRow className={classes.tableRow}>
@@ -180,31 +194,18 @@ export default function TableSummary(props) {
             
             <TableRow className={classes.tableRow}>
             <TableCell scope="row" className={classes.rowName}>
-                Latitude
+               Surface Lat/Long
               </TableCell>
               <TableCell className={classes.rowCell}>
-                {summary.Latitude ? summary.Latitude : "--"}
+                {/* {summary.Latitude ? summary.Latitude : "--" } */}
+                {summary.Latitude + "," +summary.Longitude  }
                 </TableCell>
               <TableCell scope="row" className={classes.rowName}>
-                Longitude
+                BH Lat/Long
               </TableCell>
               <TableCell className={classes.rowCell}>
-                {summary.Longitude ? summary.Longitude : "--"}
-                </TableCell>
-            </TableRow>
-
-            <TableRow className={classes.tableRow}>
-            <TableCell scope="row" className={classes.rowName}>
-                BH Latitude
-              </TableCell>
-              <TableCell className={classes.rowCell}>
-                {summary.BHLatitude ? summary.BHLatitude : "--"}
-                </TableCell>
-              <TableCell scope="row" className={classes.rowName}>
-                BH Longitude
-              </TableCell>
-              <TableCell className={classes.rowCell}>
-                {summary.BHLongitude ? summary.BHLongitude : "--"}
+                {/* {summary.BHLatitude ? summary.BHLatitude : "--"} */}
+                {summary.BHLatitude + "," + summary.BHLongitude }
                 </TableCell>
             </TableRow>
 
