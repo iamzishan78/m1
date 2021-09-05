@@ -12,10 +12,10 @@ import {
   List,
   ListItem,
   ListItemText,
-  Badge
+  Badge,
 } from "@material-ui/core";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
-import ArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+import ArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
 import ProgressBar from "components/Shared/ui/ProgressBar";
@@ -56,16 +56,16 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiIconButton-label": {
       width: "auto",
       "& span": {
-        paddingTop: "6px"
-      }
+        paddingTop: "6px",
+      },
     },
   },
   commentButton: {
     "&:hover": {
-      color: 'transparent !important',
-      backgroundColor: 'transparent !important'
-    }
-  }
+      color: "transparent !important",
+      backgroundColor: "transparent !important",
+    },
+  },
 }));
 
 export default function LaneProgressZone(props) {
@@ -101,70 +101,79 @@ export default function LaneProgressZone(props) {
         <div className={classes.laneProgressSection}>
           {/* Show two recent docs */}
 
-          {dealSettings.map((settings, index) => (
-            <div onMouseEnter={() => setShowNext(index)} onMouseLeave={() => setShowNext(-1)}>
-              <Grid key={index} container direction="row" justify="space-between" alignItems="center" className={classes.flowLane}>
-                <Grid item style={{ width: "135px", fontWeight: "normal" }}>
-                  {settings.stageName}
+          {dealSettings.map((settings, index) => {
+            const approver = users.find(user => user?.value === settings.stageDealDescriptor.approver);
+            return (
+              <div onMouseEnter={() => setShowNext(index)} onMouseLeave={() => setShowNext(-1)}>
+                <Grid key={index} container direction="row" justify="space-between" alignItems="center" className={classes.flowLane}>
+                  <Grid item style={{ width: "135px", fontWeight: "normal" }}>
+                    {settings.stageName}
+                  </Grid>
+                  <Grid item style={{ minWidth: "135px" }}>
+                    <ProgressBar value={settings.progress} isNumeric />
+                  </Grid>
+                  <Grid item className={classes.laneActionsGrid}>
+                    <PopupState variant="popover" popupId="demo-popup-popover-zone">
+                      {(popupState) => (
+                        <>
+                          <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
+                            {settings.stageDealDescriptor.approver && users.length ? (
+                              <CustomAvatar
+                                email={approver.email}
+                                text={approver.text.toString()}
+                              />
+                            ) : (
+                              <AccountCircle fontSize="default" />
+                            )}
+                          </IconButton>
+                          <Popover
+                            {...bindPopover(popupState)}
+                            anchorOrigin={{
+                              vertical: "bottom",
+                              horizontal: "center",
+                            }}
+                            transformOrigin={{
+                              vertical: "top",
+                              horizontal: "center",
+                            }}
+                          >
+                            <List style={{ maxHeight: 450 }}>
+                              {users.map((user) => (
+                                <ListItem
+                                  button
+                                  onClick={() => {
+                                    handleAssignee(user.value, settings);
+                                    popupState.close();
+                                  }}
+                                >
+                                  <ListItemText primary={user.text} />
+                                </ListItem>
+                              ))}
+                            </List>
+                          </Popover>
+                        </>
+                      )}
+                    </PopupState>
+                    <IconButton className={classes.commentButton}>
+                      <Badge
+                        anchorOrigin={{
+                          vertical: "top",
+                          horizontal: "right",
+                        }}
+                        color="secondary"
+                        opacity="1"
+                        badgeContent={settings.stageDealDescriptor.comment ? 1 : 0}
+                      >
+                        <ChatBubbleOutlineIcon fontSize="small" />
+                      </Badge>
+                      {showNext === index && <ArrowRightIcon fontSize="small" />}
+                    </IconButton>
+                  </Grid>
                 </Grid>
-                <Grid item style={{ minWidth: "135px" }}>
-                  <ProgressBar value={settings.progress} isNumeric />
-                </Grid>
-                <Grid item className={classes.laneActionsGrid}>
-                  <PopupState variant="popover" popupId="demo-popup-popover-zone">
-                    {(popupState) => (
-                      <>
-                        <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
-                          {settings.stageDealDescriptor.approver && users.length ? (
-                            <CustomAvatar text={users.find((user) => user?.value === settings.stageDealDescriptor.approver).text.toString()} />
-                          ) : (
-                            <AccountCircle fontSize="default" />
-                          )}
-                        </IconButton>
-                        <Popover
-                          {...bindPopover(popupState)}
-                          anchorOrigin={{
-                            vertical: "bottom",
-                            horizontal: "center",
-                          }}
-                          transformOrigin={{
-                            vertical: "top",
-                            horizontal: "center",
-                          }}
-                        >
-                          <List style={{ maxHeight: 450 }}>
-                            {users.map((user) => (
-                              <ListItem
-                                button
-                                onClick={() => { handleAssignee(user.value, settings); popupState.close(); }}
-                              >
-                                <ListItemText primary={user.text} />
-                              </ListItem>
-                            ))}
-                          </List>
-                        </Popover>
-                      </>
-                    )}
-                  </PopupState>
-                  <IconButton className={classes.commentButton}>
-                    <Badge
-                      anchorOrigin={{
-                        vertical: "top",
-                        horizontal: "right",
-                      }}
-                      color="secondary"
-                      opacity="1"
-                      badgeContent={settings.stageDealDescriptor.comment ? 1 : 0}
-                    >
-                      <ChatBubbleOutlineIcon fontSize="small" />
-                    </Badge>
-                    {showNext === index && <ArrowRightIcon fontSize="small" />}
-                  </IconButton>
-                </Grid>
-              </Grid>
-              <Divider />
-            </div>
-          ))}
+                <Divider />
+              </div>
+            )
+          })}
           <div style={{ margin: "10px 0px 10px 0px" }}>
             <Button size="small" style={{ color: "grey" }}>
               + Add New

@@ -1,10 +1,11 @@
 import React, { useState, createContext } from "react";
 
-const TransactContext = createContext([{}, () => {}]);
+const TransactContext = createContext([{}, () => { }]);
 
 const TransactContextProvider = (props) => {
   const [stateTransact, setStateTransact] = useState({
     openDialog: false,
+    profilesInfo: {}
   });
   return (
     <TransactContext.Provider value={[stateTransact, setStateTransact]}>
