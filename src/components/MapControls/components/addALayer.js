@@ -321,7 +321,7 @@ export default function AddLayer(props) {
             return response.json();
           })
           .then((response) => {
-            resolve(singleGeojson(response, fileName.replace('.geojson', '')));
+            resolve({ data: singleGeojson(response, fileName.replace('.geojson', '')), originalData: { file: fileData, fileName, fileType } })
           })
           .catch((error) => reject(error));
       });

@@ -6509,6 +6509,12 @@ function Map() {
     }
   }, [stateApp.selectedParcel]);
 
+  useEffect(() => {
+    if (map && !stateApp.selectedUserDefinedLayer) {
+      drawBoundary(map)
+    }
+  }, [stateApp.selectedUserDefinedLayer]);
+
 
   return (
     <div className={classes.mapWrapper}>
