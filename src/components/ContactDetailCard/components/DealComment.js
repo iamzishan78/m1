@@ -16,6 +16,7 @@ import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 import { UPSERTCOMMENT } from "graphQL/useMutationUpsertComment";
 import { REMOVECOMMENT } from "graphQL/useMutationRemoveComment";
 import { COMMENTSBYOBJECTIDQUERY } from "graphQL/useQueryCommentsByObjectId";
+import CommentField from 'components/Shared/components/Fields/CommentField';
 
 import ReactTimeAgo from "react-time-ago";
 import TimeAgo from "javascript-time-ago";
@@ -269,26 +270,27 @@ export default function DealComment(props) {
   };
 
   const addNewComment = (value) => {
-    setLoadingComments(true);
-    upsertComment({
-      variables: {
-        comment: {
-          comment: newCommentCleaner(value),
-          public: true,
-          user: stateApp.user.mongoId,
-          commentedOn: targetSourceId,
-          objectType: props.targetLabel,
-        },
-      },
-      refetchQueries: [
-        "getCommentsByObjectId",
-        "getCommentsCounter",
-        "getCommentsByObjectsIds",
-      ],
-      awaitRefetchQueries: true,
-    });
-    setShowActions(false);
-    setComment("");
+    debugger
+    // setLoadingComments(true);
+    // upsertComment({
+    //   variables: {
+    //     comment: {
+    //       comment: newCommentCleaner(value),
+    //       public: true,
+    //       user: stateApp.user.mongoId,
+    //       commentedOn: targetSourceId,
+    //       objectType: props.targetLabel,
+    //     },
+    //   },
+    //   refetchQueries: [
+    //     "getCommentsByObjectId",
+    //     "getCommentsCounter",
+    //     "getCommentsByObjectsIds",
+    //   ],
+    //   awaitRefetchQueries: true,
+    // });
+    // setShowActions(false);
+    // setComment("");
   };
 
   const getCount = () => {
@@ -479,22 +481,7 @@ export default function DealComment(props) {
                 }
               }}
             >
-              <TextField
-                margin="dense"
-                variant="outlined"
-                value={comment}
-                fullWidth
-                rows={showActions ? 2 : 1}
-                rowsMax={3}
-                multiline
-                placeholder="Add a question or post an update"
-                onChange={(e) => {
-                  setComment(e.target.value);
-                }}
-                InputProps={{
-                  classes: { notchedOutline: classes.noBorder },
-                }}
-              />
+              <CommentField comment={comment} showActions={showActions} setComment={setComment} />
               {showActions && (
                 <Button
                   className={classes.commentBtn}
