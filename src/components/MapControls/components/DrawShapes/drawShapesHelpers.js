@@ -81,49 +81,72 @@ export const drawBoundary = (map, selectedUserDefinedLayer) => {
   // let mapSourceData = map.getSource(source)._data;
   // const idx = mapSourceData.features.findIndex(feature => feature.id === featureId)
   if (selectedUserDefinedLayer?.geometry) {
+    const type = selectedUserDefinedLayer.geometry.type
     const geoJson = {
       type: "Feature",
       properties: {},
       geometry: {
-        type: "LineString",
-        coordinates: selectedUserDefinedLayer.geometry.coordinates[0],
+        type: type === 'Point' ? 'Point' : "LineString",
+        coordinates: type === 'Point' ? selectedUserDefinedLayer.geometry.coordinates : selectedUserDefinedLayer.geometry.coordinates[0],
       },
     };
 
-    if (map.getSource('BoundarySource')) {
-      map.getSource('BoundarySource').setData(geoJson);
-      if (map.getLayer('Boundary')) {
-        map.removeLayer('Boundary')
+    if (map.getSource('boundary-line-source')) {
+      map.getSource('boundary-line-source').setData(geoJson);
+      if (map.getLayer('boundary-line')) {
+        map.removeLayer('boundary-line')
       }
     } else {
-      map.addSource("BoundarySource", {
+      map.addSource("boundary-line-source", {
         type: "geojson",
         data: geoJson
       });
     }
 
-    // setStateParcelCard({
-    //   ...stateParcelCard,
-    //   selectedParcelGeom: mapSourceData.features[idx].geometry.coordinates[0],
-    // });
+    if (map.getSource('boundary-point-source')) {
+      map.getSource('boundary-point-source').setData(geoJson);
+      if (map.getLayer('boundary-point')) {
+        map.removeLayer('boundary-point')
+      }
+    } else {
+      map.addSource("boundary-point-source", {
+        type: "geojson",
+        data: geoJson
+      });
+    }
 
+    if (type === 'Point') {
+      map.addLayer({
+        id: "boundary-point",
+        type: "circle",
+        source: "boundary-point-source",
+        paint: {
+          "circle-radius": 5,
+          "circle-color": "yellow",
+        },
+      });
+    } else {
+      map.addLayer({
+        id: "boundary-line",
+        type: "line",
+        source: "boundary-line-source",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
+        },
+        paint: {
+          "line-color": "#FFFF00",
+          "line-width": 8,
+        },
+      });
+    }
 
-    map.addLayer({
-      id: "Boundary",
-      type: "line",
-      source: "BoundarySource",
-      layout: {
-        "line-join": "round",
-        "line-cap": "round",
-      },
-      paint: {
-        "line-color": "#FFFF00",
-        "line-width": 8,
-      },
-    });
   } else {
-    if (map.getLayer('Boundary')) {
-      map.removeLayer('Boundary')
+    if (map.getLayer('boundary-line')) {
+      map.removeLayer('boundary-line')
+    }
+    if (map.getLayer('boundary-point')) {
+      map.removeLayer('boundary-point')
     }
   }
 }

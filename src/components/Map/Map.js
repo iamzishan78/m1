@@ -1224,6 +1224,7 @@ function Map() {
         feature = selectedUserDefinedLayer;
         setStateApp((state) => {
           if (state.showDrawShapesPopup) return state
+          drawBoundary(map, selectedUserDefinedLayer)
           state = {
             ...state,
             selectedUserDefinedLayer,
@@ -6510,10 +6511,11 @@ function Map() {
   }, [stateApp.selectedParcel]);
 
   useEffect(() => {
-    if (map && !stateApp.selectedUserDefinedLayer) {
-      drawBoundary(map)
+    if (!stateApp.selectedUserDefinedLayer || stateApp.shapeEdit) {
+      if (map)
+        drawBoundary(map)
     }
-  }, [stateApp.selectedUserDefinedLayer]);
+  }, [stateApp.selectedUserDefinedLayer, stateApp.shapeEdit]);
 
 
   return (
