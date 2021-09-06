@@ -5,7 +5,8 @@ const TransactContext = createContext([{}, () => { }]);
 const TransactContextProvider = (props) => {
   const [stateTransact, setStateTransact] = useState({
     openDialog: false,
-    profilesInfo: {}
+    profilesInfo: {},
+    selectedTask: {}
   });
   return (
     <TransactContext.Provider value={[stateTransact, setStateTransact]}>

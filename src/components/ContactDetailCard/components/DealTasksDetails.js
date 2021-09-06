@@ -1,6 +1,7 @@
-import React, { Fragment, useState, memo, useEffect, useRef } from "react";
+import React, { Fragment, useState, memo, useEffect, useRef, useContext } from "react";
 import { get } from "lodash";
 import { useMutation } from "@apollo/client";
+import { TransactContext } from "components/Transact/TransactContext";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Menu,
@@ -253,16 +254,30 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
   const classes = useStyles();
   const [isNewSubtask, setNewSubtask] = useState({ index: -1, value: false });
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [extendedTaskIndex, setExtendedTaskIndex] = useState(0);
+
+  // Transact Context
+  const [stateTransact, setStateTransact] = useContext(TransactContext);
+
   const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
   const [addDealSubtask] = useMutation(ADD_DEAL_SUBTASK);
   const [updateSubtask] = useMutation(UPDATE_DEAL_SUBTASK);
-  // const myRef = useRef(null);
+  const selectedTaskRef = useRef(null);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     myRef.current.scrollIntoView()
-  //   }, 10000)
-  // }, []);
+  useEffect(() => {
+    if (stateTransact.selectedTask && selectedTaskRef.current) {
+      setTimeout(() => {
+        selectedTaskRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "start"
+        });
+        setStateTransact(state => ({ ...state, selectedTask: {} }));
+        const index = dealSettings.findIndex(ds => ds._id === stateTransact.selectedTask._id);
+        setExtendedTaskIndex(index);
+      }, 0);
+    }
+  }, [stateTransact.selectedTask]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -319,7 +334,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
     const approver = users.find(user => user?.value === settings.stageDealDescriptor.approver);
     return (
       <div style={{ borderTop: "1px solid lightgrey", padding: '0px 5px' }}>
-        <Accordion defaultExpanded={index === 0}>
+        <Accordion defaultExpanded={index === 0} expanded={index === extendedTaskIndex}>
           <AccordionSummary aria-controls="panel1a-content2" id="panel1a-header2" expandIcon={<ExpandMore />}>
             <Typography className={classes.laneName}>{settings.stageName}</Typography>
           </AccordionSummary>
@@ -445,7 +460,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
             </Grid>
           </AccordionDetails>
         </Accordion>
-      </div>
+      </div >
     );
   }
 
@@ -486,7 +501,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
       </CardActions>
       <CardContent style={{ padding: 0, overflowY: "auto", maxHeight: "82vh" }}>
         {dealSettings?.map((settings, index) => (
-          <div className={classes.accordion}>
+          <div className={classes.accordion} ref={settings._id === stateTransact.selectedTask?._id ? selectedTaskRef : null}>
             <LaneSettings settings={settings} index={index} />
           </div>
         ))}

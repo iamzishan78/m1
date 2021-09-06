@@ -1,6 +1,8 @@
-import React, { Fragment, useState } from "react";
+import React, { useState, useContext } from "react";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
+import { TransactContext } from "components/Transact/TransactContext";
+import { AppContext } from "AppContext";
 import {
   CardActions,
   Button,
@@ -17,7 +19,7 @@ import {
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import ArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
+import CommentIcon from "@material-ui/icons/ChatBubbleOutline";
 import ProgressBar from "components/Shared/ui/ProgressBar";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
 
@@ -71,6 +73,10 @@ const useStyles = makeStyles((theme) => ({
 export default function LaneProgressZone(props) {
   const classes = useStyles();
   const { toggleProgressDetail, dealSettings, users, activeDeal } = props;
+
+  // Transact Context
+  const [, setStateTransact] = useContext(TransactContext);
+  const [, setStateApp] = useContext(AppContext);
   const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
   const [showNext, setShowNext] = useState(-1);
 
@@ -154,7 +160,10 @@ export default function LaneProgressZone(props) {
                         </>
                       )}
                     </PopupState>
-                    <IconButton className={classes.commentButton}>
+                    <IconButton className={classes.commentButton} onClick={() => {
+                      setStateTransact(state => ({ ...state, selectedTask: settings }));
+                      setStateApp((stateApp) => ({ ...stateApp, transactBarView: 'Task Progress' }))
+                    }}>
                       <Badge
                         anchorOrigin={{
                           vertical: "top",
@@ -164,7 +173,7 @@ export default function LaneProgressZone(props) {
                         opacity="1"
                         badgeContent={settings.stageDealDescriptor.comment ? 1 : 0}
                       >
-                        <ChatBubbleOutlineIcon fontSize="small" />
+                        <CommentIcon fontSize="small" />
                       </Badge>
                       {showNext === index && <ArrowRightIcon fontSize="small" />}
                     </IconButton>
