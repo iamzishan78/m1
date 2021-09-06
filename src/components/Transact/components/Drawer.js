@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px",
     position: "absolute",
     right: 0,
-    top: '108px',
+    top: props => props.top || '108px',
     zIndex: 1223,
     backgroundColor: "rgb(240,245,248)",
   },
@@ -47,8 +47,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Drawer() {
-  const classes = useStyles();
+export default function Drawer(props) {
+  const classes = useStyles(props);
 
   const [stateApp, setStateApp] = useContext(AppContext);
 

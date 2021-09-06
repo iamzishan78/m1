@@ -418,6 +418,10 @@ function AddDealDialog(props) {
   console.log("pipelineId", pipelineId, selectedPipe)
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
+  const [getDeal, { data: getDealResult, loading: getDealLoading }] = useLazyQuery(GETDEAL, {
+    fetchPolicy: "no-cache"
+  });
+
   const [
     addContact,
     {
@@ -475,6 +479,13 @@ function AddDealDialog(props) {
     }
   }, [stateApp.transactBarView]);
 
+  useEffect(() => {
+    getDeal({
+      variables: { id: stateApp.activeDeal.cardId }
+    });
+  }, [getDeal]);
+
+  // For creating a deal
   useEffect(() => {
     if (dealData) {
       setStateApp((stateApp) => ({
@@ -1104,10 +1115,7 @@ function AddDealDialog(props) {
     return comparison;
   });
 
-  const [getDeal, { data: getDealResult, loading: getDealLoading }] =
-    useLazyQuery(GETDEAL, {
-      fetchPolicy: "no-cache"
-    });
+
 
   const refetchDeal = () => {
     getDeal({
@@ -1146,7 +1154,7 @@ function AddDealDialog(props) {
           ...stateApp.activeDeal,
           contacts: [
             ...getDealResult.deal.deal.contacts.map((c) => ({
-              _id: c.descriptorId,
+              _id: c._id,
               name: c.name
             }))
           ]
@@ -1491,7 +1499,7 @@ function AddDealDialog(props) {
           hiddenOverflow
         >
           <StickyHeader />
-          <Drawer />
+          <Drawer top={contact.name ? "160px" : "108px"} />
           <div className={classes.contentRoot}>
             {props.isTransactPage &&
               stateApp.transactBarView !== "Deal" &&

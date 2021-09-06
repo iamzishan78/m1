@@ -132,7 +132,6 @@ export default function Contacts(props) {
     });
     let response = await result.data.removeDealDescriptor.success;
     if (response) {
-      // GettingContacts()
       props.getDeal();
     } else {
       setMutationLoading(false);
@@ -255,7 +254,7 @@ export default function Contacts(props) {
                   color="primary"
                   className={classes.button}
                   onClick={() => {
-                    if (nameAutValue != "") {
+                    if (nameAutValue !== "") {
                       props.addSelectedContact(nameAutValue);
                       GettingContacts();
                       setMutationLoading(true);

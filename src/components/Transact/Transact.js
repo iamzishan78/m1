@@ -445,9 +445,7 @@ export default function Transact() {
       <article
         className={classes.cardStyle}
         onClick={() => handleCardClick(id, metadata, laneId)}
-        style={{
-          borderLeft: `4px solid ${cardColor}`
-        }}
+        style={{ borderLeft: `4px solid ${cardColor}` }}
       >
         <header className={classes.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
