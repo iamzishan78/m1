@@ -8,7 +8,7 @@ import { CircularProgress, Menu, MenuItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import { AppContext } from "AppContext";
 import { GET_PROFILE_IMAGE } from "graphQL/useQueryGetProfile";
@@ -88,6 +88,9 @@ const useStyles = makeStyles((theme) => ({
   },
   cursorPointer: {
     cursor: "pointer",
+  },
+  inlineFlex: {
+    display: "inline-flex",
   },
 }));
 
@@ -230,7 +233,7 @@ export default function DealComment(props) {
         comment: {
           comment: newCommentCleaner(value),
           _id: editCommentId,
-          isEdited: true
+          isEdited: true,
         },
       },
       refetchQueries: [
@@ -250,7 +253,7 @@ export default function DealComment(props) {
     setLoadingComments(true);
     removeComment({
       variables: {
-          commentId: id,
+        commentId: id,
       },
       refetchQueries: [
         "getCommentsByObjectId",
@@ -318,13 +321,19 @@ export default function DealComment(props) {
             )}
 
             {commentsArray.map((eachComment, index) => {
-              debugger
               let indexToShow =
                 commentsArray.length > 3 ? commentsArray.length - 3 : 0;
               return (
                 <Fragment key={index}>
                   {(showAllComments || index >= indexToShow) && (
-                    <Grid container className={classes.gridStyle} onMouseOver={() => setShowCommentActionId(eachComment._id)} onMouseLeave={() => setShowCommentActionId(null)}>
+                    <Grid
+                      container
+                      className={classes.gridStyle}
+                      onMouseOver={() =>
+                        setShowCommentActionId(eachComment._id)
+                      }
+                      onMouseLeave={() => setShowCommentActionId(null)}
+                    >
                       <Grid item xs={1}>
                         <IconButton style={{ top: "3px" }}>
                           {profilesInfo[eachComment.user.email]?.profileImage ||
@@ -369,25 +378,27 @@ export default function DealComment(props) {
                             locale="en-US"
                           />
                           {eachComment.isEdited && (
-                            <span className={classes.commentTime} >(Edited)</span>
+                            <span className={classes.commentTime}>
+                              (Edited)
+                            </span>
                           )}
-                          {(eachComment.user.email === stateApp.user.email && showCommentActionId === eachComment._id ) && (
-                            <div
-                              className={`${classes.floatRight} ${classes.cursorPointer}`}
-                            >
-                              <ActionMenu
-                                eachComment={eachComment}
-                                setEditCommentId={setEditCommentId}
-                                setEditComment={setEditComment}
-                                deleteComment={deleteComment}
-                              />
-                            </div>
-                          )}
+                          {eachComment.user.email === stateApp.user.email &&
+                            showCommentActionId === eachComment._id &&
+                            editCommentId !== eachComment._id && (
+                              <div
+                                className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}
+                              >
+                                <ActionMenu
+                                  eachComment={eachComment}
+                                  setEditCommentId={setEditCommentId}
+                                  setEditComment={setEditComment}
+                                  deleteComment={deleteComment}
+                                />
+                              </div>
+                            )}
                         </div>
                         {editCommentId !== eachComment._id ? (
-                          <div
-                            className={`${classes.whiteSpace}`}
-                          >
+                          <div className={`${classes.whiteSpace}`}>
                             {eachComment.comment}
                           </div>
                         ) : (
@@ -502,7 +513,12 @@ export default function DealComment(props) {
   );
 }
 
-const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment }) => {
+const ActionMenu = ({
+  eachComment,
+  setEditCommentId,
+  setEditComment,
+  deleteComment,
+}) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -536,7 +552,9 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
         >
           Edit
         </MenuItem>
-        <MenuItem onClick={() => deleteComment(eachComment._id)}>Delete</MenuItem>
+        <MenuItem onClick={() => deleteComment(eachComment._id)}>
+          Delete
+        </MenuItem>
       </Menu>
     </>
   );
