@@ -1,4 +1,4 @@
-import React, { Fragment, useState, memo } from "react";
+import React, { Fragment, useState, memo, useEffect, useRef } from "react";
 import { get } from "lodash";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
@@ -256,6 +256,13 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
   const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
   const [addDealSubtask] = useMutation(ADD_DEAL_SUBTASK);
   const [updateSubtask] = useMutation(UPDATE_DEAL_SUBTASK);
+  // const myRef = useRef(null);
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     myRef.current.scrollIntoView()
+  //   }, 10000)
+  // }, []);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
