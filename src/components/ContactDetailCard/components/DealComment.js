@@ -119,7 +119,7 @@ export default function DealComment(props) {
   });
   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
     COMMENTSBYOBJECTIDQUERY,
-    { fetchPolicy: "cache-and-network" }
+    { fetchPolicy: "no-cache" }
   );
 
   useEffect(() => {
@@ -232,6 +232,7 @@ export default function DealComment(props) {
       variables: {
         comment: {
           comment: newCommentCleaner(value),
+          user: stateApp.user.mongoId,
           _id: editCommentId,
           isEdited: true,
         },
