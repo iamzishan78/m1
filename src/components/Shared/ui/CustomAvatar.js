@@ -1,4 +1,4 @@
-import React, { Fragment, useContext } from "react";
+import React, { useContext } from "react";
 import { get } from "lodash";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -43,10 +43,8 @@ const CustomAvatar = React.memo(({ text = "", email = "", diglog }) => {
     };
 
     if (get(stateTransact[email], "profileImage")) {
-        console.log('email', stateTransact[email]);
         return <img className={classes.customAvatarImg} src={stateTransact[email].profileImage} alt="owner img" />;
     } else {
-        console.log('text', text);
         return (
             <span
                 className={diglog ? "" : classes.customAvatar}
