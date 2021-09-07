@@ -687,7 +687,16 @@ export default function Pipelines(props) {
   };
 
   const handleDeleteFlowLine = () => {
-    // Delete Flowline
+    openDeleteDialog("pipe")
+    setDeleteFunc(() => () => {
+      updatePipelines({
+        variables: {
+          pipelines: [{ _id: selectedPipe._id, IsDeleted: true }],
+        },
+        refetchQueries: ["getPipelines"],
+        awaitRefetchQueries: true,
+      });
+    });
   }
 
   return (
