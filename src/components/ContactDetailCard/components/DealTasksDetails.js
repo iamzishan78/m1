@@ -169,6 +169,11 @@ const useStyles = makeStyles((theme) => ({
     msTransition: "background-color 1000ms linear",
     transition: "background-color 1000ms linear",
   },
+  cardContent: {
+    padding: 0,
+    overflowY: "overlay",
+    maxHeight: "82vh"
+  }
 }));
 
 const SubtaskComponent = memo(({ task, handleUpdateSubtask, users }) => {
@@ -511,7 +516,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
           </Grid> */}
         </Grid>
       </CardActions>
-      <CardContent style={{ padding: 0, overflowY: "auto", maxHeight: "82vh" }}>
+      <CardContent className={classes.cardContent}>
         {dealSettings?.map((settings, index) => (
           <div className={classes.accordion} ref={settings._id === stateTransact.selectedTask?._id ? selectedTaskRef : null}>
             <LaneSettings settings={settings} index={index} />

@@ -136,17 +136,7 @@ const useStyles = makeStyles((theme) => ({
   },
   scrollbar: {
     overflowX: "hidden",
-    overflowY: "auto",
-    "&::-webkit-scrollbar": {
-      width: "0.4em",
-    },
-    "&::-webkit-scrollbar-track": {
-      "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "lightgray",
-      borderRadius: 5,
-    },
+    overflowY: "overlay",
   },
   dealDetailRoot: {
     "& .MuiDialog-paper": {
@@ -154,7 +144,7 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   contentRoot: {
-    overflowY: "auto",
+    overflowY: "overlay",
     maxHeight: "90vh",
     marginRight: "60px"
   },
