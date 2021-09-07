@@ -1,7 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, {useState, useEffect } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import { AppContext } from "../../AppContext";
+
 import OilDropIcon from "./components/svgIcons/OilDropIcon";
 import GasFlameIcon from "./components/svgIcons/GasFlameIcon";
 import OilGasIcon from "./components/svgIcons/OilGasIcon";
@@ -20,72 +20,42 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-/* 
-  
-export default function WellStatusCard() {
-    let classes = useStyles();
-    const [stateApp, setStateApp] = useContext(AppContext)
 
-    return (
-      <div className={classes.iconContainer}>
-
-      <WellIcon viewBox="0 0 32 31" fontSize="large" />
-
-      <Typography
-        //classes={classes.text1}
-        align="center"
-        variant="subtitle2"
-      >
-        Well Type
-      </Typography>
-      <Typography
-        align="center"
-        variant="caption"
-      >
-        {stateApp.selectedWell.WellType
-          ? stateApp.selectedWell.WellType.toUpperCase()
-          : '--'}
-      </Typography>
-      </div>
-
-
-    );
-  };
-
- */
-
-export default function WellTypeCard() {
+export default function WellTypeCard(props) {
   let classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [summary, setSummary] = useState(null);
+
+
+
   const WellTypeIcon = () => {
     if (
-      stateApp.selectedWell.wellType &&
-      stateApp.selectedWell.wellType.toUpperCase() == "OIL"
+      summary.WellType &&
+      summary.WellType.toUpperCase() == "OIL"
     ) {
       return <OilDropIcon fontSize="large" />;
     } else if (
-      stateApp.selectedWell.wellType &&
-      stateApp.selectedWell.wellType.toUpperCase() == "GAS"
+      summary.WellType &&
+      summary.WellType.toUpperCase() == "GAS"
     ) {
       return <GasFlameIcon fontSize="large" />;
     } else if (
-      stateApp.selectedWell.wellType &&
-      stateApp.selectedWell.wellType.toUpperCase() == "OIL AND GAS"
+      summary.WellType &&
+      summary.WellType.toUpperCase() == "OIL AND GAS"
     ) {
       return <OilGasIcon fontSize="large" />;
     } else if (
-      stateApp.selectedWell.wellType &&
-      stateApp.selectedWell.wellType.toUpperCase() == "INJECTION"
+      summary.WellType &&
+      summary.WellType.toUpperCase() == "INJECTION"
     ) {
       return <WaterDropIcon fontSize="large" />;
     } else if (
-      stateApp.selectedWell.wellType &&
-      stateApp.selectedWell.wellType.toUpperCase() == "WATER"
+      summary.WellType &&
+      summary.WellType.toUpperCase() == "WATER"
     ) {
       return <WaterDropIcon fontSize="large" />;
     } else if (
-      stateApp.selectedWell.wellType &&
-      stateApp.selectedWell.wellType.toUpperCase() == "P&A"
+      summary.WellType &&
+      summary.WellType.toUpperCase() == "P&A"
     ) {
       return <XIcon fontSize="large" />;
     } else {
@@ -93,12 +63,26 @@ export default function WellTypeCard() {
     }
   };
 
+
+  useEffect(() => {
+    if (props.summary) {
+      setSummary(props.summary);
+      ;
+    }
+  }, [props.summary, setSummary]);
+
+
   return (
-    <div className={classes.iconContainer}>
+
+
+    <div >
+    
+    {summary && 
+
+      <div className={classes.iconContainer}>
       <WellTypeIcon />
 
       <Typography
-        //classes={classes.text1}
         align="center"
         variant="subtitle2"
       >
@@ -106,13 +90,16 @@ export default function WellTypeCard() {
       </Typography>
       <Typography
         align="center"
-        //className={classes.text2}
         variant="caption"
       >
-        {stateApp.selectedWell.wellType
-          ? stateApp.selectedWell.wellType.toUpperCase()
+        {summary.WellType
+          ? summary.WellType.toUpperCase()
           : "--"}
       </Typography>
+      </div>
+    }
+
     </div>
+    
   );
 }

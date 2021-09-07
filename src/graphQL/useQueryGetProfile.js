@@ -63,7 +63,7 @@ export const GETPROFILE = gql`
         }
     }
 `
-export const GETPROFILEIMAGE = gql`
+export const GET_PROFILE_IMAGE = gql`
     query getProfileImage($email: String) {
         profileByEmail(userEmail: $email){
             success
@@ -72,6 +72,15 @@ export const GETPROFILEIMAGE = gql`
                 email
                 profileImage             
             }
+        }
+    }
+`
+
+export const GET_PROFILES_IMAGES = gql`
+    query getProfilesImages($email: String, $emails: [String]) {
+        profileByEmail(userEmail: $email, usersEmails: $emails){
+            success
+            profiles
         }
     }
 `
