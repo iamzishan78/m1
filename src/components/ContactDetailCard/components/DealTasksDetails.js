@@ -1,11 +1,12 @@
 import React, { Fragment, useState, memo, useEffect, useRef, useContext } from "react";
+import _ from "underscore";
 import { get } from "lodash";
 import { useMutation } from "@apollo/client";
 import { TransactContext } from "components/Transact/TransactContext";
 import { makeStyles } from "@material-ui/core/styles";
 import {
-  Menu,
-  MenuItem,
+  // Menu,
+  // MenuItem,
   Button,
   CardActions,
   CardContent,
@@ -23,12 +24,12 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from "@material-ui/core";
-import { ExpandMore, ExpandLess, Edit } from "@material-ui/icons";
+import { ExpandMore } from "@material-ui/icons";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import ArrowDown from "@material-ui/icons/ArrowDropDown";
+// import ArrowDown from "@material-ui/icons/ArrowDropDown";
 import ProgressBar from "../../Shared/ui/ProgressBar";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
@@ -157,6 +158,17 @@ const useStyles = makeStyles((theme) => ({
       borderBottomLeftRadius: "0px !important",
     },
   },
+  accordionColored: {
+    // "& .MuiAccordion-root": {
+    backgroundColor: "aliceblue",
+    // },
+  },
+  accordionColorReset: {
+    backgroundColor: "transparent",
+    webkitTransition: "background-color 1000ms linear",
+    msTransition: "background-color 1000ms linear",
+    transition: "background-color 1000ms linear",
+  },
 }));
 
 const SubtaskComponent = memo(({ task, handleUpdateSubtask, users }) => {
@@ -165,7 +177,7 @@ const SubtaskComponent = memo(({ task, handleUpdateSubtask, users }) => {
 
   const truncate = (str, n) => (str.length > n ? str.substr(0, n - 1) + "..." : str);
   const onHoverTask = (state) => setShow(state);
-  const approver = users.find(user => user?.value === task.assignee);
+  const approver = users.find((user) => user?.value === task.assignee);
 
   return (
     <div className={classes.subTaskRoot} onMouseLeave={() => onHoverTask(false)} onMouseEnter={() => onHoverTask(true)}>
@@ -210,10 +222,7 @@ const SubtaskComponent = memo(({ task, handleUpdateSubtask, users }) => {
                 <>
                   <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
                     {task.assignee ? (
-                      <CustomAvatar
-                        email={approver.email}
-                        text={approver.text.toString()}
-                      />
+                      <CustomAvatar email={approver.email} text={approver.text.toString()} />
                     ) : (
                       <AccountCircle fontSize="default" />
                     )}
@@ -251,18 +260,19 @@ const SubtaskComponent = memo(({ task, handleUpdateSubtask, users }) => {
 });
 
 function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
-  const classes = useStyles();
-  const [isNewSubtask, setNewSubtask] = useState({ index: -1, value: false });
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [extendedTaskIndex, setExtendedTaskIndex] = useState(0);
-
   // Transact Context
   const [stateTransact, setStateTransact] = useContext(TransactContext);
+
+  const [isNewSubtask, setNewSubtask] = useState({ index: -1, value: false });
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [extendedTaskIndex,] = useState(dealSettings.findIndex((ds) => ds._id === stateTransact.selectedTask._id) || 0);
 
   const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
   const [addDealSubtask] = useMutation(ADD_DEAL_SUBTASK);
   const [updateSubtask] = useMutation(UPDATE_DEAL_SUBTASK);
   const selectedTaskRef = useRef(null);
+
+  const classes = useStyles();
 
   useEffect(() => {
     if (stateTransact.selectedTask && selectedTaskRef.current) {
@@ -270,22 +280,22 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
         selectedTaskRef.current.scrollIntoView({
           behavior: "smooth",
           block: "nearest",
-          inline: "start"
+          inline: "start",
         });
-        setStateTransact(state => ({ ...state, selectedTask: {} }));
-        const index = dealSettings.findIndex(ds => ds._id === stateTransact.selectedTask._id);
-        setExtendedTaskIndex(index);
-      }, 0);
+      }, 100);
+      setTimeout(() => {
+        setStateTransact((state) => ({ ...state, selectedTask: {} }));
+      }, 3000);
     }
   }, [stateTransact.selectedTask]);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  // const handleClick = (event) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  // const handleClose = () => {
+  //   setAnchorEl(null);
+  // };
 
   const handleChangeSettings = (setting, params) => {
     const descriptor = {
@@ -331,10 +341,15 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
   };
 
   const LaneSettings = ({ settings, index }) => {
-    const approver = users.find(user => user?.value === settings.stageDealDescriptor.approver);
+    const approver = users.find((user) => user?.value === settings.stageDealDescriptor.approver);
     return (
-      <div style={{ borderTop: "1px solid lightgrey", padding: '0px 5px' }}>
-        <Accordion defaultExpanded={index === 0} expanded={index === extendedTaskIndex}>
+      <div style={{ borderTop: "1px solid lightgrey" }}>
+        <Accordion
+          defaultExpanded={true}
+          className={
+            index === extendedTaskIndex && !_.isEmpty(stateTransact.selectedTask) ? classes.accordionColored : classes.accordionColorReset
+          }
+        >
           <AccordionSummary aria-controls="panel1a-content2" id="panel1a-header2" expandIcon={<ExpandMore />}>
             <Typography className={classes.laneName}>{settings.stageName}</Typography>
           </AccordionSummary>
@@ -343,7 +358,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
               <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
                 <Typography variant="body2" color="textSecondary">
                   Progress
-              </Typography>
+                </Typography>
                 <div style={{ minWidth: "200px" }}>
                   <ProgressBar value={settings.progress} isNumeric />
                 </div>
@@ -362,9 +377,9 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
               <Grid item xl={8} md={8} sm={8} className={classes.laneDetailRow}>
                 <Typography variant="body2" color="textSecondary">
                   Approver
-              </Typography>
+                </Typography>
                 <Autocomplete
-                  options={users.filter(u => u.text)}
+                  options={users.filter((u) => u.text)}
                   onChange={(e, user) => {
                     handleChangeSettings(settings, { approver: user?.value });
                   }}
@@ -374,7 +389,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
                   classes={{
                     inputRoot: classes.dealOwnerRoot,
                     focused: classes.dealOwnerRootFocused,
-                    popupIndicator: classes.popupIndicator
+                    popupIndicator: classes.popupIndicator,
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -386,8 +401,8 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
                         ...params.InputLabelProps,
                         shrink: true,
                         classes: {
-                          root: classes.dealOwnerLabel
-                        }
+                          root: classes.dealOwnerLabel,
+                        },
                       }}
                       placeholder="Assign Owner"
                       InputProps={{
@@ -396,17 +411,14 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
                           <>
                             <InputAdornment position="start">
                               {settings.stageDealDescriptor.approver ? (
-                                <CustomAvatar
-                                  email={approver.email}
-                                  text={approver.text.toString()}
-                                />
+                                <CustomAvatar email={approver.email} text={approver.text.toString()} />
                               ) : (
                                 <AccountCircle fontSize="default" />
                               )}
                             </InputAdornment>
                             {params.InputProps.startAdornment}
                           </>
-                        )
+                        ),
                       }}
                     />
                   )}
@@ -455,14 +467,14 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
               <Grid item xs={12} className={classes.addSubTaskButton}>
                 <Button size="small" style={{ color: "grey" }} onClick={() => setNewSubtask({ index, value: !isNewSubtask.value })}>
                   + Add New Subtask
-              </Button>
+                </Button>
               </Grid>
             </Grid>
           </AccordionDetails>
         </Accordion>
-      </div >
+      </div>
     );
-  }
+  };
 
   const evaluateOverallProgress = () => {
     let progress = 0;
