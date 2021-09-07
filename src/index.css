@@ -71,3 +71,7 @@ body {
 .blue{
   color: #3FC0DF
 }
+
+.hideScroll::-webkit-scrollbar {
+  display: none;
+}

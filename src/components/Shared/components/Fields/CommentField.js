@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Grid, TextField } from "@material-ui/core";
+import $ from 'jquery';
 
 import Typography from "@material-ui/core/Typography";
 import Chip from "@material-ui/core/Chip";
@@ -36,27 +37,23 @@ const useStyles = makeStyles((theme) => ({
   },
   commentInputFocusIn: {
     marginTop: "-50px",
-    marginLeft: "12px",
-    fontSize: "16px",
-    marginRight: "4px",
-    lineHeight: "19px",
-    marginBottom: "32px",
+    marginBottom: "15px",
 
   },
   commentInputFocusOut: {
     marginTop: "-32px",
-    marginLeft: "12px",
-    fontSize: "16px", 
-    marginRight: "4px",
-    lineHeight: "19px",
-    marginBottom: "32px",
+    marginBottom: "15px",
   },
-  commentInput: {
+  textDiv: {
     marginLeft: "12px",
+    lineHeight: "19px",
     fontSize: "16px",
     marginRight: "4px",
-    lineHeight: "19px"
-  },
+    // whiteSpace: "pre"
+    height: "43px",
+    overflowY: "auto",
+    width: "96%"
+  }
 }));
 
 export default function DealComment({ comment, showActions, setComment }) {
@@ -76,6 +73,14 @@ export default function DealComment({ comment, showActions, setComment }) {
   useEffect(() => {
     getAllMongoUsers();
   }, [getAllMongoUsers]);
+
+  (function() {
+    var target = $("#colorText");
+    $(".MuiOutlinedInput-input").scroll(function() {
+      target.prop("scrollTop", this.scrollTop)
+            .prop("scrollLeft", this.scrollLeft);
+    });
+  })();
 
   useEffect(() => {
     if (userLists && userLists.allMongoUsers) {
@@ -116,6 +121,15 @@ export default function DealComment({ comment, showActions, setComment }) {
       }
     }
     document.getElementById("colorText").innerHTML = value;
+    // document.getElementById("colorText").scrollTop = document.getElementById("colorText").scrollHeight;
+    
+    // var target = $("#colorText");
+    // $(".MuiOutlinedInput-input").scroll(function() {
+    //   debugger
+    //   target.prop("scrollTop", this.scrollTop)
+    //         .prop("scrollLeft", this.scrollLeft);
+    // });
+
   }, [comment]);
 
   const setCommentValue = (value) => {
@@ -126,7 +140,8 @@ export default function DealComment({ comment, showActions, setComment }) {
           updatedValue = updatedValue.replace(`@${mentionedList[i].name}`, `{{${mentionedList[i]._id}}}`)
         }
       }
-      setFilterValue(updatedValue.split("@")[1]);
+      const splitedString = updatedValue.split("@")[1]
+      setFilterValue(splitedString ? splitedString.split(" ")[0] : '');
       setComment(updatedValue);
     }else{
       setComment(value);
@@ -137,7 +152,6 @@ export default function DealComment({ comment, showActions, setComment }) {
     setNameAutValue({ name: value, _id: "" });
 
     if (!isSelected) {
-      console.log('comment value set in input change', value)
       setCommentValue(value);
     } else {
       setIsSelected(false);
@@ -218,7 +232,7 @@ export default function DealComment({ comment, showActions, setComment }) {
             }}
             fullWidth
             rows={showActions ? 2 : 1}
-            rowsMax={3}
+            rowsMax={2}
             multiline
             className={classes.activitySearchField}
             placeholder="Add a question or post an update"
@@ -227,13 +241,7 @@ export default function DealComment({ comment, showActions, setComment }) {
           />
           <div
             id="colorText"
-            className={
-              comment
-                ? showActions
-                  ? classes.commentInputFocusIn
-                  : classes.commentInputFocusOut
-                : classes.commentInput
-            }
+            className={`${comment || showActions ? classes.commentInputFocusIn : classes.commentInputFocusOut} ${classes.textDiv} hideScroll`}
           ></div>
         </>
       )}
