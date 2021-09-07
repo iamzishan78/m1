@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiAutocomplete-endAdornment": {
       display: "none",
     },
-    "& .MuiInputBase-input": { color: "red", caretColor: "black" },
+    "& .MuiInputBase-input": { color: "transparent", caretColor: "black" },
   },
   customTextField: {
     "& textarea::placeholder": {
@@ -38,15 +38,24 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "-50px",
     marginLeft: "12px",
     fontSize: "16px",
+    marginRight: "4px",
+    lineHeight: "19px",
+    marginBottom: "32px",
+
   },
   commentInputFocusOut: {
     marginTop: "-32px",
     marginLeft: "12px",
-    fontSize: "16px",
+    fontSize: "16px", 
+    marginRight: "4px",
+    lineHeight: "19px",
+    marginBottom: "32px",
   },
   commentInput: {
     marginLeft: "12px",
     fontSize: "16px",
+    marginRight: "4px",
+    lineHeight: "19px"
   },
 }));
 
@@ -80,24 +89,7 @@ export default function DealComment({ comment, showActions, setComment }) {
     }
   }, [userLists]);
 
-  const setCommentValue = (value) => {
-    if(value.includes("@")){
-      let updatedValue = JSON.parse(JSON.stringify(value));
-      for (let i = 0; i < mentionedList.length; i++){
-        if(comment.includes(mentionedList[i]._id)){
-          updatedValue = updatedValue.replace(`@${mentionedList[i].name}`, `{{${mentionedList[i]._id}}}`)
-        }
-      }
-      setFilterValue(updatedValue.split("@")[1]);
-      setComment(updatedValue);
-    }else{
-      setComment(value);
-    }
-    
-  };
-
   useEffect(() => {
-    console.log('comment', comment);
     let value = JSON.parse(JSON.stringify(comment));
     if (value.includes("@")) {
       setShowOptions(true);
@@ -126,6 +118,21 @@ export default function DealComment({ comment, showActions, setComment }) {
     document.getElementById("colorText").innerHTML = value;
   }, [comment]);
 
+  const setCommentValue = (value) => {
+    if(value.includes("@")){
+      let updatedValue = JSON.parse(JSON.stringify(value));
+      for (let i = 0; i < mentionedList.length; i++){
+        if(comment.includes(mentionedList[i]._id)){
+          updatedValue = updatedValue.replace(`@${mentionedList[i].name}`, `{{${mentionedList[i]._id}}}`)
+        }
+      }
+      setFilterValue(updatedValue.split("@")[1]);
+      setComment(updatedValue);
+    }else{
+      setComment(value);
+    }
+  };
+
   const onInputChange = (event, value, reason) => {
     setNameAutValue({ name: value, _id: "" });
 
@@ -149,6 +156,8 @@ export default function DealComment({ comment, showActions, setComment }) {
 
     if(comment.includes("{{") && comment.includes("}}")){
       let updatedValue = JSON.parse(JSON.stringify(comment));
+      const afterMentionText = updatedValue.split("@")[1].split(' ')[0];
+      updatedValue = updatedValue.replace(`@${afterMentionText}`, `@${act.name}`)
       for (let i = 0; i < mentionedList.length; i++){
         if(updatedValue.includes(mentionedList[i]._id)){
           updatedValue = updatedValue.replace(`{{${mentionedList[i]._id}}}`, `@${mentionedList[i].name}`)
