@@ -27,17 +27,37 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiAutocomplete-endAdornment": {
       display: "none",
     },
+    "& .MuiInputBase-input": { color: "red", caretColor: "black" },
+  },
+  customTextField: {
+    "& textarea::placeholder": {
+      color: "black",
+    },
+  },
+  commentInputFocusIn: {
+    marginTop: "-50px",
+    marginLeft: "12px",
+    fontSize: "16px",
+  },
+  commentInputFocusOut: {
+    marginTop: "-32px",
+    marginLeft: "12px",
+    fontSize: "16px",
+  },
+  commentInput: {
+    marginLeft: "12px",
+    fontSize: "16px",
   },
 }));
 
 export default function DealComment({ comment, showActions, setComment }) {
   const classes = useStyles();
 
-  console.log("comment", comment);
   const [users, setUsers] = useState([]);
-  const [userValue, setUserValue] = useState("");
+  const [filterValue, setFilterValue] = useState("");
   const [showOptions, setShowOptions] = useState(false);
-//   const [mentionedList, setMentionedList] = useState([]);
+  const [isSelected, setIsSelected] = useState(false);
+  const [mentionedList, setMentionedList] = useState([]);
   const [nameAutValue, setNameAutValue] = useState([]);
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
@@ -60,44 +80,92 @@ export default function DealComment({ comment, showActions, setComment }) {
     }
   }, [userLists]);
 
-  //   const setCommentValue = (value) => {
-  //     const commentValue = "";
-  //     for (let i = 0; i < value.length; i++) {}
-  //     setComment(value);
-  //   };
+  const setCommentValue = (value) => {
+    if(value.includes("@")){
+      let updatedValue = JSON.parse(JSON.stringify(value));
+      for (let i = 0; i < mentionedList.length; i++){
+        if(comment.includes(mentionedList[i]._id)){
+          updatedValue = updatedValue.replace(`@${mentionedList[i].name}`, `{{${mentionedList[i]._id}}}`)
+        }
+      }
+      setFilterValue(updatedValue.split("@")[1]);
+      setComment(updatedValue);
+    }else{
+      setComment(value);
+    }
+    
+  };
 
-  const onInputChange = (event, value, reason) => {
+  useEffect(() => {
+    console.log('comment', comment);
+    let value = JSON.parse(JSON.stringify(comment));
     if (value.includes("@")) {
       setShowOptions(true);
     } else {
       setShowOptions(false);
     }
-    setUserValue(value.split("@")[1]);
-    // for (let i = 0; i < value.length; i++) {
-    //     debugger
-    // }
-    setNameAutValue([{ name: value, _id: "" }]);
-    // setCommentValue(value);
+    const data = value.split(" ");
+    value = "";
+
+    for (let i = 0; i < data.length; i++) {
+      if (/^{{[0-9a-z]+}}$/.test(data[i])) {
+        let id = JSON.parse(JSON.stringify(data[i]));
+        id = id.replace("{{", "");
+        id = id.replace("}}", "");
+
+        const mention = mentionedList.find((item) => item._id === id);
+        if (mention) {
+          value = value + ` <span class='blue'>@${mention.name}</span>`;
+        } else {
+          value = value + ' ' + data[i];
+        }
+      } else {
+        value = value + ' ' + data[i];
+      }
+    }
+    document.getElementById("colorText").innerHTML = value;
+  }, [comment]);
+
+  const onInputChange = (event, value, reason) => {
+    setNameAutValue({ name: value, _id: "" });
+
+    if (!isSelected) {
+      console.log('comment value set in input change', value)
+      setCommentValue(value);
+    } else {
+      setIsSelected(false);
+    }
   };
 
   const onChange = (e, act) => {
-    debugger;
-    // setShowOptions(false);
-    // const value = comment.split("@")[0];
-    // setNameAutValue({ name: value + act.name, _id: "" });
-    // setComment(value + `{{${act._id}}}`);
-    // if(!mentionedList.includes(act._id)){
-    //     const mentions = mentionedList;
-    //     mentions.push(act._id);
-    //     setMentionedList(mentions)
-    // }
-    setNameAutValue([act]);
+    setShowOptions(false);
+    if (!mentionedList.includes(act._id)) {
+      const mentions = mentionedList;
+      mentions.push(act);
+      setMentionedList(mentions);
+    }
+
+    const value = JSON.parse(JSON.stringify(comment.split("@")[0]));
+
+    if(comment.includes("{{") && comment.includes("}}")){
+      let updatedValue = JSON.parse(JSON.stringify(comment));
+      for (let i = 0; i < mentionedList.length; i++){
+        if(updatedValue.includes(mentionedList[i]._id)){
+          updatedValue = updatedValue.replace(`{{${mentionedList[i]._id}}}`, `@${mentionedList[i].name}`)
+        }
+      }
+      setNameAutValue({ name: updatedValue, _id: "" });
+    }else{
+      setNameAutValue({ name: `${value}@${act.name}`, _id: "" });
+    }
+    
+    setComment(value + `{{${act._id}}}`);
+    setIsSelected(true);
   };
 
   return (
     <Autocomplete
       className={classes.search}
-      multiple
       style={{
         margin: 0,
       }}
@@ -112,7 +180,7 @@ export default function DealComment({ comment, showActions, setComment }) {
         return option === value;
       }}
       filterOptions={(options, params) => {
-        let inputValue = JSON.parse(JSON.stringify(userValue));
+        let inputValue = JSON.parse(JSON.stringify(filterValue));
         const filtered = filter(options, { ...params, inputValue });
         return filtered;
       }}
@@ -128,43 +196,37 @@ export default function DealComment({ comment, showActions, setComment }) {
           </Grid>
         );
       }}
-      renderTags={(value, getTagProps) => {
-        // return value.map((option, index) =>
-        //   option._id ? (
-            return (
-            <Chip
-              label={
-                <Typography style={{ whiteSpace: "normal" }}>
-                  {value.map((option, index) =>  option._id ? <span style={{ color:"red"}}>{option.name}</span> : <span>{option.name}</span>)}
-                </Typography>
-              }
-              {...getTagProps(0)}
-              style={{ height: "100%" }}
-            />
-            )
-        //   ) : (
-        //     <span>{option.name}</span>
-        //   )
-        // );
-      }}
       onInputChange={onInputChange}
       onChange={onChange}
       renderInput={(params) => (
-        <TextField
-          margin="dense"
-          {...params}
-          style={{
-            margin: 0,
-          }}
-          fullWidth
-          rows={showActions ? 2 : 1}
-          rowsMax={3}
-          multiline
-          className={classes.activitySearchField}
-          placeholder="Add a question or post an update"
-          variant="outlined"
-          size="small"
-        />
+        <>
+          <TextField
+            classes={{ root: classes.customTextField }}
+            margin="dense"
+            {...params}
+            style={{
+              margin: 0,
+            }}
+            fullWidth
+            rows={showActions ? 2 : 1}
+            rowsMax={3}
+            multiline
+            className={classes.activitySearchField}
+            placeholder="Add a question or post an update"
+            variant="outlined"
+            size="small"
+          />
+          <div
+            id="colorText"
+            className={
+              comment
+                ? showActions
+                  ? classes.commentInputFocusIn
+                  : classes.commentInputFocusOut
+                : classes.commentInput
+            }
+          ></div>
+        </>
       )}
     />
   );

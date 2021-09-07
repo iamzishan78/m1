@@ -493,7 +493,7 @@ export default function DealComment(props) {
                 >
                   Comment
                 </Button>
-              )}
+              )} 
             </div>
           </Grid>
         </Grid>
