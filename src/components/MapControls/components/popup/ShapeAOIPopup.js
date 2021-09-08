@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 
 import { AppContext } from "AppContext";
-import { addCustomShapeProperties } from "../../components/DrawShapes/drawShapesHelpers";
+import { addCustomShapeProperties, drawBoundary } from "../../components/DrawShapes/drawShapesHelpers";
 import { spatialDataAttributes } from "../DrawShapes/constants";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 
@@ -106,7 +106,7 @@ export default function ShapeAOIPopup(props) {
         }
       });
       stateApp.currentFeature.properties.id = stateApp.currentFeature.id;
-
+      drawBoundary(stateApp.map, stateApp.currentFeature)
       if (user._id !== "") {
         const customLayerData = {
           shape: JSON.stringify(stateApp.currentFeature),

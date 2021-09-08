@@ -22,7 +22,7 @@ import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
 import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
 import { ABSTRACTGEOCONTAINSQUERY } from "graphQL/useQueryAbstractGeoContains";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
-import { addCustomShapeProperties } from "../../components/DrawShapes/drawShapesHelpers";
+import { addCustomShapeProperties, drawBoundary } from "../../components/DrawShapes/drawShapesHelpers";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
 import { setMapGridCardState } from "actions";
@@ -444,6 +444,7 @@ const ShapeActionsPopup = (props) => {
 
   const handleDeleteAoiModal = () => {
     setDeleteModal(!isDeleteModal);
+    drawBoundary(stateApp.map)
   };
 
   const confirmEditing = () => {

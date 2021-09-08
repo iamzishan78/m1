@@ -57,6 +57,7 @@ export default function AddUserData(props) {
 
   const [stateApp, setStateApp] = useContext(AppContext);
 
+
   const [addFile, { data: fileData }] = useMutation(ADDFILE);
 
   const [addLayer, { data: newLayer }] = useMutation(ADDLAYER);
@@ -65,8 +66,9 @@ export default function AddUserData(props) {
     if (stateMapControls.fileUploadedContent) {
       setInputFiles(stateMapControls.fileUploadedContent);
       setLayerName(stateMapControls.fileUploadedContent.groupName)
+
     }
-  }, [stateMapControls.fileUploadedContent]);
+  }, [stateMapControls.fileUploadedContent, stateMapControls.fileUploadedOriginalContent]);
 
   const handleCancel = () => {
     setIsOpen(false);
@@ -74,6 +76,7 @@ export default function AddUserData(props) {
       ...stateMapControls,
       layerAddControl: null,
       fileUploadedContent: null,
+      fileUploadedOriginalContent: null,
       // selectedControl: 'layer'
     }));
     setNotReturn(false);
@@ -89,6 +92,7 @@ export default function AddUserData(props) {
       ...stateMapControls,
       layerAddControl: null,
       fileUploadedContent: null,
+      fileUploadedOriginalContent: null,
       // selectedControl: 'layer',
       addLayer: false,
     }));
@@ -133,7 +137,6 @@ export default function AddUserData(props) {
     if (fileData && fileData.addFile) {
       if (fileData.addFile.success) {
         // Upload file to MS Blob Stroage
-
         let fileContent = inputFiles;
 
         const url = fileData.addFile.file.uri;
