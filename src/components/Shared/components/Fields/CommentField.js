@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Grid, TextField } from "@material-ui/core";
-import $ from 'jquery';
+import $ from "jquery";
 
-import Typography from "@material-ui/core/Typography";
-import Chip from "@material-ui/core/Chip";
 import { useLazyQuery } from "@apollo/client";
 import Autocomplete, {
   createFilterOptions,
@@ -11,6 +9,7 @@ import Autocomplete, {
 import { makeStyles } from "@material-ui/core/styles";
 
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
+import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 
 const filter = createFilterOptions();
 
@@ -38,7 +37,6 @@ const useStyles = makeStyles((theme) => ({
   commentInputFocusIn: {
     marginTop: "-50px",
     marginBottom: "15px",
-
   },
   commentInputFocusOut: {
     marginTop: "-32px",
@@ -49,11 +47,10 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: "19px",
     fontSize: "16px",
     marginRight: "4px",
-    // whiteSpace: "pre"
     height: "43px",
     overflowY: "auto",
-    width: "96%"
-  }
+    width: "96%",
+  },
 }));
 
 export default function DealComment({ comment, showActions, setComment }) {
@@ -69,16 +66,20 @@ export default function DealComment({ comment, showActions, setComment }) {
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "cache-and-network",
   });
+  const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
+    fetchPolicy: "cache-first",
+  });
 
   useEffect(() => {
     getAllMongoUsers();
   }, [getAllMongoUsers]);
 
-  (function() {
+  (function () {
     var target = $("#colorText");
-    $(".MuiOutlinedInput-input").scroll(function() {
-      target.prop("scrollTop", this.scrollTop)
-            .prop("scrollLeft", this.scrollLeft);
+    $(".MuiOutlinedInput-input").scroll(function () {
+      target
+        .prop("scrollTop", this.scrollTop)
+        .prop("scrollLeft", this.scrollLeft);
     });
   })();
 
@@ -91,6 +92,11 @@ export default function DealComment({ comment, showActions, setComment }) {
         }))
         .filter((user) => user._id && user.name);
       setUsers(data);
+      const emails = userLists.allMongoUsers.map((user) => user.email);
+      debugger;
+      getProfilesImages({
+        variables: { emails },
+      });
     }
   }, [userLists]);
 
@@ -114,36 +120,30 @@ export default function DealComment({ comment, showActions, setComment }) {
         if (mention) {
           value = value + ` <span class='blue'>@${mention.name}</span>`;
         } else {
-          value = value + ' ' + data[i];
+          value = value + " " + data[i];
         }
       } else {
-        value = value + ' ' + data[i];
+        value = value + " " + data[i];
       }
     }
     document.getElementById("colorText").innerHTML = value;
-    // document.getElementById("colorText").scrollTop = document.getElementById("colorText").scrollHeight;
-    
-    // var target = $("#colorText");
-    // $(".MuiOutlinedInput-input").scroll(function() {
-    //   debugger
-    //   target.prop("scrollTop", this.scrollTop)
-    //         .prop("scrollLeft", this.scrollLeft);
-    // });
-
   }, [comment]);
 
   const setCommentValue = (value) => {
-    if(value.includes("@")){
+    if (value.includes("@")) {
       let updatedValue = JSON.parse(JSON.stringify(value));
-      for (let i = 0; i < mentionedList.length; i++){
-        if(comment.includes(mentionedList[i]._id)){
-          updatedValue = updatedValue.replace(`@${mentionedList[i].name}`, `{{${mentionedList[i]._id}}}`)
+      for (let i = 0; i < mentionedList.length; i++) {
+        if (comment.includes(mentionedList[i]._id)) {
+          updatedValue = updatedValue.replace(
+            `@${mentionedList[i].name}`,
+            `{{${mentionedList[i]._id}}}`
+          );
         }
       }
-      const splitedString = updatedValue.split("@")[1]
-      setFilterValue(splitedString ? splitedString.split(" ")[0] : '');
+      const splitedString = updatedValue.split("@")[1];
+      setFilterValue(splitedString ? splitedString.split(" ")[0] : "");
       setComment(updatedValue);
-    }else{
+    } else {
       setComment(value);
     }
   };
@@ -168,20 +168,26 @@ export default function DealComment({ comment, showActions, setComment }) {
 
     const value = JSON.parse(JSON.stringify(comment.split("@")[0]));
 
-    if(comment.includes("{{") && comment.includes("}}")){
+    if (comment.includes("{{") && comment.includes("}}")) {
       let updatedValue = JSON.parse(JSON.stringify(comment));
-      const afterMentionText = updatedValue.split("@")[1].split(' ')[0];
-      updatedValue = updatedValue.replace(`@${afterMentionText}`, `@${act.name}`)
-      for (let i = 0; i < mentionedList.length; i++){
-        if(updatedValue.includes(mentionedList[i]._id)){
-          updatedValue = updatedValue.replace(`{{${mentionedList[i]._id}}}`, `@${mentionedList[i].name}`)
+      const afterMentionText = updatedValue.split("@")[1].split(" ")[0];
+      updatedValue = updatedValue.replace(
+        `@${afterMentionText}`,
+        `@${act.name}`
+      );
+      for (let i = 0; i < mentionedList.length; i++) {
+        if (updatedValue.includes(mentionedList[i]._id)) {
+          updatedValue = updatedValue.replace(
+            `{{${mentionedList[i]._id}}}`,
+            `@${mentionedList[i].name}`
+          );
         }
       }
       setNameAutValue({ name: updatedValue, _id: "" });
-    }else{
+    } else {
       setNameAutValue({ name: `${value}@${act.name}`, _id: "" });
     }
-    
+
     setComment(value + `{{${act._id}}}`);
     setIsSelected(true);
   };
@@ -241,7 +247,11 @@ export default function DealComment({ comment, showActions, setComment }) {
           />
           <div
             id="colorText"
-            className={`${comment || showActions ? classes.commentInputFocusIn : classes.commentInputFocusOut} ${classes.textDiv} hideScroll`}
+            className={`${
+              comment || showActions
+                ? classes.commentInputFocusIn
+                : classes.commentInputFocusOut
+            } ${classes.textDiv} hideScroll`}
           ></div>
         </>
       )}
