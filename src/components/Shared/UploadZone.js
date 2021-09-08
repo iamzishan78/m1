@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 		"& .MuiDropzoneArea-icon": { display: "none" },
 		// minHeight: "125px",
 		// width: "100%",
-		width: '465px',
+		width: "465px",
 		padding: "10px 40px",
 		color: "#757575",
 		fontWeight: "normal",
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 		// border: "2px dashed rgb(176, 176, 176)",
 		border: "2px dashed #dddddd",
 		marginBottom: "30px",
-		marginLeft: "15px"
+		marginLeft: "15px",
 	},
 	dropzoneClassCRM: {
 		"&:hover": { backgroundColor: "#dddddd" },
@@ -52,30 +52,25 @@ const useStyles = makeStyles((theme) => ({
 		justifyContent: "center",
 		border: "2px dashed #dddddd",
 		marginBottom: "30px",
-
-
 	},
 }));
 
 export default function UploadZone(props) {
 	const dispatch = useDispatch();
 	const [inputFile, setInputFile] = useState(null);
-	const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
-		ADDDESCRIPTORFILE,
-		{
-			refetchQueries: ["getRecentContactFiles"],
-			awaitRefetchQueries: true,
-			//   onCompleted: () => {
-			//     // setTimeout(() => {
-			//     //   getRecentFiles({
-			//     //     variables: {
-			//     //       contactId: props.id,
-			//     //     },
-			//     //   });
-			//     // }, 3000);
-			//   },
-		}
-	);
+	const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(ADDDESCRIPTORFILE, {
+		refetchQueries: ["getRecentContactFiles"],
+		awaitRefetchQueries: true,
+		//   onCompleted: () => {
+		//     // setTimeout(() => {
+		//     //   getRecentFiles({
+		//     //     variables: {
+		//     //       contactId: props.id,
+		//     //     },
+		//     //   });
+		//     // }, 3000);
+		//   },
+	});
 
 	useEffect(() => {
 		if (addFileData && addFileData?.addFileDescriptor?.success) {
@@ -100,8 +95,8 @@ export default function UploadZone(props) {
 						console.log(res);
 						if (res?.status == 201) {
 							// props.getRecentFiles();
-							if(props.setFileData){
-								props.setFileData(addFileData)
+							if (props.setFileData) {
+								props.setFileData(addFileData);
 							}
 						} else dispatch(showErrorMessage("Upload failed"));
 					})
@@ -132,74 +127,71 @@ export default function UploadZone(props) {
 
 	const classes = useStyles();
 
-	console.log('PROPS UPLOAD', props)
-
 	return (
 		<>
+			{/* <div style={{width: '100px', height: '100px'}}> */}
 
-		{/* <div style={{width: '100px', height: '100px'}}> */}
+			<Container>
+				<DropzoneAreaBase
+					onAdd={handleFileInput}
+					// onDelete={(fileObj) => console.log("Removed File:", fileObj)}
+					showAlerts={props.relatedObjectType === "Contact"}
+					onAlert={(message, variant) => {
+						console.log(`${variant}: ${message}`);
+					}}
+					filesLimit={1}
+					dropzoneText={"+"}
+					// acceptedFiles={[
+					// 	"image/*",
+					// 	"video/*",
+					// 	"application/*",
+					// 	".*",
+					// 	".geojson",
+					// 	".csv",
+					// 	".pdf",
+					// 	".docx",
+					// 	".doc",
+					// 	".ppt",
+					// 	".pptx",
+					// 	".txt",
+					// 	".xls",
+					// 	".xlsx",
+					// 	".mdb",
 
-		<Container>
-			<DropzoneAreaBase
-				onAdd={handleFileInput}
-				// onDelete={(fileObj) => console.log("Removed File:", fileObj)}
-				showAlerts={props.relatedObjectType === "Contact"}
-				onAlert={(message, variant) => {
-					console.log(`${variant}: ${message}`);
-				}}
-				filesLimit={1}
-				dropzoneText={"+"}
-				// acceptedFiles={[
-				// 	"image/*",
-				// 	"video/*",
-				// 	"application/*",
-				// 	".*",
-				// 	".geojson",
-				// 	".csv",
-				// 	".pdf",
-				// 	".docx",
-				// 	".doc",
-				// 	".ppt",
-				// 	".pptx",
-				// 	".txt",
-				// 	".xls",
-				// 	".xlsx",
-				// 	".mdb",
+					// 	// shape
+					// 	".shp",
+					// 	".shx",
+					// 	".sbn",
+					// 	".fbn",
+					// 	".ain",
+					// 	".atx",
+					// 	".ixs",
 
-				// 	// shape 
-				// 	".shp",
-				// 	".shx",
-				// 	".sbn",
-				// 	".fbn",
-				// 	".ain",
-				// 	".atx",
-				// 	".ixs",
+					// 	// phdwin
+					// 	".phd",
+					// 	".mod",
+					// 	".phb",
+					// 	".phz",
 
-				// 	// phdwin
-				// 	".phd",
-				// 	".mod",
-				// 	".phb",
-				// 	".phz",
+					// 	// IHS
+					// 	".98c",
 
-				// 	// IHS
-				// 	".98c",
+					// 	// DRILLING INFO
+					// 	".DRI",
 
-				// 	// DRILLING INFO 
-				// 	".DRI",
+					// 	// LASSER
+					// 	".PRN",
 
-				// 	// LASSER 
-				// 	".PRN",
+					// 	// DIVESTCO
+					// 	".pds",
 
-				// 	// DIVESTCO 
-				// 	".pds",
-
-				// ]}
-				maxFileSize={104857600}
-				dropzoneClass={classes.dropzoneClassCRM}
+					// ]}
+					maxFileSize={104857600}
+					dropzoneClass={classes.dropzoneClassCRM}
 				// getFileAddedMessage={(value) => {
 				// 	alert("File is been added", value);
 				// }}
-			></DropzoneAreaBase>
+				></DropzoneAreaBase>
 			</Container>
 			{/* </div> */}
 

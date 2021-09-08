@@ -269,7 +269,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
   const [stateTransact, setStateTransact] = useContext(TransactContext);
 
   const [isNewSubtask, setNewSubtask] = useState({ index: -1, value: false });
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  // const [anchorEl, setAnchorEl] = React.useState(null);
   const [extendedTaskIndex,] = useState(dealSettings.findIndex((ds) => ds._id === stateTransact.selectedTask._id) || 0);
 
   const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
@@ -292,7 +292,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
         setStateTransact((state) => ({ ...state, selectedTask: {} }));
       }, 3000);
     }
-  }, [stateTransact.selectedTask]);
+  }, [setStateTransact, stateTransact.selectedTask]);
 
   // const handleClick = (event) => {
   //   setAnchorEl(event.currentTarget);

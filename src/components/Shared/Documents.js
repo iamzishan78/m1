@@ -9,6 +9,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
+import AddIcon from "@material-ui/icons/Add";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -415,23 +416,36 @@ export default function Documents(props) {
       <div className={classes.cardContent}>
         <CardContent>
           <div className={classes.rootPadding}>
-            {props.isTransactPage && (
-              <TextField
-                fullWidth
-                value={documentSearch}
-                onChange={(e) => setDocumentSearch(e.target.value)}
-                variant="outlined"
-                label={"Search Documents"}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  )
-                }}
-                labelWidth={70}
-              />
-            )}
+            <Grid
+              container
+              direction="row"
+              justify="space-between"
+              alignItems="center">
+              <Grid item style={{ width: '86%' }}>
+                {props.isTransactPage && (
+                  <TextField
+                    fullWidth
+                    value={documentSearch}
+                    onChange={(e) => setDocumentSearch(e.target.value)}
+                    variant="outlined"
+                    label={"Search Documents"}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                      )
+                    }}
+                    labelWidth={70}
+                  />
+                )}
+              </Grid>
+              <Grid item style={{ width: '11%' }}>
+                <IconButton>
+                  <AddIcon size="large" />
+                </IconButton>
+              </Grid>
+            </Grid>
           </div>
           <div className={classes.fileList}>
             {/* this is for view all */}
