@@ -139,25 +139,38 @@ export default function Contacts(props) {
   };
   return (
     <div className={classes.root}>
-      {filteredContacts && filteredContacts.length > 0 > 0 && (
-        <TextField
-          fullWidth
-          placeholder="Search contacts..."
-          InputProps={{
-            startAdornment: (
-              <>
-                <InputAdornment position="start">
-                  <SearchIcon htmlColor="#757575" />
-                </InputAdornment>
-              </>
-            ),
-          }}
-          value={search}
-          onChange={(event) => {
-            setSearch(event.target.value);
-          }}
-        />
-      )}
+      <Grid
+        container
+        direction="row"
+        justify="space-between"
+        alignItems="center">
+        <Grid item style={{ width: '86%' }}>
+          {filteredContacts && filteredContacts.length > 0 > 0 && (
+            <TextField
+              fullWidth
+              placeholder="Search contacts..."
+              InputProps={{
+                startAdornment: (
+                  <>
+                    <InputAdornment position="start">
+                      <SearchIcon htmlColor="#757575" />
+                    </InputAdornment>
+                  </>
+                ),
+              }}
+              value={search}
+              onChange={(event) => {
+                setSearch(event.target.value);
+              }}
+            />
+          )}
+        </Grid>
+        <Grid item style={{ width: '11%' }}>
+          <IconButton>
+            <AddIcon size="large" />
+          </IconButton>
+        </Grid>
+      </Grid>
       <div className={classes.list}>
         <List aria-label="contacts list">
           {filteredContacts && filteredContacts.length > 0 ? (

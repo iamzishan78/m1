@@ -9,30 +9,25 @@ import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
 import { Container } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
-	dropzoneClassDocs: {
-		"&:hover": { backgroundColor: "#dddddd" },
-		"& .MuiDropzoneArea-text": {
-			fontSize: "0.83em",
-			marginBlockStart: "1.67em",
-			marginBlockEnd: "1.67em",
-			fontWeight: "bold",
+	root: {
+		paddingTop: "28px",
+		"& .MuiContainer-root": {
+			paddingLeft: "0px",
+			paddingRight: "0px",
+			"& .MuiDropzoneArea-root": {
+				width: "50px",
+				minHeight: "50px !important",
+				height: "50px !important",
+				borderRadius: "50%",
+				border: "none",
+				fontSize: "xx-large",
+				backgroundColor: "transparent",
+				color: "#c8c8c8",
+				"&:hover": {
+					backgroundColor: "#dddddd",
+				},
+			},
 		},
-		"& .MuiDropzoneArea-icon": { display: "none" },
-		// minHeight: "125px",
-		// width: "100%",
-		width: "465px",
-		padding: "10px 40px",
-		color: "#757575",
-		fontWeight: "normal",
-		backgroundColor: "#eee",
-		textAlign: "center",
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
-		// border: "2px dashed rgb(176, 176, 176)",
-		border: "2px dashed #dddddd",
-		marginBottom: "30px",
-		marginLeft: "15px",
 	},
 	dropzoneClassCRM: {
 		"&:hover": { backgroundColor: "#dddddd" },
@@ -93,7 +88,7 @@ export default function UploadZone(props) {
 				})
 					.then((res) => {
 						console.log(res);
-						if (res?.status == 201) {
+						if (res?.status === 201) {
 							// props.getRecentFiles();
 							if (props.setFileData) {
 								props.setFileData(addFileData);
@@ -129,71 +124,70 @@ export default function UploadZone(props) {
 
 	return (
 		<>
-			{/* <div style={{width: '100px', height: '100px'}}> */}
+			<div className={props.customClass ? classes.root : null}>
+				<Container>
+					<DropzoneAreaBase
+						onAdd={handleFileInput}
+						// onDelete={(fileObj) => console.log("Removed File:", fileObj)}
+						showAlerts={props.relatedObjectType === "Contact"}
+						onAlert={(message, variant) => {
+							console.log(`${variant}: ${message}`);
+						}}
+						filesLimit={1}
+						dropzoneText={"+"}
+						// acceptedFiles={[
+						// 	"image/*",
+						// 	"video/*",
+						// 	"application/*",
+						// 	".*",
+						// 	".geojson",
+						// 	".csv",
+						// 	".pdf",
+						// 	".docx",
+						// 	".doc",
+						// 	".ppt",
+						// 	".pptx",
+						// 	".txt",
+						// 	".xls",
+						// 	".xlsx",
+						// 	".mdb",
 
-			<Container>
-				<DropzoneAreaBase
-					onAdd={handleFileInput}
-					// onDelete={(fileObj) => console.log("Removed File:", fileObj)}
-					showAlerts={props.relatedObjectType === "Contact"}
-					onAlert={(message, variant) => {
-						console.log(`${variant}: ${message}`);
-					}}
-					filesLimit={1}
-					dropzoneText={"+"}
-					// acceptedFiles={[
-					// 	"image/*",
-					// 	"video/*",
-					// 	"application/*",
-					// 	".*",
-					// 	".geojson",
-					// 	".csv",
-					// 	".pdf",
-					// 	".docx",
-					// 	".doc",
-					// 	".ppt",
-					// 	".pptx",
-					// 	".txt",
-					// 	".xls",
-					// 	".xlsx",
-					// 	".mdb",
+						// 	// shape
+						// 	".shp",
+						// 	".shx",
+						// 	".sbn",
+						// 	".fbn",
+						// 	".ain",
+						// 	".atx",
+						// 	".ixs",
 
-					// 	// shape
-					// 	".shp",
-					// 	".shx",
-					// 	".sbn",
-					// 	".fbn",
-					// 	".ain",
-					// 	".atx",
-					// 	".ixs",
+						// 	// phdwin
+						// 	".phd",
+						// 	".mod",
+						// 	".phb",
+						// 	".phz",
 
-					// 	// phdwin
-					// 	".phd",
-					// 	".mod",
-					// 	".phb",
-					// 	".phz",
+						// 	// IHS
+						// 	".98c",
 
-					// 	// IHS
-					// 	".98c",
+						// 	// DRILLING INFO
+						// 	".DRI",
 
-					// 	// DRILLING INFO
-					// 	".DRI",
+						// 	// LASSER
+						// 	".PRN",
 
-					// 	// LASSER
-					// 	".PRN",
+						// 	// DIVESTCO
+						// 	".pds",
 
-					// 	// DIVESTCO
-					// 	".pds",
-
-					// ]}
-					maxFileSize={104857600}
-					dropzoneClass={classes.dropzoneClassCRM}
-				// getFileAddedMessage={(value) => {
-				// 	alert("File is been added", value);
-				// }}
-				></DropzoneAreaBase>
-			</Container>
-			{/* </div> */}
+						// ]}
+						maxFileSize={104857600}
+						dropzoneClass={classes.dropzoneClassCRM}
+					// getFileAddedMessage={(value) => {
+					// 	alert("File is been added", value);
+					// }}
+					></DropzoneAreaBase>
+				</Container>
+			</div>
 
 			{addFileLoading && (
 				<div style={{ display: "flex", justifyContent: "center" }}>

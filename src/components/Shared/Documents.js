@@ -3,8 +3,11 @@ import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import moment from "moment";
+import Divider from "@material-ui/core/Divider";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import TextField from "@material-ui/core/TextField";
+import Tooltip from "@material-ui/core/Tooltip";
+import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
@@ -185,7 +188,7 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   rootPadding: {
-    padding: "15px 25px 0px"
+    padding: "0px 25px"
   },
   cardContent: {
     "& .MuiCardContent-root": {
@@ -196,7 +199,50 @@ const useStyles = makeStyles((theme) => ({
     bottom: "0px !important",
     position: "absolute",
     width: "88%",
-  }
+  },
+  toolbarActions: {
+    display: "flex",
+    transition: theme.transitions.create("width"),
+  },
+  search: {
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    marginLeft: 0,
+    marginTop: 5,
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "auto",
+    },
+  },
+  iconSearch: {
+    height: "100%",
+    display: "flex",
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "rgba(121, 121, 121, 0.85)",
+    zIndex: 1,
+    "&:hover": {
+      color: "#fff",
+      cursor: "pointer",
+    },
+  },
+  inputRoot: {
+    color: "inherit",
+  },
+  inputInput: {
+    paddingLeft: `calc(1em + ${theme.spacing(2)}px)`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+
+    [theme.breakpoints.up("sm")]: {
+      width: "0ch",
+      "&:focus": {
+        width: "30ch",
+        height: "2ch",
+      },
+    },
+  },
 }));
 
 export default function Documents(props) {
@@ -206,6 +252,7 @@ export default function Documents(props) {
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [documentSearch, setDocumentSearch] = useState("");
+  const [isSearchActive, setSearchState] = useState(false);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
@@ -420,33 +467,51 @@ export default function Documents(props) {
               container
               direction="row"
               justify="space-between"
-              alignItems="center">
-              <Grid item style={{ width: '86%' }}>
-                {props.isTransactPage && (
-                  <TextField
-                    fullWidth
-                    value={documentSearch}
-                    onChange={(e) => setDocumentSearch(e.target.value)}
-                    variant="outlined"
-                    label={"Search Documents"}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchIcon />
-                        </InputAdornment>
-                      )
+              alignItems="center"
+              className={classes.toolbarActions}
+            >
+              {!isSearchActive && (
+                <Grid item xs={10}>
+                  <Typography variant="h6">Documents</Typography>
+                </Grid>
+              )}
+              <Grid item xs={1}>
+                <div className={classes.search}>
+                  <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput1").focus()}>
+                    <SearchIcon />
+                  </Tooltip>
+                  <InputBase
+                    id="searchInput1"
+                    autoComplete='off'
+                    placeholder="Search"
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput,
                     }}
-                    labelWidth={70}
+                    inputProps={{ "aria-label": "search" }}
+                    onFocus={() => setSearchState(true)}
+                    value={documentSearch}
+                    onBlur={() =>
+                      setTimeout(() => {
+                        setSearchState(false);
+                        setDocumentSearch("");
+                      }, 300)
+                    }
+                    onChange={(evt) => setDocumentSearch(evt.target.value)}
                   />
-                )}
+                </div>
               </Grid>
-              <Grid item style={{ width: '11%' }}>
-                <IconButton>
-                  <AddIcon size="large" />
-                </IconButton>
+              <Grid item xs={1}>
+                <UploadZone
+                  relatedObjectId={props.id}
+                  userId={userId}
+                  relatedObjectType={relatedObjectType}
+                  customClass
+                />
               </Grid>
             </Grid>
           </div>
+          <Divider />
           <div className={classes.fileList}>
             {/* this is for view all */}
             {filteredDocuments?.map((file, key) => {

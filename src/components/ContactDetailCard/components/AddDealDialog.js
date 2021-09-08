@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useRef,
-  useCallback,
-  Fragment
-} from "react";
+import React, { useState, useEffect, useContext, Fragment } from "react";
 import { get } from "lodash";
 import { useHistory } from "react-router-dom";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
@@ -26,20 +19,12 @@ import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {
-  CircularProgress,
-  Dialog,
-  Typography,
-  Avatar
-} from "@material-ui/core";
+import { Dialog, Avatar } from "@material-ui/core";
 import RightDialog from "./RightDialog";
 import Drawer from "components/Transact/components/Drawer";
 import moment from "moment";
-import {
-  deepEqual,
-  deepEqualObjects,
-  setStateIfDeepEqual
-} from "../../Shared/functions";
+import { setStateIfDeepEqual } from "../../Shared/functions";
+
 import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
 import DealTasksProgressZone from "./DealTasksProgressZone";
 import DealTasksDetails from "./DealTasksDetails";
