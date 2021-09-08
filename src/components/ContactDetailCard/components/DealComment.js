@@ -270,27 +270,26 @@ export default function DealComment(props) {
   };
 
   const addNewComment = (value) => {
-    debugger
-    // setLoadingComments(true);
-    // upsertComment({
-    //   variables: {
-    //     comment: {
-    //       comment: newCommentCleaner(value),
-    //       public: true,
-    //       user: stateApp.user.mongoId,
-    //       commentedOn: targetSourceId,
-    //       objectType: props.targetLabel,
-    //     },
-    //   },
-    //   refetchQueries: [
-    //     "getCommentsByObjectId",
-    //     "getCommentsCounter",
-    //     "getCommentsByObjectsIds",
-    //   ],
-    //   awaitRefetchQueries: true,
-    // });
-    // setShowActions(false);
-    // setComment("");
+    setLoadingComments(true);
+    upsertComment({
+      variables: {
+        comment: {
+          comment: newCommentCleaner(value),
+          public: true,
+          user: stateApp.user.mongoId,
+          commentedOn: targetSourceId,
+          objectType: props.targetLabel,
+        },
+      },
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
+      awaitRefetchQueries: true,
+    });
+    setShowActions(false);
+    setComment("");
   };
 
   const getCount = () => {
@@ -481,19 +480,7 @@ export default function DealComment(props) {
                 }
               }}
             >
-              <CommentField comment={comment} showActions={showActions} setComment={setComment} />
-              {showActions && (
-                <Button
-                  className={classes.commentBtn}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    addNewComment(comment);
-                  }}
-                >
-                  Comment
-                </Button>
-              )} 
+              <CommentField comment={comment} showActions={showActions} setComment={setComment} addNewComment={addNewComment} />
             </div>
           </Grid>
         </Grid>

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Grid, TextField } from "@material-ui/core";
 import $ from "jquery";
 
+import Avatar from "react-avatar";
+import IconButton from "@material-ui/core/IconButton";
+import Button from "@material-ui/core/Button";
 import { useLazyQuery } from "@apollo/client";
 import Autocomplete, {
   createFilterOptions,
@@ -51,9 +54,14 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "auto",
     width: "96%",
   },
+  commentBtn: {
+    float: "right",
+    right: "5px",
+    bottom: "5px",
+  },
 }));
 
-export default function DealComment({ comment, showActions, setComment }) {
+export default function DealComment({ comment, showActions, setComment, addNewComment }) {
   const classes = useStyles();
 
   const [users, setUsers] = useState([]);
@@ -61,7 +69,8 @@ export default function DealComment({ comment, showActions, setComment }) {
   const [showOptions, setShowOptions] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const [mentionedList, setMentionedList] = useState([]);
-  const [nameAutValue, setNameAutValue] = useState([]);
+  const [nameAutValue, setNameAutValue] = useState({});
+  const [profilesInfo, setProfilesInfo] = useState({});
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "cache-and-network",
@@ -89,16 +98,22 @@ export default function DealComment({ comment, showActions, setComment }) {
         .map((user) => ({
           _id: user._id,
           name: user.name,
+          email: user.email,
         }))
         .filter((user) => user._id && user.name);
       setUsers(data);
       const emails = userLists.allMongoUsers.map((user) => user.email);
-      debugger;
       getProfilesImages({
         variables: { emails },
       });
     }
   }, [userLists]);
+
+  useEffect(() => {
+    if (profilesData?.data?.profileByEmail?.profiles) {
+      setProfilesInfo(profilesData.data.profileByEmail.profiles);
+    }
+  }, [profilesData]);
 
   useEffect(() => {
     let value = JSON.parse(JSON.stringify(comment));
@@ -193,68 +208,96 @@ export default function DealComment({ comment, showActions, setComment }) {
   };
 
   return (
-    <Autocomplete
-      className={classes.search}
-      style={{
-        margin: 0,
-      }}
-      disableClearable
-      open={showOptions}
-      defaultValue={nameAutValue}
-      value={nameAutValue}
-      disableListWrap
-      options={users}
-      getOptionLabel={(option) => option.name}
-      getOptionSelected={(option, value) => {
-        return option === value;
-      }}
-      filterOptions={(options, params) => {
-        let inputValue = JSON.parse(JSON.stringify(filterValue));
-        const filtered = filter(options, { ...params, inputValue });
-        return filtered;
-      }}
-      renderOption={(option) => {
-        return (
-          <Grid container spacing={0}>
-            <Grid container item xs={12} alignItems="center">
-              <Grid item xs>
-                <span style={{ fontWeight: 400 }}>{option.name}</span>
-                {option.type}
+    <>
+      <Autocomplete
+        className={classes.search}
+        style={{
+          margin: 0,
+        }}
+        disableClearable
+        open={showOptions}
+        defaultValue={nameAutValue}
+        value={nameAutValue}
+        disableListWrap
+        options={users}
+        getOptionLabel={(option) => option.name}
+        getOptionSelected={(option, value) => {
+          return option === value;
+        }}
+        filterOptions={(options, params) => {
+          let inputValue = JSON.parse(JSON.stringify(filterValue));
+          const filtered = filter(options, { ...params, inputValue });
+          return filtered;
+        }}
+        renderOption={(option) => {
+          return (
+            <Grid className={classes.myClass} container spacing={0}>
+              <Grid container item xs={1} alignItems="center">
+                <IconButton style={{ padding: "0px" }}>
+                  {profilesInfo[option.email]?.profileImage ? (
+                    <Avatar
+                      src={profilesInfo[option.email].profileImage}
+                      size="25"
+                      round
+                    />
+                  ) : (
+                    <Avatar name={option.name} size="25" round />
+                  )}
+                </IconButton>
+              </Grid>
+              <Grid container item xs={11} alignItems="center">
+                <Grid item xs>
+                  <span style={{ fontWeight: 400 }}>{option.name}</span>
+                  {option.type}
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
-        );
-      }}
-      onInputChange={onInputChange}
-      onChange={onChange}
-      renderInput={(params) => (
-        <>
-          <TextField
-            classes={{ root: classes.customTextField }}
-            margin="dense"
-            {...params}
-            style={{
-              margin: 0,
-            }}
-            fullWidth
-            rows={showActions ? 2 : 1}
-            rowsMax={2}
-            multiline
-            className={classes.activitySearchField}
-            placeholder="Add a question or post an update"
-            variant="outlined"
-            size="small"
-          />
-          <div
-            id="colorText"
-            className={`${
-              comment || showActions
-                ? classes.commentInputFocusIn
-                : classes.commentInputFocusOut
-            } ${classes.textDiv} hideScroll`}
-          ></div>
-        </>
+          );
+        }}
+        onInputChange={onInputChange}
+        onChange={onChange}
+        renderInput={(params) => (
+          <>
+            <TextField
+              classes={{ root: classes.customTextField }}
+              margin="dense"
+              {...params}
+              style={{
+                margin: 0,
+              }}
+              fullWidth
+              rows={showActions ? 2 : 1}
+              rowsMax={2}
+              multiline
+              className={classes.activitySearchField}
+              placeholder="Add a question or post an update"
+              variant="outlined"
+              size="small"
+            />
+            <div
+              id="colorText"
+              className={`${
+                comment || showActions
+                  ? classes.commentInputFocusIn
+                  : classes.commentInputFocusOut
+              } ${classes.textDiv} hideScroll`}
+            ></div>
+          </>
+        )}
+      />
+      {showActions && (
+        <Button
+          className={classes.commentBtn}
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            addNewComment(comment);
+            setNameAutValue({})
+          }}
+        >
+          Comment
+        </Button>
       )}
-    />
+    </>
   );
 }
