@@ -32,7 +32,8 @@ import ContactMailIcon from "@material-ui/icons/ContactMail";
 import DotsIcon from "@material-ui/icons/MoreHoriz";
 import DocumentIcon from "@material-ui/icons/DescriptionOutlined";
 import PersonIcon from "@material-ui/icons/Person";
-import LinkIcon from "@material-ui/icons/Link";
+import RecentActorsIcon from '@material-ui/icons/RecentActors';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import BusinessIcon from "@material-ui/icons/Business";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -218,7 +219,7 @@ export default function ActivitiesModal({
 }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-
+  const history = useHistory();
   const [addNew, setAddNew] = useState(true);
   const [activityType, setActivityType] = useState("");
   const [activityName, setActivityName] = useState("");
@@ -552,6 +553,15 @@ export default function ActivitiesModal({
     });
   };
 
+  const handleOnContactView = () =>
+    nameAutValue._id && history.push(`/contact/details/${nameAutValue._id}`);
+    
+  const handleOnDealClick = () => {
+    // handle Deal Click we need to get lane id 
+  }
+
+  const dealValue = openDeals.find((deal) => deal._id === dealId) || null
+
   return (
     <Dialog
       className={classes.dialogExpCard}
@@ -812,9 +822,10 @@ export default function ActivitiesModal({
                   />
                 </div>
               </div>
+
               <div className={classes.row}>
                 <span className={classes.rowIcon}>
-                  <LinkIcon />
+                <MonetizationOnIcon  onClick={handleOnDealClick} color={dealValue ? "secondary" : "disabled"} />
                 </span>
                 <div style={{ width: "76%", marginRight: 24 }}>
                   <Autocomplete
@@ -823,9 +834,7 @@ export default function ActivitiesModal({
                     onChange={(e, deal) => {
                       setDealId(deal?._id);
                     }}
-                    value={
-                      openDeals.find((deal) => deal._id === dealId) || null
-                    }
+                    value={dealValue}
                     getOptionSelected={(option) => option.id === dealId}
                     getOptionLabel={(option) => option.name}
                     renderOption={(option) => {
@@ -854,41 +863,47 @@ export default function ActivitiesModal({
                       />
                     )}
                   />
+                </div>
+              </div>
+              <div className={classes.row}>
+                <span className={classes.rowIcon}>
+                  <RecentActorsIcon  onClick={handleOnContactView} color={nameAutValue._id ? "secondary" : "disabled"} />
+                </span>
+                <div className={classes.fieldWidth}>
+                  <AutocompEntityNamesVirtualizeList
+                    mongoEntitiesArray={mongoEntitiesArray}
+                    setMongoEntitiesArray={setMongoEntitiesArray}
+                    nameAutValue={nameAutValue}
+                    setNameAutValue={setNameAutValue}
+                    nameAutInputValue={nameAutInputValue}
+                    setNameAutInputValue={setNameAutInputValue}
+                    variant="outlined"
+                    label="Associated Contact or Lead"
+                    hasNextPage={hasNextPage}
+                    isNextPageLoading={isNextPageLoading}
+                    loadNextPage={loadNextPage}
+                    addNew={true}
+                    addNewOnClick={(value) => {
+                      const contact = {name: value};
+                      addContact({
+                        variables: {
+                          contact: {
+                            ...contact,
+                            createBy: stateApp.user.mongoId,
+                            lastUpdateBy: stateApp.user.mongoId,
+                          },
+                        },
+                        refetchQueries: ["getPaginatedContacts", "getContact"],
+                        awaitRefetchQueries: true,
+                      });
+                    }}
+                  />
+                </div>
+              </div>
 
-                  <br />
-                  <div className={classes.fieldWidth}>
-                    <AutocompEntityNamesVirtualizeList
-                      mongoEntitiesArray={mongoEntitiesArray}
-                      setMongoEntitiesArray={setMongoEntitiesArray}
-                      nameAutValue={nameAutValue}
-                      setNameAutValue={setNameAutValue}
-                      nameAutInputValue={nameAutInputValue}
-                      setNameAutInputValue={setNameAutInputValue}
-                      variant="outlined"
-                      label="Associated Contact or Lead"
-                      hasNextPage={hasNextPage}
-                      isNextPageLoading={isNextPageLoading}
-                      loadNextPage={loadNextPage}
-                      addNew={true}
-                      addNewOnClick={(value) => {
-                        const contact = {name: value};
-                        addContact({
-                            variables: {
-                              contact: {
-                                ...contact,
-                                createBy: stateApp.user.mongoId,
-                                lastUpdateBy: stateApp.user.mongoId,
-                              },
-                            },
-                            refetchQueries: ["getPaginatedContacts", "getContact"],
-                            awaitRefetchQueries: true,
-                          });
-                      }}
-                    />
-                  </div>
-
-                  <br />
-
+              <div className={classes.row}>
+                <span className={classes.rowIcon}></span>
+                <div style={{ width: "76%", marginRight: 24 }}>
                   <TextField
                     type="text"
                     variant="outlined"
