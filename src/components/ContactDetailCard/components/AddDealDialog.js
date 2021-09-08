@@ -27,6 +27,7 @@ import { setStateIfDeepEqual } from "../../Shared/functions";
 
 import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
 import DealTasksProgressZone from "./DealTasksProgressZone";
+import DealComment from "./DealComment";
 import DealTasksDetails from "./DealTasksDetails";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
@@ -337,6 +338,9 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       visibility: "visible"
     }
+  },
+  dealContainer:{
+    maxHeight: "calc(100vh - 147px) !important",
   }
 }));
 
@@ -360,6 +364,7 @@ function AddDealDialog(props) {
   const { selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
   const [isProgressDetail, toggleProgressDetail] = useState(null);
   const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
+  const [newCommentsIds, setNewCommentsIds] = useState([]);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [titleFocus, setTitleFocus] = useState(false);
@@ -1018,6 +1023,10 @@ function AddDealDialog(props) {
         if (ID.length > 0) {
           variables = { ...variables, files: ID }
         }
+        
+        if(newCommentsIds.length > 0){
+          variables = { ...variables, comments: newCommentsIds }
+        }
         addDeal({
           variables,
           refetchQueries: [
@@ -1254,6 +1263,12 @@ function AddDealDialog(props) {
 
   const setUploadedFileData = (uploadedfile) => {
     setUploadedFiles([...uploadedFiles, uploadedfile])
+  }
+
+  const setNewCommentId = (id) => {
+    const comments = JSON.parse(JSON.stringify(newCommentsIds))
+    comments.push(id)
+    setNewCommentsIds(comments);
   }
 
   const StickyHeader = () => (
@@ -1767,9 +1782,13 @@ function AddDealDialog(props) {
                     activeDeal={stateApp.activeDeal}
                   />
                 </div>
-              </div>
+              </div>                 
             )}
           </div>
+          <DealComment
+            setNewCommentId={setNewCommentId}
+            targetSourceId={stateApp.activeDeal?.cardId}
+          />
         </RightDialog>
       </div>
     </>
