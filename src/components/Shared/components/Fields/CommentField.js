@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiAutocomplete-endAdornment": {
       display: "none",
     },
-    "& .MuiInputBase-input": { color: "transparent", caretColor: "black" },
+    "& .MuiInputBase-input": { color: "red", caretColor: "black" },
   },
   customTextField: {
     "& textarea::placeholder": {
@@ -61,14 +61,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DealComment({ comment, showActions, setComment, addNewComment }) {
+export default function DealComment({
+  comment,
+  showActions,
+  setComment,
+  upsertComment,
+  isEdit,
+  setEditCommentId
+}) {
   const classes = useStyles();
 
   const [users, setUsers] = useState([]);
   const [filterValue, setFilterValue] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
-  const [mentionedList, setMentionedList] = useState([]);
+  // const [mentionedList, setMentionedList] = useState([]);
   const [nameAutValue, setNameAutValue] = useState({});
   const [profilesInfo, setProfilesInfo] = useState({});
 
@@ -122,36 +129,67 @@ export default function DealComment({ comment, showActions, setComment, addNewCo
     } else {
       setShowOptions(false);
     }
-    const data = value.split(" ");
-    value = "";
+    // const data = value.split(" ");
+    // value = "";
 
-    for (let i = 0; i < data.length; i++) {
-      if (/^{{[0-9a-z]+}}$/.test(data[i])) {
-        let id = JSON.parse(JSON.stringify(data[i]));
-        id = id.replace("{{", "");
-        id = id.replace("}}", "");
+    // for (let i = 0; i < data.length; i++) {
+    //   if (/^{{[0-9a-z]+}}$/.test(data[i])) {
+    //     let id = JSON.parse(JSON.stringify(data[i]));
+    //     id = id.replace("{{", "");
+    //     id = id.replace("}}", "");
 
-        const mention = mentionedList.find((item) => item._id === id);
-        if (mention) {
-          value = value + ` <span class='blue'>@${mention.name}</span>`;
-        } else {
-          value = value + " " + data[i];
+    //     const mention = users.find((item) => item._id === id);
+    //     if (mention) {
+    //       value = value + ` <span class='blue'>@${mention.name}</span>`;
+    //     } else {
+    //       value = value + " " + data[i];
+    //     }
+    //   } else {
+    //     value = value + " " + data[i];
+    //   }
+    // }
+    // debugger
+    // document.getElementById("colorText").innerHTML = value;
+
+
+    
+    if (comment.includes("{{") && comment.includes("}}")) {
+
+      let updatedValue = JSON.parse(JSON.stringify(comment));
+      // const afterMentionText = updatedValue.split("@")[1].split(" ")[0];
+      // updatedValue = updatedValue.replace(
+      //   `@${afterMentionText}`,
+      //   `@${act.name}`
+      // );
+      for (let i = 0; i < users.length; i++) {
+        if (updatedValue.includes(users[i]._id)) {
+          updatedValue = updatedValue.replace(
+            `{{${users[i]._id}}}`,
+            `@${users[i].name}`
+          );
+          value = value.replace(
+            `{{${users[i]._id}}}`,
+            ` <span class='blue'>@${users[i].name}</span>`
+          );
         }
-      } else {
-        value = value + " " + data[i];
       }
+      document.getElementById("colorText").innerHTML = value;
+      setNameAutValue({ name: updatedValue, _id: "" });
+    } else {
+      document.getElementById("colorText").innerHTML = value;
+      setNameAutValue({ name: comment, _id: "" });
     }
-    document.getElementById("colorText").innerHTML = value;
-  }, [comment]);
+
+  }, [comment, users]);
 
   const setCommentValue = (value) => {
     if (value.includes("@")) {
       let updatedValue = JSON.parse(JSON.stringify(value));
-      for (let i = 0; i < mentionedList.length; i++) {
-        if (comment.includes(mentionedList[i]._id)) {
+      for (let i = 0; i < users.length; i++) {
+        if (comment.includes(users[i]._id)) {
           updatedValue = updatedValue.replace(
-            `@${mentionedList[i].name}`,
-            `{{${mentionedList[i]._id}}}`
+            `@${users[i].name}`,
+            `{{${users[i]._id}}}`
           );
         }
       }
@@ -164,7 +202,7 @@ export default function DealComment({ comment, showActions, setComment, addNewCo
   };
 
   const onInputChange = (event, value, reason) => {
-    setNameAutValue({ name: value, _id: "" });
+    // setNameAutValue({ name: value, _id: "" });
 
     if (!isSelected) {
       setCommentValue(value);
@@ -175,33 +213,33 @@ export default function DealComment({ comment, showActions, setComment, addNewCo
 
   const onChange = (e, act) => {
     setShowOptions(false);
-    if (!mentionedList.includes(act._id)) {
-      const mentions = mentionedList;
-      mentions.push(act);
-      setMentionedList(mentions);
-    }
+    // if (!mentionedList.includes(act._id)) {
+    //   const mentions = mentionedList;
+    //   mentions.push(act);
+    //   setMentionedList(mentions);
+    // }
 
     const value = JSON.parse(JSON.stringify(comment.split("@")[0]));
 
-    if (comment.includes("{{") && comment.includes("}}")) {
-      let updatedValue = JSON.parse(JSON.stringify(comment));
-      const afterMentionText = updatedValue.split("@")[1].split(" ")[0];
-      updatedValue = updatedValue.replace(
-        `@${afterMentionText}`,
-        `@${act.name}`
-      );
-      for (let i = 0; i < mentionedList.length; i++) {
-        if (updatedValue.includes(mentionedList[i]._id)) {
-          updatedValue = updatedValue.replace(
-            `{{${mentionedList[i]._id}}}`,
-            `@${mentionedList[i].name}`
-          );
-        }
-      }
-      setNameAutValue({ name: updatedValue, _id: "" });
-    } else {
-      setNameAutValue({ name: `${value}@${act.name}`, _id: "" });
-    }
+    // if (comment.includes("{{") && comment.includes("}}")) {
+    //   let updatedValue = JSON.parse(JSON.stringify(comment));
+    //   const afterMentionText = updatedValue.split("@")[1].split(" ")[0];
+    //   updatedValue = updatedValue.replace(
+    //     `@${afterMentionText}`,
+    //     `@${act.name}`
+    //   );
+    //   for (let i = 0; i < mentionedList.length; i++) {
+    //     if (updatedValue.includes(mentionedList[i]._id)) {
+    //       updatedValue = updatedValue.replace(
+    //         `{{${mentionedList[i]._id}}}`,
+    //         `@${mentionedList[i].name}`
+    //       );
+    //     }
+    //   }
+    //   setNameAutValue({ name: updatedValue, _id: "" });
+    // } else {
+    //   setNameAutValue({ name: `${value}@${act.name}`, _id: "" });
+    // }
 
     setComment(value + `{{${act._id}}}`);
     setIsSelected(true);
@@ -266,7 +304,7 @@ export default function DealComment({ comment, showActions, setComment, addNewCo
                 margin: 0,
               }}
               fullWidth
-              rows={showActions ? 2 : 1}
+              rows={(isEdit || showActions) ? 2 : 1}
               rowsMax={2}
               multiline
               className={classes.activitySearchField}
@@ -285,18 +323,47 @@ export default function DealComment({ comment, showActions, setComment, addNewCo
           </>
         )}
       />
-      {showActions && (
-        <Button
-          className={classes.commentBtn}
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            addNewComment(comment);
-            setNameAutValue({})
-          }}
-        >
-          Comment
-        </Button>
+      {!isEdit ? (
+        <>
+          {showActions && (
+            <Button
+              className={classes.commentBtn}
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                debugger
+                // upsertComment(comment);
+                setNameAutValue({});
+              }}
+            >
+              Comment
+            </Button>
+          )}
+        </>
+      ) : (
+        <>
+          <Button
+            className={classes.commentBtn}
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              upsertComment(comment);
+            }}
+          >
+            Save Changes
+          </Button>
+
+          <Button
+            className={classes.commentBtn}
+            variant="contained"
+            onClick={() => {
+              setComment("");
+              setEditCommentId("");
+            }}
+          >
+            Cancel
+          </Button>
+        </>
       )}
     </>
   );

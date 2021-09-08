@@ -404,7 +404,8 @@ export default function DealComment(props) {
                           </div>
                         ) : (
                           <div className={classes.border}>
-                            <TextField
+                            <CommentField isEdit comment={editComment} showActions={showActions} setEditCommentId={setEditCommentId} setComment={setEditComment} upsertComment={updateComment} />
+                            {/* <TextField
                               margin="dense"
                               variant="outlined"
                               value={editComment}
@@ -441,7 +442,7 @@ export default function DealComment(props) {
                               }}
                             >
                               Cancel
-                            </Button>
+                            </Button> */}
                           </div>
                         )}
                       </Grid>
