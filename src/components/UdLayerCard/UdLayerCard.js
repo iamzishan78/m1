@@ -99,6 +99,7 @@ function UdLayerCard(props) {
         selectedPermit: null,
         expandedCard: false,
         currentFeature: undefined,
+        selectedUserDefinedLayer: null,
         // editDraw: false,
         // showShapeActionsPopup: false,
         viewDoc: null,
