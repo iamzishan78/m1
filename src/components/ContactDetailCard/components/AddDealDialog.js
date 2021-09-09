@@ -339,7 +339,7 @@ const useStyles = makeStyles((theme) => ({
       visibility: "visible"
     }
   },
-  dealContainer:{
+  dealContainer: {
     maxHeight: "calc(100vh - 147px) !important",
   }
 }));
@@ -1023,8 +1023,8 @@ function AddDealDialog(props) {
         if (ID.length > 0) {
           variables = { ...variables, files: ID }
         }
-        
-        if(newCommentsIds.length > 0){
+
+        if (newCommentsIds.length > 0) {
           variables = { ...variables, comments: newCommentsIds }
         }
         addDeal({
@@ -1421,7 +1421,7 @@ function AddDealDialog(props) {
             placeholder="Click to enter deal name"
             required
             fullWidth
-            // autoFocus
+            autoFocus
             // error text that will prevent things
             error={title && title !== "" ? false : true}
             helperText={
@@ -1782,7 +1782,7 @@ function AddDealDialog(props) {
                     activeDeal={stateApp.activeDeal}
                   />
                 </div>
-              </div>                 
+              </div>
             )}
           </div>
           <DealComment

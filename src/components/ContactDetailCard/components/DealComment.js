@@ -210,21 +210,21 @@ export default function DealComment(props) {
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")
       : `${value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")}.`;
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")}.`;
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -338,13 +338,13 @@ export default function DealComment(props) {
                       <Grid item xs={1}>
                         <IconButton style={{ top: "3px" }}>
                           {profilesInfo[eachComment.user.email]?.profileImage ||
-                          eachComment.isNew ? (
+                            eachComment.isNew ? (
                             <Avatar
                               src={
                                 eachComment.isNew
                                   ? profileImage
                                   : profilesInfo[eachComment.user.email]
-                                      .profileImage
+                                    .profileImage
                               }
                               size="38"
                               round
