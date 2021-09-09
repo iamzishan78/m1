@@ -483,7 +483,7 @@ export default function Documents(props) {
                   <InputBase
                     id="searchInput1"
                     autoComplete='off'
-                    placeholder="Search"
+                    placeholder="Search Documents"
                     classes={{
                       root: classes.inputRoot,
                       input: classes.inputInput,
@@ -494,7 +494,6 @@ export default function Documents(props) {
                     onBlur={() =>
                       setTimeout(() => {
                         setSearchState(false);
-                        setDocumentSearch("");
                       }, 300)
                     }
                     onChange={(evt) => setDocumentSearch(evt.target.value)}

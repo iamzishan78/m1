@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import {
   Grid,
-  InputAdornment,
   ListItemIcon,
   ListItemText,
   makeStyles,
-  TextField,
   Divider,
   List,
   ListItem,
   Button,
+  Typography,
+  Tooltip,
+  InputBase
 } from "@material-ui/core";
 import get from "lodash/get";
 import Avatar from "react-avatar";
@@ -29,12 +30,13 @@ import { REMOVEDEALDESCRIPTOR } from "../../graphQL/useMutationRemoveDealDescrip
 import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  rootPadding: {
     padding: "30px 30px 0px",
   },
   list: {
     overflowY: "auto",
     maxHeight: "79vh",
+    padding: "0px 30px",
     "& .MuiList-padding": {
       padding: "23px 0px !important",
     },
@@ -45,6 +47,45 @@ const useStyles = makeStyles((theme) => ({
   actionGrid: {
     margin: "0px 0px 10px 0px",
   },
+  search: {
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    marginLeft: 0,
+    marginTop: 5,
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "auto",
+    },
+  },
+  iconSearch: {
+    height: "100%",
+    display: "flex",
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "rgba(121, 121, 121, 0.85)",
+    zIndex: 1,
+    "&:hover": {
+      color: "#fff",
+      cursor: "pointer",
+    },
+  },
+  inputRoot: {
+    color: "inherit",
+  },
+  inputInput: {
+    paddingLeft: `calc(1em + ${theme.spacing(2)}px)`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+
+    [theme.breakpoints.up("sm")]: {
+      width: "0ch",
+      "&:focus": {
+        width: "30ch",
+        height: "2ch",
+      },
+    },
+  },
 }));
 
 export default function Contacts(props) {
@@ -52,6 +93,7 @@ export default function Contacts(props) {
   const classes = useStyles();
   const [search, setSearch] = useState("");
   const [contacts, setContacts] = useState();
+  const [isSearchActive, setSearchState] = useState(false);
   const [filteredContacts, setFilteredContacts] = useState(contacts);
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [hasNextPage, setHasNextPage] = useState(true);
@@ -138,40 +180,105 @@ export default function Contacts(props) {
     }
   };
   return (
-    <div className={classes.root}>
+    <>
       <Grid
         container
         direction="row"
         justify="space-between"
-        alignItems="center">
-        <Grid item style={{ width: '86%' }}>
-          {filteredContacts && filteredContacts.length > 0 > 0 && (
-            <TextField
-              fullWidth
-              placeholder="Search contacts..."
-              InputProps={{
-                startAdornment: (
-                  <>
-                    <InputAdornment position="start">
-                      <SearchIcon htmlColor="#757575" />
-                    </InputAdornment>
-                  </>
-                ),
+        alignItems="center"
+        className={classes.rootPadding}
+      >
+        {!isSearchActive && (
+          <Grid item xs={10}>
+            <Typography variant="h6">Contacts</Typography>
+          </Grid>
+        )}
+        <Grid item xs={1}>
+          <div className={classes.search}>
+            <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInputDocuments").focus()}>
+              <SearchIcon />
+            </Tooltip>
+            <InputBase
+              id="searchInputDocuments"
+              autoComplete='off'
+              placeholder="Search Contacts"
+              classes={{
+                root: classes.inputRoot,
+                input: classes.inputInput,
               }}
+              inputProps={{ "aria-label": "search" }}
+              onFocus={() => setSearchState(true)}
               value={search}
-              onChange={(event) => {
-                setSearch(event.target.value);
-              }}
+              onBlur={() =>
+                setTimeout(() => {
+                  setSearchState(false);
+                }, 300)
+              }
+              onChange={(evt) => setSearch(evt.target.value)}
             />
-          )}
+          </div>
         </Grid>
-        <Grid item style={{ width: '11%' }}>
-          <IconButton>
+        <Grid item xs={1}>
+          <IconButton onClick={() => setAddContact((addContact) => !addContact)}>
             <AddIcon size="large" />
           </IconButton>
         </Grid>
       </Grid>
+      <Divider />
       <div className={classes.list}>
+        <Grid container className={classes.actionGrid}>
+          <Grid item xs={12}>
+            {addContact && (
+              <>
+                <AutocompEntityNamesVirtualizeList
+                  mongoEntitiesArray={mongoEntitiesArray}
+                  setMongoEntitiesArray={setMongoEntitiesArray}
+                  nameAutValue={nameAutValue}
+                  setNameAutValue={setNameAutValue}
+                  nameAutInputValue={nameAutInputValue}
+                  setNameAutInputValue={setNameAutInputValue}
+                  variant="outlined"
+                  label="Contact Name"
+                  hasNextPage={hasNextPage}
+                  isNextPageLoading={isNextPageLoading}
+                  loadNextPage={loadNextPage}
+                  disabled={props.loading}
+                  addNew={true}
+                  addNewOnClick={(value) => {
+                    const contact = { name: value };
+                    addNewContact({
+                      variables: {
+                        contact: {
+                          ...contact,
+                          createBy: stateApp.user.mongoId,
+                          lastUpdateBy: stateApp.user.mongoId,
+                        },
+                      },
+                      refetchQueries: ["getPaginatedContacts", "getContact"],
+                      awaitRefetchQueries: true,
+                    });
+                  }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  onClick={() => {
+                    if (nameAutValue !== "") {
+                      props.addSelectedContact(nameAutValue);
+                      GettingContacts();
+                      setMutationLoading(true);
+                      setAddContact(false);
+                    }
+                  }}
+                >
+                  <AddIcon />
+                </Button>
+              </>
+            )}
+          </Grid>
+        </Grid>
+
         <List aria-label="contacts list">
           {filteredContacts && filteredContacts.length > 0 ? (
             filteredContacts.map((c, i) => (
@@ -229,70 +336,7 @@ export default function Contacts(props) {
             </ListItem>
           )}
         </List>
-        <Grid container className={classes.actionGrid}>
-          <Grid item xs={12}>
-            {addContact ? (
-              <>
-                <AutocompEntityNamesVirtualizeList
-                  mongoEntitiesArray={mongoEntitiesArray}
-                  setMongoEntitiesArray={setMongoEntitiesArray}
-                  nameAutValue={nameAutValue}
-                  setNameAutValue={setNameAutValue}
-                  nameAutInputValue={nameAutInputValue}
-                  setNameAutInputValue={setNameAutInputValue}
-                  variant="outlined"
-                  label="Contact Name"
-                  hasNextPage={hasNextPage}
-                  isNextPageLoading={isNextPageLoading}
-                  loadNextPage={loadNextPage}
-                  disabled={props.loading}
-                  addNew={true}
-                  addNewOnClick={(value) => {
-                    const contact = { name: value };
-                    addNewContact({
-                      variables: {
-                        contact: {
-                          ...contact,
-                          createBy: stateApp.user.mongoId,
-                          lastUpdateBy: stateApp.user.mongoId,
-                        },
-                      },
-                      refetchQueries: ["getPaginatedContacts", "getContact"],
-                      awaitRefetchQueries: true,
-                    });
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  onClick={() => {
-                    if (nameAutValue !== "") {
-                      props.addSelectedContact(nameAutValue);
-                      GettingContacts();
-                      setMutationLoading(true);
-                      setAddContact(false);
-                    }
-                  }}
-                >
-                  <AddIcon />
-                </Button>
-              </>
-            ) : (
-              <Button
-                disabled={mutationLoading}
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                className={classes.button}
-                onClick={() => setAddContact((addContact) => !addContact)}
-              >
-                Add Contact
-              </Button>
-            )}
-          </Grid>
-        </Grid>
       </div>
-    </div>
+    </>
   );
 }
