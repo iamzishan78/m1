@@ -11,12 +11,13 @@ import { useMutation, useLazyQuery } from "@apollo/client";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import { AppContext } from "AppContext";
+import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { GET_PROFILE_IMAGE } from "graphQL/useQueryGetProfile";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 import { UPSERTCOMMENT } from "graphQL/useMutationUpsertComment";
 import { REMOVECOMMENT } from "graphQL/useMutationRemoveComment";
 import { COMMENTSBYOBJECTIDQUERY } from "graphQL/useQueryCommentsByObjectId";
-import CommentField from 'components/Shared/components/Fields/CommentField';
+import CommentField from "components/Shared/components/Fields/CommentField";
 
 import ReactTimeAgo from "react-time-ago";
 import TimeAgo from "javascript-time-ago";
@@ -100,6 +101,7 @@ export default function DealComment(props) {
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
 
+  const [users, setUsers] = useState([]);
   const [comment, setComment] = useState("");
   const [editCommentId, setEditCommentId] = useState("");
   const [editComment, setEditComment] = useState("");
@@ -114,6 +116,9 @@ export default function DealComment(props) {
   const [removeComment] = useMutation(REMOVECOMMENT);
   const [upsertComment, { data: newlyAddedComment }] =
     useMutation(UPSERTCOMMENT);
+  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
+    fetchPolicy: "cache-and-network",
+  });
   const [getProfileImage, profiledata] = useLazyQuery(GET_PROFILE_IMAGE);
   const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
@@ -122,6 +127,27 @@ export default function DealComment(props) {
     COMMENTSBYOBJECTIDQUERY,
     { fetchPolicy: "no-cache" }
   );
+
+  useEffect(() => {
+    getAllMongoUsers();
+  }, [getAllMongoUsers]);
+
+  useEffect(() => {
+    if (userLists && userLists.allMongoUsers) {
+      const data = userLists.allMongoUsers
+        .map((user) => ({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+        }))
+        .filter((user) => user._id && user.name);
+      setUsers(data);
+      const emails = userLists.allMongoUsers.map((user) => user.email);
+      getProfilesImages({
+        variables: { emails },
+      });
+    }
+  }, [userLists]);
 
   useEffect(() => {
     if (targetSourceId) {
@@ -136,12 +162,6 @@ export default function DealComment(props) {
 
   useEffect(() => {
     if (dataComments && dataComments.commentsByObjectId) {
-      const emails = dataComments.commentsByObjectId.map(
-        (comment) => comment.user.email
-      );
-      getProfilesImages({
-        variables: { emails },
-      });
       setCommentsArray(
         sortArrayBasedOnTs([...dataComments.commentsByObjectId])
       );
@@ -211,21 +231,21 @@ export default function DealComment(props) {
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
-        .split("\n")
-        .map((line) => {
-          if (line.trim() !== ".") {
-            return line.trim();
-          }
-        })
-        .join("\n")
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")
       : `${value
-        .split("\n")
-        .map((line) => {
-          if (line.trim() !== ".") {
-            return line.trim();
-          }
-        })
-        .join("\n")}.`;
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")}`;
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -339,13 +359,13 @@ export default function DealComment(props) {
                       <Grid item xs={1}>
                         <IconButton style={{ top: "3px" }}>
                           {profilesInfo[eachComment.user.email]?.profileImage ||
-                            eachComment.isNew ? (
+                          eachComment.isNew ? (
                             <Avatar
                               src={
                                 eachComment.isNew
                                   ? profileImage
                                   : profilesInfo[eachComment.user.email]
-                                    .profileImage
+                                      .profileImage
                               }
                               size="38"
                               round
@@ -400,50 +420,19 @@ export default function DealComment(props) {
                             )}
                         </div>
                         {editCommentId !== eachComment._id ? (
-                          <div className={`${classes.whiteSpace}`}>
-                            {eachComment.comment}
-                          </div>
+                          <CommentText users={users} eachComment={eachComment} />
                         ) : (
                           <div className={classes.border}>
-                            <CommentField isEdit comment={editComment} showActions={showActions} setEditCommentId={setEditCommentId} setComment={setEditComment} upsertComment={updateComment} />
-                            {/* <TextField
-                              margin="dense"
-                              variant="outlined"
-                              value={editComment}
-                              fullWidth
-                              rows={2}
-                              rowsMax={3}
-                              multiline
-                              placeholder="Add a question or post an update"
-                              onChange={(e) => {
-                                setEditComment(e.target.value);
-                              }}
-                              InputProps={{
-                                classes: { notchedOutline: classes.noBorder },
-                              }}
+                            <CommentField
+                              isEdit
+                              profilesInfo={profilesInfo}
+                              users={users}
+                              comment={editComment}
+                              showActions={showActions}
+                              setEditCommentId={setEditCommentId}
+                              setComment={setEditComment}
+                              upsertComment={updateComment}
                             />
-
-                            <Button
-                              className={classes.commentBtn}
-                              variant="contained"
-                              color="primary"
-                              onClick={() => {
-                                updateComment(editComment);
-                              }}
-                            >
-                              Save Changes
-                            </Button>
-
-                            <Button
-                              className={classes.commentBtn}
-                              variant="contained"
-                              onClick={() => {
-                                setEditComment("");
-                                setEditCommentId("");
-                              }}
-                            >
-                              Cancel
-                            </Button> */}
                           </div>
                         )}
                       </Grid>
@@ -482,7 +471,14 @@ export default function DealComment(props) {
                 }
               }}
             >
-              <CommentField comment={comment} showActions={showActions} setComment={setComment} upsertComment={addNewComment} />
+              <CommentField
+                profilesInfo={profilesInfo}
+                users={users}
+                comment={comment}
+                showActions={showActions}
+                setComment={setComment}
+                upsertComment={addNewComment}
+              />
             </div>
           </Grid>
         </Grid>
@@ -490,6 +486,25 @@ export default function DealComment(props) {
     </div>
   );
 }
+
+const CommentText = ({ eachComment, users }) => {
+  const classes = useStyles();
+  return (
+    <div id={eachComment._id} className={`${classes.whiteSpace}`}>
+      {eachComment.comment.split(" ").map((word) => {
+        if (word.includes("{{") && word.includes("}}")) {
+          const firstPart = word.split("{{")[0];
+          const secondPart = word.split("}}")[1];
+          let id = word.split("{{")[1];
+          id = id.split("}}")[0];
+          return <span className="blue">{firstPart}@{users.find(user => user._id === id).name}{secondPart} </span>
+        } else {
+          return <span>{word} </span>;
+        }
+      })}
+    </div>
+  );
+};
 
 const ActionMenu = ({
   eachComment,
@@ -530,7 +545,12 @@ const ActionMenu = ({
         >
           Edit Comment
         </MenuItem>
-        <MenuItem textcolor="red" onClick={() => deleteComment(eachComment._id)}>Delete Comment</MenuItem>
+        <MenuItem
+          textcolor="red"
+          onClick={() => deleteComment(eachComment._id)}
+        >
+          Delete Comment
+        </MenuItem>
       </Menu>
     </>
   );

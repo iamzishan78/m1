@@ -5,14 +5,11 @@ import $ from "jquery";
 import Avatar from "react-avatar";
 import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
-import { useLazyQuery } from "@apollo/client";
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
-import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 
 const filter = createFilterOptions();
 
@@ -52,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "4px",
     height: "43px",
     overflowY: "auto",
-    width: "96%",
+    width: "348px",
   },
   commentBtn: {
     float: "right",
@@ -67,28 +64,16 @@ export default function DealComment({
   setComment,
   upsertComment,
   isEdit,
+  users,
+  profilesInfo,
   setEditCommentId
 }) {
   const classes = useStyles();
 
-  const [users, setUsers] = useState([]);
   const [filterValue, setFilterValue] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
-  // const [mentionedList, setMentionedList] = useState([]);
   const [nameAutValue, setNameAutValue] = useState({});
-  const [profilesInfo, setProfilesInfo] = useState({});
-
-  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-    fetchPolicy: "cache-and-network",
-  });
-  const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
-    fetchPolicy: "cache-first",
-  });
-
-  useEffect(() => {
-    getAllMongoUsers();
-  }, [getAllMongoUsers]);
 
   (function () {
     var target = $("#colorText");
@@ -100,67 +85,15 @@ export default function DealComment({
   })();
 
   useEffect(() => {
-    if (userLists && userLists.allMongoUsers) {
-      const data = userLists.allMongoUsers
-        .map((user) => ({
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-        }))
-        .filter((user) => user._id && user.name);
-      setUsers(data);
-      const emails = userLists.allMongoUsers.map((user) => user.email);
-      getProfilesImages({
-        variables: { emails },
-      });
-    }
-  }, [userLists]);
-
-  useEffect(() => {
-    if (profilesData?.data?.profileByEmail?.profiles) {
-      setProfilesInfo(profilesData.data.profileByEmail.profiles);
-    }
-  }, [profilesData]);
-
-  useEffect(() => {
     let value = JSON.parse(JSON.stringify(comment));
     if (value.includes("@")) {
       setShowOptions(true);
     } else {
       setShowOptions(false);
     }
-    // const data = value.split(" ");
-    // value = "";
-
-    // for (let i = 0; i < data.length; i++) {
-    //   if (/^{{[0-9a-z]+}}$/.test(data[i])) {
-    //     let id = JSON.parse(JSON.stringify(data[i]));
-    //     id = id.replace("{{", "");
-    //     id = id.replace("}}", "");
-
-    //     const mention = users.find((item) => item._id === id);
-    //     if (mention) {
-    //       value = value + ` <span class='blue'>@${mention.name}</span>`;
-    //     } else {
-    //       value = value + " " + data[i];
-    //     }
-    //   } else {
-    //     value = value + " " + data[i];
-    //   }
-    // }
-    // debugger
-    // document.getElementById("colorText").innerHTML = value;
-
-
-    
     if (comment.includes("{{") && comment.includes("}}")) {
 
       let updatedValue = JSON.parse(JSON.stringify(comment));
-      // const afterMentionText = updatedValue.split("@")[1].split(" ")[0];
-      // updatedValue = updatedValue.replace(
-      //   `@${afterMentionText}`,
-      //   `@${act.name}`
-      // );
       for (let i = 0; i < users.length; i++) {
         if (updatedValue.includes(users[i]._id)) {
           updatedValue = updatedValue.replace(
@@ -202,8 +135,8 @@ export default function DealComment({
   };
 
   const onInputChange = (event, value, reason) => {
-    // setNameAutValue({ name: value, _id: "" });
 
+    value = value.replace(/\s\s/g, ' ')
     if (!isSelected) {
       setCommentValue(value);
     } else {
@@ -213,34 +146,7 @@ export default function DealComment({
 
   const onChange = (e, act) => {
     setShowOptions(false);
-    // if (!mentionedList.includes(act._id)) {
-    //   const mentions = mentionedList;
-    //   mentions.push(act);
-    //   setMentionedList(mentions);
-    // }
-
     const value = JSON.parse(JSON.stringify(comment.split("@")[0]));
-
-    // if (comment.includes("{{") && comment.includes("}}")) {
-    //   let updatedValue = JSON.parse(JSON.stringify(comment));
-    //   const afterMentionText = updatedValue.split("@")[1].split(" ")[0];
-    //   updatedValue = updatedValue.replace(
-    //     `@${afterMentionText}`,
-    //     `@${act.name}`
-    //   );
-    //   for (let i = 0; i < mentionedList.length; i++) {
-    //     if (updatedValue.includes(mentionedList[i]._id)) {
-    //       updatedValue = updatedValue.replace(
-    //         `{{${mentionedList[i]._id}}}`,
-    //         `@${mentionedList[i].name}`
-    //       );
-    //     }
-    //   }
-    //   setNameAutValue({ name: updatedValue, _id: "" });
-    // } else {
-    //   setNameAutValue({ name: `${value}@${act.name}`, _id: "" });
-    // }
-
     setComment(value + `{{${act._id}}}`);
     setIsSelected(true);
   };
