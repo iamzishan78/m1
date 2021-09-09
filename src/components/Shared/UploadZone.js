@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { DropzoneAreaBase } from "material-ui-dropzone";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { CircularProgress } from "@material-ui/core";
-import { showErrorMessage, showWarningMessage } from "../../actions";
+import { showErrorMessage } from "../../actions";
 import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
 import { Container } from "@material-ui/core";
 

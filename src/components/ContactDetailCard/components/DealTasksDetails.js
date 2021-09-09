@@ -270,7 +270,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
 
   const [isNewSubtask, setNewSubtask] = useState({ index: -1, value: false });
   // const [anchorEl, setAnchorEl] = React.useState(null);
-  const [extendedTaskIndex,] = useState(dealSettings.findIndex((ds) => ds._id === stateTransact.selectedTask._id) || 0);
+  const [extendedTaskIndex,] = useState(dealSettings.findIndex((ds) => ds?._id === stateTransact.selectedTask?._id) || 0);
 
   const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
   const [addDealSubtask] = useMutation(ADD_DEAL_SUBTASK);
