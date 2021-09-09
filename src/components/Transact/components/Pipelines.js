@@ -9,7 +9,6 @@ import { useHistory } from "react-router-dom";
 
 //icons 
 import IconButton from "@material-ui/core/IconButton";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import Dialog from "@material-ui/core/Dialog";
 import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "../../../actions";
@@ -29,14 +28,13 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
-import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
+import { Tooltip } from "@material-ui/core";
 import { GETPIPELINE } from "../../../graphQL/useQueryPipeline";
 import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import { ADD_PIPELINE } from "../../../graphQL/useMutationAddPipeline";
 import { UPDATEPIPELINES } from "../../../graphQL/useMutationUpdatePipelines";
 import { ADDSTAGES } from "../../../graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "../../../graphQL/useMutationUpdateStages";
-import { UPDATESTAGE } from "../../../graphQL/useMutationUpdateStage";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../../AppContext";
 import { deepEqualObjects } from "../../Shared/functions";
@@ -44,6 +42,7 @@ import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/Su
 import { DEALSCOUNTINANSTAGE } from "../../../graphQL/useQueryNonDeletedDealsCountInAnStageByPipeline";
 import { DEALSCOUNTINAPIPE } from "../../../graphQL/useQueryNonDeletedDealsCountInAPipeline";
 import DeleteIcon from "@material-ui/icons/Delete";
+import FlowLineAction from "./FlowLineAction";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -59,7 +58,6 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "1.6rem",
   },
   addIconButton: {
-    //backgroundColor: "#D5F4FF",
     color: "gray",
     fontSize: "14px",
     "&:hover": {
@@ -152,7 +150,7 @@ String.prototype.capitalize = function () {
 export default function Pipelines(props) {
   const dispatch = useDispatch();
   let history = useHistory();
-  const { openPipeDialog, selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
+  const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
   const [name, setName] = useState("");
@@ -662,6 +660,21 @@ export default function Pipelines(props) {
     return false;
   };
 
+  const handleEditFlowLine = () =>
+    dispatch(
+      setFlowState({
+        openPipeDialog: true,
+      })
+    );
+
+  const handleDuplicateFlowLine = () => {
+    // Duplicate Flowline
+  }
+
+  const handleDeleteFlowLine = () => {
+    // Delete Flowline
+  }
+
   return (
     <React.Fragment>
       <div className={classes.settingsButton}>
@@ -670,25 +683,11 @@ export default function Pipelines(props) {
             {selectedPipe.name}
           </Typography>
         )}
-
-        <Tooltip title={"Flowline Actions"}
-        >
-          <IconButton
-            disabled={!selectedPipe}
-            size="medium"
-            style={{ marginLeft: 10, marginRight: 10 }}
-            onClick={() => {
-              dispatch(
-                setFlowState({
-                  openPipeDialog: true,
-                })
-              );
-            }}
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </Tooltip>
-
+        <FlowLineAction
+          onDelete={handleDeleteFlowLine}
+          onEdit={handleEditFlowLine}
+          onDuplicate={handleDuplicateFlowLine}
+        />
       </div>
 
       {/* //// pipelines dialog //// */}

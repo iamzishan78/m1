@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useRef,
-  useCallback,
-  Fragment
-} from "react";
+import React, { useState, useEffect, useContext, Fragment } from "react";
 import { get } from "lodash";
 import { useHistory } from "react-router-dom";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
@@ -26,20 +19,12 @@ import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {
-  CircularProgress,
-  Dialog,
-  Typography,
-  Avatar
-} from "@material-ui/core";
+import { Dialog, Avatar } from "@material-ui/core";
 import RightDialog from "./RightDialog";
 import Drawer from "components/Transact/components/Drawer";
 import moment from "moment";
-import {
-  deepEqual,
-  deepEqualObjects,
-  setStateIfDeepEqual
-} from "../../Shared/functions";
+import { setStateIfDeepEqual } from "../../Shared/functions";
+
 import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
 import DealTasksProgressZone from "./DealTasksProgressZone";
 import DealComment from "./DealComment";
@@ -137,17 +122,7 @@ const useStyles = makeStyles((theme) => ({
   },
   scrollbar: {
     overflowX: "hidden",
-    overflowY: "auto",
-    "&::-webkit-scrollbar": {
-      width: "0.4em",
-    },
-    "&::-webkit-scrollbar-track": {
-      "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "lightgray",
-      borderRadius: 5,
-    },
+    overflowY: "overlay",
   },
   dealDetailRoot: {
     "& .MuiDialog-paper": {
@@ -155,7 +130,7 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   contentRoot: {
-    overflowY: "auto",
+    overflowY: "overlay",
     maxHeight: "90vh",
     marginRight: "60px"
   },
@@ -364,7 +339,7 @@ const useStyles = makeStyles((theme) => ({
       visibility: "visible"
     }
   },
-  dealContainer:{
+  dealContainer: {
     maxHeight: "calc(100vh - 147px) !important",
   }
 }));
@@ -423,6 +398,10 @@ function AddDealDialog(props) {
   console.log("pipelineId", pipelineId, selectedPipe)
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
+  const [getDeal, { data: getDealResult, loading: getDealLoading }] = useLazyQuery(GETDEAL, {
+    fetchPolicy: "no-cache"
+  });
+
   const [
     addContact,
     {
@@ -480,6 +459,13 @@ function AddDealDialog(props) {
     }
   }, [stateApp.transactBarView]);
 
+  useEffect(() => {
+    getDeal({
+      variables: { id: stateApp.activeDeal.cardId }
+    });
+  }, [getDeal]);
+
+  // For creating a deal
   useEffect(() => {
     if (dealData) {
       setStateApp((stateApp) => ({
@@ -1037,8 +1023,8 @@ function AddDealDialog(props) {
         if (ID.length > 0) {
           variables = { ...variables, files: ID }
         }
-        
-        if(newCommentsIds.length > 0){
+
+        if (newCommentsIds.length > 0) {
           variables = { ...variables, comments: newCommentsIds }
         }
         addDeal({
@@ -1113,10 +1099,7 @@ function AddDealDialog(props) {
     return comparison;
   });
 
-  const [getDeal, { data: getDealResult, loading: getDealLoading }] =
-    useLazyQuery(GETDEAL, {
-      fetchPolicy: "no-cache"
-    });
+
 
   const refetchDeal = () => {
     getDeal({
@@ -1155,7 +1138,7 @@ function AddDealDialog(props) {
           ...stateApp.activeDeal,
           contacts: [
             ...getDealResult.deal.deal.contacts.map((c) => ({
-              _id: c.descriptorId,
+              _id: c._id,
               name: c.name
             }))
           ]
@@ -1438,7 +1421,7 @@ function AddDealDialog(props) {
             placeholder="Click to enter deal name"
             required
             fullWidth
-            // autoFocus
+            autoFocus
             // error text that will prevent things
             error={title && title !== "" ? false : true}
             helperText={
@@ -1506,7 +1489,7 @@ function AddDealDialog(props) {
           hiddenOverflow
         >
           <StickyHeader />
-          <Drawer />
+          <Drawer top={contact.name ? "160px" : "108px"} />
           <div className={classes.contentRoot}>
             {props.isTransactPage &&
               stateApp.transactBarView !== "Deal" &&
@@ -1799,7 +1782,7 @@ function AddDealDialog(props) {
                     activeDeal={stateApp.activeDeal}
                   />
                 </div>
-              </div>                 
+              </div>
             )}
           </div>
           <DealComment

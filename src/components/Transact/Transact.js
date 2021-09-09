@@ -3,6 +3,7 @@ import { useMutation, useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 
 import { AppContext } from "../../AppContext";
+import { TransactContext } from "./TransactContext";
 import Board from "react-trello";
 import { makeStyles } from "@material-ui/core/styles";
 import { UPDATESTAGEDEALDESCRIPTORS } from "../../graphQL/useMutationUpdateStageDealDescriptors";
@@ -158,7 +159,7 @@ export default function Transact() {
   const { pipeToShow, pipeToShowTab } = useSelector(({ Flow }) => Flow);
   console.log("PIPETOSHOW: ", pipeToShow);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [profilesInfo, setProfilesInfo] = useState({});
+  const [, setStateTransact] = useContext(TransactContext);
   const [filteredBoardTransactData, setFilteredBoardTransactData] = useState({
     lanes: []
   });
@@ -199,12 +200,16 @@ export default function Transact() {
   };
 
   useEffect(() => {
+    getProfilesImages({
+      variables: {}
+    });
+  }, [getProfilesImages]);
+
+  useEffect(() => {
     if (pipeToShow?.lanes && dealFilter) {
       setFilteredBoardTransactData({
         lanes: [...filterBoardCards(pipeToShow.lanes, dealFilter)]
       });
-      // getting deal owners profile images
-      const ownersEmails = [];
 
       const cardColorsAndImages = (lanes) => {
         lanes.forEach((lane) => {
@@ -216,7 +221,6 @@ export default function Transact() {
                 card.metadata.owners &&
                 card.metadata.owners[0];
               const ownerId = owner && card.metadata.owners[0].id;
-              if (owner && validateEmail(owner.relatedObject.email)) ownersEmails.push(owner.relatedObject.email);
 
               if (!(ownerId in cardColors.current)) {
                 cardColors.current = {
@@ -234,16 +238,12 @@ export default function Transact() {
       } else {
         cardColorsAndImages(pipeToShow.lanes);
       }
-
-      getProfilesImages({
-        variables: { emails: ownersEmails }
-      })
     }
   }, [pipeToShow, dealFilter]);
 
   useEffect(() => {
     if (profiledata?.data?.profileByEmail?.profiles) {
-      setProfilesInfo(profiledata.data.profileByEmail.profiles);
+      setStateTransact(profiledata.data.profileByEmail.profiles);
     }
   }, [profiledata]);
 
@@ -445,9 +445,7 @@ export default function Transact() {
       <article
         className={classes.cardStyle}
         onClick={() => handleCardClick(id, metadata, laneId)}
-        style={{
-          borderLeft: `4px solid ${cardColor}`
-        }}
+        style={{ borderLeft: `4px solid ${cardColor}` }}
       >
         <header className={classes.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -457,7 +455,6 @@ export default function Transact() {
                 email={ownerEmail}
                 text={owner}
                 color={cardColors[ownerId]}
-                imageUrl={profilesInfo[ownerEmail]?.profileImage}
               />
             )}
           </div>

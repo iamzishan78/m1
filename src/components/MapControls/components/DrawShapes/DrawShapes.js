@@ -383,7 +383,7 @@ export default function DrawShapes() {
         !stateApp.currentFeature.id?.includes("draw_rectangle") &&
         !stateApp.currentFeature.id?.includes("edit_polygon") ? (
         <Fragment>
-          {showSpatialDataCard && stateApp.currentFeature.source === 'interests_source' && ( // for edit/create AOI
+          {showSpatialDataCard && stateApp.currentFeature?.properties?.sdType === "interest" && ( // for edit/create AOI
             <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} user={user} toggleSpatialDataCard={toggleSpatialDataCard} />
           )}
           <div className={classes.mapOverlay}>
