@@ -4,15 +4,15 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import moment from "moment";
 import { useDispatch } from "react-redux";
 import {
-	showErrorMessage,
-	showSuccessMessage,
+  showErrorMessage,
+  showSuccessMessage,
 } from "../../../actions";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
-import {Dialog,CircularProgress} from "@material-ui/core";
+import { Dialog, CircularProgress } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -127,8 +127,8 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   dialog: {
-		zIndex: "99999 !important",
-	},
+    zIndex: "99999 !important",
+  },
 }));
 
 const initialErrors = {
@@ -158,7 +158,7 @@ function AddActivityDialog(props) {
   const classes = useStyles();
   const { selectedActivity, onClose, contactData } = props;
   const [stateApp] = useContext(AppContext);
-	const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const [addNew, setAddNew] = useState(true);
   const [activityType, setActivityType] = useState("call");
@@ -190,13 +190,13 @@ function AddActivityDialog(props) {
     }
   );
 
-	const openConfirmationDialog = () => {
-		setDeleteDialogOpen(true);
-	};
-	const handleCloseDialog = () => {
-		setDeleteDialogOpen(false);
+  const openConfirmationDialog = () => {
+    setDeleteDialogOpen(true);
   };
-  
+  const handleCloseDialog = () => {
+    setDeleteDialogOpen(false);
+  };
+
   useEffect(() => {
     getAllMongoUsers();
   }, []);
@@ -432,26 +432,26 @@ function AddActivityDialog(props) {
   };
 
   const deleteFunc = async () => {
-		try {
-			setIsDeleting(true);
-			await deleteActivityMutation({
+    try {
+      setIsDeleting(true);
+      await deleteActivityMutation({
         variables: {
           id: selectedActivity._id,
         },
       }).then((result) => {
-				const {
-					data: { deleteActivity },
-				} = result;
-				if (deleteActivity?.success === true) {
-					dispatch(showSuccessMessage("The Activity was successfully deleted."));
-					onModalClose();
-				} else dispatch(showErrorMessage("An error occurred."));
-			});;
-			setIsDeleting(false);
-		} catch {
-			setIsDeleting(false);
-		}
-	};
+        const {
+          data: { deleteActivity },
+        } = result;
+        if (deleteActivity?.success === true) {
+          dispatch(showSuccessMessage("The Activity was successfully deleted."));
+          onModalClose();
+        } else dispatch(showErrorMessage("An error occurred."));
+      });;
+      setIsDeleting(false);
+    } catch {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div style={{ padding: "30px" }}>
@@ -459,49 +459,49 @@ function AddActivityDialog(props) {
         Recent Activities
       </h4> */}
       {deleteDialogOpen && (
-				<Dialog
-					className={classes.dialog}
-					open={deleteDialogOpen ? true : false}
-					onClose={handleCloseDialog}
-					fullWidth={false}
-					maxWidth="sm"
-				>
-					<DeleteConfirmationDialogContent
-						header={`Delete Activity`}
-						onClose={handleCloseDialog}
-						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={null}
+        <Dialog
+          className={classes.dialog}
+          open={deleteDialogOpen ? true : false}
+          onClose={handleCloseDialog}
+          fullWidth={false}
+          maxWidth="sm"
+        >
+          <DeleteConfirmationDialogContent
+            header={`Delete Activity`}
+            onClose={handleCloseDialog}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => { }}
-					>
-						Do you want to delete the selected Activity?
+          >
+            Do you want to delete the selected Activity?
 					</DeleteConfirmationDialogContent>
-				</Dialog>
-			)}
+        </Dialog>
+      )}
 
       <Grid item xs={12} style={{ minHeight: "35px" }}>
         <h4 style={{ margin: "0 0 30px 0", float: "left", fontSize: "1.1rem" }}>
           Recent Activities
         </h4>
-        {!addNew &&        
+        {!addNew &&
           <IconButton
             size="small"
             style={{ float: "right", top: "-5px", right: "37px" }}
-            disabled={addLoading || updateLoading} 
+            disabled={addLoading || updateLoading}
             onClick={openConfirmationDialog}
-          >  
-          {isDeleting ? <CircularProgress size={20} color="secondary" />: 
-                        <DeleteIcon
-                          className={classes.closeIcon}
-                          fontSize="small"
-                        />
-          }
+          >
+            {isDeleting ? <CircularProgress size={20} color="secondary" /> :
+              <DeleteIcon
+                className={classes.closeIcon}
+                fontSize="small"
+              />
+            }
           </IconButton>
-        }  
+        }
         <IconButton
           onClick={onModalClose}
           size="small"
           style={{ float: "right", top: "-5px", right: `${addNew ? -5 : -26}px` }}
-        >  
+        >
           <CloseIcon className={classes.closeIcon} fontSize="small" />
         </IconButton>
       </Grid>
@@ -526,8 +526,8 @@ function AddActivityDialog(props) {
         className={clsx(
           classes.inputField,
           (activityType === "" || !activityType) &&
-            errors.activityType &&
-            classes.error
+          errors.activityType &&
+          classes.error
         )}
         size="small"
       >
@@ -671,7 +671,7 @@ function AddActivityDialog(props) {
       />
       <Autocomplete
         className={clsx(!owner.id && errors.owner && classes.error)}
-        options={users}
+        options={users.filter(u => u.text)}
         onChange={(e, user) => {
           setOwner({ name: user.text, id: user.value });
         }}
