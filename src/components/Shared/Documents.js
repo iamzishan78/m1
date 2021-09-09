@@ -188,7 +188,8 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   rootPadding: {
-    padding: "0px 25px"
+    padding: "0px 25px",
+    maxHeight: "60px"
   },
   cardContent: {
     "& .MuiCardContent-root": {
@@ -468,14 +469,13 @@ export default function Documents(props) {
               direction="row"
               justify="space-between"
               alignItems="center"
-              className={classes.toolbarActions}
             >
               {!isSearchActive && (
-                <Grid item xs={10}>
+                <Grid item xs={10} style={{ marginTop: "-28px" }}>
                   <Typography variant="h6">Documents</Typography>
                 </Grid>
               )}
-              <Grid item xs={1}>
+              <Grid item xs={1} style={{ marginTop: "-28px" }}>
                 <div className={classes.search}>
                   <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput1").focus()}>
                     <SearchIcon />
@@ -500,7 +500,7 @@ export default function Documents(props) {
                   />
                 </div>
               </Grid>
-              <Grid item xs={1}>
+              <Grid item xs={1} style={{ marginTop: "7px" }}>
                 <UploadZone
                   relatedObjectId={props.id}
                   userId={userId}

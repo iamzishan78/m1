@@ -10,7 +10,6 @@ import { Container } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		paddingTop: "28px",
 		"& .MuiContainer-root": {
 			paddingLeft: "0px",
 			paddingRight: "0px",

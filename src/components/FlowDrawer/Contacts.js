@@ -30,7 +30,7 @@ import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles((theme) => ({
   rootPadding: {
-    padding: "30px 30px 0px",
+    padding: "6px 30px",
   },
   list: {
     overflowY: "auto",
