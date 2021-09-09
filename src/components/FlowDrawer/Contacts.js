@@ -7,7 +7,6 @@ import {
   Divider,
   List,
   ListItem,
-  Button,
   Typography,
   Tooltip,
   InputBase
@@ -119,6 +118,15 @@ export default function Contacts(props) {
       },
     });
   }, [getPaginatedContacts, nameAutInputValue]);
+
+  useEffect(() => {
+    if (nameAutValue) {
+      props.addSelectedContact(nameAutValue);
+      GettingContacts();
+      setMutationLoading(true);
+      setAddContact(false);
+    }
+  }, [nameAutValue]);
 
   useEffect(() => {
     if (get(addContactData, "addContact.contact")) {
@@ -259,22 +267,12 @@ export default function Contacts(props) {
                     });
                   }}
                 />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  onClick={() => {
-                    if (nameAutValue !== "") {
-                      props.addSelectedContact(nameAutValue);
-                      GettingContacts();
-                      setMutationLoading(true);
-                      setAddContact(false);
-                    }
-                  }}
-                >
-                  <AddIcon />
-                </Button>
               </>
+            )}
+            {mutationLoading === true && (
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <CircularProgress size="20px" />
+              </div>
             )}
           </Grid>
         </Grid>

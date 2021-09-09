@@ -131,6 +131,7 @@ const useStyles = makeStyles((theme) => ({
   },
   contentRoot: {
     overflowY: "overlay",
+    overflowX: "hidden",
     maxHeight: "90vh",
     marginRight: "60px"
   },
