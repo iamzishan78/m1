@@ -68,7 +68,7 @@ export default function WellProdChart(props) {
       let chart = am4core.create("chartDiv", am4charts.XYChart);
 
       chart.dateFormatter.inputDateFormat = "MM/YYYY";
-      chart.data = stateWellProdChart.wellProdHistory;
+      chart.data = stateWellProdChart.wellProdHistory.reverse();
 
       // Create common x-asix
       var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
