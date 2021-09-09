@@ -1,8 +1,10 @@
-import React, { Fragment } from "react";
+import React, { useContext } from "react";
+import { get } from "lodash";
 
 import { makeStyles } from "@material-ui/core/styles";
-import { getRandomColor } from 'components/Shared/functions/ui.js'
 
+import { getRandomColor } from "components/Shared/functions/ui.js";
+import { TransactContext } from "components/Transact/TransactContext";
 
 const useStyles = makeStyles((theme) => ({
     customAvatar: {
@@ -13,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
         width: "25px",
         height: "25px",
         fontSize: "0.7rem",
-        textAlign: "center"
+        textAlign: "center",
     },
     customAvatarImg: {
         borderRadius: "50%",
@@ -21,12 +23,13 @@ const useStyles = makeStyles((theme) => ({
         width: "25px",
         height: "25px",
         fontSize: "0.7rem",
-        textAlign: "center"
-    }
+        textAlign: "center",
+    },
 }));
 
-const CustomAvatar = React.memo(({ text = "", email = "", diglog, imageUrl }) => {
+const CustomAvatar = React.memo(({ text = "", email = "", diglog }) => {
     const classes = useStyles();
+    const [stateTransact] = useContext(TransactContext);
 
     const getInitials = (name) => {
         if (!name || name.length === 0) return "--";
@@ -39,26 +42,20 @@ const CustomAvatar = React.memo(({ text = "", email = "", diglog, imageUrl }) =>
         return initials.toUpperCase();
     };
 
-    return (
-        <Fragment>
-            {imageUrl ? (
-                <img
-                    className={classes.customAvatarImg}
-                    src={imageUrl}
-                    alt="owner img"
-                />
-            ) : (
-                <span
-                    className={diglog ? "" : classes.customAvatar}
-                    style={{
-                        backgroundColor: diglog ? "" : getRandomColor(text)
-                    }}
-                >
-                    {getInitials(text)}
-                </span>
-            )}
-        </Fragment>
-    );
+    if (get(stateTransact[email], "profileImage")) {
+        return <img className={classes.customAvatarImg} src={stateTransact[email].profileImage} alt="owner img" />;
+    } else {
+        return (
+            <span
+                className={diglog ? "" : classes.customAvatar}
+                style={{
+                    backgroundColor: diglog ? "" : getRandomColor(text),
+                }}
+            >
+                {getInitials(text)}
+            </span>
+        );
+    }
 });
 
 export default CustomAvatar;

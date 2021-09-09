@@ -15,7 +15,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function AlertDialogSlide(props) {
   const useStyles = makeStyles((theme) => ({
     dialog: {
-      "& .MuiPaper-root": {
+      "& .MuiDialog-paper": {
         position: "fixed",
         top: "0 !important",
         right: "0px !important",
@@ -25,8 +25,6 @@ export default function AlertDialogSlide(props) {
         margin: "0 !important",
         borderTopRightRadius: "0 !important",
         overflowX: "hidden",
-      },
-      "& .MuiDialog-paper": {
         overflowY: props.hiddenOverflow ? "hidden" : "auto"
       },
       "& .MuiListItem-container": {
