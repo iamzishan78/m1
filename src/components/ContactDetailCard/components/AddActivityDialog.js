@@ -673,7 +673,7 @@ function AddActivityDialog(props) {
         className={clsx(!owner.id && errors.owner && classes.error)}
         options={users.filter(u => u.text)}
         onChange={(e, user) => {
-          setOwner({ name: user.text, id: user.value });
+          setOwner({ name: user?.text, id: user?.value });
         }}
         value={users.find((user) => user.value === owner.id) || null}
         getOptionLabel={(option) => option.text}

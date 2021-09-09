@@ -794,7 +794,7 @@ export default function ActivitiesModal({
                     )}
                     options={users.filter(u => u.text)}
                     onChange={(e, user) => {
-                      setOwner({ name: user.text, id: user.value });
+                      setOwner({ name: user?.text, id: user?.value });
                     }}
                     value={
                       users.find((user) => user.value === owner.id) || null
