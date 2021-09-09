@@ -14,6 +14,7 @@ export const ADDLAYER = gql`
         defaultSettings
         createBy
         file
+        originalFile
       }
     }
   }

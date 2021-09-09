@@ -1,7 +1,6 @@
-import React, { useContext,useState } from 'react';
+import React, {useState, useEffect } from "react";
 import { makeStyles,useTheme } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography'
-import { AppContext } from '../../AppContext'
 import WellIcon from './components/svgIcons/WellIcon'
 
 // value formatters 
@@ -21,11 +20,23 @@ const useStyles = makeStyles(theme => ({
   }))
 
   
-export default function FirstProdDateCard() {
+export default function FirstProdDateCard(props) {
     let classes = useStyles();
-    const [stateApp, setStateApp] = useContext(AppContext)
+    const [summary, setSummary] = useState(null);
+
+    useEffect(() => {
+      if (props.summary) {
+        setSummary(props.summary);
+        ;
+      }
+    }, [props.summary, setSummary]);
+  
 
     return (
+
+      <div >
+    
+      {summary && 
       <div className={classes.iconContainer}>
 
       <WellIcon  viewBox="0 0 32 31" fontSize="large" />
@@ -42,9 +53,12 @@ export default function FirstProdDateCard() {
         //className={classes.text2}
         variant="caption"
       >
-      {convert_date(stateApp.selectedWell.firstProductionDate)}
+      {convert_date(summary.FirstProdDate)}
       </Typography>
       </div>
+    }
+
+    </div>
 
 
     );

@@ -1,9 +1,11 @@
-import React, { useContext,useState } from 'react';
+import React, {useState, useEffect } from "react";
 import { makeStyles,useTheme } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography'
-import { AppContext } from '../../AppContext'
 import CompletionIcon from './components/svgIcons/CompletionIcon'
-import moment from 'moment'
+
+// value formatters 
+import convert_date from "../Shared/valueformatters/convert_date.js";
+
 
 
 const useStyles = makeStyles(theme => ({
@@ -18,26 +20,27 @@ const useStyles = makeStyles(theme => ({
     }
   }))
 
-const formatDateString = dateString => {
-    if (!dateString) return '--'
-    return new Date(dateString).toLocaleDateString()
-  }
 
-const convert_date = unixStamp => {
-  const date = moment.utc(unixStamp).format("MM/DD/YYYY");
-
-  if (unixStamp === 'null') {return '--'}
-  else if(unixStamp === null) {return '--'}
-  else if(unixStamp === undefined) {return '--'}
-  else {return date}
-}
 
   
-export default function CompletionDateCard() {
+export default function CompletionDateCard(props) {
     let classes = useStyles();
-    const [stateApp, setStateApp] = useContext(AppContext)
+    const [summary, setSummary] = useState(null);
+
+    useEffect(() => {
+      if (props.summary) {
+        setSummary(props.summary);
+        ;
+      }
+    }, [props.summary, setSummary]);
+  
 
     return (
+
+      <div >
+    
+      {summary && 
+
       <div className={classes.iconContainer}>
 
       <CompletionIcon  viewBox="0 0 77.5 60.5" fontSize="large" />
@@ -56,9 +59,13 @@ export default function CompletionDateCard() {
         //className={classes.text2}
         variant="caption"
       >
-      {convert_date(stateApp.selectedWell.completionDate)}
+      {convert_date(summary.CompletionDate)}
       </Typography>
       </div>
+
+}
+
+</div>
 
 
     );

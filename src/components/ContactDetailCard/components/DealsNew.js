@@ -11,14 +11,13 @@ import { AppContext } from "../../../AppContext";
 import DealsDetailCard from "../../DealsDetailCard/DealsDetailCard";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
-import Button from '@material-ui/core/Button';
-
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "23px 23px 0 23px",
     cursor: "pointer",
-    width: "100%"
+    width: "100%",
   },
   cardContent: { width: "100%", display: "flex" },
   leftColumn: {
@@ -31,14 +30,13 @@ const useStyles = makeStyles((theme) => ({
     top: "-6px",
     justifyContent: "right",
     alignItems: "right",
-
   },
   button: {
     height: "100%",
     width: "100%",
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'left'
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "left",
   },
   lastContactedSpan: { fontWeight: "normal", marginBottom: "0" },
   icon: {
@@ -51,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
   },
-  h5: { color: "#757575", marginTop: "0", textAlign: "left", },
+  h5: { color: "#757575", marginTop: "0", textAlign: "left" },
 }));
 
 export default function Deals({ contact, ...props }) {
@@ -136,29 +134,82 @@ export default function Deals({ contact, ...props }) {
   };
 
   return (
-
-    <Button
-      className={classes.button}
-      fullWidth={true}
-      variant='outlined'
-    // style={{justifyContent: "flex-start"}}
-      onClick={() => {
-        history.push(`/contact/details/${contact._id}/deals`)
-        // props.handleOpenExpandableCard(
-        //   <DealsDetailCard
-        //     activeDeals={activeDeals}
-        //     lostDeals={lostDeals}
-        //     closedDeals={wonDeals}
-        //     contact={contact}
-        //   />,
-        //   "Deals"
-        // );
-      }}
-    >
-
-      <div className={classes.root}
+    <>
+      <Button
+        className={classes.button}
+        fullWidth={true}
+        variant="outlined"
+        // style={{justifyContent: "flex-start"}}
+        onClick={() => {
+          history.push(`/contact/details/${contact._id}/deals`);
+          // props.handleOpenExpandableCard(
+          //   <DealsDetailCard
+          //     activeDeals={activeDeals}
+          //     lostDeals={lostDeals}
+          //     closedDeals={wonDeals}
+          //     contact={contact}
+          //   />,
+          //   "Deals"
+          // );
+        }}
       >
+        <div className={classes.root}>
+          <div>
+            <h4 style={{ marginTop: "0", float: "left" }}>
+              Deals ({allDeals.length})
+            </h4>
+            <IconButton
+              style={{ marginTop: "0", alignItems: "right" }}
+              size="small"
+              className={classes.addIcon}
+              onClick={(e) => {
+                e.stopPropagation();
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  dealDialog: true,
+                }));
+              }}
+            >
+              <AddIcon
+                style={{ marginTop: "0", alignItems: "right" }}
+                htmlColor="rgb(28 173 225 / 81%)"
+              />
+            </IconButton>
+          </div>
+          <div className={classes.cardContent}>
+            <div className={classes.leftColumn}>
+              <div className={classes.icon}>
+                <DealMoneyIcon />
+              </div>
+            </div>
 
+            <div>
+              <h5 className={classes.h5}>
+                Active Deals
+                {/* Active Deals ({activeDeals.length}) */}
+                <br />
+                <span className={classes.lastContactedSpan}>
+                  {sumOpenDeals() || vf_currency("0")}
+                </span>
+              </h5>
+              <h5 className={classes.h5}>
+                Closed Deals
+                {/* Closed Deals ({wonDeals.length}) */}
+                <br />
+                <span className={classes.lastContactedSpan}>
+                  {sumWonDeals() || vf_currency("0")}
+                </span>
+              </h5>
+              {/* <h5 className={classes.h5}>
+            Lost Deals ({lostDeals.length})
+            <br />
+            <span className={classes.lastContactedSpan}>{sumLostDeals()}</span>
+          </h5> */}
+            </div>
+          </div>
+        </div>
+      </Button>
+      {stateApp.dealDialog && (
         <AddDealDialog
           open={stateApp.dealDialog ? true : false}
           width="450px"
@@ -170,50 +221,7 @@ export default function Deals({ contact, ...props }) {
           }
           contactId={contact._id}
         />
-        <div>
-          <h4 style={{ marginTop: "0", float: "left" }}>Deals ({allDeals.length})</h4>
-          <IconButton
-            style={{ marginTop: "0", alignItems: "right" }}
-            size="small"
-            className={classes.addIcon}
-            onClick={() =>
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                dealDialog: true,
-              }))
-            }
-          >
-            <AddIcon style={{ marginTop: "0", alignItems: "right" }} htmlColor="rgb(28 173 225 / 81%)" />
-          </IconButton>
-        </div>
-        <div className={classes.cardContent}>
-          <div className={classes.leftColumn}>
-            <div className={classes.icon}>
-              <DealMoneyIcon />
-            </div>
-          </div>
-
-          <div>
-            <h5 className={classes.h5}>
-              Active Deals
-              {/* Active Deals ({activeDeals.length}) */}
-              <br />
-              <span className={classes.lastContactedSpan}>{sumOpenDeals() || vf_currency("0")}</span>
-            </h5>
-            <h5 className={classes.h5}>
-              Closed Deals
-              {/* Closed Deals ({wonDeals.length}) */}
-              <br />
-              <span className={classes.lastContactedSpan}>{sumWonDeals() || vf_currency("0")}</span>
-            </h5>
-            {/* <h5 className={classes.h5}>
-            Lost Deals ({lostDeals.length})
-            <br />
-            <span className={classes.lastContactedSpan}>{sumLostDeals()}</span>
-          </h5> */}
-          </div>
-        </div>
-      </div>
-    </Button>
+      )}
+    </>
   );
 }

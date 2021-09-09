@@ -1,7 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, {useState, useEffect } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography'
-import { AppContext } from '../../AppContext'
 import PlugIcon from './components/svgIcons/PlugIcon'
 
 // value formatters 
@@ -25,11 +24,27 @@ const useStyles = makeStyles(theme => ({
 
 
 
-export default function PlugDateCard() {
+export default function PlugDateCard(props) {
   let classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext)
+  const [summary, setSummary] = useState(null);
+
+
+  useEffect(() => {
+    if (props.summary) {
+      setSummary(props.summary);
+      ;
+    }
+  }, [props.summary, setSummary]);
+
+
 
   return (
+
+    
+    <div >
+    
+    {summary && 
+
     <div className={classes.iconContainer}>
 
       <PlugIcon htmlColor='black'
@@ -48,11 +63,14 @@ export default function PlugDateCard() {
         //className={classes.text2}
         variant="caption"
       >
-        {convert_date(stateApp.selectedWell.plugDate)}
+        {convert_date(summary.PlugDate)}
 
       </Typography>
     </div>
 
+    }
+
+    </div>
 
   );
 };
