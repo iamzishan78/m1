@@ -481,7 +481,7 @@ export default function DealComment(props) {
                 }
               }}
             >
-              <CommentField comment={comment} showActions={showActions} setComment={setComment} addNewComment={addNewComment} />
+              <CommentField comment={comment} showActions={showActions} setComment={setComment} upsertComment={addNewComment} />
             </div>
           </Grid>
         </Grid>

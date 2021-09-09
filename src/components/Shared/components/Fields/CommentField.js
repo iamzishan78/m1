@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiAutocomplete-endAdornment": {
       display: "none",
     },
-    "& .MuiInputBase-input": { color: "red", caretColor: "black" },
+    "& .MuiInputBase-input": { color: "transparent", caretColor: "black" },
   },
   customTextField: {
     "& textarea::placeholder": {
@@ -332,7 +332,7 @@ export default function DealComment({
               color="primary"
               onClick={() => {
                 debugger
-                // upsertComment(comment);
+                upsertComment(comment);
                 setNameAutValue({});
               }}
             >
