@@ -42,7 +42,7 @@ export default function ContactAutoComplete({ value, onChange, onKeyDown, onBlur
 
     return (
         <Autocomplete
-            options={users}
+            options={users.filter(u => u.text)}
             onChange={onChange ? onChange : () => { }}
             onKeyDown={onKeyDown ? onKeyDown : () => { }}
             onBlur={onBlur ? onBlur : () => { }}
