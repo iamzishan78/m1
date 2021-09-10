@@ -20,14 +20,14 @@ import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContac
 import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { Dialog, Avatar } from "@material-ui/core";
-import RightDialog from "./RightDialog";
+import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import Drawer from "components/Transact/components/Drawer";
 import moment from "moment";
 import { setStateIfDeepEqual } from "../../Shared/functions";
 
 import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
-import DealTasksProgressZone from "./DealTasksProgressZone";
-import DealComment from "./DealComment";
+import DealTasksProgressZone from "../../ContactDetailCard/components/DealTasksProgressZone";
+import DealComment from "../../ContactDetailCard/components/DealComment";
 import DealTasksDetails from "./DealTasksDetails";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
@@ -43,7 +43,7 @@ import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
 import Documents from "../../Shared/Documents";
-import AddDialogeUploadZone from "./AddDialogUploadZone";
+import AddDialogeUploadZone from "../../ContactDetailCard/components/AddDialogUploadZone";
 import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GET_DEAL_SETTINGS } from "graphQL/useQueryGetDealSettings";
@@ -1490,7 +1490,7 @@ function AddDealDialog(props) {
           hiddenOverflow
         >
           <StickyHeader />
-          <Drawer top={contact.name ? "160px" : "108px"} />
+          <Drawer top={contact.name && !props.isTransactPage ? "160px" : "108px"} />
           <div className={classes.contentRoot}>
             {props.isTransactPage &&
               stateApp.transactBarView !== "Deal" &&
@@ -1786,10 +1786,12 @@ function AddDealDialog(props) {
               </div>
             )}
           </div>
-          <DealComment
-            setNewCommentId={setNewCommentId}
-            targetSourceId={stateApp.activeDeal?.cardId}
-          />
+          {stateApp.transactBarView === 'Deal' && (
+            <DealComment
+              setNewCommentId={setNewCommentId}
+              targetSourceId={stateApp.activeDeal?.cardId}
+            />
+          )}
         </RightDialog>
       </div>
     </>
