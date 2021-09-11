@@ -293,6 +293,7 @@ export default function Pipelines(props) {
                 if (lane.id === laneId && cardId === card.id) {
                   setStateApp((stateApp) => ({
                     ...stateApp,
+                    transactBarView: stateApp.transactBarView || "Deal",
                     dealDialog: true,
                     activeDeal: {
                       cardId,

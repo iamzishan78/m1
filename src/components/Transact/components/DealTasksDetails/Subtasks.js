@@ -1,4 +1,4 @@
-import React, { useState, memo } from "react";
+import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 
 import { DndProvider } from "react-dnd";
@@ -156,7 +156,10 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
                         {users.map((user) => (
                           <ListItem
                             button
-                            onClick={() => handleUpdateSubtask({ ...task, assignee: user.value, assignedDate: new Date().toString() })}
+                            onClick={() => {
+                              handleUpdateSubtask({ ...task, assignee: user.value, assignedDate: new Date().toString() });
+                              popupState.close();
+                            }}
                           >
                             <ListItemText primary={user.text} />
                           </ListItem>
@@ -174,11 +177,16 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
   );
 };
 
-const Subtasks = memo((props) => {
+const Subtasks = (props) => {
   const { tasks, users } = props;
-  const [items, setItems] = useState(tasks.map((t, index) => ({ ...t, id: `${index + 1}`, depth: 0 })));
+  const [items, setItems] = useState([]);
 
   const [updateSubtask] = useMutation(UPDATE_DEAL_SUBTASK);
+
+  useEffect(() => {
+    debugger;
+    setItems(tasks.map((t, index) => ({ ...t, id: `${index + 1}`, depth: 0 })));
+  }, [tasks]);
 
   const handleUpdateSubtask = (task) => {
     updateSubtask({
@@ -214,6 +222,6 @@ const Subtasks = memo((props) => {
       </ContextProvider>
     </DndProvider>
   );
-});
+};
 
 export default Subtasks;
