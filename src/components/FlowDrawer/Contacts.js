@@ -301,7 +301,7 @@ export default function Contacts(props) {
                   ) : (
                     <ListItemSecondaryAction
                       onClick={() => {
-                        DeleteContact(stateApp.activeDeal?.contacts[i]?._id);
+                        DeleteContact(stateApp.activeDeal?.contacts[i]?.descriptorId);
                         setMutationLoading(stateApp.activeDeal?.contacts[i]?._id);
                       }}
                     >
