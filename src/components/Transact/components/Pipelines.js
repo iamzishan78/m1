@@ -7,7 +7,7 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useHistory } from "react-router-dom";
 
-//icons 
+//icons
 import IconButton from "@material-ui/core/IconButton";
 
 import Dialog from "@material-ui/core/Dialog";
@@ -183,44 +183,38 @@ export default function Pipelines(props) {
   useEffect(() => {
     if (pipelinesData) {
       //// select first one as default
-      const pipelineId = history.location.pathname.split("/")[2]
-      let laneId = ''
-      let cardId = ''
-      if (history.location.pathname.includes('lane')) {
-        laneId = history.location.pathname.split("/")[4]
+      const pipelineId = history.location.pathname.split("/")[2];
+      let laneId = "";
+      let cardId = "";
+      if (history.location.pathname.includes("lane")) {
+        laneId = history.location.pathname.split("/")[4];
       }
-      if (history.location.pathname.includes('card')) {
-        cardId = history.location.pathname.split("/")[6]
+      if (history.location.pathname.includes("card")) {
+        cardId = history.location.pathname.split("/")[6];
       }
 
       if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
         let activePipeline = {};
 
         if (pipelineId) {
-          activePipeline = pipelinesData.pipelines.find(
-            (p) => p._id === pipelineId
-          );
+          activePipeline = pipelinesData.pipelines.find((p) => p._id === pipelineId);
         }
         if (!activePipeline) {
-          const isExist = !!pipelinesData.pipelines.find(
-            (p) => p._id === selectedPipe?._id
-          );
+          const isExist = !!pipelinesData.pipelines.find((p) => p._id === selectedPipe?._id);
           if (selectedPipe && isExist) {
-            activePipeline = pipelinesData.pipelines.find(
-              (p) => p._id === selectedPipe._id
-            );
+            activePipeline = pipelinesData.pipelines.find((p) => p._id === selectedPipe._id);
           } else activePipeline = pipelinesData.pipelines[0];
         }
         if (laneId && cardId) {
           history.push(`/flow/${activePipeline._id}/lane/${laneId}/card/${cardId}`);
         } else {
-          history.push(`/flow/${activePipeline._id}`)
+          history.push(`/flow/${activePipeline._id}`);
         }
 
         dispatch(
           setFlowState({
             selectedPipe: activePipeline,
-            pipelines: pipelinesData.pipelines
+            pipelines: pipelinesData.pipelines,
           })
         );
       } else
@@ -228,12 +222,11 @@ export default function Pipelines(props) {
           setFlowState({
             selectedPipe: null,
             pipelines: [],
-            pipeToShow: false
+            pipeToShow: false,
           })
         );
     }
   }, [pipelinesData]);
-
 
   useEffect(() => {
     if (dataDealsCountByStage?.nonDeletedDealsCountInAnStageByPipeline) {
@@ -281,13 +274,13 @@ export default function Pipelines(props) {
   useEffect(() => {
     if (pipelineData) {
       if (pipelineData.pipeline) {
-        let laneId = ''
-        let cardId = ''
-        if (history.location.pathname.includes('lane')) {
-          laneId = history.location.pathname.split("/")[4]
+        let laneId = "";
+        let cardId = "";
+        if (history.location.pathname.includes("lane")) {
+          laneId = history.location.pathname.split("/")[4];
         }
-        if (history.location.pathname.includes('card')) {
-          cardId = history.location.pathname.split("/")[6]
+        if (history.location.pathname.includes("card")) {
+          cardId = history.location.pathname.split("/")[6];
         }
 
         let deals = [];
@@ -300,13 +293,12 @@ export default function Pipelines(props) {
                 if (lane.id === laneId && cardId === card.id) {
                   setStateApp((stateApp) => ({
                     ...stateApp,
-                    transactBarView: "Deal",
                     dealDialog: true,
                     activeDeal: {
                       cardId,
                       laneId,
-                      ...card.metadata
-                    }
+                      ...card.metadata,
+                    },
                   }));
                 }
                 deals.push({
@@ -631,7 +623,7 @@ export default function Pipelines(props) {
             if (success === true) dispatch(showSuccessMessage("The Pipeline was successfully updated."));
             else dispatch(showErrorMessage("An error occurred during the update."));
           })
-          .catch((reason) => { });
+          .catch((reason) => {});
       }
 
       handleClose();
@@ -669,11 +661,11 @@ export default function Pipelines(props) {
 
   const handleDuplicateFlowLine = () => {
     // Duplicate Flowline
-  }
+  };
 
   const handleDeleteFlowLine = () => {
     // Delete Flowline
-  }
+  };
 
   return (
     <React.Fragment>
@@ -683,11 +675,7 @@ export default function Pipelines(props) {
             {selectedPipe.name}
           </Typography>
         )}
-        <FlowLineAction
-          onDelete={handleDeleteFlowLine}
-          onEdit={handleEditFlowLine}
-          onDuplicate={handleDuplicateFlowLine}
-        />
+        <FlowLineAction onDelete={handleDeleteFlowLine} onEdit={handleEditFlowLine} onDuplicate={handleDuplicateFlowLine} />
       </div>
 
       {/* //// pipelines dialog //// */}
@@ -723,7 +711,7 @@ export default function Pipelines(props) {
                     setName(event.target.value);
                     if (error) setError(false);
                   }}
-                  style={{ width: '48%' }}
+                  style={{ width: "48%" }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -889,9 +877,9 @@ export default function Pipelines(props) {
           <DeleteConfirmationDialogContent
             header={deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`}
             onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => { }}
+            deleteFunc={deleteFunc ? deleteFunc : () => {}}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
             {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the Flowline?" : "Are you sure you want to delete the stage?"}
           </DeleteConfirmationDialogContent>
