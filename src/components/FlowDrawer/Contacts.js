@@ -1,16 +1,5 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
-import {
-  Grid,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Divider,
-  List,
-  ListItem,
-  Typography,
-  Tooltip,
-  InputBase
-} from "@material-ui/core";
+import { Grid, ListItemIcon, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
 import get from "lodash/get";
 import Avatar from "react-avatar";
 import SearchIcon from "@material-ui/icons/Search";
@@ -189,13 +178,7 @@ export default function Contacts(props) {
   };
   return (
     <>
-      <Grid
-        container
-        direction="row"
-        justify="space-between"
-        alignItems="center"
-        className={classes.rootPadding}
-      >
+      <Grid container direction="row" justify="space-between" alignItems="center" className={classes.rootPadding}>
         {!isSearchActive && (
           <Grid item xs={10}>
             <Typography variant="h6">Contacts</Typography>
@@ -203,12 +186,20 @@ export default function Contacts(props) {
         )}
         <Grid item xs={1}>
           <div className={classes.search}>
-            <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInputDocuments").focus()}>
+            <Tooltip
+              title="Search"
+              className={classes.iconSearch}
+              onClick={() => {
+                if (!isSearchActive) {
+                  document.getElementById("searchInputDocuments").focus();
+                }
+              }}
+            >
               <SearchIcon />
             </Tooltip>
             <InputBase
               id="searchInputDocuments"
-              autoComplete='off'
+              autoComplete="off"
               placeholder="Search Contacts"
               classes={{
                 root: classes.inputRoot,
@@ -310,7 +301,7 @@ export default function Contacts(props) {
                   ) : (
                     <ListItemSecondaryAction
                       onClick={() => {
-                        DeleteContact(stateApp.activeDeal?.contacts[i]?._id);
+                        DeleteContact(stateApp.activeDeal?.contacts[i]?.descriptorId);
                         setMutationLoading(stateApp.activeDeal?.contacts[i]?._id);
                       }}
                     >
