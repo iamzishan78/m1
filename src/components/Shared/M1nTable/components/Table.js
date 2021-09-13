@@ -32,6 +32,7 @@ import Button from "@material-ui/core/Button";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
 import MergeTypeIcon from "@material-ui/icons/MergeType";
 import AssignmentIndOutlinedIcon from "@material-ui/icons/AssignmentIndOutlined";
+import AlternateEmailIcon from '@material-ui/icons/AlternateEmail';
 import ContactPhoneRoundedIcon from "@material-ui/icons/ContactPhoneRounded";
 import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
 import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
@@ -2474,6 +2475,17 @@ function SubTable(props) {
                       {/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
                       <Button
                         color="secondary"
+                        startIcon={<AlternateEmailIcon />}
+                        className={classes.multiSelectionTopBarButtons}
+                        disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+                        onClick={() => {
+                          handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData");
+                        }}
+                      >
+                        Contact Data
+                      </Button>
+                      <Button
+                        color="secondary"
                         startIcon={<AssignmentIndOutlinedIcon />}
                         className={classes.multiSelectionTopBarButtons}
                         disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
@@ -2748,6 +2760,14 @@ function SubTable(props) {
 
             {props.addAble.type === "contact" && (
               <>
+                <Button
+                  color="secondary"
+                  startIcon={<AlternateEmailIcon />}
+                  className={classes.multiSelectionTopBarButtons}
+                  disabled
+                >
+                  Contact Data
+                </Button>
                 <Button
                   color="secondary"
                   startIcon={<AssignmentIndOutlinedIcon />}
@@ -3348,6 +3368,17 @@ function SubTable(props) {
         {openDialog && openDialog === "buyContactsInfo" && (
           <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
             <BuyContactsInfoDialogContent
+              onClose={handleCloseDialog}
+              rows={expandedObject}
+              setRows={setExpandedObject}
+              setSelectedRow={setSelectedRow}
+            />
+          </RightDialog>
+        )}
+        {openDialog && openDialog === "buyContactsInfoData" && (
+          <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
+            <BuyContactsInfoDialogContent
+              header="Contact Data Integration"
               onClose={handleCloseDialog}
               rows={expandedObject}
               setRows={setExpandedObject}

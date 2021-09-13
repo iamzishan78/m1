@@ -5,8 +5,9 @@ import React, { useContext, useState, useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 // mui core components
-import { Grid } from "@material-ui/core";
+import { Grid, Menu, MenuItem } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useHistory } from "react-router-dom";
 
 // internal components
@@ -289,6 +290,13 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": { color: "#757575" },
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
+  menuIcon:{
+    padding: "0px !important" ,
+    margin: "0px !important",
+    minWidth: "0px !important",
+    background: "white !important",
+    color: "black !important"
+  }
 }));
 
 export default function ContactDetailCard(props) {
@@ -307,6 +315,7 @@ export default function ContactDetailCard(props) {
   );
   const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [transactData, setTransactData] = useState();
   const [transactId, setTransactId] = useState();
   const [contactData, setContactData] = useState(null);
@@ -334,6 +343,13 @@ export default function ContactDetailCard(props) {
   );
   const [updateContact] = useMutation(UPDATECONTACT);
 
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const handleClickRightDialogOpen = (childrenToOpen) => {
     setRightDialogOpen(childrenToOpen);
   };
@@ -537,13 +553,40 @@ export default function ContactDetailCard(props) {
                 )}
 
                 <Button
-                  variant="contained"
-                  onClick={() => {
-                    handleExpandClick("deleteConfirmation");
+                  className={classes.menuIcon}
+                  onClick={handleClick}
+                >
+                  <MoreVertIcon aria-controls="simple-menu" aria-haspopup="true" />
+                </Button>
+              
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
                   }}
                 >
-                  Delete
-                </Button>
+                  <MenuItem className={classes.userMenuItem} onClick={(e) => {
+                    handleClose()
+                    handleExpandClick("buyContactsInfo");
+                  }}>
+                    Purchase contact data
+                  </MenuItem>
+                  <MenuItem className={classes.userMenuItem} onClick={(e) => {
+                    handleClose()
+                    handleExpandClick("deleteConfirmation")
+                  }}>
+                    Delete contact
+                  </MenuItem>
+                </Menu>
               </div>
               <div>
                 <div className={classes.userIcon}>
@@ -872,29 +915,32 @@ export default function ContactDetailCard(props) {
             maxWidth={"sm"}
           >
             {openDialog === "buyContactsInfo" && (
-              <BuyContactsInfoDialogContent
-                onClose={handleCloseDialog}
-                rows={[contactData]}
-                setRows={() => { }}
-                updateMelissaTable={() => {
-                  getLastMelissaRecord({
-                    variables: {
-                      contactId: stateApp.selectedContact,
-                    },
-                  });
-                  updateContact({
-                    variables: {
-                      contact: {
-                        _id: stateApp.selectedContact,
-                        lastUpdateBy: stateApp.user.mongoId,
+              <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
+                <BuyContactsInfoDialogContent
+                  header="Contact Data Integration"
+                  onClose={handleCloseDialog}
+                  rows={[contactData]}
+                  setRows={() => { }}
+                  updateMelissaTable={() => {
+                    getLastMelissaRecord({
+                      variables: {
+                        contactId: stateApp.selectedContact,
                       },
-                      ignoreResponse: true,
-                    },
-                    refetchQueries: ["getPaginatedContacts", "getContact"],
-                    awaitRefetchQueries: false,
-                  });
-                }}
-              />
+                    });
+                    updateContact({
+                      variables: {
+                        contact: {
+                          _id: stateApp.selectedContact,
+                          lastUpdateBy: stateApp.user.mongoId,
+                        },
+                        ignoreResponse: true,
+                      },
+                      refetchQueries: ["getPaginatedContacts", "getContact"],
+                      awaitRefetchQueries: false,
+                    });
+                  }}
+                />
+              </RightDialog>
             )}
             {openDialog === "deleteConfirmation" && (
               <ConfirmationDialog
