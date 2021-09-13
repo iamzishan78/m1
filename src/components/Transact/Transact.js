@@ -459,8 +459,8 @@ export default function Transact() {
             )}
           </div>
           <div className={classes.cardSubheading}>
-            <span>{formattedPrice}</span>
-            {formattedDate && (
+          
+          {formattedDate && (
               <>
                 <br />
                 <span>
@@ -469,6 +469,9 @@ export default function Transact() {
                 </span>
               </>
             )}
+
+            <span>{formattedPrice}</span>
+
           </div>
         </header>
         <div className={classes.cardDescStyle}>{desc}</div>
