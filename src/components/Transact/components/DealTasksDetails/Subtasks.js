@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
       marginRight: 0,
     },
   },
-  subTaskRightGrid: {
+  subTaskRightGrid: (props) => ({
     alignItems: "right",
     "& .MuiIconButton-root": {
       height: "25px",
@@ -49,7 +49,14 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiFormHelperText-root": {
       display: "none !important",
     },
-  },
+    "& .MuiInputBase-input": {
+      textAlign: "right",
+      cursor: "pointer",
+    },
+    "& .MuiInputAdornment-root": {
+      display: props.task.dueDate ? "none" : "",
+    },
+  }),
   addSubTaskButton: {
     marginBottom: "10px",
   },
@@ -66,6 +73,7 @@ const useStyles = makeStyles((theme) => ({
 const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
   const approver = users.find((user) => user?.value === task.assignee);
   const [showTaskActions, setShow] = useState(false);
+  const [isDatePopup, setDatePopup] = useState(false);
 
   const truncate = (str, n) => (str.length > n ? str.substr(0, n - 1) + "..." : str);
   const onHoverTask = (state) => setShow(state);
@@ -82,7 +90,7 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
   });
 
   const [, drop] = useDrop();
-  const classes = useStyles({ muted: useIsClosestDragging() || isDragging });
+  const classes = useStyles({ muted: useIsClosestDragging() || isDragging, task });
 
   return (
     <Flipped flipId={task.id}>
@@ -117,7 +125,7 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
               <span style={{ fontSize: "medium" }}>{truncate(task.name, 18)}</span>
             </Tooltip>
           </Grid>
-          <Grid item className={classes.subTaskRightGrid}>
+          <Grid item className={classes.subTaskRightGrid} onClick={() => setDatePopup(!isDatePopup)}>
             {(task.dueDate || showTaskActions) && (
               <KeyboardDatePicker
                 disableToolbar
@@ -127,6 +135,9 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
                 allowKeyboardControl={false}
                 value={task.dueDate || ""}
                 emptyLabel
+                disabled
+                keyboardIcon={task.dueDate && <></>}
+                open={isDatePopup}
                 onChange={(date) => handleUpdateSubtask({ ...task, dueDate: date ? String(date["_d"]) : "" })}
               />
             )}
