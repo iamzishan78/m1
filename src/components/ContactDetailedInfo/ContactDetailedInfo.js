@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import FieldContent from "../ContactDetailCard/components/FieldContent";
 import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -14,6 +16,8 @@ import {
   FormGroup,
   Switch
 } from "@material-ui/core";
+
+import { getBasicInfoContent, getBasicInfoExpContent } from 'components/ContactDetailedInfo/helper'
 
 
 const AntSwitch = withStyles((theme) => ({
@@ -169,265 +173,283 @@ const useStyles = makeStyles((theme) => ({
   switchTextDeselected: {
     color: "rgb(141, 141, 141)",
   },
+  tab:{
+    border: "1px solid #C9C9C9",
+    padding: "3px 20px",
+    color: "#919191",
+    cursor: "pointer",
+  },
+  selectedTab:{
+    color: 'white',
+    background: '#01B0F0',
+  },
+  viewSwitcher:{
+    width : "245px",
+    fontSize : "14px",
+    marginLeft: "10px",
+  }
+
 }));
 
 export default function DetailInfo(props) {
   const [basicInfExp, setBasicInfExp] = useState(false);
   const [showEmpty, setShowEmpty] = useState(true);
+  const [selectedTab, setSelectedTab] = useState('Basic Info')
+  const [selectedPurchaseData, setSelectedPurchaseData] = useState('')
   const classes = useStyles();
   let history = useHistory();
   const [loading, setLoading] = useState(false);
-  const basicInfoContent = {
-    // "Full Name": {
-    //   data: {
-    //     title: props.contactData.title,
-    //     firstName: props.contactData.firstName,
-    //     middleName: props.contactData.middleName,
-    //     lastName: props.contactData.lastName,
-    //     suffix: props.contactData.suffix,
-    //   },
-    //   linkType: LinkTypes.None,
-    // },
-    "Primary Email": {
-      data: { primaryEmail: props.contactData.primaryEmail },
-      linkType: LinkTypes.Mail,
-    },
+  // const basicInfoContent = {
+  //   // "Full Name": {
+  //   //   data: {
+  //   //     title: props.contactData.title,
+  //   //     firstName: props.contactData.firstName,
+  //   //     middleName: props.contactData.middleName,
+  //   //     lastName: props.contactData.lastName,
+  //   //     suffix: props.contactData.suffix,
+  //   //   },
+  //   //   linkType: LinkTypes.None,
+  //   // },
+  //   "Primary Email": {
+  //     data: { primaryEmail: props.contactData.primaryEmail },
+  //     linkType: LinkTypes.Mail,
+  //   },
 
-    "Primary Mobile Phone": {
-      data: { mobilePhone: props.contactData.mobilePhone },
-      linkType: LinkTypes.None,
-    },
-    "Primary Home Phone": {
-      data: { homePhone: props.contactData.homePhone },
-      linkType: LinkTypes.None,
-    },
-    "Primary Work Phone": {
-      data: { AltPhone: props.contactData.AltPhone },
-      linkType: LinkTypes.None,
-    },
-    "Primary Address": {
-      data: {
-        address1: props.contactData.address1,
-        address2: props.contactData.address2,
-        city: props.contactData.city,
-        state: props.contactData.state,
-        zip: props.contactData.zip,
-        country: props.contactData.country,
-      },
-      linkType: LinkTypes.None,
-    },
-    "Secondary Address": {
-      data: {
-        address1Alt: props.contactData.address1Alt,
-        address2Alt: props.contactData.address2Alt,
-        cityAlt: props.contactData.cityAlt,
-        stateAlt: props.contactData.stateAlt,
-        zipAlt: props.contactData.zipAlt,
-        countryAlt: props.contactData.countryAlt,
-      },
-      linkType: LinkTypes.None,
-    },
-  };
+  //   "Primary Mobile Phone": {
+  //     data: { mobilePhone: props.contactData.mobilePhone },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Primary Home Phone": {
+  //     data: { homePhone: props.contactData.homePhone },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Primary Work Phone": {
+  //     data: { AltPhone: props.contactData.AltPhone },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Primary Address": {
+  //     data: {
+  //       address1: props.contactData.address1,
+  //       address2: props.contactData.address2,
+  //       city: props.contactData.city,
+  //       state: props.contactData.state,
+  //       zip: props.contactData.zip,
+  //       country: props.contactData.country,
+  //     },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Secondary Address": {
+  //     data: {
+  //       address1Alt: props.contactData.address1Alt,
+  //       address2Alt: props.contactData.address2Alt,
+  //       cityAlt: props.contactData.cityAlt,
+  //       stateAlt: props.contactData.stateAlt,
+  //       zipAlt: props.contactData.zipAlt,
+  //       countryAlt: props.contactData.countryAlt,
+  //     },
+  //     linkType: LinkTypes.None,
+  //   },
+  // };
 
-  const lastUpdateByRow =
-    props.contactData.lastUpdateBy &&
-      props.contactData.lastUpdateBy.name === null ? (
-        <span className={classes.userSmallLoader}>
-          <CircularProgress size={22} color="secondary" />
-        </span>
-      ) : (props.contactData.lastUpdateBy &&
-        props.contactData.lastUpdateBy.name) ||
-        props.contactData.lastUpdateAt ? (
-          `${props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name
-            ? props.contactData.lastUpdateBy.name
-            : ""
-          }
-    ${props.contactData.lastUpdateAt
-            ? " - " + anyToDate(props.contactData.lastUpdateAt).toLocaleString()
-            : ""
-          }`
-        ) : (
-          <p className={classes.notAvailableP}>Not Available</p>
-        );
+  // const lastUpdateByRow =
+  //   props.contactData.lastUpdateBy &&
+  //     props.contactData.lastUpdateBy.name === null ? (
+  //       <span className={classes.userSmallLoader}>
+  //         <CircularProgress size={22} color="secondary" />
+  //       </span>
+  //     ) : (props.contactData.lastUpdateBy &&
+  //       props.contactData.lastUpdateBy.name) ||
+  //       props.contactData.lastUpdateAt ? (
+  //         `${props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name
+  //           ? props.contactData.lastUpdateBy.name
+  //           : ""
+  //         }
+  //   ${props.contactData.lastUpdateAt
+  //           ? " - " + anyToDate(props.contactData.lastUpdateAt).toLocaleString()
+  //           : ""
+  //         }`
+  //       ) : (
+  //         <p className={classes.notAvailableP}>Not Available</p>
+  //       );
 
-  const createByRow =
-    props.contactData.createBy && props.contactData.createBy.name === null ? (
-      <span className={classes.userSmallLoader}>
-        <CircularProgress size={22} color="secondary" />
-      </span>
-    ) : (props.contactData.createBy && props.contactData.createBy.name) ||
-      props.contactData.createAt ? (
-          `${props.contactData.createBy && props.contactData.createBy.name
-            ? props.contactData.createBy.name
-            : ""
-          }
-    ${props.contactData.createAt
-            ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
-            : ""
-          }`
-        ) : (
-          <p className={classes.notAvailableP}>Not Available</p>
-        );
+  // const createByRow =
+  //   props.contactData.createBy && props.contactData.createBy.name === null ? (
+  //     <span className={classes.userSmallLoader}>
+  //       <CircularProgress size={22} color="secondary" />
+  //     </span>
+  //   ) : (props.contactData.createBy && props.contactData.createBy.name) ||
+  //     props.contactData.createAt ? (
+  //         `${props.contactData.createBy && props.contactData.createBy.name
+  //           ? props.contactData.createBy.name
+  //           : ""
+  //         }
+  //   ${props.contactData.createAt
+  //           ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
+  //           : ""
+  //         }`
+  //       ) : (
+  //         <p className={classes.notAvailableP}>Not Available</p>
+  //       );
 
-  const basicInfoExpContent = {
-    "Email 2": {
-      data: { secondaryEmail: props.contactData.secondaryEmail },
-      linkType: LinkTypes.Mail,
-    },
-    "Email 3": {
-      data: { email3: props.contactData.email3 },
-      linkType: LinkTypes.None,
-    },
-    "Mobile Phone 2": {
-      data: { mobilephone2: props.contactData.mobilephone2 },
-      linkType: LinkTypes.None,
-    },
-    "Mobile Phone 3": {
-      data: { mobilephone3: props.contactData.mobilephone3 },
-      linkType: LinkTypes.None,
-    },
-    "Home Phone 2": {
-      data: { homePhone2: props.contactData.homePhone2 },
-      linkType: LinkTypes.None,
-    },
-    "Home Phone 3": {
-      data: { homePhone3: props.contactData.homePhone3 },
-      linkType: LinkTypes.None,
-    },
-    "Work Phone 2": {
-      data: { AltPhone2: props.contactData.AltPhone2 },
-      linkType: LinkTypes.None,
-    },
-    "Work Phone 3": {
-      data: { AltPhone3: props.contactData.AltPhone3 },
-      linkType: LinkTypes.None,
-    },
-    "Age": {
-      data: { age: props.contactData.age },
-      linkType: LinkTypes.None,
-    },
-    "Relative Names": {
-      data: { relatives: props.contactData.relatives },
-      linkType: LinkTypes.None,
-    },
-    // Notes: {
-    //   data: { notes: props.contactData.notes },
-    //   linkType: LinkTypes.None,
-    // },
+  // const basicInfoExpContent = {
+  //   "Email 2": {
+  //     data: { secondaryEmail: props.contactData.secondaryEmail },
+  //     linkType: LinkTypes.Mail,
+  //   },
+  //   "Email 3": {
+  //     data: { email3: props.contactData.email3 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Mobile Phone 2": {
+  //     data: { mobilephone2: props.contactData.mobilephone2 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Mobile Phone 3": {
+  //     data: { mobilephone3: props.contactData.mobilephone3 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Home Phone 2": {
+  //     data: { homePhone2: props.contactData.homePhone2 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Home Phone 3": {
+  //     data: { homePhone3: props.contactData.homePhone3 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Work Phone 2": {
+  //     data: { AltPhone2: props.contactData.AltPhone2 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Work Phone 3": {
+  //     data: { AltPhone3: props.contactData.AltPhone3 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Age": {
+  //     data: { age: props.contactData.age },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Relative Names": {
+  //     data: { relatives: props.contactData.relatives },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   // Notes: {
+  //   //   data: { notes: props.contactData.notes },
+  //   //   linkType: LinkTypes.None,
+  //   // },
 
 
-    "LinkedIn Profile": {
-      data: { linkedIn: props.contactData.linkedIn },
-      linkType: LinkTypes.Simple,
-      // inner: props.contactData.linkedIn && (
-      //   <a
-      //     href={`${
-      //       !props.contactData.linkedIn.startsWith("http") &&
-      //       !props.contactData.linkedIn.startsWith("//")
-      //         ? "//"
-      //         : ""
-      //     }${props.contactData.linkedIn}`}
-      //     target="_blank"
-      //   >
-      //     {props.contactData.linkedIn}
-      //   </a>
-      // ),
-    },
-    "Facebook Profile": {
-      data: { facebook: props.contactData.facebook },
-      linkType: LinkTypes.Simple,
-      // inner: props.contactData.facebook && (
-      //   <a
-      //     href={`${
-      //       !props.contactData.facebook.startsWith("http") &&
-      //       !props.contactData.facebook.startsWith("//")
-      //         ? "//"
-      //         : ""
-      //     }${props.contactData.facebook}`}
-      //     target="_blank"
-      //   >
-      //     {props.contactData.facebook}
-      //   </a>
-      // ),
-    },
-    "Twitter Profile": {
-      data: { twitter: props.contactData.twitter },
-      linkType: LinkTypes.Simple,
-      // inner: props.contactData.twitter && (
-      //   <a
-      //     href={`${
-      //       !props.contactData.twitter.startsWith("http") &&
-      //       !props.contactData.twitter.startsWith("//")
-      //         ? "//"
-      //         : ""
-      //     }${props.contactData.twitter}`}
-      //     target="_blank"
-      //   >
-      //     {props.contactData.twitter}
-      //   </a>
-      // ),
-    },
-    Website: {
-      data: { website: props.contactData.website },
-      linkType: LinkTypes.None,
-    },
+  //   "LinkedIn Profile": {
+  //     data: { linkedIn: props.contactData.linkedIn },
+  //     linkType: LinkTypes.Simple,
+  //     // inner: props.contactData.linkedIn && (
+  //     //   <a
+  //     //     href={`${
+  //     //       !props.contactData.linkedIn.startsWith("http") &&
+  //     //       !props.contactData.linkedIn.startsWith("//")
+  //     //         ? "//"
+  //     //         : ""
+  //     //     }${props.contactData.linkedIn}`}
+  //     //     target="_blank"
+  //     //   >
+  //     //     {props.contactData.linkedIn}
+  //     //   </a>
+  //     // ),
+  //   },
+  //   "Facebook Profile": {
+  //     data: { facebook: props.contactData.facebook },
+  //     linkType: LinkTypes.Simple,
+  //     // inner: props.contactData.facebook && (
+  //     //   <a
+  //     //     href={`${
+  //     //       !props.contactData.facebook.startsWith("http") &&
+  //     //       !props.contactData.facebook.startsWith("//")
+  //     //         ? "//"
+  //     //         : ""
+  //     //     }${props.contactData.facebook}`}
+  //     //     target="_blank"
+  //     //   >
+  //     //     {props.contactData.facebook}
+  //     //   </a>
+  //     // ),
+  //   },
+  //   "Twitter Profile": {
+  //     data: { twitter: props.contactData.twitter },
+  //     linkType: LinkTypes.Simple,
+  //     // inner: props.contactData.twitter && (
+  //     //   <a
+  //     //     href={`${
+  //     //       !props.contactData.twitter.startsWith("http") &&
+  //     //       !props.contactData.twitter.startsWith("//")
+  //     //         ? "//"
+  //     //         : ""
+  //     //     }${props.contactData.twitter}`}
+  //     //     target="_blank"
+  //     //   >
+  //     //     {props.contactData.twitter}
+  //     //   </a>
+  //     // ),
+  //   },
+  //   Website: {
+  //     data: { website: props.contactData.website },
+  //     linkType: LinkTypes.None,
+  //   },
 
-    // "Company Name": {
-    //   data: { companyName: props.contactData.companyName },
-    //   linkType: LinkTypes.None,
-    // },
-    // "Job Title": {
-    //   data: { jobTitle: props.contactData.jobTitle },
-    //   linkType: LinkTypes.None,
-    // },
-    // "Lead Stage": {
-    //   data: { leadStage: props.contactData.leadStage },
-    //   linkType: LinkTypes.None,
-    // },
-    "Industry Type": {
-      data: { industryType: props.contactData.industryType },
-      linkType: LinkTypes.None,
-    },
+  //   // "Company Name": {
+  //   //   data: { companyName: props.contactData.companyName },
+  //   //   linkType: LinkTypes.None,
+  //   // },
+  //   // "Job Title": {
+  //   //   data: { jobTitle: props.contactData.jobTitle },
+  //   //   linkType: LinkTypes.None,
+  //   // },
+  //   // "Lead Stage": {
+  //   //   data: { leadStage: props.contactData.leadStage },
+  //   //   linkType: LinkTypes.None,
+  //   // },
+  //   "Industry Type": {
+  //     data: { industryType: props.contactData.industryType },
+  //     linkType: LinkTypes.None,
+  //   },
 
-    "Campaign Name": {
-      data: { campaignName: props.contactData.campaignName },
-      linkType: LinkTypes.None,
-    },
-    "Lead Source": {
-      data: { leadSource: props.contactData.leadSource },
-      linkType: LinkTypes.None,
-    },
+  //   "Campaign Name": {
+  //     data: { campaignName: props.contactData.campaignName },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Lead Source": {
+  //     data: { leadSource: props.contactData.leadSource },
+  //     linkType: LinkTypes.None,
+  //   },
 
-    "Time Zone": {
-      data: { timeZone: props.contactData.timeZone },
-      linkType: LinkTypes.None,
-    },
-    Territory: {
-      data: { territory: props.contactData.territory },
-      linkType: LinkTypes.None,
-    },
-    Status: {
-      data: { status: props.contactData.status },
-      linkType: LinkTypes.None,
-    },
-    "Contact Owner": {
-      data: {
-        contactOwner: props.contactData.contactOwner,
-        contactOwnerId: props.contactData.contactOwnerId
-      },
-      linkType: LinkTypes.None,
-    },
-    "Created By": {
-      data: { createByRow },
-      linkType: LinkTypes.None,
-      inner: createByRow,
-    },
-    "Last Updated By": {
-      data: { lastUpdateByRow },
-      linkType: LinkTypes.None,
-      inner: lastUpdateByRow,
-    },
-  };
+  //   "Time Zone": {
+  //     data: { timeZone: props.contactData.timeZone },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   Territory: {
+  //     data: { territory: props.contactData.territory },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   Status: {
+  //     data: { status: props.contactData.status },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Contact Owner": {
+  //     data: {
+  //       contactOwner: props.contactData.contactOwner,
+  //       contactOwnerId: props.contactData.contactOwnerId
+  //     },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Created By": {
+  //     data: { createByRow },
+  //     linkType: LinkTypes.None,
+  //     inner: createByRow,
+  //   },
+  //   "Last Updated By": {
+  //     data: { lastUpdateByRow },
+  //     linkType: LinkTypes.None,
+  //     inner: lastUpdateByRow,
+  //   },
+  // };
 
   useEffect(() => {
     setLoading(true);
@@ -468,12 +490,31 @@ export default function DetailInfo(props) {
     );
   };
 
+  const tabs = ['Basic Info', 'Custom Fields', 'Purchased Info']
+
   return (
     <div className={classes.root}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
-        <h4 style={{ margin: "0 0 10px 0", "float": "left" }}>
-          Basic Information
-        </h4>
+        {tabs.map(tab => {
+          return (
+          <span className={`${classes.tab} ${selectedTab === tab ? classes.selectedTab : ''}`} onClick={() => setSelectedTab(tab)}>
+            {tab}
+          </span>
+          )
+        })}
+        {selectedTab === 'Purchased Info' && (
+          <Select
+            className={classes.viewSwitcher}
+            value={selectedPurchaseData}
+            onChange={(e) => {
+              setSelectedPurchaseData(e.target.value)
+            }}
+          >
+            <MenuItem value="id1">IDI Data -07/28/2021 11:07:02am</MenuItem>
+            <MenuItem value="id2">IDI Data -07/29/2021 11:07:02am</MenuItem>
+          </Select>
+        )}
+
         <Box display="flex" justifyContent="flex-end">
           <ToggleEmptyFieldButton />
           <h4
@@ -487,8 +528,8 @@ export default function DetailInfo(props) {
 
 
       <Grid item xs={12} container className={classes.dataSect} spacing={0}>
-        {!loading && basicInfoContent &&
-          Object.entries(basicInfoContent).map(([key, row]) => {
+        {!loading && getBasicInfoContent(props.contactData) &&
+          Object.entries(getBasicInfoContent(props.contactData)).map(([key, row]) => {
             if (showEmpty) {
               return (
                 <React.Fragment>
@@ -502,6 +543,7 @@ export default function DetailInfo(props) {
                       isMerged={!!props.contactData.mergedContacts}
                       content={row.data}
                       linkType={row.linkType}
+                      isPurchased={selectedTab === 'Purchased Info'}
                     />
                   </Grid>
                 </React.Fragment>
@@ -538,7 +580,7 @@ export default function DetailInfo(props) {
 
         {basicInfExp && (
           <>
-            {Object.entries(basicInfoExpContent).map(([key, row]) => {
+            {Object.entries(getBasicInfoExpContent(props.contactData)).map(([key, row]) => {
               if (showEmpty) {
                 return (
                   <React.Fragment key={key}>
