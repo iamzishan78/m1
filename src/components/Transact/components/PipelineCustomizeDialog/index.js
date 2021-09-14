@@ -37,7 +37,7 @@ const PipelineCustomDialog = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [tab, setTab] = useState(0);
-  const { openPipeDialog, selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
+  const { openPipeDialog /*, selectedPipe, pipelines, pipeToShow*/ } = useSelector(({ Flow }) => Flow);
 
   const handleChange = (event, tab) => setTab(tab);
   const handleClose = () => {

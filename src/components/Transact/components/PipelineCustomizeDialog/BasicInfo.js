@@ -1,11 +1,6 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Typography, FormControl, TextField, FormControlLabel, Select } from "@material-ui/core";
-import { Close as CloseIcon } from "@material-ui/icons/";
-
-import { setFlowState } from "actions";
-import AutoComplete from "components/Shared/components/Fields/AutoComplete";
+import { Grid, FormControl, TextField, Select } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
   basicInfoRoot: {
