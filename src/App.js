@@ -94,18 +94,18 @@ const theme = createMuiTheme({
   },
   overrides: {
     MuiCssBaseline: {
-      '@global': {
-        '*::-webkit-scrollbar': {
+      "@global": {
+        "*::-webkit-scrollbar": {
           height: "0.4em",
-          width: "0.4em"
+          width: "0.4em",
         },
-        '*::-webkit-scrollbar-track': {
+        "*::-webkit-scrollbar-track": {
           "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
         },
-        '*::-webkit-scrollbar-thumb': {
+        "*::-webkit-scrollbar-thumb": {
           backgroundColor: "#929292",
           borderRadius: 5,
-        }
+        },
       },
     },
   },
@@ -183,8 +183,8 @@ const PrivateRoute = ({ component, ...options }) => {
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now() && apolloClient?.link?.options?.headers?.["X-ZUMO-AUTH"]
       ? component
       : (() => {
-        return stateApp.myMSALB2CObj ? LoginB2C : Login;
-      })();
+          return stateApp.myMSALB2CObj ? LoginB2C : Login;
+        })();
 
   return (
     <div>

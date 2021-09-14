@@ -11,7 +11,8 @@ import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
 import "./index.css";
 import TransactAppBar from "./components/TransactAppBar";
 import SidePanel from "./components/SidePanel";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setFlowState } from "actions";
 import { UPDATEDEAL } from "../../graphQL/useMutationUpdateDeal";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import Drawer from "./components/Drawer";
@@ -19,29 +20,30 @@ import moment from "moment";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
 import DocViewer from "../Shared/DocViewer";
 import { validateEmail } from "components/Login/loginHelpers";
+import { GETPIPELINES } from "graphQL/useQueryPipelines";
+import { GETPIPELINE } from "graphQL/useQueryPipeline";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    textAlign: "center"
+    textAlign: "center",
   },
   list: {
     overflowX: "auto !important",
-    height: "100%"
+    height: "100%",
   },
   cardStyle: {
     position: "relative",
     border: "none",
     borderLeft: "4px solid #e2e2e2",
-    boxShadow:
-      "rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px",
+    boxShadow: "rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px",
     backgroundColor: "rgb(242, 242, 242)",
     textAlign: "center",
     marginBottom: "10px",
     cursor: "pointer",
     maxWidth: "250px",
     minWidth: "250px",
-    maxHeight: "150px"
+    maxHeight: "150px",
   },
   cardHeaderStyle: {
     display: "flex",
@@ -50,42 +52,42 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px",
     textAlign: "left",
     whiteSpace: "pre-wrap",
-    maxWidth: "245px"
+    maxWidth: "245px",
   },
   cardDescStyle: {
     color: "#2e4451",
     padding: "10px",
     whiteSpace: "pre-wrap",
     textAlign: "left",
-    fontSize: "12px"
+    fontSize: "12px",
   },
   cardTitle: {
     color: "#1CB6DA",
-    textTransform: "uppercase"
+    textTransform: "uppercase",
   },
   cardSubheading: {
-    fontSize: "12px"
+    fontSize: "12px",
   },
   laneHeaderStyle: {
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
     padding: "0px 5px",
-    marginBottom: "0px"
+    marginBottom: "0px",
   },
   laneHeaderSpanStyle: {
     color: "#2e4451",
     fontWeight: "bold",
     fontSize: "18px",
-    marginBottom: "5px"
+    marginBottom: "5px",
   },
   laneHeaderNotBold: {
     fontSize: "14px !important",
-    fontWeight: "normal !important"
+    fontWeight: "normal !important",
   },
   laneHeaderTotalStyle: {
     fontSize: "14px !important",
-    fontWeight: "bold !important"
+    fontWeight: "bold !important",
   },
   boardAndTable: {
     maxHeight: "calc(100vh - 140px) !important",
@@ -99,17 +101,17 @@ const useStyles = makeStyles((theme) => ({
           height: "100%",
           "& section": {
             height: "100%",
-            minHeight: "100%"
-          }
-        }
-      }
+            minHeight: "100%",
+          },
+        },
+      },
     },
     "& div": {
       "&>.MuiPaper-root": {
-        "&>:nth-child(3)": { minHeight: "calc(100vh - 258px) !important" }
-      }
+        "&>:nth-child(3)": { minHeight: "calc(100vh - 258px) !important" },
+      },
     },
-    "& .MuiToolbar-root": { textAlign: "initial" }
+    "& .MuiToolbar-root": { textAlign: "initial" },
   },
   customAvatar: {
     borderRadius: "50%",
@@ -119,7 +121,7 @@ const useStyles = makeStyles((theme) => ({
     width: "25px",
     height: "25px",
     fontSize: "0.7rem",
-    textAlign: "center"
+    textAlign: "center",
   },
   customAvatarImg: {
     borderRadius: "50%",
@@ -127,7 +129,7 @@ const useStyles = makeStyles((theme) => ({
     width: "25px",
     height: "25px",
     fontSize: "0.7rem",
-    textAlign: "center"
+    textAlign: "center",
   },
   dealOwnerAvatar: {
     width: theme.spacing(3),
@@ -135,12 +137,12 @@ const useStyles = makeStyles((theme) => ({
     color: "#fff",
     fontSize: "0.6rem",
     backgroundColor: "#4880F6",
-    padding: "0.5em"
+    padding: "0.5em",
   },
   content: {
     flexGrow: 1,
-    marginLeft: "315px"
-  }
+    marginLeft: "315px",
+  },
 }));
 
 export const CustomAvatar = React.memo(({ text = "", email = "", diglog, imageUrl }) => {
@@ -160,16 +162,12 @@ export const CustomAvatar = React.memo(({ text = "", email = "", diglog, imageUr
   return (
     <Fragment>
       {imageUrl ? (
-        <img
-          className={classes.customAvatarImg}
-          src={imageUrl}
-          alt="owner img"
-        />
+        <img className={classes.customAvatarImg} src={imageUrl} alt="owner img" />
       ) : (
         <span
           className={diglog ? "" : classes.customAvatar}
           style={{
-            backgroundColor: diglog ? "" : getRandomColor(text)
+            backgroundColor: diglog ? "" : getRandomColor(text),
           }}
         >
           {getInitials(text)}
@@ -179,14 +177,7 @@ export const CustomAvatar = React.memo(({ text = "", email = "", diglog, imageUr
   );
 });
 
-const defaultColors = [
-  "#d73d32",
-  "#7e3794",
-  "#4285f4",
-  "#67ae3f",
-  "#d61a7f",
-  "#ff4080"
-];
+const defaultColors = ["#d73d32", "#7e3794", "#4285f4", "#67ae3f", "#d61a7f", "#ff4080"];
 
 function _stringAsciiPRNG(value, m) {
   // Xn+1 = (a * Xn + c) % m
@@ -224,23 +215,28 @@ export function getRandomColor(value, colors = defaultColors) {
 export default function Transact() {
   const classes = useStyles();
   let history = useHistory();
-  const { pipeToShow, pipeToShowTab } = useSelector(({ Flow }) => Flow);
+  const dispatch = useDispatch();
+  const { pipeToShow, pipeToShowTab, openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
   console.log("PIPETOSHOW: ", pipeToShow);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [profilesInfo, setProfilesInfo] = useState({});
   const [filteredBoardTransactData, setFilteredBoardTransactData] = useState({
-    lanes: []
+    lanes: [],
   });
   const [filteredTabTransactData, setFilteredTabTransactData] = useState([]);
   const [dealFilter, setDealFilter] = useState("all");
 
   const cardColors = useRef({});
 
+  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
+  const [getPipeline, { data: pipelineData }] = useLazyQuery(GETPIPELINE, {
+    fetchPolicy: "cache-and-network",
+  });
   const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
   const [updateDeal] = useMutation(UPDATEDEAL);
 
   const [getProfilesImages, profiledata] = useLazyQuery(GET_PROFILES_IMAGES, {
-    fetchPolicy: "cache-first"
+    fetchPolicy: "cache-first",
   });
 
   const filterBoardCards = (lanes, filter) => {
@@ -257,9 +253,7 @@ export default function Transact() {
           break;
 
         default:
-          cards = cards.filter(
-            (card) => card.metadata.status === filter && !card.metadata.IsDeleted
-          );
+          cards = cards.filter((card) => card.metadata.status === filter && !card.metadata.IsDeleted);
           break;
       }
 
@@ -268,9 +262,140 @@ export default function Transact() {
   };
 
   useEffect(() => {
+    getPipelines();
+  }, [getPipelines]);
+
+  useEffect(() => {
+    if (selectedPipe) {
+      getPipeline({ variables: { id: selectedPipe._id } });
+    }
+  }, [selectedPipe, getPipeline]);
+
+  useEffect(() => {
+    if (pipelinesData) {
+      //// select first one as default
+      const pipelineId = history.location.pathname.split("/")[2];
+      let laneId = "";
+      let cardId = "";
+      if (history.location.pathname.includes("lane")) {
+        laneId = history.location.pathname.split("/")[4];
+      }
+      if (history.location.pathname.includes("card")) {
+        cardId = history.location.pathname.split("/")[6];
+      }
+
+      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
+        let activePipeline = {};
+
+        if (pipelineId) {
+          activePipeline = pipelinesData.pipelines.find((p) => p._id === pipelineId);
+        }
+        if (!activePipeline) {
+          const isExist = !!pipelinesData.pipelines.find((p) => p._id === selectedPipe?._id);
+          if (selectedPipe && isExist) {
+            activePipeline = pipelinesData.pipelines.find((p) => p._id === selectedPipe._id);
+          } else activePipeline = pipelinesData.pipelines[0];
+        }
+        if (laneId && cardId) {
+          history.push(`/flow/${activePipeline._id}/lane/${laneId}/card/${cardId}`);
+        } else {
+          history.push(`/flow/${activePipeline._id}`);
+        }
+
+        dispatch(
+          setFlowState({
+            selectedPipe: activePipeline,
+            pipelines: pipelinesData.pipelines,
+          })
+        );
+      } else
+        dispatch(
+          setFlowState({
+            selectedPipe: null,
+            pipelines: [],
+            pipeToShow: false,
+          })
+        );
+    }
+  }, [pipelinesData]);
+
+  useEffect(() => {
+    if (pipelineData) {
+      if (pipelineData.pipeline) {
+        let laneId = "";
+        let cardId = "";
+        if (history.location.pathname.includes("lane")) {
+          laneId = history.location.pathname.split("/")[4];
+        }
+        if (history.location.pathname.includes("card")) {
+          cardId = history.location.pathname.split("/")[6];
+        }
+
+        let deals = [];
+        let pipe = {
+          ...pipelineData.pipeline,
+          lanes: pipelineData.pipeline.lanes?.map((lane) => ({
+            ...lane,
+            cards: lane.cards?.map((card) => {
+              if (!card.metadata.IsDeleted) {
+                if (lane.id === laneId && cardId === card.id) {
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    dealDialog: true,
+                    activeDeal: {
+                      cardId,
+                      laneId,
+                      ...card.metadata,
+                    },
+                  }));
+                }
+                deals.push({
+                  cardId: card.id,
+                  laneId: lane.id,
+                  laneName: lane.title,
+                  pipeline: pipelineData.pipeline._id,
+                  pipelineName: pipelineData.pipeline.name,
+                  ownerName:
+                    card?.metadata?.owners && card.metadata.owners[0]?.relatedObject?.name
+                      ? card.metadata.owners[0].relatedObject.name
+                      : null,
+                  contactName:
+                    card?.metadata?.contacts && card.metadata.contacts[0]?.relatedObject?.entity?.name
+                      ? card.metadata.contacts[0].relatedObject.entity.name
+                      : null,
+                  isContact:
+                    card?.metadata?.contacts && card.metadata.contacts[0]?.relatedObject?._id
+                      ? card.metadata.contacts[0].relatedObject._id
+                      : null,
+                  ...card.metadata,
+                });
+              }
+
+              return { ...card };
+            }),
+          })),
+        };
+
+        dispatch(
+          setFlowState({
+            pipeToShow: pipe,
+            pipeToShowTab: deals,
+          })
+        );
+      } else
+        dispatch(
+          setFlowState({
+            pipeToShow: null,
+            pipeToShowTab: null,
+          })
+        );
+    }
+  }, [pipelineData]);
+
+  useEffect(() => {
     if (pipeToShow?.lanes && dealFilter) {
       setFilteredBoardTransactData({
-        lanes: [...filterBoardCards(pipeToShow.lanes, dealFilter)]
+        lanes: [...filterBoardCards(pipeToShow.lanes, dealFilter)],
       });
       // getting deal owners profile images
       const ownersEmails = [];
@@ -280,23 +405,20 @@ export default function Transact() {
           lane &&
             lane.cards &&
             lane.cards.forEach((card) => {
-              const owner = card &&
-                card.metadata &&
-                card.metadata.owners &&
-                card.metadata.owners[0];
+              const owner = card && card.metadata && card.metadata.owners && card.metadata.owners[0];
               const ownerId = owner && card.metadata.owners[0].id;
               if (owner && validateEmail(owner.relatedObject.email)) ownersEmails.push(owner.relatedObject.email);
 
               if (!(ownerId in cardColors.current)) {
                 cardColors.current = {
                   ...cardColors.current,
-                  [ownerId]: getRandomColor(ownerId)
+                  [ownerId]: getRandomColor(ownerId),
                 };
               }
               // card.metadata.owners[0].id
             });
         });
-      }
+      };
 
       if (filteredBoardTransactData.lanes?.length) {
         cardColorsAndImages(filteredBoardTransactData.lanes);
@@ -305,8 +427,8 @@ export default function Transact() {
       }
 
       getProfilesImages({
-        variables: { emails: ownersEmails }
-      })
+        variables: { emails: ownersEmails },
+      });
     }
   }, [pipeToShow, dealFilter]);
 
@@ -333,63 +455,42 @@ export default function Transact() {
 
   useEffect(() => {
     if (pipeToShowTab && dealFilter) {
-      setFilteredTabTransactData([
-        ...filterTabCards(pipeToShowTab, dealFilter)
-      ]);
+      setFilteredTabTransactData([...filterTabCards(pipeToShowTab, dealFilter)]);
     }
   }, [pipeToShowTab, dealFilter]);
 
-  useEffect(() => { }, [filteredTabTransactData]);
-
-  const handleDataChange = (newData) => { };
+  const handleDataChange = (newData) => {};
 
   const handleCardClick = (cardId, metadata, laneId) => {
-    history.push(`${history.location.pathname}/lane/${laneId}/card/${cardId}`)
+    history.push(`${history.location.pathname}/lane/${laneId}/card/${cardId}`);
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,
       activeDeal: {
         cardId,
         laneId,
-        ...metadata
-      }
+        ...metadata,
+      },
     }));
   };
 
-  const handleCardDragEnd = (
-    cardId,
-    sourceLaneId,
-    targetLaneId,
-    position,
-    cardDetails
-  ) => {
+  const handleCardDragEnd = (cardId, sourceLaneId, targetLaneId, position, cardDetails) => {
     // handle drag within lanes - runs first
 
-    let unfilteredSourceLane = pipeToShow.lanes.find(
-      (lane) => lane?.id === sourceLaneId
-    );
-    let unfilteredTargetLane = pipeToShow.lanes.find(
-      (lane) => lane?.id === targetLaneId
-    );
+    let unfilteredSourceLane = pipeToShow.lanes.find((lane) => lane?.id === sourceLaneId);
+    let unfilteredTargetLane = pipeToShow.lanes.find((lane) => lane?.id === targetLaneId);
 
-    let filteredTargetLane = filteredBoardTransactData.lanes.find(
-      (lane) => lane?.id === targetLaneId
-    );
+    let filteredTargetLane = filteredBoardTransactData.lanes.find((lane) => lane?.id === targetLaneId);
 
-    let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex(
-      (card) => card?.id === cardId
-    );
+    let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex((card) => card?.id === cardId);
     let unfilteredTargetPosition = (() => {
       if (position === 0) return 0;
       let atEnd = position >= filteredTargetLane?.cards?.length;
       let prevCardFilteredPosition = position - atEnd;
-      let prevCardAtPosition =
-        filteredTargetLane?.cards[prevCardFilteredPosition];
-      let prevCardUnfilteredPosition = unfilteredTargetLane?.cards.findIndex(
-        (card) => {
-          return card?.id === prevCardAtPosition?.id;
-        }
-      );
+      let prevCardAtPosition = filteredTargetLane?.cards[prevCardFilteredPosition];
+      let prevCardUnfilteredPosition = unfilteredTargetLane?.cards.findIndex((card) => {
+        return card?.id === prevCardAtPosition?.id;
+      });
 
       return (prevCardUnfilteredPosition += atEnd);
     })();
@@ -398,74 +499,63 @@ export default function Transact() {
     let movedCardDescriptor = {
       _id: cardDetails.metadata.descriptorId,
       relatedObject: targetLaneId,
-      position: unfilteredTargetPosition
+      position: unfilteredTargetPosition,
     };
 
     // update unfilteredSourceLane descriptors
     // including dragging down in same lane
     let sourceSliceStart = unfilteredSourcePosition + 1;
-    let sourceSliceEnd =
-      sourceLaneId === targetLaneId ? unfilteredTargetPosition + 1 : undefined;
+    let sourceSliceEnd = sourceLaneId === targetLaneId ? unfilteredTargetPosition + 1 : undefined;
     let unfilteredSourceLaneDescriptors = [
-      ...unfilteredSourceLane.cards
-        .slice(sourceSliceStart, sourceSliceEnd)
-        .map((card, index) => {
-          return {
-            _id: card.metadata.descriptorId,
-            position: unfilteredSourcePosition + index
-          };
-        })
+      ...unfilteredSourceLane.cards.slice(sourceSliceStart, sourceSliceEnd).map((card, index) => {
+        return {
+          _id: card.metadata.descriptorId,
+          position: unfilteredSourcePosition + index,
+        };
+      }),
     ];
 
     // update unfilteredTargetLane descriptors
     // including dragging up in same lane
     let targetSliceStart = unfilteredTargetPosition;
-    let targetSliceEnd =
-      sourceLaneId === targetLaneId ? unfilteredSourcePosition : undefined;
+    let targetSliceEnd = sourceLaneId === targetLaneId ? unfilteredSourcePosition : undefined;
     let unfilteredTargetLaneDescriptors = [
-      ...unfilteredTargetLane.cards
-        .slice(targetSliceStart, targetSliceEnd)
-        .map((card, index) => {
-          return {
-            _id: card.metadata.descriptorId,
-            position: unfilteredTargetPosition + index + 1
-          };
-        })
+      ...unfilteredTargetLane.cards.slice(targetSliceStart, targetSliceEnd).map((card, index) => {
+        return {
+          _id: card.metadata.descriptorId,
+          position: unfilteredTargetPosition + index + 1,
+        };
+      }),
     ];
 
     updateStageDealDescriptors({
       variables: {
-        stageDealDescriptors: [
-          movedCardDescriptor,
-          ...unfilteredSourceLaneDescriptors,
-          ...unfilteredTargetLaneDescriptors
-        ]
+        stageDealDescriptors: [movedCardDescriptor, ...unfilteredSourceLaneDescriptors, ...unfilteredTargetLaneDescriptors],
       },
-      refetchQueries: ["getPipeline"]
+      refetchQueries: ["getPipeline"],
       // awaitRefetchQueries: true,
     });
 
     if (sourceLaneId !== targetLaneId) {
       let updatedDeal = {
         _id: cardId,
-        stageChangeDate: new Date().toUTCString()
+        stageChangeDate: new Date().toUTCString(),
       };
 
       if (
         unfilteredTargetLane?.metadata?.dealsStatus &&
-        unfilteredTargetLane.metadata.dealsStatus.toLowerCase() !==
-        cardDetails?.metadata?.status?.toLowerCase()
+        unfilteredTargetLane.metadata.dealsStatus.toLowerCase() !== cardDetails?.metadata?.status?.toLowerCase()
       )
         updatedDeal = {
           ...updatedDeal,
-          status: unfilteredTargetLane.metadata.dealsStatus.toLowerCase()
+          status: unfilteredTargetLane.metadata.dealsStatus.toLowerCase(),
         };
 
       updateDeal({
         variables: {
-          deal: { ...updatedDeal }
+          deal: { ...updatedDeal },
         },
-        refetchQueries: ["getPipeline", "getContactDeals"]
+        refetchQueries: ["getPipeline", "getContactDeals"],
         // awaitRefetchQueries: true,
       });
     }
@@ -499,10 +589,7 @@ export default function Transact() {
 
     let formattedDate = null;
 
-    if (metadata?.closeDate)
-      formattedDate = moment
-        .parseZone(new Date(metadata.closeDate))
-        .format("MM/DD/yyyy");
+    if (metadata?.closeDate) formattedDate = moment.parseZone(new Date(metadata.closeDate)).format("MM/DD/yyyy");
 
     let owner = null;
     let ownerId = null;
@@ -519,15 +606,11 @@ export default function Transact() {
     }
 
     let desc = description;
-    if (description && description.length > 50)
-      desc = description.slice(0, 53) + "...";
+    if (description && description.length > 50) desc = description.slice(0, 53) + "...";
 
-    const stageChangeDate =
-      metadata.stageChangeDate && moment.parseZone(metadata.stageChangeDate);
+    const stageChangeDate = metadata.stageChangeDate && moment.parseZone(metadata.stageChangeDate);
 
-    const lane = filteredBoardTransactData.lanes.find(
-      (lane) => lane.id === laneId
-    );
+    const lane = filteredBoardTransactData.lanes.find((lane) => lane.id === laneId);
 
     let cardColor = "limegreen";
     if (lane?.metadata?.rotting && stageChangeDate) {
@@ -539,19 +622,14 @@ export default function Transact() {
         className={classes.cardStyle}
         onClick={() => handleCardClick(id, metadata, laneId)}
         style={{
-          borderLeft: `4px solid ${cardColor}`
+          borderLeft: `4px solid ${cardColor}`,
         }}
       >
         <header className={classes.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span className={classes.cardTitle}>{title}</span>
             {owner && (
-              <CustomAvatar
-                email={ownerEmail}
-                text={owner}
-                color={cardColors[ownerId]}
-                imageUrl={profilesInfo[ownerEmail]?.profileImage}
-              />
+              <CustomAvatar email={ownerEmail} text={owner} color={cardColors[ownerId]} imageUrl={profilesInfo[ownerEmail]?.profileImage} />
             )}
           </div>
           <div className={classes.cardSubheading}>
@@ -573,21 +651,12 @@ export default function Transact() {
   });
 
   const getLaneHeader = ({ title, id, metadata }) => {
-    const lane = filteredBoardTransactData?.lanes?.find(
-      (lane) => lane.id === id
-    );
+    const lane = filteredBoardTransactData?.lanes?.find((lane) => lane.id === id);
     let dealCount = 0;
     if (lane) dealCount = lane?.cards.length;
 
     let priceSum = 0;
-    lane &&
-      lane.cards.forEach(
-        (card) =>
-        (priceSum +=
-          card && card.metadata && card.metadata.offerPrice
-            ? card.metadata.offerPrice
-            : 0)
-      );
+    lane && lane.cards.forEach((card) => (priceSum += card && card.metadata && card.metadata.offerPrice ? card.metadata.offerPrice : 0));
 
     const formattedTotal = vf_currency(priceSum);
 
@@ -604,14 +673,10 @@ export default function Transact() {
           {title} ({dealCount})
         </span>
         <span className={classes.laneHeaderTotalStyle}>
-          Total:{" "}
-          <span className={classes.laneHeaderNotBold}>{formattedTotal}</span>
+          Total: <span className={classes.laneHeaderNotBold}>{formattedTotal}</span>
         </span>
         <span className={classes.laneHeaderTotalStyle}>
-          Forecast:{" "}
-          <span className={classes.laneHeaderNotBold}>
-            {forecast === 0 || forecast === null ? "--" : forecastFormatted}
-          </span>
+          Forecast: <span className={classes.laneHeaderNotBold}>{forecast === 0 || forecast === null ? "--" : forecastFormatted}</span>
         </span>
       </header>
     );
@@ -630,7 +695,7 @@ export default function Transact() {
             setStateApp((stateApp) => ({
               ...stateApp,
               dealDialog: false,
-              activeDeal: { cardId: null, laneId: null }
+              activeDeal: { cardId: null, laneId: null },
             }))
           }
         />
@@ -665,51 +730,43 @@ export default function Transact() {
                   backgroundColor: "#fff",
                   color: "#011133",
                   fontWeight: "bold",
-                  textAlign: "left"
+                  textAlign: "left",
                 }}
                 cardStyle={{
-                  boxShadow:
-                    "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
                   backgroundColor: "#F2F2F2",
                   textAlign: "center",
-                  marginBottom: "10px"
+                  marginBottom: "10px",
                 }}
                 components={{
                   LaneHeader: (laneProps) => getLaneHeader(laneProps),
-                  Card: (cardProps) => <GetCard cardProps={cardProps} />
+                  Card: (cardProps) => <GetCard cardProps={cardProps} />,
                 }}
 
-              //onCardAdd = {handleCardAdd}
-              //onCardDelete = {handleCardDelete}
-              // handleDragStart = {}
-              // handleDragEnd={}
-              // handleLaneDragStart
-              // onDataChange
-              // onCardAdd
-              // onBeforeCardDelete
-              // onCardDelete
-              // onCardMoveAcrossLanes
-              // onLaneAdd
-              // onLaneDelete
-              // onLaneUpdate
-              // onLaneClick
-              // onLaneScroll
-              //onCardMoveAcrossLanes
+                //onCardAdd = {handleCardAdd}
+                //onCardDelete = {handleCardDelete}
+                // handleDragStart = {}
+                // handleDragEnd={}
+                // handleLaneDragStart
+                // onDataChange
+                // onCardAdd
+                // onBeforeCardDelete
+                // onCardDelete
+                // onCardMoveAcrossLanes
+                // onLaneAdd
+                // onLaneDelete
+                // onLaneUpdate
+                // onLaneClick
+                // onLaneScroll
+                //onCardMoveAcrossLanes
               />
             )}
             {stateApp.dealDisplayType === "table" && (
-              <M1nTable
-                dense
-                filteredTabTransactData={filteredTabTransactData}
-                parent="TransactDeals"
-              />
+              <M1nTable dense filteredTabTransactData={filteredTabTransactData} parent="TransactDeals" />
             )}
           </div>
         ) : pipeToShow === false ? (
-          <h1 style={{ marginTop: 80 }}>
-            No flowlines currently exist - please setup a new flowline and
-            corresponding stages.
-          </h1>
+          <h1 style={{ marginTop: 80 }}>No flowlines currently exist - please setup a new flowline and corresponding stages.</h1>
         ) : (
           <CircularProgress size={80} disableShrink color="secondary" />
         )}

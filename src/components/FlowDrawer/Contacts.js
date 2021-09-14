@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Grid,
   InputAdornment,
@@ -11,7 +11,7 @@ import {
   ListItem,
   Button,
 } from "@material-ui/core";
-import get from 'lodash/get'
+import get from "lodash/get";
 import Avatar from "react-avatar";
 import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
@@ -20,12 +20,12 @@ import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/compon
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "graphQL/useMutationAddContact";
 import { AppContext } from "../../AppContext";
-import { useLazyQuery,useMutation } from "@apollo/client";
-import DeleteIcon from '@material-ui/icons/Delete';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
+import { useLazyQuery, useMutation } from "@apollo/client";
+import DeleteIcon from "@material-ui/icons/Delete";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import IconButton from "@material-ui/core/IconButton";
 import { GETPIPELINES } from "../../graphQL/useQueryPipelines";
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { REMOVEDEALDESCRIPTOR } from "../../graphQL/useMutationRemoveDealDescriptor";
 import Link from "@material-ui/core/Link";
 
@@ -53,15 +53,15 @@ export default function Contacts(props) {
   const [nameAutInputValue, setNameAutInputValue] = useState("");
   const [addContact, setAddContact] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [mutationLoading, setMutationLoading] = useState(false)
-  const [
-    getPaginatedContacts,
-    { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts },
-  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-  });
-  const [addNewContact, { data: addContactData} ] = useMutation(ADDCONTACT);
+  const [mutationLoading, setMutationLoading] = useState(false);
+  const [getPaginatedContacts, { data: allContacts, loading, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
+    {
+      fetchPolicy: "cache-and-network",
+      nextFetchPolicy: "cache-first",
+    }
+  );
+  const [addNewContact, { data: addContactData }] = useMutation(ADDCONTACT);
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
   const [removeDealDescriptor, { loading: DealLoading, error: DealError }] = useMutation(REMOVEDEALDESCRIPTOR);
   useEffect(() => {
@@ -75,16 +75,14 @@ export default function Contacts(props) {
   }, [nameAutInputValue]);
 
   useEffect(() => {
-    if(get(addContactData, 'addContact.contact')){
-      setNameAutValue({ name:addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id })
+    if (get(addContactData, "addContact.contact")) {
+      setNameAutValue({ name: addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id });
     }
-  },[addContactData])
+  }, [addContactData]);
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray(
-        allContacts?.paginatedContacts?.edges?.map((el) => el.node)
-      );
+      setMongoEntitiesArray(allContacts?.paginatedContacts?.edges?.map((el) => el.node));
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
       setIsNextPageLoading(false);
     }
@@ -96,92 +94,75 @@ export default function Contacts(props) {
   };
 
   useEffect(() => {
-    let filtered = contacts?.filter((c) =>
-      c.toLowerCase().includes(search.toLowerCase())
-    );
+    let filtered = contacts?.filter((c) => c.toLowerCase().includes(search.toLowerCase()));
     setFilteredContacts(filtered);
-    
   }, [search, contacts]);
   const GettingContacts = () => {
     let contactnames = stateApp.activeDeal?.contacts?.map((value) => {
-      if (value.relatedObject?.entity?.name !== undefined)
-      {
-       return value.relatedObject?.entity?.name
-      }
-      else if (value?.name && value?.name !== undefined) {
+      if (value.relatedObject?.entity?.name !== undefined) {
+        return value.relatedObject?.entity?.name;
+      } else if (value?.name && value?.name !== undefined) {
         return value.name;
+      } else {
+        return "Empty";
       }
-      else {
-        return 'Empty'
-      }
-   })
-   setContacts(contactnames)
-  }
+    });
+    setContacts(contactnames);
+  };
   useEffect(() => {
-   GettingContacts()
-  
-  }, [ search, props]);
-
+    GettingContacts();
+  }, [search, props]);
 
   useEffect(() => {
-    if(!props.loading){ setMutationLoading(false) }
-  }, [props.loading])
- const DeleteContact = async (dealid) => {
-  let result =  await removeDealDescriptor({
-    variables: { id: dealid, relatedObjectType: "Contact"},
-    refetchQueries: ["getPipeline", "getContactDeals"],
-			awaitRefetchQueries: true,
-    
-  });
-  let response = await result.data.removeDealDescriptor.success
-  if(response)
-  {
-    // GettingContacts()
-    props.getDeal()
-    
-  }
-  else {
-    setMutationLoading(false)
-
-
-  }
- }
+    if (!props.loading) {
+      setMutationLoading(false);
+    }
+  }, [props.loading]);
+  const DeleteContact = async (dealid) => {
+    let result = await removeDealDescriptor({
+      variables: { id: dealid, relatedObjectType: "Contact" },
+      refetchQueries: ["getPipeline", "getContactDeals"],
+      awaitRefetchQueries: true,
+    });
+    let response = await result.data.removeDealDescriptor.success;
+    if (response) {
+      // GettingContacts()
+      props.getDeal();
+    } else {
+      setMutationLoading(false);
+    }
+  };
   return (
     <div>
       <h1>{stateApp.activeDeal.name}</h1>
-      {filteredContacts && filteredContacts.length > 0  > 0  && <TextField
-        fullWidth
-        placeholder="Search contacts..."
-        InputProps={{
-          startAdornment: (
-            <>
-              <InputAdornment position="start">
-                <SearchIcon htmlColor="#757575" />
-              </InputAdornment>
-            </>
-          ),
-        }}
-        value={search}
-        onChange={(event) => {
-          setSearch(event.target.value);
-        }}
-      />}
+      {filteredContacts && filteredContacts.length > 0 > 0 && (
+        <TextField
+          fullWidth
+          placeholder="Search contacts..."
+          InputProps={{
+            startAdornment: (
+              <>
+                <InputAdornment position="start">
+                  <SearchIcon htmlColor="#757575" />
+                </InputAdornment>
+              </>
+            ),
+          }}
+          value={search}
+          onChange={(event) => {
+            setSearch(event.target.value);
+          }}
+        />
+      )}
       <div className={classes.root}>
         <List aria-label="contacts list">
           {filteredContacts && filteredContacts.length > 0 ? (
             filteredContacts.map((c, i) => (
-              
               <>
                 <ListItem key={i}>
                   <ListItemIcon>
                     <Avatar
-                      color={Avatar.getRandomColor(c, [
-                        "#b5d2f6",
-                        "#ade2e9",
-                        "#eaeaea",
-                        "#f2c1e2",
-                        "#d7d6fb",
-                      ])}
+                      color={Avatar.getRandomColor(c, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                       fgColor="#000"
                       name={c}
                       size="35"
@@ -197,21 +178,25 @@ export default function Contacts(props) {
                   >
                     {c}
                   </Link>
-                  
-                  {mutationLoading === stateApp.activeDeal?.contacts[i]?._id  ? (
-                     <ListItemSecondaryAction >
-                     <IconButton edge="end" aria-label="delete">
-                     <CircularProgress></CircularProgress>
-                     </IconButton>
-                   </ListItemSecondaryAction>
-                  ) : ( <ListItemSecondaryAction onClick={() => { 
-                    DeleteContact(stateApp.activeDeal?.contacts[i]?._id); 
-                    setMutationLoading(stateApp.activeDeal?.contacts[i]?._id)}}>
-                    <IconButton edge="end" aria-label="delete">
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>)}
-                  
+
+                  {mutationLoading === stateApp.activeDeal?.contacts[i]?._id ? (
+                    <ListItemSecondaryAction>
+                      <IconButton edge="end" aria-label="delete">
+                        <CircularProgress></CircularProgress>
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  ) : (
+                    <ListItemSecondaryAction
+                      onClick={() => {
+                        DeleteContact(stateApp.activeDeal?.contacts[i]?._id);
+                        setMutationLoading(stateApp.activeDeal?.contacts[i]?._id);
+                      }}
+                    >
+                      <IconButton edge="end" aria-label="delete">
+                        <DeleteIcon />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  )}
                 </ListItem>
                 <Divider />
               </>
@@ -246,35 +231,35 @@ export default function Contacts(props) {
                   hasNextPage={hasNextPage}
                   isNextPageLoading={isNextPageLoading}
                   loadNextPage={loadNextPage}
-                  disabled ={props.loading}
+                  disabled={props.loading}
                   addNew={true}
-                      addNewOnClick={(value) => {
-                        const contact = {name: value};
-                        addNewContact({
-                            variables: {
-                              contact: {
-                                ...contact,
-                                createBy: stateApp.user.mongoId,
-                                lastUpdateBy: stateApp.user.mongoId,
-                              },
-                            },
-                            refetchQueries: ["getPaginatedContacts", "getContact"],
-                            awaitRefetchQueries: true,
-                          });
-                      }}
+                  addNewOnClick={(value) => {
+                    const contact = { name: value };
+                    addNewContact({
+                      variables: {
+                        contact: {
+                          ...contact,
+                          createBy: stateApp.user.mongoId,
+                          lastUpdateBy: stateApp.user.mongoId,
+                        },
+                      },
+                      refetchQueries: ["getPaginatedContacts", "getContact"],
+                      awaitRefetchQueries: true,
+                    });
+                  }}
                 />
                 <Button
                   variant="contained"
                   color="primary"
                   className={classes.button}
                   onClick={() => {
-                    if (nameAutValue != '') {
-                    props.addSelectedContact(nameAutValue) 
-                     GettingContacts() 
-                     setMutationLoading(true)
-                     setAddContact(false)
-                     }
-                    }}
+                    if (nameAutValue !== "") {
+                      props.addSelectedContact(nameAutValue);
+                      GettingContacts();
+                      setMutationLoading(true);
+                      setAddContact(false);
+                    }
+                  }}
                 >
                   <AddIcon />
                 </Button>

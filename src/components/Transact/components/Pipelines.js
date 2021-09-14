@@ -7,9 +7,9 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useHistory } from "react-router-dom";
 
-//icons 
+//icons
 import IconButton from "@material-ui/core/IconButton";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import Dialog from "@material-ui/core/Dialog";
 import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "../../../actions";
@@ -29,14 +29,11 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
-import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
-import { GETPIPELINE } from "../../../graphQL/useQueryPipeline";
-import { GETPIPELINES } from "graphQL/useQueryPipelines";
+import { Tooltip } from "@material-ui/core";
 import { ADD_PIPELINE } from "../../../graphQL/useMutationAddPipeline";
 import { UPDATEPIPELINES } from "../../../graphQL/useMutationUpdatePipelines";
 import { ADDSTAGES } from "../../../graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "../../../graphQL/useMutationUpdateStages";
-import { UPDATESTAGE } from "../../../graphQL/useMutationUpdateStage";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../../AppContext";
 import { deepEqualObjects } from "../../Shared/functions";
@@ -80,12 +77,6 @@ const useStyles = makeStyles((theme) => ({
   },
   settingGroup: {
     "& .MuiTypography-body1": { fontSize: "1.2rem !important" },
-  },
-  settingsButton: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    float: "right",
   },
 }));
 
@@ -151,7 +142,7 @@ String.prototype.capitalize = function () {
 export default function Pipelines(props) {
   const dispatch = useDispatch();
   let history = useHistory();
-  const { openPipeDialog, selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
+  const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
   const [name, setName] = useState("");
@@ -165,76 +156,12 @@ export default function Pipelines(props) {
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
 
-  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
-  const [getPipeline, { loading: loadingPipeline, data: pipelineData }] = useLazyQuery(GETPIPELINE, {
-    fetchPolicy: "cache-and-network",
-  });
-
   const [getDealsCountByStage, { data: dataDealsCountByStage }] = useLazyQuery(DEALSCOUNTINANSTAGE, {
     fetchPolicy: "network-only",
   });
   const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
     fetchPolicy: "network-only",
   });
-
-  useEffect(() => {
-    getPipelines();
-  }, []);
-
-  useEffect(() => {
-    if (pipelinesData) {
-      //// select first one as default
-      const pipelineId = history.location.pathname.split("/")[2]
-      let laneId = ''
-      let cardId = ''
-      if(history.location.pathname.includes('lane')){
-        laneId = history.location.pathname.split("/")[4]
-      }
-      if(history.location.pathname.includes('card')){
-        cardId = history.location.pathname.split("/")[6]
-      }
-
-      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
-        let activePipeline = {};
-
-        if(pipelineId){
-          activePipeline = pipelinesData.pipelines.find(
-            (p) => p._id === pipelineId
-          );
-        }
-        if(!activePipeline){
-          const isExist = !!pipelinesData.pipelines.find(
-            (p) => p._id === selectedPipe?._id
-          );
-          if (selectedPipe && isExist) {
-            activePipeline = pipelinesData.pipelines.find(
-              (p) => p._id === selectedPipe._id
-            );
-          } else activePipeline = pipelinesData.pipelines[0];
-        }
-        if(laneId && cardId){
-          history.push(`/flow/${activePipeline._id}/lane/${laneId}/card/${cardId}`);
-        }else{
-          history.push(`/flow/${activePipeline._id}`)
-        }
-        
-        dispatch(
-          setFlowState({
-            selectedPipe: activePipeline,
-            pipelines: pipelinesData.pipelines
-          })
-        );
-      } else
-        dispatch(
-          setFlowState({
-            selectedPipe: null,
-            pipelines: [],
-            pipeToShow: false
-          })
-        );
-    }
-  }, [pipelinesData]);
-
 
   useEffect(() => {
     if (dataDealsCountByStage?.nonDeletedDealsCountInAnStageByPipeline) {
@@ -262,86 +189,6 @@ export default function Pipelines(props) {
       else openDeleteDialog("pipe");
     }
   }, [dataDealsCountByPipeline]);
-
-  //// get the whole selected pipe
-  useEffect(() => {
-    if (selectedPipe) {
-      getPipeline({ variables: { id: selectedPipe._id } });
-    }
-  }, [selectedPipe]);
-
-  useEffect(() => {
-    if (pipelineData) {
-      if (pipelineData.pipeline) {
-        let laneId = ''
-        let cardId = ''
-        if(history.location.pathname.includes('lane')){
-          laneId = history.location.pathname.split("/")[4]
-        }
-        if(history.location.pathname.includes('card')){
-          cardId = history.location.pathname.split("/")[6]
-        }
-  
-        let deals = [];
-        let pipe = {
-          ...pipelineData.pipeline,
-          lanes: pipelineData.pipeline.lanes?.map((lane) => ({
-            ...lane,
-            cards: lane.cards?.map((card) => {
-              if (!card.metadata.IsDeleted){
-                if(lane.id === laneId && cardId === card.id){ 
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    dealDialog: true,
-                    activeDeal: {
-                      cardId,
-                      laneId,
-                      ...card.metadata
-                    }
-                  }));
-                }
-                deals.push({
-                  cardId: card.id,
-                  laneId: lane.id,
-                  laneName: lane.title,
-                  pipeline: pipelineData.pipeline._id,
-                  pipelineName: pipelineData.pipeline.name,
-                  ownerName:
-                    card?.metadata?.owners && card.metadata.owners[0]?.relatedObject?.name
-                      ? card.metadata.owners[0].relatedObject.name
-                      : null,
-                  contactName:
-                    card?.metadata?.contacts && card.metadata.contacts[0]?.relatedObject?.entity?.name
-                      ? card.metadata.contacts[0].relatedObject.entity.name
-                      : null,
-                  isContact:
-                    card?.metadata?.contacts && card.metadata.contacts[0]?.relatedObject?._id
-                      ? card.metadata.contacts[0].relatedObject._id
-                      : null,
-                  ...card.metadata,
-                });
-              }
-
-              return { ...card };
-            }),
-          })),
-        };
-
-        dispatch(
-          setFlowState({
-            pipeToShow: pipe,
-            pipeToShowTab: deals,
-          })
-        );
-      } else
-        dispatch(
-          setFlowState({
-            pipeToShow: null,
-            pipeToShowTab: null,
-          })
-        );
-    }
-  }, [pipelineData]);
 
   useEffect(() => {
     if (openPipeDialog && selectedPipe && openPipeDialog !== "newPipe") {
@@ -436,13 +283,6 @@ export default function Pipelines(props) {
     const { reorderedStages, stagesToUpdate } = reorder(stages, result.source.index, result.destination.index);
     //// saving state
     setStages([...reorderedStages]);
-  };
-
-  const handleToggleRotten = (stage, index) => {
-    const upStages = [...stages];
-    upStages[index] = { ...stage, rotten: !stage.rotten };
-    setStages([...upStages]);
-    // }
   };
 
   const handleAddStage = () => {
@@ -622,7 +462,7 @@ export default function Pipelines(props) {
             if (success === true) dispatch(showSuccessMessage("The Pipeline was successfully updated."));
             else dispatch(showErrorMessage("An error occurred during the update."));
           })
-          .catch((reason) => { });
+          .catch((reason) => {});
       }
 
       handleClose();
@@ -653,33 +493,6 @@ export default function Pipelines(props) {
 
   return (
     <React.Fragment>
-      <div className={classes.settingsButton}>
-        {selectedPipe && (
-          <Typography style={{ marginLeft: 10 }} variant="h5" color="textPrimary" fontWeight="fontWeightBold">
-            {selectedPipe.name}
-          </Typography>
-        )}
-
-        <Tooltip title={"Flowline Actions"}
-        >
-          <IconButton
-            disabled={!selectedPipe}
-            size="medium"
-            style={{ marginLeft: 10, marginRight: 10 }}
-            onClick={() => {
-              dispatch(
-                setFlowState({
-                  openPipeDialog: true,
-                })
-              );
-            }}
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </Tooltip>
-
-      </div>
-
       {/* //// pipelines dialog //// */}
       {openPipeDialog && (
         <Dialog open={openPipeDialog ? true : false} onClose={handleClose} fullWidth={true} maxWidth={"lg"}>
@@ -878,9 +691,9 @@ export default function Pipelines(props) {
           <DeleteConfirmationDialogContent
             header={deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`}
             onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => { }}
+            deleteFunc={deleteFunc ? deleteFunc : () => {}}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
             {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the Flowline?" : "Are you sure you want to delete the stage?"}
           </DeleteConfirmationDialogContent>
