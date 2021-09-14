@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import FieldContent from "../../ContactDetailCard/components/FieldContent";
 import { FieldTypes } from "../../ContactDetailCard/components/FieldContent/helper";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
 import { excludeList } from "./ExcludeList";
 import { Grid } from "@material-ui/core";
 import {
@@ -132,11 +134,17 @@ const useStyles = makeStyles((theme) => ({
   switchTextDeselected: {
     color: "rgb(141, 141, 141)",
   },
+  viewSwitcher:{
+    width : "245px",
+    fontSize : "14px",
+    marginLeft: "10px",
+  }
 }));
 
-export default ({ ...props }) => {
+const MelissaTable =  ({ ...props }) => {
   const classes = useStyles();
   const [showEmpty, setShowEmpty] = useState(true);
+  const [selectedPurchaseData, setSelectedPurchaseData] = useState('')
 
   const handleEmptyFields = () => {
     setShowEmpty(!showEmpty);
@@ -171,8 +179,25 @@ export default ({ ...props }) => {
     <div style={{ padding: "23px 28px" }}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
         <Box display="flex" justifyContent="space-between">
-
-          <h4 style={{ margin: "0 0 13px 0" }}>Basic Information</h4>
+          {props.header === 'Purchased Data' ? (
+            <span>
+              <h4 style={{ margin: "0 0 13px 0", display: "inline-block" }}>
+                Purchased Data
+              </h4>
+              <Select
+                className={classes.viewSwitcher}
+                value={selectedPurchaseData}
+                onChange={(e) => setSelectedPurchaseData(e.target.value)}
+              >
+                <MenuItem value="id1">IDI Data -07/28/2021 11:07:02am</MenuItem>
+                <MenuItem value="id2">IDI Data -07/29/2021 11:07:02am</MenuItem>
+              </Select>
+            </span>
+          ) : (
+            <h4 style={{ margin: "0 0 13px 0" }}>
+              Basic Information
+            </h4>
+          )}
           <ToggleEmptyFieldButton />
         </Box>
         <Grid item xs={12} container className={props.wrapperClass} spacing={0}>
@@ -281,7 +306,7 @@ export default ({ ...props }) => {
           </>
         )} */}
 
-        {props.melissaData && props.melissaData.melissaRecord ? (
+        {/* {props.melissaData && props.melissaData.melissaRecord ? (
           <>
             <h4 style={{ margin: "13px 0 13px 0" }}>Purchased Contact Data</h4>
             <Grid
@@ -329,8 +354,10 @@ export default ({ ...props }) => {
             <h4 style={{ margin: "13px 0 13px 0" }}>
               No Purchased Contact Information to Display
             </h4>
-          )}
+          )} */}
       </Grid>
     </div>
   );
 };
+
+export default MelissaTable

@@ -99,8 +99,7 @@ function CopyPurchaseInfo({ contactId, content }) {
             <div
               className={classes.menuItem}
               onClick={(e) => {
-                  console.log('Data', content, key, row)
-                // setSelectedField()
+                console.log('Data', content, key, row)
                 handleClose();
               }}
             >

@@ -362,6 +362,15 @@ export default function ContactDetailedInfoCard() {
         wrapperClass={classes.dataSect}
         melissaData={melissaData}
       />
+
+      <MelissaTable
+        header="Purchased Data"
+        id={contactData?._id}
+        entity={contactData?.entity}
+        rows={{ ...getBasicInfoContent(contactData), ...getBasicInfoExpContent(contactData) }}
+        wrapperClass={classes.dataSect}
+        melissaData={melissaData}
+      />
     </div>
   ) : (
     <div
