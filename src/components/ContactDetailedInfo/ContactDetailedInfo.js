@@ -569,6 +569,7 @@ export default function DetailInfo(props) {
                         isMerged={!!props.contactData.mergedContacts}
                         content={row.data}
                         linkType={row.linkType}
+                        isPurchased={selectedTab === 'Purchased Info'}
                       />
                     </Grid>
                   </React.Fragment>

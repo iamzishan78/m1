@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import FieldContent from "../../ContactDetailCard/components/FieldContent";
-import { FieldTypes } from "../../ContactDetailCard/components/FieldContent/helper";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
+import Accordion from "@material-ui/core/Accordion";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+
 import Select from "@material-ui/core/Select";
+import Button from "@material-ui/core/Button";
 import MenuItem from "@material-ui/core/MenuItem";
 import { excludeList } from "./ExcludeList";
 import { Grid } from "@material-ui/core";
-import {
-  Box,
-  FormControlLabel,
-  FormGroup,
-  Switch
-} from "@material-ui/core";
+import { Box, FormControlLabel, FormGroup, Switch } from "@material-ui/core";
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -59,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     margin: "0 0 8px 0",
-    "float": "right",
+    float: "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -75,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textBtn: {
     margin: "0 0 8px 0",
-    "float": "right",
+    float: "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -122,45 +121,50 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
   switchButtom: {
-    "float": "right",
+    float: "right",
     width: "fit-content",
     alignSelf: "flex-end",
     marginRight: 0,
     "& span.MuiTypography-body1": {
       fontSize: "0.9rem",
-      marginLeft: "5px"
+      marginLeft: "5px",
     },
   },
   switchTextDeselected: {
     color: "rgb(141, 141, 141)",
   },
-  viewSwitcher:{
-    width : "245px",
-    fontSize : "14px",
+  viewSwitcher: {
+    width: "245px",
+    fontSize: "14px",
     marginLeft: "10px",
+  },
+  fullWidth: {
+    width: "100%"
   }
 }));
 
-const MelissaTable =  ({ ...props }) => {
+const MelissaTable = ({ ...props }) => {
   const classes = useStyles();
   const [showEmpty, setShowEmpty] = useState(true);
-  const [selectedPurchaseData, setSelectedPurchaseData] = useState('')
+  const [selectedPurchaseData, setSelectedPurchaseData] = useState("");
 
   const handleEmptyFields = () => {
     setShowEmpty(!showEmpty);
-  }
+  };
 
   const ToggleEmptyFieldButton = () => {
     return (
       <FormGroup style={{ display: "block" }}>
         <FormControlLabel
-          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""
-            } ${!showEmpty ? classes.switchTextDeselected : ""}`}
+          className={`${classes.switchButtom}${
+            props.publicLeftBottom ? classes.publicLeftBottom : ""
+          } ${!showEmpty ? classes.switchTextDeselected : ""}`}
           control={
             <React.Fragment>
               <AntSwitch
                 checked={showEmpty}
-                onChange={() => {
+                onClick={(e) => {
+                  e.stopPropagation()
                   handleEmptyFields();
                 }}
                 name="checkedC"
@@ -169,7 +173,6 @@ const MelissaTable =  ({ ...props }) => {
           }
           label="Show empty fields"
           labelPlacement="end"
-
         />
       </FormGroup>
     );
@@ -178,84 +181,107 @@ const MelissaTable =  ({ ...props }) => {
   return (
     <div style={{ padding: "23px 28px" }}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
-        <Box display="flex" justifyContent="space-between">
-          {props.header === 'Purchased Data' ? (
-            <span>
-              <h4 style={{ margin: "0 0 13px 0", display: "inline-block" }}>
-                Purchased Data
-              </h4>
-              <Select
-                className={classes.viewSwitcher}
-                value={selectedPurchaseData}
-                onChange={(e) => setSelectedPurchaseData(e.target.value)}
-              >
-                <MenuItem value="id1">IDI Data -07/28/2021 11:07:02am</MenuItem>
-                <MenuItem value="id2">IDI Data -07/29/2021 11:07:02am</MenuItem>
-              </Select>
-            </span>
-          ) : (
-            <h4 style={{ margin: "0 0 13px 0" }}>
-              Basic Information
-            </h4>
-          )}
-          <ToggleEmptyFieldButton />
-        </Box>
-        <Grid item xs={12} container className={props.wrapperClass} spacing={0}>
-          {Object.entries(props.rows).map(([key, value]) => {
-            if (!excludeList.includes(key)) {
-              if (showEmpty) {
-
-                return (
-                  <React.Fragment>
-                    <Grid item xs={3} className="fieldName">
-                      <p className="dataLabels">{key}</p>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <FieldContent
-                        id={props.id}
-                        entity={props.entity}
-                        onlyChildren={value.inner ? true : false}
-                        content={value.data}
-                        linkType={value.linkType}
-                      >
-                        {value.inner}
-                      </FieldContent>
-                    </Grid>
-                  </React.Fragment>
-                );
-              } else {
-                let objName = Object.keys(value.data)[0];
-                if (value.data[objName] != undefined
-                  && value.data[objName] != `""`
-                  && value.data[objName] != ''
-                  && value.data[objName] != ""
-                  && value.data[objName].length != 0
-                  && value.data[objName] != null
-                ) {
-                  return (
-                    <React.Fragment>
-                      <Grid item xs={3} className="fieldName">
-                        <p className="dataLabels">{key}</p>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <FieldContent
-                          id={props.id}
-                          entity={props.entity}
-                          onlyChildren={value.inner ? true : false}
-                          content={value.data}
-                          linkType={value.linkType}
-                        >
-                          {value.inner}
-                        </FieldContent>
-                      </Grid>
-                    </React.Fragment>
-                  );
+        <Accordion defaultExpanded>
+          <AccordionSummary
+            expandIcon={<></>}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Box display="flex" justifyContent="space-between" className={classes.fullWidth}>
+              {props.header === "Purchased Data" ? (
+                <span>
+                  <h4 style={{ margin: "0 0 13px 0", display: "inline-block" }}>
+                    Purchased Data
+                  </h4>
+                  <Select
+                    className={classes.viewSwitcher}
+                    value={selectedPurchaseData}
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      setSelectedPurchaseData(e.target.value)
+                    }}
+                  >
+                    <MenuItem value="id1">
+                      IDI Data -07/28/2021 11:07:02am
+                    </MenuItem>
+                    <MenuItem value="id2">
+                      IDI Data -07/29/2021 11:07:02am
+                    </MenuItem>
+                  </Select>
+                </span>
+              ) : (
+                <h4 style={{ margin: "0 0 13px 0" }}>Basic Information</h4>
+              )}
+              <ToggleEmptyFieldButton />
+            </Box>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Grid
+              item
+              xs={12}
+              container
+              className={props.wrapperClass}
+              spacing={0}
+            >
+              {Object.entries(props.rows).map(([key, value]) => {
+                if (!excludeList.includes(key)) {
+                  if (showEmpty) {
+                    return (
+                      <React.Fragment>
+                        <Grid item xs={3} className="fieldName">
+                          <p className="dataLabels">{key}</p>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <FieldContent
+                            id={props.id}
+                            entity={props.entity}
+                            onlyChildren={value.inner ? true : false}
+                            content={value.data}
+                            linkType={value.linkType}
+                            isPurchased={props.header === "Purchased Data" }
+                          >
+                            {value.inner}
+                          </FieldContent>
+                        </Grid>
+                      </React.Fragment>
+                    );
+                  } else {
+                    let objName = Object.keys(value.data)[0];
+                    if (
+                      value.data[objName] != undefined &&
+                      value.data[objName] != `""` &&
+                      value.data[objName] != "" &&
+                      value.data[objName] != "" &&
+                      value.data[objName].length != 0 &&
+                      value.data[objName] != null
+                    ) {
+                      return (
+                        <React.Fragment>
+                          <Grid item xs={3} className="fieldName">
+                            <p className="dataLabels">{key}</p>
+                          </Grid>
+                          <Grid item xs={9}>
+                            <FieldContent
+                              id={props.id}
+                              entity={props.entity}
+                              onlyChildren={value.inner ? true : false}
+                              content={value.data}
+                              linkType={value.linkType}
+                              isPurchased={props.header === "Purchased Data" }
+                            >
+                              {value.inner}
+                            </FieldContent>
+                          </Grid>
+                        </React.Fragment>
+                      );
+                    }
+                  }
                 }
-              }
-            }
-            return null;
-          })}
-        </Grid>
+                return null;
+              })}
+            </Grid>
+          </AccordionDetails>
+        </Accordion>
 
         {/* {props.melissaData &&
           props.melissaData.melissaAddressRecord &&
@@ -360,4 +386,4 @@ const MelissaTable =  ({ ...props }) => {
   );
 };
 
-export default MelissaTable
+export default MelissaTable;
