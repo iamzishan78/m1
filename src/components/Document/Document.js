@@ -12,11 +12,12 @@ import { AppContext } from "AppContext";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import Drawer from "./components/Drawer";
 import { Container } from "@material-ui/core";
+import DocumentsTable from "components/Table/Documents/DocumentsTable";
 
 
 
 const useStyles = makeStyles((theme) => ({
-  root:{
+  root: {
     "& div": {
       "&>.MuiPaper-root": {
         display: "flex",
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
         "&>.MuiPaper-root": { 
           display: "contents",
         },
-        "&>:nth-child(3)": { 
+        "&>:nth-child(3)": {
           height: "inherit !important",
         },
         "&> table": {
@@ -58,19 +59,19 @@ export default function DocumentComponent() {
     setNumPages(numPages);
   }
 
-
-
   return (
     <div className={classes.root}>
-    {/* <Container 
+      {/* <Container 
         maxWidth='false' 
         style={{overflow: 'auto', 
         height: 'calc(100vh - 64px)'
     }}> */}
-      <M1nTable dense parent="Documents"></M1nTable>
+
+      <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} />
+      {/* <M1nTable dense parent="Documents"></M1nTable> */}
       <Drawer data={true}></Drawer>
 
-      
+
       <Dialog
         className={classes.dialogExpCard}
         fullWidth
@@ -132,7 +133,7 @@ export default function DocumentComponent() {
       </Dialog>
       {/* </Container> */}
 
-      
+
     </div>
   );
 }
