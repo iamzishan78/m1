@@ -51,12 +51,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     height: "100%",
   },
-  gridPortion: {
-    flexGrow: 1,
-    display: "flex",
-    height: "100%",
-    justifyContent: 'center'
-  },
   gridPacelDetails: {
     flexGrow: 1,
     display: "flex",
@@ -80,18 +74,15 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "calc(100% - 88px)",
     overflow: "auto",
     "&::-webkit-scrollbar": {
-      width: "0.75em",
-      height: "0.75em",
+      height: "0.4em",
+      width: "0.4em"
     },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "1.0em",
-    // },
-    // "&::-webkit-scrollbar-track": {
-    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    // },
+    "&::-webkit-scrollbar-track": {
+      "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    },
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
-      borderRadius: 10,
+      borderRadius: 5,
     },
   },
   gridItemGrey: {
@@ -217,8 +208,10 @@ const useStyles = makeStyles((theme) => ({
   },
   parcelDocument: {
     "& .MuiTableRow-root": {
-      "&>:nth-child(2) > span": {
-        width: "336px !important"
+      "&>:nth-child(2) ": {
+        "& .fileName":{
+          width: "375px !important"
+        }
       }
     }
   }
@@ -229,7 +222,6 @@ export default function ParcelsDetailCard(props) {
   const dispatch = useDispatch();
   const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
   const [parcelObj, setParcelObj] = useState();
-  const [parcelWells, setParcelWells] = useState();
   const [parcelProperties, setProperties] = useState();
   const [originalProperties, setOriginalProperties] = useState(null);
   const [parcelName, setParcelName] = useState();
@@ -242,7 +234,7 @@ export default function ParcelsDetailCard(props) {
     UPDATECUSTOMLAYER,
   );
 
-  const [getCustomLayer, { data: dataCustomLayer, loading }] = useLazyQuery(
+  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
     CUSTOMLAYER,
   );
 
@@ -294,8 +286,19 @@ export default function ParcelsDetailCard(props) {
 
   useEffect(() => {
     if (updatedParcel) {
-      if (updatedParcel.updateCustomLayer.success) {
+      if (updatedParcel.updateCustomLayer?.success) {
         dispatch(showSuccessMessage("Successfully updated the parcel"));
+
+        // Updating stateapp parcel object
+        const customLayer = updatedParcel.updateCustomLayer.customLayer;
+        const feature = JSON.parse(customLayer.shape);
+        feature.id = customLayer._id;
+        feature.properties.id = customLayer._id;
+        feature.layer = { id: 'parcel' }
+        setStateApp((state) => ({
+          ...state,
+          selectedParcel: { ...feature.properties, feature },
+        }));
       } else {
         dispatch(showErrorMessage("Failed to update parcel"));
       }
@@ -389,7 +392,7 @@ export default function ParcelsDetailCard(props) {
           <Grid item sm={12} className={classes.gridItemGrey}>
             <StateCard state={originalProperties.state} />
             <CountyCard county={originalProperties.county} />
-            {originalProperties.state == "TX" ? (
+            {originalProperties.state === "TX" ? (
               [<SurveyCard survey={originalProperties.survey} />,
               <BlockCard block={originalProperties.block} />,
               <SectionCard section={originalProperties.section} />,
@@ -442,7 +445,7 @@ export default function ParcelsDetailCard(props) {
                   onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: true }) }}
                   onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: false }) }}
                   InputProps={{
-                    endAdornment: (onChangeFooterLabel.parcelName == true &&
+                    endAdornment: (onChangeFooterLabel.parcelName === true &&
                       <p className={classes.foodText}>
                         <span>Return</span> to save
                       </p>)
@@ -453,6 +456,7 @@ export default function ParcelsDetailCard(props) {
                 <p className={classes.parcelSummmary}>Gross Acres</p>
                 <TextField
                   size="small"
+                  type="number"
                   value={grossAcres}
                   variant="outlined"
                   onChange={(e) => {
@@ -464,7 +468,7 @@ export default function ParcelsDetailCard(props) {
                   onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: true }) }}
                   onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: false }) }}
                   InputProps={{
-                    endAdornment: (onChangeFooterLabel.grossAcres == true &&
+                    endAdornment: (onChangeFooterLabel.grossAcres === true &&
                       <p className={classes.foodText}>
                         <span>Return</span> to save
                       </p>)
@@ -537,7 +541,7 @@ export default function ParcelsDetailCard(props) {
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <SuggestedTaxOwnersTable
                     customLayer={parcelObj}
-                    parent="suggestedOwnersPerParcel"
+                    parent="potentialOwnersPerParcel"
                     targetLabel="well"
                     header={<Header />}
                     setSelectedTab={setSelectedTab}
@@ -561,10 +565,11 @@ export default function ParcelsDetailCard(props) {
                 parent="associatedWellsPerParcel"
                 targetLabel="well"
                 header={<WellHeader />}
+                showTracks
                 dense
               />
             </div>,
-            <div className={showSummary ? classes.subContent : classes.subContent2}>
+            <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
               <ParcelDetailsDocumentTable
                 customLayer={parcelObj}
                 parent="associatedDocumentsPerParcel"

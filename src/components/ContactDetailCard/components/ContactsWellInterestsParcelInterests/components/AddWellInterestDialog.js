@@ -152,6 +152,7 @@ function AddWellInterestDialog(props) {
     },
     refetchQueries: [
       "getContactWells",
+      "getContactWellCardDetail",
       "getPaginatedContactWellInterests",
       "getContactWellInterestsFilterOptions"
     ],
@@ -186,7 +187,7 @@ function AddWellInterestDialog(props) {
     () =>
       debounce((request, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/wellheader-index-en-ms/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=WellName%2CApiNumber&$top=" +
+          "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2020-06-30&queryType=full&count=true&%24filter=Latitude%20ne%20null%20and%20Longitude%20ne%20null&searchFields=WellName%2CApiNumber&$top=" +
           50 +
           "&search=" +
           encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
@@ -201,7 +202,7 @@ function AddWellInterestDialog(props) {
         };
 
         console.log(
-          "request made to wellheader-index-en-ms search at: " + new Date().toString()
+          "request made to wellheader-index search at: " + new Date().toString()
         );
 
         fetch(endpoint, options)
@@ -362,6 +363,7 @@ function AddWellInterestDialog(props) {
         },
         refetchQueries: [
           "getContactWells",
+          "getContactWellCardDetail",
           "getPaginatedContactWellInterests",
           "getContactWellInterestsFilterOptions"
         ],

@@ -21,10 +21,10 @@ const useStyles = makeStyles((theme) => ({
     "& div": {
       "&>.MuiPaper-root": {
         display: "flex",
-        'flexDirection': "column",
+        "flex-direction": "column",
         height: "calc(100vh - 65px)",
-        "align-Iems": "stretch",
-        "&>.MuiPaper-root": {
+        "align-items": "stretch",
+        "&>.MuiPaper-root": { 
           display: "contents",
         },
         "&>:nth-child(3)": {
@@ -78,6 +78,7 @@ export default function DocumentComponent() {
         maxWidth="xl"
         open={stateApp.pdfView ? true : false}
         onClose={() => {
+          window.history.pushState('', '', `/documents`);
           setStateApp((state) => ({
             ...state,
             pdfView: null,
@@ -101,6 +102,7 @@ export default function DocumentComponent() {
                 className="float-right"
                 color="inherit"
                 onClick={() => {
+                  window.history.pushState('', '', `/documents`);
                   setStateApp((state) => ({
                     ...state,
                     pdfView: null,

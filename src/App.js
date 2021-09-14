@@ -27,8 +27,10 @@ import AlertsProvider from "./components/Alerts/AlertsProvider";
 import DashboardProvider from "./components/Dashboard/DashboardProvider";
 import StudioProvider from "./components/Studio/StudioProvider";
 import BulkUpload from "./components/BulkUpload/BulkUpload";
+import AgreementProvider from "./components/Agreement/AgreementProvider";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import ActivitiesProvider from "./components/Activities/ActivitiesProvider";
+import ContactBulkProgress from "./components/BulkUpload/ContactBulkProgress";
 
 // pick a date util library
 import MomentUtils from "@date-io/moment";
@@ -90,6 +92,23 @@ const theme = createMuiTheme({
   typography: {
     fontFamily: "Poppins",
   },
+  overrides: {
+    MuiCssBaseline: {
+      '@global': {
+        '*::-webkit-scrollbar': {
+          height: "0.4em",
+          width: "0.4em"
+        },
+        '*::-webkit-scrollbar-track': {
+          "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+        },
+        '*::-webkit-scrollbar-thumb': {
+          backgroundColor: "#929292",
+          borderRadius: 5,
+        }
+      },
+    },
+  },
 });
 
 const SetApolloClient = (props) => {
@@ -113,7 +132,7 @@ const SetApolloClient = (props) => {
 
   useEffect(() => {
     let draggableArea = document.getElementById("root");
-    if (window.location.pathname == "/") {
+    if (window.location.pathname === "/") {
       draggableArea.style.overflow = "hidden";
     } else {
       draggableArea.style.overflow = "visible";
@@ -175,6 +194,7 @@ const PrivateRoute = ({ component, ...options }) => {
 };
 
 function App() {
+  const [stateApp] = useContext(AppContext);
   const [apolloClient, setApolloClient] = useState(null);
   const [apolloClientToken, setApolloClientToken] = useState(null);
   const [apolloClientEndpoint, setApolloClientEndpoint] = useState(null);
@@ -193,7 +213,7 @@ function App() {
 
   const updateApolloClient = (endpoint, token) => {
     // uncomment to run against local
-    endpoint = "http://localhost:7071/api/m1graph";
+    // endpoint = "http://localhost:7071/api/m1graph";
 
     if (!apolloClient) {
       let client = new ApolloClient({
@@ -229,7 +249,7 @@ function App() {
           ...state.link.options,
           uri: endpoint,
           cache: state.cache,
-          defaultOptions: state.defaultOptions
+          defaultOptions: state.defaultOptions,
         });
       });
     }
@@ -253,6 +273,7 @@ function App() {
           <ApolloProvider client={apolloClient}>
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
+                <ContactBulkProgress />
                 <ConnectedRouter history={history}>
                   <Switch>
                     <NavigationProvider>
@@ -262,8 +283,12 @@ function App() {
                       <Route exact path="/forgotpassword" component={ForgotPassword} />
                       <PrivateRoute exact path="/track" component={TrackProvider} />
                       <PrivateRoute exact path="/flow" component={TransactProvider} />
+                      <PrivateRoute exact path="/flow/:pipelineId" component={TransactProvider} />
+                      <PrivateRoute exact path="/flow/:pipelineId/lane/:laneId/card/:cardId/" component={TransactProvider} />
                       <PrivateRoute exact path="/documents" component={DocumentProvider} />
+                      <PrivateRoute exact path="/documents/:documentId/view" component={DocumentProvider} />
                       <PrivateRoute exact path="/activities" component={ActivitiesProvider} />
+                      <PrivateRoute exact path="/activities/:eventId" component={ActivitiesProvider} />
                       <PrivateRoute exact path="/title" component={TitleOpinionProvider} />
                       <PrivateRoute exact path="/alerts" component={AlertsProvider} />
                       <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider} />
@@ -274,11 +299,16 @@ function App() {
                       <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/wells" component={ContactWellInterestProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/parcels" component={ContactParcelsInterestProvider} />
-                      <PrivateRoute exact path="/contact/details/:contactId/parcels/:parcelId" component={ContactParcelsInterestDetailsProvider} />
+                      <PrivateRoute
+                        exact
+                        path="/contact/details/:contactId/parcels/:parcelId"
+                        component={ContactParcelsInterestDetailsProvider}
+                      />
                       <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} />
                       <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
                       <PrivateRoute exact path="/studio" component={StudioProvider} />
                       <PrivateRoute exact path="/bulkupload" component={BulkUpload} />
+                      <PrivateRoute exact path="/agreement" component={AgreementProvider} />
                       {/* <Route component={NotFoundRedirect} /> */}
                     </NavigationProvider>
                   </Switch>

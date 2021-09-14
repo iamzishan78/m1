@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
@@ -8,16 +8,13 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Tooltip from "@material-ui/core/Tooltip";
 import $ from "jquery";
-import CircularProgress from "@material-ui/core/CircularProgress";
 
 // contexts
 import { AppContext } from "../../AppContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    // zIndex: 88888,
   },
-
   card: {
     position: (props) => props.position,
     left: (props) => props.cardLeft,
@@ -35,9 +32,6 @@ const useStyles = makeStyles((theme) => ({
       alignSelf: "left",
     },
     zIndex: 1250,
-    // "&.MuiCard-root": {
-    //     maxWidth: props => props.width
-    // }
   },
   title: {
     fontFamily: "Poppins",
@@ -65,13 +59,6 @@ const useStyles = makeStyles((theme) => ({
     "&::-webkit-scrollbar": {
       width: "0.75em",
     },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "1.0em",
-    // },
-    // "&::-webkit-scrollbar-track": {
-    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    // },
-
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
       borderRadius: 10,
@@ -97,8 +84,6 @@ function UdLayerCard(props) {
     parent,
   } = props;
 
-  //   const [openDialog, setOpenDialog] = useState(false);
-
   const handleClose = () => {
     if (parent === "map") {
       if ($("#tempPopupHolder").length) {
@@ -113,11 +98,13 @@ function UdLayerCard(props) {
         selectedParcel: null,
         selectedPermit: null,
         expandedCard: false,
+        currentFeature: undefined,
+        selectedUserDefinedLayer: null,
+        // editDraw: false,
+        // showShapeActionsPopup: false,
         viewDoc: null,
       }));
     }
-    // props.handleCloseExpandableCard();
-    //if EC is inside map popup you need to close it
   };
 
   const getTitle = () => {
@@ -139,22 +126,6 @@ function UdLayerCard(props) {
       </div>
     );
   };
-
-  console.log("Title Rendered: ", props.title);
-
-  //   useEffect(() => {
-  //     ///Set body style overflow hidden when card is fully expanded
-  //     const disableBodyScrollBarIfExpanded = () => {
-  //       if (cardWidth === "100vw") {
-  //         document.body.style.overflow = "hidden";
-  //       }
-  //     };
-
-  //     disableBodyScrollBarIfExpanded();
-  //     return () => {
-  //       document.body.style.overflow = "auto";
-  //     };
-  //   }, [openDialog, props.targetLabel, isExpanded, width]);
 
   return (
     <React.Fragment>

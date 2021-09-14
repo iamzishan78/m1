@@ -2,6 +2,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import findIndex from 'lodash/findIndex'
+import { useHistory } from "react-router-dom";
 // context
 import { AppContext } from "../../../AppContext";
 import { MapGridContext } from "../../../components/MapGridCard/MapGridContext.js";
@@ -26,7 +27,7 @@ import { ABSTRACTWELLGEOQUERY } from "../../../graphQL/useQueryAbstractWellGeo";
 import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
-import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
+import { REMOVE_CONTACTS } from "../../../graphQL/useMutationRemoveContact";
 import { REMOVEUSER } from "../../../graphQL/useMutationRemoveUser";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
@@ -59,7 +60,6 @@ import TrackedOwnersHeadCells from '../constants/track-owners-header-schema.js'
 import CustomWellsHeadCells from '../constants/custom-wells-header-schema.js'
 import OwnersPerWellHeadCells from '../constants/ownersperwell-header-schema.js'
 import SearchsHeadCells from '../constants/search-header-schema.js'
-import OwnersPerContactsHeadCells from '../constants/ownerspercontacts-header-schema.js'
 import OwnersPerParcelHeadCells from '../constants/ownersperparcel-header-schema.js'
 import UserManagementHeadCells from '../constants/user-management-header-schema.js'
 import DealsHeadCells from '../constants/deals-header-schema.js'
@@ -72,6 +72,8 @@ import ContactWellHeadCells from '../constants/contactperwell-header-schema.js'
 
 // import value formatters 
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
+import { addTrailingZeros } from 'components/Shared/functions'
+import Loader from "components/Loaders";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -84,6 +86,7 @@ const useStyles = makeStyles((theme) => ({
 function M1nTable(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -162,7 +165,7 @@ function M1nTable(props) {
   const [getContactsFilterOptions, { data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
   const [updateMailerStatuses] = useMutation(UPDATEMAILERSTATUSES);
   const [getContactDeals, { data: dataDeals }] = useLazyQuery(CONTACTDEALS, { fetchPolicy: "cache-and-network", });
-  const [removeContact] = useMutation(REMOVECONTACT);
+  const [removeContact] = useMutation(REMOVE_CONTACTS);
   const [updateContact] = useMutation(UPDATECONTACT);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
@@ -1058,12 +1061,11 @@ function M1nTable(props) {
 
 
         // setLoading(true);
-        const objectsIdsArray = dataWellOwners.wellOwners.map(
-          (wellOwner) => wellOwner.globalOwnerId
-        );
-        const gLodIdsArray = dataWellOwners.wellOwners.map(
-          (wellOwner) => wellOwner.id
-        );
+        const [objectsIdsArray, gLodIdsArray] = [[], []];
+        dataWellOwners.wellOwners.forEach(wellOwner => {
+          objectsIdsArray.push(wellOwner.globalOwnerId);
+          gLodIdsArray.push(wellOwner.id);
+        });
         getCommentsCounter({
           variables: { objectsIdsArray, userId: stateApp.user.mongoId },
         });
@@ -1082,9 +1084,6 @@ function M1nTable(props) {
         setRows([]);
         setLoading(false);
       }
-
-
-
     }
   }, [dataWellOwners]);
 
@@ -1112,6 +1111,7 @@ function M1nTable(props) {
         wellOwner.tags = [[], 0];
         wellOwner.wellsCounter = [];
         wellOwner.isTracked = false;
+        wellOwner.address = getAddressUrl(o);
 
         for (
           let i = 0;
@@ -1166,7 +1166,7 @@ function M1nTable(props) {
       });
 
       let availableTags = [];
-      dataTagSamples.tagSamples.map((sample) => {
+      dataTagSamples.tagSamples.forEach((sample) => {
         availableTags = [...availableTags, ...sample.tags];
       });
       const cleanAvailableTags = [...new Set(availableTags)];
@@ -1214,25 +1214,6 @@ function M1nTable(props) {
     checkIfOwnersAreContactsData,
     dataTracks,
   ]);
-
-  ////////////Owners Per Well end///////////////////////////////////////////////
-
-
-
-
-
-
-
-  ////////////"detail-well-card-contact-ties" begin///////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
   ////////////Contacts begin///////////////////////////////////////////////
 
   useEffect(() => {
@@ -1293,9 +1274,6 @@ function M1nTable(props) {
   }, [props.parent,
   stateGrid.gridSearchTarget]);
 
-
-
-
   useEffect(() => {
     if (props.parent && props.parent === "detail-well-card-contact-ties") {
       setLoading(true);
@@ -1311,11 +1289,6 @@ function M1nTable(props) {
       setColumnsBase(ContactsHeadCells);
     }
   }, [props.selectedWell, selectedYear]);
-
-
-
-
-
 
   useEffect(() => {
     if (
@@ -1368,9 +1341,9 @@ function M1nTable(props) {
         // this initial load is to make the grid appear more performantly 
         // the descriptors come in a later use effect 
         setDataContacts(tmpDataContacts);
-        setRows([
-          ...tmpDataContacts.paginatedContacts.edges.map((el) => ({ ...el.node, cursor: el.cursor })),
-        ]);
+        let rows = tmpDataContacts.paginatedContacts.edges.map((el) => ({ ...el.node, cursor: el.cursor }));
+        rows = getContactsAddress(rows);
+        setRows(rows);
         setLoading(false);
       } else {
         setLoading(false);
@@ -1378,10 +1351,7 @@ function M1nTable(props) {
       }
 
     }
-  }, [
-    constDataContacts,
-  ]);
-
+  }, [constDataContacts]);
 
   useEffect(() => {
     if (
@@ -1407,9 +1377,6 @@ function M1nTable(props) {
       });
     }
   }, [dataContacts]);
-
-
-
 
   useEffect(() => {
     if (
@@ -1572,10 +1539,9 @@ function M1nTable(props) {
           node.melissaRowsCount = foundMelissaRowsCount.total;
         }
       });
-
-      setRows([
-        ...tmpDataContacts.paginatedContacts.edges.map((el) => ({ ...el.node, cursor: el.cursor })),
-      ]);
+      let rows = tmpDataContacts.paginatedContacts.edges.map((el) => ({ ...el.node, cursor: el.cursor }));
+      rows = getContactsAddress(rows);
+      setRows(rows);
       setLoading(false);
     }
   }, [
@@ -1595,25 +1561,29 @@ function M1nTable(props) {
       stateApp.user.mongoId
     ) {
       setDeleteFunc(() => (contactsIdsToDelete) => {
-        if (contactsIdsToDelete) {
-          for (let i = 0; i < contactsIdsToDelete.length; i++) {
-            updateContact({
-              variables: {
-                contact: {
-                  _id: contactsIdsToDelete[i],
-                  lastUpdateBy: stateApp.user.mongoId,
-                  IsDeleted: true,
-                },
-              },
-              refetchQueries: [
-                "getPaginatedContacts",
-                "getContact",
-                "checkIfOwnersAreContacts",
-              ],
-              awaitRefetchQueries: true,
-            });
-          }
-        }
+        Loader.createToast('contact-deletion', 'Contact Deletion in Progress')
+        removeContact({
+          variables: {
+            contactIds: contactsIdsToDelete,
+            userId: stateApp.user.mongoId
+          },
+          refetchQueries: [
+            "getPaginatedContacts",
+            "getContact",
+            "checkIfOwnersAreContacts",
+          ],
+          awaitRefetchQueries: true,
+        }).then(
+          res => {
+            if (res.data && res.data.removeContact) {
+              const { success, message } = res.data.removeContact
+              if (success) Loader.successToast('contact-deletion', message)
+              else Loader.errorToast('contact-deletion', message)
+
+            } else Loader.errorToast('contact-deletion', "Failed to convert to contact")
+          },
+          err => { console.log(err); Loader.errorToast('contact-deletion', "Failed to convert to contact") }
+        );;
       });
     }
   }, [props.parent, stateApp.user]);
@@ -1648,19 +1618,6 @@ function M1nTable(props) {
   }, [props.parent, stateApp.user]);
 
   ////////////Contacts end///////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   //////////// Search begin///////////////////////////////////////////////
   useEffect(() => {
@@ -1953,8 +1910,8 @@ function M1nTable(props) {
       props.parent === "ownersPerParcel" &&
       dataParcelOwners
     ) {
-      if (dataParcelOwners.parcelOwners && dataParcelOwners.parcelOwners.length > 0 && !parcelOwnerLoading) {
-        setLoading(true);
+      setLoading(parcelOwnerLoading);
+      if (dataParcelOwners.parcelOwners && dataParcelOwners.parcelOwners.length > 0) {
         const objectsIdsArray = dataParcelOwners.parcelOwners.map(
           (owner) => owner.ownerEntity
         );
@@ -1968,7 +1925,6 @@ function M1nTable(props) {
           variables: { idsArray: objectsIdsArray },
         });
       } else {
-        setLoading(false);
         setRows([]);
       }
     }
@@ -1988,6 +1944,19 @@ function M1nTable(props) {
       dataParcelOwners?.parcelOwners
     ) {
 
+      const interestKeys = [
+        "nra",
+        "surface_interest",
+        "mineral_interest",
+        "royalty_interest",
+        "orri",
+        "record_title",
+        "operating_rights",
+        "nri",
+        "net_acres",
+        'unknown_interest'
+      ];
+
       const parcelOwners = dataParcelOwners.parcelOwners.map((o) => {
         let parcelOwner = { ...o };
         if (parcelOwner.qtr) {
@@ -1996,6 +1965,16 @@ function M1nTable(props) {
         parcelOwner.commentsCounter = 0;
         parcelOwner.tags = [[], 0];
         parcelOwner.isTracked = false;
+
+        Object.keys(o).forEach(key => {
+          if (interestKeys.includes(key)) {
+            if (typeof parcelOwner[key] === 'number')
+              parcelOwner[key] = addTrailingZeros(parcelOwner[key]);
+            else if (parcelOwner[key]?.["$numberDecimal"]) {
+              parcelOwner[key] = addTrailingZeros(Number(parcelOwner[key]["$numberDecimal"]));
+            }
+          }
+        });
 
         for (
           let i = 0;
@@ -2085,6 +2064,13 @@ function M1nTable(props) {
                   },
                 },
               };
+            } else if (interestKeys.includes(column.name)) {
+              return {
+                ...column,
+                options: {
+                  setCellProps: () => ({ style: { minWidth: "130px", maxWidth: "140px" } })
+                }
+              }
             }
             return column;
           })
@@ -2097,6 +2083,13 @@ function M1nTable(props) {
                   filter: false,
                 },
               };
+            } else if (interestKeys.includes(column.name)) {
+              return {
+                ...column,
+                options: {
+                  setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } })
+                }
+              }
             }
             return column;
           }));
@@ -2126,7 +2119,6 @@ function M1nTable(props) {
       });
     }
   }, [abstractWellData]);
-
 
   useEffect(() => {
     if (props.parent && props.parent === "ownersPerParcelWells") {
@@ -2168,14 +2160,14 @@ function M1nTable(props) {
           });
 
           let availableTags = [];
-          dataTagSamples.tagSamples.map((sample) => {
+          dataTagSamples.tagSamples.forEach((sample) => {
             availableTags = [...availableTags, ...sample.tags];
           });
           const cleanAvailableTags = [...new Set(availableTags)];
 
           wells.forEach(element => {
             if (stateApp.trackedWells) {
-              const found = stateApp.trackedWells.find((x) => x.id == element.wellId);
+              const found = stateApp.trackedWells.find((x) => x.id === element.wellId);
               if (found) {
                 element.isTracked = true;
               } else {
@@ -2225,8 +2217,6 @@ function M1nTable(props) {
     }
 
   }, [abstractWellData, dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData])
-
-
 
   //////////// SELECTED POLYGON WELL //////////////////////////////////////
 
@@ -2322,14 +2312,14 @@ function M1nTable(props) {
           });
 
           let availableTags = [];
-          dataTagSamples.tagSamples.map((sample) => {
+          dataTagSamples.tagSamples.forEach((sample) => {
             availableTags = [...availableTags, ...sample.tags];
           });
           const cleanAvailableTags = [...new Set(availableTags)];
 
           wells.forEach(element => {
             if (stateApp.trackedWells) {
-              const found = stateApp.trackedWells.find((x) => x.id == element.wellId);
+              const found = stateApp.trackedWells.find((x) => x.id === element.wellId);
               if (found) {
                 element.isTracked = true;
               } else {
@@ -2380,10 +2370,6 @@ function M1nTable(props) {
 
   }, [abstractWellData, dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData])
   //////////// SELECTED POLYGON WELL //////////////////////////////////////
-
-
-
-
 
   ////////////Owners Per Parcel begin//////////Delete//////////////////////////////
 
@@ -2617,6 +2603,13 @@ function M1nTable(props) {
       props.parent === "Documents" &&
       DocumentsData?.getFiles
     ) {
+      const documentId = history.location.pathname.split('/')[2]
+      if (documentId) {
+        setStateApp((state) => ({
+          ...state,
+          pdfView: DocumentsData.getFiles.find((row) => row._id === documentId),
+        }));
+      }
       setTargetLabel("documents");
       setRows([...DocumentsData.getFiles]);
       setColumns([...DocumentsHeadCells]);
@@ -3121,13 +3114,38 @@ function M1nTable(props) {
   const getWellOwnersByYear = (selectedYear) => {
     setSelectedYear(selectedYear)
   }
+
+  const getContactsAddress = (contacts) => {
+    const addressedContacts = contacts.map(contact => {
+      let address = 'https://www.google.com/maps/search/';
+      if (contact.address1) address = `${address}${contact.address1.replace(/ /g, '+')}`;
+      if (contact.city) address = `${address},+${contact.city.replace(/ /g, '+')}`;
+      if (contact.state) address = `${address},+${contact.state}`;
+      if (contact.zip) address = `${address}+${contact.zip}`;
+      return {
+        ...contact,
+        fullContactAddress: address
+      }
+    });
+    return addressedContacts;
+  }
+
+  const getAddressUrl = (owner) => {
+    let address = 'https://www.google.com/maps/search/';
+    if (owner.StreetAddress) address = `${address}${owner.StreetAddress.replace(/ /g, '+')}`;
+    if (owner.City) address = `${address},+${owner.City.replace(/ /g, '+')}`;
+    if (owner.State) address = `${address},+${owner.State}`;
+    if (owner.Zip) address = `${address}+${owner.Zip}`;
+    return address;
+  }
+
   return (
     <Container
       maxWidth={false}
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
-      {props.parent && props.parent === "Deals" && (
+      {props.parent && props.parent === "Deals" && stateApp.dealDialog && (
         <AddDealDialog
           open={stateApp.dealDialog ? true : false}
           width="450px"

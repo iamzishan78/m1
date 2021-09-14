@@ -5,6 +5,7 @@ import React, {
   useRef,
   useCallback
 } from "react";
+import { useHistory } from "react-router-dom";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
@@ -364,6 +365,7 @@ const newContact = {
 
 function AddDealDialog(props) {
   const dispatch = useDispatch();
+  let history = useHistory();
   const classes = useStyles();
   const { selectedPipe, pipelines, pipeToShow } = useSelector(
     ({ Flow }) => Flow
@@ -377,12 +379,12 @@ function AddDealDialog(props) {
   const [dealPosition, setDealPosition] = useState(null);
   const [dealState, setDealState] = useState(null);
   const [description, setDescription] = useState("");
-  const [pipelineId, setPipelineId] = useState(selectedPipe?._id);
+  const [pipelineId, setPipelineId] = useState("");
   const [stagesToChoose, setStagesToChoose] = useState([]);
   const [ownerId, setOwnerId] = useState("");
   const [cardId, setCardId] = useState("");
   const [users, setUsers] = useState([]);
-  const [closeDate, setCloseDate] = useState(new Date());
+  const [closeDate, setCloseDate] = useState("");
   const [colaborators, setColaborators] = useState([]);
   const [originationDate, setOriginationDate] = useState(null);
 
@@ -398,11 +400,13 @@ function AddDealDialog(props) {
   const [dealInfoFocus, setDealInfoFocus] = useState(false);
   const [pageVariables, setPageVariables] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   let [transactData, setTransactData] = useState(
     props.transactData ? { ...props.transactData } : null
   );
 
+  console.log("pipelineId", pipelineId, selectedPipe)
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
   const [
@@ -468,33 +472,37 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     if (pipelinesData) {
-      //// select first one as default
       if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
-        let activePipeline = {};
-        const isExist = !!pipelinesData.pipelines.find(
-          (p) => p._id === selectedPipe?._id
-        );
-        if (selectedPipe && isExist) {
-          activePipeline = pipelinesData.pipelines.find(
-            (p) => p._id === selectedPipe._id
-          );
-        } else activePipeline = pipelinesData.pipelines[0];
         dispatch(
           setFlowState({
-            selectedPipe: activePipeline,
             pipelines: pipelinesData.pipelines
           })
         );
       } else
         dispatch(
           setFlowState({
-            selectedPipe: null,
             pipelines: [],
             pipeToShow: false
           })
         );
     }
   }, [pipelinesData]);
+
+  useEffect(()=>{
+    if(pipelines.length > 0 && props.contactId){
+      let activePipeline = {};
+      const isExist = !!pipelines.find(
+        (p) => p._id === selectedPipe?._id
+      );
+      if (selectedPipe && isExist) {
+        activePipeline = pipelines.find(
+          (p) => p._id === selectedPipe._id
+        );
+      } else activePipeline = pipelines[0];
+      settingNewPipeWithDefaultStage(activePipeline._id, true)
+    }
+
+  },[props.contactId, pipelines])
 
   const settingNewStageAndFindNextAvailablePosition = (
     stageId,
@@ -776,15 +784,18 @@ function AddDealDialog(props) {
 
     if (pipelineId && stageId && title && title.trim() !== "") {
       const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
-
+      let selectedDate = closeDate;
+      if((closeDate instanceof Date)){
+        selectedDate = moment(closeDate).format('YYYY-MM-DD');
+      }
       const deal = {
         name: title ? title.trim() : null,
         offerPrice: label,
         notes: description ? description.trim() : null,
         status: dealState ? dealState : "open",
         closeDate:
-          closeDate && closeDate !== ""
-            ? new Date(`${closeDate}T08:00`).toUTCString()
+        selectedDate && selectedDate !== ""
+            ? new Date(`${selectedDate}T08:00`).toUTCString()
             : null
       };
 
@@ -798,7 +809,7 @@ function AddDealDialog(props) {
           contactId &&
           ((stateApp.activeDeal?.contacts?.length > 0 &&
             stateApp.activeDeal?.contacts[0]?.relatedObject?._id !==
-              contactId) ||
+            contactId) ||
             !stateApp.activeDeal.contacts ||
             stateApp.activeDeal.contacts.length <= 0)
         ) {
@@ -985,6 +996,14 @@ function AddDealDialog(props) {
             : { ...variables, contactId };
         }
 
+        const ID = []
+        for (let i = 0; i < uploadedFiles.length; i++) {
+          ID.push({id: uploadedFiles[i].addFileDescriptor.file.id, name: uploadedFiles[i].addFileDescriptor.file.name});
+        }
+
+        if(ID.length > 0){
+          variables = { ...variables, files: ID }
+        }
         addDeal({
           variables,
           refetchQueries: [
@@ -1000,6 +1019,7 @@ function AddDealDialog(props) {
         });
       }
     }
+    setUploadedFiles([])
   };
 
   const handleUpdate = async () => {
@@ -1039,6 +1059,7 @@ function AddDealDialog(props) {
     try {
       setIsDeleting(true);
       await deleteDeal();
+      history.push(`${history.location.pathname.split("/lane")[0]}`)
       setIsDeleting(false);
     } catch {
       setIsDeleting(false);
@@ -1185,11 +1206,13 @@ function AddDealDialog(props) {
     for (let i = 0; i < files?.getFileDescriptors.length; i++) {
       ID.push(files?.getFileDescriptors[i].fileId);
     }
-
+    for (let i = 0; i < uploadedFiles.length; i++) {
+      ID.push(uploadedFiles[i].addFileDescriptor.file.id);
+    }
     viewFiles({
       variables: { fileIds: ID }
     });
-  }, [files]);
+  }, [files, uploadedFiles]);
 
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] =
@@ -1207,6 +1230,11 @@ function AddDealDialog(props) {
       contactUpdated: null
     }));
   };
+
+  const setUploadedFileData = (uploadedfile) => {
+    setUploadedFiles([ ...uploadedFiles, uploadedfile])
+  }
+
   return (
     <>
       {deleteDialogOpen && (
@@ -1222,7 +1250,7 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
@@ -1230,8 +1258,8 @@ function AddDealDialog(props) {
       )}
 
       {props.isTransactPage &&
-      stateApp.transactBarView !== "" &&
-      (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
+        stateApp.transactBarView !== "" &&
+        (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
         <RightDialog
           open={props.open}
           width={props.width}
@@ -1286,6 +1314,7 @@ function AddDealDialog(props) {
           open={props.open}
           handleClickDialogClose={() => {
             if (!updateDealLoading && !addContactLoading) {
+              history.push(`${history.location.pathname.split("/lane")[0]}`)
               setStateApp((stateApp) => ({
                 ...stateApp,
                 dealDialog: false,
@@ -1451,26 +1480,6 @@ function AddDealDialog(props) {
             </Grid>
 
             <div className={classes.inputFieldDateRoot}>
-              {!(
-                (Object.keys(contact).length === 0 &&
-                  contact.constructor === Object) ||
-                contact === null
-              ) && !props.isTransactPage ? (
-                <div className={classes.inputFieldDateRoot}>
-                  <TextField
-                    variant="outlined"
-                    margin="dense"
-                    value={contact?.name}
-                    label="Contact Name"
-                    fullWidth
-                    disabled
-                    className={classes.inputField}
-                  />
-                </div>
-              ) : (
-                <></>
-              )}
-
               <FormControl
                 variant="outlined"
                 className={classes.inputFieldDealName}
@@ -1506,6 +1515,31 @@ function AddDealDialog(props) {
                   onBlur={() => setTitleFocus(false)}
                 />
               </FormControl>
+              {!(
+                (Object.keys(contact).length === 0 &&
+                  contact.constructor === Object) ||
+                contact === null
+              ) && !props.isTransactPage && (
+                  <FormControl variant="outlined" fullWidth size="small">
+                    <Grid container className={classes.gridStyle}>
+                      <Grid item xs={3}>
+                        Contact Name
+                  </Grid>
+                      <Grid item xs={9}>
+                        <TextField
+                          type="text"
+                          variant="outlined"
+                          margin="dense"
+                          value={contact?.name}
+                          fullWidth
+                          disabled
+                          className={classes.inputField}
+                        />
+
+                      </Grid>
+                    </Grid>
+                  </FormControl>
+                )}
 
               <FormControl variant="outlined" fullWidth size="small">
                 <Grid container className={classes.gridStyle}>
@@ -1514,7 +1548,7 @@ function AddDealDialog(props) {
                   </Grid>
                   <Grid item xs={9}>
                     <Autocomplete
-                      options={users}
+                      options={users.filter(u => u.text)}
                       onChange={(e, user) => {
                         setOwnerId(user?.value);
                       }}
@@ -1567,11 +1601,11 @@ function AddDealDialog(props) {
                                             .toUpperCase()
                                             .split(" ").length > 1
                                             ? users
-                                                .find(
-                                                  (user) =>
-                                                    user?.value === ownerId
-                                                )
-                                                .text.toString()
+                                              .find(
+                                                (user) =>
+                                                  user?.value === ownerId
+                                              )
+                                              .text.toString()
                                             : "Add Owner"
                                         }
                                       />
@@ -1808,7 +1842,8 @@ function AddDealDialog(props) {
                   filesData={viewFileResult}
                   id={stateApp.activeDeal?.cardId}
                   loading={viewFileLoading}
-                  disabled={!stateApp.activeDeal?.cardId}
+                  setUploadedFileData={setUploadedFileData}
+                  // disabled={!stateApp.activeDeal?.cardId}
                   handleOpenExpandableCard={handleOpenExpandableCard}
                 ></AddDialogeUploadZone>
               </div>

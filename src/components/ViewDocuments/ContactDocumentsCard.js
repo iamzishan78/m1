@@ -8,15 +8,23 @@ import Typography from "@material-ui/core/Typography";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import Button from "@material-ui/core/Button";
 
 import { AppContext } from "AppContext";
 import { NavigationContext } from "components/Navigation/NavigationContext";
 import ViewDocuments from "./ViewDocuments";
 import { CONTACT } from "graphQL/useQueryContact";
 import { DELETEDESCRIPTORFILE } from "graphQL/useMutationDeleteDescriptorFile";
+import { Modals } from "styles/Modal";
 
 export default function ContactDocumentsCard(props) {
   let history = useHistory();
+  const modalClass = Modals();
   const [stateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [contactData, setContactData] = useState(null);
@@ -140,6 +148,44 @@ export default function ContactDocumentsCard(props) {
         setOpenDeleteConfirmDialog={setOpenDeleteConfirmDialog}
         setFileIdToDelete={setFileIdToDelete}
       />
+      <Dialog
+        // style={{zIndex: 99998}}
+        open={openDeleteConfirmDialog}
+        onClose={() => setOpenDeleteConfirmDialog(false)}
+        fullWidth
+        maxWidth="lg"
+      >
+        <DialogTitle className={modalClass.title} id="customized-dialog-title">
+          Delete Document
+          <HighlightOffIcon
+            fontSize="large"
+            className={modalClass.titleClose}
+            onClick={()=> setOpenDeleteConfirmDialog(false)}
+          />
+        </DialogTitle>
+        <DialogContent>
+          <h3 className={modalClass.inputLabel}>Are you sure you want to delete this document?</h3>
+        </DialogContent>
+        <DialogActions>
+
+          <Button
+            onClick={() => {
+              setOpenDeleteConfirmDialog(false)
+            }}
+            color="primary"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              handleDeleteAccept()
+            }}
+            color="secondary"
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   ) : (
     <div

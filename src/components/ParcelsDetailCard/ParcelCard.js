@@ -26,7 +26,7 @@ import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 // QUERIES 
 import { useLazyQuery } from "@apollo/client";
 import { SHAPEWELLS } from "graphQL/useQueryPaginatedShapeWells";
-import { GET_PARCELS_FILES } from "graphQL/useQueryGetParcelFiles";
+import { GET_PARCELS_FILES_COUNT } from "graphQL/useQueryGetParcelFiles";
 import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 
 // contexts 
@@ -128,8 +128,8 @@ export default function ParcelCard(props) {
 
   // queries 
   const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true });
-  const [getAllFiles, { data: dataParcelFiles }] = useLazyQuery(GET_PARCELS_FILES);
-  const documentCount = dataParcelFiles?.getParcelFiles.length || 0;
+  const [getParcelFilesCount, { data: dataParcelFiles }] = useLazyQuery(GET_PARCELS_FILES_COUNT, { fetchPolicy: "cache-and-network"});
+  const documentCount = dataParcelFiles?.getParcelFilesCount || 0;
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER,);
 
 
@@ -179,7 +179,7 @@ export default function ParcelCard(props) {
 
   useEffect(() => {
     if (parcelObj)
-      getAllFiles({
+    getParcelFilesCount({
         variables: {
           relatedObjectId: parcelObj?._id || stateApp.user.mongoId,
           relatedObjectType: "Parcel",

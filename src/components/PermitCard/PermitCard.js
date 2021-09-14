@@ -293,7 +293,7 @@ export default function PermitCard() {
 
                 <TableRow className={classes.rowWhite}>
                   <TableCell className={classes.cell1} align="left">
-                    Completion Depth [ft]
+                    Completed Depth [ft]
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
                     {stateApp.selectedPermit.CompletionDepth

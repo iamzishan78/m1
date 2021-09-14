@@ -5,6 +5,7 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { useHistory } from "react-router-dom";
 
 //icons 
 import IconButton from "@material-ui/core/IconButton";
@@ -30,6 +31,7 @@ import TableRow from "@material-ui/core/TableRow";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 import { GETPIPELINE } from "../../../graphQL/useQueryPipeline";
+import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import { ADD_PIPELINE } from "../../../graphQL/useMutationAddPipeline";
 import { UPDATEPIPELINES } from "../../../graphQL/useMutationUpdatePipelines";
 import { ADDSTAGES } from "../../../graphQL/useMutationAddStages";
@@ -148,6 +150,7 @@ String.prototype.capitalize = function () {
 
 export default function Pipelines(props) {
   const dispatch = useDispatch();
+  let history = useHistory();
   const { openPipeDialog, selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
@@ -162,6 +165,7 @@ export default function Pipelines(props) {
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
 
+  const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
   const [getPipeline, { loading: loadingPipeline, data: pipelineData }] = useLazyQuery(GETPIPELINE, {
     fetchPolicy: "cache-and-network",
   });
@@ -172,6 +176,65 @@ export default function Pipelines(props) {
   const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
     fetchPolicy: "network-only",
   });
+
+  useEffect(() => {
+    getPipelines();
+  }, []);
+
+  useEffect(() => {
+    if (pipelinesData) {
+      //// select first one as default
+      const pipelineId = history.location.pathname.split("/")[2]
+      let laneId = ''
+      let cardId = ''
+      if(history.location.pathname.includes('lane')){
+        laneId = history.location.pathname.split("/")[4]
+      }
+      if(history.location.pathname.includes('card')){
+        cardId = history.location.pathname.split("/")[6]
+      }
+
+      if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
+        let activePipeline = {};
+
+        if(pipelineId){
+          activePipeline = pipelinesData.pipelines.find(
+            (p) => p._id === pipelineId
+          );
+        }
+        if(!activePipeline){
+          const isExist = !!pipelinesData.pipelines.find(
+            (p) => p._id === selectedPipe?._id
+          );
+          if (selectedPipe && isExist) {
+            activePipeline = pipelinesData.pipelines.find(
+              (p) => p._id === selectedPipe._id
+            );
+          } else activePipeline = pipelinesData.pipelines[0];
+        }
+        if(laneId && cardId){
+          history.push(`/flow/${activePipeline._id}/lane/${laneId}/card/${cardId}`);
+        }else{
+          history.push(`/flow/${activePipeline._id}`)
+        }
+        
+        dispatch(
+          setFlowState({
+            selectedPipe: activePipeline,
+            pipelines: pipelinesData.pipelines
+          })
+        );
+      } else
+        dispatch(
+          setFlowState({
+            selectedPipe: null,
+            pipelines: [],
+            pipeToShow: false
+          })
+        );
+    }
+  }, [pipelinesData]);
+
 
   useEffect(() => {
     if (dataDealsCountByStage?.nonDeletedDealsCountInAnStageByPipeline) {
@@ -210,13 +273,33 @@ export default function Pipelines(props) {
   useEffect(() => {
     if (pipelineData) {
       if (pipelineData.pipeline) {
+        let laneId = ''
+        let cardId = ''
+        if(history.location.pathname.includes('lane')){
+          laneId = history.location.pathname.split("/")[4]
+        }
+        if(history.location.pathname.includes('card')){
+          cardId = history.location.pathname.split("/")[6]
+        }
+  
         let deals = [];
         let pipe = {
           ...pipelineData.pipeline,
           lanes: pipelineData.pipeline.lanes?.map((lane) => ({
             ...lane,
             cards: lane.cards?.map((card) => {
-              if (!card.metadata.IsDeleted)
+              if (!card.metadata.IsDeleted){
+                if(lane.id === laneId && cardId === card.id){ 
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    dealDialog: true,
+                    activeDeal: {
+                      cardId,
+                      laneId,
+                      ...card.metadata
+                    }
+                  }));
+                }
                 deals.push({
                   cardId: card.id,
                   laneId: lane.id,
@@ -237,6 +320,7 @@ export default function Pipelines(props) {
                       : null,
                   ...card.metadata,
                 });
+              }
 
               return { ...card };
             }),
@@ -304,7 +388,7 @@ export default function Pipelines(props) {
   };
 
   const removeStage = (stage, index) => {
-    if (stages.length == 1) dispatch(showWarningMessage("The stage can't be deleted, the pipeline needs at least one stage."));
+    if (stages.length === 1) dispatch(showWarningMessage("The stage can't be deleted, the pipeline needs at least one stage."));
     else {
       if (stage?._id && selectedPipe) {
         setStateApp((state) => ({
@@ -389,7 +473,7 @@ export default function Pipelines(props) {
   const handleSaveOrUpdate = () => {
     //// check validations
     let valid = true;
-    stages.map((stage) => {
+    stages.forEach((stage) => {
       if (!stage.name || stage.name === "") valid = false;
     });
 
@@ -567,9 +651,6 @@ export default function Pipelines(props) {
     return false;
   };
 
-  //// setting the add new button header /////
-  let optionsWithHeader = ["header", ...pipelines];
-
   return (
     <React.Fragment>
       <div className={classes.settingsButton}>
@@ -579,7 +660,7 @@ export default function Pipelines(props) {
           </Typography>
         )}
 
-        <Tooltip title={"Flowline Actions"} 
+        <Tooltip title={"Flowline Actions"}
         >
           <IconButton
             disabled={!selectedPipe}

@@ -14,7 +14,6 @@ import Paper from "@material-ui/core/Paper";
 
 //custom components
 import Taps from "../Shared/Taps";
-import CardDetailsMap from "./components/CardDetailsMap";
 import TableSummary from "./components/TableSummary";
 
 import QuadProvider from "../Quad/QuadProvider";
@@ -30,7 +29,6 @@ import ProfileCard from "../Shared/ProfileCard";
 import WellTypeCard from "../Shared/WellTypeCard";
 import SpudDateCard from "../Shared/SpudDateCard";
 import PlugDateCard from "../Shared/PlugDateCard";
-import WellApiCard from "../Shared/WellApiCard";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 
@@ -74,18 +72,14 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "calc(100% - 88px)",
     overflow: "auto",
     "&::-webkit-scrollbar": {
-      width: "0.75em",
-      height: "0.75em",
+      height: "0.4em",
     },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "1.0em",
-    // },
-    // "&::-webkit-scrollbar-track": {
-    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    // },
+    "&::-webkit-scrollbar-track": {
+      "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+    },
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
-      borderRadius: 10,
+      borderRadius: 5,
     },
   },
   card: {
@@ -240,31 +234,36 @@ export default function WellCardDetails(props) {
   const [showSummary, setShowSummary] = useState(true)
   let temp_state = useRef(null);
   const [
-    getProductionDetail,
-    { loading: loadingProductionDetail, data: productionDetail },
+    getExternalProductionDetail,
+    { loading: loadingProductionDetail, data: externalProductionDetail },
   ] = useLazyQuery(PRODUCTIONDETAILQUERY);
 
   useEffect(() => {
-    getProductionDetail({
-      variables: { id: stateApp.selectedWell.id },
+    getExternalProductionDetail({
+      variables: { id: stateApp.selectedWell.api, pageSize: "1000" },
     });
   }, []);
 
   useEffect(() => {
-    if (productionDetail) {
+    if (externalProductionDetail) {
       let temp = [];
-      productionDetail.productionDetail.forEach(element => {
+      externalProductionDetail.externalProductionDetail.forEach(element => {
         let temp_row = { ...element };
         temp_row.ReportDate = moment.utc(temp_row.ReportDate).format("MM/YYYY");
         temp.push(temp_row)
       });
       setProduction(temp);
+      setStateWellCard((state) => {
+        return {
+        ...state,
+        wellProdHistory: temp,
+      }});
       if (props.target) {
         setTarget(props.target);
       }
     } else {
     }
-  }, [productionDetail, props.target, setTarget]);
+  }, [externalProductionDetail, props.target, setTarget]);
 
   const handleChangeOil = (event) => {
     setStateWellCard({
@@ -344,16 +343,18 @@ export default function WellCardDetails(props) {
   return stateApp.selectedWell ? (
     <React.Fragment >
       <Grid item sm={12} className={classes.gridItemGrey}>
-        <WellTypeCard />
-        <WellStatusCard />
-        <Last12StatusCard />
-        <OwnerNumCard />
-        <ProfileCard />
-        <PermitDateCard />
-        <SpudDateCard />
-        <CompletionDateCard />
-        <FirstProdDateCard />
-        <PlugDateCard />
+            
+        <WellTypeCard summary={props.summary}/>
+
+        <WellStatusCard summary={props.summary}/>
+        {/* <Last12StatusCard summary={props.summary}/> */}
+        <OwnerNumCard summary={props.summary}/>
+        <ProfileCard summary={props.summary}/>
+        <PermitDateCard summary={props.summary}/>
+        <SpudDateCard summary={props.summary}/>
+        <CompletionDateCard summary={props.summary}/>
+        <FirstProdDateCard summary={props.summary}/>
+        <PlugDateCard summary={props.summary}/>
         <Box>
           <IconButton
             onClick={() => setShowSummary(!showSummary)}
@@ -458,8 +459,6 @@ export default function WellCardDetails(props) {
               ,
               <Paper elevation={3} style={{ padding: "10px" }}>
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-
-                  {console.log('stateApp.selectedWell', stateApp.selectedWell)}
                   <M1nTable
                     parent="OwnersPerWell"
                     selectedWell={stateApp.selectedWell}  // MIGRATE TO WELL CARD CONTEXT

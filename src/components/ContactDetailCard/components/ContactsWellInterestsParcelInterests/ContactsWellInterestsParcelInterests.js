@@ -6,8 +6,32 @@ import ContactParcelInterestTable from "components/Table/Contact/ContactParcelIn
 import ContactTaxRollInterestTable from "components/Table/Contact/ContactTaxRollInterestTable";
 import TabPanels from "components/Shared/TabPanels";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        display: "flex",
+        "flex-direction": "column",
+        height: "calc(100vh - 176px)",
+        "align-items": "stretch",
+        "&>.MuiPaper-root": { 
+          display: "contents",
+        },
+        "&>:nth-child(3)": { 
+          height: "inherit !important",
+        },
+        "&> table": {
+          bottom: 0,
+        }
+      },
+    },
+  },
+}));
 
 function ContactsWellInterestsParcelInterests(props) {
+  const classes = useStyles();
   let history = useHistory();
   const type =
     history.location.pathname.split("/")[
@@ -15,7 +39,6 @@ function ContactsWellInterestsParcelInterests(props) {
     ];
 
   const [selectedTab, setSelectedTab] = useState(type === 'wells' ? 0 : type === 'parcels' ? 2 : 1);
-
 
   const Header = () => (
     <TabButtons
@@ -31,8 +54,9 @@ function ContactsWellInterestsParcelInterests(props) {
     <div>
       {/* temporarily comment search out until we have a chance to build it out fully */}
       <Search contactId={props.contactData._id} />
+      
 
-      <div style={{ position: "relative" }}>
+      <div className={classes.root} style={{ position: "relative" }}>
         <TabPanels
           value={selectedTab}
           panels={[

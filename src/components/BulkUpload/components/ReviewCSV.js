@@ -100,8 +100,8 @@ export default function MaterialTableDemo() {
   return (
     <div style={main_div}>
       <div style={{ ...big_text, ...padding_div_top }}>
-        Review, modify or delete any records before they are uploaded to the
-        system.
+        Review the data to be uploaded based on the mapping of M1neral headers
+        that were selected.
       </div>
       <div style={{ ...padding_div_top, ...table }}>
         <MaterialTable
