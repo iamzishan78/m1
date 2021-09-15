@@ -26,6 +26,7 @@ import PipelinesList from "components/Transact/components/SidePanel/PipelinesLis
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { DEALSCOUNTINAPIPE } from "graphQL/useQueryNonDeletedDealsCountInAPipeline";
 import { AppContext } from "AppContext";
+import { TransactContext } from "components/Transact/TransactContext";
 
 const dnd = isMobile ? TouchBackend : HTML5Backend;
 const useStyles = makeStyles((theme) => ({
@@ -137,6 +138,7 @@ const SidePanel = () => {
   const [deleteDialogOpen, setModal] = useState(false);
 
   const [stateApp] = useContext(AppContext);
+  const [, setStateTransact] = useContext(TransactContext);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES);
   const [updatePipelinesPositions] = useMutation(UPDATE_PIPELINES_POSITIONS);
@@ -159,10 +161,12 @@ const SidePanel = () => {
 
   const mapFLowlinesToProject = (pipelines) => {
     let projectIncludedPipelines = [],
-      projects = {};
+      projects = {},
+      projectsList = [];
     pipelines.forEach((pipe) => {
       if (pipe.projectId && !projects[pipe.projectId]) {
         projects[pipe.projectId] = true;
+        projectsList.push({ projectName: pipe.projectName, projectId: pipe.projectId });
         projectIncludedPipelines.push({
           projectName: pipe.projectName,
           projectId: pipe.projectId,
@@ -195,6 +199,7 @@ const SidePanel = () => {
         });
       }
     });
+    setStateTransact((stateTransact) => ({ ...stateTransact, projects: projectsList }));
     return projectIncludedPipelines;
   };
 
@@ -387,7 +392,7 @@ const SidePanel = () => {
           onClose={() => setModal(false)}
           deleteFunc={handleDelete}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => { }}
+          setM1nSelectedRowsIndexes={() => {}}
         >
           {selectedPipelines.length > 1
             ? "Are you sure you want to delete the selected flowlines?"

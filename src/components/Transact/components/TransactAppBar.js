@@ -219,6 +219,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
             </Tooltip>
           </div>
 
+          {/* <Pipelines /> */}
           <PipelineCustomDialog />
           <div className={classes.left}>
             <div>

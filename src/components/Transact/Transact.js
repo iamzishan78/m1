@@ -407,7 +407,7 @@ export default function Transact() {
             lane.cards.forEach((card) => {
               const owner = card && card.metadata && card.metadata.owners && card.metadata.owners[0];
               const ownerId = owner && card.metadata.owners[0].id;
-              if (owner && validateEmail(owner.relatedObject.email)) ownersEmails.push(owner.relatedObject.email);
+              if (owner && validateEmail(owner.relatedObject?.email)) ownersEmails.push(owner.relatedObject?.email);
 
               if (!(ownerId in cardColors.current)) {
                 cardColors.current = {

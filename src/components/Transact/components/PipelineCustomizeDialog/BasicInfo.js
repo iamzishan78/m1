@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useEffect, useContext, Fragment } from "react";
+import { useSelector } from "react-redux";
+import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, FormControl, TextField, Select } from "@material-ui/core";
+
+import { TransactContext } from "components/Transact/TransactContext";
 
 const useStyles = makeStyles(() => ({
   basicInfoRoot: {
@@ -11,12 +15,6 @@ const useStyles = makeStyles(() => ({
         backgroundColor: "transparent",
       },
     },
-  },
-  stickyHeader: {
-    padding: "25px",
-  },
-  panelInfo: {
-    padding: "25px",
   },
   label: {
     margin: "15px 0px 0px",
@@ -30,62 +28,95 @@ const useStyles = makeStyles(() => ({
 
 const BasicInfo = (props) => {
   const classes = useStyles();
+  const [stateTransact] = useContext(TransactContext);
+  const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
+  const { control, getValues, reset, watch } = useForm("FLOWLINE_FORM");
+
+  useEffect(() => {
+    if (openPipeDialog === true) {
+      reset(selectedPipe);
+    }
+  }, [openPipeDialog, reset, selectedPipe]);
 
   return (
     <div className={classes.basicInfoRoot}>
       <Grid container display="flex" alignItems="center">
         <Grid item xs={12}>
           <h3 className={classes.label}>Flowline Name</h3>
-          <TextField margin="dense" variant="outlined" placeholder="Click to enter deal name" required fullWidth />
+          <Controller
+            control={control}
+            name="name"
+            render={(field) => (
+              <TextField {...field} margin="dense" variant="outlined" placeholder="Click to enter deal name" required fullWidth />
+            )}
+          />
         </Grid>
         <Grid item xs={12}>
           <h3 className={classes.label}>Project Tie</h3>
           <FormControl variant="outlined" className={classes.formControl}>
-            <Select
-              native
-              //   onChange={handleChange}
-            >
-              <option value={0}>Project A</option>
-              <option value={1}>Project B</option>
-            </Select>
+            <Controller
+              control={control}
+              name="projectId"
+              render={(field) => (
+                <Select {...field} native>
+                  <>
+                    <option value=""></option>
+                    {stateTransact.projects?.map((project, index) => (
+                      <Fragment key={index}>
+                        <option value={project.projectId}>{project.projectName}</option>
+                      </Fragment>
+                    ))}
+                  </>
+                </Select>
+              )}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12}>
           <h3 className={classes.label}>Flow Milestone Date</h3>
           <FormControl variant="outlined" className={classes.formControl}>
-            <Select
-              native
-              //   onChange={handleChange}
-            >
-              <option value={0}>Project A</option>
-              <option value={1}>Project B</option>
-            </Select>
+            <Controller
+              control={control}
+              name="milestoneDate"
+              render={(field) => (
+                <Select {...field} native>
+                  <option value=""></option>
+                  <option value="expectedClose">Expected Close</option>
+                </Select>
+              )}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12}>
           <h3 className={classes.label}>Detail Card Section</h3>
           <FormControl variant="outlined" className={classes.formControl}>
-            <Select
-              native
-              //   onChange={handleChange}
-            >
-              <option value={0}>Project A</option>
-              <option value={1}>Project B</option>
-            </Select>
+            <Controller
+              control={control}
+              name="detailCardSection"
+              render={(field) => (
+                <Select {...field} native>
+                  <option value=""></option>
+                  <option value="description">Description</option>
+                </Select>
+              )}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12}>
           <h3 className={classes.label}>Flow Status</h3>
           <FormControl variant="outlined" className={classes.formControl}>
-            <Select
-              native
-              defaultValue={-1}
-              //   onChange={handleChange}
-            >
-              <option value={0}>Won</option>
-              <option value={1}>Lost</option>
-              <option value={2}>Passed</option>
-            </Select>
+            <Controller
+              control={control}
+              name="status"
+              render={(field) => (
+                <Select {...field} native defaultValue="">
+                  <option value=""></option>
+                  <option value="won">Won</option>
+                  <option value="lost">Lost</option>
+                  <option value="passed">Passed</option>
+                </Select>
+              )}
+            />
           </FormControl>
         </Grid>
       </Grid>
