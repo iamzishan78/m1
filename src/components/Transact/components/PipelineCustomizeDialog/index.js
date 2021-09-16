@@ -73,6 +73,7 @@ const PipelineCustomDialog = (props) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteFunc, setDeleteFunc] = useState(null);
   const [stages, setStages] = useState([]);
+  const [flowErrors, setFlowErrors] = useState([]);
   const [stagesError, setStageError] = useState(false);
   const { control, reset, setValue, getValues, watch } = useForm("FLOWLINE_FORM");
 
@@ -161,6 +162,12 @@ const PipelineCustomDialog = (props) => {
   const handleCloseDeleteDialog = () => setDeleteDialogOpen(false);
 
   const handleSaveOrUpdate = () => {
+    const formStates = getValues();
+    if (!formStates.name) {
+      setFlowErrors((flowErrors) => ({ ...flowErrors, name: true }));
+      return;
+    }
+
     let isValid = stages.length > 0 ? true : false;
     for (let s = 0; s < stages.length; s += 1) {
       if (!stages[s].name || stages[s].name === "") {
@@ -173,8 +180,6 @@ const PipelineCustomDialog = (props) => {
       handleChange(null, 1);
       return;
     }
-
-    const formStates = getValues();
 
     if (openPipeDialog === "newPipe") {
       // New flowline
@@ -362,17 +367,19 @@ const PipelineCustomDialog = (props) => {
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <IconButton
-                    size="small"
-                    component="span"
-                    style={{
-                      background: "transparent",
-                      align: "center",
-                    }}
-                    onClick={handleDeletePipe}
-                  >
-                    <DeleteIcon size="medium" className={classes.deleteIcon} />
-                  </IconButton>
+                  {openPipeDialog !== "newPipe" && (
+                    <IconButton
+                      size="small"
+                      component="span"
+                      style={{
+                        background: "transparent",
+                        align: "center",
+                      }}
+                      onClick={handleDeletePipe}
+                    >
+                      <DeleteIcon size="medium" className={classes.deleteIcon} />
+                    </IconButton>
+                  )}
                   <IconButton size="small" onClick={handleClose}>
                     <CloseIcon className={classes.closeIcon} fontSize="small" />
                   </IconButton>
@@ -393,7 +400,14 @@ const PipelineCustomDialog = (props) => {
             </Tabs>
             <div className={classes.panelInfo}>
               <div style={{ display: tab !== 0 ? "none" : "" }}>
-                <BaicInfoPanel control={control} reset={reset} setValue={setValue} watch={watch} />
+                <BaicInfoPanel
+                  control={control}
+                  reset={reset}
+                  setValue={setValue}
+                  watch={watch}
+                  flowErrors={flowErrors}
+                  setFlowErrors={setFlowErrors}
+                />
               </div>
               <div style={{ display: tab === 0 ? "none" : "" }}>
                 <LanesInfoPanel

@@ -27,10 +27,18 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const BasicInfo = ({ control, reset, setValue, watch }) => {
+const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors }) => {
   const classes = useStyles();
   const [stateTransact] = useContext(TransactContext);
   const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
+
+  const name = watch("name");
+
+  useEffect(() => {
+    if (name && flowErrors.name) {
+      setFlowErrors((flowErrors) => ({ ...flowErrors, name: false }));
+    }
+  }, [name, setFlowErrors]);
 
   useEffect(() => {
     if (openPipeDialog === true) {
@@ -47,7 +55,16 @@ const BasicInfo = ({ control, reset, setValue, watch }) => {
             control={control}
             name="name"
             render={(field) => (
-              <TextField {...field} margin="dense" variant="outlined" placeholder="Click to enter deal name" required fullWidth />
+              <TextField
+                {...field}
+                margin="dense"
+                variant="outlined"
+                placeholder="Click to flowline name"
+                required
+                fullWidth
+                error={flowErrors.name}
+                helperText={flowErrors.name && "Name is Required"}
+              />
             )}
           />
         </Grid>

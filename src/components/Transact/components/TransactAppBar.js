@@ -4,7 +4,7 @@ import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import Add from "@material-ui/icons/Add";
 import { makeStyles } from "@material-ui/core/styles";
 import { setFlowState } from "actions";
-import Pipelines from "./Pipelines";
+// import Pipelines from "./Pipelines";
 import PipelineCustomDialog from "./PipelineCustomizeDialog";
 import { useSelector, useDispatch } from "react-redux";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
@@ -169,7 +169,7 @@ const sumDeals = (lanes, status) => {
 const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { pipeToShow, selectedPipe } = useSelector(({ Flow }) => Flow);
+  const { pipeToShow, selectedPipe, openPipeDialog } = useSelector(({ Flow }) => Flow);
   const [openDeals, setOpenDeals] = useState({ count: 0, amount: "$0" });
   const [wonDeals, setWonDeals] = useState({ count: 0, amount: "$0" });
   const [lostDeals, setLostDeals] = useState({ count: 0, amount: "$0" });
@@ -220,7 +220,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
           </div>
 
           {/* <Pipelines /> */}
-          <PipelineCustomDialog />
+          {openPipeDialog && <PipelineCustomDialog />}
           <div className={classes.left}>
             <div>
               <Button onClick={handleClickAddDeal} color="secondary" className={classes.newDealAction} startIcon={<Add />}>
