@@ -3,13 +3,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { useHistory } from "react-router-dom";
 
 //icons
 import IconButton from "@material-ui/core/IconButton";
 
-import Dialog from "@material-ui/core/Dialog";
-import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "actions";
 import Grid from "@material-ui/core/Grid";
 import AddIcon from "@material-ui/icons/Add";
 import DragIndicator from "@material-ui/icons/DragIndicator";
@@ -22,13 +19,8 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import { Tooltip } from "@material-ui/core";
-import { ADD_PIPELINE } from "graphQL/useMutationAddPipeline";
-import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
-import { ADDSTAGES } from "graphQL/useMutationAddStages";
-import { UPDATESTAGES } from "graphQL/useMutationUpdateStages";
-import { useMutation, useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { AppContext } from "AppContext";
-import { deepEqualObjects } from "components/Shared/functions";
 import { DEALSCOUNTINANSTAGE } from "graphQL/useQueryNonDeletedDealsCountInAnStageByPipeline";
 
 const useStyles = makeStyles((theme) => ({
@@ -123,21 +115,12 @@ String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-export default function LanesInfoPanel(props) {
+export default function LanesInfoPanel({ showWarningMessage, stages, setStages, stagesError, setStageError }) {
   const dispatch = useDispatch();
   const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [, setStateApp] = useContext(AppContext);
   const classes = useStyles();
-  const [name, setName] = useState("");
-  const [error, setError] = useState(false);
-  const [stages, setStages] = useState([]);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteFunc, setDeleteFunc] = useState(null);
-
-  const [addPipeline] = useMutation(ADD_PIPELINE);
-  const [updatePipelines] = useMutation(UPDATEPIPELINES);
-  const [addStages] = useMutation(ADDSTAGES);
-  const [updateStages] = useMutation(UPDATESTAGES);
 
   const [getDealsCountByStage, { data: dataDealsCountByStage }] = useLazyQuery(DEALSCOUNTINANSTAGE, {
     fetchPolicy: "network-only",
@@ -160,7 +143,6 @@ export default function LanesInfoPanel(props) {
   useEffect(() => {
     if (openPipeDialog && selectedPipe && openPipeDialog !== "newPipe") {
       if (selectedPipe.stages) setStages(selectedPipe.stages);
-      if (selectedPipe.name) setName(selectedPipe.name);
     }
   }, [openPipeDialog, selectedPipe]);
 
@@ -193,17 +175,6 @@ export default function LanesInfoPanel(props) {
     }
   };
 
-  const handleClose = () => {
-    if (error) setError(false);
-    setStages([]);
-    setName("");
-    dispatch(
-      setFlowState({
-        openPipeDialog: false,
-      })
-    );
-  };
-
   const onDragEnd = (result) => {
     // dropped outside the list || same position
     if (!result.destination || result.destination.index === result.source.index) {
@@ -216,7 +187,7 @@ export default function LanesInfoPanel(props) {
   };
 
   const handleAddStage = () => {
-    if (error) setError(false);
+    if (stagesError) setStageError(false);
     // if (addingNewPipe) {
     setStages([
       ...stages,
@@ -238,179 +209,6 @@ export default function LanesInfoPanel(props) {
     updStages[index] = { ...stages[index], [fieldName]: value };
     setStages(updStages);
     // }
-  };
-
-  const handleSaveOrUpdate = () => {
-    //// check validations
-    let valid = true;
-    stages.forEach((stage) => {
-      if (!stage.name || stage.name === "") valid = false;
-    });
-
-    if (!name || name === "" || !valid || stages.length === 0) {
-      setError(true);
-    } else {
-      if (openPipeDialog === "newPipe")
-        //// save it
-        addPipeline({
-          variables: {
-            name,
-            stages,
-            userId: stateApp.user.mongoId,
-          },
-          refetchQueries: ["getPipelines", "getPipeline"],
-          awaitRefetchQueries: true,
-        });
-      else if (selectedPipe) {
-        ////update
-        let stagesToUpdate = [];
-
-        let pipeToUpdate = selectedPipe.name !== name ? { _id: selectedPipe._id, name } : { _id: selectedPipe._id }; //// else update the ts
-
-        let stagesToAdd = stages.filter((stage) => !stage._id);
-        let existingStages = stages.filter((stage) => stage._id);
-
-        for (let i = 0; i < existingStages.length; i++) {
-          const frontEndStage = { ...existingStages[i] };
-          for (let j = 0; j < selectedPipe.stages.length; j++) {
-            const dbStage = { ...selectedPipe.stages[j] };
-            if (dbStage._id === frontEndStage._id) {
-              if (!deepEqualObjects(dbStage, frontEndStage)) {
-                let stageToUpdate = {
-                  _id: dbStage._id,
-                  descriptorId: dbStage.descriptorId,
-                };
-
-                //// checking if the descriptor position changed
-                if (dbStage.position !== frontEndStage.position) stageToUpdate.position = frontEndStage.position;
-
-                //// checking if something change in the real stage object
-                delete dbStage.position;
-                delete frontEndStage.position;
-                if (!deepEqualObjects(dbStage, frontEndStage)) stageToUpdate = { ...stageToUpdate, ...frontEndStage };
-
-                ////
-                stagesToUpdate.push(stageToUpdate);
-              }
-
-              break;
-            }
-          }
-        }
-
-        //// checking if some db stage was deleted
-        for (let j = 0; j < selectedPipe.stages.length; j++) {
-          const dbStage = { ...selectedPipe.stages[j] };
-          let found = false;
-
-          for (let i = 0; i < stages.length; i++) {
-            const frontEndStage = { ...stages[i] };
-            if (dbStage._id === frontEndStage._id) {
-              found = true;
-              break;
-            }
-          }
-
-          if (!found) stagesToUpdate.push({ _id: dbStage._id, IsDeleted: true });
-        }
-
-        //// pipeToUpdate ////
-        //// stagesToAdd ////
-        //// stagesToUpdate ////
-
-        let success = true;
-        let allPromises = [];
-
-        if (pipeToUpdate)
-          //// if not necessary now
-          allPromises.push(
-            new Promise((resolve, reject) => {
-              updatePipelines({
-                variables: {
-                  pipelines: [pipeToUpdate],
-                },
-                refetchQueries: ["getPipelines", "getPipeline"], //// separete latter to the end all promises
-                awaitRefetchQueries: true,
-              }).then((result) => {
-                const {
-                  data: { updatePipelines },
-                } = result;
-
-                if (updatePipelines?.success === false) success = false;
-
-                resolve();
-              });
-            })
-          );
-
-        if (stagesToAdd && stagesToAdd.length > 0)
-          allPromises.push(
-            new Promise((resolve, reject) => {
-              addStages({
-                variables: {
-                  stages: stagesToAdd,
-                  pipelineId: selectedPipe._id,
-                  userId: stateApp.user.mongoId,
-                },
-                refetchQueries: ["getPipelines", "getPipeline"], //// separete latter to the end all promises
-                awaitRefetchQueries: true,
-              }).then((result) => {
-                const {
-                  data: { addStages },
-                } = result;
-
-                if (addStages?.success === false) success = false;
-
-                resolve();
-              });
-            })
-          );
-
-        if (stagesToUpdate && stagesToUpdate.length > 0)
-          allPromises.push(
-            new Promise((resolve, reject) => {
-              updateStages({
-                variables: {
-                  stages: stagesToUpdate,
-                },
-                refetchQueries: ["getPipelines", "getPipeline"], //// separete latter to the end all promises
-                awaitRefetchQueries: true,
-              }).then((result) => {
-                const {
-                  data: { updateStages },
-                } = result;
-
-                if (updateStages?.success === false) success = false;
-
-                resolve();
-              });
-            })
-          );
-
-        Promise.all(allPromises)
-          .then((values) => {
-            if (success === true) dispatch(showSuccessMessage("The Pipeline was successfully updated."));
-            else dispatch(showErrorMessage("An error occurred during the update."));
-          })
-          .catch((reason) => {});
-      }
-
-      handleClose();
-    }
-  };
-
-  //// checking if the something to update in the pipe or the stages
-  const checkingIfEdited = () => {
-    if (openPipeDialog !== "newPipe" && selectedPipe) {
-      if (selectedPipe.name !== name || selectedPipe.stages?.length !== stages.length) return true;
-
-      ////checking stages
-      for (let i = 0; i < stages.length; i++) {
-        if (!deepEqualObjects(stages[i], selectedPipe.stages[i])) return true;
-      }
-    }
-
-    return false;
   };
 
   return (
@@ -448,7 +246,7 @@ export default function LanesInfoPanel(props) {
                                   </TableCell>
                                   <TableCell align="left">
                                     <TextField
-                                      error={error && (!stage.name || stage.name === "")}
+                                      error={stagesError && (!stage.name || stage.name === "")}
                                       variant="outlined"
                                       size="small"
                                       fullWidth
@@ -456,7 +254,7 @@ export default function LanesInfoPanel(props) {
                                       value={stage.name}
                                       onChange={(event) => {
                                         handleCellTextChange(event.target.value, "name", index);
-                                        if (error) setError(false);
+                                        if (stagesError) setStageError(false);
                                       }}
                                     />
 
@@ -545,7 +343,7 @@ export default function LanesInfoPanel(props) {
             style={{
               marginLeft: 15,
               color: "red",
-              visibility: error && stages.length === 0 ? "visible" : "hidden",
+              visibility: stagesError && stages.length === 0 ? "visible" : "hidden",
             }}
           >
             Please add at least one stage.

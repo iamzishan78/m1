@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PipelineCard = (props) => {
-  const { pipeline, selectedPipelines, onFlowlineSelect, data, handleDragBegin, handleDragEnd } = props;
+  const { pipeline, onFlowlineSelect, data, handleDragBegin, handleDragEnd } = props;
   const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
 
   const [{ isDragging }, drag, preview] = useDrag({

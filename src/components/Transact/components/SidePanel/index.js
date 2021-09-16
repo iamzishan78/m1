@@ -244,7 +244,7 @@ const SidePanel = () => {
         createPipelineDescriptors({
           variables: {
             descriptor: {
-              project: `Project ${moment().format("MM/DD/YYYY HH:m")}`,
+              projectName: `Project ${moment().format("MM/DD/YYYY HH:m")}`,
               pipelines: selectedPipelines,
               userId: stateApp.user.mongoId,
             },
@@ -280,6 +280,7 @@ const SidePanel = () => {
         break;
       case "Duplicate":
         const pipelinesToDuplicate = selectedPipelines.map((pipe) => ({
+          ...pipe,
           _id: pipe,
           name: filteredPipelines.find((p) => p._id === pipe).name,
         }));

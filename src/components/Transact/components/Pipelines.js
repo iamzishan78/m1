@@ -324,9 +324,11 @@ export default function Pipelines(props) {
         //// save it
         addPipeline({
           variables: {
-            name,
-            stages,
-            userId: stateApp.user.mongoId,
+            pipeline: {
+              name,
+              stages,
+              userId: stateApp.user.mongoId,
+            },
           },
           refetchQueries: ["getPipelines", "getPipeline"],
           awaitRefetchQueries: true,

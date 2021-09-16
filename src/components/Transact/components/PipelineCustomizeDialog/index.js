@@ -1,19 +1,25 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { Grid, Typography, IconButton, Tab, Tabs, Dialog } from "@material-ui/core";
 import { Close as CloseIcon, Delete as DeleteIcon } from "@material-ui/icons/";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { setFlowState, showWarningMessage } from "actions";
+import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "actions";
 import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import BaicInfoPanel from "components/Transact/components/PipelineCustomizeDialog/BasicInfo";
 import LanesInfoPanel from "components/Transact/components/PipelineCustomizeDialog/LanesInfo";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { deepEqualObjects } from "components/Shared/functions";
 
 import { AppContext } from "AppContext";
 import { DEALSCOUNTINAPIPE } from "graphQL/useQueryNonDeletedDealsCountInAPipeline";
 import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
+import { ADD_PIPELINE } from "graphQL/useMutationAddPipeline";
+import { ADDSTAGES } from "graphQL/useMutationAddStages";
+import { UPDATESTAGES } from "graphQL/useMutationUpdateStages";
+import { CREATE_PIPELINE_DESCRIPTORS, UPDATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,16 +72,28 @@ const PipelineCustomDialog = (props) => {
   const [width, setDialogWidth] = useState("450px");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteFunc, setDeleteFunc] = useState(null);
+  const [stages, setStages] = useState([]);
+  const [stagesError, setStageError] = useState(false);
+  const { control, reset, setValue, getValues, watch } = useForm("FLOWLINE_FORM");
 
-  const [, setStateApp] = useContext(AppContext);
-  const { openPipeDialog, selectedPipe /*, pipelines, pipeToShow*/ } = useSelector(({ Flow }) => Flow);
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
 
   const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
     fetchPolicy: "network-only",
   });
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
+  const [addPipeline] = useMutation(ADD_PIPELINE);
+  const [addStages] = useMutation(ADDSTAGES);
+  const [updateStages] = useMutation(UPDATESTAGES);
+  const [updatePipelineDescriptors] = useMutation(UPDATE_PIPELINE_DESCRIPTORS);
+  const [createPipelineDescriptors] = useMutation(CREATE_PIPELINE_DESCRIPTORS);
 
   const classes = useStyles({ width });
+
+  useEffect(() => {
+    return () => reset({});
+  }, [reset]);
 
   useEffect(() => {
     if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
@@ -85,7 +103,10 @@ const PipelineCustomDialog = (props) => {
       }));
       if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
         dispatch(showWarningMessage("There are deals associated to the pipeline, please remove them first."));
-      else setDeleteDialogOpen("pipe");
+      else {
+        setDeleteDialogOpen("pipe");
+        handleClose();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataDealsCountByPipeline]);
@@ -139,10 +160,199 @@ const PipelineCustomDialog = (props) => {
 
   const handleCloseDeleteDialog = () => setDeleteDialogOpen(false);
 
+  const handleSaveOrUpdate = () => {
+    let isValid = stages.length > 0 ? true : false;
+    for (let s = 0; s < stages.length; s += 1) {
+      if (!stages[s].name || stages[s].name === "") {
+        isValid = false;
+        break;
+      }
+    }
+    if (!isValid) {
+      setStageError(true);
+      handleChange(null, 1);
+      return;
+    }
+
+    const formStates = getValues();
+
+    if (openPipeDialog === "newPipe") {
+      // New flowline
+      addPipeline({
+        variables: {
+          pipeline: {
+            ...formStates,
+            stages,
+            userId: stateApp.user.mongoId,
+          },
+        },
+        refetchQueries: ["getPipelines", "getPipeline"],
+        awaitRefetchQueries: true,
+      });
+    } else if (selectedPipe) {
+      ////update
+      let stagesToUpdate = [];
+
+      let pipeToUpdate = { ...selectedPipe, ...formStates }; //// else update the ts
+
+      let stagesToAdd = stages.filter((stage) => !stage._id);
+      let existingStages = stages.filter((stage) => stage._id);
+
+      for (let i = 0; i < existingStages.length; i++) {
+        const frontEndStage = { ...existingStages[i] };
+        for (let j = 0; j < selectedPipe.stages.length; j++) {
+          const dbStage = { ...selectedPipe.stages[j] };
+          if (dbStage._id === frontEndStage._id) {
+            if (!deepEqualObjects(dbStage, frontEndStage)) {
+              let stageToUpdate = {
+                _id: dbStage._id,
+                descriptorId: dbStage.descriptorId,
+              };
+
+              //// checking if the descriptor position changed
+              if (dbStage.position !== frontEndStage.position) stageToUpdate.position = frontEndStage.position;
+
+              //// checking if something change in the real stage object
+              delete dbStage.position;
+              delete frontEndStage.position;
+              if (!deepEqualObjects(dbStage, frontEndStage)) stageToUpdate = { ...stageToUpdate, ...frontEndStage };
+
+              ////
+              stagesToUpdate.push(stageToUpdate);
+            }
+
+            break;
+          }
+        }
+      }
+
+      //// checking if some db stage was deleted
+      for (let j = 0; j < selectedPipe.stages.length; j++) {
+        const dbStage = { ...selectedPipe.stages[j] };
+        let found = false;
+
+        for (let i = 0; i < stages.length; i++) {
+          const frontEndStage = { ...stages[i] };
+          if (dbStage._id === frontEndStage._id) {
+            found = true;
+            break;
+          }
+        }
+
+        if (!found) stagesToUpdate.push({ _id: dbStage._id, IsDeleted: true });
+      }
+
+      //// pipeToUpdate ////
+      //// stagesToAdd ////
+      //// stagesToUpdate ////
+
+      let success = true;
+      let allPromises = [];
+
+      if (pipeToUpdate)
+        //// if not necessary now
+        allPromises.push(
+          new Promise((resolve, reject) => {
+            updatePipelines({
+              variables: {
+                pipelines: [pipeToUpdate],
+              },
+              refetchQueries: ["getPipelines", "getPipeline"], //// separete latter to the end all promises
+              awaitRefetchQueries: true,
+            }).then((result) => {
+              const {
+                data: { updatePipelines },
+              } = result;
+
+              if (updatePipelines?.success === false) success = false;
+
+              resolve();
+            });
+          })
+        );
+
+      if (stagesToAdd && stagesToAdd.length > 0)
+        allPromises.push(
+          new Promise((resolve, reject) => {
+            addStages({
+              variables: {
+                stages: stagesToAdd,
+                pipelineId: selectedPipe._id,
+                userId: stateApp.user.mongoId,
+              },
+              refetchQueries: ["getPipelines", "getPipeline"], //// separete latter to the end all promises
+              awaitRefetchQueries: true,
+            }).then((result) => {
+              const {
+                data: { addStages },
+              } = result;
+
+              if (addStages?.success === false) success = false;
+
+              resolve();
+            });
+          })
+        );
+      // attaching project
+      if (selectedPipe.projectId && !formStates.projectId)
+        updatePipelineDescriptors({
+          variables: {
+            descriptors: [
+              {
+                relatedObject: selectedPipe.projectId,
+                descriptorObject: selectedPipe._id,
+                isDeleted: true,
+              },
+            ],
+          },
+        });
+      // removing project
+      else if (!selectedPipe.projectId && formStates.projectId)
+        createPipelineDescriptors({
+          variables: {
+            descriptor: {
+              projectId: formStates.projectId,
+              pipelines: [selectedPipe._id],
+              userId: stateApp.user.mongoId,
+            },
+          },
+        });
+
+      if (stagesToUpdate && stagesToUpdate.length > 0)
+        allPromises.push(
+          new Promise((resolve, reject) => {
+            updateStages({
+              variables: {
+                stages: stagesToUpdate,
+              },
+              refetchQueries: ["getPipelines", "getPipeline"], //// separete latter to the end all promises
+              awaitRefetchQueries: true,
+            }).then((result) => {
+              const {
+                data: { updateStages },
+              } = result;
+
+              if (updateStages?.success === false) success = false;
+
+              resolve();
+            });
+          })
+        );
+
+      Promise.all(allPromises)
+        .then((values) => {
+          if (success === true) dispatch(showSuccessMessage("The Pipeline was successfully updated."));
+          else dispatch(showErrorMessage("An error occurred during the update."));
+        })
+        .catch((reason) => {});
+    }
+    handleClose();
+  };
+
   return (
     <>
       {openPipeDialog === "newPipe" || openPipeDialog ? (
-        <RightDialog open={openPipeDialog === "newPipe" || openPipeDialog} handleClickDialogClose={handleClose} width={width}>
+        <RightDialog open={openPipeDialog === "newPipe" || openPipeDialog} handleClickDialogClose={handleSaveOrUpdate} width={width}>
           <div className={classes.root}>
             <div className={classes.stickyHeader}>
               <Grid container justify="space-between" direction="row" display="flex">
@@ -182,8 +392,18 @@ const PipelineCustomDialog = (props) => {
               ))}
             </Tabs>
             <div className={classes.panelInfo}>
-              {tab === 0 && <BaicInfoPanel />}
-              {tab === 1 && <LanesInfoPanel />}
+              <div style={{ display: tab !== 0 ? "none" : "" }}>
+                <BaicInfoPanel control={control} reset={reset} setValue={setValue} watch={watch} />
+              </div>
+              <div style={{ display: tab === 0 ? "none" : "" }}>
+                <LanesInfoPanel
+                  showWarningMessage={showWarningMessage}
+                  stages={stages}
+                  setStages={setStages}
+                  stagesError={stagesError}
+                  setStageError={setStageError}
+                />
+              </div>
             </div>
           </div>
         </RightDialog>
