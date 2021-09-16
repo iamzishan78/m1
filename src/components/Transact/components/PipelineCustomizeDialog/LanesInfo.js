@@ -1,23 +1,15 @@
 import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useHistory } from "react-router-dom";
 
 //icons
 import IconButton from "@material-ui/core/IconButton";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import Dialog from "@material-ui/core/Dialog";
 import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "actions";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import { withStyles } from "@material-ui/core/styles";
-import CloseIcon from "@material-ui/icons/Close";
-import MuiDialogActions from "@material-ui/core/DialogActions";
 import Grid from "@material-ui/core/Grid";
 import AddIcon from "@material-ui/icons/Add";
 import DragIndicator from "@material-ui/icons/DragIndicator";
@@ -37,10 +29,7 @@ import { UPDATESTAGES } from "graphQL/useMutationUpdateStages";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { AppContext } from "AppContext";
 import { deepEqualObjects } from "components/Shared/functions";
-import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { DEALSCOUNTINANSTAGE } from "graphQL/useQueryNonDeletedDealsCountInAnStageByPipeline";
-import { DEALSCOUNTINAPIPE } from "graphQL/useQueryNonDeletedDealsCountInAPipeline";
-import DeleteIcon from "@material-ui/icons/Delete";
 
 const useStyles = makeStyles((theme) => ({
   lanesRoot: {
@@ -59,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "1.6rem",
   },
   addIconButton: {
-    //backgroundColor: "#D5F4FF",
     color: "gray",
     fontSize: "14px",
     "&:hover": {
@@ -137,7 +125,6 @@ String.prototype.capitalize = function () {
 
 export default function LanesInfoPanel(props) {
   const dispatch = useDispatch();
-  let history = useHistory();
   const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
@@ -155,9 +142,6 @@ export default function LanesInfoPanel(props) {
   const [getDealsCountByStage, { data: dataDealsCountByStage }] = useLazyQuery(DEALSCOUNTINANSTAGE, {
     fetchPolicy: "network-only",
   });
-  const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
-    fetchPolicy: "network-only",
-  });
 
   useEffect(() => {
     if (dataDealsCountByStage?.nonDeletedDealsCountInAnStageByPipeline) {
@@ -168,23 +152,10 @@ export default function LanesInfoPanel(props) {
       if (dataDealsCountByStage.nonDeletedDealsCountInAnStageByPipeline.dealsCount > 0)
         dispatch(showWarningMessage("There are deals associated to the stage, please remove them first."));
       else {
-        // openDeleteDialog();
         deleteFunc();
       }
     }
   }, [dataDealsCountByStage]);
-
-  useEffect(() => {
-    if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
-      setStateApp((state) => ({
-        ...state,
-        uniuniversalCircularLoaderAct: false,
-      }));
-      if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
-        dispatch(showWarningMessage("There are deals associated to the pipeline, please remove them first."));
-      else openDeleteDialog("pipe");
-    }
-  }, [dataDealsCountByPipeline]);
 
   useEffect(() => {
     if (openPipeDialog && selectedPipe && openPipeDialog !== "newPipe") {
@@ -192,43 +163,6 @@ export default function LanesInfoPanel(props) {
       if (selectedPipe.name) setName(selectedPipe.name);
     }
   }, [openPipeDialog, selectedPipe]);
-
-  const handleDeletePipe = () => {
-    if (selectedPipe) {
-      setStateApp((state) => ({
-        ...state,
-        uniuniversalCircularLoaderAct: true,
-      }));
-
-      getDealsCountByPipeline({
-        variables: {
-          pipelinesIds: [selectedPipe?._id],
-        },
-      });
-
-      setDeleteFunc(() => () => {
-        updatePipelines({
-          variables: {
-            pipelines: [{ _id: selectedPipe._id, IsDeleted: true }],
-          },
-          refetchQueries: ["getPipelines"],
-          awaitRefetchQueries: true,
-        });
-
-        //// handleClose()++
-        if (error) setError(false);
-        setStages([]);
-        setName("");
-        dispatch(
-          setFlowState({
-            openPipeDialog: false,
-            selectedPipe: null,
-            pipeToShow: null,
-          })
-        );
-      });
-    }
-  };
 
   const removeStage = (stage, index) => {
     if (stages.length === 1) dispatch(showWarningMessage("The stage can't be deleted, the pipeline needs at least one stage."));
@@ -465,14 +399,6 @@ export default function LanesInfoPanel(props) {
     }
   };
 
-  const handleCloseDeleteDialog = () => {
-    setDeleteDialogOpen(false);
-  };
-
-  const openDeleteDialog = (open = true) => {
-    setDeleteDialogOpen(open);
-  };
-
   //// checking if the something to update in the pipe or the stages
   const checkingIfEdited = () => {
     if (openPipeDialog !== "newPipe" && selectedPipe) {
@@ -626,26 +552,6 @@ export default function LanesInfoPanel(props) {
           </p>
         </Grid>
       </Grid>
-
-      {deleteDialogOpen && (
-        <Dialog
-          className={classes.dialog}
-          open={deleteDialogOpen ? true : false}
-          onClose={handleCloseDeleteDialog}
-          fullWidth={false}
-          maxWidth="sm"
-        >
-          <DeleteConfirmationDialogContent
-            header={deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`}
-            onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => {}}
-            m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
-          >
-            {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the Flowline?" : "Are you sure you want to delete the stage?"}
-          </DeleteConfirmationDialogContent>
-        </Dialog>
-      )}
     </div>
   );
 }

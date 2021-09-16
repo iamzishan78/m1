@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setFlowState } from "actions";
-import { Grid, Typography, IconButton, Tab, Tabs } from "@material-ui/core";
+import { useMutation, useLazyQuery } from "@apollo/client";
+import { Grid, Typography, IconButton, Tab, Tabs, Dialog } from "@material-ui/core";
 import { Close as CloseIcon, Delete as DeleteIcon } from "@material-ui/icons/";
 import { makeStyles } from "@material-ui/core/styles";
 
+import { setFlowState, showWarningMessage } from "actions";
 import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import BaicInfoPanel from "components/Transact/components/PipelineCustomizeDialog/BasicInfo";
 import LanesInfoPanel from "components/Transact/components/PipelineCustomizeDialog/LanesInfo";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+
+import { AppContext } from "AppContext";
+import { DEALSCOUNTINAPIPE } from "graphQL/useQueryNonDeletedDealsCountInAPipeline";
+import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,9 +64,31 @@ const PipelineCustomDialog = (props) => {
   const dispatch = useDispatch();
   const [tab, setTab] = useState(0);
   const [width, setDialogWidth] = useState("450px");
-  const { openPipeDialog /*, selectedPipe, pipelines, pipeToShow*/ } = useSelector(({ Flow }) => Flow);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteFunc, setDeleteFunc] = useState(null);
+
+  const [, setStateApp] = useContext(AppContext);
+  const { openPipeDialog, selectedPipe /*, pipelines, pipeToShow*/ } = useSelector(({ Flow }) => Flow);
+
+  const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
+    fetchPolicy: "network-only",
+  });
+  const [updatePipelines] = useMutation(UPDATEPIPELINES);
 
   const classes = useStyles({ width });
+
+  useEffect(() => {
+    if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
+      setStateApp((state) => ({
+        ...state,
+        uniuniversalCircularLoaderAct: false,
+      }));
+      if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
+        dispatch(showWarningMessage("There are deals associated to the pipeline, please remove them first."));
+      else setDeleteDialogOpen("pipe");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataDealsCountByPipeline]);
 
   const handleChange = (event, tab) => {
     if (tab === 0) {
@@ -68,6 +96,7 @@ const PipelineCustomDialog = (props) => {
     } else setDialogWidth("1100px");
     setTab(tab);
   };
+
   const handleClose = () => {
     dispatch(
       setFlowState({
@@ -75,6 +104,40 @@ const PipelineCustomDialog = (props) => {
       })
     );
   };
+
+  const handleDeletePipe = () => {
+    if (selectedPipe) {
+      setStateApp((state) => ({
+        ...state,
+        uniuniversalCircularLoaderAct: true,
+      }));
+
+      getDealsCountByPipeline({
+        variables: {
+          pipelinesIds: [selectedPipe?._id],
+        },
+      });
+
+      setDeleteFunc(() => () => {
+        updatePipelines({
+          variables: {
+            pipelines: [{ _id: selectedPipe._id, IsDeleted: true }],
+          },
+          refetchQueries: ["getPipelines"],
+          awaitRefetchQueries: true,
+        });
+        dispatch(
+          setFlowState({
+            openPipeDialog: false,
+            selectedPipe: null,
+            pipeToShow: null,
+          })
+        );
+      });
+    }
+  };
+
+  const handleCloseDeleteDialog = () => setDeleteDialogOpen(false);
 
   return (
     <>
@@ -96,6 +159,7 @@ const PipelineCustomDialog = (props) => {
                       background: "transparent",
                       align: "center",
                     }}
+                    onClick={handleDeletePipe}
                   >
                     <DeleteIcon size="medium" className={classes.deleteIcon} />
                   </IconButton>
@@ -125,6 +189,25 @@ const PipelineCustomDialog = (props) => {
         </RightDialog>
       ) : (
         <></>
+      )}
+      {deleteDialogOpen && (
+        <Dialog
+          className={classes.dialog}
+          open={deleteDialogOpen ? true : false}
+          onClose={handleCloseDeleteDialog}
+          fullWidth={false}
+          maxWidth="sm"
+        >
+          <DeleteConfirmationDialogContent
+            header={deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`}
+            onClose={handleCloseDeleteDialog}
+            deleteFunc={deleteFunc ? deleteFunc : () => {}}
+            m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => {}}
+          >
+            {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the Flowline?" : "Are you sure you want to delete the stage?"}
+          </DeleteConfirmationDialogContent>
+        </Dialog>
       )}
     </>
   );
