@@ -469,8 +469,11 @@ export default function Transact() {
                 </span>
               </>
             )}
+             <br />
 
             <span>{formattedPrice}</span>
+
+
 
           </div>
         </header>
