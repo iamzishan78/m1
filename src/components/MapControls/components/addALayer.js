@@ -299,10 +299,14 @@ export default function AddLayer(props) {
 
   async function handleFileAsync(file) {
     let inputFile = null;
+    let fileData = null;
     let fileName = null;
+    let fileType = null
     if (Array.isArray(file)) {
       inputFile = file[0].data;
+      fileData = file[0].file;
       fileName = file[0].file.name;
+      fileType = file[0].file.type;
     } else {
       inputFile = file;
       fileName = file.split("?")[0].split("/");
@@ -317,7 +321,7 @@ export default function AddLayer(props) {
             return response.json();
           })
           .then((response) => {
-            resolve(singleGeojson(response, fileName.replace('.geojson', '')));
+            resolve({ data: singleGeojson(response, fileName.replace('.geojson', '')), originalData: { file: fileData, fileName, fileType } })
           })
           .catch((error) => reject(error));
       });
@@ -356,9 +360,9 @@ export default function AddLayer(props) {
                 merged.fileNames = allFileNames
                 merged.featureTypes = allLayerTypes
                 merged.groupName = fileName.replace('.zip', '')
-                resolve(merged)
+                resolve({ data: merged, originalData: { file: fileData, fileName, fileType } })
               } else {
-                resolve(singleGeojson(geojson, name));
+                resolve({ data: singleGeojson(geojson, name), originalData: { file: fileData, fileName, fileType } })
               }
             });
           });
@@ -373,7 +377,12 @@ export default function AddLayer(props) {
       ...stateApp,
       universalCircularLoaderAct: true,
     }));
+    let originalData;
     let fileContent = await handleFileAsync(fileObj);
+    if (fileContent.originalData) {
+      originalData = fileContent.originalData
+      fileContent = fileContent.data
+    }
     setStateApp((stateApp) => ({
       ...stateApp,
       universalCircularLoaderAct: false,
@@ -384,6 +393,7 @@ export default function AddLayer(props) {
         ...stateMapControls,
         layerAddControl: fileContent.featureTypes?.length > 1 ? "addGroup" : "add",
         fileUploadedContent: fileContent,
+        fileUploadedOriginalContent: originalData
       });
   }
 

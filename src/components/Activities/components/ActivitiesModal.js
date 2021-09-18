@@ -295,7 +295,7 @@ export default function ActivitiesModal({
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
-  const [addContact, { data: addContactData} ] = useMutation(ADDCONTACT);
+  const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
@@ -316,12 +316,12 @@ export default function ActivitiesModal({
       },
     });
   }, [nameAutInputValue]);
-  
+
   useEffect(() => {
-    if(get(addContactData, 'addContact.contact')){
-      setNameAutValue({ name:addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id })
+    if (get(addContactData, 'addContact.contact')) {
+      setNameAutValue({ name: addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id })
     }
-  },[addContactData])
+  }, [addContactData])
 
   const loadNextPage = async (pageVariables) => {
     setIsNextPageLoading(true);
@@ -570,20 +570,20 @@ export default function ActivitiesModal({
       open={stateApp.activityDialog ? true : false}
       onClose={
         addLoading && updateLoading
-          ? () => {}
+          ? () => { }
           : () => {
-              onModalClose();
-            }
+            onModalClose();
+          }
       }
     >
       <ExpandableCardProvider
         expanded={true}
         handleCloseExpandableCard={
           addLoading && updateLoading
-            ? () => {}
+            ? () => { }
             : () => {
-                onModalClose();
-              }
+              onModalClose();
+            }
         }
         title={addNew ? "Add Activity" : "Activity Details"}
         subTitle={""}
@@ -802,9 +802,9 @@ export default function ActivitiesModal({
                       classes.fieldWidth,
                       !owner.id && errors.owner && classes.error
                     )}
-                    options={users}
+                    options={users.filter(u => u.text)}
                     onChange={(e, user) => {
-                      setOwner({ name: user.text, id: user.value });
+                      setOwner({ name: user?.text, id: user?.value });
                     }}
                     value={
                       users.find((user) => user.value === owner.id) || null

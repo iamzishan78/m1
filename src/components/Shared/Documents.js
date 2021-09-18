@@ -3,12 +3,16 @@ import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import moment from "moment";
+import Divider from "@material-ui/core/Divider";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import TextField from "@material-ui/core/TextField";
+import Tooltip from "@material-ui/core/Tooltip";
+import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
+import AddIcon from "@material-ui/icons/Add";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -184,7 +188,8 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   rootPadding: {
-    padding: "15px 25px 0px"
+    padding: "0px 25px",
+    maxHeight: "60px"
   },
   cardContent: {
     "& .MuiCardContent-root": {
@@ -195,7 +200,50 @@ const useStyles = makeStyles((theme) => ({
     bottom: "0px !important",
     position: "absolute",
     width: "88%",
-  }
+  },
+  toolbarActions: {
+    display: "flex",
+    transition: theme.transitions.create("width"),
+  },
+  search: {
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    marginLeft: 0,
+    marginTop: 5,
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "auto",
+    },
+  },
+  iconSearch: {
+    height: "100%",
+    display: "flex",
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "rgba(121, 121, 121, 0.85)",
+    zIndex: 1,
+    "&:hover": {
+      color: "#fff",
+      cursor: "pointer",
+    },
+  },
+  inputRoot: {
+    color: "inherit",
+  },
+  inputInput: {
+    paddingLeft: `calc(1em + ${theme.spacing(2)}px)`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+
+    [theme.breakpoints.up("sm")]: {
+      width: "0ch",
+      "&:focus": {
+        width: "30ch",
+        height: "2ch",
+      },
+    },
+  },
 }));
 
 export default function Documents(props) {
@@ -205,6 +253,7 @@ export default function Documents(props) {
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [documentSearch, setDocumentSearch] = useState("");
+  const [isSearchActive, setSearchState] = useState(false);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
@@ -415,24 +464,53 @@ export default function Documents(props) {
       <div className={classes.cardContent}>
         <CardContent>
           <div className={classes.rootPadding}>
-            {props.isTransactPage && (
-              <TextField
-                fullWidth
-                value={documentSearch}
-                onChange={(e) => setDocumentSearch(e.target.value)}
-                variant="outlined"
-                label={"Search Documents"}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  )
-                }}
-                labelWidth={70}
-              />
-            )}
+            <Grid
+              container
+              direction="row"
+              justify="space-between"
+              alignItems="center"
+            >
+              {!isSearchActive && (
+                <Grid item xs={10} style={{ marginTop: "-28px" }}>
+                  <Typography variant="h6">Documents</Typography>
+                </Grid>
+              )}
+              <Grid item xs={1} style={{ marginTop: "-28px" }}>
+                <div className={classes.search}>
+                  <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput1").focus()}>
+                    <SearchIcon />
+                  </Tooltip>
+                  <InputBase
+                    id="searchInput1"
+                    autoComplete='off'
+                    placeholder="Search Documents"
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput,
+                    }}
+                    inputProps={{ "aria-label": "search" }}
+                    onFocus={() => setSearchState(true)}
+                    value={documentSearch}
+                    onBlur={() =>
+                      setTimeout(() => {
+                        setSearchState(false);
+                      }, 300)
+                    }
+                    onChange={(evt) => setDocumentSearch(evt.target.value)}
+                  />
+                </div>
+              </Grid>
+              <Grid item xs={1} style={{ marginTop: "7px" }}>
+                <UploadZone
+                  relatedObjectId={props.id}
+                  userId={userId}
+                  relatedObjectType={relatedObjectType}
+                  customClass
+                />
+              </Grid>
+            </Grid>
           </div>
+          <Divider />
           <div className={classes.fileList}>
             {/* this is for view all */}
             {filteredDocuments?.map((file, key) => {

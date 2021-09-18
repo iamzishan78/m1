@@ -7,8 +7,8 @@ export const ADD_DEAL_SUBTASK = gql`
 `;
 
 export const UPDATE_DEAL_SUBTASK = gql`
-  mutation updateSubtask($task: JSON) {
-    updateSubtask(task: $task) {
+  mutation updateSubtask($task: JSON, $tasks: [JSON]) {
+    updateSubtask(task: $task, tasks: $tasks) {
       success
       message
       error

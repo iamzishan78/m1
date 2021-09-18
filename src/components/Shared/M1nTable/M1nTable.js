@@ -25,9 +25,9 @@ import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ABSTRACTWELLGEOQUERY } from "../../../graphQL/useQueryAbstractWellGeo";
 import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
-import { GET_DOCUMENTS } from "../../../graphQL/useQueryDocuments";
+import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
-import { REMOVECONTACT } from "../../../graphQL/useMutationRemoveContact";
+import { REMOVE_CONTACTS } from "../../../graphQL/useMutationRemoveContact";
 import { REMOVEUSER } from "../../../graphQL/useMutationRemoveUser";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
@@ -48,7 +48,7 @@ import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
 import RightDialog from "../../ContactDetailCard/components/RightDialog";
-import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
+import AddDealDialog from "components/Transact/components/AddDealDialog";
 import AddWellInterestDialog from "../../ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 import { setMapGridCardState, showWarningMessage } from "../../../actions";
 
@@ -73,6 +73,7 @@ import ContactWellHeadCells from '../constants/contactperwell-header-schema.js'
 // import value formatters 
 import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
 import { addTrailingZeros } from 'components/Shared/functions'
+import Loader from "components/Loaders";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -150,7 +151,8 @@ function M1nTable(props) {
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, { onError: () => { setLoading(false) }, fetchPolicy: "cache-and-network" });
-  const [getDocuments, { data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS, { fetchPolicy: "no-cache" });
+  const [getESDocuments, { data: DocumentsData }] = useLazyQuery(GET_ES_DOCUMENTS, { fetchPolicy: "no-cache" });
+
   const [removeUser] = useMutation(REMOVEUSER);
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network", skip: true,
@@ -163,7 +165,7 @@ function M1nTable(props) {
   const [getContactsFilterOptions, { data: dataContactsFilterOptions },] = useLazyQuery(CONTACTSFILTEROPTIONS, { fetchPolicy: "cache-and-network", });
   const [updateMailerStatuses] = useMutation(UPDATEMAILERSTATUSES);
   const [getContactDeals, { data: dataDeals }] = useLazyQuery(CONTACTDEALS, { fetchPolicy: "cache-and-network", });
-  const [removeContact] = useMutation(REMOVECONTACT);
+  const [removeContact] = useMutation(REMOVE_CONTACTS);
   const [updateContact] = useMutation(UPDATECONTACT);
   const [updateTransaction] = useMutation(UPDATETRANSACTION);
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
@@ -219,13 +221,13 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === 'Documents') {
-      getDocuments({
+      getESDocuments({
         variables: {
           search: stateApp.documentSearchQuery ? stateApp.documentSearchQuery : ""
         }
       })
     }
-  }, [getDocuments, props.parent, stateApp.documentSearchQuery])
+  }, [getESDocuments, props.parent, stateApp.documentSearchQuery])
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners") {
@@ -1559,25 +1561,29 @@ function M1nTable(props) {
       stateApp.user.mongoId
     ) {
       setDeleteFunc(() => (contactsIdsToDelete) => {
-        if (contactsIdsToDelete) {
-          for (let i = 0; i < contactsIdsToDelete.length; i++) {
-            updateContact({
-              variables: {
-                contact: {
-                  _id: contactsIdsToDelete[i],
-                  lastUpdateBy: stateApp.user.mongoId,
-                  IsDeleted: true,
-                },
-              },
-              refetchQueries: [
-                "getPaginatedContacts",
-                "getContact",
-                "checkIfOwnersAreContacts",
-              ],
-              awaitRefetchQueries: true,
-            });
-          }
-        }
+        Loader.createToast('contact-deletion', 'Contact Deletion in Progress')
+        removeContact({
+          variables: {
+            contactIds: contactsIdsToDelete,
+            userId: stateApp.user.mongoId
+          },
+          refetchQueries: [
+            "getPaginatedContacts",
+            "getContact",
+            "checkIfOwnersAreContacts",
+          ],
+          awaitRefetchQueries: true,
+        }).then(
+          res => {
+            if (res.data && res.data.removeContact) {
+              const { success, message } = res.data.removeContact
+              if (success) Loader.successToast('contact-deletion', message)
+              else Loader.errorToast('contact-deletion', message)
+
+            } else Loader.errorToast('contact-deletion', "Failed to convert to contact")
+          },
+          err => { console.log(err); Loader.errorToast('contact-deletion', "Failed to convert to contact") }
+        );;
       });
     }
   }, [props.parent, stateApp.user]);
@@ -2598,7 +2604,7 @@ function M1nTable(props) {
       DocumentsData?.getFiles
     ) {
       const documentId = history.location.pathname.split('/')[2]
-      if(documentId){
+      if (documentId) {
         setStateApp((state) => ({
           ...state,
           pdfView: DocumentsData.getFiles.find((row) => row._id === documentId),
