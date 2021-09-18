@@ -41,6 +41,7 @@ import { deepEqualObjects } from "../../Shared/functions";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { DEALSCOUNTINANSTAGE } from "../../../graphQL/useQueryNonDeletedDealsCountInAnStageByPipeline";
 import { DEALSCOUNTINAPIPE } from "../../../graphQL/useQueryNonDeletedDealsCountInAPipeline";
+import { DUPLICATE_PIPELINES } from "graphQL/useMutationDuplicatePipelines";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FlowLineAction from "./FlowLineAction";
 
@@ -163,7 +164,8 @@ export default function Pipelines(props) {
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
-
+  const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES);
+  
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
   const [getPipeline, { loading: loadingPipeline, data: pipelineData }] = useLazyQuery(GETPIPELINE, {
     fetchPolicy: "cache-and-network",
@@ -661,12 +663,31 @@ export default function Pipelines(props) {
     );
 
   const handleDuplicateFlowLine = () => {
-    // Duplicate Flowline
+    const pipeline = {
+      _id: selectedPipe._id,
+      name: selectedPipe.name,
+    };
+    duplicatePipelines({
+      variables: {
+        pipelines: [pipeline],
+        userId: stateApp.user.mongoId,
+      },
+      refetchQueries: ["getPipelines"],
+    });
   };
 
   const handleDeleteFlowLine = () => {
-    // Delete Flowline
-  };
+    openDeleteDialog("pipe")
+    setDeleteFunc(() => () => {
+      updatePipelines({
+        variables: {
+          pipelines: [{ _id: selectedPipe._id, IsDeleted: true }],
+        },
+        refetchQueries: ["getPipelines"],
+        awaitRefetchQueries: true,
+      });
+    });
+  }
 
   return (
     <React.Fragment>
