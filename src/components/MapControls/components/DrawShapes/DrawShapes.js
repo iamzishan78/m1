@@ -186,6 +186,22 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     transform: "translate(-50%, -50%)",
   },
+  parcelPopover: {
+    "& .MuiPopover-paper": {
+      left: "49% !important",
+      top: "auto !important",
+      bottom: "98px !important",
+    },
+    "& .Mui-disabled": {
+      paddingBottom: "10px",
+      borderBottom: "1px solid lightgrey",
+    },
+    "& .MuiMenuItem-root": {
+      "&:hover": {
+        color: "rgba(23, 170, 221, 1)",
+      },
+    },
+  },
 }));
 
 export default function DrawShapes() {
@@ -221,11 +237,7 @@ export default function DrawShapes() {
         currentFeature: selectedUserDefinedLayer,
         selectedAoi: selectedUserDefinedLayer,
       }));
-      if (
-        selectedUserDefinedLayer.source === "interests_source" &&
-        showShapeActionsPopup === true &&
-        selectedParcel === null
-      ) {
+      if (selectedUserDefinedLayer.source === "interests_source" && showShapeActionsPopup === true && selectedParcel === null) {
         toggleSpatialDataCard(true);
       }
     }
@@ -246,7 +258,6 @@ export default function DrawShapes() {
       setUser(dataUser.userByEmail);
     }
   }, [dataUser]);
-
 
   useEffect(() => {
     if (!eventsConfiguredRef.current) {
@@ -277,14 +288,13 @@ export default function DrawShapes() {
         if (feature) {
           addCustomShapeProperties(feature, draw);
         }
-        setFeatureProperty(draw, feature.id, 'shapeEdit', false)
-        drawShapeLayerToggle(stateApp, "none")
+        setFeatureProperty(draw, feature.id, "shapeEdit", false);
+        drawShapeLayerToggle(stateApp, "none");
         setStateApp((state) => ({ ...state, editDraw: false, showShapeActionsPopup: true }));
         setTimeout(() => {
           draw.changeMode("static");
           setStateApp((state) => ({ ...state, isDrawing: false }));
-        })
-
+        });
       });
 
       map.on("draw.selectionchange", ({ features }) => {
@@ -299,12 +309,11 @@ export default function DrawShapes() {
             };
           });
         } else {
-
           setStateApp((state) => {
             return {
               ...state,
               editDraw: false,
-            }
+            };
           });
         }
         setStateApp((stateApp) => {
@@ -315,10 +324,10 @@ export default function DrawShapes() {
               featureId: stateApp?.currentFeature?.id || stateApp?.featureOrMapShape?.id,
             });
           }
-          const { features } = stateApp.draw.getAll()
-          drawShapeLayerToggle(stateApp, stateApp.shapeEdit || !features || features.length === 0 ? "visible" : "none")
-          return stateApp
-        })
+          const { features } = stateApp.draw.getAll();
+          drawShapeLayerToggle(stateApp, stateApp.shapeEdit || !features || features.length === 0 ? "visible" : "none");
+          return stateApp;
+        });
       });
 
       eventsConfiguredRef.current = true;
@@ -330,7 +339,7 @@ export default function DrawShapes() {
   // }, [setStateApp, stateApp.currentFeature]);
 
   const actionClose = () => {
-    clearMapAndCloseShapeActionsPopup(stateApp, setStateApp)
+    clearMapAndCloseShapeActionsPopup(stateApp, setStateApp);
 
     // Removing layer of AOI Label
     if (stateApp.map.getLayer("aoi_label_layer")) {
@@ -338,10 +347,10 @@ export default function DrawShapes() {
     }
     setStateApp((state) => ({
       ...state,
-      gridPolygonString: '',
+      gridPolygonString: "",
       selectedAoi: null,
       shapeGridWellsCount: 0,
-      shapeGridOwnersCount: 0
+      shapeGridOwnersCount: 0,
     }));
     dispatch(
       setMapGridCardState({
@@ -377,15 +386,16 @@ export default function DrawShapes() {
         </ClickAwayListener>
       )}
       {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
-        stateApp.currentFeature !== undefined &&
-        !stateApp.currentFeature.id?.includes("draw_polygon") &&
-        !stateApp.currentFeature.id?.includes("drag_circle") &&
-        !stateApp.currentFeature.id?.includes("draw_rectangle") &&
-        !stateApp.currentFeature.id?.includes("edit_polygon") ? (
+      stateApp.currentFeature !== undefined &&
+      !stateApp.currentFeature.id?.includes("draw_polygon") &&
+      !stateApp.currentFeature.id?.includes("drag_circle") &&
+      !stateApp.currentFeature.id?.includes("draw_rectangle") &&
+      !stateApp.currentFeature.id?.includes("edit_polygon") ? (
         <Fragment>
-          {showSpatialDataCard && stateApp.currentFeature?.properties?.sdType === "interest" && ( // for edit/create AOI
-            <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} user={user} toggleSpatialDataCard={toggleSpatialDataCard} />
-          )}
+          {showSpatialDataCard &&
+            stateApp.currentFeature?.properties?.sdType === "interest" && ( // for edit/create AOI
+              <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} user={user} toggleSpatialDataCard={toggleSpatialDataCard} />
+            )}
           <div className={classes.mapOverlay}>
             <div class={classes.mapOverlayInner}>
               <div className={classes.content}>
