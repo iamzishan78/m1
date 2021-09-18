@@ -328,7 +328,7 @@ export default function Documents(props) {
             }}
           />
 
-          <Grid container spacing={2}>
+          <Grid container spacing={0}>
             {console.log(recentFiles, "Files data in Adddialog")}
             {recentFiles?.map((value, key) => {
               let fileExtension = value?.name
@@ -337,9 +337,9 @@ export default function Documents(props) {
 
               console.log('VALUE TEST GOOD ONE', value)
 
-              if (key <= 1) {
+              if (key <= 2) {
                 return (
-                  <Grid item xs={4} key={key} className="" >
+                  <Grid item xs={3} key={key} className="" >
                     <LightTooltip
                       title={
                         <div className={classes.IconSection}>
