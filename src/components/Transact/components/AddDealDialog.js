@@ -108,8 +108,8 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "7px",
   },
   inputFieldDealName: {
-    width: "405px",
-    padding: "5px 0px 15px 0px",
+    width: "750px",
+    padding: "0px 30px 20px 30px",
   },
   dateLabel: {
     transform: "translate(10px, 2px) scale(0.75) !important",
@@ -215,6 +215,7 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     width: "100%",
     marginTop: 25,
+    marginBottom: 25,
 
     "& .MuiOutlinedInput-root": {
       width: "100%",
@@ -1276,7 +1277,7 @@ function AddDealDialog(props) {
           </>
         )}
       </Grid>
-      <Grid item container xs={12} style={{ padding: "0px 30px" }} alignItems="center">
+      <Grid item container xs={12} style={{ padding: "0px 0px 0px 0px" }} alignItems="center">
         {!((Object.keys(contact).length === 0 && contact.constructor === Object) || contact === null) && !props.isTransactPage && (
           <TextField
             variant="outlined"
@@ -1356,7 +1357,7 @@ function AddDealDialog(props) {
               handleClose();
             }
           }}
-          width="495px"
+          width="650px"
           isTransactPage={props.isTransactPage}
           hiddenOverflow
         >
@@ -1602,9 +1603,9 @@ function AddDealDialog(props) {
                   className={classes.notes}
                 />
 
-                {originationDate && (
+                {/* {originationDate && (
                   <div className={classes.originationDate}>Deal Creation Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
-                )}
+                )} */}
                 <div>
                   <AddDialogeUploadZone
                     isTransactPage={true}
