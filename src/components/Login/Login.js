@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
-import { AppContext } from "../../AppContext";
+import { AppContext, apolloClientEndpointDev, isDev, setApolloHeaders } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import SignInCard from "./SignInCard";
@@ -19,12 +19,13 @@ import {
   authGraphQLRequest,
 } from "./AADAuthConfig";
 import * as msal from "@azure/msal-browser";
+import { GET_LOGGED_IN_USER } from "graphQL/useMutationLoggedInUser";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
     display: "inline",
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "center"
     //overflowY: 'auto',
   },
   height_100: {
@@ -61,7 +62,7 @@ const localStyles = makeStyles((theme) => ({
     textAlign: "center",
     display: "flex",
     height: "100%",
-    flexDirection: "column",
+    flexDirection: "column"
     // "&::-webkit-scrollbar": {
     //   width: "0 !important",
     // },
@@ -142,7 +143,7 @@ const Login = (props) => {
   // useEffect(() => {
   //   setStateApp({...stateApp, loading});
   // },[loading])
-  
+
   let history = props.history;
 
   useEffect(() => {
@@ -153,14 +154,14 @@ const Login = (props) => {
           const accountObj = tokenResponse
             ? tokenResponse.account
             : (() => {
-                const currentAccounts = stateApp.myMSALObj.getAllAccounts();
-                return currentAccounts && currentAccounts.length === 1
-                  ? currentAccounts[0]
-                  : (() => {
-                      // hoose account code here
-                      return;
-                    })();
-              })();
+              const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+              return currentAccounts && currentAccounts.length === 1
+                ? currentAccounts[0]
+                : (() => {
+                  // hoose account code here
+                  return;
+                })();
+            })();
 
           if (accountObj) {
 
@@ -168,7 +169,7 @@ const Login = (props) => {
             // "acr" claim in the token tells us what policy is used (NOTE: for new policies (v2.0), use "tfp" instead of "acr")
             // To learn more about b2c tokens, visit https://docs.microsoft.com/en-us/azure/active-directory-b2c/tokens-overview
             if (tokenResponse && tokenResponse.idTokenClaims && tokenResponse.idTokenClaims.tfp === b2cPolicies.forgotPassword) {
-              
+
               // stateApp.myMSALObj.clearCache();
               // stateApp.myMSALObj.account = null;
               const logoutRequest = {
@@ -205,7 +206,7 @@ const Login = (props) => {
             } else {
               console.log(
                 "tokenResponse was not null but did not have any tokens: " +
-                  tokenResponse
+                tokenResponse
               );
             }
             setLoading(false);
@@ -221,13 +222,13 @@ const Login = (props) => {
             console.log(stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword))
 
             stateApp.myMSALObj.loginRedirect({ authority: stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword) });
-            
+
             return;
           }
 
           if (error.errorMessage && error.errorMessage.includes("AADB2C90085")) {
             console.log("retrying with forced login bypassing session cookies")
-            
+
             let request = loginRequest()
             request.extraQueryParameters = { prompt: "login" }
             stateApp.myMSALObj.loginRedirect(request);
@@ -239,21 +240,21 @@ const Login = (props) => {
           const currentAccount = currentAccounts && currentAccounts.length === 1
             ? currentAccounts[0]
             : undefined
-      
+
           const logoutRequest = {
             account: currentAccount
           };
-      
+
           sessionStorage.clear();
           localStorage.clear();
-      
+
           // Need to call this all the time on exception to clear msal cache
           // in particular when cancelling login to change workspaces
           stateApp.myMSALObj.logout(logoutRequest);
-      
+
           // window.location.replace(window.location.origin);
           setLoading(false);
-          
+
         });
     } else {
       if (stateApp.myMSALObj === false) setLoading(false);
@@ -272,7 +273,6 @@ const Login = (props) => {
         myMSALObj = new msal.PublicClientApplication(
           msalConfig(tenant)
         );
-
         setStateApp({
           ...stateApp,
           myMSALObj,
@@ -339,7 +339,7 @@ const Login = (props) => {
     }
 
     const authGraphQLResponse = await callAuthGraphQL(
-      `${new URL(stateApp.apolloClientEndpoint).origin}/.auth/login/aad`,
+      `${new URL(stateApp.apolloOriginalClientEndpoint).origin}/.auth/login/aad`,
       authGraphQLToken.idToken,
       authGraphQLToken.accessToken
     ).catch((error) => {
@@ -352,7 +352,7 @@ const Login = (props) => {
     }
 
     const graphQLProfileResponse = await callProfileGraphQL(
-      `${new URL(stateApp.apolloClientEndpoint).origin}/.auth/me`,
+      `${new URL(stateApp.apolloOriginalClientEndpoint).origin}/.auth/me`,
       authGraphQLResponse.authenticationToken
     ).catch((error) => {
       //do some error stuff
@@ -365,33 +365,39 @@ const Login = (props) => {
 
 
     const authUser = {}
-    authUser.issuerUserId = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'http://schemas.microsoft.com/identity/claims/objectidentifier'});
+    authUser.issuerUserId = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'http://schemas.microsoft.com/identity/claims/objectidentifier' });
     if (authUser.issuerUserId) { authUser.issuerUserId = authUser.issuerUserId.val }
-    authUser.issuerTenantId = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'http://schemas.microsoft.com/identity/claims/tenantid'});
+    authUser.issuerTenantId = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'http://schemas.microsoft.com/identity/claims/tenantid' });
     if (authUser.issuerTenantId) { authUser.issuerTenantId = authUser.issuerTenantId.val }
-    authUser.b2cEmail = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'emails'});
+    authUser.b2cEmail = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'emails' });
     if (authUser.b2cEmail) { authUser.b2cEmail = authUser.b2cEmail.val }
-    authUser.b2bEmail = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'preferred_username'});
+    authUser.b2bEmail = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'preferred_username' });
     if (authUser.b2bEmail) { authUser.b2bEmail = authUser.b2bEmail.val }
-    authUser.b2cName = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'displayName'});
+    authUser.b2cName = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'displayName' });
     if (authUser.b2cName) { authUser.b2cName = authUser.b2cName.val }
-    authUser.b2bName = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'name'})
+    authUser.b2bName = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'name' })
     if (authUser.b2bName) { authUser.b2bName = authUser.b2bName.val }
-    authUser.roles = graphQLProfileResponse.user_claims.filter(({typ}) => { return typ === 'roles'})
+    authUser.roles = graphQLProfileResponse.user_claims.filter(({ typ }) => { return typ === 'roles' })
     if (authUser.roles) { authUser.roles = authUser.roles.map(role => role.val) }
 
-    const mongoUser = await getMongoDBUser(
+    const loginResp = await loginUser(
       {
         // issuerUserId: authUser.issuerUserId,
         // issuerTenantId: authUser.issuerTenantId,
         email: authUser.b2cEmail ?? authUser.b2bEmail,
         name: authUser.b2cName ?? authUser.b2bName
       },
-      authGraphQLResponse.authenticationToken
+      authGraphQLResponse.authenticationToken,
+      authGraphQLToken.idToken,
     ).catch((error) => {
       //do some error stuff
       console.log(error);
     });
+    let mongoUser, sessionData;
+    if (loginResp.user) {
+      mongoUser = loginResp.user
+      sessionData = loginResp.sessionData
+    }
     if (!mongoUser) {
       //do some error stuff
       return;
@@ -401,11 +407,13 @@ const Login = (props) => {
       ...state,
       user: {
         id: accountObj.sub,
+        features: sessionData.features,
         mongoId: mongoUser._id,
         email: mongoUser.email,
         name: mongoUser.name,
         roles: authUser.roles,
         authToken: authGraphQLResponse.authenticationToken,
+        accessToken: authGraphQLToken.idToken,
         authTokenExpires: new Date(
           authGraphQLToken.expiresOn.setDate(
             authGraphQLToken.expiresOn.getDate() + 14
@@ -415,8 +423,7 @@ const Login = (props) => {
           id: request.tenantId,
           tenant: "M1neral",
           graphQL: {
-            endpoint:
-              "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
+            endpoint: "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
           },
         },
       },
@@ -431,38 +438,22 @@ const Login = (props) => {
     //setLoading(false);
   }
 
-  async function getMongoDBUser(user, accessToken) {
-    const mutation = `
-      mutation getFindOrCreateUser($user: UserInput) {
-        findOrCreateUser(user: $user) {
-          success
-          message
-          user {
-            _id
-            email
-            name
-            }
-          }
-        }
-       `;
+  async function loginUser(user, authToken, idToken) {
 
     var options = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-ZUMO-AUTH": accessToken,
       },
-      body: JSON.stringify({ query: mutation, variables: { user } }),
+      body: JSON.stringify({ query: GET_LOGGED_IN_USER, variables: { user } }),
     };
-
-    return await fetch(stateApp.apolloClientEndpoint, options)
+    let endpoint = stateApp.apolloClientEndpoint
+    options = setApolloHeaders(options, authToken, idToken)
+    return await fetch(endpoint, options)
       .then((response) => response.json())
       .then((response) => {
-        return response &&
-          response.data &&
-          response.data.findOrCreateUser &&
-          response.data.findOrCreateUser.success
-          ? response.data.findOrCreateUser.user
+        return response?.data?.login?.success
+          ? { user: response.data.login.user, sessionData: response.data.login.sessionData }
           : null;
       })
       .catch((error) => console.log(error));
@@ -613,9 +604,9 @@ const Login = (props) => {
           ready={loadingSigInButton}
           handleAADSignIn={handledAADSignIn}
           tenant={
-            !stateApp.myMSALObj 
-            ? queryString.parse(props.location.search).tenant 
-            : undefined}
+            !stateApp.myMSALObj
+              ? queryString.parse(props.location.search).tenant
+              : undefined}
         />
 
         <div>
@@ -664,7 +655,7 @@ const Login = (props) => {
                   disableElevation
                   type="submit"
                   style={{
-                    float: "left",
+                    "float": "left",
                     marginTop: "35px",
                     marginLeft: "65px",
                   }}
@@ -691,9 +682,9 @@ const Login = (props) => {
           ? `${localClass.height_100} ${localClass.myRoot}`
           : localClass.myRoot
       }
-      
+
     >
-      <div className={localClass.rootNewUser} 
+      <div className={localClass.rootNewUser}
       // style={{ overflowY: "scroll !important"}}
       >{renderBody}</div>
 

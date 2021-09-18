@@ -31,10 +31,11 @@ export default function ContactAutoComplete({ value, onChange, onKeyDown, onBlur
 
     useEffect(() => {
         if (userLists && userLists.allMongoUsers) {
+            console.log(userLists.allMongoUsers)
             setUsers(
                 userLists.allMongoUsers.map((user) => ({
                     value: user._id,
-                    text: user.name
+                    text: user.displayName || user.name
                 }))
             );
         }

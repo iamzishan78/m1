@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-import { AppProvider, AppContext } from "./AppContext";
+import { AppProvider, AppContext, setApolloHeaders } from "./AppContext";
 import { Switch, Route } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 //components
 import Login from "./components/Login/Login";
-import LoginB2C from "./components/Login/LoginB2C";
 import SignUpCard from "./components/Login/SignUpCard";
 import ForgotPassword from "./components/Login/ForgotPassword";
 import NavigationProvider from "./components/Navigation/NavigationProvider";
@@ -126,7 +125,7 @@ const SetApolloClient = (props) => {
 
   useEffect(() => {
     if (stateApp.user) {
-      props.setApolloClientToken(stateApp.user.authToken);
+      props.setApolloClientToken(stateApp.user.authToken, stateApp.user.accessToken);
     }
   }, [stateApp.user]);
 
@@ -183,7 +182,7 @@ const PrivateRoute = ({ component, ...options }) => {
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now() && apolloClient?.link?.options?.headers?.["X-ZUMO-AUTH"]
       ? component
       : (() => {
-        return stateApp.myMSALB2CObj ? LoginB2C : Login;
+        return Login;
       })();
 
   return (
@@ -197,23 +196,27 @@ function App() {
   const [stateApp] = useContext(AppContext);
   const [apolloClient, setApolloClient] = useState(null);
   const [apolloClientToken, setApolloClientToken] = useState(null);
+  const [apolloClientIdToken, setApolloIdClientToken] = useState(null);
   const [apolloClientEndpoint, setApolloClientEndpoint] = useState(null);
   //const apolloDevEndpoint = "https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA==";
   //set default to core until login is complete and we can get the tenant's endpoint
   //const apolloEndpoint = "https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA==";
   const updateApolloClientEndpoint = (endpoint) => {
     setApolloClientEndpoint(endpoint);
-    updateApolloClient(endpoint, apolloClientToken);
+    updateApolloClient(endpoint, apolloClientToken, apolloClientIdToken);
   };
 
-  const updateApolloClientToken = (token) => {
+  const updateApolloClientToken = (token, idToken) => {
     setApolloClientToken(token);
-    updateApolloClient(apolloClientEndpoint, token);
+    setApolloIdClientToken(idToken);
+    updateApolloClient(apolloClientEndpoint, token, idToken);
   };
 
-  const updateApolloClient = (endpoint, token) => {
-    // uncomment to run against local
-    // endpoint = "http://localhost:7071/api/m1graph";
+  const updateApolloClient = (endpoint, token, idToken) => {
+
+    if (apolloClient && token) {
+      apolloClient.link.options = setApolloHeaders(apolloClient.link.options, token, idToken)
+    }
 
     if (!apolloClient) {
       let client = new ApolloClient({
@@ -253,10 +256,6 @@ function App() {
         });
       });
     }
-
-    if (apolloClient && token) {
-      apolloClient.link.options.headers = { "X-ZUMO-AUTH": token };
-    }
   };
 
   return (
@@ -279,7 +278,6 @@ function App() {
                     <NavigationProvider>
                       <PrivateRoute exact path="/" component={MapProvider} />
                       <Route exact path="/signup" component={SignUpCard} />
-                      <Route exact path="/loginb2c" component={LoginB2C} />
                       <Route exact path="/forgotpassword" component={ForgotPassword} />
                       <PrivateRoute exact path="/track" component={TrackProvider} />
                       <PrivateRoute exact path="/flow" component={TransactProvider} />

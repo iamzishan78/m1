@@ -449,7 +449,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "0px 30px 10px 10px",
     marginTop: "-10px",
     position: "relative",
-    justifyContent: "flex-end",
+    justifyContent: "flex-end"
     // minWidth: "100px",
     // borderRadius: "7px",
     // color: "#17aadd",
@@ -457,7 +457,7 @@ const useStyles = makeStyles((theme) => ({
     //   textDecoration: "underline",
     // },
     // fontWeight: "bold",
-  },
+  }
   // filenamediv: {
   //   cursor: "pointer",
   //   padding: "10px 30px 10px 10px",
@@ -1055,7 +1055,7 @@ function SubTable(props) {
           <div></div>
         )}
         <MenuItem className={classes.userMenuItem} onClick={(e) => handleExpandClick(null, null, null, "deleteUser")}>
-          Delete User
+          Inactivate User
         </MenuItem>
       </Menu>
     );
@@ -1172,6 +1172,19 @@ function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   return (
                     <span style={{ padding: 10 }}>{tableMeta.rowData[5] ? moment(tableMeta.rowData[5]).format("MM/DD/YYYY") : ""}</span>
+                  );
+                },
+              };
+            }
+            break;
+          }
+          case "lastLogin": {
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value) => {
+                  return (
+                    <span style={{ padding: 10 }}>{value ? moment(value).format("MM/DD/YYYY HH:MM A") : ""}</span>
                   );
                 },
               };
@@ -2689,7 +2702,7 @@ function SubTable(props) {
 
       return (
         <>
-          <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
+          <div style={{ display: "inline", cssFloat: "left", marginRight: "15px", marginTop: "5px" }}>
             {props.addAble.type === "parcelInterest" && (
               <Button color="secondary" className={classes.multiSelectionTopBarButtons} disabled={true} onClick={() => { }}>
                 {buttonLabel}
@@ -2753,8 +2766,8 @@ function SubTable(props) {
                   }}
                 >
                   <PostAddIcon></PostAddIcon>
-                Add Document
-              </Button>
+                  Add Document
+                </Button>
               </ButtonGroup>
             )}
 
@@ -3758,7 +3771,7 @@ function SubTable(props) {
               )}
               {openDialog === "deleteUser" && (
                 <DeleteConfirmationDialogContent
-                  header={`Delete User${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""}`}
+                  header={`Inactivate User${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""}`}
                   onClose={handleCloseDialog}
                   deleteFunc={() => {
                     props.deleteFunc(selectedUser.id);
@@ -3768,7 +3781,7 @@ function SubTable(props) {
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
                   {selectedUser !== null
-                    ? `Remove '${selectedUser.displayName}' from list?`
+                    ? `Remove system access for '${selectedUser.displayName}' ?`
                     : `Are you sure you want to delete selected user${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""}?`}
                 </DeleteConfirmationDialogContent>
               )}
