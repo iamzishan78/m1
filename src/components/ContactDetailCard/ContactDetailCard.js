@@ -7,7 +7,7 @@ import { makeStyles, withStyles } from "@material-ui/core/styles";
 // mui core components
 import { Grid, Menu, MenuItem } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { useHistory } from "react-router-dom";
 
 // internal components
@@ -61,6 +61,8 @@ import Typography from "@material-ui/core/Typography";
 // contexts
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -119,13 +121,13 @@ const useStyles = makeStyles((theme) => ({
   },
   userIcon: {
     marginRight: "15px",
-    "float": "left",
+    float: "left",
   },
   userName: {
     color: "#919191",
     minWidth: "50%",
     maxWidth: "calc( 100% - 400px)",
-    "float": "left",
+    float: "left",
     "& h2": {
       margin: "0",
       color: "#202020",
@@ -193,7 +195,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     zIndex: "600",
     height: "0",
-    "float": "right",
+    float: "right",
     color: "#757575",
     "& a": {
       textDecoration: "none !important",
@@ -239,9 +241,10 @@ const useStyles = makeStyles((theme) => ({
       width: "100%",
     },
   },
-  linkClass: {
-
+  dialog: {
+    zIndex: "9999999999 !important",
   },
+  linkClass: {},
   expTardTopBarNav: {
     fontWeight: "normal",
     flexGrow: 1,
@@ -283,20 +286,20 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     margin: "0 0 8px 0",
-    "float": "right",
+    float: "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
     "&:hover": { color: "#757575" },
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
-  menuIcon:{
-    padding: "0px !important" ,
+  menuIcon: {
+    padding: "0px !important",
     margin: "0px !important",
     minWidth: "0px !important",
     background: "white !important",
-    color: "black !important"
-  }
+    color: "black !important",
+  },
 }));
 
 export default function ContactDetailCard(props) {
@@ -308,7 +311,7 @@ export default function ContactDetailCard(props) {
   let history = useHistory();
   const contactId =
     history.location.pathname.split("/")[
-    history.location.pathname.split("/").length - 1
+      history.location.pathname.split("/").length - 1
     ];
   const shrinkRightColumn = useSelector(
     ({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn
@@ -345,7 +348,7 @@ export default function ContactDetailCard(props) {
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
-  }
+  };
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -515,7 +518,7 @@ export default function ContactDetailCard(props) {
         {/*/////////// left column //////////// */}
 
         {stateApp.viewDoc &&
-          ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
+        ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
           <div className={classes.leftColumn}>
             {" "}
             <DocViewer
@@ -552,13 +555,13 @@ export default function ContactDetailCard(props) {
                   </a>
                 )}
 
-                <Button
-                  className={classes.menuIcon}
-                  onClick={handleClick}
-                >
-                  <MoreVertIcon aria-controls="simple-menu" aria-haspopup="true" />
+                <Button className={classes.menuIcon} onClick={handleClick}>
+                  <MoreVertIcon
+                    aria-controls="simple-menu"
+                    aria-haspopup="true"
+                  />
                 </Button>
-              
+
                 <Menu
                   id="simple-menu"
                   anchorEl={anchorEl}
@@ -566,24 +569,32 @@ export default function ContactDetailCard(props) {
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
                   anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
+                    vertical: "bottom",
+                    horizontal: "center",
                   }}
                   transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
+                    vertical: "top",
+                    horizontal: "center",
                   }}
                 >
-                  <MenuItem className={classes.userMenuItem} onClick={(e) => {
-                    handleClose()
-                    handleExpandClick("buyContactsInfo");
-                  }}>
-                    Purchase contact data
-                  </MenuItem>
-                  <MenuItem className={classes.userMenuItem} onClick={(e) => {
-                    handleClose()
-                    handleExpandClick("deleteConfirmation")
-                  }}>
+                  <FeatureFlag feature={FEATURES.IDICORE}>
+                    <MenuItem
+                      className={classes.userMenuItem}
+                      onClick={(e) => {
+                        handleClose();
+                        handleExpandClick("buyContactsInfo");
+                      }}
+                    >
+                      Purchase contact data
+                    </MenuItem>
+                  </FeatureFlag>
+                  <MenuItem
+                    className={classes.userMenuItem}
+                    onClick={(e) => {
+                      handleClose();
+                      handleExpandClick("deleteConfirmation");
+                    }}
+                  >
                     Delete contact
                   </MenuItem>
                 </Menu>
@@ -611,48 +622,51 @@ export default function ContactDetailCard(props) {
                       {(contactData.facebook ||
                         contactData.twitter ||
                         contactData.linkedIn) && (
-                          <span className={classes.socialMediaSection}>
-                            {contactData.facebook && (
-                              <a
-                                href={`${!contactData.facebook.startsWith("http") &&
-                                  !contactData.facebook.startsWith("//")
+                        <span className={classes.socialMediaSection}>
+                          {contactData.facebook && (
+                            <a
+                              href={`${
+                                !contactData.facebook.startsWith("http") &&
+                                !contactData.facebook.startsWith("//")
                                   ? "//"
                                   : ""
-                                  }${contactData.facebook}`}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                <FacebookIcon />
-                              </a>
-                            )}
-                            {contactData.twitter && (
-                              <a
-                                href={`${!contactData.twitter.startsWith("http") &&
-                                  !contactData.twitter.startsWith("//")
+                              }${contactData.facebook}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <FacebookIcon />
+                            </a>
+                          )}
+                          {contactData.twitter && (
+                            <a
+                              href={`${
+                                !contactData.twitter.startsWith("http") &&
+                                !contactData.twitter.startsWith("//")
                                   ? "//"
                                   : ""
-                                  }${contactData.twitter}`}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                <TwitterIcon className={classes.twitterIcon} />
-                              </a>
-                            )}
-                            {contactData.linkedIn && (
-                              <a
-                                href={`${!contactData.linkedIn.startsWith("http") &&
-                                  !contactData.linkedIn.startsWith("//")
+                              }${contactData.twitter}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <TwitterIcon className={classes.twitterIcon} />
+                            </a>
+                          )}
+                          {contactData.linkedIn && (
+                            <a
+                              href={`${
+                                !contactData.linkedIn.startsWith("http") &&
+                                !contactData.linkedIn.startsWith("//")
                                   ? "//"
                                   : ""
-                                  }${contactData.linkedIn}`}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                <LinkedInIcon />
-                              </a>
-                            )}
-                          </span>
-                        )}
+                              }${contactData.linkedIn}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <LinkedInIcon />
+                            </a>
+                          )}
+                        </span>
+                      )}
                     </FieldContent>
                   </h2>
                   <h4>
@@ -722,7 +736,7 @@ export default function ContactDetailCard(props) {
             <Grid item xs={12} className={`${classes.border}`}>
               <div className={classes.SectMargin}>
                 <Grid item xs={12} style={{ minHeight: "33px" }}>
-                  <h4 style={{ margin: "0 0 13px 0", "float": "left" }}>
+                  <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
                     Lead Stage changed:{" "}
                     <span style={{ fontWeight: "normal" }}>
                       {anyToDate(
@@ -759,7 +773,7 @@ export default function ContactDetailCard(props) {
               spacing={0}
             >
               <Grid item xs={12}>
-                <h4 style={{ margin: "0 0 13px 0", "float": "left" }}>
+                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
                   Associated Interests &amp; Deals
                 </h4>
               </Grid>
@@ -906,50 +920,45 @@ export default function ContactDetailCard(props) {
           )}
         </div>
 
-        {openDialog && (
-          <Dialog
-            className={classes.dialog}
+        {openDialog === "buyContactsInfo" && (
+          <RightDialog
             open={openDialog ? true : false}
-            onClose={handleCloseDialog}
-            fullWidth={true}
-            maxWidth={"sm"}
+            handleClickDialogClose={handleCloseDialog}
+            width={"700px"}
           >
-            {openDialog === "buyContactsInfo" && (
-              <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
-                <BuyContactsInfoDialogContent
-                  header="Contact Data Integration"
-                  onClose={handleCloseDialog}
-                  rows={[contactData]}
-                  setRows={() => { }}
-                  updateMelissaTable={() => {
-                    getLastMelissaRecord({
-                      variables: {
-                        contactId: stateApp.selectedContact,
-                      },
-                    });
-                    updateContact({
-                      variables: {
-                        contact: {
-                          _id: stateApp.selectedContact,
-                          lastUpdateBy: stateApp.user.mongoId,
-                        },
-                        ignoreResponse: true,
-                      },
-                      refetchQueries: ["getPaginatedContacts", "getContact"],
-                      awaitRefetchQueries: false,
-                    });
-                  }}
-                />
-              </RightDialog>
-            )}
-            {openDialog === "deleteConfirmation" && (
-              <ConfirmationDialog
-                openDialog={openDialog}
-                handleDialogClose={setOpenDialog}
-                id={contactData._id}
-              />
-            )}
-          </Dialog>
+            <BuyContactsInfoDialogContent
+              header="Contact Data Integration"
+              onClose={handleCloseDialog}
+              rows={[contactData]}
+              setRows={() => {}}
+              updateMelissaTable={() => {
+                getLastMelissaRecord({
+                  variables: {
+                    contactId: stateApp.selectedContact,
+                  },
+                });
+                updateContact({
+                  variables: {
+                    contact: {
+                      _id: stateApp.selectedContact,
+                      lastUpdateBy: stateApp.user.mongoId,
+                    },
+                    ignoreResponse: true,
+                  },
+                  refetchQueries: ["getPaginatedContacts", "getContact"],
+                  awaitRefetchQueries: false,
+                });
+              }}
+            />
+          </RightDialog>
+        )}
+
+        {openDialog === "deleteConfirmation" && (
+          <ConfirmationDialog
+            openDialog={openDialog}
+            handleDialogClose={setOpenDialog}
+            id={contactData._id}
+          />
         )}
 
         {/* //// ViewAll in a right dialog //// */}
@@ -991,7 +1000,8 @@ export default function ContactDetailCard(props) {
                   aria-label="breadcrumb"
                 >
                   {checkModuleHistory() && (
-                    <Link className={classes.linkClass}
+                    <Link
+                      className={classes.linkClass}
                       style={{
                         marginLeft: "5px",
                         fontSize: "16px",

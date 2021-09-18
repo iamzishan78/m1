@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { FormLabel } from "@material-ui/core";
@@ -13,7 +13,9 @@ import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import DialogContent from "@material-ui/core/DialogContent";
 
+import { AppContext } from "../../../../../AppContext";
 import { GETPERSONDATA } from "../../../../../graphQL/useQueryGetPersonData";
+// import { GET_FEATURE_QUOTA } from "graphQL/useQueryGetFeatureQuota";
 import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import Close from "@material-ui/icons/Close";
@@ -56,8 +58,12 @@ const DialogTitle = withStyles(styles)((props) => {
 
 export default function BuyContactsInfoDialogContent(props) {
   const dispatch = useDispatch();
+  const [stateApp, setStateApp] = useContext(AppContext);
   const modalClass = Modals();
+  
+  // const [getFeatureQuota, { loading, data }] = useLazyQuery(GET_FEATURE_QUOTA);
 
+  console.log('userData', stateApp.user)
   const [getPersonData, { data: personsData }] = useMutation(GETPERSONDATA, {
     onCompleted: (data) => {
       props.onClose();
