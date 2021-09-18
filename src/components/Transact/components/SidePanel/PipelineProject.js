@@ -138,7 +138,7 @@ const PipelineProject = (props) => {
                         onUpdateProjectNameHandler(e.target.value);
                       }
                     }}
-                    onClick={event => event.stopPropagation()}
+                    onClick={(event) => event.stopPropagation()}
                     onBlur={() => setEdit({ able: false, mode: false })}
                   />
                 )}
@@ -156,7 +156,6 @@ const PipelineProject = (props) => {
               </Grid>
             </Grid>
           </AccordionSummary>
-          {/* <AccordionDetails className={classes.detailRoot}>{children}</AccordionDetails> */}
         </Accordion>
       </div>
     </Flipped>

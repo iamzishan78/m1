@@ -8,7 +8,7 @@ import { TouchBackend } from "react-dnd-touch-backend";
 import { isMobile } from "react-device-detect";
 import { ContextProvider } from "react-sortly";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { Drawer, Typography, Grid, Tooltip, IconButton, InputBase, Dialog } from "@material-ui/core";
+import { Drawer, Typography, Grid, Tooltip, IconButton, InputBase, Dialog, List, ListItem, ListItemText } from "@material-ui/core";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import CreateNewFolderIcon from "@material-ui/icons/CreateNewFolder";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
@@ -136,7 +136,7 @@ const SidePanel = () => {
   const [filteredPipelines, setPipelines] = useState([]);
   const [deleteDialogOpen, setModal] = useState(false);
 
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES);
   const [updatePipelinesPositions] = useMutation(UPDATE_PIPELINES_POSITIONS);
@@ -156,6 +156,19 @@ const SidePanel = () => {
       else setModal(true);
     }
   }, [dataDealsCountByPipeline]);
+
+  useEffect(() => {
+    if (selectedPipe) {
+      // Deselecting all flowwlines on ESC
+      document.removeEventListener("keydown", () => { });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === 'Escape') {
+          setMultiSelection([selectedPipe._id]);
+          setStateApp(stateApp => ({ ...stateApp, dealDialog: false }))
+        }
+      });
+    }
+  }, [selectedPipe]);
 
   const mapFLowlinesToProject = (pipelines) => {
     let projectIncludedPipelines = [],
@@ -389,9 +402,18 @@ const SidePanel = () => {
           m1nSelectedRowsIds={null}
           setM1nSelectedRowsIndexes={() => { }}
         >
-          {selectedPipelines.length > 1
-            ? "Are you sure you want to delete the selected flowlines?"
-            : "Are you sure you want to delete the selected flowline?"}
+          <>
+            Are you sure you want to delete the following selected {selectedPipelines.length > 1 ? "flowlines" : "flowline"}?
+          <List dense={false}>
+              {pipelines.filter(pipe => selectedPipelines.includes(pipe._id)).map((pipe, index) => (
+                <ListItem key={index}>
+                  <ListItemText
+                    primary={pipe.name}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </>
         </DeleteConfirmationDialogContent>
       </Dialog>
     </>

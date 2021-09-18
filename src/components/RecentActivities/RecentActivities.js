@@ -156,6 +156,7 @@ console.log(props);
           <h4 style={{ margin: "0px 12px 8px 0px" }}>Recent Activities</h4>
           <h4 className={classes.addNew} onClick={addActivity}>
             Add New
+            {props.activityLog.length > 0 ? <h4 className={classes.contact}>contact created</h4>: null}
           </h4>
 
         </div>

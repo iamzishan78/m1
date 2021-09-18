@@ -48,7 +48,7 @@ import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import { useDispatch, useSelector } from "react-redux";
 import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
 import RightDialog from "../../ContactDetailCard/components/RightDialog";
-import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
+import AddDealDialog from "components/Transact/components/AddDealDialog";
 import AddWellInterestDialog from "../../ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 import { setMapGridCardState, showWarningMessage } from "../../../actions";
 
