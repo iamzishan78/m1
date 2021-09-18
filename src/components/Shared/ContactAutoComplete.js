@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
     tex1: {
         colorPrimary: 'white'
     }
-}))
+}));
 
 export default function ContactAutoComplete({ value, onChange, onKeyDown, onBlur }) {
     let classes = useStyles();

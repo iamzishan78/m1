@@ -1,15 +1,18 @@
 import React, { useMemo, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import gql from "graphql-tag";
 import moment from "moment";
+import Divider from "@material-ui/core/Divider";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import TextField from "@material-ui/core/TextField";
+import Tooltip from "@material-ui/core/Tooltip";
+import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
+import AddIcon from "@material-ui/icons/Add";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -82,12 +85,16 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "8px"
   },
 
-  fileUploadSection: {
+  fileList: {
     minHeight: "50px",
     display: "flex",
     justifyContent: "space-between",
     flexDirection: "column",
-    width: "100%"
+    width: "100%",
+    padding: "15px 30px 30px 30px",
+    overflowY: "auto",
+    maxHeight: "54vh",
+    marginTop: "21px"
   },
   fileUploadTopSection: {
     minHeight: "50px",
@@ -135,13 +142,13 @@ const useStyles = makeStyles((theme) => ({
   fileDropError: {
     color: "red"
   },
-  forImage: {
-    width: "80px !important",
-    height: "80px !important",
-    backgroundColor: "transparent !important",
-    // border: "1px solid #999",
-    borderRadius: "10px !important"
-  },
+  // forImage: {
+  //   width: "80px !important",
+  //   height: "80px !important",
+  //   backgroundColor: "transparent !important",
+  //   // border: "1px solid #999",
+  //   borderRadius: "10px !important"
+  // },
   forImageContainer: {
     // width: "100px !important",
     // height: "100px !important",
@@ -179,7 +186,64 @@ const useStyles = makeStyles((theme) => ({
     "& svg": {
       fill: "#d3d3d3ab !important"
     }
-  }
+  },
+  rootPadding: {
+    padding: "0px 25px",
+    maxHeight: "60px"
+  },
+  cardContent: {
+    "& .MuiCardContent-root": {
+      padding: 0
+    }
+  },
+  docUploader: {
+    bottom: "0px !important",
+    position: "absolute",
+    width: "88%",
+  },
+  toolbarActions: {
+    display: "flex",
+    transition: theme.transitions.create("width"),
+  },
+  search: {
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    marginLeft: 0,
+    marginTop: 5,
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "auto",
+    },
+  },
+  iconSearch: {
+    height: "100%",
+    display: "flex",
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "rgba(121, 121, 121, 0.85)",
+    zIndex: 1,
+    "&:hover": {
+      color: "#fff",
+      cursor: "pointer",
+    },
+  },
+  inputRoot: {
+    color: "inherit",
+  },
+  inputInput: {
+    paddingLeft: `calc(1em + ${theme.spacing(2)}px)`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+
+    [theme.breakpoints.up("sm")]: {
+      width: "0ch",
+      "&:focus": {
+        width: "30ch",
+        height: "2ch",
+      },
+    },
+  },
 }));
 
 export default function Documents(props) {
@@ -189,6 +253,7 @@ export default function Documents(props) {
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [documentSearch, setDocumentSearch] = useState("");
+  const [isSearchActive, setSearchState] = useState(false);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
@@ -363,11 +428,6 @@ export default function Documents(props) {
     setFilteredDocuments(filteredMerged);
   }, [documentSearch, viewFileResultt?.viewFiles]);
 
-  const ExtenstionGetter = (name) => {
-    let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
-
-    return fileExtension;
-  };
   return (
     <div className={classes.root} variant="outlined">
       {!props.isTransactPage && (
@@ -401,161 +461,178 @@ export default function Documents(props) {
           relatedObjectType={relatedObjectType} //Contact or Deal
         />
       )}
-
-      <CardContent>
-        {props.isTransactPage && (
-          <UploadZone
-            relatedObjectId={props.id}
-            userId={userId}
-            relatedObjectType={relatedObjectType} //Contact or Deal
-          />
-        )}
-
-        {props.isTransactPage && (
-          <div style={{ marginBottom: "20px" }}>
-            <TextField
-              fullWidth
-              value={documentSearch}
-              onChange={(e) => setDocumentSearch(e.target.value)}
-              variant="outlined"
-              label={"Search Documents"}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
+      <div className={classes.cardContent}>
+        <CardContent>
+          <div className={classes.rootPadding}>
+            <Grid
+              container
+              direction="row"
+              justify="space-between"
+              alignItems="center"
+            >
+              {!isSearchActive && (
+                <Grid item xs={10} style={{ marginTop: "-28px" }}>
+                  <Typography variant="h6">Documents</Typography>
+                </Grid>
+              )}
+              <Grid item xs={1} style={{ marginTop: "-28px" }}>
+                <div className={classes.search}>
+                  <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput1").focus()}>
                     <SearchIcon />
-                  </InputAdornment>
-                )
-              }}
-              labelWidth={70}
-            />
-          </div>
-        )}
-        <div className={classes.fileUploadSection}>
-          {/* this is for view all */}
-          {filteredDocuments?.map((file, key) => {
-            if (file.state === "pending")
-              return (
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                  <CircularProgress size="20px" />
-                </div>
-              );
-
-            let fileExtension = file?.name
-              ?.slice(file.name.lastIndexOf(".") + 1)
-              ?.toLowerCase();
-
-            return (
-              <div key={file.id}>
-                <div className={classes.fileUploadTopSection}>
-                  <div className={classes.flexIcon}>
-                    {
-                      <div
-                        className={`${classes.greySquare} 
-                        // ${
-                          file.state !== "active"
-                          //   ? classes.disabledDownload
-                          //   : ""
-                        }`}
-                      >
-                        {new RegExp(
-                          ["jpg", "jpeg", "png", "bmp"].join("|")
-                        ).test(fileExtension) ? (
-                          <img
-                            src={file.uri}
-                            alt={file.name}
-                            className={classes.forImage}
-                          ></img>
-                        ) : (
-                          <div
-                            className={classes.forImageContainer}
-                            onClick={() => {
-                              if (file.state !== "active") return;
-
-                              if (fileExtension === "pdf") {
-                                setStateApp({
-                                  ...stateApp,
-                                  viewDoc: { uri: file.uri, name: file.name }
-                                });
-                              } else {
-                                handleViewFile(file.id);
-                              }
-                            }}
-                          >
-                            {/* {fileExtension} */}
-                            {get_file_icon(fileExtension)}
-                          </div>
-                        )}
-                      </div>
+                  </Tooltip>
+                  <InputBase
+                    id="searchInput1"
+                    autoComplete='off'
+                    placeholder="Search Documents"
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput,
+                    }}
+                    inputProps={{ "aria-label": "search" }}
+                    onFocus={() => setSearchState(true)}
+                    value={documentSearch}
+                    onBlur={() =>
+                      setTimeout(() => {
+                        setSearchState(false);
+                      }, 300)
                     }
-                    <div
-                      className="DocumentTitle"
-                      // onClick={() => {
+                    onChange={(evt) => setDocumentSearch(evt.target.value)}
+                  />
+                </div>
+              </Grid>
+              <Grid item xs={1} style={{ marginTop: "7px" }}>
+                <UploadZone
+                  relatedObjectId={props.id}
+                  userId={userId}
+                  relatedObjectType={relatedObjectType}
+                  customClass
+                />
+              </Grid>
+            </Grid>
+          </div>
+          <Divider />
+          <div className={classes.fileList}>
+            {/* this is for view all */}
+            {filteredDocuments?.map((file, key) => {
+              if (file.state === "pending")
+                return (
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <CircularProgress size="20px" />
+                  </div>
+                );
 
-                      //   viewFileResultt?.viewFiles.map((value) => {
+              let fileExtension = file?.name
+                ?.slice(file.name.lastIndexOf(".") + 1)
+                ?.toLowerCase();
 
-                      //     if (value.id === file.id && ExtenstionGetter(file.name) === 'pdf') {
-                      //       setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: file.name } })
-                      //     }
-                      //     else {
-                      //       handleViewFile(file.id)
-                      //     }
+              return (
+                <div key={file.id}>
+                  <div className={classes.fileUploadTopSection}>
+                    <div className={classes.flexIcon}>
+                      {
+                        <div
+                          className={`${classes.greySquare} 
+                        // ${file.state !== "active"
+                            //   ? classes.disabledDownload
+                            //   : ""
+                            }`}
+                        >
+                          {new RegExp(
+                            ["jpg", "jpeg", "png", "bmp"].join("|")
+                          ).test(fileExtension) ? (
+                            <img
+                              src={file.uri}
+                              alt={file.name}
+                              className={classes.forImage}
+                            ></img>
+                          ) : (
+                            <div
+                              className={classes.forImageContainer}
+                              onClick={() => {
+                                if (file.state !== "active") return;
 
-                      //   })
+                                if (fileExtension === "pdf") {
+                                  setStateApp({
+                                    ...stateApp,
+                                    viewDoc: { uri: file.uri, name: file.name }
+                                  });
+                                } else {
+                                  handleViewFile(file.id);
+                                }
+                              }}
+                            >
+                              {/* {fileExtension} */}
+                              {get_file_icon(fileExtension)}
+                            </div>
+                          )}
+                        </div>
+                      }
+                      <div
+                        className="DocumentTitle"
+                        onClick={() => {
+                          if (file.state !== "active") return;
 
-                      onClick={() => {
-                        if (file.state !== "active") return;
+                          if (fileExtension === "pdf") {
+                            setStateApp({
+                              ...stateApp,
+                              viewDoc: { uri: file.uri, name: file.name }
+                            });
+                          } else {
+                            handleViewFile(file.id);
+                          }
+                        }}
+                      >
+                        {/* }}> */}
 
-                        if (fileExtension === "pdf") {
-                          setStateApp({
-                            ...stateApp,
-                            viewDoc: { uri: file.uri, name: file.name }
-                          });
-                        } else {
-                          handleViewFile(file.id);
-                        }
-                      }}
-                    >
-                      {/* }}> */}
+                        <h4 className={classes.uploadTitle}>
+                          {file?.name?.length > 22
+                            ? file?.name?.slice(0, 20) + "..."
+                            : file?.name}
+                        </h4>
+                        {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
+                        <h5 className={classes.uploadSubtext}>
+                          {moment
+                            .unix(file.dateTime / 1000)
+                            .format("MMM DD, YYYY")}
+                        </h5>
+                      </div>
+                    </div>
+                    <div className={classes.IconSection}>
+                      <IconButton
+                        size="small"
+                        style={{ marginBottom: "8px" }}
+                        onClick={() => {
+                          setOpenDeleteConfirmDialog(true);
+                          setFileIdToDelete(file.descriptorId);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
 
-                      <h4 className={classes.uploadTitle}>
-                        {file?.name?.length > 22
-                          ? file?.name?.slice(0, 20) + "..."
-                          : file?.name}
-                      </h4>
-                      {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
-                      <h5 className={classes.uploadSubtext}>
-                        {moment
-                          .unix(file.dateTime / 1000)
-                          .format("MMM DD, YYYY")}
-                      </h5>
+                      {/* {!props.isTransactPage && ( */}
+                      <IconButton
+                        disabled={file.state !== "active"}
+                        size="small"
+                        onClick={() => handleViewFile(file.id)}
+                      >
+                        <GetAppIcon />
+                      </IconButton>
+                      {/* )} */}
                     </div>
                   </div>
-                  <div className={classes.IconSection}>
-                    <IconButton
-                      size="small"
-                      style={{ marginBottom: "8px" }}
-                      onClick={() => {
-                        setOpenDeleteConfirmDialog(true);
-                        setFileIdToDelete(file.descriptorId);
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-
-                    {/* {!props.isTransactPage && ( */}
-                    <IconButton
-                      disabled={file.state !== "active"}
-                      size="small"
-                      onClick={() => handleViewFile(file.id)}
-                    >
-                      <GetAppIcon />
-                    </IconButton>
-                    {/* )} */}
-                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+          <div className={classes.docUploader}>
+            {props.isTransactPage && (
+              <UploadZone
+                relatedObjectId={props.id}
+                userId={userId}
+                relatedObjectType={relatedObjectType} //Contact or Deal
+              />
+            )}
+          </div>
           <DeleteDocumentConfirmation
             open={openDeleteConfirmDialog}
             handleClose={handleDeleteCancel}
@@ -563,8 +640,8 @@ export default function Documents(props) {
               handleDeleteAccept();
             }}
           />
-        </div>
-      </CardContent>
+        </CardContent>
+      </div>
     </div>
   );
 }

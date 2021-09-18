@@ -43,7 +43,6 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
   } = props;
 
   const itemData = React.Children.toArray(children);
-  const theme = useTheme();
   // const smUp = useMediaQuery(theme.breakpoints.up("sm"), { noSsr: true });
   // const itemCount = /*hasNextPage ? itemData.length + 1 : */itemData.length;
   // const itemSize = smUp ? 36 : 48;
@@ -240,7 +239,6 @@ export default function AutocompEntityNamesVirtualizeList(props) {
             <Grid container item xs={12} alignItems="center">
               <Grid item xs>
                 <span style={{ fontWeight: 400 }}>{option.name}</span>
-
                 <Typography variant="body2" color="textSecondary">
                   {joinAddress(option)}
                 </Typography>
@@ -269,7 +267,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       onChange={(event, newValue) => {
         if (newValue && newValue._id) {
           if (newValue._id !== "newEntity") setNameAutValue(newValue);
-          else{
+          else {
             if(addNewOnClick){
               addNewOnClick(newValue.name)
             }else{

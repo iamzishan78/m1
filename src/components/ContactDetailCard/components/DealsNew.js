@@ -10,7 +10,7 @@ import DealMoneyIcon from "../../Shared/svgIcons/DealMoneyIcon";
 import { AppContext } from "../../../AppContext";
 import DealsDetailCard from "../../DealsDetailCard/DealsDetailCard";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
-import AddDealDialog from "../../ContactDetailCard/components/AddDealDialog";
+import AddDealDialog from "components/Transact/components/AddDealDialog";
 import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme) => ({

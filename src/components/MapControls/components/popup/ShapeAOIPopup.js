@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 
 import { useMutation } from "@apollo/client";
-import { makeStyles, Grid } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 
 import { AppContext } from "AppContext";
