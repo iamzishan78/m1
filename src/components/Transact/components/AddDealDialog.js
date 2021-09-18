@@ -215,7 +215,7 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     width: "100%",
     marginTop: 25,
-    marginBottom: 25,
+    // marginBottom: 25,
 
     "& .MuiOutlinedInput-root": {
       width: "100%",
@@ -1606,7 +1606,12 @@ function AddDealDialog(props) {
                 {/* {originationDate && (
                   <div className={classes.originationDate}>Deal Creation Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
                 )} */}
+
+
                 <div>
+
+                  {/* This is the document zone  */}
+                  <div style={{marginTop: 20}}>
                   <AddDialogeUploadZone
                     isTransactPage={true}
                     filesData={viewFileResult}
@@ -1615,13 +1620,20 @@ function AddDealDialog(props) {
                     disabled={!stateApp.activeDeal?.cardId}
                     handleOpenExpandableCard={handleOpenExpandableCard}
                   />
+                  </div>
+
+
                   {/* Here is flow lane form */}
+                  <div style={{marginTop: 15, marginBottom: 50}}>
                   <DealTasksProgressZone
                     toggleProgressDetail={toggleProgressDetail}
                     dealSettings={get(dealSettings, "dealSettings", [])}
                     users={users}
                     activeDeal={stateApp.activeDeal}
                   />
+                  </div>
+
+
                 </div>
               </div>
             )}
