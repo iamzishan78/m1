@@ -184,9 +184,9 @@ export default function LaneProgressZone(props) {
             )
           })}
           <div style={{ margin: "10px 0px 10px 0px" }}>
-            <Button size="small" style={{ color: "grey" }}>
+            {/* <Button size="small" style={{ color: "grey" }}>
               + Add New
-            </Button>
+            </Button> */}
           </div>
         </div>
       </CardContent>
