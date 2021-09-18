@@ -490,7 +490,7 @@ export default function DetailInfo(props) {
     );
   };
 
-  const tabs = ['Basic Info', 'Custom Fields', 'Purchased Info']
+  const tabs = ['Basic Info',  'Purchased Info']
 
   return (
     <div className={classes.root}>

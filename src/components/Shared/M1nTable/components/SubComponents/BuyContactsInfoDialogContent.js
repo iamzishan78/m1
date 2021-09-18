@@ -132,7 +132,7 @@ export default function BuyContactsInfoDialogContent(props) {
           <>
           <Grid item xs={12}>
             <h3 style={{ padding: 0, marginTop: "20px", marginBottom: 0 }}>
-              Credits
+              Available search credits
             </h3>
           </Grid>
           <Grid item xs={12} className={modalClass.inputContainer}>
@@ -147,14 +147,14 @@ export default function BuyContactsInfoDialogContent(props) {
           </>
           )}
           <Grid item xs={12} style={{ marginTop: "50px" }}>
-            <h3 style={{ margin: "0" }}>Contact information to purchase</h3>
+            <h3 style={{ margin: "0" }}>Selected contacts</h3>
           </Grid>
-          <Grid item xs={12} style={{ margin: 0, paddingTop: 0 }}>
+          {/* <Grid item xs={12} style={{ margin: 0, paddingTop: 0 }}>
             <FormLabel>
               {props.rows && props.rows.length ? props.rows.length : ""}{" "}
-              selected at 1 credit each
+              selected 
             </FormLabel>
-          </Grid>
+          </Grid> */}
           {props.rows &&
             props.rows.map((row, index) => (
               <Grid item xs={12} className={modalClass.inputContainer}>
