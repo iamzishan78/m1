@@ -109,6 +109,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputFieldDealName: {
     width: "405px",
+    padding: "5px 0px 15px 0px",
   },
   dateLabel: {
     transform: "translate(10px, 2px) scale(0.75) !important",
@@ -1182,7 +1183,7 @@ function AddDealDialog(props) {
 
   const StickyHeader = () => (
     <div>
-      <Grid item container xs={12} style={{ padding: "10px 14px 5px 25px" }}>
+      <Grid item container xs={12} style={{ padding: "30px 14px 10px 25px" }}>
         {!titleFocus && (
           <>
             <Grid item xs={6} style={{ minHeight: "35px" }}>
@@ -1249,7 +1250,10 @@ function AddDealDialog(props) {
                 )}
               </div>
             </Grid>
-            <Grid item xs={6} style={{ minHeight: "35px" }}>
+            <Grid item xs={6} style={{ 
+              // minHeight: "35px", 
+              // padding: "30px 14px 10px 25px" 
+              }}>
               {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) && stateApp.activeDeal?.laneId && (
                 <>
                   <IconButton
@@ -1357,7 +1361,7 @@ function AddDealDialog(props) {
           hiddenOverflow
         >
           <StickyHeader />
-          <Drawer top={contact.name && !props.isTransactPage ? "160px" : "108px"} />
+          <Drawer top={contact.name && !props.isTransactPage ? "160px" : "152px"} />
           <div className={classes.contentRoot}>
             {props.isTransactPage && stateApp.transactBarView !== "Deal" && (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
               <Fragment>{getView()}</Fragment>
