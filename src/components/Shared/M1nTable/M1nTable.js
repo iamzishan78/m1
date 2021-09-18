@@ -25,7 +25,7 @@ import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ABSTRACTWELLGEOQUERY } from "../../../graphQL/useQueryAbstractWellGeo";
 import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
-import { GET_DOCUMENTS } from "../../../graphQL/useQueryDocuments";
+import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVE_CONTACTS } from "../../../graphQL/useMutationRemoveContact";
 import { REMOVEUSER } from "../../../graphQL/useMutationRemoveUser";
@@ -151,7 +151,8 @@ function M1nTable(props) {
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, { onError: () => { setLoading(false) }, fetchPolicy: "cache-and-network" });
-  const [getDocuments, { data: DocumentsData }] = useLazyQuery(GET_DOCUMENTS, { fetchPolicy: "no-cache" });
+  const [getESDocuments, { data: DocumentsData }] = useLazyQuery(GET_ES_DOCUMENTS, { fetchPolicy: "no-cache" });
+
   const [removeUser] = useMutation(REMOVEUSER);
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network", skip: true,
@@ -220,13 +221,13 @@ function M1nTable(props) {
 
   useEffect(() => {
     if (props.parent && props.parent === 'Documents') {
-      getDocuments({
+      getESDocuments({
         variables: {
           search: stateApp.documentSearchQuery ? stateApp.documentSearchQuery : ""
         }
       })
     }
-  }, [getDocuments, props.parent, stateApp.documentSearchQuery])
+  }, [getESDocuments, props.parent, stateApp.documentSearchQuery])
   ////////////Tracked Owners begin///////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "trackOwners") {
