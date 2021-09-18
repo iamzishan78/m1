@@ -1,6 +1,13 @@
 import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
+import { NavigationContext } from "../Navigation/NavigationContext";
 import { makeStyles } from "@material-ui/core/styles";
+import Toolbar from "@material-ui/core/Toolbar";
+import Link from "@material-ui/core/Link";
+import Typography from "@material-ui/core/Typography";
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Stepper from "./components/stepper";
 
 const useStyles = makeStyles((theme) => ({
@@ -8,14 +15,23 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "white",
   },
   header: {
-    paddingTop: "25px",
-    paddingBottom: "75px",
-    paddingLeft: "20px",
+    borderBottom: "1px solid rgba(224, 224, 224, 1)",
+    backgroundColor: "#F2F2F2",
+    minHeight: "64px",
+    display: "flex",
+    position: "relative",
+    alignItems: "center",
   },
 }));
 
 export default function BulkUpload(props) {
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const [stateNav, setStateNav] = React.useContext(NavigationContext);
+  let history = useHistory();
+
+  const checkModuleHistory = () => {
+    return !!stateNav.bulkUploadFromMap;
+  };
 
   useEffect(() => {
     reset_state();
@@ -307,6 +323,54 @@ export default function BulkUpload(props) {
 
   return (
     <div className={classes.root}>
+      <div className={classes.header}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "left",
+            paddingLeft: "25px",
+          }}
+        ></div>
+        <Breadcrumbs
+          separator={<NavigateNextIcon fontSize="small" />}
+          aria-label="breadcrumb"
+        >
+          {checkModuleHistory() && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => {
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  // parcelDetailCardOpen: false,
+                }));
+
+                history.push("/");
+
+                setStateNav((stateApp) => ({
+                  ...stateApp,
+                  contactFromMap: false,
+                }));
+              }}
+            >
+              Map
+            </Link>
+          )}
+
+          {console.log("CURRENT MAP BREADCRUMB")}
+
+          <Typography
+            style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}
+          >
+            Interest Owner Upload
+          </Typography>
+        </Breadcrumbs>
+      </div>
       <Stepper>{props.children}</Stepper>
     </div>
   );
