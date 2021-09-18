@@ -59,16 +59,18 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
                 {...field}
                 margin="dense"
                 variant="outlined"
-                placeholder="Click to flowline name"
+                placeholder="Click to enter flowline name"
                 required
                 fullWidth
                 error={flowErrors.name}
-                helperText={flowErrors.name && "Name is Required"}
+                helperText={flowErrors.name && "Flowline name is required"}
               />
             )}
           />
         </Grid>
-        <Grid item xs={12}>
+
+        {/* temporarily commenting out until we get further along on flow custom settings and custom detail Card -KC 20210918 */}
+        {/* <Grid item xs={12}>
           <h4 className={classes.label}>Project Tie</h4>
           <FormControl variant="outlined" className={classes.formControl}>
             <Controller
@@ -135,7 +137,7 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
               )}
             />
           </FormControl>
-        </Grid>
+        </Grid> */}
         <Grid item xs={12} style={{ marginTop: "20px" }}>
           <FormControl variant="outlined" className={classes.formControl}>
             <Controller
@@ -174,7 +176,7 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
                       onChange={({ target }) => setValue("rottenness", target.checked)}
                     />
                   }
-                  label="Rottenness Toggle"
+                  label="Show rotten indicator on card"
                 />
               )}
             />
