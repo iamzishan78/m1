@@ -211,7 +211,7 @@ export default function DocumentDrawer() {
       documentType = newDocument.documentType.name;
     }
     const fileId = fileData?.addFileDescriptor?.file?.id;
-    if (stateApp.selectedDocument.fileId || fileId ) {
+    if (stateApp.selectedDocument.fileId || fileId) {
       setLoader(true);
       updateDocument({
         variables: {
@@ -226,7 +226,7 @@ export default function DocumentDrawer() {
             fileId: fileId || newDocument.fileId,
           },
         },
-        refetchQueries: ["getDocuments"],
+        refetchQueries: ["getESDocuments"],
         awaitRefetchQueries: true,
       }).then(() => {
         setFileData(null)
@@ -275,7 +275,7 @@ export default function DocumentDrawer() {
             isDeleted: true,
           },
         },
-        refetchQueries: ["getDocuments"],
+        refetchQueries: ["getESDocuments"],
         awaitRefetchQueries: true,
       }).then(() => {
         setStateApp({
@@ -340,7 +340,7 @@ export default function DocumentDrawer() {
           partyName2,
           fileId,
         });
-      }else{
+      } else {
         setNewDocument(documentInitial)
       }
     }
@@ -361,7 +361,7 @@ export default function DocumentDrawer() {
 
     setState({ ...state, [anchor]: open });
   };
-  
+
 
   const DocumentDetail = (anchor) => (
     <div
@@ -475,7 +475,7 @@ export default function DocumentDrawer() {
             format="MM/DD/YYYY"
             margin="normal"
             id="date-picker-inline"
-            value={newDocument?.dateTime ? new Date(newDocument.dateTime): null}
+            value={newDocument?.dateTime ? new Date(newDocument.dateTime) : null}
             onChange={(date) => {
               setNewDocument({
                 ...newDocument,
@@ -537,45 +537,45 @@ export default function DocumentDrawer() {
 
 
       {stateApp.selectedDocument?.fileId || fileData ? (
-          <ListItem>
-            <div style={{ display: "flex", justifyContent: "start" }}>
-              {viewFileSResult?.viewFiles?.map((value, key) => {
-                let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
-                if (key <= 1) {
-                  return (
-                    <div key={key}>
-                      <LightTooltip
-                        title={
-                          <div className={classes.IconSection}>
-                            <IconButton
-                              size="small"
-                              onClick={() => {
-                                setOpenDeleteConfirmDialog(true);
-                                setFileIdToDelete(stateApp.selectedDocument.fileId);
-                              }}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
+        <ListItem>
+          <div style={{ display: "flex", justifyContent: "start" }}>
+            {viewFileSResult?.viewFiles?.map((value, key) => {
+              let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
+              if (key <= 1) {
+                return (
+                  <div key={key}>
+                    <LightTooltip
+                      title={
+                        <div className={classes.IconSection}>
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              setOpenDeleteConfirmDialog(true);
+                              setFileIdToDelete(stateApp.selectedDocument.fileId);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
 
-                            <IconButton
-                              disabled={false}
-                              size="small"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleViewFile(value.id);
-                              }}
-                            >
-                              <GetAppIcon />
-                            </IconButton>
-                          </div>
-                        }
-                        interactive
-                      >
-                        <div>
-                          {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
-                            <img src={value.uri} alt={value.name} className={classes.forImage}></img>
-                          ) : (
-                            <div className={classes.forImageContainer}
+                          <IconButton
+                            disabled={false}
+                            size="small"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleViewFile(value.id);
+                            }}
+                          >
+                            <GetAppIcon />
+                          </IconButton>
+                        </div>
+                      }
+                      interactive
+                    >
+                      <div>
+                        {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
+                          <img src={value.uri} alt={value.name} className={classes.forImage}></img>
+                        ) : (
+                          <div className={classes.forImageContainer}
 
                             onClick={() => {
 
@@ -596,120 +596,120 @@ export default function DocumentDrawer() {
                               }
                             }}>
 
-                              {get_file_icon(fileExtension)}
-                            </div>
-                          )}
-                          <div className={classes.imageSubText}>
-                            {value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}
+                            {get_file_icon(fileExtension)}
                           </div>
+                        )}
+                        <div className={classes.imageSubText}>
+                          {value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}
                         </div>
-                      </LightTooltip>
-                    </div>
-                  );
-                }
-              })}
-              {/* <div style={{width:'150px',marginLeft:'20px'}}>
+                      </div>
+                    </LightTooltip>
+                  </div>
+                );
+              }
+            })}
+            {/* <div style={{width:'150px',marginLeft:'20px'}}>
          <UploadZone
                 style={{width:'150px',height:'150px'}}
              
               />
          </div> */}
-            </div>
-          </ListItem>
-        ) : (
-          <ListItem>
-            <div style={{ display: "flex", justifyContent: "start" }}>
-              {recentFiles?.map((value, key) => {
-                let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
-                if (key <= 1) {
-                  return (
-                    <div key={key}>
-                      <LightTooltip
-                        title={
-                          <div className={classes.IconSection}>
-                            <IconButton
-                              size="small"
-                              onClick={() => {
-                                setOpenDeleteConfirmDialog(true);
-                                setFileIdToDelete(value.id);
-                              }}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-
-                            <IconButton
-                              disabled={false}
-                              size="small"
-                              // onClick={() =>
-                              //   handleViewFile(
-                              //     files?.getFileDescriptors[key].fileId
-                              //   )
-                              // }
-                            >
-                              <GetAppIcon />
-                            </IconButton>
-                          </div>
-                        }
-                        interactive
-                      >
-                        <div>
-                        { console.log('STATE', stateApp) }
-
-                          {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
-                            <img src={value.uri} alt={value.name} className={classes.forImage}></img>
-                          ) : (
-                            <div className={classes.forImageContainer}
-                            
-                              onClick={() => {
-
-                                console.log('STATE', stateApp)
-                                if (fileExtension === 'pdf') {
-                                  setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } })
-                                }
-                                else {
-                                  handleViewFile(
-                                    // files?.getFileDescriptors[key].fileId
-                                  )
-                                }
-                              }}>
-
-                              {get_file_icon(fileExtension)}
-                            </div>
-                          )}
-                          <div className={classes.imageSubText}>
-                            {value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}
-                          </div>
-                        </div>
-                      </LightTooltip>
-                    </div>
-                  );
-                }
-              })}
-
-            </div>
-          </ListItem>
-        )}
-
-
-        {!stateApp.selectedDocument?.fileId && !fileData ? (
-          <div className={classes.Uploadcomp}>
-            <UploadZone
-              style={{ 
-                // width: "75px !important", 
-                // height: "50px !important",
-                paddingLeft: "50px"
-
-              }}
-              userId={stateApp.user.mongoId}
-              setFileData={setFileData}
-              // relatedObjectId={props.id}
-              // userId={userId}
-              // relatedObjectType={relatedObjectType} //Contact or Deal
-              // loading={props.loading}
-              // disabled={props.disabled}
-            />
           </div>
-        ) : null}
+        </ListItem>
+      ) : (
+        <ListItem>
+          <div style={{ display: "flex", justifyContent: "start" }}>
+            {recentFiles?.map((value, key) => {
+              let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
+              if (key <= 1) {
+                return (
+                  <div key={key}>
+                    <LightTooltip
+                      title={
+                        <div className={classes.IconSection}>
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              setOpenDeleteConfirmDialog(true);
+                              setFileIdToDelete(value.id);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+
+                          <IconButton
+                            disabled={false}
+                            size="small"
+                          // onClick={() =>
+                          //   handleViewFile(
+                          //     files?.getFileDescriptors[key].fileId
+                          //   )
+                          // }
+                          >
+                            <GetAppIcon />
+                          </IconButton>
+                        </div>
+                      }
+                      interactive
+                    >
+                      <div>
+                        {console.log('STATE', stateApp)}
+
+                        {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
+                          <img src={value.uri} alt={value.name} className={classes.forImage}></img>
+                        ) : (
+                          <div className={classes.forImageContainer}
+
+                            onClick={() => {
+
+                              console.log('STATE', stateApp)
+                              if (fileExtension === 'pdf') {
+                                setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } })
+                              }
+                              else {
+                                handleViewFile(
+                                  // files?.getFileDescriptors[key].fileId
+                                )
+                              }
+                            }}>
+
+                            {get_file_icon(fileExtension)}
+                          </div>
+                        )}
+                        <div className={classes.imageSubText}>
+                          {value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}
+                        </div>
+                      </div>
+                    </LightTooltip>
+                  </div>
+                );
+              }
+            })}
+
+          </div>
+        </ListItem>
+      )}
+
+
+      {!stateApp.selectedDocument?.fileId && !fileData ? (
+        <div className={classes.Uploadcomp}>
+          <UploadZone
+            style={{
+              // width: "75px !important", 
+              // height: "50px !important",
+              paddingLeft: "50px"
+
+            }}
+            userId={stateApp.user.mongoId}
+            setFileData={setFileData}
+          // relatedObjectId={props.id}
+          // userId={userId}
+          // relatedObjectType={relatedObjectType} //Contact or Deal
+          // loading={props.loading}
+          // disabled={props.disabled}
+          />
+        </div>
+      ) : null}
 
 
       <div className={classes.dialogFooter}>
@@ -749,7 +749,7 @@ export default function DocumentDrawer() {
 
     </div>
   );
-  
+
   return (
     <div>
       {/* <ClickAwayListener onClickAway={() => {handleClose()}}> */}
@@ -764,7 +764,7 @@ export default function DocumentDrawer() {
             onClose={handleDeleteCancel}
             deleteFunc={handleDeleteAccept}
             m1nSelectedRowsIds={[document._id]}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected documents?
           </DeleteConfirmationDialogContent>
@@ -846,7 +846,7 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
       onInputChange={onInputChange}
       filterOptions={(options, params) => {
         let inputValue = JSON.parse(JSON.stringify(value));
-        if(inputValue.name){
+        if (inputValue.name) {
           inputValue = inputValue.name
         }
         const filtered = filter(options, { ...params, inputValue });

@@ -476,7 +476,7 @@ export default function AddContactDialogContent(props) {
             <h3>Contact Owner</h3>
             <Autocomplete
               className={classes.fieldWidth}
-              options={users}
+              options={users.filter(u => u.text)}
               onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
               value={users.find((user) => user?.value === newContact.contactOwner) || null}
               getOptionLabel={(option) => option.text}

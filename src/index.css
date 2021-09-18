@@ -63,3 +63,7 @@ body {
 .Toastify__toast_error {
   border-top: 6px solid #a52a20 !important;
 }
+
+#laneProgressMenu {
+  z-index: 9999999999 !important;
+}
