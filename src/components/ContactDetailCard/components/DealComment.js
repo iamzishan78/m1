@@ -51,8 +51,11 @@ const useStyles = makeStyles((theme) => ({
   },
   commentBtn: {
     float: "right",
-    right: "5px",
-    bottom: "5px",
+    right: "10px",
+    bottom: "10px",
+    marginBottom: -20,
+    background: "#24afdf",
+
   },
   paddingLeft10: {
     paddingLeft: "20px !important",
@@ -77,9 +80,10 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
   },
   commentView: {
-    padding: "5px 10px",
-    marginRight: "60px",
-    marginBottom: "10px",
+    padding: "10px 5px 10px 0px",
+    // marginRight: "60px",
+    // marginBottom: "10px",
+    marginLeft: '20px'
   },
   commentTime: {
     marginLeft: "10px",
@@ -414,7 +418,7 @@ export default function DealComment(props) {
                               rows={2}
                               rowsMax={3}
                               multiline
-                              placeholder="Add a question or post an update"
+                              placeholder="Add a question or post an update ..."
                               onChange={(e) => {
                                 setEditComment(e.target.value);
                               }}
@@ -457,10 +461,12 @@ export default function DealComment(props) {
           <CircularProgress color="secondary"></CircularProgress>
         )}
       </div>
-      <div className={classes.commentView}>
+      <div  style = {{paddingBottom: '20px'}}>
         <Grid container>
           <Grid item xs={1}>
-            <IconButton style={{ top: "3px" }}>
+            <IconButton className={classes.commentView} 
+            // style={{ top: "3px" }}
+            >
               {profileImage ? (
                 <Avatar src={profileImage} size="38" round />
               ) : (
@@ -471,6 +477,7 @@ export default function DealComment(props) {
           <Grid item xs={11} className={classes.paddingLeft10}>
             <div
               className={classes.border}
+              style = {{width: '500px', paddingBottom: '20px'}}
               onClick={() => {
                 if (!showActions) {
                   setShowActions(true);
