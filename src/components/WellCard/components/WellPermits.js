@@ -8,7 +8,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import { AppContext } from "../../../AppContext";
 import { Typography } from "@material-ui/core";
-import { useQueryWellCompletions } from "../../../graphQL/useQueryWellCompletionsAndStimulation";
+import { useQueryWellPermits } from "../../../graphQL/useQueryWellCompletionsAndStimulation";
 import moment from 'moment';
 
 const useStyles = makeStyles({
@@ -56,31 +56,28 @@ const useStyles = makeStyles({
 });
 
 const headers = [
-    "COMPLETION DATE",
-    "LEASE ID",
-    "LEASE NAME",
-    "LEASE ACREAGE",
-    "FORMATION",
-    "TYPE",
-    "UPPER PERF MD",
-    "UPPER PERF TVD",
-    "LOWER PERF MD",
-    "LOWER PERF TVD",
-    "PLUG BACK MD",
-    "PLUG BACK TVD"
+    "PERMIT NUMBER",
+    "STATE WELL ID",
+    "SUBMITTED ON",
+    "APPROVED ON",
+    "EXPIRES ON",
+    "AMENDED ON",
+    "PERMIT STATUS",
+    "PERMIT PURPOSE",
+    "FILED BY"
 ];
 
-export default function Completions(props) {
+export default function WellPermits(props) {
   const classes = useStyles();
   const [summary, setSummary] = useState(null);
   const [stateApp] = useContext(AppContext);
-  const { data } = useQueryWellCompletions(stateApp.selectedWell.id);
+  const { data } = useQueryWellPermits(stateApp.selectedWell.id);
 
-  const [completionsData, setCompletionsData] = useState(null);
+  const [wellPermitData, setWellPermitData] = useState(null);
 
   useEffect(() => {
-    if (typeof data !== "undefined" && typeof data.wellCompletions !== "undefined" ) {
-      setCompletionsData(data.wellCompletions);
+    if (typeof data !== "undefined" && typeof data.wellPermits !== "undefined" ) {
+      setWellPermitData(data.wellPermits);
     }
   }, [data]);
 
@@ -93,7 +90,7 @@ export default function Completions(props) {
 
   return (
     <TableContainer className={classes.tableContainer}>
-      {completionsData !== null ? (
+      {wellPermitData !== null ? (
         <div className={props.showSummary? classes.tableSize:classes.tableSize2}>
           <Table
             aria-label="simple table"
@@ -111,44 +108,35 @@ export default function Completions(props) {
                   })
               }     
               </TableRow>
-              { completionsData !== null && completionsData.length > 0 && (
-                completionsData.map((row, index) =>  (
+              { wellPermitData !== null && wellPermitData.length > 0 && (
+                wellPermitData.map((row, index) =>  (
                       <TableRow key={index}>
                         <TableCell>
-                          {moment(row.CompletionDate).isValid()  ?  moment(row.CompletionDate).format("MM/DD/YYYY")  : ""}
+                          {row.PermitId}
                         </TableCell>
                         <TableCell>
-                          {row.LeaseId}
+                          {row.StateWellId}
                         </TableCell>
                         <TableCell>
-                          {row.LeaseName}
+                          {moment(row.SubmittedDate).isValid() ?  moment(row.SubmittedDate).format("MM/DD/YYYY") : ""}
                         </TableCell>
                         <TableCell>
-                          {formatValue(row.LeaseAcreage)}
+                          {moment(row.ApprovedDate).isValid()  ?  moment(row.ApprovedDate).format("MM/DD/YYYY")  : ""}
                         </TableCell>
                         <TableCell>
-                          {row.Formation}
+                          {moment(row.ExpiredDate).isValid()   ? moment(row.ExpiredDate).format("MM/DD/YYYY")  : ""}
                         </TableCell>
                         <TableCell>
-                          {row.CompletionType}
+                          {moment(row.AmendedDate).isValid()  ? moment(row.AmendedDate).format("MM/DD/YYYY") : ""}
                         </TableCell>
                         <TableCell>
-                          {formatValue(row.UpperPerf)}
+                          {row.PermitStatus.toUpperCase()}
                         </TableCell>
                         <TableCell>
-                          {formatValue(row.UpperPerfTVD)}
+                          {row.PermitPurpose.toUpperCase()}
                         </TableCell>
                         <TableCell>
-                          {formatValue(row.LowerPerf)}
-                        </TableCell>
-                        <TableCell>
-                          {formatValue(row.LowerPerfTVD)}
-                        </TableCell>
-                        <TableCell>
-                          {formatValue(row.PlugBackMD)}
-                        </TableCell>
-                        <TableCell>
-                          {formatValue(row.PlugBackTVD)}
+                          {row.FiledBy.toUpperCase()}
                         </TableCell>
                       </TableRow>
                   ))
@@ -157,8 +145,8 @@ export default function Completions(props) {
             </TableBody>
           </Table>
           <Typography color="textSecondary" align="center"> 
-          {completionsData !== null && completionsData.length === 0 ?
-            "No completion records available" : ""
+          {wellPermitData !== null && wellPermitData.length === 0 ?
+            "No permit records available" : ""
           }
           </Typography>
         </div>
