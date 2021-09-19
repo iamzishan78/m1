@@ -1368,6 +1368,8 @@ function AddDealDialog(props) {
               <Fragment>{getView()}</Fragment>
             ) : (
               <div className={classes.inputFieldRoot}>
+
+                <div style={{marginTop: 5}}>
                 <FormControl variant="outlined" fullWidth size="small">
                   <Grid container className={classes.gridStyle}>
                     <Grid item xs={3}>
@@ -1436,6 +1438,7 @@ function AddDealDialog(props) {
                     </Grid>
                   </Grid>
                 </FormControl>
+                </div>
 
                 <FormControl variant="outlined" fullWidth size="small">
                   <Grid container className={classes.gridStyle}>
@@ -1639,7 +1642,11 @@ function AddDealDialog(props) {
             )}
           </div>
           {stateApp.transactBarView === "Deal" && (
+
+          <div style={{marginTop: 2,}}>
             <DealComment setNewCommentId={setNewCommentId} targetSourceId={stateApp.activeDeal?.cardId} />
+          </div>
+
           )}
         </RightDialog>
       </div>
