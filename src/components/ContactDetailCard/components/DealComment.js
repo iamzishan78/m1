@@ -55,7 +55,9 @@ const useStyles = makeStyles((theme) => ({
     bottom: "5px",
   },
   paddingLeft10: {
-    paddingLeft: "10px !important",
+    paddingLeft: "20px !important",
+    paddingTop: "3px !important",
+
   },
   moreComment: {
     padding: "10px",
@@ -299,11 +301,11 @@ export default function DealComment(props) {
 
   return (
     <div className={classes.container}>
-      <div className={classes.comment}>
+      <div className={classes.comment} >
         {!loadingComments ? (
           <>
             {!showAllComments && commentsArray.length > 3 && (
-              <div className={classes.moreComment}>
+              <div className={classes.moreComment} style={{marginTop: 10, marginBottom: 10}}>
                 <span
                   onClick={() => {
                     setShowAllComments(true);
@@ -314,7 +316,7 @@ export default function DealComment(props) {
               </div>
             )}
             {showAllComments && commentsArray.length > 3 && (
-              <div className={classes.moreComment}>
+              <div className={classes.moreComment} style={{marginTop: 10, marginBottom: 10}}>
                 <span onClick={() => setShowAllComments(false)}>
                   Hide Earlier Comments
                 </span>
@@ -336,7 +338,7 @@ export default function DealComment(props) {
                       onMouseLeave={() => setShowCommentActionId(null)}
                     >
                       <Grid item xs={1}>
-                        <IconButton style={{ top: "3px" }}>
+                        <IconButton style={{ marginTop: "3px", marginLeft: "12px"}}>
                           {profilesInfo[eachComment.user.email]?.profileImage ||
                             eachComment.isNew ? (
                             <Avatar
