@@ -365,7 +365,6 @@ function AddDealDialog(props) {
   const classes = useStyles();
   const { selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
   const [isProgressDetail, toggleProgressDetail] = useState(null);
-  const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
   const [newCommentsIds, setNewCommentsIds] = useState([]);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
@@ -1251,10 +1250,16 @@ function AddDealDialog(props) {
                 )}
               </div>
             </Grid>
-            <Grid item xs={6} style={{ 
-              // minHeight: "35px", 
-              // padding: "30px 14px 10px 25px" 
-              }}>
+            <Grid
+              item
+              xs={6}
+              style={
+                {
+                  // minHeight: "35px",
+                  // padding: "30px 14px 10px 25px"
+                }
+              }
+            >
               {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) && stateApp.activeDeal?.laneId && (
                 <>
                   <IconButton
@@ -1368,76 +1373,75 @@ function AddDealDialog(props) {
               <Fragment>{getView()}</Fragment>
             ) : (
               <div className={classes.inputFieldRoot}>
-
-                <div style={{marginTop: 5}}>
-                <FormControl variant="outlined" fullWidth size="small">
-                  <Grid container className={classes.gridStyle}>
-                    <Grid item xs={3}>
-                      <div>Owner</div>
+                <div style={{ marginTop: 5 }}>
+                  <FormControl variant="outlined" fullWidth size="small">
+                    <Grid container className={classes.gridStyle}>
+                      <Grid item xs={3}>
+                        <div>Owner</div>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Autocomplete
+                          options={users.filter((u) => u.text)}
+                          onChange={(e, user) => {
+                            setOwnerId(user?.value);
+                          }}
+                          value={users.find((user) => user?.value === ownerId) || null}
+                          getOptionLabel={(option) => option.text}
+                          getOptionSelected={(option) => option.value === ownerId}
+                          classes={{
+                            inputRoot: classes.dealOwnerRoot,
+                            focused: classes.dealOwnerRootFocused,
+                            popupIndicator: classes.popupIndicator,
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              margin="dense"
+                              {...params}
+                              variant="outlined"
+                              className={classes.inputFieldOwner}
+                              InputLabelProps={{
+                                ...params.InputLabelProps,
+                                shrink: true,
+                                classes: {
+                                  root: classes.dealOwnerLabel,
+                                },
+                              }}
+                              placeholder="Assign Owner"
+                              InputProps={{
+                                ...params.InputProps,
+                                startAdornment: (
+                                  <>
+                                    <InputAdornment position="start">
+                                      <Avatar className={classes.dealOwnerAvatar}>
+                                        {users.find((user) => user?.value === ownerId) ? (
+                                          <CustomAvatar
+                                            diglog={true}
+                                            email={users.find((user) => user?.value === ownerId).email}
+                                            text={
+                                              users
+                                                .find((user) => user?.value === ownerId)
+                                                .text.toString()
+                                                .toUpperCase()
+                                                .split(" ").length > 1
+                                                ? users.find((user) => user?.value === ownerId).text.toString()
+                                                : "Add Owner"
+                                            }
+                                          />
+                                        ) : (
+                                          "AO"
+                                        )}
+                                      </Avatar>
+                                    </InputAdornment>
+                                    {params.InputProps.startAdornment}
+                                  </>
+                                ),
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item xs={9}>
-                      <Autocomplete
-                        options={users.filter((u) => u.text)}
-                        onChange={(e, user) => {
-                          setOwnerId(user?.value);
-                        }}
-                        value={users.find((user) => user?.value === ownerId) || null}
-                        getOptionLabel={(option) => option.text}
-                        getOptionSelected={(option) => option.value === ownerId}
-                        classes={{
-                          inputRoot: classes.dealOwnerRoot,
-                          focused: classes.dealOwnerRootFocused,
-                          popupIndicator: classes.popupIndicator,
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            margin="dense"
-                            {...params}
-                            variant="outlined"
-                            className={classes.inputFieldOwner}
-                            InputLabelProps={{
-                              ...params.InputLabelProps,
-                              shrink: true,
-                              classes: {
-                                root: classes.dealOwnerLabel,
-                              },
-                            }}
-                            placeholder="Assign Owner"
-                            InputProps={{
-                              ...params.InputProps,
-                              startAdornment: (
-                                <>
-                                  <InputAdornment position="start">
-                                    <Avatar className={classes.dealOwnerAvatar}>
-                                      {users.find((user) => user?.value === ownerId) ? (
-                                        <CustomAvatar
-                                          diglog={true}
-                                          email={users.find((user) => user?.value === ownerId).email}
-                                          text={
-                                            users
-                                              .find((user) => user?.value === ownerId)
-                                              .text.toString()
-                                              .toUpperCase()
-                                              .split(" ").length > 1
-                                              ? users.find((user) => user?.value === ownerId).text.toString()
-                                              : "Add Owner"
-                                          }
-                                        />
-                                      ) : (
-                                        "AO"
-                                      )}
-                                    </Avatar>
-                                  </InputAdornment>
-                                  {params.InputProps.startAdornment}
-                                </>
-                              ),
-                            }}
-                          />
-                        )}
-                      />
-                    </Grid>
-                  </Grid>
-                </FormControl>
+                  </FormControl>
                 </div>
 
                 <FormControl variant="outlined" fullWidth size="small">
@@ -1610,43 +1614,37 @@ function AddDealDialog(props) {
                   <div className={classes.originationDate}>Deal Creation Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
                 )} */}
 
-
                 <div>
-
                   {/* This is the document zone  */}
-                  <div style={{marginTop: 20}}>
-                  <AddDialogeUploadZone
-                    isTransactPage={true}
-                    filesData={viewFileResult}
-                    id={stateApp.activeDeal?.cardId}
-                    loading={viewFileLoading}
-                    disabled={!stateApp.activeDeal?.cardId}
-                    handleOpenExpandableCard={handleOpenExpandableCard}
-                  />
+                  <div style={{ marginTop: 20 }}>
+                    <AddDialogeUploadZone
+                      isTransactPage={true}
+                      filesData={viewFileResult}
+                      id={stateApp.activeDeal?.cardId}
+                      loading={viewFileLoading}
+                      setUploadedFileData={setUploadedFileData}
+                      // disabled={!stateApp.activeDeal?.cardId}
+                      handleOpenExpandableCard={handleOpenExpandableCard}
+                    ></AddDialogeUploadZone>
                   </div>
-
 
                   {/* Here is flow lane form */}
-                  <div style={{marginTop: 15, marginBottom: 50}}>
-                  <DealTasksProgressZone
-                    toggleProgressDetail={toggleProgressDetail}
-                    dealSettings={get(dealSettings, "dealSettings", [])}
-                    users={users}
-                    activeDeal={stateApp.activeDeal}
-                  />
+                  <div style={{ marginTop: 15, marginBottom: 50 }}>
+                    <DealTasksProgressZone
+                      toggleProgressDetail={toggleProgressDetail}
+                      dealSettings={get(dealSettings, "dealSettings", [])}
+                      users={users}
+                      activeDeal={stateApp.activeDeal}
+                    />
                   </div>
-
-
                 </div>
               </div>
             )}
           </div>
           {stateApp.transactBarView === "Deal" && (
-
-          <div style={{marginTop: 2,}}>
-            <DealComment setNewCommentId={setNewCommentId} targetSourceId={stateApp.activeDeal?.cardId} />
-          </div>
-
+            <div style={{ marginTop: 2 }}>
+              <DealComment setNewCommentId={setNewCommentId} targetSourceId={stateApp.activeDeal?.cardId} />
+            </div>
           )}
         </RightDialog>
       </div>

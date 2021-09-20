@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import AppBar from "@material-ui/core/AppBar";
-import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
+import { Typography, AppBar, Button, ButtonGroup, Tooltip, IconButton } from "@material-ui/core";
+import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import Add from "@material-ui/icons/Add";
 import { makeStyles } from "@material-ui/core/styles";
-import Pipelines from "./Pipelines";
-import { useSelector } from "react-redux";
+import { setFlowState } from "actions";
+// import Pipelines from "./Pipelines";
+import PipelineCustomDialog from "./PipelineCustomizeDialog";
+import { useSelector, useDispatch } from "react-redux";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -140,7 +141,13 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#263451",
       color: "#fff",
     },
-  }
+  },
+  settingsButton: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    float: "right",
+  },
 }));
 
 const sumDeals = (lanes, status) => {
@@ -161,7 +168,8 @@ const sumDeals = (lanes, status) => {
 
 const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
   const classes = useStyles();
-  const { pipeToShow } = useSelector(({ Flow }) => Flow);
+  const dispatch = useDispatch();
+  const { pipeToShow, selectedPipe, openPipeDialog } = useSelector(({ Flow }) => Flow);
   const [openDeals, setOpenDeals] = useState({ count: 0, amount: "$0" });
   const [wonDeals, setWonDeals] = useState({ count: 0, amount: "$0" });
   const [lostDeals, setLostDeals] = useState({ count: 0, amount: "$0" });
@@ -186,7 +194,33 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
     <>
       <AppBar elevation={1} className={classes.root} position="static" variant="outlined">
         <div className={classes.top} style={{ marginTop: 15 }}>
-          <Pipelines />
+          <div className={classes.settingsButton}>
+            {selectedPipe && (
+              <Typography style={{ marginLeft: 10 }} variant="h5" color="textPrimary" fontWeight="fontWeightBold">
+                {selectedPipe.name}
+              </Typography>
+            )}
+
+            <Tooltip title={"Flowline Actions"}>
+              <IconButton
+                disabled={!selectedPipe}
+                size="medium"
+                style={{ marginLeft: 10, marginRight: 10 }}
+                onClick={() => {
+                  dispatch(
+                    setFlowState({
+                      openPipeDialog: true,
+                    })
+                  );
+                }}
+              >
+                <ExpandMoreIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
+
+          {/* <Pipelines /> */}
+          {openPipeDialog && <PipelineCustomDialog />}
           <div className={classes.left}>
             <div>
               <Button onClick={handleClickAddDeal} color="secondary" className={classes.newDealAction} startIcon={<Add />}>

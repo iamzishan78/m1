@@ -9,6 +9,7 @@ import { useHistory } from "react-router-dom";
 
 //icons
 import IconButton from "@material-ui/core/IconButton";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import Dialog from "@material-ui/core/Dialog";
 import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "../../../actions";
@@ -80,12 +81,6 @@ const useStyles = makeStyles((theme) => ({
   },
   settingGroup: {
     "& .MuiTypography-body1": { fontSize: "1.2rem !important" },
-  },
-  settingsButton: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    float: "right",
   },
 }));
 
@@ -165,7 +160,7 @@ export default function Pipelines(props) {
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
   const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES);
-  
+
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
   const [getPipeline, { loading: loadingPipeline, data: pipelineData }] = useLazyQuery(GETPIPELINE, {
     fetchPolicy: "cache-and-network",
@@ -442,13 +437,6 @@ export default function Pipelines(props) {
     setStages([...reorderedStages]);
   };
 
-  const handleToggleRotten = (stage, index) => {
-    const upStages = [...stages];
-    upStages[index] = { ...stage, rotten: !stage.rotten };
-    setStages([...upStages]);
-    // }
-  };
-
   const handleAddStage = () => {
     if (error) setError(false);
     // if (addingNewPipe) {
@@ -488,9 +476,11 @@ export default function Pipelines(props) {
         //// save it
         addPipeline({
           variables: {
-            name,
-            stages,
-            userId: stateApp.user.mongoId,
+            pipeline: {
+              name,
+              stages,
+              userId: stateApp.user.mongoId,
+            },
           },
           refetchQueries: ["getPipelines", "getPipeline"],
           awaitRefetchQueries: true,
@@ -677,7 +667,7 @@ export default function Pipelines(props) {
   };
 
   const handleDeleteFlowLine = () => {
-    openDeleteDialog("pipe")
+    openDeleteDialog("pipe");
     setDeleteFunc(() => () => {
       updatePipelines({
         variables: {
@@ -687,7 +677,7 @@ export default function Pipelines(props) {
         awaitRefetchQueries: true,
       });
     });
-  }
+  };
 
   return (
     <React.Fragment>

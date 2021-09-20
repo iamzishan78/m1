@@ -25,7 +25,8 @@ export default function AlertDialogSlide(props) {
         margin: "0 !important",
         borderTopRightRadius: "0 !important",
         overflowX: "hidden",
-        overflowY: props.hiddenOverflow ? "hidden" : "auto"
+        overflowY: props.hiddenOverflow ? "hidden" : "auto",
+        transition: "width 0.5s",
       },
       "& .MuiListItem-container": {
         borderBottom: "1px solid #c7c7c7",
@@ -55,7 +56,7 @@ export default function AlertDialogSlide(props) {
       onClose={props.handleClickDialogClose}
       aria-labelledby="alert-dialog-slide-title"
       aria-describedby="alert-dialog-slide-description"
-      style={{ zIndex: 1222, border: "4px solid green", inset: "unset" }}
+      style={{ zIndex: 9999, border: "4px solid green", inset: "unset" }}
     >
       {props.header && <DialogTitle id="alert-dialog-slide-title">{props.header}</DialogTitle>}
 
