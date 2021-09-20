@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../../AppContext";
+import { NavigationContext } from "../../Navigation/NavigationContext";
 import { Button, Grid } from "@material-ui/core";
 import { CSVReader, CSVDownloader } from "react-papaparse";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
@@ -177,6 +178,7 @@ const StyledTableCell = withStyles((theme) => ({
 export default function CSVFileReader(props) {
   const dispatch = useDispatch();
   let [stateApp, setStateApp] = useContext(AppContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
   const classes = useStyles();
   let unmounted = useRef(false);
 
@@ -190,6 +192,10 @@ export default function CSVFileReader(props) {
     if (!unmounted.current) {
       if (data && data.length <= 10001) {
         mapped_headers_from_CSV(data);
+        stateNav.bulkUploadFromMap && data.forEach((data) => Object.assign(data.data, {
+          ...(stateApp.selectedParcel?.id) && { 'Parcel Id': stateApp.selectedParcel?.id },
+          ...(stateApp.selectedParcel?.shapeLabel) && { 'Parcel Name': stateApp.selectedParcel?.shapeLabel }
+        }))
         setStateApp((state) => ({
           ...state,
           csvContactsList: data,

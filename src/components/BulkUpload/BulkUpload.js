@@ -32,11 +32,18 @@ export default function BulkUpload(props) {
   console.log(history.pathHistory);
 
   const checkModuleHistory = () => {
-    return !!stateNav.bulkUploadFromMap;
+    return !!stateNav.bulkUploadFromMap && 'Map' || !!stateNav.bulkUploadFromContacts && 'Contacts';
   };
 
   useEffect(() => {
     reset_state();
+    return function cleanup() {
+      setStateNav((state) => ({
+        ...state,
+        bulkUploadFromMap: false,
+        bulkUploadFromContacts: false
+      }));
+    };
   }, []);
   const M1neral_headers = [
     {
@@ -467,7 +474,7 @@ export default function BulkUpload(props) {
                 }));
               }}
             >
-              Map
+              {checkModuleHistory()}
             </Link>
           )}
 
@@ -476,7 +483,11 @@ export default function BulkUpload(props) {
           <Typography
             style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}
           >
-            Interest Owner Upload
+            {
+              stateNav.bulkUploadFromMap 
+                ? 'Interest Owner Upload'
+                : 'Import Contacts'
+            }
           </Typography>
         </Breadcrumbs>
       </div>
