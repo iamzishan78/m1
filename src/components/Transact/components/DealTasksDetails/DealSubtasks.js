@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
   subTaskRightGrid: (props) => ({
     alignItems: "right",
+    textAlign: "right",
     "& .MuiIconButton-root": {
       height: "25px",
       width: "25px",
@@ -125,61 +126,65 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
               <span style={{ fontSize: "medium" }}>{truncate(task.name, 18)}</span>
             </Tooltip>
           </Grid>
-          <Grid item className={classes.subTaskRightGrid} onClick={() => setDatePopup(!isDatePopup)}>
+          <Grid item xs={5} className={classes.subTaskRightGrid}>
             {(task.dueDate || showTaskActions) && (
-              <KeyboardDatePicker
-                disableToolbar
-                variant="inline"
-                format="MM/DD/YY"
-                margin="normal"
-                allowKeyboardControl={false}
-                value={task.dueDate || ""}
-                emptyLabel
-                disabled
-                keyboardIcon={task.dueDate && <></>}
-                open={isDatePopup}
-                onChange={(date) => handleUpdateSubtask({ ...task, dueDate: date ? String(date["_d"]) : "" })}
-              />
+              <span onClick={() => setDatePopup(!isDatePopup)} style={{ cursor: "pointer" }}>
+                <KeyboardDatePicker
+                  disableToolbar
+                  variant="inline"
+                  format="MM/DD/YY"
+                  margin="normal"
+                  allowKeyboardControl={false}
+                  value={task.dueDate || ""}
+                  emptyLabel
+                  disabled
+                  keyboardIcon={task.dueDate && <></>}
+                  open={isDatePopup}
+                  onChange={(date) => handleUpdateSubtask({ ...task, dueDate: date ? String(date["_d"]) : "" })}
+                />
+              </span>
             )}
             {(task.assignee || showTaskActions) && (
-              <PopupState variant="popover" popupId="demo-popup-popover">
-                {(popupState) => (
-                  <>
-                    <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
-                      {task.assignee ? (
-                        <CustomAvatar email={approver.email} text={approver.text.toString()} />
-                      ) : (
-                        <AccountCircle fontSize="default" />
-                      )}
-                    </IconButton>
-                    <Popover
-                      {...bindPopover(popupState)}
-                      anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "center",
-                      }}
-                      transformOrigin={{
-                        vertical: "top",
-                        horizontal: "center",
-                      }}
-                    >
-                      <List style={{ maxHeight: 450 }}>
-                        {users.map((user) => (
-                          <ListItem
-                            button
-                            onClick={() => {
-                              handleUpdateSubtask({ ...task, assignee: user.value, assignedDate: new Date().toString() });
-                              popupState.close();
-                            }}
-                          >
-                            <ListItemText primary={user.text} />
-                          </ListItem>
-                        ))}
-                      </List>
-                    </Popover>
-                  </>
-                )}
-              </PopupState>
+              <span>
+                <PopupState variant="popover" popupId="demo-popup-popover">
+                  {(popupState) => (
+                    <>
+                      <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
+                        {task.assignee ? (
+                          <CustomAvatar email={approver.email} text={approver.text.toString()} />
+                        ) : (
+                          <AccountCircle fontSize="default" />
+                        )}
+                      </IconButton>
+                      <Popover
+                        {...bindPopover(popupState)}
+                        anchorOrigin={{
+                          vertical: "bottom",
+                          horizontal: "center",
+                        }}
+                        transformOrigin={{
+                          vertical: "top",
+                          horizontal: "center",
+                        }}
+                      >
+                        <List style={{ maxHeight: 450 }}>
+                          {users.map((user) => (
+                            <ListItem
+                              button
+                              onClick={() => {
+                                handleUpdateSubtask({ ...task, assignee: user.value, assignedDate: new Date().toString() });
+                                popupState.close();
+                              }}
+                            >
+                              <ListItemText primary={user.text} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Popover>
+                    </>
+                  )}
+                </PopupState>
+              </span>
             )}
           </Grid>
         </Grid>
@@ -188,14 +193,13 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
   );
 };
 
-const Subtasks = (props) => {
+const DealSubtasks = (props) => {
   const { tasks, users } = props;
   const [items, setItems] = useState([]);
 
   const [updateSubtask] = useMutation(UPDATE_DEAL_SUBTASK);
 
   useEffect(() => {
-    debugger;
     setItems(tasks.map((t, index) => ({ ...t, id: `${index + 1}`, depth: 0 })));
   }, [tasks]);
 
@@ -235,4 +239,4 @@ const Subtasks = (props) => {
   );
 };
 
-export default Subtasks;
+export default DealSubtasks;

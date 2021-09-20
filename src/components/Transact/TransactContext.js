@@ -8,6 +8,7 @@ const TransactContextProvider = (props) => {
     profilesInfo: {},
     selectedTask: {},
     projects: [],
+    dealToCreate: {},
   });
   return <TransactContext.Provider value={[stateTransact, setStateTransact]}>{props.children}</TransactContext.Provider>;
 };

@@ -1,47 +1,25 @@
 import React, { useMemo, useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { get } from 'lodash';
-import gql from "graphql-tag";
-import moment from "moment";
-import Card from "@material-ui/core/Card";
-import Button from "@material-ui/core/Button";
+import { get } from "lodash";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFilePdf,
-  faFilePowerpoint,
-  faFileWord,
-  faFileExcel,
-  faFile,
-  faFileArchive,
-  faFileCode,
-  faFileImage,
-} from "@fortawesome/free-solid-svg-icons";
 // import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "../../Shared/DeleteDocumentConfirmation";
-import { ADDFILE } from "../../../graphQL/useMutationAddFile";
 import { AppContext } from "../../../AppContext";
-import { ADDDESCRIPTORFILE } from "../../../graphQL/useMutationAddDescriptorFile";
 import { GETRECENTCONTACTFILES } from "../../../graphQL/useQueryGetContactFiles";
 import { DELETEDESCRIPTORFILE } from "../../../graphQL/useMutationDeleteDescriptorFile";
 import { VIEWFILEQUERY } from "../../../graphQL/useQueryViewFile";
-import { useDispatch } from "react-redux";
 import UploadZone from "./DailogUploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
-import { CircularProgress } from "@material-ui/core";
-import { Document, Page, pdfjs } from "react-pdf";
+import { pdfjs } from "react-pdf";
 
-// functions 
-import get_file_icon from "../../../components/Shared/functions/get_file_icon.js";
-
+// functions
+import get_file_icon from "components/Shared/functions/get_file_icon.js";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const useStyles = makeStyles((theme) => ({
@@ -183,47 +161,44 @@ export default function Documents(props) {
     else return ["Contact", 2];
   }, [props.isTransactPage]);
 
-  const [getRecentFiles, { data: files }] = useLazyQuery(
-    GETRECENTCONTACTFILES,
-    {
-      fetchPolicy: "cache-and-network",
-      onCompleted: ({ getFileDescriptors }) => {
-        let allActive = true;
+  const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
+    fetchPolicy: "cache-and-network",
+    onCompleted: ({ getFileDescriptors }) => {
+      let allActive = true;
 
-        console.log("File descriptors: ", getFileDescriptors);
-        if (getFileDescriptors)
-          for (let i = 0; i < getFileDescriptors.length; i++) {
-            if (getFileDescriptors[i].fileState !== "active") {
-              allActive = false;
-              break;
-            }
+      console.log("File descriptors: ", getFileDescriptors);
+      if (getFileDescriptors)
+        for (let i = 0; i < getFileDescriptors.length; i++) {
+          if (getFileDescriptors[i].fileState !== "active") {
+            allActive = false;
+            break;
           }
+        }
 
-        if (!allActive) {
-          if (fileRequestCounter <= 40) {
-            let waitBeforeRequestAgain = setTimeout(() => {
-              setFileRequestCounter(fileRequestCounter + 1);
-              getRecentFiles({
-                variables: {
-                  relatedObjectId: props.id,
-                  relatedObjectType,
-                  limit,
-                },
-              });
-              clearTimeout(waitBeforeRequestAgain);
-            }, 1000);
-          } else {
-            setFileRequestCounter(1);
-            // dispatch(
-            //   showWarningMessage(
-            //     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
-            //   )
-            // );
-          }
-        } else setFileRequestCounter(1);
-      },
-    }
-  );
+      if (!allActive) {
+        if (fileRequestCounter <= 40) {
+          let waitBeforeRequestAgain = setTimeout(() => {
+            setFileRequestCounter(fileRequestCounter + 1);
+            getRecentFiles({
+              variables: {
+                relatedObjectId: props.id,
+                relatedObjectType,
+                limit,
+              },
+            });
+            clearTimeout(waitBeforeRequestAgain);
+          }, 1000);
+        } else {
+          setFileRequestCounter(1);
+          // dispatch(
+          //   showWarningMessage(
+          //     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
+          //   )
+          // );
+        }
+      } else setFileRequestCounter(1);
+    },
+  });
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
 
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
@@ -255,7 +230,7 @@ export default function Documents(props) {
   }, [viewFileResult]);
 
   useEffect(() => {
-    setStateApp((state) => ({ ...state, filesDescriptors: files?.getFileDescriptors }))
+    setStateApp((state) => ({ ...state, filesDescriptors: files?.getFileDescriptors }));
   }, [files]);
 
   const handleDeleteCancel = () => {
@@ -295,13 +270,12 @@ export default function Documents(props) {
     setNumPages(numPages);
   }
 
-
   return (
     <div className={classes.root} variant="outlined">
       <CardActions style={{ padding: "23px 0px 8px 0px" }}>
         {props.isTransactPage && (
           <Grid item xs={12} style={{ minHeight: "35px" }}>
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents ({get(files, 'getFileDescriptors.length', 0)})</h4>
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Documents ({get(files, "getFileDescriptors.length", 0)})</h4>
             <h4
               className={classes.viewAll}
               onClick={() => {
@@ -331,15 +305,13 @@ export default function Documents(props) {
           <Grid container spacing={0}>
             {console.log(recentFiles, "Files data in Adddialog")}
             {recentFiles?.map((value, key) => {
-              let fileExtension = value?.name
-                ?.slice(value.name.lastIndexOf(".") + 1)
-                ?.toLowerCase();
+              let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
 
-              console.log('VALUE TEST GOOD ONE', value)
+              console.log("VALUE TEST GOOD ONE", value);
 
               if (key <= 2) {
                 return (
-                  <Grid item xs={3} key={key} className="" >
+                  <Grid item xs={3} key={key} className="">
                     <LightTooltip
                       title={
                         <div className={classes.IconSection}>
@@ -347,25 +319,16 @@ export default function Documents(props) {
                             size="small"
                             onClick={() => {
                               setOpenDeleteConfirmDialog(true);
-                              setFileIdToDelete(
-                                files?.getFileDescriptors[key].descriptorId
-                              );
+                              setFileIdToDelete(files?.getFileDescriptors[key].descriptorId);
                             }}
                           >
                             <DeleteIcon />
                           </IconButton>
 
                           <IconButton
-                            disabled={
-                              files?.getFileDescriptors[key]?.fileState !==
-                              "active"
-                            }
+                            disabled={files?.getFileDescriptors[key]?.fileState !== "active"}
                             size="small"
-                            onClick={() =>
-                              handleViewFile(
-                                files?.getFileDescriptors[key].fileId
-                              )
-                            }
+                            onClick={() => handleViewFile(files?.getFileDescriptors[key].fileId)}
                           >
                             <GetAppIcon />
                           </IconButton>
@@ -374,44 +337,30 @@ export default function Documents(props) {
                       interactive
                     >
                       <div>
-                        {new RegExp(
-                          ["jpg", "jpeg", "png", "bmp"].join("|")
-                        ).test(fileExtension) ? (
-                          <img
-                            src={value.uri}
-                            alt={value.name}
-                            className={classes.forImage}
-                          ></img>
+                        {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
+                          <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                         ) : (
-                          <div className={classes.forImageContainer}
-
+                          <div
+                            className={classes.forImageContainer}
                             onClick={() => {
-
-                              if (fileExtension === 'pdf') {
-                                setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } })
+                              if (fileExtension === "pdf") {
+                                setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } });
+                              } else {
+                                handleViewFile(files?.getFileDescriptors[key].fileId);
                               }
-                              else {
-                                handleViewFile(
-                                  files?.getFileDescriptors[key].fileId
-                                )
-                              }
-                            }}>
-
+                            }}
+                          >
                             {get_file_icon(fileExtension)}
                           </div>
                         )}
-                        <div className={classes.imageSubText}>
-                          {value?.name?.length > 12
-                            ? value.name.slice(0, 8) + "..."
-                            : value.name}
-                        </div>
+                        <div className={classes.imageSubText}>{value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}</div>
                       </div>
                     </LightTooltip>
                   </Grid>
                 );
               }
             })}
-            <Grid item xs={4} >
+            <Grid item xs={4}>
               <div className={classes.Uploadcomp}>
                 <UploadZone
                   style={{ width: "150px", height: "150px" }}

@@ -56,7 +56,7 @@ export default function AlertDialogSlide(props) {
       onClose={props.handleClickDialogClose}
       aria-labelledby="alert-dialog-slide-title"
       aria-describedby="alert-dialog-slide-description"
-      style={{ zIndex: 9999, border: "4px solid green", inset: "unset" }}
+      style={{ zIndex: 1222, border: "4px solid green", inset: "unset" }}
     >
       {props.header && <DialogTitle id="alert-dialog-slide-title">{props.header}</DialogTitle>}
 

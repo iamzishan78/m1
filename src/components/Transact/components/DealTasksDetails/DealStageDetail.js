@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import _ from "underscore";
 import { get } from "lodash";
 import { useMutation } from "@apollo/client";
@@ -10,9 +10,9 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import ProgressBar from "../../../Shared/ui/ProgressBar";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
-import Subtasks from "components/Transact/components/DealTasksDetails/Subtasks";
+import DealSubtasks from "components/Transact/components/DealTasksDetails/DealSubtasks";
 
-import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
+import { TransactContext } from "components/Transact/TransactContext";
 import { ADD_DEAL_SUBTASK } from "graphQL/useMutationDealSubtask";
 
 const useStyles = makeStyles((theme) => ({
@@ -86,13 +86,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function DealStageDetail({ settings, index, users, stateTransact, extendedTaskIndex, user, activeDeal }) {
+function DealStageDetail({ settings, index, users, extendedTaskIndex, user, activeDeal, updateStageDealDescriptor }) {
   const classes = useStyles();
   const [isNewSubtask, setNewSubtask] = useState({ index: -1, value: false });
   const approver = users.find((user) => user?.value === settings.stageDealDescriptor.approver);
+  const [stateTransact, setStateTransact] = useContext(TransactContext);
 
-  const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
-  const [addDealSubtask] = useMutation(ADD_DEAL_SUBTASK);
+  const [addSubtask, { data: addedSubtask }] = useMutation(ADD_DEAL_SUBTASK);
+
+  useEffect(() => {
+    if (addedSubtask && !activeDeal._id) {
+      setStateTransact((stateTransact) => ({
+        ...stateTransact,
+        dealToCreate: { _id: addedSubtask.task.pipeline },
+      }));
+    }
+  }, [addedSubtask, setStateTransact]);
 
   const handleChangeSettings = (setting, params) => {
     const descriptor = {
@@ -115,7 +124,7 @@ function DealStageDetail({ settings, index, users, stateTransact, extendedTaskIn
   };
 
   const handleNewSubtask = (setting, params) => {
-    addDealSubtask({
+    addSubtask({
       variables: {
         task: params,
         stageId: setting._id,
@@ -223,7 +232,7 @@ function DealStageDetail({ settings, index, users, stateTransact, extendedTaskIn
               />
             </Grid>
             <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
-              <Subtasks tasks={settings.tasks} users={users} />
+              <DealSubtasks tasks={settings.tasks} users={users} />
             </Grid>
             {isNewSubtask.index === index && isNewSubtask.value && (
               <Grid item xs={12} className={classes.addSubTaskButton}>

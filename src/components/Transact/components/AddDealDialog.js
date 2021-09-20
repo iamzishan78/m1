@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, Fragment } from "react";
 import { get } from "lodash";
+import _ from "underscore";
 import { useHistory } from "react-router-dom";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -13,7 +14,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
-import { AppContext } from "../../../AppContext";
+import { AppContext } from "AppContext";
+import { TransactContext } from "components/Transact/TransactContext";
 import { CONTACT } from "../../../graphQL/useQueryContact";
 import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
@@ -364,9 +366,9 @@ function AddDealDialog(props) {
   let history = useHistory();
   const classes = useStyles();
   const { selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
-  const [isProgressDetail, toggleProgressDetail] = useState(null);
   const [newCommentsIds, setNewCommentsIds] = useState([]);
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [titleFocus, setTitleFocus] = useState(false);
   const [label, setLabel] = useState("");
@@ -411,7 +413,7 @@ function AddDealDialog(props) {
   const [updateDeal, { loading: updateDealLoading }] = useMutation(UPDATEDEAL);
   const [upsertDealDescriptor] = useMutation(UPSERTDEALDESCRIPTOR);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
-  const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
+  const [updateStageDealDescriptor, { data: updatedStageDealDescriptor }] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
 
   const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
@@ -431,22 +433,22 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     getPipelines();
-  }, []);
+  }, [getPipelines]);
 
+  //? pre saving the deal id in case deal descriptors
+  //? are created before deal
   useEffect(() => {
-    console.log("===========");
-    console.log("FLOW TRANSACT BAR VIEW", stateApp.transactBarView);
-
-    if (stateApp.transactBarView !== "Deal") {
-      // handleValidate();
-
-      if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
-        addUpdateDeal(null, false);
-      }
-    } else {
-      toggleProgressDetail(false);
+    if (updatedStageDealDescriptor) {
+      const {
+        updateStageDealDescriptor: { stageDealDescriptors },
+      } = updatedStageDealDescriptor;
+      if (stageDealDescriptors)
+        setStateTransact((stateTransact) => ({
+          ...stateTransact,
+          dealToCreate: { _id: stageDealDescriptors.descriptorObject },
+        }));
     }
-  }, [stateApp.transactBarView]);
+  }, [updatedStageDealDescriptor]);
 
   useEffect(() => {
     getDeal({
@@ -461,26 +463,25 @@ function AddDealDialog(props) {
         ...stateApp,
         activeDeal: dealData?.addDeal?.deal,
       }));
+      setStateTransact((stateTransact) => ({
+        ...stateTransact,
+        dealToCreate: {},
+      }));
     }
   }, [dealData]);
 
   useEffect(() => {
     if (stateApp.activeDeal && pipelineId) {
       // fetching deal settings
+      const dealId = get(stateApp, "activeDeal._id", get(stateTransact, "dealToCreate._id"));
       getDealSettings({
         variables: {
-          dealId: stateApp.activeDeal._id,
+          dealId,
           pipelineId: pipelineId,
         },
       });
     }
-  }, [pipelineId, stateApp.activeDeal]);
-
-  useEffect(() => {
-    if (isProgressDetail) {
-      setStateApp((stateApp) => ({ ...stateApp, transactBarView: "Task Progress" }));
-    }
-  }, [isProgressDetail]);
+  }, [pipelineId, stateApp.activeDeal, stateTransact.dealToCreate]);
 
   useEffect(() => {
     if (pipelinesData) {
@@ -607,6 +608,17 @@ function AddDealDialog(props) {
   const [trackByObjectId, { loading: loadingTrack, data: dataTrack }] = useLazyQuery(TRACKBYOBJECTID);
 
   const [target, setTarget] = useState({});
+
+  useEffect(() => {
+    console.log("===========");
+    console.log("FLOW TRANSACT BAR VIEW", stateApp.transactBarView);
+
+    if (stateApp.transactBarView !== "Deal") {
+      if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
+        addUpdateDeal(null, false);
+      }
+    }
+  }, [stateApp.transactBarView]);
 
   useEffect(() => {
     if (dataTrack) {
@@ -753,7 +765,7 @@ function AddDealDialog(props) {
     //// stageId, pipelineId, ownerId, contactId
 
     if (pipelineId && stageId && title && title.trim() !== "") {
-      const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
+      const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?._id;
       let selectedDate = closeDate;
       if (closeDate instanceof Date) {
         selectedDate = moment(closeDate).format("YYYY-MM-DD");
@@ -967,7 +979,7 @@ function AddDealDialog(props) {
           variables = { ...variables, comments: newCommentsIds };
         }
         addDeal({
-          variables,
+          variables: { ...variables, deal: { ...variables.deal, _id: get(stateTransact, "dealToCreate._id") } },
           refetchQueries: [
             "getPipeline",
             "getContactDeals",
@@ -1041,25 +1053,15 @@ function AddDealDialog(props) {
   };
 
   const addSelectedContactToDeal = (contact) => {
-    // HERE
     upsertDealDescriptor({
       variables: {
-        dealId: cardId,
+        dealId: stateApp.activeDeal._id,
         relatedObject: [contact._id],
         relatedObjectType: "Contact",
         userId: stateApp.user.mongoId,
       },
-      refetchQueries: ["getPipeline", "getContactDeals"],
+      refetchQueries: ["getPipeline", "getContactDeals", "getDeal"],
       awaitRefetchQueries: true,
-    }).then((result) => {
-      const {
-        data: { upsertDealDescriptor },
-      } = result;
-
-      // if (upsertDealDescriptor?.success === false) success = false;
-      // resolve();
-
-      refetchDeal();
     });
   };
 
@@ -1077,7 +1079,7 @@ function AddDealDialog(props) {
 
   const getView = () => {
     if (stateApp.transactBarView === "Documents") {
-      return <Documents id={stateApp.activeDeal?.cardId} user_id={stateApp.user.email} isTransactPage={true} />;
+      return <Documents id={stateApp.activeDeal?._id} user_id={stateApp.user.email} isTransactPage={true} />;
     } else if (stateApp.transactBarView === "Contacts") {
       return <Contacts addSelectedContact={addSelectedContactToDeal} loading={getDealLoading} getDeal={refetchDeal} />;
     } else if (stateApp.transactBarView === "Task Progress") {
@@ -1088,6 +1090,8 @@ function AddDealDialog(props) {
           activeDeal={stateApp.activeDeal}
           dealSettings={get(dealSettings, "dealSettings", [])}
           user={stateApp.user}
+          updateStageDealDescriptor={updateStageDealDescriptor}
+          pipelineId={pipelineId}
         />
       );
     }
@@ -1369,7 +1373,9 @@ function AddDealDialog(props) {
           <StickyHeader />
           <Drawer top={contact.name && !props.isTransactPage ? "160px" : "152px"} />
           <div className={classes.contentRoot}>
-            {props.isTransactPage && stateApp.transactBarView !== "Deal" && (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
+            {props.isTransactPage &&
+            stateApp.transactBarView !== "Deal" &&
+            (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
               <Fragment>{getView()}</Fragment>
             ) : (
               <div className={classes.inputFieldRoot}>
@@ -1631,10 +1637,11 @@ function AddDealDialog(props) {
                   {/* Here is flow lane form */}
                   <div style={{ marginTop: 15, marginBottom: 50 }}>
                     <DealTasksProgressZone
-                      toggleProgressDetail={toggleProgressDetail}
                       dealSettings={get(dealSettings, "dealSettings", [])}
                       users={users}
                       activeDeal={stateApp.activeDeal}
+                      updateStageDealDescriptor={updateStageDealDescriptor}
+                      pipelineId={pipelineId}
                     />
                   </div>
                 </div>

@@ -25,7 +25,7 @@ import {
   faFileExcel,
   faFileArchive,
   faFileCode,
-  faFileImage
+  faFileImage,
 } from "@fortawesome/free-solid-svg-icons";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import GetAppIcon from "@material-ui/icons/GetApp";
@@ -34,7 +34,6 @@ import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
 import { ADDFILE } from "../../graphQL/useMutationAddFile";
 import { AppContext } from "../../AppContext";
-import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
 import { GETRECENTCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { DELETEDESCRIPTORFILE } from "../../graphQL/useMutationDeleteDescriptorFile";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "../../graphQL/useQueryViewFile";
@@ -51,15 +50,15 @@ const useStyles = makeStyles((theme) => ({
   },
   timelineItemRight: {
     "&:before": {
-      content: "none"
-    }
+      content: "none",
+    },
   },
   forImage: {
     width: "80px",
     height: "80px",
     backgroundColor: "transparent !important",
     border: "1px solid #999",
-    borderRadius: "12px"
+    borderRadius: "12px",
   },
   viewAll: {
     textDecoration: "underline",
@@ -69,20 +68,20 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     fontWeight: "normal",
     "&:hover": { color: "#757575" },
-    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms"
+    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
   timelineText: {
     "& .MuiTypography-body1": { fontSize: "0.85rem" },
     "& .MuiTypography-body2": { fontSize: "0.7rem" },
     "&  p": {
-      margin: "0"
-    }
+      margin: "0",
+    },
   },
   blue: {
-    color: theme.palette.secondary.main
+    color: theme.palette.secondary.main,
   },
   todayDot: {
-    fontSize: "8px"
+    fontSize: "8px",
   },
 
   fileList: {
@@ -94,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "15px 30px 30px 30px",
     overflowY: "auto",
     maxHeight: "54vh",
-    marginTop: "21px"
+    marginTop: "21px",
   },
   fileUploadTopSection: {
     minHeight: "50px",
@@ -102,28 +101,28 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    marginBottom: "23px"
+    marginBottom: "23px",
   },
   flexIcon: {
-    display: "flex"
+    display: "flex",
   },
   uploadTitle: {
     margin: "0",
     color: "#757575",
     fontWeight: "normal",
-    marginBottom: "8px"
+    marginBottom: "8px",
   },
   uploadSubtext: {
     color: "rgb(176, 176, 176)",
     margin: "0",
-    fontWeight: "normal"
+    fontWeight: "normal",
   },
   IconSection: {
     minHeight: "35px",
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
-    width: "fit-content"
+    width: "fit-content",
   },
   fileDrop: {
     minHeight: "125px",
@@ -137,10 +136,10 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     border: "2px dashed rgb(176, 176, 176)",
-    marginBottom: "30px"
+    marginBottom: "30px",
   },
   fileDropError: {
-    color: "red"
+    color: "red",
   },
   // forImage: {
   //   width: "80px !important",
@@ -177,24 +176,24 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "10px",
 
     "& svg": {
-      fill: "#999 !important"
-    }
+      fill: "#999 !important",
+    },
   },
   disabledDownload: {
     cursor: "auto !important",
     backgroundColor: "#e9e9e978 !important",
     "& svg": {
-      fill: "#d3d3d3ab !important"
-    }
+      fill: "#d3d3d3ab !important",
+    },
   },
   rootPadding: {
     padding: "0px 25px",
-    maxHeight: "60px"
+    maxHeight: "60px",
   },
   cardContent: {
     "& .MuiCardContent-root": {
-      padding: 0
-    }
+      padding: 0,
+    },
   },
   docUploader: {
     bottom: "0px !important",
@@ -264,67 +263,47 @@ export default function Documents(props) {
     else return ["Contact", 2];
   }, [props.isTransactPage]);
 
-  const [getRecentFiles, { data: files, loading }] = useLazyQuery(
-    GETRECENTCONTACTFILES,
-    {
-      fetchPolicy: "cache-and-network",
-      onCompleted: ({ getFileDescriptors }) => {
-        let allActive = true;
+  const [getRecentFiles, { data: files, loading }] = useLazyQuery(GETRECENTCONTACTFILES, {
+    fetchPolicy: "cache-and-network",
+    onCompleted: ({ getFileDescriptors }) => {
+      let allActive = true;
 
-        console.log("File descriptors: ", getFileDescriptors);
-        if (getFileDescriptors)
-          for (let i = 0; i < getFileDescriptors.length; i++) {
-            if (getFileDescriptors[i].fileState !== "active") {
-              allActive = false;
-              break;
-            }
+      console.log("File descriptors: ", getFileDescriptors);
+      if (getFileDescriptors)
+        for (let i = 0; i < getFileDescriptors.length; i++) {
+          if (getFileDescriptors[i].fileState !== "active") {
+            allActive = false;
+            break;
           }
+        }
 
-        if (!allActive) {
-          if (fileRequestCounter <= 40) {
-            let waitBeforeRequestAgain = setTimeout(() => {
-              setFileRequestCounter(fileRequestCounter + 1);
-              getRecentFiles({
-                variables: {
-                  relatedObjectId: props.id,
-                  relatedObjectType,
-                  limit
-                }
-              });
-              clearTimeout(waitBeforeRequestAgain);
-            }, 1000);
-          } else {
-            setFileRequestCounter(1);
-            // dispatch(
-            //   showWarningMessage(
-            //     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
-            //   )
-            // );
-          }
-        } else setFileRequestCounter(1);
-      }
-    }
-  );
+      if (!allActive) {
+        if (fileRequestCounter <= 40) {
+          let waitBeforeRequestAgain = setTimeout(() => {
+            setFileRequestCounter(fileRequestCounter + 1);
+            getRecentFiles({
+              variables: {
+                relatedObjectId: props.id,
+                relatedObjectType,
+                limit,
+              },
+            });
+            clearTimeout(waitBeforeRequestAgain);
+          }, 1000);
+        } else {
+          setFileRequestCounter(1);
+          // dispatch(
+          //   showWarningMessage(
+          //     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
+          //   )
+          // );
+        }
+      } else setFileRequestCounter(1);
+    },
+  });
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
-
-  // const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
-  //   ADDDESCRIPTORFILE,
-  //   {
-  //     refetchQueries: ["getRecentContactFiles"],
-  //     awaitRefetchQueries: true,
-  //     //   onCompleted: () => {
-  //     //     // setTimeout(() => {
-  //     //     //   getRecentFiles({
-  //     //     //     variables: {
-  //     //     //       contactId: props.id,
-  //     //     //     },
-  //     //     //   });
-  //     //     // }, 3000);
-  //     //   },
-  //   }
-  // );
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "no-cache"
+    fetchPolicy: "no-cache",
   });
 
   // const [viewFile, { data: viewFileData }] = useLazyQuery(VIEWFILEQUERY, {
@@ -335,15 +314,14 @@ export default function Documents(props) {
       variables: {
         relatedObjectId: props.id,
         relatedObjectType,
-        limit
-      }
+        limit,
+      },
     });
   }, [props.id]);
 
-  const [viewFiles, { data: viewFileResultt, loading: viewFileLoading }] =
-    useLazyQuery(VIEWFILESQUERY, {
-      fetchPolicy: "no-cache"
-    });
+  const [viewFiles, { data: viewFileResultt, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
+    fetchPolicy: "no-cache",
+  });
   useEffect(() => {
     if (files && files?.getFileDescriptors?.length > 0) {
       let ID = [];
@@ -353,7 +331,7 @@ export default function Documents(props) {
       }
 
       viewFiles({
-        variables: { fileIds: ID }
+        variables: { fileIds: ID },
       });
     }
   }, [files]);
@@ -382,10 +360,10 @@ export default function Documents(props) {
     if (fileIdToDelete) {
       deleteFile({
         variables: {
-          id: fileIdToDelete
+          id: fileIdToDelete,
         },
         refetchQueries: ["getRecentContactFiles", "getContactFiles"],
-        awaitRefetchQueries: true
+        awaitRefetchQueries: true,
       });
       setFileIdToDelete(null);
       setOpenDeleteConfirmDialog(false);
@@ -410,19 +388,15 @@ export default function Documents(props) {
   }, [viewFileResult]);
 
   useEffect(() => {
-    let filtered = viewFileResultt?.viewFiles?.filter((doc) =>
-      doc.name.toLowerCase().includes(documentSearch.toLowerCase())
-    );
+    let filtered = viewFileResultt?.viewFiles?.filter((doc) => doc.name.toLowerCase().includes(documentSearch.toLowerCase()));
 
     let filteredMerged = filtered?.map((doc) => {
-      let fileDescriptor = files?.getFileDescriptors?.find(
-        (file) => file.fileId === doc.id
-      );
+      let fileDescriptor = files?.getFileDescriptors?.find((file) => file.fileId === doc.id);
       return {
         ...doc,
         descriptorId: fileDescriptor?.descriptorId,
         state: fileDescriptor?.fileState,
-        dateTime: fileDescriptor?.dateTime
+        dateTime: fileDescriptor?.dateTime,
       };
     });
     setFilteredDocuments(filteredMerged);
@@ -433,9 +407,7 @@ export default function Documents(props) {
       {!props.isTransactPage && (
         <CardActions style={{ padding: "23px 23px 8px 23px" }}>
           <Grid item xs={12} style={{ minHeight: "35px" }}>
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
-              Recent Documents
-            </h4>
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Recent Documents</h4>
             <h4
               className={classes.viewAll}
               // onClick={(e) => {
@@ -464,12 +436,7 @@ export default function Documents(props) {
       <div className={classes.cardContent}>
         <CardContent>
           <div className={classes.rootPadding}>
-            <Grid
-              container
-              direction="row"
-              justify="space-between"
-              alignItems="center"
-            >
+            <Grid container direction="row" justify="space-between" alignItems="center">
               {!isSearchActive && (
                 <Grid item xs={10} style={{ marginTop: "-28px" }}>
                   <Typography variant="h6">Documents</Typography>
@@ -482,7 +449,7 @@ export default function Documents(props) {
                   </Tooltip>
                   <InputBase
                     id="searchInput1"
-                    autoComplete='off'
+                    autoComplete="off"
                     placeholder="Search Documents"
                     classes={{
                       root: classes.inputRoot,
@@ -501,12 +468,7 @@ export default function Documents(props) {
                 </div>
               </Grid>
               <Grid item xs={1} style={{ marginTop: "7px" }}>
-                <UploadZone
-                  relatedObjectId={props.id}
-                  userId={userId}
-                  relatedObjectType={relatedObjectType}
-                  customClass
-                />
+                <UploadZone relatedObjectId={props.id} userId={userId} relatedObjectType={relatedObjectType} customClass />
               </Grid>
             </Grid>
           </div>
@@ -521,9 +483,7 @@ export default function Documents(props) {
                   </div>
                 );
 
-              let fileExtension = file?.name
-                ?.slice(file.name.lastIndexOf(".") + 1)
-                ?.toLowerCase();
+              let fileExtension = file?.name?.slice(file.name.lastIndexOf(".") + 1)?.toLowerCase();
 
               return (
                 <div key={file.id}>
@@ -532,19 +492,14 @@ export default function Documents(props) {
                       {
                         <div
                           className={`${classes.greySquare} 
-                        // ${file.state !== "active"
-                            //   ? classes.disabledDownload
-                            //   : ""
-                            }`}
+                        // ${
+                          file.state !== "active"
+                          //   ? classes.disabledDownload
+                          //   : ""
+                        }`}
                         >
-                          {new RegExp(
-                            ["jpg", "jpeg", "png", "bmp"].join("|")
-                          ).test(fileExtension) ? (
-                            <img
-                              src={file.uri}
-                              alt={file.name}
-                              className={classes.forImage}
-                            ></img>
+                          {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
+                            <img src={file.uri} alt={file.name} className={classes.forImage}></img>
                           ) : (
                             <div
                               className={classes.forImageContainer}
@@ -554,7 +509,7 @@ export default function Documents(props) {
                                 if (fileExtension === "pdf") {
                                   setStateApp({
                                     ...stateApp,
-                                    viewDoc: { uri: file.uri, name: file.name }
+                                    viewDoc: { uri: file.uri, name: file.name },
                                   });
                                 } else {
                                   handleViewFile(file.id);
@@ -575,7 +530,7 @@ export default function Documents(props) {
                           if (fileExtension === "pdf") {
                             setStateApp({
                               ...stateApp,
-                              viewDoc: { uri: file.uri, name: file.name }
+                              viewDoc: { uri: file.uri, name: file.name },
                             });
                           } else {
                             handleViewFile(file.id);
@@ -584,17 +539,9 @@ export default function Documents(props) {
                       >
                         {/* }}> */}
 
-                        <h4 className={classes.uploadTitle}>
-                          {file?.name?.length > 22
-                            ? file?.name?.slice(0, 20) + "..."
-                            : file?.name}
-                        </h4>
+                        <h4 className={classes.uploadTitle}>{file?.name?.length > 22 ? file?.name?.slice(0, 20) + "..." : file?.name}</h4>
                         {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
-                        <h5 className={classes.uploadSubtext}>
-                          {moment
-                            .unix(file.dateTime / 1000)
-                            .format("MMM DD, YYYY")}
-                        </h5>
+                        <h5 className={classes.uploadSubtext}>{moment.unix(file.dateTime / 1000).format("MMM DD, YYYY")}</h5>
                       </div>
                     </div>
                     <div className={classes.IconSection}>
@@ -610,11 +557,7 @@ export default function Documents(props) {
                       </IconButton>
 
                       {/* {!props.isTransactPage && ( */}
-                      <IconButton
-                        disabled={file.state !== "active"}
-                        size="small"
-                        onClick={() => handleViewFile(file.id)}
-                      >
+                      <IconButton disabled={file.state !== "active"} size="small" onClick={() => handleViewFile(file.id)}>
                         <GetAppIcon />
                       </IconButton>
                       {/* )} */}
