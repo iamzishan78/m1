@@ -25,9 +25,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function BulkUpload(props) {
+  console.log(props.history.pathHistory);
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
   let history = useHistory();
+  console.log(history.pathHistory);
 
   const checkModuleHistory = () => {
     return !!stateNav.bulkUploadFromMap;
@@ -37,6 +39,12 @@ export default function BulkUpload(props) {
     reset_state();
   }, []);
   const M1neral_headers = [
+    {
+      label: "Contact Id",
+      mapped_key: "",
+      required: false,
+      actual_key: "contactId",
+    },
     {
       label: "Full Name",
       mapped_key: "",
@@ -307,7 +315,108 @@ export default function BulkUpload(props) {
     //   required: false,
     //   actual_key: "lastUpdateBy",
     // },
-
+    {
+      label: "Parcel Id",
+      mapped_key: "",
+      required: false,
+      actual_key: "parcelId",
+    },
+    {
+      label: "Parcel Name",
+      mapped_key: "",
+      required: false,
+      actual_key: "parcelName",
+    },
+    {
+      label: "Surface Interest",
+      mapped_key: "",
+      required: false,
+      actual_key: "surface_interest"
+    },
+    {
+      label: "Mineral Interest",
+      mapped_key: "",
+      required: false,
+      actual_key: "mineral_interest"
+    },
+    {
+      label: "Royalty Interest",
+      mapped_key: "",
+      required: false,
+      actual_key: "royalty_interest"
+    },
+    {
+      label: "Overriding Royalty",
+      mapped_key: "",
+      required: false,
+      actual_key: "orri"
+    },
+    {
+      label: "Record Title",
+      mapped_key: "",
+      required: false,
+      actual_key: "record_title"
+    },
+    {
+      label: "Operating Rights",
+      mapped_key: "",
+      required: false,
+      actual_key: "operating_rights"
+    },
+    {
+      label: "Net Revenue Interest",
+      mapped_key: "",
+      required: false,
+      actual_key: "nri"
+    },
+    {
+      label: "Net Acres",
+      mapped_key: "",
+      required: false,
+      actual_key: "net_acres"
+    },
+    {
+      label: "Net Royalty Acres",
+      mapped_key: "",
+      required: false,
+      actual_key: "nra"
+    },
+    {
+      label: "Depth From",
+      mapped_key: "",
+      required: false,
+      actual_key: "depthFrom"
+    },
+    {
+      label: "Depth To",
+      mapped_key: "",
+      required: false,
+      actual_key: "depthTo"
+    },
+    {
+      label: "QTR1",
+      mapped_key: "",
+      required: false,
+      actual_key: "qtr[0]"
+    },
+    {
+      label: "QTR2",
+      mapped_key: "",
+      required: false,
+      actual_key: "qtr[1]"
+    },
+    {
+      label: "QTR3",
+      mapped_key: "",
+      required: false,
+      actual_key: "qtr[2]"
+    },
+    {
+      label: "QTR4",
+      mapped_key: "",
+      required: false,
+      actual_key: "qtr[3]"
+    },
   ];
   const reset_state = () => {
     setStateApp((state) => ({
@@ -354,7 +463,7 @@ export default function BulkUpload(props) {
 
                 setStateNav((stateApp) => ({
                   ...stateApp,
-                  contactFromMap: false,
+                  bulkUploadFromMap: false,
                 }));
               }}
             >
