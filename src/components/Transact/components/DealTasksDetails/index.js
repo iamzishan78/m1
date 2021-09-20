@@ -198,7 +198,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
       <CardActions style={{ paddingBottom: 15, padding: "0px 30px" }}>
         <Grid container direction="row" justify="space-between" alignItems="center">
           <Grid item xs={8} style={{ marginBottom: "15px" }}>
-            <h4 style={{ height: "8px" }}>Overall Progress</h4>
+            <h3 style={{ height: "8px" }}>Overall Progress</h3>
             <ProgressBar value={evaluateOverallProgress()} isNumeric />
           </Grid>
           {/* <Grid item xs={6} style={{ textAlign: "right" }}>
