@@ -256,6 +256,7 @@ const Documents = memo((props) => {
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
   };
+
   const LightTooltip = withStyles((theme) => ({
     tooltip: {
       backgroundColor: theme.palette.common.white,

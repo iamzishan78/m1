@@ -1484,10 +1484,6 @@ function AddDealDialog(props) {
                   className={classes.notes}
                 />
 
-                {/* {originationDate && (
-                  <div className={classes.originationDate}>Deal Creation Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
-                )} */}
-
                 <div>
                   {/* This is the document zone  */}
                   <div style={{ marginTop: 20 }}>
@@ -1497,7 +1493,6 @@ function AddDealDialog(props) {
                       id={stateApp.activeDeal?.cardId}
                       loading={viewFileLoading}
                       setUploadedFileData={setUploadedFileData}
-                      // disabled={!stateApp.activeDeal?.cardId}
                       handleOpenExpandableCard={handleOpenExpandableCard}
                     ></AddDialogeUploadZone>
                   </div>
