@@ -2616,6 +2616,13 @@ function SubTable(props) {
       }
       if (props.addAble.type === "ownerToParcel") {
         buttonLabel = "+ ADD INTEREST OWNER";
+        menuOptions = { text: "Import Interest Owners", isShow: true, action: () => {
+          setStateNav((stateNav) => ({
+            ...stateNav,
+            bulkUploadFromMap: true,
+          }));
+          routeChange("/bulkupload")
+        }};
       }
       if (props.addAble.type === "suggestedOwnerToParcel") {
         buttonLabel = "+ ADD TO PARCEL";
@@ -2710,7 +2717,6 @@ function SubTable(props) {
             )}
             {(props.addAble.type === "wellInterest" ||
               props.addAble.type === "deals" ||
-              props.addAble.type === "ownerToParcel" ||
               props.addAble.type === "suggestedOwnerToParcel" ||
               (props.addAble && props.parent === "UserManagement")) && (
                 <Button
@@ -2722,7 +2728,9 @@ function SubTable(props) {
                   {buttonLabel}
                 </Button>
               )}
-            {props.addAble.type === "contact" && <ButtonDropDown options={options} />}
+            {(props.addAble.type === "contact" ||
+             props.addAble.type === "ownerToParcel") && 
+             <ButtonDropDown options={options} />}
 
             {props.header === "Documents" && (
               // <ButtonDropDown options={options} onClick={() => {

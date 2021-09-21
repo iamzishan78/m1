@@ -1,6 +1,13 @@
 import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
+import { NavigationContext } from "../Navigation/NavigationContext";
 import { makeStyles } from "@material-ui/core/styles";
+import Toolbar from "@material-ui/core/Toolbar";
+import Link from "@material-ui/core/Link";
+import Typography from "@material-ui/core/Typography";
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Stepper from "./components/stepper";
 
 const useStyles = makeStyles((theme) => ({
@@ -8,19 +15,43 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "white",
   },
   header: {
-    paddingTop: "25px",
-    paddingBottom: "75px",
-    paddingLeft: "20px",
+    borderBottom: "1px solid rgba(224, 224, 224, 1)",
+    backgroundColor: "#F2F2F2",
+    minHeight: "64px",
+    display: "flex",
+    position: "relative",
+    alignItems: "center",
   },
 }));
 
 export default function BulkUpload(props) {
+  console.log(props.history.pathHistory);
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const [stateNav, setStateNav] = React.useContext(NavigationContext);
+  let history = useHistory();
+  console.log(history.pathHistory);
+
+  const checkModuleHistory = () => {
+    return !!stateNav.bulkUploadFromMap && 'Map' || !!stateNav.bulkUploadFromContacts && 'Contacts';
+  };
 
   useEffect(() => {
     reset_state();
+    return function cleanup() {
+      setStateNav((state) => ({
+        ...state,
+        bulkUploadFromMap: false,
+        bulkUploadFromContacts: false
+      }));
+    };
   }, []);
   const M1neral_headers = [
+    {
+      label: "Contact Id",
+      mapped_key: "",
+      required: false,
+      actual_key: "contactId",
+    },
     {
       label: "Full Name",
       mapped_key: "",
@@ -291,7 +322,108 @@ export default function BulkUpload(props) {
     //   required: false,
     //   actual_key: "lastUpdateBy",
     // },
-
+    {
+      label: "Parcel Id",
+      mapped_key: "",
+      required: false,
+      actual_key: "parcelId",
+    },
+    {
+      label: "Parcel Name",
+      mapped_key: "",
+      required: false,
+      actual_key: "parcelName",
+    },
+    {
+      label: "Surface Interest",
+      mapped_key: "",
+      required: false,
+      actual_key: "surface_interest"
+    },
+    {
+      label: "Mineral Interest",
+      mapped_key: "",
+      required: false,
+      actual_key: "mineral_interest"
+    },
+    {
+      label: "Royalty Interest",
+      mapped_key: "",
+      required: false,
+      actual_key: "royalty_interest"
+    },
+    {
+      label: "Overriding Royalty",
+      mapped_key: "",
+      required: false,
+      actual_key: "orri"
+    },
+    {
+      label: "Record Title",
+      mapped_key: "",
+      required: false,
+      actual_key: "record_title"
+    },
+    {
+      label: "Operating Rights",
+      mapped_key: "",
+      required: false,
+      actual_key: "operating_rights"
+    },
+    {
+      label: "Net Revenue Interest",
+      mapped_key: "",
+      required: false,
+      actual_key: "nri"
+    },
+    {
+      label: "Net Acres",
+      mapped_key: "",
+      required: false,
+      actual_key: "net_acres"
+    },
+    {
+      label: "Net Royalty Acres",
+      mapped_key: "",
+      required: false,
+      actual_key: "nra"
+    },
+    {
+      label: "Depth From",
+      mapped_key: "",
+      required: false,
+      actual_key: "depthFrom"
+    },
+    {
+      label: "Depth To",
+      mapped_key: "",
+      required: false,
+      actual_key: "depthTo"
+    },
+    {
+      label: "QTR1",
+      mapped_key: "",
+      required: false,
+      actual_key: "qtr[0]"
+    },
+    {
+      label: "QTR2",
+      mapped_key: "",
+      required: false,
+      actual_key: "qtr[1]"
+    },
+    {
+      label: "QTR3",
+      mapped_key: "",
+      required: false,
+      actual_key: "qtr[2]"
+    },
+    {
+      label: "QTR4",
+      mapped_key: "",
+      required: false,
+      actual_key: "qtr[3]"
+    },
   ];
   const reset_state = () => {
     setStateApp((state) => ({
@@ -307,6 +439,58 @@ export default function BulkUpload(props) {
 
   return (
     <div className={classes.root}>
+      <div className={classes.header}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "left",
+            paddingLeft: "25px",
+          }}
+        ></div>
+        <Breadcrumbs
+          separator={<NavigateNextIcon fontSize="small" />}
+          aria-label="breadcrumb"
+        >
+          {checkModuleHistory() && (
+            <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => {
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  // parcelDetailCardOpen: false,
+                }));
+
+                history.push("/");
+
+                setStateNav((stateApp) => ({
+                  ...stateApp,
+                  bulkUploadFromMap: false,
+                }));
+              }}
+            >
+              {checkModuleHistory()}
+            </Link>
+          )}
+
+          {console.log("CURRENT MAP BREADCRUMB")}
+
+          <Typography
+            style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}
+          >
+            {
+              stateNav.bulkUploadFromMap 
+                ? 'Interest Owner Upload'
+                : 'Import Contacts'
+            }
+          </Typography>
+        </Breadcrumbs>
+      </div>
       <Stepper>{props.children}</Stepper>
     </div>
   );
