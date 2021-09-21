@@ -129,13 +129,13 @@ export default function Simulation(props) {
           stimulationData.map((row, index) => (
                       <TableRow key={index}>
                         <TableCell>
-                          {moment(row.StimDate).format("MM-DD-YYYY")}
+                          {moment(row.StimDate).isValid()  ?  moment(row.StimDate).format("MM/DD/YYYY")  : ""}
                         </TableCell>
                         <TableCell>
-                          {moment(row.StartDate).format("MM-DD-YYYY")}
+                          {moment(row.StartDate).isValid()   ?  moment(row.StartDate).format("MM/DD/YYYY")  : ""}
                         </TableCell>
                         <TableCell>
-                          {moment(row.EndDate).format("MM-DD-YYYY")}
+                          {moment(row.EndDate).isValid()   ?  moment(row.EndDate).format("MM/DD/YYYY")  : ""}
                         </TableCell>
                         <TableCell>
                           {row.ServiceCompany}

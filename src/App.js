@@ -103,11 +103,11 @@ const theme = createMuiTheme({
           "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0)",
         },
         "*::-webkit-scrollbar-thumb": {
-          backgroundColor: "#929292",
+          backgroundColor: "#d3d3d3",
           borderRadius: 5
         },
         '*::-webkit-scrollbar-thumb:active': {
-          backgroundColor: "red",
+          backgroundColor: "#929292",
         }
       },
     },
