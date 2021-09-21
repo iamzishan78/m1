@@ -135,7 +135,7 @@ const SetApolloClient = (props) => {
 
   useEffect(() => {
     let draggableArea = document.getElementById("root");
-    if (window.location.pathname === "/") {
+    if (window.location.pathname === "/" || window.location.pathname.startsWith('/map/')) {
       draggableArea.style.overflow = "hidden";
     } else {
       draggableArea.style.overflow = "visible";
@@ -281,6 +281,7 @@ function App() {
                   <Switch>
                     <NavigationProvider>
                       <PrivateRoute exact path="/" component={MapProvider} />
+                      <PrivateRoute exact path="/map/parcels/:parcelId" component={MapProvider} />
                       <Route exact path="/signup" component={SignUpCard} />
                       <Route exact path="/loginb2c" component={LoginB2C} />
                       <Route exact path="/forgotpassword" component={ForgotPassword} />
