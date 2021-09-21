@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, Fragment } from "react";
+import React, { useState, useEffect, useContext, Fragment, useMemo } from "react";
 import { get } from "lodash";
 import _ from "underscore";
 import { useHistory } from "react-router-dom";
@@ -16,44 +16,45 @@ import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
 import { AppContext } from "AppContext";
 import { TransactContext } from "components/Transact/TransactContext";
-import { CONTACT } from "../../../graphQL/useQueryContact";
-import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
-import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
-import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
+import { CONTACT } from "../../../../graphQL/useQueryContact";
+import { ADDCONTACT } from "../../../../graphQL/useMutationAddContact";
+import { PAGINATEDCONTACTSQUERY } from "../../../../graphQL/useQueryPaginatedContacts";
+import { GETMONGOUSERS } from "../../../../graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { Dialog, Avatar } from "@material-ui/core";
-import RightDialog from "../../ContactDetailCard/components/RightDialog";
+import RightDialog from "../../../ContactDetailCard/components/RightDialog";
+import DealDialogHeader from "components/Transact/components/DealDialog/DealDialogHeader";
 import Drawer from "components/Transact/components/Drawer";
 import moment from "moment";
-import { setStateIfDeepEqual } from "../../Shared/functions";
+import { setStateIfDeepEqual } from "../../../Shared/functions";
 
-import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
-import DealTasksProgressZone from "../../ContactDetailCard/components/DealTasksProgressZone";
-import DealComment from "../../ContactDetailCard/components/DealComment";
-import DealTasksDetails from "./DealTasksDetails";
-import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { TRACKBYOBJECTID } from "../../../../graphQL/useQueryTrackByObjectId";
+import DealTasksProgressZone from "../../../ContactDetailCard/components/DealTasksProgressZone";
+import DealComment from "../../../ContactDetailCard/components/DealComment";
+import DealTasksDetails from "../DealTasksDetails";
+import DeleteConfirmationDialogContent from "../../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
 import { ADDDEAL } from "graphQL/useMutationAddDeal";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { UPDATEDEAL } from "graphQL/useMutationUpdateDeal";
 import { UPSERTDEALDESCRIPTOR } from "graphQL/useMutationUpsertDealDescriptor";
-import { REMOVEDEALDESCRIPTOR } from "../../../graphQL/useMutationRemoveDealDescriptor";
+import { REMOVEDEALDESCRIPTOR } from "../../../../graphQL/useMutationRemoveDealDescriptor";
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
-import { setFlowState, showErrorMessage, showSuccessMessage } from "../../../actions";
+import { setFlowState, showErrorMessage, showSuccessMessage } from "../../../../actions";
 
 import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
-import Documents from "../../Shared/Documents";
-import AddDialogeUploadZone from "../../ContactDetailCard/components/AddDialogUploadZone";
+import Documents from "../../../Shared/Documents";
+import AddDialogeUploadZone from "../../../ContactDetailCard/components/AddDialogUploadZone";
 import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GET_DEAL_SETTINGS } from "graphQL/useQueryGetDealSettings";
 import { GETDEAL } from "graphQL/useQueryDeal";
-import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
+import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
 import Contacts from "components/FlowDrawer/Contacts";
 import EventIcon from "@material-ui/icons/Event";
-import "./style/dialog.css";
+import "./dialog.css";
 import { faCloudShowersHeavy } from "@fortawesome/free-solid-svg-icons";
 
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
@@ -1185,152 +1186,6 @@ function AddDealDialog(props) {
     setNewCommentsIds(comments);
   };
 
-  const StickyHeader = () => (
-    <div>
-      <Grid item container xs={12} style={{ padding: "30px 14px 10px 25px" }}>
-        {!titleFocus && (
-          <>
-            <Grid item xs={6} style={{ minHeight: "35px" }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  float: "left",
-                }}
-              >
-                {(dealState === null || dealState === "open") && (
-                  <>
-                    <div
-                      className={classes.dealStateOpenWon}
-                      onClick={() => setDealState("won")}
-                      style={{
-                        marginRight: 8,
-                      }}
-                    >
-                      Won
-                    </div>
-
-                    <div className={classes.dealStateOpenLost} onClick={() => setDealState("lost")}>
-                      Lost
-                    </div>
-                  </>
-                )}
-                {dealState === "won" && (
-                  <>
-                    <div
-                      className={classes.dealStateClosed}
-                      style={{
-                        backgroundColor: "#a6e5c3",
-                        fontWeight: "bold",
-                        color: "#54a83c",
-                        marginRight: 8,
-                      }}
-                    >
-                      Won
-                    </div>
-                    <div className={classes.dealStateReopen} onClick={() => setDealState(null)}>
-                      Re-open
-                    </div>
-                  </>
-                )}
-                {dealState === "lost" && (
-                  <>
-                    <div
-                      className={classes.dealStateClosed}
-                      style={{
-                        backgroundColor: "#ffa8a8",
-                        // borderStyle: "solid",
-                        fontWeight: "bold",
-                        color: "#f96060",
-                        marginRight: 8,
-                      }}
-                    >
-                      Lost
-                    </div>
-                    <div className={classes.dealStateReopen} onClick={() => setDealState(null)}>
-                      Re-open
-                    </div>
-                  </>
-                )}
-              </div>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              style={
-                {
-                  // minHeight: "35px",
-                  // padding: "30px 14px 10px 25px"
-                }
-              }
-            >
-              {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) && stateApp.activeDeal?.laneId && (
-                <>
-                  <IconButton
-                    disabled={updateDealLoading || addContactLoading}
-                    onClick={openConfirmationDialog}
-                    size="small"
-                    component="span"
-                    style={{
-                      background: "transparent",
-                      paddingLeft: "10px",
-                      align: "center",
-                      float: "right",
-                    }}
-                  >
-                    <DeleteIcon size="medium" className={classes.closeIcon} />
-                  </IconButton>
-                </>
-              )}
-            </Grid>
-          </>
-        )}
-      </Grid>
-      <Grid item container xs={12} style={{ padding: "0px 0px 0px 0px" }} alignItems="center">
-        {!((Object.keys(contact).length === 0 && contact.constructor === Object) || contact === null) && !props.isTransactPage && (
-          <TextField
-            variant="outlined"
-            margin="dense"
-            value={contact?.name}
-            label="Contact Name"
-            fullWidth
-            disabled
-            className={classes.inputField}
-          />
-        )}
-
-        <FormControl variant="outlined" className={classes.inputFieldDealName} style={{ marginLeft: "-15px" }} fullWidth size="small">
-          <TextField
-            margin="dense"
-            value={title}
-            variant="outlined"
-            placeholder="Click to enter deal name"
-            required
-            fullWidth
-            autoFocus
-            // error text that will prevent things
-            error={title && title !== "" ? false : true}
-            helperText={title && title !== "" ? "" : "Enter a deal name to get started"}
-            //   required
-            onChange={(e) => {
-              e.preventDefault();
-              setTitle(e.target.value);
-            }}
-            InputProps={{
-              classes: {
-                root: classes.dealNameRoot,
-                focused: classes.focused,
-                notchedOutline: classes.notchedOutline,
-              },
-            }}
-            onBlur={() => setTitleFocus(false)}
-          />
-        </FormControl>
-      </Grid>
-      <Divider />
-    </div>
-  );
-
   return (
     <>
       {deleteDialogOpen && (
@@ -1370,7 +1225,21 @@ function AddDealDialog(props) {
           isTransactPage={props.isTransactPage}
           hiddenOverflow
         >
-          <StickyHeader />
+          <DealDialogHeader
+            titleFocus={titleFocus}
+            dealState={dealState}
+            setDealState={setDealState}
+            classes={classes}
+            activeDeal={stateApp.activeDeal}
+            title={title}
+            setTitle={setTitle}
+            updateDealLoading={updateDealLoading}
+            addContactLoading={addContactLoading}
+            contact={contact}
+            openConfirmationDialog={openConfirmationDialog}
+            setTitleFocus={setTitleFocus}
+            isTransactPage={props.isTransactPage}
+          />
           <Drawer top={contact.name && !props.isTransactPage ? "160px" : "152px"} />
           <div className={classes.contentRoot}>
             {props.isTransactPage &&

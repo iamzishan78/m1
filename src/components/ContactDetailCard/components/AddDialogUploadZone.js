@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState, memo } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { get } from "lodash";
@@ -142,7 +142,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Documents(props) {
+const Documents = memo((props) => {
   const classes = useStyles();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
@@ -378,4 +378,6 @@ export default function Documents(props) {
       </CardContent>
     </div>
   );
-}
+});
+
+export default Documents;

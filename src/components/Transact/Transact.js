@@ -8,7 +8,7 @@ import Board from "react-trello";
 import { makeStyles } from "@material-ui/core/styles";
 import { UPDATESTAGEDEALDESCRIPTORS } from "../../graphQL/useMutationUpdateStageDealDescriptors";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import AddDealDialog from "components/Transact/components/AddDealDialog";
+import AddDealDialog from "components/Transact/components/DealDialog/AddDealDialog";
 import "./index.css";
 import TransactAppBar from "./components/TransactAppBar";
 import SidePanel from "./components/SidePanel";
