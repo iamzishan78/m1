@@ -8,6 +8,9 @@ import Board from "react-trello";
 import { makeStyles } from "@material-ui/core/styles";
 import { UPDATESTAGEDEALDESCRIPTORS } from "../../graphQL/useMutationUpdateStageDealDescriptors";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Typography from "@material-ui/core/CircularProgress";
+import Grid from "@material-ui/core/Grid";
+
 import AddDealDialog from "components/Transact/components/DealDialog/AddDealDialog";
 import "./index.css";
 import TransactAppBar from "./components/TransactAppBar";
@@ -66,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
   cardTitle: {
     color: "#1CB6DA",
     textTransform: "uppercase",
+    width: '85%',
   },
   cardSubheading: {
     fontSize: "12px",
@@ -553,10 +557,12 @@ export default function Transact() {
         style={{ borderLeft: `4px solid ${cardColor}` }}
       >
         <header className={classes.cardHeaderStyle}>
+
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span className={classes.cardTitle}>{title}</span>
+            <span className={classes.cardTitle}>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</span>
             {owner && <CustomAvatar email={ownerEmail} text={owner} color={cardColors[ownerId]} />}
           </div>
+
           <div className={classes.cardSubheading}>
             {formattedDate && (
               <>
