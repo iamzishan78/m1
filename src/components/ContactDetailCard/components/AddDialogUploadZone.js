@@ -264,12 +264,6 @@ const Documents = memo((props) => {
       fontSize: 11,
     },
   }))(Tooltip);
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  function onDocumentLoadSuccess({ numPages }) {
-    setNumPages(numPages);
-  }
-
   return (
     <div className={classes.root} variant="outlined">
       <CardActions style={{ padding: "23px 0px 8px 0px" }}>
@@ -290,7 +284,7 @@ const Documents = memo((props) => {
           </Grid>
         )}
       </CardActions>
-      <CardContent style={{ padding: "0 23px" }}>
+      <CardContent>
         <div className={classes.fileUploadSection}>
           {/* Show two recent docs */}
 

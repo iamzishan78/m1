@@ -159,7 +159,6 @@ const useStyles = makeStyles((theme) => ({
   },
   topBtnGroup: {},
   inputField: {
-    // marginBottom: "30px",
     outline: "none",
   },
   dealStateOpenWon: {
