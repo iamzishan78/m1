@@ -433,9 +433,9 @@ function Map() {
 
   useEffect(() => {
     if (!loading &&
-        parcelId !== "" &&
-        parcelId !== stateApp.selectedParcel?.id &&
-        stateApp.customLayers.length > 0) {
+      parcelId !== "" &&
+      parcelId !== stateApp.selectedParcel?.id &&
+      stateApp.customLayers.length > 0) {
       console.log(parcelId)
       const parcel = stateApp.customLayers.find(el => el._id === parcelId)
       if (parcel) {
@@ -1537,6 +1537,7 @@ function Map() {
 
   useEffect(() => {
     let beforeLayer = null;
+    console.log(map?.getStyle()?.sources)
     if (stateApp.layers && stateApp.layers.length > 0 && map) {
       for (let i = 0; i < stateApp.layers.length; i++) {
         const layer = stateApp.layers[i];
@@ -4816,7 +4817,7 @@ function Map() {
         );
 
         if (!currentFeature) {
-          features = map.querySourceFeatures("composite", {
+          features = map.querySourceFeatures("wellsVT", {
             sourceLayer: "wellPoints",
             filter: ["in", "id", stateApp.selectedWellId],
           });
@@ -5364,7 +5365,7 @@ function Map() {
       let features = [];
       features = [
         ...features,
-        ...map.querySourceFeatures("composite", { sourceLayer: "wellLines" })
+        ...map.querySourceFeatures("wellsVT", { sourceLayer: "wellLines" })
       ];
       features = [
         ...features,
@@ -5387,10 +5388,12 @@ function Map() {
         let id = mapEl.current.id;
 
         var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
-
+        // debugger;
+        console.log("mapbox://styles/m1neral/" + mapStyles[index].id);
         const newMap = new mapboxgl.Map({
           container: `${id}`,
           style: "mapbox://styles/m1neral/" + mapStyles[index].id,
+          // style: "mapbox://styles/mapbox/outdoors-v11",
           center: stateApp.mapVars.center,
           zoom: stateApp.mapVars.zoom,
           pitch: stateApp.mapVars.pitch,
@@ -5422,7 +5425,7 @@ function Map() {
 
         newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
 
-        newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
+        newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right")
 
         var geoLocate = new mapboxgl.GeolocateControl({
           positionOptions: {
@@ -5562,7 +5565,45 @@ function Map() {
           map: newMap, draw: Draw
         }));
 
+        function setLayerSource(layerId, source, sourceLayer) {
+          const oldLayers = newMap.getStyle().layers;
+          const layerIndex = oldLayers.findIndex(l => l.id === layerId);
+          const layerDef = oldLayers[layerIndex];
+          const before = oldLayers[layerIndex + 1] && oldLayers[layerIndex + 1].id;
+          layerDef.source = source;
+          if (sourceLayer) {
+            layerDef['source-layer'] = sourceLayer;
+          }
+          newMap.removeLayer(layerId);
+          newMap.addLayer(layerDef, before);
+        }
+
         newMap.on("load", function (e) {
+
+          const tilesetEndpoint = 'https://m1neraldata.z22.web.core.windows.net/latest.json'
+          fetch(tilesetEndpoint)
+            .then((response) => response.json())
+            .then((response) => {
+              newMap.addSource('wellsVT', {
+                'type': 'vector',
+                'tiles': [
+                  `https://m1neraldata.z22.web.core.windows.net/${response.latest}/{z}/{x}/{y}.pbf`
+                ]
+              });
+              setStateApp((state) => ({
+                ...state,
+                wellTilesetSource: `https://m1neraldata.z22.web.core.windows.net/${response.latest}/{z}/{x}/{y}.pbf`
+              }));
+              setLayerSource("wellpermitlines", 'wellsVT')
+              setLayerSource("welllines", 'wellsVT')
+              setLayerSource("wellpoints", 'wellsVT')
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+
+          // setTimeout(() => { console.log(newMap?.getStyle()?.layers) }, 3000)
+
           newMap.loadImage(MarkerIcon, function (error, image) {
             if (error) throw error;
             // add image to the active style and make it SDF-enabled
@@ -5946,7 +5987,7 @@ function Map() {
       stateApp.fitBounds.maxLong &&
       stateApp.fitBounds.minLong
     ) {
-      
+
       let bounds = fitOverBounds();
 
       map.fitBounds([
