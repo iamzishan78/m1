@@ -1,57 +1,51 @@
-import React, { useState, useEffect, useContext, Fragment, useMemo } from "react";
+import React, { useState, useEffect, useContext, Fragment } from "react";
 import { get } from "lodash";
 import _ from "underscore";
 import { useHistory } from "react-router-dom";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import Divider from "@material-ui/core/Divider";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Select from "@material-ui/core/Select";
+
 import Grid from "@material-ui/core/Grid";
 import { AppContext } from "AppContext";
 import { TransactContext } from "components/Transact/TransactContext";
-import { CONTACT } from "../../../../graphQL/useQueryContact";
-import { ADDCONTACT } from "../../../../graphQL/useMutationAddContact";
-import { PAGINATEDCONTACTSQUERY } from "../../../../graphQL/useQueryPaginatedContacts";
-import { GETMONGOUSERS } from "../../../../graphQL/useQueryGetUsers";
+import { CONTACT } from "graphQL/useQueryContact";
+import { ADDCONTACT } from "graphQL/useMutationAddContact";
+import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
+import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { Dialog, Avatar } from "@material-ui/core";
-import RightDialog from "../../../ContactDetailCard/components/RightDialog";
+import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import DealDialogHeader from "components/Transact/components/DealDialog/DealDialogHeader";
 import Drawer from "components/Transact/components/Drawer";
 import moment from "moment";
-import { setStateIfDeepEqual } from "../../../Shared/functions";
+import { setStateIfDeepEqual } from "components/Shared/functions";
 
-import { TRACKBYOBJECTID } from "../../../../graphQL/useQueryTrackByObjectId";
-import DealTasksProgressZone from "../../../ContactDetailCard/components/DealTasksProgressZone";
-import DealComment from "../../../ContactDetailCard/components/DealComment";
+import { TRACKBYOBJECTID } from "graphQL/useQueryTrackByObjectId";
+import DealTasksProgressZone from "components/ContactDetailCard/components/DealTasksProgressZone";
+import DealComments from "components/Transact/components/DealComments";
 import DealTasksDetails from "../DealTasksDetails";
-import DeleteConfirmationDialogContent from "../../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
 import { ADDDEAL } from "graphQL/useMutationAddDeal";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { UPDATEDEAL } from "graphQL/useMutationUpdateDeal";
 import { UPSERTDEALDESCRIPTOR } from "graphQL/useMutationUpsertDealDescriptor";
-import { REMOVEDEALDESCRIPTOR } from "../../../../graphQL/useMutationRemoveDealDescriptor";
+import { REMOVEDEALDESCRIPTOR } from "graphQL/useMutationRemoveDealDescriptor";
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
-import { setFlowState, showErrorMessage, showSuccessMessage } from "../../../../actions";
+import { setFlowState, showErrorMessage, showSuccessMessage } from "actions";
 
 import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
-import Documents from "../../../Shared/Documents";
-import AddDialogeUploadZone from "../../../ContactDetailCard/components/AddDialogUploadZone";
+import Documents from "components/Shared/Documents";
+import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDialogUploadZone";
 import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GET_DEAL_SETTINGS } from "graphQL/useQueryGetDealSettings";
 import { GETDEAL } from "graphQL/useQueryDeal";
-import ExpandableCardProvider from "../../../ExpandableCard/ExpandableCardProvider";
+import ExpandableCardProvider from "components/ExpandableCard/ExpandableCardProvider";
 import Contacts from "components/FlowDrawer/Contacts";
 import EventIcon from "@material-ui/icons/Event";
 import "./dialog.css";
@@ -1513,7 +1507,7 @@ function AddDealDialog(props) {
           </div>
           {stateApp.transactBarView === "Deal" && (
             <div style={{ marginTop: 2 }}>
-              <DealComment setNewCommentId={setNewCommentId} targetSourceId={stateApp.activeDeal?.cardId} />
+              <DealComments setNewCommentId={setNewCommentId} targetSourceId={stateApp.activeDeal?.cardId} />
             </div>
           )}
         </RightDialog>
