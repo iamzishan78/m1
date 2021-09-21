@@ -121,7 +121,7 @@ const DealDialogHeader = ({
         </>
       )}
     </Grid>
-    <Grid item container xs={12} style={{ padding: "0px 0px 0px 0px" }} alignItems="center">
+    <Grid item container xs={12} style={{ padding: "0px 0px 0px 10px" }} alignItems="center">
       {!((Object.keys(contact).length === 0 && contact.constructor === Object) || contact === null) && !isTransactPage && (
         <TextField
           variant="outlined"
@@ -141,7 +141,8 @@ const DealDialogHeader = ({
           variant="outlined"
           placeholder="Click to enter deal name"
           required
-          fullWidth
+          // fullWidth
+          multiline
           error={!title}
           helperText={!title ? "Enter a deal name to get started" : ""}
           onChange={({ target }) => setTitle(target.value)}

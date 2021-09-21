@@ -573,7 +573,8 @@ export default function Transact() {
                 </span>
               </>
             )}
-
+          
+          
             {formattedPrice && (
               <>
                 <br />

@@ -24,6 +24,8 @@ import RightDialog from "../../ContactDetailCard/components/RightDialog";
 import Drawer from "components/Transact/components/Drawer";
 import moment from "moment";
 import { setStateIfDeepEqual } from "../../Shared/functions";
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+
 
 import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
 import DealTasksProgressZone from "../../ContactDetailCard/components/DealTasksProgressZone";
@@ -1286,9 +1288,10 @@ function AddDealDialog(props) {
         )}
 
         <FormControl variant="outlined" className={classes.inputFieldDealName} style={{ marginLeft: "-15px" }} fullWidth size="small">
+{/* 
           <TextField
             margin="dense"
-            value={<Typography noWrap>{title}</Typography>}
+            value={title}
             variant="outlined"
             placeholder="Click to enter deal name"
             required
@@ -1311,7 +1314,14 @@ function AddDealDialog(props) {
               },
             }}
             onBlur={() => setTitleFocus(false)}
+          /> */}
+
+          <TextareaAutosize
+              aria-label="empty textarea"
+              placeholder="Empty"
+              style={{ width: 200 }}
           />
+          
         </FormControl>
       </Grid>
       <Divider />
