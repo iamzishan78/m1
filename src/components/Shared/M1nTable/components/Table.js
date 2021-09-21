@@ -92,6 +92,8 @@ import convert_date from "../../../Shared/valueformatters/convert_date.js";
 import get_file_icon from "../../../Shared/functions/get_file_icon.js";
 
 import RightDialog from "../../../ContactDetailCard/components/RightDialog";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 // queries
 import { OWNERSLATSLONS } from "../../../../graphQL/useQueryOwnerLatsLonsArray";
@@ -2486,17 +2488,19 @@ function SubTable(props) {
                   {props.header !== "Active Users" && props.header !== "Documents" && (
                     <>
                       {/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
-                      <Button
-                        color="secondary"
-                        startIcon={<AlternateEmailIcon />}
-                        className={classes.multiSelectionTopBarButtons}
-                        disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
-                        onClick={() => {
-                          handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData");
-                        }}
-                      >
-                        Contact Data
-                      </Button>
+                      <FeatureFlag feature={FEATURES.IDICORE}>
+                        <Button
+                          color="secondary"
+                          startIcon={<AlternateEmailIcon />}
+                          className={classes.multiSelectionTopBarButtons}
+                          disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+                          onClick={() => {
+                            handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData");
+                          }}
+                        >
+                          Contact Data
+                        </Button>
+                      </FeatureFlag>
                       <Button
                         color="secondary"
                         startIcon={<AssignmentIndOutlinedIcon />}
@@ -2773,14 +2777,16 @@ function SubTable(props) {
 
             {props.addAble.type === "contact" && (
               <>
-                <Button
-                  color="secondary"
-                  startIcon={<AlternateEmailIcon />}
-                  className={classes.multiSelectionTopBarButtons}
-                  disabled
-                >
-                  Contact Data
-                </Button>
+                <FeatureFlag feature={FEATURES.IDICORE}>
+                  <Button
+                    color="secondary"
+                    startIcon={<AlternateEmailIcon />}
+                    className={classes.multiSelectionTopBarButtons}
+                    disabled
+                  >
+                    Contact Data
+                  </Button>
+                </FeatureFlag>
                 <Button
                   color="secondary"
                   startIcon={<AssignmentIndOutlinedIcon />}
