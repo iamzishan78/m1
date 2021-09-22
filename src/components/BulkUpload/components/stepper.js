@@ -16,6 +16,7 @@ import ReviewCSV from "./ReviewCSV";
 import UploadStepperComponent from "./UploadStepperComponent";
 import { AppContext } from "../../../AppContext";
 import { useHistory } from "react-router-dom";
+import { matchRoutes } from "react-router-config";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { showErrorMessage } from "actions";
 import { ADDBULKCONTACT } from "../../../graphQL/useMutationAddBulkContacts";
@@ -169,6 +170,9 @@ const stepper_style = {
 export default function CustomizedSteppers(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const history = useHistory();
+  const previousRoute = matchRoutes(props.routes, history.pathHistory[1]);
+
   const [contactList, setContactList] = useState(null);
   const [jobId, setJobId] = useState(null);
 
@@ -281,14 +285,14 @@ export default function CustomizedSteppers(props) {
     }
     if (stateApp.activeStepNumber === steps.length - 1) {
       handleReset();
-      routeChange("/contacts");
+      routeChange(previousRoute[0]?.match?.url);
     }
   };
 
   const handleBack = () => {
     if (stateApp.activeStepNumber === 0) {
       handleReset();
-      routeChange("/contacts");
+      routeChange(previousRoute[0]?.match?.url);
     } else {
       setStateApp((state) => ({
         ...state,
@@ -307,10 +311,8 @@ export default function CustomizedSteppers(props) {
     }));
   };
 
-  let history = useHistory();
-
   let routeChange = (route) => {
-    history.push(route);
+    history.push(route || '/');
   };
 
   return (

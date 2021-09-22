@@ -188,7 +188,9 @@ const PrivateRoute = ({ component, ...options }) => {
 
   return (
     <div>
-      <Route {...options} component={finalComponent} />
+      <Route {...options} render={(props) => (
+          React.createElement(finalComponent, { ...options, ...props})
+      )} />
     </div>
   );
 };
@@ -277,8 +279,7 @@ function App() {
                 <ConnectedRouter history={history}>
                   <Switch>
                     <NavigationProvider>
-                      <PrivateRoute exact path="/" component={MapProvider} />
-                      <PrivateRoute exact path="/map/parcels/:parcelId" component={MapProvider} />
+                      <PrivateRoute title="Map" exact path={["/", "/map/parcels/:parcelId"]} component={MapProvider} />
                       <Route exact path="/signup" component={SignUpCard} />
                       <Route exact path="/loginb2c" component={LoginB2C} />
                       <Route exact path="/forgotpassword" component={ForgotPassword} />
@@ -293,7 +294,7 @@ function App() {
                       <PrivateRoute exact path="/title" component={TitleOpinionProvider} />
                       <PrivateRoute exact path="/alerts" component={AlertsProvider} />
                       <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider} />
-                      <PrivateRoute exact path="/contacts" component={ContactsProvider} />
+                      <PrivateRoute title="Contacts" exact path="/contacts" component={ContactsProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId" component={ContactDetailsProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/detailedInformation" component={ContactDetailedInfoProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/recentActivites" component={ContactRecentActivitiesProvider} />
@@ -308,7 +309,7 @@ function App() {
                       <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} />
                       <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
                       <PrivateRoute exact path="/studio" component={StudioProvider} />
-                      <PrivateRoute exact path="/bulkupload" component={BulkUpload} />
+                      <PrivateRoute title="Bulk Upload" exact path="/bulkupload" component={BulkUpload} />
                       <PrivateRoute exact path="/agreement" component={AgreementProvider} />
                       {/* <Route component={NotFoundRedirect} /> */}
                     </NavigationProvider>

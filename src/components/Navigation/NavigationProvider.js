@@ -11,9 +11,17 @@ const useStyles = makeStyles(theme => ({
 
 export default function NavigationProvider(props) {
   let classes = useStyles()
+
+  const routes = props.children.map(child => child.props)
+
   return (
     <NavigationContextProvider>
-        <Navigation>{props.children}</Navigation>
+      <Navigation>
+        {/* {props.children} */}
+        {React.Children.map(props.children, child => {
+          return React.cloneElement(child, { routes: routes })
+        })}
+      </Navigation>
     </NavigationContextProvider>
   )
 }
