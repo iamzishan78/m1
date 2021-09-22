@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import { matchRoutes } from "react-router-config";
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { makeStyles } from "@material-ui/core/styles";
@@ -25,11 +26,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function BulkUpload(props) {
-  console.log(props.history.pathHistory);
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
-  let history = useHistory();
-  console.log(history.pathHistory);
+  const history = useHistory();
+  const previousRoute = matchRoutes(props.routes, history.pathHistory[1]);
 
   const checkModuleHistory = () => {
     return !!stateNav.bulkUploadFromMap && 'Map' || !!stateNav.bulkUploadFromContacts && 'Contacts';
@@ -452,8 +452,7 @@ export default function BulkUpload(props) {
           separator={<NavigateNextIcon fontSize="small" />}
           aria-label="breadcrumb"
         >
-          {checkModuleHistory() && (
-            <Link
+          {previousRoute[0] && <Link
               style={{
                 marginLeft: "5px",
                 fontSize: "16px",
@@ -461,25 +460,35 @@ export default function BulkUpload(props) {
               }}
               color="inherit"
               onClick={() => {
-                setStateApp((stateApp) => ({
-                  ...stateApp,
-                  // parcelDetailCardOpen: false,
-                }));
-
-                history.push("/");
-
                 setStateNav((stateApp) => ({
                   ...stateApp,
                   bulkUploadFromMap: false,
                 }));
+                history.push(previousRoute[0]?.match?.url);
               }}
             >
-              {checkModuleHistory()}
+              {previousRoute[0]?.route?.title}
             </Link>
-          )}
-
-          {console.log("CURRENT MAP BREADCRUMB")}
-
+          }
+          {stateApp.selectedParcel?.shapeLabel && <Link
+              style={{
+                marginLeft: "5px",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              color="inherit"
+              onClick={() => {
+                setStateNav((stateApp) => ({
+                  ...stateApp,
+                  bulkUploadFromMap: false,
+                }));
+                
+                history.push(previousRoute[0]?.match?.url);
+              }}
+            >
+              {stateApp.selectedParcel?.shapeLabel}
+            </Link>
+          }
           <Typography
             style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}
           >
@@ -491,7 +500,7 @@ export default function BulkUpload(props) {
           </Typography>
         </Breadcrumbs>
       </div>
-      <Stepper>{props.children}</Stepper>
+      <Stepper {...{ routes: props.routes }}>{props.children}</Stepper>
     </div>
   );
 }

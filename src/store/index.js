@@ -15,6 +15,11 @@ export const history = (() => {
     historyTemp.pathHistory.splice(100)
     oldPush.apply(this, args)
   }
+  const oldReplace = historyTemp.replace
+  historyTemp.replace = function (...args) {
+    historyTemp.pathHistory[0] = args[0]
+    oldReplace.apply(this, args)
+  }
   return historyTemp
 })();
 
