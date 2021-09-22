@@ -5,6 +5,8 @@ import FormControl from "@material-ui/core/FormControl";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+// import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 
 const DealDialogHeader = ({
   titleFocus,
@@ -126,7 +128,7 @@ const DealDialogHeader = ({
         <TextField
           variant="outlined"
           margin="dense"
-          value={contact?.name}
+          value={<Typography noWrap> {contact?.name} </Typography>}
           label="Contact Name"
           fullWidth
           disabled
@@ -155,6 +157,7 @@ const DealDialogHeader = ({
           }}
           onBlur={() => setTitleFocus(false)}
         />
+        {/* <TextareaAutosize aria-label="empty textarea" placeholder="Empty" style={{ width: 200 }} /> */}
       </FormControl>
     </Grid>
     <Divider />
