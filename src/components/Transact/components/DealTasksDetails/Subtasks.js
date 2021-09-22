@@ -130,7 +130,7 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
               <KeyboardDatePicker
                 disableToolbar
                 variant="inline"
-                format="MM/DD/YYYY"
+                format="MM/DD/YY"
                 margin="normal"
                 allowKeyboardControl={false}
                 value={task.dueDate || ""}

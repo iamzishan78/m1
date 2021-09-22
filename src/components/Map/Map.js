@@ -8,6 +8,7 @@ import React, {
   useCallback,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 // contexts
 import { AppContext } from "../../AppContext";
@@ -140,6 +141,11 @@ function Map() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
+  const history = useHistory();
+  const parcelId =
+    history.location.pathname.split("/")[
+    history.location.pathname.split("/").length - 1
+    ];
 
   // function states
   const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
@@ -350,6 +356,112 @@ function Map() {
   const [removeCustomLayer] = useMutation(REMOVECUSTOMLAYER);
 
   /////end/////////temporary
+
+  // const functions
+  const findBounds = (shapes) => {
+    let bound = null;
+    // if (
+    //   fitBounds &&
+    //   fitBounds.maxLat &&
+    //   fitBounds.minLat &&
+    //   fitBounds.maxLong &&
+    //   fitBounds.minLong
+    // ) {
+    //   bound = fitBounds;
+    // }
+    if (shapes && shapes.length > 0) {
+      shapes.forEach((shape) => {
+        if (gjv.valid(shape)) {
+          const bbox = turf.bbox(shape);
+
+          if (bound) {
+            bound.minLong =
+              bound.minLong > bbox[0] ? bbox[0] : bound.minLong;
+            bound.minLat = bound.minLat > bbox[1] ? bbox[1] : bound.minLat;
+            bound.maxLong =
+              bound.maxLong < bbox[2] ? bbox[2] : bound.maxLong;
+            bound.maxLat = bound.maxLat < bbox[3] ? bbox[3] : bound.maxLat;
+          } else {
+            bound = {
+              minLong: bbox[0],
+              minLat: bbox[1],
+              maxLong: bbox[2],
+              maxLat: bbox[3],
+            };
+          }
+        }
+      });
+    }
+    return { ...bound };
+  };
+
+  const fitOverBounds = () => {
+    let { maxLat, minLat, maxLong, minLong } = stateApp.fitBounds || {};
+
+    const latDif = maxLat - minLat;
+    const longDif = maxLong - minLong;
+
+    if (latDif === 0) {
+      maxLat = maxLat + 0.005 > 90 ? 89.995 : maxLat + 0.005;
+      minLat = minLat - 0.005 < -90 ? -89.995 : minLat - 0.005;
+    } else {
+      maxLat =
+        maxLat + latDif * 0.08 > 90 ? 89.995 : maxLat + latDif * 0.08;
+      minLat =
+        minLat - latDif * 0.08 < -90 ? -89.995 : minLat - latDif * 0.08;
+    }
+
+    if (longDif === 0) {
+      maxLong = maxLong + 0.005 > 180 ? 179.995 : maxLong + 0.005;
+      minLong = minLong - 0.005 < -180 ? -179.995 : minLong - 0.005;
+    } else {
+      maxLong =
+        maxLong + longDif * 0.08 > 180 ? 179.995 : maxLong + latDif * 0.08;
+      maxLong =
+        maxLong - longDif * 0.08 < -180
+          ? -179.995
+          : maxLong - latDif * 0.08;
+    }
+
+    return {
+      maxLat,
+      minLat,
+      maxLong,
+      minLong,
+    };
+  };
+
+  useEffect(() => {
+    if (!loading &&
+        parcelId !== "" &&
+        // parcelId !== stateApp.selectedParcel?.id &&
+        stateApp.customLayers.length > 0) {
+      console.log(parcelId)
+      const parcel = stateApp.customLayers.find(el => el._id === parcelId)
+      if (parcel) {
+        let jsonParcel = JSON.parse(parcel.shape)
+        let fitBounds = findBounds([jsonParcel]);
+
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          fitBounds: { ...fitBounds }
+        }))
+
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedParcel: {
+            ...jsonParcel.properties,
+            feature: jsonParcel,
+            id: parcel._id
+          },
+          popupOpen: false,
+          expandedCard: true,
+          // parcelDetailCardOpen: true,
+          // fitBounds: { ...fitBounds }
+        }))
+      }
+    }
+  }, [loading, parcelId]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -5834,42 +5946,7 @@ function Map() {
       stateApp.fitBounds.maxLong &&
       stateApp.fitBounds.minLong
     ) {
-      const fitOverBounds = () => {
-        let { maxLat, minLat, maxLong, minLong } = stateApp.fitBounds;
-
-        const latDif = maxLat - minLat;
-        const longDif = maxLong - minLong;
-
-        if (latDif === 0) {
-          maxLat = maxLat + 0.005 > 90 ? 89.995 : maxLat + 0.005;
-          minLat = minLat - 0.005 < -90 ? -89.995 : minLat - 0.005;
-        } else {
-          maxLat =
-            maxLat + latDif * 0.08 > 90 ? 89.995 : maxLat + latDif * 0.08;
-          minLat =
-            minLat - latDif * 0.08 < -90 ? -89.995 : minLat - latDif * 0.08;
-        }
-
-        if (longDif === 0) {
-          maxLong = maxLong + 0.005 > 180 ? 179.995 : maxLong + 0.005;
-          minLong = minLong - 0.005 < -180 ? -179.995 : minLong - 0.005;
-        } else {
-          maxLong =
-            maxLong + longDif * 0.08 > 180 ? 179.995 : maxLong + latDif * 0.08;
-          maxLong =
-            maxLong - longDif * 0.08 < -180
-              ? -179.995
-              : maxLong - latDif * 0.08;
-        }
-
-        return {
-          maxLat,
-          minLat,
-          maxLong,
-          minLong,
-        };
-      };
-
+      
       let bounds = fitOverBounds();
 
       map.fitBounds([
@@ -6426,15 +6503,15 @@ function Map() {
       const longitude = coordinates[0];
       const latitude = coordinates[1];
 
-
       const mapBounds = map.getBounds();
-      const screenLeftLng = mapBounds._sw.lng;
-      const screenRightLng = mapBounds._ne.lng;
+      const fitBounds = fitOverBounds();
+      const screenLeftLng = fitBounds?.minLong || mapBounds._sw.lng;
+      const screenRightLng = fitBounds?.maxLong || mapBounds._ne.lng;
       const alpha = (screenRightLng - screenLeftLng) / 2;
 
       const bbox = [
-        [longitude - 1.5 * alpha, latitude],
-        [longitude + 0.5 * alpha, latitude],
+        [longitude - 1.5 * alpha, fitBounds?.minLat || latitude],
+        [longitude + 0.5 * alpha, fitBounds?.maxLat || latitude],
       ];
 
       map.fitBounds(bbox, {

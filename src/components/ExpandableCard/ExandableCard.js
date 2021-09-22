@@ -1,4 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -37,7 +38,7 @@ function ExpandableCard(props) {
   // contexts 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
-
+  const history = useHistory();
 
   const [stateExpandableCard, setStateExpandableCard] = useContext(
     ExpandableCardContext
@@ -243,7 +244,8 @@ function ExpandableCard(props) {
         parcelDetailCardOpen: true,
         popupOpen: false,
       }));
-
+      const newPath = `/map/parcels/${stateApp.selectedParcel?.id}`;
+      history.location.pathname !== newPath && history.replace(newPath)
     }
     setStateApp((state) => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
@@ -288,6 +290,7 @@ function ExpandableCard(props) {
         expandedCard: false,
         viewDoc: null,
       }));
+      stateApp.selectedParcel?.id && history.replace({ pathname: '/'})
     }
     props.handleCloseExpandableCard();
     //if EC is inside map popup you need to close it
@@ -634,5 +637,4 @@ function ExpandableCard(props) {
   );
 }
 
-ExpandableCard.whyDidYouRender = true
 export default React.memo(ExpandableCard);

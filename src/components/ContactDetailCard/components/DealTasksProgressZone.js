@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   flowLane: {
-    fontWeight: "bold",
+    fontWeight: "100",
     minHeight: "40px",
   },
   laneActionsGrid: {
@@ -111,17 +111,21 @@ export default function LaneProgressZone(props) {
             const approver = users.find(user => user?.value === settings.stageDealDescriptor.approver);
             return (
               <div onMouseEnter={() => setShowNext(index)} onMouseLeave={() => setShowNext(-1)}>
-                <Grid key={index} container direction="row" justify="space-between" alignItems="center" className={classes.flowLane}>
-                  <Grid item style={{ width: "135px", fontWeight: "normal" }}>
+                <Grid key={index} container direction="row" alignItems="center" justify="space-between" className={classes.flowLane}>
+                  <Grid item xs={6} style={{ fontWeight: "100" }}>
                     {settings.stageName}
                   </Grid>
-                  <Grid item style={{ minWidth: "135px" }}>
+                  <Grid item xs={4} style={{}} >
+                  <div style={{float: 'right', minWidth: "135px"}}>
                     <ProgressBar value={settings.progress} isNumeric />
+                  </div>
                   </Grid>
-                  <Grid item className={classes.laneActionsGrid}>
+                  <Grid item xs={2} className={classes.laneActionsGrid} >
+                    <div style={{float: 'right'}}>
                     <PopupState variant="popover" popupId="demo-popup-popover-zone">
                       {(popupState) => (
                         <>
+
                           <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
                             {settings.stageDealDescriptor.approver && users.length ? (
                               <CustomAvatar
@@ -160,6 +164,7 @@ export default function LaneProgressZone(props) {
                         </>
                       )}
                     </PopupState>
+                    {/* <ProgressBar value={settings.progress} isNumeric /> */}
                     <IconButton className={classes.commentButton} onClick={() => {
                       setStateTransact(state => ({ ...state, selectedTask: settings }));
                       setStateApp((stateApp) => ({ ...stateApp, transactBarView: 'Task Progress' }))
@@ -177,9 +182,11 @@ export default function LaneProgressZone(props) {
                       </Badge>
                       {showNext === index && <ArrowRightIcon fontSize="small" />}
                     </IconButton>
+                    </div>
+
                   </Grid>
                 </Grid>
-                <Divider />
+                <Divider style={{backgroundColor:'#eeeeee'}}/>
               </div>
             )
           })}

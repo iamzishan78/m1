@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
         overflowX: "scroll",
         overflowY: "hidden",
         "&::-webkit-scrollbar": {
-          height: "0.4em",
+          height: "0.75em",
         },
         "&::-webkit-scrollbar-track": {
           "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
@@ -413,7 +413,7 @@ export default function Transact() {
 
     let formattedDate = null;
 
-    if (metadata?.closeDate) formattedDate = moment.parseZone(new Date(metadata.closeDate)).format("MM/DD/yyyy");
+    if (metadata?.closeDate) formattedDate = moment.parseZone(new Date(metadata.closeDate)).format("MM/DD/YY");
 
     let owner = null;
     let ownerId = null;
@@ -464,16 +464,22 @@ export default function Transact() {
               <>
                 <br />
                 <span>
-                  Est. Close {"  "}
+                  Est. Close {"   "}
                   <span style={{ fontWeight: "normal" }}>{formattedDate}</span>
                 </span>
               </>
             )}
+
+          {formattedPrice && (
+            <>
              <br />
 
-            <span>{formattedPrice}</span>
-
-
+             <span>
+                  Offer Price {" "}
+            <span style={{ fontWeight: "normal" }}>{formattedPrice}</span>
+            </span>
+            </>
+            )}
 
           </div>
         </header>

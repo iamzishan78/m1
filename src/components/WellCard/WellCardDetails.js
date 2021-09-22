@@ -35,6 +35,7 @@ import Switch from "@material-ui/core/Switch";
 import CompletionsContainer from "./components/Completions";
 import SimulationContainer from "./components/Stimulation";
 import FormationContainer from "./components/Formation";
+import PermitsContainer from "./components/WellPermits";
 
 import { useLazyQuery } from "@apollo/client";
 import { PRODUCTIONDETAILQUERY } from "../../graphQL/useQueryProductionDetail";
@@ -388,6 +389,7 @@ export default function WellCardDetails(props) {
               "Completion",
               "Stimulation",
               "Formation",
+              "Permits",
             ]}
             tabPanels={[
               <Paper elevation={3} style={{ padding: "10px" }}>
@@ -469,6 +471,8 @@ export default function WellCardDetails(props) {
               <CompletionsContainer showSummary={showSummary} />,
               <SimulationContainer showSummary={showSummary} />,
               <FormationContainer showSummary={showSummary} />,
+              <PermitsContainer showSummary={showSummary} />,
+              
             ]}
             openTabIdex={stateApp.wellDetailCardTabIndex}
           />
