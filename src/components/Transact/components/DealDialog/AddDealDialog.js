@@ -579,11 +579,6 @@ function AddDealDialog(props) {
     }
   }, [nameAutInputValue]);
 
-  const loadNextPage = async (pageVariables) => {
-    setIsNextPageLoading(true);
-    fetchMorePaginatedContacts(pageVariables);
-  };
-
   useEffect(() => {
     if (cData?.contact) {
       setNameAutValue(cData?.contact ? { name: cData.contact.name, _id: cData.contact._id } : {});

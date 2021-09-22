@@ -4,9 +4,9 @@ import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
 import { MSALB2CObj, B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
-import { heatLayers, baseMapLayers, } from "./LayerConfig";
+import { heatLayers, baseMapLayers } from "./LayerConfig";
 
-const AppContext = createContext([{}, () => { }]);
+const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = (props) => {
   const [stateApp, setStateApp] = useState({
@@ -14,16 +14,16 @@ const AppProvider = (props) => {
     myMSALB2CObj: null,
 
     baseMapLayers: baseMapLayers, // move to a map context -- will be changed with mepler anyways
-    heatLayers: heatLayers, // move to a map context -- will be changed with mepler anyways 
+    heatLayers: heatLayers, // move to a map context -- will be changed with mepler anyways
     apolloClientEndpoint: "",
-    graphqlScope: null, /// potentially login context? 
-    user: null, /// potenitally login context or maybe a specific user context?? 
-    signUpUserType: null,/// potenitally login context or maybe a specific user context?? 
-    wellDetailCardOpen: null, // move to map data card context 
+    graphqlScope: null, /// potentially login context?
+    user: null, /// potenitally login context or maybe a specific user context??
+    signUpUserType: null, /// potenitally login context or maybe a specific user context??
+    wellDetailCardOpen: null, // move to map data card context
     wellDetailCardTabIndex: null,
-    parcelDetailCardOpen: false, // move to map data card context 
-    trackedwells: null, // move to a grid context or query context 
-    trackedOwnerWells: null, // move to a grid context or query context 
+    parcelDetailCardOpen: false, // move to map data card context
+    trackedwells: null, // move to a grid context or query context
+    trackedOwnerWells: null, // move to a grid context or query context
     selectedWell: null, // move to a selected object context (maybe flyto)
     selectedWellId: null, // move to a selected object context (maybe flyto)
     selectedAbstracts: [], // move to a selected object context (maybe flyto)
@@ -39,7 +39,7 @@ const AppProvider = (props) => {
 
     customLayers: [],
 
-    // should be in a draw context 
+    // should be in a draw context
     editDraw: false,
     isDrawing: false,
     shapeEdit: false,
@@ -52,13 +52,13 @@ const AppProvider = (props) => {
     selectedOwner: null,
     owners: null,
     popupOpen: false, //map used in flyto
-    expandedCard: false, // probably need in a map card context 
+    expandedCard: false, // probably need in a map card context
     flyTo: null, //map used in flyto
     fitBounds: null, //map used in fitBounds
     selectedTitleOpinionId: null,
     selectedUserDefinedLayer: null,
     featureOrMapShape: {},
-    filters: [],    // map filter context 
+    filters: [], // map filter context
     filtersMockDb: null,
     filtersAdd: null,
     filtersOnOff: null,
@@ -68,7 +68,6 @@ const AppProvider = (props) => {
     trackedWellArray: [],
     // userSnap: false,
 
-
     // MAP CONTEXT vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
     mapStyles: [],
     mapVars: {
@@ -77,21 +76,20 @@ const AppProvider = (props) => {
       pitch: 0,
       bearing: 0,
       styleId: "Outdoors",
-    }, // move to a map context. check if this is somehow duplicated. 
+    }, // move to a map context. check if this is somehow duplicated.
     defaultMapVars: {
       zoom: 4.88,
       center: { lng: -98.8, lat: 38 },
       pitch: 0,
       bearing: 0,
       styleId: "Outdoors",
-    }, // move to a map context 
+    }, // move to a map context
     wellSelectedCoordinates: [],
     universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
 
     //Map State
     mapCircularLoaderAct: false,
-    mapboxglAccessToken:
-      "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJja2V6MHd2bnQwYzRqMnlwaTV6ejU2cTMyIn0.ghyrh-G8uQtyg4N4VcfTOw",
+    mapboxglAccessToken: "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJja2V6MHd2bnQwYzRqMnlwaTV6ejU2cTMyIn0.ghyrh-G8uQtyg4N4VcfTOw",
     selectedWellApi: null,
     layers: null,
     searchLayerIndex: null,
@@ -115,8 +113,8 @@ const AppProvider = (props) => {
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,
-    toggle3d: null,  // move to a map context
-    toggleZoomOut: null, // move to a map context 
+    toggle3d: null, // move to a map context
+    toggleZoomOut: null, // move to a map context
     map: null, // move to a map context
     draw: null,
     zoomFault: null,
@@ -138,7 +136,7 @@ const AppProvider = (props) => {
     prevBasinVisible: false,
     DocumentDrawer: false,
     selectedDocument: {},
-    transactBarView: "",
+    transactBarView: "Deal",
     multiSelectLandGrids: false,
     isAbstractedLayersPolygon: false,
     contactSearchQuery: "",
@@ -155,18 +153,13 @@ const AppProvider = (props) => {
         setStateApp((stateApp) => {
           if (stateApp.layers && Array.isArray(stateApp.layers)) {
             const currentLayers = [...stateApp.layers];
-            const index = currentLayers.findIndex(
-              (l) => l.identifier === identifier
-            );
+            const index = currentLayers.findIndex((l) => l.identifier === identifier);
 
             const updatedLayer = {
               ...currentLayers[index],
               layerSettings: {
                 ...currentLayers[index].layerSettings,
-                visiable:
-                  activityValue !== undefined
-                    ? activityValue
-                    : !currentLayers[index].layerSettings.visiable,
+                visiable: activityValue !== undefined ? activityValue : !currentLayers[index].layerSettings.visiable,
               },
             };
             res = updatedLayer.layerSettings.visiable;
@@ -236,12 +229,8 @@ const AppProvider = (props) => {
     dispatch(
       setMapGridCardState({
         trackedDataCount:
-          (!stateApp.owners || !stateApp.owners.length
-            ? 0
-            : stateApp.owners.length) +
-          (!stateApp.trackedwells || !stateApp.trackedwells.length
-            ? 0
-            : stateApp.trackedwells.length),
+          (!stateApp.owners || !stateApp.owners.length ? 0 : stateApp.owners.length) +
+          (!stateApp.trackedwells || !stateApp.trackedwells.length ? 0 : stateApp.trackedwells.length),
       })
     );
   }, [stateApp.owners, stateApp.trackedwells]);
