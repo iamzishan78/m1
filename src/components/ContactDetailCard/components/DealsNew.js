@@ -4,7 +4,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import { useHistory } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
-import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACTDEALS } from "../../../graphQL/useQueryContactDeals";
 import DealMoneyIcon from "../../Shared/svgIcons/DealMoneyIcon";
 import { AppContext } from "../../../AppContext";

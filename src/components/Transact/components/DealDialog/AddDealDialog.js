@@ -403,7 +403,7 @@ function AddDealDialog(props) {
     fetchPolicy: "no-cache",
   });
 
-  const [addDeal, { data: dealData }] = useMutation(ADDDEAL);
+  const [addDeal, { data: dealData, loading: addDealLoading }] = useMutation(ADDDEAL);
   const [updateDeal, { loading: updateDealLoading }] = useMutation(UPDATEDEAL);
   const [upsertDealDescriptor] = useMutation(UPSERTDEALDESCRIPTOR);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
@@ -937,7 +937,7 @@ function AddDealDialog(props) {
             .catch((reason) => {
               console.log(reason);
             });
-      } else {
+      } else if (!addDealLoading) {
         //// add a new deal
         let variables = {
           deal,
