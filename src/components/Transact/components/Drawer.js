@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px",
     position: "absolute",
     right: 0,
-    top: (props) => props.top || "108px",
+    top: (props) => props.top,
     zIndex: 1223,
     backgroundColor: "rgb(240,245,248)",
   },
