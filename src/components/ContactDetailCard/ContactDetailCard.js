@@ -54,6 +54,7 @@ import Link from "@material-ui/core/Link";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
 
+import { truncate } from "components/Shared/functions";
 // contexts
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
@@ -457,11 +458,9 @@ export default function ContactDetailCard(props) {
                   cursor: "pointer",
                 }}
                 color="inherit"
-                onClick={() => {
-                  history.push(`/flow/${selectedPipe._id}`);
-                }}
+                onClick={() => history.push(`/flow/${selectedPipe._id}`)}
               >
-                {selectedPipe.name}
+                {truncate(selectedPipe.name, 30)}
               </Link>
             )}
             {isPrevUrlFlowline && (
@@ -474,7 +473,7 @@ export default function ContactDetailCard(props) {
                 color="inherit"
                 onClick={() => history.push(getFlowlineReturnUrl())}
               >
-                {stateApp.activeDeal.name}
+                {truncate(stateApp.activeDeal.name, 30)}
               </Link>
             )}
             {checkModuleHistory() && (
