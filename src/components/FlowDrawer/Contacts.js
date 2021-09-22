@@ -89,7 +89,7 @@ export default function Contacts(props) {
   const [nameAutValue, setNameAutValue] = useState("");
   const [nameAutInputValue, setNameAutInputValue] = useState("");
   const [addContact, setAddContact] = useState(false);
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [mutationLoading, setMutationLoading] = useState(false);
   const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
@@ -176,6 +176,17 @@ export default function Contacts(props) {
       setMutationLoading(false);
     }
   };
+
+  const gotoContact = (index) => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedContact: stateApp.activeDeal?.contacts[index]?._id,
+      dealDialog: false,
+      transactBarView: "Deal",
+    }));
+    history.push(`/contact/details/${stateApp.activeDeal?.contacts[index]?._id}?return-url=${history.location.pathname}`);
+  };
+
   return (
     <>
       <Grid container direction="row" justify="space-between" alignItems="center" className={classes.rootPadding}>
@@ -287,7 +298,7 @@ export default function Contacts(props) {
                       cursor: "pointer",
                     }}
                     color="primary"
-                    onClick={() => history.push(`/contact/details/${stateApp.activeDeal?.contacts[i]?._id}`)}
+                    onClick={() => gotoContact(i)}
                   >
                     {c}
                   </Link>
@@ -295,7 +306,7 @@ export default function Contacts(props) {
                   {mutationLoading === stateApp.activeDeal?.contacts[i]?._id ? (
                     <ListItemSecondaryAction>
                       <IconButton edge="end" aria-label="delete">
-                        <CircularProgress></CircularProgress>
+                        <CircularProgress />
                       </IconButton>
                     </ListItemSecondaryAction>
                   ) : (

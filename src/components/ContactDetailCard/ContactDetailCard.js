@@ -289,10 +289,10 @@ export default function ContactDetailCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
-  const dispatch = useDispatch();
   let history = useHistory();
   const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
   const shrinkRightColumn = useSelector(({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn);
+  const { selectedPipe } = useSelector(({ Flow }) => Flow);
   const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
   const [transactData, setTransactData] = useState();
@@ -412,6 +412,13 @@ export default function ContactDetailCard(props) {
     return !!stateNav.contactFromMap;
   };
 
+  const getFlowlineReturnUrl = () => {
+    const searchParams = new URLSearchParams(window.location.search?.replace("?", ""));
+    const returnUrl = searchParams.get("return-url");
+    return returnUrl;
+  };
+  const isPrevUrlFlowline = getFlowlineReturnUrl() && stateApp.activeDeal?._id;
+
   const ExtenstionGetter = (name) => {
     let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
 
@@ -428,9 +435,48 @@ export default function ContactDetailCard(props) {
             paddingLeft: "25px",
           }}
         >
-          {/* {checkModuleHistory() && } */}
-
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+            {isPrevUrlFlowline && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push("/flow")}
+              >
+                Flow
+              </Link>
+            )}
+            {isPrevUrlFlowline && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => {
+                  history.push(`/flow/${selectedPipe._id}`);
+                }}
+              >
+                {selectedPipe.name}
+              </Link>
+            )}
+            {isPrevUrlFlowline && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push(getFlowlineReturnUrl())}
+              >
+                {stateApp.activeDeal.name}
+              </Link>
+            )}
             {checkModuleHistory() && (
               <Link
                 style={{
@@ -440,13 +486,7 @@ export default function ContactDetailCard(props) {
                 }}
                 color="inherit"
                 onClick={() => {
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    // parcelDetailCardOpen: false,
-                  }));
-
                   history.push("/");
-
                   setStateNav((stateApp) => ({
                     ...stateApp,
                     contactFromMap: false,
@@ -456,8 +496,6 @@ export default function ContactDetailCard(props) {
                 Map
               </Link>
             )}
-
-            {console.log("CURRENT MAP BREADCRUMB")}
 
             <Link
               style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer" }}
