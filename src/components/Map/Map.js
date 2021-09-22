@@ -433,9 +433,9 @@ function Map() {
 
   useEffect(() => {
     if (!loading &&
-      parcelId !== "" &&
-      parcelId !== stateApp.selectedParcel?.id &&
-      stateApp.customLayers.length > 0) {
+        parcelId !== "" &&
+        // parcelId !== stateApp.selectedParcel?.id &&
+        stateApp.customLayers.length > 0) {
       console.log(parcelId)
       const parcel = stateApp.customLayers.find(el => el._id === parcelId)
       if (parcel) {
