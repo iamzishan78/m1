@@ -3397,7 +3397,7 @@ function SubTable(props) {
         {openDialog && openDialog === "buyContactsInfoData" && (
           <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
             <BuyContactsInfoDialogContent
-              header="Contact Data Integration"
+              header="Contact Data Integration test"
               onClose={handleCloseDialog}
               rows={expandedObject}
               setRows={setExpandedObject}
@@ -3428,6 +3428,7 @@ function SubTable(props) {
           openDialog !== "addDeals" &&
           openDialog !== "sendMailers" &&
           openDialog !== "buyContactsInfo" &&
+          openDialog !== "buyContactsInfoData" &&
           openDialog !== "addOwnerToParcel" && (
             <Dialog
               // style={{zIndex: 99998}}

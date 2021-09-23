@@ -408,6 +408,7 @@ const Login = (props) => {
       user: {
         id: accountObj.sub,
         features: sessionData.features,
+        tenantId: sessionData.tenantId,
         mongoId: mongoUser._id,
         email: mongoUser.email,
         name: mongoUser.name,

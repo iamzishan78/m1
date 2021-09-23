@@ -20,6 +20,7 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
+import { CONTACT_PURCHASE_DATA } from "graphQL/useQueryContactPurchaseData";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { LASTMELISSARECORD } from "../../graphQL/useQueryGetMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -326,11 +327,13 @@ export default function ContactDetailCard(props) {
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
+  const [purchaseData, setPurchaseData] = useState([]);
 
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] =
     useState(null);
 
   const [getContact, { loading, data }] = useLazyQuery(CONTACT);
+  const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
   // const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
   //   TRANSACTIONDATA
   // );
@@ -397,6 +400,11 @@ export default function ContactDetailCard(props) {
           contactId: stateApp.selectedContact,
         },
       });
+      getContactPurchaseData({
+        variables: {
+          contactId: stateApp.selectedContact,
+        },
+      })
     } else if (contactId) {
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -404,6 +412,12 @@ export default function ContactDetailCard(props) {
       }));
     }
   }, [contactId, getContact, setStateApp, stateApp.selectedContact]);
+
+  useEffect(() => {
+    if (contactPurchaseData?.getContactPurchaseData?.length > 0) {
+      setPurchaseData(contactPurchaseData?.getContactPurchaseData);
+    }
+  }, [contactPurchaseData]);
 
   useEffect(() => {
     if (data && data.contact) {
@@ -730,7 +744,7 @@ export default function ContactDetailCard(props) {
               spacing={0}
               style={{ padding: "23px 28px" }}
             >
-              <ContactDetailedInfo contactData={contactData} />
+              <ContactDetailedInfo purchaseData={purchaseData} contactData={contactData} />
             </Grid>
             {/*/////////// new section - lead stage //////////// */}
             <Grid item xs={12} className={`${classes.border}`}>

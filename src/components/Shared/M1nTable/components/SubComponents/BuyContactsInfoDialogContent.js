@@ -1,6 +1,6 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import { FormLabel } from "@material-ui/core";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { Grid } from "@material-ui/core";
@@ -15,8 +15,10 @@ import DialogContent from "@material-ui/core/DialogContent";
 
 import { AppContext } from "../../../../../AppContext";
 import { GETPERSONDATA } from "../../../../../graphQL/useQueryGetPersonData";
-// import { GET_FEATURE_QUOTA } from "graphQL/useQueryGetFeatureQuota";
+import { GET_IDICORE_DATA } from "graphQL/useQueryGetIdiCoreData";
+import { GET_FEATURE_QUOTA } from "graphQL/useQueryGetFeatureQuota";
 import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import Close from "@material-ui/icons/Close";
 
@@ -59,11 +61,29 @@ const DialogTitle = withStyles(styles)((props) => {
 export default function BuyContactsInfoDialogContent(props) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [featureQuota, setFeatureQuota] = useState(null)
+  const [currentCredits, setCurrentCredits] = useState(-1)
   const modalClass = Modals();
   
-  // const [getFeatureQuota, { loading, data }] = useLazyQuery(GET_FEATURE_QUOTA);
+  const [getFeatureQuota, { loading, data: quota }] = useLazyQuery(GET_FEATURE_QUOTA);
 
-  console.log('userData', stateApp.user)
+  useEffect(() => {
+    const feature = stateApp?.user?.features?.find(f => f.name === FEATURES.IDICORE)
+    getFeatureQuota({
+      variables: {
+        featureId: feature.id,
+        tenantId: stateApp.user.tenantId
+      },
+    });
+  },[])
+
+  useEffect(()=>{
+    if(quota && quota.featureQuota){
+      setFeatureQuota(quota.featureQuota)
+      setCurrentCredits(quota.featureQuota.QuotaLimit - (quota.featureQuota.QuotaPending + quota.featureQuota.QuotaUsed))
+    }
+  },[quota])
+
   const [getPersonData, { data: personsData }] = useMutation(GETPERSONDATA, {
     onCompleted: (data) => {
       props.onClose();
@@ -78,12 +98,26 @@ export default function BuyContactsInfoDialogContent(props) {
     },
   });
 
+  const [getIdICoreData, { data: idiCoreData }] = useMutation(GET_IDICORE_DATA);
+
+  useEffect(()=>{
+    if(idiCoreData?.getIdiCoreData?.success && idiCoreData?.getIdiCoreData?.data?.length > 0){
+      dispatch(showSuccessMessage("Data fetched successfully"));
+      props.onClose();
+    } else if(idiCoreData?.getIdiCoreData?.success === false) {
+      dispatch(showErrorMessage("Error occurred"));
+    }else if(idiCoreData?.getIdiCoreData?.success === true){
+      dispatch(showErrorMessage("No data found against the contact"));
+    }
+  },[idiCoreData])
+
   function loadPersonData() {
     let persons = [];
     for (const row of props.rows) {
       let person = {
         id: row._id,
-        fullName: row.name,
+        firstName: row.name.split(' ')[0],
+        lastName: row.name.replace(row.name.split(' ')[0], ''),
         address: row.address1 + (row.address2 ? ", " + row.address2 : ""),
         city: row.city,
         state: row.state,
@@ -106,11 +140,22 @@ export default function BuyContactsInfoDialogContent(props) {
       persons.push(person);
     }
 
-    getPersonData({
-      variables: { persons },
+    // getPersonData({
+    //   variables: { persons },
+    //   refetchQueries: [
+    //     "getLastMelissaRecord",
+    //     "getMelissaRecordsCountForContactIds",
+    //   ],
+    //   awaitRefetchQueries: true,
+    // });
+
+    getIdICoreData({
+      variables: { 
+        tenantId: stateApp.user.tenantId,
+        persons 
+      },
       refetchQueries: [
-        "getLastMelissaRecord",
-        "getMelissaRecordsCountForContactIds",
+        "getContactPurchaseData",
       ],
       awaitRefetchQueries: true,
     });
@@ -120,7 +165,7 @@ export default function BuyContactsInfoDialogContent(props) {
     if (!props.rows || props.rows.length === 0) props.onClose();
   }, [props.rows]);
 
-  const currentCredits = 20;
+  // const currentCredits = 20;
 
   return (
     <React.Fragment>

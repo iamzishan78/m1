@@ -192,3 +192,181 @@ export const getBasicInfoContent = (contactData) => {
     },
   };
 };
+
+export const getBasicPurchaseInfoExpContent = (contactData) => {
+  return {
+    "Full Name": {
+      data: { fullName: contactData?.fullName },
+      linkType: LinkTypes.None,
+    },
+    "First Name": {
+      data: { firstName: contactData?.firstName },
+      linkType: LinkTypes.None,
+    },
+    "Last Name": {
+      data: { lastName: contactData?.lastName },
+      linkType: LinkTypes.None,
+    },
+    "Age": {
+      data: { age: contactData?.age },
+      linkType: LinkTypes.None,
+    },
+    "Current Address": {
+      data: { currentAddress: contactData?.currentAddress },
+      linkType: LinkTypes.None,
+    },
+    "Current Address Range": {
+      data: { currentAddressDateRange: contactData?.currentAddressDateRange },
+      linkType: LinkTypes.None,
+    },
+    "Previous Address 1": {
+      data: { previousAddress1: contactData?.previousAddress1 },
+      linkType: LinkTypes.None,
+    },
+    "Previous Address 1 Range": {
+      data: { previousAddress1DateRange: contactData?.previousAddress1DateRange },
+      linkType: LinkTypes.None,
+    },
+    "Previous Address 2": {
+      data: { previousAddress2: contactData?.previousAddress2 },
+      linkType: LinkTypes.None,
+    },
+    "Previous Address 2 Range": {
+      data: { previousAddress2DateRange: contactData?.previousAddress2DateRange },
+      linkType: LinkTypes.None,
+    },
+    "Previous Address 3": {
+      data: { previousAddress3: contactData?.previousAddress3 },
+      linkType: LinkTypes.None,
+    },
+    "Previous Address 3 Range": {
+      data: { previousAddress3DateRange: contactData?.previousAddress3DateRange },
+      linkType: LinkTypes.None,
+    },
+    "Phone 1": {
+      data: { phone1: contactData?.phone1 },
+      linkType: LinkTypes.None,
+    },
+    "Phone 1 Type": {
+      data: { phone1Type: contactData?.phone1Type },
+      linkType: LinkTypes.None,
+    },
+    "Phone 1 Last Seen": {
+      data: { phone1LastSeen: contactData?.phone1LastSeen },
+      linkType: LinkTypes.None,
+    },
+    "Phone 2": {
+      data: { phone2: contactData?.phone2 },
+      linkType: LinkTypes.None,
+    },
+    "Phone 2 Type": {
+      data: { phone2Type: contactData?.phone2Type },
+      linkType: LinkTypes.None,
+    },
+    "Phone 2 Last Seen": {
+      data: { phone2LastSeen: contactData?.phone2LastSeen },
+      linkType: LinkTypes.None,
+    },
+    "Phone 3": {
+      data: { phone3: contactData?.phone3 },
+      linkType: LinkTypes.None,
+    },
+    "Phone 3 Type": {
+      data: { phone3Type: contactData?.phone3Type },
+      linkType: LinkTypes.None,
+    },
+    "Phone 3 Last Seen": {
+      data: { phone3LastSeen: contactData?.phone3LastSeen },
+      linkType: LinkTypes.None,
+    },
+    "Phone 4": {
+      data: { phone4: contactData?.phone4 },
+      linkType: LinkTypes.None,
+    },
+    "Phone 4 Type": {
+      data: { phone4Type: contactData?.phone4Type },
+      linkType: LinkTypes.None,
+    },
+    "Phone 4 Last Seen": {
+      data: { phone4LastSeen: contactData?.phone4LastSeen },
+      linkType: LinkTypes.None,
+    },
+    "Phone 5": {
+      data: { phone5: contactData?.phone5 },
+      linkType: LinkTypes.None,
+    },
+    "Phone 5 Type": {
+      data: { phone5Type: contactData?.phone5Type },
+      linkType: LinkTypes.None,
+    },
+    "Phone 5 Last Seen": {
+      data: { phone5LastSeen: contactData?.phone5LastSeen },
+      linkType: LinkTypes.None,
+    },
+    "Email 1": {
+      data: { email1: contactData?.email1 },
+      linkType: LinkTypes.None,
+    },
+    "Email 1 Last Seen": {
+      data: { email1LastSeen: contactData?.email1LastSeen },
+      linkType: LinkTypes.None,
+    },
+    "Email 2": {
+      data: { email2: contactData?.email2 },
+      linkType: LinkTypes.None,
+    },
+    "Email 2 Last Seen": {
+      data: { email2LastSeen: contactData?.email2LastSeen },
+      linkType: LinkTypes.None,
+    },
+    "Email 3": {
+      data: { email3: contactData?.email3 },
+      linkType: LinkTypes.None,
+    },
+    "Email 3 Last Seen": {
+      data: { email3LastSeen: contactData?.email3LastSeen },
+      linkType: LinkTypes.None,
+    },
+    "Email 4": {
+      data: { email4: contactData?.email4 },
+      linkType: LinkTypes.None,
+    },
+    "Email 4 Last Seen": {
+      data: { email4LastSeen: contactData?.email4LastSeen },
+      linkType: LinkTypes.None,
+    },
+    "Email 5": {
+      data: { email5: contactData?.email5 },
+      linkType: LinkTypes.None,
+    },
+    "Email 5 Last Seen": {
+      data: { email5LastSeen: contactData?.email5LastSeen },
+      linkType: LinkTypes.None,
+    },
+  };
+};
+
+export const getBasicPurchaseInfoContent = (contactData) => {
+  return {
+    "Full Name": {
+      data: { fullName: contactData?.fullName },
+      linkType: LinkTypes.None,
+    },
+    "Age": {
+      data: { age: contactData?.age },
+      linkType: LinkTypes.None,
+    },
+    "Current Address": {
+      data: { currentAddress: contactData?.currentAddress },
+      linkType: LinkTypes.None,
+    },
+    "Phone1": {
+      data: { phone1: contactData?.phone1 },
+      linkType: LinkTypes.None,
+    },
+    "Email1": {
+      data: { email1: contactData?.email1 },
+      linkType: LinkTypes.None,
+    }
+  };
+};

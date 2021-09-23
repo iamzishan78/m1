@@ -14,11 +14,16 @@ import {
   Box,
   FormControlLabel,
   FormGroup,
-  Switch
+  Switch,
 } from "@material-ui/core";
+import moment from "moment";
 
-import { getBasicInfoContent, getBasicInfoExpContent } from 'components/ContactDetailedInfo/helper'
-
+import {
+  getBasicInfoContent,
+  getBasicInfoExpContent,
+  getBasicPurchaseInfoContent,
+  getBasicPurchaseInfoExpContent,
+} from "components/ContactDetailedInfo/helper";
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -66,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     margin: "0 0 8px 22px",
-    "float": "right",
+    float: "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -82,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textBtn: {
     margin: "0 0 8px 0",
-    "float": "right",
+    float: "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -153,7 +158,7 @@ const useStyles = makeStyles((theme) => ({
   },
   showAll: {
     margin: "8px 0 0 0",
-    "float": "right",
+    float: "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -161,44 +166,50 @@ const useStyles = makeStyles((theme) => ({
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
   switchButtom: {
-    "float": "right",
+    float: "right",
     width: "fit-content",
     alignSelf: "flex-end",
     marginRight: 0,
     "& span.MuiTypography-body1": {
       fontSize: "0.9rem",
-      marginLeft: "5px"
+      marginLeft: "5px",
     },
   },
   switchTextDeselected: {
     color: "rgb(141, 141, 141)",
   },
-  tab:{
+  tab: {
     border: "1px solid #C9C9C9",
     padding: "3px 20px",
     color: "#919191",
     cursor: "pointer",
   },
-  selectedTab:{
-    color: 'white',
-    background: '#01B0F0',
+  selectedTab: {
+    color: "white",
+    background: "#01B0F0",
   },
-  viewSwitcher:{
-    width : "245px",
-    fontSize : "14px",
+  viewSwitcher: {
+    width: "245px",
+    fontSize: "14px",
     marginLeft: "10px",
-  }
-
+  },
 }));
 
 export default function DetailInfo(props) {
   const [basicInfExp, setBasicInfExp] = useState(false);
   const [showEmpty, setShowEmpty] = useState(true);
-  const [selectedTab, setSelectedTab] = useState('Basic Info')
-  const [selectedPurchaseData, setSelectedPurchaseData] = useState('')
+  const [selectedTab, setSelectedTab] = useState("Basic Info");
+  const [selectedPurchaseData, setSelectedPurchaseData] = useState("");
   const classes = useStyles();
   let history = useHistory();
   const [loading, setLoading] = useState(false);
+
+  useEffect(()=>{
+    if(props.purchaseData.length > 0){
+      setSelectedPurchaseData(props.purchaseData[0]._id)
+    }
+
+  },[props.purchaseData])
   // const basicInfoContent = {
   //   // "Full Name": {
   //   //   data: {
@@ -337,7 +348,6 @@ export default function DetailInfo(props) {
   //   //   linkType: LinkTypes.None,
   //   // },
 
-
   //   "LinkedIn Profile": {
   //     data: { linkedIn: props.contactData.linkedIn },
   //     linkType: LinkTypes.Simple,
@@ -457,20 +467,19 @@ export default function DetailInfo(props) {
       setLoading(false);
     }
     update();
-  }, [props.contactData])
-
-
+  }, [props.contactData]);
 
   const handleEmptyFields = () => {
     setShowEmpty(!showEmpty);
-  }
+  };
 
   const ToggleEmptyFieldButton = () => {
     return (
       <FormGroup style={{ display: "block" }}>
         <FormControlLabel
-          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""
-            } ${!showEmpty ? classes.switchTextDeselected : ""}`}
+          className={`${classes.switchButtom}${
+            props.publicLeftBottom ? classes.publicLeftBottom : ""
+          } ${!showEmpty ? classes.switchTextDeselected : ""}`}
           control={
             <React.Fragment>
               <AntSwitch
@@ -484,34 +493,49 @@ export default function DetailInfo(props) {
           }
           label="Show empty fields"
           labelPlacement="end"
-
         />
       </FormGroup>
     );
   };
 
-  const tabs = ['Basic Info',  'Purchased Info']
+  const tabs =
+    props.purchaseData.length > 0
+      ? ["Basic Info", "Purchased Info"]
+      : ["Basic Info"];
 
   return (
     <div className={classes.root}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
-        {tabs.map(tab => {
+        {tabs.map((tab) => {
           return (
-          <span className={`${classes.tab} ${selectedTab === tab ? classes.selectedTab : ''}`} onClick={() => setSelectedTab(tab)}>
-            {tab}
-          </span>
-          )
+            <span
+              className={`${classes.tab} ${
+                selectedTab === tab ? classes.selectedTab : ""
+              }`}
+              onClick={() => setSelectedTab(tab)}
+            >
+              {tab}
+            </span>
+          );
         })}
-        {selectedTab === 'Purchased Info' && (
+        {selectedTab === "Purchased Info" && (
           <Select
             className={classes.viewSwitcher}
             value={selectedPurchaseData}
             onChange={(e) => {
-              setSelectedPurchaseData(e.target.value)
+              setSelectedPurchaseData(e.target.value);
             }}
           >
-            <MenuItem value="id1">IDI Data -07/28/2021 11:07:02am</MenuItem>
-            <MenuItem value="id2">IDI Data -07/29/2021 11:07:02am</MenuItem>
+            {props.purchaseData.map((purchaseData) => {
+              return (
+                <MenuItem value={purchaseData._id}>
+                  IDI Data -{" "}
+                  {moment(purchaseData.sysDateTime).format(
+                    "MM/DD/YYYY hh:mm:ss a"
+                  )}
+                </MenuItem>
+              );
+            })}
           </Select>
         )}
 
@@ -519,141 +543,294 @@ export default function DetailInfo(props) {
           <ToggleEmptyFieldButton />
           <h4
             className={classes.viewAll}
-            onClick={() => { history.push(`/contact/details/${props.contactData._id}/detailedInformation`) }}
+            onClick={() => {
+              history.push(
+                `/contact/details/${props.contactData._id}/detailedInformation`
+              );
+            }}
           >
             View All
-        </h4>
+          </h4>
         </Box>
       </Grid>
 
+      {selectedTab === "Basic Info" && (
+        <>
+          <Grid item xs={12} container className={classes.dataSect} spacing={0}>
+            {!loading &&
+              getBasicInfoContent(props.contactData) &&
+              Object.entries(getBasicInfoContent(props.contactData)).map(
+                ([key, row]) => {
+                  if (showEmpty) {
+                    return (
+                      <React.Fragment>
+                        <Grid item xs={3} className="fieldName">
+                          <p className="dataLabels">{key}</p>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <FieldContent
+                            id={props.contactData._id}
+                            entity={props.contactData.entity}
+                            isMerged={!!props.contactData.mergedContacts}
+                            content={row.data}
+                            linkType={row.linkType}
+                            isPurchased={selectedTab === "Purchased Info"}
+                          />
+                        </Grid>
+                      </React.Fragment>
+                    );
+                  } else {
+                    let objName = Object.keys(row.data)[0];
+                    if (
+                      row.data[objName] != undefined &&
+                      row.data[objName] != `""` &&
+                      row.data[objName] != "" &&
+                      row.data[objName] != "" &&
+                      row.data[objName].length != 0 &&
+                      row.data[objName] != null
+                    ) {
+                      return (
+                        <React.Fragment>
+                          <Grid item xs={3} className="fieldName">
+                            <p className="dataLabels">{key}</p>
+                          </Grid>
+                          <Grid item xs={9}>
+                            <FieldContent
+                              id={props.contactData._id}
+                              entity={props.contactData.entity}
+                              isMerged={!!props.contactData.mergedContacts}
+                              content={row.data}
+                              linkType={row.linkType}
+                            />
+                          </Grid>
+                        </React.Fragment>
+                      );
+                    }
+                  }
+                }
+              )}
 
-      <Grid item xs={12} container className={classes.dataSect} spacing={0}>
-        {!loading && getBasicInfoContent(props.contactData) &&
-          Object.entries(getBasicInfoContent(props.contactData)).map(([key, row]) => {
-            if (showEmpty) {
-              return (
-                <React.Fragment>
-                  <Grid item xs={3} className="fieldName">
-                    <p className="dataLabels">{key}</p>
-                  </Grid>
-                  <Grid item xs={9}>
-                    <FieldContent
-                      id={props.contactData._id}
-                      entity={props.contactData.entity}
-                      isMerged={!!props.contactData.mergedContacts}
-                      content={row.data}
-                      linkType={row.linkType}
-                      isPurchased={selectedTab === 'Purchased Info'}
-                    />
-                  </Grid>
-                </React.Fragment>
+            {basicInfExp && (
+              <>
+                {Object.entries(getBasicInfoExpContent(props.contactData)).map(
+                  ([key, row]) => {
+                    if (showEmpty) {
+                      return (
+                        <React.Fragment key={key}>
+                          <Grid item xs={3} className="fieldName">
+                            <p className="dataLabels">{key}</p>
+                          </Grid>
+                          <Grid item xs={9}>
+                            <FieldContent
+                              onlyChildren={row.inner ? true : false}
+                              id={props.contactData._id}
+                              entity={props.contactData.entity}
+                              isMerged={!!props.contactData.mergedContacts}
+                              content={row.data}
+                              linkType={row.linkType}
+                            >
+                              {row.inner}
+                            </FieldContent>
+                          </Grid>
+                        </React.Fragment>
+                      );
+                    } else {
+                      let objName = Object.keys(row.data)[0];
+
+                      if (
+                        row.data[objName] != undefined &&
+                        row.data[objName] != `""` &&
+                        row.data[objName] != "" &&
+                        row.data[objName] != "" &&
+                        row.data[objName].length != 0 &&
+                        row.data[objName] != null
+                      ) {
+                        return (
+                          <React.Fragment key={key}>
+                            <Grid item xs={3} className="fieldName">
+                              <p className="dataLabels">{key}</p>
+                            </Grid>
+                            <Grid item xs={9}>
+                              <FieldContent
+                                onlyChildren={row.inner ? true : false}
+                                id={props.contactData._id}
+                                entity={props.contactData.entity}
+                                isMerged={!!props.contactData.mergedContacts}
+                                content={row.data}
+                                linkType={row.linkType}
+                              >
+                                {row.inner}
+                              </FieldContent>
+                            </Grid>
+                          </React.Fragment>
+                        );
+                      }
+                    }
+                  }
+                )}
+              </>
+            )}
+          </Grid>
+          <Grid item xs={12}>
+            <h4
+              className={classes.showAll}
+              onClick={() => {
+                setBasicInfExp(!basicInfExp);
+              }}
+            >
+              Show {!basicInfExp ? "More" : "Less"}
+              {!basicInfExp ? (
+                <ExpandMoreIcon style={{ position: "relative", top: "8px" }} />
+              ) : (
+                <ExpandLessIcon style={{ position: "relative", top: "8px" }} />
+              )}
+            </h4>
+          </Grid>
+        </>
+      )}
+
+      {selectedTab === "Purchased Info" && (
+        <>
+          <Grid item xs={12} container className={classes.dataSect} spacing={0}>
+            {!basicInfExp && getBasicPurchaseInfoContent(
+              props.purchaseData.find(
+                (purchaseData) => purchaseData._id === selectedPurchaseData
               )
-            } else {
-              let objName = Object.keys(row.data)[0];
-              if (row.data[objName] != undefined
-                && row.data[objName] != `""`
-                && row.data[objName] != ''
-                && row.data[objName] != ""
-                && row.data[objName].length != 0
-                && row.data[objName] != null
-              ) {
-                return (
-                  <React.Fragment>
-                    <Grid item xs={3} className="fieldName">
-                      <p className="dataLabels">{key}</p>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <FieldContent
-                        id={props.contactData._id}
-                        entity={props.contactData.entity}
-                        isMerged={!!props.contactData.mergedContacts}
-                        content={row.data}
-                        linkType={row.linkType}
-                        isPurchased={selectedTab === 'Purchased Info'}
-                      />
-                    </Grid>
-                  </React.Fragment>
+            ) &&
+              Object.entries(
+                getBasicPurchaseInfoContent(
+                  props.purchaseData.find(
+                    (purchaseData) => purchaseData._id === selectedPurchaseData
+                  )
                 )
-              }
-            }
-
-          })}
-
-        {basicInfExp && (
-          <>
-            {Object.entries(getBasicInfoExpContent(props.contactData)).map(([key, row]) => {
-              if (showEmpty) {
-                return (
-                  <React.Fragment key={key}>
-                    <Grid item xs={3} className="fieldName">
-                      <p className="dataLabels">{key}</p>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <FieldContent
-                        onlyChildren={row.inner ? true : false}
-                        id={props.contactData._id}
-                        entity={props.contactData.entity}
-                        isMerged={!!props.contactData.mergedContacts}
-                        content={row.data}
-                        linkType={row.linkType}
-                      >
-                        {row.inner}
-                      </FieldContent>
-                    </Grid>
-                  </React.Fragment>
-                )
-              } else {
-                let objName = Object.keys(row.data)[0];
-
-                if (row.data[objName] != undefined
-                  && row.data[objName] != `""`
-                  && row.data[objName] != ''
-                  && row.data[objName] != ""
-                  && row.data[objName].length != 0
-                  && row.data[objName] != null
-                ) {
+              ).map(([key, row]) => {
+                if (showEmpty) {
                   return (
-
-                    <React.Fragment key={key}>
+                    <React.Fragment>
                       <Grid item xs={3} className="fieldName">
                         <p className="dataLabels">{key}</p>
                       </Grid>
                       <Grid item xs={9}>
                         <FieldContent
-                          onlyChildren={row.inner ? true : false}
                           id={props.contactData._id}
                           entity={props.contactData.entity}
-                          isMerged={!!props.contactData.mergedContacts}
                           content={row.data}
                           linkType={row.linkType}
-                        >
-                          {row.inner}
-                        </FieldContent>
+                          isPurchased
+                        />
                       </Grid>
                     </React.Fragment>
-                  )
+                  );
+                } else {
+                  let objName = Object.keys(row.data)[0];
+                  if (
+                    row.data[objName] != undefined &&
+                    row.data[objName] != `""` &&
+                    row.data[objName] != "" &&
+                    row.data[objName] != "" &&
+                    row.data[objName].length != 0 &&
+                    row.data[objName] != null
+                  ) {
+                    return (
+                      <React.Fragment>
+                        <Grid item xs={3} className="fieldName">
+                          <p className="dataLabels">{key}</p>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <FieldContent
+                            id={props.contactData._id}
+                            entity={props.contactData.entity}
+                            content={row.data}
+                            linkType={row.linkType}
+                            isPurchased
+                          />
+                        </Grid>
+                      </React.Fragment>
+                    );
+                  }
                 }
-              }
+              })}
 
-            })}
-          </>
-        )}
-      </Grid>
-      <Grid item xs={12}>
-        <h4
-          className={classes.showAll}
-          onClick={() => {
-            setBasicInfExp(!basicInfExp);
-          }}
-        >
-          Show {!basicInfExp ? "More" : "Less"}
-          {!basicInfExp ? (
-            <ExpandMoreIcon style={{ position: "relative", top: "8px" }} />
-          ) : (
-              <ExpandLessIcon style={{ position: "relative", top: "8px" }} />
+            {basicInfExp && (
+              <>
+                {Object.entries(
+                  getBasicPurchaseInfoExpContent(props.purchaseData.find(
+                    (purchaseData) => purchaseData._id === selectedPurchaseData
+                  ))
+                ).map(([key, row]) => {
+                  if (showEmpty) {
+                    return (
+                      <React.Fragment key={key}>
+                        <Grid item xs={3} className="fieldName">
+                          <p className="dataLabels">{key}</p>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <FieldContent
+                            onlyChildren={row.inner ? true : false}
+                            id={props.contactData._id}
+                            entity={props.contactData.entity}
+                            isMerged={!!props.contactData.mergedContacts}
+                            content={row.data}
+                            linkType={row.linkType}
+                          >
+                            {row.inner}
+                          </FieldContent>
+                        </Grid>
+                      </React.Fragment>
+                    );
+                  } else {
+                    let objName = Object.keys(row.data)[0];
+
+                    if (
+                      row.data[objName] != undefined &&
+                      row.data[objName] != `""` &&
+                      row.data[objName] != "" &&
+                      row.data[objName] != "" &&
+                      row.data[objName].length != 0 &&
+                      row.data[objName] != null
+                    ) {
+                      return (
+                        <React.Fragment key={key}>
+                          <Grid item xs={3} className="fieldName">
+                            <p className="dataLabels">{key}</p>
+                          </Grid>
+                          <Grid item xs={9}>
+                            <FieldContent
+                              onlyChildren={row.inner ? true : false}
+                              id={props.contactData._id}
+                              entity={props.contactData.entity}
+                              isMerged={!!props.contactData.mergedContacts}
+                              content={row.data}
+                              linkType={row.linkType}
+                            >
+                              {row.inner}
+                            </FieldContent>
+                          </Grid>
+                        </React.Fragment>
+                      );
+                    }
+                  }
+                })}
+              </>
             )}
-        </h4>
-      </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <h4
+              className={classes.showAll}
+              onClick={() => {
+                setBasicInfExp(!basicInfExp);
+              }}
+            >
+              Show {!basicInfExp ? "More" : "Less"}
+              {!basicInfExp ? (
+                <ExpandMoreIcon style={{ position: "relative", top: "8px" }} />
+              ) : (
+                <ExpandLessIcon style={{ position: "relative", top: "8px" }} />
+              )}
+            </h4>
+          </Grid>
+        </>
+      )}
     </div>
   );
-};
+}
