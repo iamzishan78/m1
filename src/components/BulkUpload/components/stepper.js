@@ -182,7 +182,9 @@ export default function CustomizedSteppers(props) {
   const steps = getSteps();
   const dispatch = useDispatch();
   // const [createBulkContacts] = useMutation(ADDBULKCONTACT);
-  const [getUploadContactUri, { data: contactUploadUri }] = useLazyQuery(GET_UPLOAD_CONTACT_URI);
+  const [getUploadContactUri, { data: contactUploadUri }] = useLazyQuery(GET_UPLOAD_CONTACT_URI, {
+    fetchPolicy: "no-cache",
+  });
   const [createJob, { data: createJobData }] = useMutation(CREATE_JOB);
   const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB);
 
@@ -190,7 +192,11 @@ export default function CustomizedSteppers(props) {
   let data_to_send = stateApp.csvContactsListToSend;
 
   useEffect(() => {
-    if(createJobData?.createJob){
+    console.log(updatedJob)
+  },[updatedJob])
+
+  useEffect(() => {
+    if(createJobData?.createJob && jobId){
       updateJob({
         variables: {
           job:{
@@ -200,7 +206,7 @@ export default function CustomizedSteppers(props) {
         }
       })
     }
-  },[createJobData])
+  },[createJobData, jobId])
 
   useEffect(() => {
     if(contactUploadUri?.getUploadContactUri?.success &&
