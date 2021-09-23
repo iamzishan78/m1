@@ -108,7 +108,8 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "7px",
   },
   inputFieldDealName: {
-    width: "405px",
+    width: "750px",
+    padding: "0px 30px 20px 30px",
   },
   dateLabel: {
     transform: "translate(10px, 2px) scale(0.75) !important",
@@ -214,6 +215,7 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     width: "100%",
     marginTop: 25,
+    // marginBottom: 25,
 
     "& .MuiOutlinedInput-root": {
       width: "100%",
@@ -1182,7 +1184,7 @@ function AddDealDialog(props) {
 
   const StickyHeader = () => (
     <div>
-      <Grid item container xs={12} style={{ padding: "10px 14px 5px 25px" }}>
+      <Grid item container xs={12} style={{ padding: "30px 14px 10px 25px" }}>
         {!titleFocus && (
           <>
             <Grid item xs={6} style={{ minHeight: "35px" }}>
@@ -1249,7 +1251,10 @@ function AddDealDialog(props) {
                 )}
               </div>
             </Grid>
-            <Grid item xs={6} style={{ minHeight: "35px" }}>
+            <Grid item xs={6} style={{ 
+              // minHeight: "35px", 
+              // padding: "30px 14px 10px 25px" 
+              }}>
               {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) && stateApp.activeDeal?.laneId && (
                 <>
                   <IconButton
@@ -1272,7 +1277,7 @@ function AddDealDialog(props) {
           </>
         )}
       </Grid>
-      <Grid item container xs={12} style={{ padding: "0px 30px" }} alignItems="center">
+      <Grid item container xs={12} style={{ padding: "0px 0px 0px 0px" }} alignItems="center">
         {!((Object.keys(contact).length === 0 && contact.constructor === Object) || contact === null) && !props.isTransactPage && (
           <TextField
             variant="outlined"
@@ -1352,17 +1357,19 @@ function AddDealDialog(props) {
               handleClose();
             }
           }}
-          width="495px"
+          width="650px"
           isTransactPage={props.isTransactPage}
           hiddenOverflow
         >
           <StickyHeader />
-          <Drawer top={contact.name && !props.isTransactPage ? "160px" : "108px"} />
+          <Drawer top={contact.name && !props.isTransactPage ? "160px" : "152px"} />
           <div className={classes.contentRoot}>
             {props.isTransactPage && stateApp.transactBarView !== "Deal" && (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
               <Fragment>{getView()}</Fragment>
             ) : (
               <div className={classes.inputFieldRoot}>
+
+                <div style={{marginTop: 5}}>
                 <FormControl variant="outlined" fullWidth size="small">
                   <Grid container className={classes.gridStyle}>
                     <Grid item xs={3}>
@@ -1431,6 +1438,7 @@ function AddDealDialog(props) {
                     </Grid>
                   </Grid>
                 </FormControl>
+                </div>
 
                 <FormControl variant="outlined" fullWidth size="small">
                   <Grid container className={classes.gridStyle}>
@@ -1598,10 +1606,15 @@ function AddDealDialog(props) {
                   className={classes.notes}
                 />
 
-                {originationDate && (
+                {/* {originationDate && (
                   <div className={classes.originationDate}>Deal Creation Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
-                )}
+                )} */}
+
+
                 <div>
+
+                  {/* This is the document zone  */}
+                  <div style={{marginTop: 20}}>
                   <AddDialogeUploadZone
                     isTransactPage={true}
                     filesData={viewFileResult}
@@ -1610,19 +1623,30 @@ function AddDealDialog(props) {
                     disabled={!stateApp.activeDeal?.cardId}
                     handleOpenExpandableCard={handleOpenExpandableCard}
                   />
+                  </div>
+
+
                   {/* Here is flow lane form */}
+                  <div style={{marginTop: 15, marginBottom: 50}}>
                   <DealTasksProgressZone
                     toggleProgressDetail={toggleProgressDetail}
                     dealSettings={get(dealSettings, "dealSettings", [])}
                     users={users}
                     activeDeal={stateApp.activeDeal}
                   />
+                  </div>
+
+
                 </div>
               </div>
             )}
           </div>
           {stateApp.transactBarView === "Deal" && (
+
+          <div style={{marginTop: 2,}}>
             <DealComment setNewCommentId={setNewCommentId} targetSourceId={stateApp.activeDeal?.cardId} />
+          </div>
+
           )}
         </RightDialog>
       </div>

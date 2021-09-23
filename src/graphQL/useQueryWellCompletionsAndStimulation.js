@@ -25,3 +25,11 @@ export function useQueryWellFormation(id) {
   const { data,loading, error} = useQuery(QUERY);
   return {data, loading, error}
 }
+
+export function useQueryWellPermits(id) {
+  const QUERY = gql`query {
+    wellPermits(wellID:"${id}")
+  }`
+  const { data,loading, error} = useQuery(QUERY);
+  return {data, loading, error}
+}

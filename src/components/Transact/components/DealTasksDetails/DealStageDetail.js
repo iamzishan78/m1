@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputFieldOwner: {
     marginBottom: "7px",
-    width: "200px",
+    width: "275px",
     backgroundColor: "#efefef",
   },
   dealOwnerRoot: {
@@ -144,7 +144,7 @@ function DealStageDetail({ settings, index, users, stateTransact, extendedTaskIn
               <Typography variant="body2" color="textSecondary">
                 Progress
               </Typography>
-              <div style={{ minWidth: "200px" }}>
+              <div style={{ minWidth: "350px" }}>
                 <ProgressBar value={settings.progress} isNumeric />
               </div>
             </Grid>
@@ -189,7 +189,7 @@ function DealStageDetail({ settings, index, users, stateTransact, extendedTaskIn
                         root: classes.dealOwnerLabel,
                       },
                     }}
-                    placeholder="Assign Owner"
+                    placeholder="Assign approver"
                     InputProps={{
                       ...params.InputProps,
                       startAdornment: (
@@ -216,7 +216,7 @@ function DealStageDetail({ settings, index, users, stateTransact, extendedTaskIn
                 multiline
                 rows={8}
                 defaultValue={get(settings, "stageDealDescriptor.comment", "")}
-                label="Comment"
+                label="Stage notes"
                 fullWidth
                 onBlur={(e) => handleChangeSettings(settings, { comment: e.target.value })}
                 className={classes.notes}
