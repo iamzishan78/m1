@@ -15,6 +15,7 @@ import M1neralHeaders from "./M1neralHeaders";
 import ReviewCSV from "./ReviewCSV";
 import UploadStepperComponent from "./UploadStepperComponent";
 import { AppContext } from "../../../AppContext";
+import { NavigationContext } from "../../Navigation/NavigationContext";
 import { useHistory } from "react-router-dom";
 import { matchRoutes } from "react-router-config";
 import { useMutation, useLazyQuery } from "@apollo/client";
@@ -170,16 +171,20 @@ const stepper_style = {
 export default function CustomizedSteppers(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const [stateNav, setStateNav] = React.useContext(NavigationContext);
   const history = useHistory();
   const previousRoute = matchRoutes(props.routes, history.pathHistory[1]);
 
   const [contactList, setContactList] = useState(null);
   const [jobId, setJobId] = useState(null);
+  const [processing, setProcessing] = useState(false)
 
   const steps = getSteps();
   const dispatch = useDispatch();
   // const [createBulkContacts] = useMutation(ADDBULKCONTACT);
-  const [getUploadContactUri, { data: contactUploadUri }] = useLazyQuery(GET_UPLOAD_CONTACT_URI);
+  const [getUploadContactUri, { data: contactUploadUri }] = useLazyQuery(GET_UPLOAD_CONTACT_URI, {
+    fetchPolicy: "no-cache",
+  });
   const [createJob, { data: createJobData }] = useMutation(CREATE_JOB);
   const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB);
 
@@ -187,7 +192,11 @@ export default function CustomizedSteppers(props) {
   let data_to_send = stateApp.csvContactsListToSend;
 
   useEffect(() => {
-    if(createJobData?.createJob){
+    console.log(updatedJob)
+  },[updatedJob])
+
+  useEffect(() => {
+    if(createJobData?.createJob && jobId){
       updateJob({
         variables: {
           job:{
@@ -197,10 +206,12 @@ export default function CustomizedSteppers(props) {
         }
       })
     }
-  },[createJobData])
+  },[createJobData, jobId])
 
   useEffect(() => {
-    if(contactUploadUri?.getUploadContactUri?.success){
+    if(contactUploadUri?.getUploadContactUri?.success &&
+       !processing){
+      setProcessing(true);
       setStateApp((state) => ({
         ...state,
         bulkUpload: !stateApp.bulkUpload,
@@ -247,6 +258,7 @@ export default function CustomizedSteppers(props) {
       });
       getUploadContactUri({
         variables: {
+          jobName: stateNav.bulkUploadFromMap ? 'Parcel Interests' : 'Contacts',
           userId: userID,
         },
       });
