@@ -101,7 +101,7 @@ function DealStageDetail({ settings, index, users, extendedTaskIndex, user, acti
         dealToCreate: { _id: addedSubtask.task.pipeline },
       }));
     }
-  }, [addedSubtask, setStateTransact]);
+  }, [activeDeal._id, addedSubtask, setStateTransact]);
 
   const handleChangeSettings = (setting, params) => {
     const descriptor = {
@@ -175,7 +175,7 @@ function DealStageDetail({ settings, index, users, extendedTaskIndex, user, acti
               <Autocomplete
                 options={users.filter((u) => u.text)}
                 onChange={(e, user) => {
-                  handleChangeSettings(settings, { approver: user?.value });
+                  handleChangeSettings(settings, { approver: get(user, "value", null) });
                 }}
                 value={users.find((user) => user?.value === settings.stageDealDescriptor.approver) || null}
                 getOptionLabel={(option) => option.text}
