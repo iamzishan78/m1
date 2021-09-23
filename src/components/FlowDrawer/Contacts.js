@@ -229,7 +229,12 @@ export default function Contacts(props) {
           </div>
         </Grid>
         <Grid item xs={1}>
-          <IconButton onClick={() => setAddContact((addContact) => !addContact)}>
+          <IconButton
+            onClick={() => {
+              setAddContact((addContact) => !addContact);
+              setSearch("");
+            }}
+          >
             <AddIcon size="large" />
           </IconButton>
         </Grid>
