@@ -89,6 +89,7 @@ import { drawShapeStyles } from "components/MapControls/commonHelper";
 import _ from "lodash";
 
 import parseLinkHeader from 'parse-link-header';
+import UnitCardProvider from "components/UnitDetailCard/UnitCardProvider";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -433,9 +434,9 @@ function Map() {
 
   useEffect(() => {
     if (!loading &&
-        parcelId !== "" &&
-        // parcelId !== stateApp.selectedParcel?.id &&
-        stateApp.customLayers.length > 0) {
+      parcelId !== "" &&
+      // parcelId !== stateApp.selectedParcel?.id &&
+      stateApp.customLayers.length > 0) {
       console.log(parcelId)
       const parcel = stateApp.customLayers.find(el => el._id === parcelId)
       if (parcel) {
@@ -739,7 +740,7 @@ function Map() {
     for (let i = (paintProps ? paintProps.length : 0) - 1; i >= 0; i--) {
       const prop = paintProps[i];
       let layerData = null;
-      if (identifier === "Parcels" || identifier === "Area of Interest") {
+      if (identifier === "Parcels" || identifier === "Area of Interest" || identifier === "Units") {
         const dataId = prop.id;
         const groupBy = (arr, property) => {
           return arr.reduce((memo, x) => {
@@ -858,7 +859,7 @@ function Map() {
       }
 
 
-      if (sourceId === "parcels_source" || sourceId === "interests_source") {
+      if (sourceId === "parcels_source" || sourceId === "interests_source" || sourceId === "units_source") {
 
         let pointSource = geoJson.features.map(feature => {
 
@@ -991,6 +992,21 @@ function Map() {
               ]
             }
           } else if (layerId === 'interest') {
+            labelLayout = {
+              ...labelLayout,
+              "text-size": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                9,
+                16,
+                11,
+                32,
+                15,
+                54
+              ]
+            }
+          } else if (layerId === 'unit') {
             labelLayout = {
               ...labelLayout,
               "text-size": [
@@ -1274,6 +1290,17 @@ function Map() {
           }
         });
       }
+      if (feature.source === "units_source") {
+        setStateApp((state) => {
+          if (state.isDrawing) return state
+          return {
+            ...state,
+            expandedCard: true,
+            selectedUserDefinedLayer: null,
+            selectedUnit: { ...feature.properties, feature: selectedUserDefinedLayer },
+          }
+        });
+      }
       else if (feature.source === "interests_source" && !drawMode.includes('draw') && !drawMode.includes('drag')) {
         setStateApp((state) => {
           if (state.isDrawing) return state
@@ -1346,7 +1373,7 @@ function Map() {
         })
       }
       setStateApp((state) => {
-        if (!state.showDrawShapesPopup || feature.source === "parcels_source" || feature.source === "interests_source")
+        if (!state.showDrawShapesPopup || feature.source === "parcels_source" || feature.source === "interests_source" || feature.source === "units_source")
           createUDPopUp(feature.properties);
         return state
       })
@@ -1409,6 +1436,7 @@ function Map() {
               if (map.getLayer(layerId)) {
                 if (
                   layer.identifier === "Parcels" ||
+                  layer.identifier === "Units" ||
                   layer.identifier === "Area of Interest" ||
                   layer.identifier === "Tracked Wells" ||
                   layer.identifier === "Tracked Owners" ||
@@ -1419,6 +1447,7 @@ function Map() {
 
                 if (
                   layer.identifier === "Parcels" ||
+                  layer.identifier === "Units" ||
                   layer.identifier === "Area of Interest"
                 ) {
                   udLayers.push(layerId);
@@ -1498,6 +1527,7 @@ function Map() {
             layerId === "welllines" ||
             layerId === "wellpermitlines" ||
             layerId === "Parcels" ||
+            layerId === "Units" ||
             layerId === "Area of Interest" ||
             layerId === "Tracked Wells" ||
             layerId === "Tracked Owners" ||
@@ -2545,7 +2575,7 @@ function Map() {
               });
 
               let ids = result.map(function (feature) {
-                if (["interest", "parcel"].indexOf(filterLayer) > -1) {
+                if (["interest", "parcel", "unit"].indexOf(filterLayer) > -1) {
                   return feature.properties.shapeLabel;
                 }
                 return feature.properties.VIEWID;
@@ -2597,6 +2627,7 @@ function Map() {
           "rigs",
           "interest",
           "parcel",
+          "unit"
         ];
 
         const basinShapes = stateNav.filterBasin;
@@ -2647,6 +2678,7 @@ function Map() {
           "recent_submitted_permit_laterals",
           "rigs",
           "parcel",
+          "unit"
         ];
 
         const aoiShapes = stateNav.filterAOI;
@@ -2779,6 +2811,7 @@ function Map() {
           "rigs",
           "interest",
           "parcel",
+          "unit"
         ];
         const filterFeature = stateNav.filterDrawing[1];
         filterShapeAction([filterFeature], filterLayers);
@@ -2944,6 +2977,7 @@ function Map() {
           "Tags Filter",
           "interest",
           "parcel",
+          "unit",
           //"permits",
           "recent_submitted_permits",
           "recent_submitted_permit_laterals",
@@ -2979,7 +3013,7 @@ function Map() {
                   intersectingPermitLinesFilter
                 ]
               ]);
-            } else if (["interest", "parcel"].indexOf(filterLayer) > -1) {
+            } else if (["interest", "parcel", "unit"].indexOf(filterLayer) > -1) {
               map.setFilter(filterLayer, [
                 "match",
                 ["get", "shapeLabel"],
@@ -3057,7 +3091,7 @@ function Map() {
                     true,
                     false,
                   ]);
-                } else if (["interest", "parcel"].indexOf(filterLayer) > -1) {
+                } else if (["interest", "parcel", "unit"].indexOf(filterLayer) > -1) {
                   map.setFilter(filterLayer, [
                     "match",
                     ["get", "shapeLabel"],
@@ -4438,6 +4472,7 @@ function Map() {
         map.setFilter("interest", null);
         map.setFilter("interest_point", null);
         map.setFilter("parcel", null);
+        map.setFilter("unit", null);
         map.setFilter("parcel_point", null);
         map.setFilter("wellsHeatmapBoe", [">", ["get", "boeTotal"], 0]);
         map.setFilter("wellsHeatmapIP90Oil", [">", ["get", "ipOil"], 0]);
@@ -5946,7 +5981,7 @@ function Map() {
       stateApp.fitBounds.maxLong &&
       stateApp.fitBounds.minLong
     ) {
-      
+
       let bounds = fitOverBounds();
 
       map.fitBounds([
@@ -6668,6 +6703,29 @@ function Map() {
           </div>
         )
       }
+      {stateApp.selectedUnit !== null &&
+        stateApp.expandedCard && (
+          <div className={classes.draggable}>
+            <ExpandableCardProvider
+              expanded={true}
+              handleCloseExpandableCard={handleCloseExpandableCard}
+              component={<UnitCardProvider ></UnitCardProvider >}
+              title={stateApp.selectedUnit.shapeLabel}
+              subTitle=""
+              parent="map"
+              position="relative"
+              cardTop={0}
+              cardLeft={0}
+              zIndex={99}
+              cardWidthExpanded="50vw"
+              cardHeightExpanded="calc(100vh - 64px)"
+              targetSourceId={stateApp.selectedUnit.id}
+              targetLabel="unit"
+              deleteParcel={deleteParcel}
+            ></ExpandableCardProvider>
+          </div>
+        )
+      }
       {stateApp.selectedPermit !== null && stateApp.selectedPermit.hasOwnProperty('Lease') &&
         // && stateApp.popupOpen==true
         showExpandableCard && (
@@ -6730,6 +6788,7 @@ function Map() {
               )}
             {stateApp.selectedUserDefinedLayer !== null &&
               stateApp.currentFeature?.source !== 'parcels_source' &&
+              stateApp.currentFeature?.source !== 'units_source' &&
               stateApp.currentFeature?.source !== 'interests_source' && (
                 <PortalD id="popupContainer">
                   <UdLayerCardProvider

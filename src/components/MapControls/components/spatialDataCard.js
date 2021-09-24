@@ -140,7 +140,7 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 265,
-    color: "black",
+    color: "black"
     //paddingBottom: 3
   },
   label: {
@@ -191,6 +191,9 @@ export default function SpatialDataCard(props) {
         break;
       case "parcel":
         udName = "Parcels";
+        break;
+      case "unit":
+        udName = "Units";
         break;
       default:
         udName = "";
@@ -314,6 +317,7 @@ export default function SpatialDataCard(props) {
             >
               <MenuItem value="interest">Area of Interest</MenuItem>
               <MenuItem value="parcel">Parcel</MenuItem>
+              <MenuItem value="unit">Unit</MenuItem>
               {/* {stateApp.currentFeature &&
                 stateApp.currentFeature.geometry.type === "Polygon" &&
                 !stateApp.currentFeature.properties.isCircle && (
@@ -322,7 +326,7 @@ export default function SpatialDataCard(props) {
             </Select>
           </FormControl>
         </div>
-        {(dataType === "interest" || dataType === "parcel") && (
+        {(dataType === "interest" || dataType === "parcel" || dataType === "unit") && (
           <div style={{ marginLeft: "0" }}>
             {/* Text Field for Shape Name */}
             <div className={classes.TextField}>

@@ -84,7 +84,7 @@ const ShapeActionsPopup = (props) => {
           },
         },
       });
-      updateSelectedParcel(customLayer);
+      updateSelectedLayerFeature(customLayer);
     },
   });
 
@@ -108,7 +108,7 @@ const ShapeActionsPopup = (props) => {
     },
   });
 
-  const updateSelectedParcel = (customLayer) => {
+  const updateSelectedLayerFeature = (customLayer) => {
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
@@ -116,10 +116,14 @@ const ShapeActionsPopup = (props) => {
     const feature = JSON.parse(customLayer.shape);
     feature.id = customLayer._id;
     feature.properties.id = customLayer._id;
-    feature.layer = { id: "parcel" };
+    feature.layer = { id: customLayer.layer };
+    let key;
+    if (customLayer.layer === 'parcel') key = 'selectedParcel'
+    if (customLayer.layer === 'unit') key = 'selectedUnit'
+
     setStateApp((state) => ({
       ...state,
-      selectedParcel: { ...feature.properties, feature },
+      [key]: { ...feature.properties, feature },
     }));
     setStateApp((state) => ({
       ...state,
@@ -146,7 +150,7 @@ const ShapeActionsPopup = (props) => {
 
   useEffect(() => {
     if (get(customLayerInsertedData, "upsertCustomLayer.customLayer")) {
-      updateSelectedParcel(customLayerInsertedData.upsertCustomLayer.customLayer);
+      updateSelectedLayerFeature(customLayerInsertedData.upsertCustomLayer.customLayer);
     }
     if (get(customLayerInsertedData, "upsertCustomLayer.customLayer") && !customLayerInsertedData.upsertCustomLayer.success) {
       setError(true);
@@ -421,6 +425,56 @@ const ShapeActionsPopup = (props) => {
     popupCloseAction();
   };
 
+  const saveAndOpenUnitDetail = () => {
+    if (!user._id) {
+      return;
+    }
+    let abstractShape = stateApp.currentFeature;
+
+    const featureId = hat();
+    const newShapeFeature = {
+      id: featureId,
+      type: "Feature",
+      geometry: abstractShape.geometry,
+      properties: {
+        type: "unit",
+        shapeLabel: 'Default Name',
+        uNumber: "",
+        uName: "",
+        uType: "",
+        uOperator: "",
+        uStatus: "",
+        uFieldName: "",
+        sdNotes: "",
+        sdGrossAcres: "",
+        shapeArea: calculateLandArea(abstractShape),
+        shapeCenter: calculateShapeCenter(abstractShape.geometry.coordinates),
+        shapeLabelLayer: "",
+        id: featureId,
+      },
+    };
+    const customLayerData = {
+      shape: JSON.stringify(newShapeFeature),
+      layer: "unit",
+      name: 'Default Name',
+      user: user._id,
+    };
+
+    upsertCustomLayer({
+      variables: { customLayer: customLayerData },
+    });
+
+    let layers = [...stateApp.customLayers];
+    layers.push(customLayerData);
+
+    setStateApp((state) => ({
+      ...state,
+      selectedUnit: newShapeFeature.properties,
+      customLayers: layers,
+    }));
+    popupCloseAction();
+  };
+
   const deleteAOI = () => {
     // Turning off the confirmation modal
     setDeleteModal(false);
@@ -497,7 +551,7 @@ const ShapeActionsPopup = (props) => {
       >
         <MenuItem disabled>Shape Layer Type</MenuItem>
         <MenuItem onClick={saveAndOpenParcelDetail}>Ownership</MenuItem>
-        <MenuItem>Unit Boundary</MenuItem>
+        <MenuItem onClick={saveAndOpenUnitDetail}>Unit Boundary</MenuItem>
         <MenuItem>Agreement</MenuItem>
       </Menu>
       <Fragment>

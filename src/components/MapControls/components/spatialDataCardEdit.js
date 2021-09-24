@@ -237,6 +237,9 @@ export default function SpatialDataCardEdit(props) {
       case "parcel":
         udName = "Parcels";
         break;
+      case "unit":
+        udName = "Units";
+        break;
       default:
         udName = "";
         break;
@@ -428,6 +431,7 @@ export default function SpatialDataCardEdit(props) {
             >
               <MenuItem value="interest">Area of Interest</MenuItem>
               <MenuItem value="parcel">Parcel</MenuItem>
+              <MenuItem value="unit">Unit</MenuItem>
               {/* {stateApp.currentFeature &&
                 stateApp.currentFeature.geometry.type === "Polygon" &&
                 !stateApp.currentFeature.properties.isCircle && (
@@ -436,7 +440,7 @@ export default function SpatialDataCardEdit(props) {
             </Select>
           </FormControl>
         </div>
-        {(dataType === "interest" || dataType === "parcel") && (
+        {(dataType === "interest" || dataType === "parcel" || dataType === "unit") && (
           <div style={{ marginLeft: "0" }}>
             {/* Text Field for Shape Name */}
             <div className={classes.TextField}>
