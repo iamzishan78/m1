@@ -558,7 +558,7 @@ export default function Transact() {
       >
         <header className={classes.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span className={classes.cardTitle}>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</span>
+            <span className={classes.cardTitle}>{title.length > 30 ? `${title.substr(0, 47)}...` : title}</span>
             {owner && <CustomAvatar email={ownerEmail} text={owner} color={cardColors[ownerId]} />}
           </div>
 
