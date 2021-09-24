@@ -262,6 +262,7 @@ export default function Contacts(props) {
                   awaitRefetchQueries: true,
                 });
               }}
+              onBlur={() => setAddContact((addContact) => !addContact)}
             />
           </Grid>
         )}
