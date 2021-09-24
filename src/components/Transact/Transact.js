@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
   cardHeaderStyle: {
     display: "flex",
     flexDirection: "column",
-    borderBottom: "1px solid #e2e2e2",
+    borderBottom: (props) => (props.description ? "1px solid #e2e2e2" : ""),
     padding: "10px",
     textAlign: "left",
     whiteSpace: "pre-wrap",
@@ -516,6 +516,7 @@ export default function Transact() {
   };
 
   const GetCard = React.memo(({ cardProps }) => {
+    const CardClasses = useStyles(cardProps);
     const { metadata, title, description, id, laneId } = cardProps;
     const cardPrice = metadata && metadata.offerPrice ? metadata.offerPrice : 0;
     const formattedPrice = vf_currency(cardPrice);
@@ -552,17 +553,17 @@ export default function Transact() {
 
     return (
       <article
-        className={classes.cardStyle}
+        className={CardClasses.cardStyle}
         onClick={() => handleCardClick(id, metadata, laneId)}
         style={{ borderLeft: `4px solid ${cardColor}` }}
       >
-        <header className={classes.cardHeaderStyle}>
+        <header className={CardClasses.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span className={classes.cardTitle}>{title.length > 30 ? `${title.substr(0, 47)}...` : title}</span>
+            <span className={CardClasses.cardTitle}>{title.length > 30 ? `${title.substr(0, 47)}...` : title}</span>
             {owner && <CustomAvatar email={ownerEmail} text={owner} color={cardColors[ownerId]} />}
           </div>
 
-          <div className={classes.cardSubheading}>
+          <div className={CardClasses.cardSubheading}>
             {formattedDate && (
               <>
                 <br />
@@ -584,7 +585,7 @@ export default function Transact() {
             )}
           </div>
         </header>
-        <div className={classes.cardDescStyle}>{desc}</div>
+        <div className={CardClasses.cardDescStyle}>{desc}</div>
       </article>
     );
   });

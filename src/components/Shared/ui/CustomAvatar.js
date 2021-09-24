@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   customAvatar: {
     borderRadius: "50%",
     backgroundColor: "red",
-    padding: "3px",
+    padding: "4px",
     color: "#fff",
     width: "25px",
     height: "25px",
