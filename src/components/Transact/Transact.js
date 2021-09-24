@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
   cardTitle: {
     color: "#1CB6DA",
     textTransform: "uppercase",
-    width: '85%',
+    width: "85%",
   },
   cardSubheading: {
     fontSize: "12px",
@@ -96,7 +96,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold !important",
   },
   boardAndTable: {
-    marginTop: "8px",
+    marginTop: "4px",
     maxHeight: "calc(100vh - 140px) !important",
     overflowY: "auto",
     maxWidth: "100vw",
@@ -557,7 +557,6 @@ export default function Transact() {
         style={{ borderLeft: `4px solid ${cardColor}` }}
       >
         <header className={classes.cardHeaderStyle}>
-
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span className={classes.cardTitle}>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</span>
             {owner && <CustomAvatar email={ownerEmail} text={owner} color={cardColors[ownerId]} />}
@@ -573,8 +572,7 @@ export default function Transact() {
                 </span>
               </>
             )}
-          
-          
+
             {formattedPrice && (
               <>
                 <br />
