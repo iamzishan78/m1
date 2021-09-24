@@ -104,15 +104,15 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "name",
-    label: "Full Name",
-    // editable: true,
-    options: {
-      sort: true,
-      filter: false,
-    },
-  },
+  // {
+  //   name: "name",
+  //   label: "Full Name",
+  //   // editable: true,
+  //   options: {
+  //     sort: true,
+  //     filter: false,
+  //   },
+  // },
   {
     name: "title",
     label: "Title",
@@ -126,12 +126,12 @@ const ContactsHeadCells = [
   {
     name: "firstName",
     label: "First Name",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-    },
+    // options: {
+    //   display: false,
+    //   filter: false,
+    //   searchable: false,
+    //   sort: false,
+    // },
   },
   {
     name: "middleName",
@@ -146,12 +146,12 @@ const ContactsHeadCells = [
   {
     name: "lastName",
     label: "Last Name",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-    },
+    // options: {
+    //   display: false,
+    //   filter: false,
+    //   searchable: false,
+    //   sort: false,
+    // },
   },
   {
     name: "suffix",

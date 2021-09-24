@@ -152,6 +152,19 @@ export const getBasicInfoExpContent = (contactData) => {
 
 export const getBasicInfoContent = (contactData) => {
   return {
+    "First Name": {
+      data: { firstName: contactData?.firstName },
+      linkType: LinkTypes.None,
+    },
+    "Middle Name": {
+      data: { middleName: contactData?.middleName },
+      linkType: LinkTypes.None,
+    },
+    "Last Name": {
+      data: { lastName: contactData?.lastName },
+      linkType: LinkTypes.None,
+    },
+
     "Primary Email": {
       data: { primaryEmail: contactData?.primaryEmail },
       linkType: LinkTypes.Mail,

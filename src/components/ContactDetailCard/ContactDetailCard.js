@@ -523,7 +523,7 @@ export default function ContactDetailCard(props) {
             <Typography
               style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}
             >
-              {contactData.name}
+              {`${contactData.firstName} ${contactData.lastName}`}
             </Typography>
           </Breadcrumbs>
         </div>
@@ -618,7 +618,7 @@ export default function ContactDetailCard(props) {
                   <StyleBadge>
                     <Avatar
                       className={classes.grey}
-                      name={contactData.name}
+                      name={`${contactData.firstName} ${contactData.lastName}`}
                       size="93"
                       round
                     />
@@ -631,7 +631,8 @@ export default function ContactDetailCard(props) {
                       noMargin
                       id={contactData._id}
                       entity={contactData.entity}
-                      content={{ name: contactData.name }}
+                      content={{ name: `${contactData.firstName} ${contactData.lastName}` }}
+                      disabled
                     >
                       {(contactData.facebook ||
                         contactData.twitter ||

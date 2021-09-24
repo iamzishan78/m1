@@ -2040,6 +2040,7 @@ function SubTable(props) {
                       </div>
                     );
                   }
+                  debugger
                   return (
                     <div
                       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
@@ -2050,11 +2051,11 @@ function SubTable(props) {
                         : []
                         }`}
                     >
-                      {props.targetLabel === "contact" && column.name === "name" && (
+                      {props.targetLabel === "contact" && column.name === "firstName" && (
                         <Avatar
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
-                          name={valueFormatter(value)}
+                          name={valueFormatter(`${tableMeta.rowData[9]} ${tableMeta.rowData[11]}`)}
                           size="35"
                           round
                         />
@@ -2075,7 +2076,7 @@ function SubTable(props) {
                           nonEditable={!column.editable}
                         />
                       )}
-                      {props.targetLabel === "contact" && column.name !== "name" && (
+                      {props.targetLabel === "contact"  && column.name !== "firstName"&& (
                         <CellContentEdition
                           id={tableMeta.rowData[0]}
                           content={{ [column.name]: valueFormatter(value) }}
@@ -2091,7 +2092,7 @@ function SubTable(props) {
                           nonEditable={!column.editable}
                         />
                       )}
-                      {props.targetLabel === "contact" && column.name === "name" && (
+                      {props.targetLabel === "contact" && column.name === "firstName" && (
                         <p
                           className={classes.clickableCell}
                           onClick={() => {
@@ -3405,7 +3406,7 @@ function SubTable(props) {
         {openDialog && openDialog === "buyContactsInfoData" && (
           <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
             <BuyContactsInfoDialogContent
-              header="Contact Data Integration test"
+              header="Contact Data Integration"
               onClose={handleCloseDialog}
               rows={expandedObject}
               setRows={setExpandedObject}
@@ -3432,7 +3433,12 @@ function SubTable(props) {
         // popups that overlay the screen due to actions from the grid 
         // examples would be grid tags or grid comments  */}
 
+        {openDialog === "addContact" && props.targetLabel === "contact" && (
+          <AddContactDialogContent onClose={handleCloseDialog} parent={props.addAble.parent} />
+        )}
+
         {openDialog &&
+          openDialog !== "addContact" &&
           openDialog !== "addDeals" &&
           openDialog !== "sendMailers" &&
           openDialog !== "buyContactsInfo" &&
@@ -3549,10 +3555,6 @@ function SubTable(props) {
                 >
                   {`Do you want to create a new Contact from this Owner?`}
                 </MakeItAContactConfirmationDialogContent>
-              )}
-
-              {openDialog === "addContact" && props.targetLabel === "contact" && (
-                <AddContactDialogContent onClose={handleCloseDialog} parent={props.addAble.parent} />
               )}
 
               {/* {openDialog === "addOwnerToParcel" && (

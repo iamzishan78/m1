@@ -88,7 +88,9 @@ export default function AddContactDialogContent(props) {
   const [users, setUsers] = useState([]);
   const [existingContact, setExistingContact] = useState({ name: "" });
   const [newContact, setNewContact] = useState({
-    name: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
     mobilePhone: "",
     homePhone: "",
     primaryEmail: "",
@@ -143,7 +145,7 @@ export default function AddContactDialogContent(props) {
   useEffect(() => {
     if (
       (activeTapIndex === 1 && existingContact.name !== "") ||
-      (activeTapIndex === 0 && newContact.name.trim() !== "")
+      (activeTapIndex === 0 && newContact.firstName.trim() !== "" && newContact.lastName.trim() !== "")
       //   &&
       // !validated
     ) {
@@ -151,7 +153,7 @@ export default function AddContactDialogContent(props) {
     } else {
       setValidated(false);
     }
-  }, [activeTapIndex, existingContact, newContact.name]); ///////////add other inputs
+  }, [activeTapIndex, existingContact, newContact.firstName, newContact.lastName]); ///////////add other inputs
 
   useEffect(() => {
     emptyStates();
@@ -176,7 +178,9 @@ export default function AddContactDialogContent(props) {
     setExistingContact({ name: "" });
     setNewContact({
       ...newContact,
-      name: "",
+      firstName: "",
+      middleName: "",
+      lastName: "",
       mobilePhone: "",
       homePhone: "",
       primaryEmail: "",
@@ -211,6 +215,7 @@ export default function AddContactDialogContent(props) {
     e.preventDefault();
     if (props.dealsPage) {
       if (activeTapIndex === 0) {
+        debugger
         addContact({
           variables: {
             contact: {
@@ -309,17 +314,46 @@ export default function AddContactDialogContent(props) {
       <React.Fragment>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <h3>Name</h3>
+            <h3>First Name</h3>
             <TextField
               size="small"
-              //placeholder="E.g. Jacob"
               className={classes.maxWidth}
               multiline
-              value={newContact.name}
+              value={newContact.firstName}
               onChange={(e) => {
                 setNewContact({
                   ...newContact,
-                  name: e.target.value,
+                  firstName: e.target.value,
+                });
+              }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <h3>Middle Name</h3>
+            <TextField
+              size="small"
+              className={classes.maxWidth}
+              multiline
+              value={newContact.middleName}
+              onChange={(e) => {
+                setNewContact({
+                  ...newContact,
+                  middleName: e.target.value,
+                });
+              }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <h3>Last Name</h3>
+            <TextField
+              size="small"
+              className={classes.maxWidth}
+              multiline
+              value={newContact.lastName}
+              onChange={(e) => {
+                setNewContact({
+                  ...newContact,
+                  lastName: e.target.value,
                 });
               }}
             />

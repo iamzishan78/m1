@@ -36,6 +36,7 @@ export default function FieldContent({
   fieldType = FieldTypes.Contact,
   isEdited = false,
   isMerged = false,
+  disabled,
   ...props
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
@@ -420,7 +421,7 @@ export default function FieldContent({
             : ""
           : textArray.join(", ")
         : `${name ? name + " " : ""} Not Available`}
-      {!onlyChildren && (
+      {!onlyChildren && !disabled && (
         <PencilEditIcon
           handleUpdating={handleUpdating}
           anchorEl={edit}
