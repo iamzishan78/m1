@@ -80,6 +80,7 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user, ...rest }) {
       completedSubtasks += setting.tasks.filter((t) => t.isCompleted).length;
       totalSubtasks += setting.tasks.length;
     });
+    if (totalSubtasks === 0) return 0;
     let overallProgress = (completedSubtasks / totalSubtasks) * 100;
     overallProgress = Number.isInteger(overallProgress) ? overallProgress : overallProgress.toFixed(2);
     return overallProgress;
