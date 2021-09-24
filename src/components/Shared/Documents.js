@@ -402,6 +402,15 @@ export default function Documents(props) {
     setFilteredDocuments(filteredMerged);
   }, [documentSearch, viewFileResultt?.viewFiles]);
 
+  const getDate = (dateTime) => {
+    let _d;
+    _d = moment.unix(dateTime / 1000).format("MMM DD, YYYY");
+    if (_d === "Invalid date") {
+      _d = moment(dateTime).format("MMM DD, YYYY");
+    }
+    return _d;
+  };
+
   return (
     <div className={classes.root} variant="outlined">
       {!props.isTransactPage && (
@@ -541,7 +550,7 @@ export default function Documents(props) {
 
                         <h4 className={classes.uploadTitle}>{file?.name?.length > 22 ? file?.name?.slice(0, 20) + "..." : file?.name}</h4>
                         {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
-                        <h5 className={classes.uploadSubtext}>{moment.unix(file.dateTime / 1000).format("MMM DD, YYYY")}</h5>
+                        <h5 className={classes.uploadSubtext}>{getDate(file.dateTime)}</h5>
                       </div>
                     </div>
                     <div className={classes.IconSection}>
