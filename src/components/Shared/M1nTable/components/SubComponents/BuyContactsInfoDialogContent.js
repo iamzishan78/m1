@@ -118,24 +118,24 @@ export default function BuyContactsInfoDialogContent(props) {
         id: row._id,
         firstName: row.name.split(' ')[0],
         lastName: row.name.replace(row.name.split(' ')[0], ''),
-        address: row.address1 + (row.address2 ? ", " + row.address2 : ""),
+        address: row.address1,
         city: row.city,
         state: row.state,
         country: row.country,
         postal: row.zip,
       };
 
-      if (
-        (!person.address || !person.city || !person.state) &&
-        !person.postal
-      ) {
-        dispatch(
-          showErrorMessage(
-            "Invalid data: [state, city, address] or [ZIP code] required"
-          )
-        );
-        return;
-      }
+      // if (
+      //   (!person.address || !person.city || !person.state) &&
+      //   !person.postal
+      // ) {
+      //   dispatch(
+      //     showErrorMessage(
+      //       "Invalid data: [state, city, address] or [ZIP code] required"
+      //     )
+      //   );
+      //   return;
+      // }
 
       persons.push(person);
     }
@@ -210,7 +210,7 @@ export default function BuyContactsInfoDialogContent(props) {
             props.rows.map((row, index) => (
               <Grid item xs={12} className={modalClass.inputContainer}>
                 <FormLabel className={modalClass.inputLabel}>
-                  {row.name}
+                  {`${row.firstName} ${row.lastName}`}
                 </FormLabel>
                 <FormLabel className={modalClass.inputContent}>
                   <DeleteOutlinedIcon

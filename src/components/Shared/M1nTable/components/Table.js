@@ -69,6 +69,7 @@ import moment from "moment";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
 import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
+import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 
@@ -490,6 +491,7 @@ function SubTable(props) {
 
   // function state
   const [trueTargetLabel, TrueTargetLabel] = useState(null);
+  const [contactDataMissing, setContactDataMissing] = useState([]);
   const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
   const [firstMount, FirstMount] = useState(true);
   const [title, Title] = useState("");
@@ -2040,7 +2042,6 @@ function SubTable(props) {
                       </div>
                     );
                   }
-                  debugger
                   return (
                     <div
                       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
@@ -2496,7 +2497,20 @@ function SubTable(props) {
                           className={classes.multiSelectionTopBarButtons}
                           disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
                           onClick={() => {
-                            handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData");
+                            const rows = getSelectedRows()
+                            const contacts = []
+                            for(let i=0; i<rows.length; i++){
+                              if(!rows[i].firstName || !rows[i].lastName || !rows[i].address1){
+                                contacts.push(rows[i]);
+                              }
+                            }
+                            setContactDataMissing(contacts)
+                            if(contacts.length > 0){
+                              handleExpandClick(null, null, getSelectedRows(), "contactDataMissing");
+                            }else{
+                              handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData");
+                            }
+                            
                           }}
                         >
                           Contact Data
@@ -3437,8 +3451,16 @@ function SubTable(props) {
           <AddContactDialogContent onClose={handleCloseDialog} parent={props.addAble.parent} />
         )}
 
+        {openDialog === "contactDataMissing" && (
+          <ContactDataMissingDialog
+            openDialog={openDialog}
+            onClose={handleCloseDialog}
+            contacts={contactDataMissing}
+          />
+        )}
         {openDialog &&
           openDialog !== "addContact" &&
+          openDialog !== "contactDataMissing" && 
           openDialog !== "addDeals" &&
           openDialog !== "sendMailers" &&
           openDialog !== "buyContactsInfo" &&

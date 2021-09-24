@@ -48,11 +48,10 @@ import DealsNew from "./components/DealsNew";
 import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
 import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
+import ContactDataMissingDialog from "./components/ContactDataMissingDialog";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
 import DocViewer from "../Shared/DocViewer";
-import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
-import ArrowRight from "../Shared/svgIcons/arrow-right";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Link from "@material-ui/core/Link";
@@ -595,8 +594,12 @@ export default function ContactDetailCard(props) {
                     <MenuItem
                       className={classes.userMenuItem}
                       onClick={(e) => {
+                        if(!contactData.firstName || !contactData.lastName || !contactData.address1){
+                          handleExpandClick("contactDataMissing");
+                        }else{
+                          handleExpandClick("buyContactsInfo");
+                        }
                         handleClose();
-                        handleExpandClick("buyContactsInfo");
                       }}
                     >
                       Purchase contact data
@@ -973,6 +976,14 @@ export default function ContactDetailCard(props) {
             openDialog={openDialog}
             handleDialogClose={setOpenDialog}
             id={contactData._id}
+          />
+        )}
+
+        {openDialog === "contactDataMissing" && (
+          <ContactDataMissingDialog
+            openDialog={openDialog}
+            onClose={handleCloseDialog}
+            contacts={[{...contactData}]}
           />
         )}
 

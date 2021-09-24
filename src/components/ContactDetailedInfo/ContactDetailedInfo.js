@@ -716,6 +716,7 @@ export default function DetailInfo(props) {
                           entity={props.contactData.entity}
                           content={row.data}
                           linkType={row.linkType}
+                          disabled
                           isPurchased
                         />
                       </Grid>
@@ -742,6 +743,7 @@ export default function DetailInfo(props) {
                             entity={props.contactData.entity}
                             content={row.data}
                             linkType={row.linkType}
+                            disabled
                             isPurchased
                           />
                         </Grid>
