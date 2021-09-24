@@ -3458,9 +3458,18 @@ function SubTable(props) {
             contacts={contactDataMissing}
           />
         )}
+        {openDialog === "multipleOwnerToContact" && (
+          <MultipleOwnerToContactDrawer
+            onClose={handleCloseDialog}
+            rows={expandedObject}
+            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+            setRows={setExpandedObject}
+          />
+        )}
         {openDialog &&
           openDialog !== "addContact" &&
           openDialog !== "contactDataMissing" && 
+          openDialog !== "multipleOwnerToContact" && 
           openDialog !== "addDeals" &&
           openDialog !== "sendMailers" &&
           openDialog !== "buyContactsInfo" &&
@@ -3767,14 +3776,6 @@ function SubTable(props) {
               )}
               {openDialog === "merge" && (
                 <MergeContactDrawer
-                  onClose={handleCloseDialog}
-                  rows={expandedObject}
-                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-                  setRows={setExpandedObject}
-                />
-              )}
-              {openDialog === "multipleOwnerToContact" && (
-                <MultipleOwnerToContactDrawer
                   onClose={handleCloseDialog}
                   rows={expandedObject}
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}

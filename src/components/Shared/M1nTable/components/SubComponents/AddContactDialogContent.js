@@ -215,7 +215,6 @@ export default function AddContactDialogContent(props) {
     e.preventDefault();
     if (props.dealsPage) {
       if (activeTapIndex === 0) {
-        debugger
         addContact({
           variables: {
             contact: {
