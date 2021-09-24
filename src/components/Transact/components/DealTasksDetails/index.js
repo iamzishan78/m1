@@ -74,12 +74,15 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user, ...rest }) {
   // };
 
   const evaluateOverallProgress = () => {
-    let progress = 0;
+    let totalSubtasks = 0,
+      completedSubtasks = 0;
     dealSettings.forEach((setting) => {
-      progress += setting.progress;
+      completedSubtasks += setting.tasks.filter((t) => t.isCompleted).length;
+      totalSubtasks += setting.tasks.length;
     });
-    progress = ((progress / (100 * dealSettings.length)) * 100).toFixed(2);
-    return progress;
+    let overallProgress = (completedSubtasks / totalSubtasks) * 100;
+    overallProgress = Number.isInteger(overallProgress) ? overallProgress : overallProgress.toFixed(2);
+    return overallProgress;
   };
 
   return (
