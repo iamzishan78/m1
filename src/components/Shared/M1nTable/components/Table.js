@@ -1183,7 +1183,7 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value) => {
                   return (
-                    <span style={{ padding: 10 }}>{value ? moment(value).format("MM/DD/YYYY HH:MM A") : ""}</span>
+                    <span style={{ padding: 10 }}>{value ? moment(value).format('lll') : ""}</span>
                   );
                 },
               };
