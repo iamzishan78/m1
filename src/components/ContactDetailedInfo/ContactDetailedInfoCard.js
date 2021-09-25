@@ -9,6 +9,7 @@ import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
+import { CONTACT_PURCHASE_DATA } from "graphQL/useQueryContactPurchaseData";
 
 import { CONTACT } from "graphQL/useQueryContact";
 import MelissaTable from "./components/MelissaTable";
@@ -17,7 +18,7 @@ import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
 
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
-import { getBasicInfoContent, getBasicInfoExpContent } from 'components/ContactDetailedInfo/helper'
+import { getBasicInfoContent, getBasicInfoExpContent, getBasicPurchaseInfoContent, getBasicPurchaseInfoExpContent } from 'components/ContactDetailedInfo/helper'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,12 +58,15 @@ export default function ContactDetailedInfoCard() {
   const [melissaData, setMelissaData] = useState(null);
   const [contactData, setContactData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [purchaseData, setPurchaseData] = useState([]);
+  const [selectedPurchaseData, setSelectedPurchaseData] = useState("");
   const contactId =
     history.location.pathname.split("/")[
       history.location.pathname.split("/").length - 2
     ];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
+  const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
   const [getLastMelissaRecord, { data: mData }] = useLazyQuery(LASTMELISSARECORD, { fetchPolicy: "network-only" } );
 
   useEffect(() => {
@@ -72,6 +76,11 @@ export default function ContactDetailedInfoCard() {
           contactId: contactId,
         },
       });
+      getContactPurchaseData({
+        variables: {
+          contactId: contactId,
+        },
+      })
       getLastMelissaRecord({
         variables: {
           contactId: contactId,
@@ -89,6 +98,13 @@ export default function ContactDetailedInfoCard() {
       }));
     }
   }, [data, setStateApp]);
+
+  useEffect(() => {
+    if (contactPurchaseData?.getContactPurchaseData?.length > 0) {
+      setPurchaseData(contactPurchaseData?.getContactPurchaseData);
+    }
+  }, [contactPurchaseData]);
+
 
   useEffect(() => {
     if (mData && mData.getLastMelissaRecord.success === true) {
@@ -365,11 +381,14 @@ export default function ContactDetailedInfoCard() {
 
       <MelissaTable
         header="Purchased Data"
+        options={purchaseData ? purchaseData.map(data => ({_id: data._id, date: data.sysDateTime})): [] }
         id={contactData?._id}
         entity={contactData?.entity}
-        rows={{ ...getBasicInfoContent(contactData), ...getBasicInfoExpContent(contactData) }}
+        rows={{ ...getBasicPurchaseInfoContent(purchaseData.find((purchaseData) => purchaseData._id === selectedPurchaseData)), ...getBasicPurchaseInfoExpContent(purchaseData.find((purchaseData) => purchaseData._id === selectedPurchaseData)) }}
         wrapperClass={classes.dataSect}
         melissaData={melissaData}
+        selectedPurchaseData={selectedPurchaseData}
+        setSelectedPurchaseData={setSelectedPurchaseData}
       />
     </div>
   ) : (

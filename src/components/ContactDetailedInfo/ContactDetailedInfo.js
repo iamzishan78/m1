@@ -774,6 +774,8 @@ export default function DetailInfo(props) {
                             isMerged={!!props.contactData.mergedContacts}
                             content={row.data}
                             linkType={row.linkType}
+                            disabled
+                            isPurchased
                           >
                             {row.inner}
                           </FieldContent>
@@ -804,6 +806,8 @@ export default function DetailInfo(props) {
                               isMerged={!!props.contactData.mergedContacts}
                               content={row.data}
                               linkType={row.linkType}
+                              disabled
+                              isPurchased
                             >
                               {row.inner}
                             </FieldContent>

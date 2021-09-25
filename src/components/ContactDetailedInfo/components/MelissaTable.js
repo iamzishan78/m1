@@ -4,6 +4,7 @@ import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
+import moment from "moment";
 
 import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
@@ -146,7 +147,6 @@ const useStyles = makeStyles((theme) => ({
 const MelissaTable = ({ ...props }) => {
   const classes = useStyles();
   const [showEmpty, setShowEmpty] = useState(true);
-  const [selectedPurchaseData, setSelectedPurchaseData] = useState("");
 
   const handleEmptyFields = () => {
     setShowEmpty(!showEmpty);
@@ -195,18 +195,23 @@ const MelissaTable = ({ ...props }) => {
                   </h4>
                   <Select
                     className={classes.viewSwitcher}
-                    value={selectedPurchaseData}
+                    value={props.selectedPurchaseData}
                     onChange={(e) => {
                       e.stopPropagation()
-                      setSelectedPurchaseData(e.target.value)
+                      props.setSelectedPurchaseData(e.target.value)
                     }}
                   >
-                    <MenuItem value="id1">
-                      IDI Data -07/28/2021 11:07:02am
-                    </MenuItem>
-                    <MenuItem value="id2">
-                      IDI Data -07/29/2021 11:07:02am
-                    </MenuItem>
+                    {props.options?.map(option=>{
+                      debugger
+                      return(
+                        <MenuItem value={option._id}>
+                          IDI Data -{" "}
+                          {moment(option.date).format(
+                            "MM/DD/YYYY hh:mm:ss a"
+                          )}
+                        </MenuItem>                        
+                      )
+                    })}
                   </Select>
                 </span>
               ) : (
