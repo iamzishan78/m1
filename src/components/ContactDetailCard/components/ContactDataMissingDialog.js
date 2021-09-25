@@ -24,7 +24,7 @@ export default function ContactDataMissingDialog(props) {
         </DialogTitle>
         <DialogContent>
           <h3 className={modalClass.inputLabel}>
-            Required Fields(First Name, Last Name and Address) is missing for following contacts:
+            Required Fields (First Name, Last Name and Address) are missing for following contacts:
           </h3>
           {props.contacts.map(contact => {
             return (
