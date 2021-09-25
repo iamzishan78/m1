@@ -104,10 +104,6 @@ const useStyles = makeStyles((theme) => ({
   inputFieldCustomTextInput: {
     marginBottom: "7px",
   },
-  inputFieldDealName: {
-    width: "750px",
-    padding: "0px 30px 20px 30px",
-  },
   dateLabel: {
     transform: "translate(10px, 2px) scale(0.75) !important",
     backgroundColor: "#fff !important",
@@ -144,57 +140,11 @@ const useStyles = makeStyles((theme) => ({
   label: {
     backgroundColor: "white",
   },
-
-  closeIcon: {
-    fill: theme.palette.secondary.main,
-    "&:hover": {
-      fill: "red",
-    },
-  },
   topBtnGroup: {},
-  inputField: {
-    outline: "none",
-  },
-  dealStateOpenWon: {
-    padding: "8px 16px",
-    borderRadius: 5,
-    cursor: "pointer",
-    backgroundColor: "#d9d9d9",
-    "&:hover": {
-      backgroundColor: "#a6e5c3",
-      // borderStyle: "solid",
-      fontWeight: "bold",
-      color: "#54a83c",
-    },
-  },
-  dealStateOpenLost: {
-    padding: "8px 16px",
-    borderRadius: 5,
-    cursor: "pointer",
-    backgroundColor: "#d9d9d9",
-    "&:hover": {
-      backgroundColor: "#ffa8a8",
-      // borderStyle: "solid",
-      fontWeight: "bold",
-      color: "#f96060",
-    },
-  },
-  dealStateClosed: {
-    padding: "8px 16px",
-    borderRadius: 18,
-
-    // color: "#fff",
-  },
   gridStyle: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-  },
-  dealStateReopen: {
-    padding: "2px 10px",
-    cursor: "pointer",
-    borderRadius: 5,
-    border: "1px solid gray",
   },
   originationDate: {
     paddingBottom: "12px",
@@ -264,19 +214,6 @@ const useStyles = makeStyles((theme) => ({
   },
   icon: {
     display: "none",
-  },
-  dealNameRoot: {
-    fontWeight: "bold",
-    paddingLeft: 0,
-    textAlign: "left",
-    fontSize: "1.2rem",
-    "&.Mui-focused fieldset": {
-      border: "1px solid black",
-      backgroundColor: "transparent",
-    },
-    "&:hover": {
-      border: "1px solid black",
-    },
   },
   customDataTextInputRoot: {
     border: "1px solid #EBEBEB",
