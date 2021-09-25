@@ -4,10 +4,29 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import { Modals } from "styles/Modal";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import get from 'lodash/get';
 
 export default function ContactDataMissingDialog(props) {
 
   const modalClass = Modals();
+
+  const getMissingKeys = (contact) => {
+    const keys = []
+    if(!contact.firstName){
+      keys.push('First Name')
+    }
+    if(!contact.lastName){
+      keys.push('Last Name')
+    }
+    if(!contact.address){
+      keys.push('Address')
+    }
+    return <span className="red">({keys.map(key=> {
+      return <span> {key} </span>
+    })})</span>
+    
+
+  }
   return (
     <Dialog
       open={true}
@@ -28,7 +47,7 @@ export default function ContactDataMissingDialog(props) {
           </h3>
           {props.contacts.map(contact => {
             return (
-              <div>{`${contact.firstName} ${contact.lastName}`}</div>
+              <div>{`${get(contact,'firstName', '')} ${get(contact,'lastName','')}`} {getMissingKeys(contact)}</div>
             )
           })}
           

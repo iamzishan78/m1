@@ -57,6 +57,7 @@ import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Link from "@material-ui/core/Link";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
+import get from 'lodash/get';
 
 // contexts
 import { AppContext } from "../../AppContext";
@@ -634,7 +635,7 @@ export default function ContactDetailCard(props) {
                       noMargin
                       id={contactData._id}
                       entity={contactData.entity}
-                      content={{ name: `${contactData.firstName} ${contactData.lastName}` }}
+                      content={{ name: `${get(contactData,'firstName', '')} ${get(contactData,'lastName','')}` }}
                       disabled
                     >
                       {(contactData.facebook ||

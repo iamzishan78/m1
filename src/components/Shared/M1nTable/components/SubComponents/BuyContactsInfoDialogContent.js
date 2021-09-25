@@ -116,8 +116,8 @@ export default function BuyContactsInfoDialogContent(props) {
     for (const row of props.rows) {
       let person = {
         id: row._id,
-        firstName: row.name.split(' ')[0],
-        lastName: row.name.replace(row.name.split(' ')[0], ''),
+        firstName: row.firstName,
+        lastName: row.lastName,
         address: row.address1,
         city: row.city,
         state: row.state,
