@@ -11,7 +11,7 @@ import Typography from "@material-ui/core/Typography";
 
 const getDealNameFieldHeight = (title) => {
   const lineLength = Math.ceil(title.length / 53);
-  return `${22 * lineLength}px !important`;
+  return `${24 * lineLength}px !important`;
 };
 
 const useStyles = makeStyles((theme) => ({
