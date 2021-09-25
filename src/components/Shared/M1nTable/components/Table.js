@@ -437,7 +437,7 @@ const useStyles = makeStyles((theme) => ({
   },
   clickableCell: {
     cursor: "pointer",
-    padding: "10px 30px 0px 10px",
+    padding: "10px 10px 0px 10px",
     position: "relative",
     minWidth: "100px",
     borderRadius: "7px",
@@ -446,6 +446,11 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: "underline",
     },
     fontWeight: "bold",
+  },
+  companyName:{
+    fontSize: "12px",
+    color: "#000000",
+    fontWeight: "normal",
   },
   docDateText: {
     // cursor: "pointer",
@@ -2052,11 +2057,11 @@ function SubTable(props) {
                         : []
                         }`}
                     >
-                      {props.targetLabel === "contact" && column.name === "firstName" && (
+                      {props.targetLabel === "contact" && column.name === "name" && (
                         <Avatar
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
-                          name={valueFormatter(`${tableMeta.rowData[9]} ${tableMeta.rowData[11]}`)}
+                          name={valueFormatter(`${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
                           size="35"
                           round
                         />
@@ -2077,7 +2082,7 @@ function SubTable(props) {
                           nonEditable={!column.editable}
                         />
                       )}
-                      {props.targetLabel === "contact"  && column.name !== "firstName"&& (
+                      {props.targetLabel === "contact"  && column.name !== "name"&& (
                         <CellContentEdition
                           id={tableMeta.rowData[0]}
                           content={{ [column.name]: valueFormatter(value) }}
@@ -2093,7 +2098,7 @@ function SubTable(props) {
                           nonEditable={!column.editable}
                         />
                       )}
-                      {props.targetLabel === "contact" && column.name === "firstName" && (
+                      {props.targetLabel === "contact" && column.name === "name" && (
                         <p
                           className={classes.clickableCell}
                           onClick={() => {
@@ -2112,7 +2117,8 @@ function SubTable(props) {
                             handleOpenExpandableCard();
                           }}
                         >
-                          {value}
+                          {`${tableMeta.rowData[10] ? tableMeta.rowData[10]: ''} ${tableMeta.rowData[12] ? tableMeta.rowData[12]: ''}`}
+                          <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
                         </p>
                       )}
 
