@@ -356,6 +356,126 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       data: { email5LastSeen: contactData?.email5LastSeen },
       linkType: LinkTypes.None,
     },
+    "Relative 1 First Name": {
+      data: { relative1FirstName: contactData?.relative1FirstName },
+      linkType: LinkTypes.None,
+    },
+    "Relative 1 Last Name": {
+      data: { relative1LastName: contactData?.relative1LastName },
+      linkType: LinkTypes.None,
+    },
+    "Relative 1 Age": {
+      data: { relative1Age: contactData?.relative1Age },
+      linkType: LinkTypes.None,
+    },
+    "Relative 1 Phone1": {
+      data: { relative1Phone1: contactData?.relative1Phone1 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 1 Phone2": {
+      data: { relative1Phone2: contactData?.relative1Phone2 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 1 Phone3": {
+      data: { relative1Phone3: contactData?.relative1Phone3 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 2 First Name": {
+      data: { relative2FirstName: contactData?.relative2FirstName },
+      linkType: LinkTypes.None,
+    },
+    "Relative 2 Last Name": {
+      data: { relative2LastName: contactData?.relative2LastName },
+      linkType: LinkTypes.None,
+    },
+    "Relative 2 Age": {
+      data: { relative2Age: contactData?.relative2Age },
+      linkType: LinkTypes.None,
+    },
+    "Relative 2 Phone1": {
+      data: { relative2Phone1: contactData?.relative2Phone1 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 2 Phone2": {
+      data: { relative2Phone2: contactData?.relative2Phone2 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 2 Phone3": {
+      data: { relative2Phone3: contactData?.relative2Phone3 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 3 First Name": {
+      data: { relative3FirstName: contactData?.relative3FirstName },
+      linkType: LinkTypes.None,
+    },
+    "Relative 3 Last Name": {
+      data: { relative3LastName: contactData?.relative3LastName },
+      linkType: LinkTypes.None,
+    },
+    "Relative 3 Age": {
+      data: { relative3Age: contactData?.relative3Age },
+      linkType: LinkTypes.None,
+    },
+    "Relative 3 Phone1": {
+      data: { relative3Phone1: contactData?.relative3Phone1 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 3 Phone2": {
+      data: { relative3Phone2: contactData?.relative3Phone2 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 3 Phone3": {
+      data: { relative3Phone3: contactData?.relative3Phone3 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 4 First Name": {
+      data: { relative4FirstName: contactData?.relative4FirstName },
+      linkType: LinkTypes.None,
+    },
+    "Relative 4 Last Name": {
+      data: { relative4LastName: contactData?.relative4LastName },
+      linkType: LinkTypes.None,
+    },
+    "Relative 4 Age": {
+      data: { relative4Age: contactData?.relative4Age },
+      linkType: LinkTypes.None,
+    },
+    "Relative 4 Phone1": {
+      data: { relative4Phone1: contactData?.relative4Phone1 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 4 Phone2": {
+      data: { relative4Phone2: contactData?.relative4Phone2 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 4 Phone3": {
+      data: { relative4Phone3: contactData?.relative4Phone3 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 5 First Name": {
+      data: { relative5FirstName: contactData?.relative5FirstName },
+      linkType: LinkTypes.None,
+    },
+    "Relative 5 Last Name": {
+      data: { relative5LastName: contactData?.relative5LastName },
+      linkType: LinkTypes.None,
+    },
+    "Relative 5 Age": {
+      data: { relative5Age: contactData?.relative5Age },
+      linkType: LinkTypes.None,
+    },
+    "Relative 5 Phone1": {
+      data: { relative5Phone1: contactData?.relative5Phone1 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 5 Phone2": {
+      data: { relative5Phone2: contactData?.relative5Phone2 },
+      linkType: LinkTypes.None,
+    },
+    "Relative 5 Phone3": {
+      data: { relative5Phone3: contactData?.relative5Phone3 },
+      linkType: LinkTypes.None,
+    },
   };
 };
 

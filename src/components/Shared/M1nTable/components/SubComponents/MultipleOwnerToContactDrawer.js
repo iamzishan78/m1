@@ -224,7 +224,9 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                   <Typography style={{ backgroundColor: "#edfbff" }}>
                     <Grid container alignItems='center' style={{ paddingLeft: 10 }}>
                       <Grid item >{row.name || row.OwnerName}</Grid>
-                      <Grid item >{row.StreetAddress} {row.City}, {row.State} {row.Zip}</Grid>
+                      <div>
+                        <Grid item >{row.StreetAddress} {row.City}, {row.State} {row.Zip}</Grid>
+                      </div>
                     </Grid>
                   </Typography>
                 </Grid>
