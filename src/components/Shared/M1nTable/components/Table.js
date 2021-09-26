@@ -437,7 +437,7 @@ const useStyles = makeStyles((theme) => ({
   },
   clickableCell: {
     cursor: "pointer",
-    padding: "10px 10px 0px 10px",
+    padding: "10px 10px 10px 10px",
     position: "relative",
     minWidth: "100px",
     borderRadius: "7px",
@@ -2061,7 +2061,8 @@ function SubTable(props) {
                         <Avatar
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
-                          name={valueFormatter(`${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
+                          name={valueFormatter(`${tableMeta.rowData[10]}`)}
+                         // name={valueFormatter(`${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
                           size="35"
                           round
                         />

@@ -152,6 +152,10 @@ export const getBasicInfoExpContent = (contactData) => {
 
 export const getBasicInfoContent = (contactData) => {
   return {
+    "Full Name": {
+      data: { name: contactData?.name },
+      linkType: LinkTypes.None,
+    },
     "First Name": {
       data: { firstName: contactData?.firstName },
       linkType: LinkTypes.None,
@@ -224,11 +228,23 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       data: { age: contactData?.age },
       linkType: LinkTypes.None,
     },
+    "Deceased": {
+      data: { age: contactData?.deceased },
+      linkType: LinkTypes.None,
+    },
+    "Bankruptcy": {
+      data: { age: contactData?.bankruptcy },
+      linkType: LinkTypes.None,
+    },
+    "Lien": {
+      data: { age: contactData?.lien },
+      linkType: LinkTypes.None,
+    },
     "Current Address": {
       data: { currentAddress: contactData?.currentAddress },
       linkType: LinkTypes.None,
     },
-    "Current Address Range": {
+    "Current Address Date Range": {
       data: { currentAddressDateRange: contactData?.currentAddressDateRange },
       linkType: LinkTypes.None,
     },
@@ -236,7 +252,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       data: { previousAddress1: contactData?.previousAddress1 },
       linkType: LinkTypes.None,
     },
-    "Previous Address 1 Range": {
+    "Previous Address 1 Date Range": {
       data: { previousAddress1DateRange: contactData?.previousAddress1DateRange },
       linkType: LinkTypes.None,
     },
@@ -244,7 +260,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       data: { previousAddress2: contactData?.previousAddress2 },
       linkType: LinkTypes.None,
     },
-    "Previous Address 2 Range": {
+    "Previous Address 2 Date Range": {
       data: { previousAddress2DateRange: contactData?.previousAddress2DateRange },
       linkType: LinkTypes.None,
     },
@@ -252,7 +268,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       data: { previousAddress3: contactData?.previousAddress3 },
       linkType: LinkTypes.None,
     },
-    "Previous Address 3 Range": {
+    "Previous Address 3 Date Range": {
       data: { previousAddress3DateRange: contactData?.previousAddress3DateRange },
       linkType: LinkTypes.None,
     },
@@ -368,15 +384,15 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       data: { relative1Age: contactData?.relative1Age },
       linkType: LinkTypes.None,
     },
-    "Relative 1 Phone1": {
+    "Relative 1 Phone 1": {
       data: { relative1Phone1: contactData?.relative1Phone1 },
       linkType: LinkTypes.None,
     },
-    "Relative 1 Phone2": {
+    "Relative 1 Phone 2": {
       data: { relative1Phone2: contactData?.relative1Phone2 },
       linkType: LinkTypes.None,
     },
-    "Relative 1 Phone3": {
+    "Relative 1 Phone 3": {
       data: { relative1Phone3: contactData?.relative1Phone3 },
       linkType: LinkTypes.None,
     },
@@ -392,15 +408,15 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       data: { relative2Age: contactData?.relative2Age },
       linkType: LinkTypes.None,
     },
-    "Relative 2 Phone1": {
+    "Relative 2 Phone 1": {
       data: { relative2Phone1: contactData?.relative2Phone1 },
       linkType: LinkTypes.None,
     },
-    "Relative 2 Phone2": {
+    "Relative 2 Phone 2": {
       data: { relative2Phone2: contactData?.relative2Phone2 },
       linkType: LinkTypes.None,
     },
-    "Relative 2 Phone3": {
+    "Relative 2 Phone 3": {
       data: { relative2Phone3: contactData?.relative2Phone3 },
       linkType: LinkTypes.None,
     },
@@ -416,15 +432,15 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       data: { relative3Age: contactData?.relative3Age },
       linkType: LinkTypes.None,
     },
-    "Relative 3 Phone1": {
+    "Relative 3 Phone 1": {
       data: { relative3Phone1: contactData?.relative3Phone1 },
       linkType: LinkTypes.None,
     },
-    "Relative 3 Phone2": {
+    "Relative 3 Phone 2": {
       data: { relative3Phone2: contactData?.relative3Phone2 },
       linkType: LinkTypes.None,
     },
-    "Relative 3 Phone3": {
+    "Relative 3 Phone 3": {
       data: { relative3Phone3: contactData?.relative3Phone3 },
       linkType: LinkTypes.None,
     },
@@ -440,15 +456,15 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       data: { relative4Age: contactData?.relative4Age },
       linkType: LinkTypes.None,
     },
-    "Relative 4 Phone1": {
+    "Relative 4 Phone 1": {
       data: { relative4Phone1: contactData?.relative4Phone1 },
       linkType: LinkTypes.None,
     },
-    "Relative 4 Phone2": {
+    "Relative 4 Phone 2": {
       data: { relative4Phone2: contactData?.relative4Phone2 },
       linkType: LinkTypes.None,
     },
-    "Relative 4 Phone3": {
+    "Relative 4 Phone 3": {
       data: { relative4Phone3: contactData?.relative4Phone3 },
       linkType: LinkTypes.None,
     },
@@ -464,15 +480,15 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       data: { relative5Age: contactData?.relative5Age },
       linkType: LinkTypes.None,
     },
-    "Relative 5 Phone1": {
+    "Relative 5 Phone 1": {
       data: { relative5Phone1: contactData?.relative5Phone1 },
       linkType: LinkTypes.None,
     },
-    "Relative 5 Phone2": {
+    "Relative 5 Phone 2": {
       data: { relative5Phone2: contactData?.relative5Phone2 },
       linkType: LinkTypes.None,
     },
-    "Relative 5 Phone3": {
+    "Relative 5 Phone 3": {
       data: { relative5Phone3: contactData?.relative5Phone3 },
       linkType: LinkTypes.None,
     },
@@ -489,15 +505,27 @@ export const getBasicPurchaseInfoContent = (contactData) => {
       data: { age: contactData?.age },
       linkType: LinkTypes.None,
     },
+    "Deceased": {
+      data: { age: contactData?.deceased },
+      linkType: LinkTypes.None,
+    },
+    "Bankruptcy": {
+      data: { age: contactData?.bankruptcy },
+      linkType: LinkTypes.None,
+    },
+    "Lien": {
+      data: { age: contactData?.lien },
+      linkType: LinkTypes.None,
+    },
     "Current Address": {
       data: { currentAddress: contactData?.currentAddress },
       linkType: LinkTypes.None,
     },
-    "Phone1": {
+    "Phone 1": {
       data: { phone1: contactData?.phone1 },
       linkType: LinkTypes.None,
     },
-    "Email1": {
+    "Email 1": {
       data: { email1: contactData?.email1 },
       linkType: LinkTypes.None,
     }

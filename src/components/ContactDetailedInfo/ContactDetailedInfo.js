@@ -189,7 +189,7 @@ const useStyles = makeStyles((theme) => ({
     background: "#01B0F0",
   },
   viewSwitcher: {
-    width: "245px",
+    width: "275px",
     fontSize: "14px",
     marginLeft: "10px",
   },
@@ -528,7 +528,7 @@ export default function DetailInfo(props) {
           >
             {props.purchaseData.map((purchaseData) => {
               return (
-                <MenuItem value={purchaseData._id}>
+                <MenuItem  value={purchaseData._id}>
                   IDI Data -{" "}
                   {moment(purchaseData.sysDateTime).format(
                     "MM/DD/YYYY hh:mm:ss a"

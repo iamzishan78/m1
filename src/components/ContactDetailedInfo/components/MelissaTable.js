@@ -135,7 +135,7 @@ const useStyles = makeStyles((theme) => ({
     color: "rgb(141, 141, 141)",
   },
   viewSwitcher: {
-    width: "245px",
+    width: "275px",
     fontSize: "14px",
     marginLeft: "10px",
   },
