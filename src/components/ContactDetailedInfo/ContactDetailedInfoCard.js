@@ -102,8 +102,11 @@ export default function ContactDetailedInfoCard() {
   useEffect(() => {
     if (contactPurchaseData?.getContactPurchaseData?.length > 0) {
       setPurchaseData(contactPurchaseData?.getContactPurchaseData);
+      setSelectedPurchaseData(contactPurchaseData.getContactPurchaseData[0]._id)
     }
   }, [contactPurchaseData]);
+
+
 
 
   useEffect(() => {

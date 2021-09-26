@@ -223,10 +223,9 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                 <Grid item md={tab === TAB.NEW && ACTION.COMBINE ? 10 : 11}>
                   <Typography style={{ backgroundColor: "#edfbff" }}>
                     <Grid container alignItems='center' style={{ paddingLeft: 10 }}>
-                      <Grid item >{row.name || row.OwnerName}</Grid>
-                      <div>
-                        <Grid item >{row.StreetAddress} {row.City}, {row.State} {row.Zip}</Grid>
-                      </div>
+                      <div style={{ width: '100%' }}>{row.name || row.OwnerName}</div>
+                      <div>{row.StreetAddress} {row.City}, {row.State} {row.Zip}</div>
+                      
                     </Grid>
                   </Typography>
                 </Grid>

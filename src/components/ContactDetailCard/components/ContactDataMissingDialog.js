@@ -18,7 +18,7 @@ export default function ContactDataMissingDialog(props) {
     if(!contact.lastName){
       keys.push('Last Name')
     }
-    if(!contact.address){
+    if(!contact.address1){
       keys.push('Address')
     }
     return <span className="red">({keys.map(key=> {
