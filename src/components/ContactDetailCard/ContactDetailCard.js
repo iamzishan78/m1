@@ -467,6 +467,14 @@ export default function ContactDetailCard(props) {
 
     return fileExtension;
   };
+
+  const getName=(contact)=>{
+    if(!contact.firstName && !contact.lastName){
+      return contact.name
+    }else{
+      return `${get(contact,'firstName', '')} ${get(contact,'lastName','')}`
+    }
+  }
   return contactData ? (
     <>
       <div className={classes.header}>
@@ -523,7 +531,7 @@ export default function ContactDetailCard(props) {
             <Typography
               style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}
             >
-              {`${contactData.firstName} ${contactData.lastName}`}
+              {getName(contactData)}
             </Typography>
           </Breadcrumbs>
         </div>
@@ -635,7 +643,7 @@ export default function ContactDetailCard(props) {
                       noMargin
                       id={contactData._id}
                       entity={contactData.entity}
-                      content={{ name: `${get(contactData,'firstName', '')} ${get(contactData,'lastName','')}` }}
+                      content={{ name: getName(contactData) }}
                       disabled
                     >
                       {(contactData.facebook ||

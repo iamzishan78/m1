@@ -2118,7 +2118,11 @@ function SubTable(props) {
                             handleOpenExpandableCard();
                           }}
                         >
-                          {`${tableMeta.rowData[10] ? tableMeta.rowData[10]: ''} ${tableMeta.rowData[12] ? tableMeta.rowData[12]: ''}`}
+                          {!tableMeta.rowData[10] && !tableMeta.rowData[12] ? (
+                            `${tableMeta.rowData[8] ? tableMeta.rowData[8]: ''}`
+                          ):(
+                            `${tableMeta.rowData[10] ? tableMeta.rowData[10]: ''} ${tableMeta.rowData[12] ? tableMeta.rowData[12]: ''}`
+                          )}
                           <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
                         </p>
                       )}
