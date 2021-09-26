@@ -202,7 +202,6 @@ const MelissaTable = ({ ...props }) => {
                     }}
                   >
                     {props.options?.map(option=>{
-                      debugger
                       return(
                         <MenuItem value={option._id}>
                           IDI Data -{" "}

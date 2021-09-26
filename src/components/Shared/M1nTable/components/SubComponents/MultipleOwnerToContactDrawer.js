@@ -102,7 +102,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const onConvert = () => {
     let ownerIds = rows.filter((row) => row.id !== primaryOwner.id);
     ownerIds.unshift(primaryOwner)
-    ownerIds = ownerIds.reduce((ids, row) => { ids.push(row.globalOwnerId || row.id); return ids; }, []);
+    ownerIds = ownerIds.reduce((ids, row) => { ids.push({id: row.globalOwnerId || row.id, ownershipType: row.ownershipType}); return ids; }, []);
 
     let existingContactId = null;
     let action = actionType

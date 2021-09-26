@@ -1,6 +1,7 @@
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
+import moment from "moment";
 
 const getCreateByRow = (contactData) => {
     return contactData?.createBy && contactData?.createBy.name === null ? (
@@ -281,7 +282,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Phone 1 Last Seen": {
-      data: { phone1LastSeen: contactData?.phone1LastSeen },
+      data: { phone1LastSeen: contactData?.phone1LastSeen ? moment(contactData.phone1LastSeen).format('DD/MM/YYYY'): null },
       linkType: LinkTypes.None,
     },
     "Phone 2": {
@@ -293,7 +294,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Phone 2 Last Seen": {
-      data: { phone2LastSeen: contactData?.phone2LastSeen },
+      data: { phone2LastSeen: contactData?.phone2LastSeen ? moment(contactData.phone2LastSeen).format('DD/MM/YYYY'): null },
       linkType: LinkTypes.None,
     },
     "Phone 3": {
@@ -305,7 +306,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Phone 3 Last Seen": {
-      data: { phone3LastSeen: contactData?.phone3LastSeen },
+      data: { phone3LastSeen: contactData?.phone3LastSeen ? moment(contactData.phone3LastSeen).format('DD/MM/YYYY'): null },
       linkType: LinkTypes.None,
     },
     "Phone 4": {
@@ -317,7 +318,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Phone 4 Last Seen": {
-      data: { phone4LastSeen: contactData?.phone4LastSeen },
+      data: { phone4LastSeen: contactData?.phone4LastSeen ? moment(contactData.phone4LastSeen).format('DD/MM/YYYY'): null },
       linkType: LinkTypes.None,
     },
     "Phone 5": {
@@ -329,7 +330,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Phone 5 Last Seen": {
-      data: { phone5LastSeen: contactData?.phone5LastSeen },
+      data: { phone5LastSeen: contactData?.phone5LastSeen ? moment(contactData.phone5LastSeen).format('DD/MM/YYYY'): null },
       linkType: LinkTypes.None,
     },
     "Email 1": {
@@ -337,7 +338,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Email 1 Last Seen": {
-      data: { email1LastSeen: contactData?.email1LastSeen },
+      data: { email1LastSeen: contactData?.email1LastSeen ? moment(contactData.email1LastSeen).format('DD/MM/YYYY'): null },
       linkType: LinkTypes.None,
     },
     "Email 2": {
@@ -353,7 +354,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Email 3 Last Seen": {
-      data: { email3LastSeen: contactData?.email3LastSeen },
+      data: { email3LastSeen: contactData?.email3LastSeen ? moment(contactData.email3LastSeen).format('DD/MM/YYYY'): null },
       linkType: LinkTypes.None,
     },
     "Email 4": {
@@ -361,7 +362,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Email 4 Last Seen": {
-      data: { email4LastSeen: contactData?.email4LastSeen },
+      data: { email4LastSeen: contactData?.email4LastSeen ? moment(contactData.email4LastSeen).format('DD/MM/YYYY'): null },
       linkType: LinkTypes.None,
     },
     "Email 5": {
@@ -369,7 +370,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
       linkType: LinkTypes.None,
     },
     "Email 5 Last Seen": {
-      data: { email5LastSeen: contactData?.email5LastSeen },
+      data: { email5LastSeen: contactData?.email5LastSeen ? moment(contactData.email5LastSeen).format('DD/MM/YYYY'): null },
       linkType: LinkTypes.None,
     },
     "Relative 1 First Name": {
