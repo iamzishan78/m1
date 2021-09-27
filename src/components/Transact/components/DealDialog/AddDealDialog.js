@@ -342,7 +342,7 @@ function AddDealDialog(props) {
 
   const [addDeal, { data: dealData, loading: addDealLoading }] = useMutation(ADDDEAL);
   const [updateDeal, { loading: updateDealLoading }] = useMutation(UPDATEDEAL);
-  const [upsertDealDescriptor] = useMutation(UPSERTDEALDESCRIPTOR);
+  const [upsertDealDescriptor, { loading: upsertDealDescriptorLoading }] = useMutation(UPSERTDEALDESCRIPTOR);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
   const [updateStageDealDescriptor, { data: updatedStageDealDescriptor }] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
 
@@ -1007,7 +1007,7 @@ function AddDealDialog(props) {
     if (stateApp.transactBarView === "Documents") {
       return <Documents id={stateApp.activeDeal?._id} user_id={stateApp.user.email} isTransactPage={true} />;
     } else if (stateApp.transactBarView === "Contacts") {
-      return <Contacts addSelectedContact={addSelectedContactToDeal} loading={getDealLoading} getDeal={refetchDeal} />;
+      return <Contacts addSelectedContact={addSelectedContactToDeal} loading={upsertDealDescriptorLoading} getDeal={refetchDeal} />;
     } else if (stateApp.transactBarView === "Task Progress") {
       return (
         <DealTasksDetails

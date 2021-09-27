@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import {
-  Grid,
-  InputAdornment,
-  TextField,
-  IconButton,
-  Tooltip,
-} from "@material-ui/core";
+import { Grid, InputAdornment, TextField, IconButton, Tooltip } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "react-redux";
 
@@ -68,8 +62,6 @@ const useStyles = makeStyles((theme) => ({
         color: "##ffffffc9",
       },
     },
-
-
   },
 }));
 
@@ -127,7 +119,7 @@ const DealSearch = () => {
           );
         }}
         renderInput={(params) => {
-          const _params = { ...params, inputProps: { ...params.inputProps, value: searchInputValue } }
+          const _params = { ...params, inputProps: { ...params.inputProps, value: searchInputValue } };
           return (
             <TextField
               {..._params}
@@ -136,7 +128,7 @@ const DealSearch = () => {
               margin="dense"
               variant="outlined"
               placeholder="Search for deals"
-              onChange={e => setSearchInputValue(e.target.value)}
+              onChange={(e) => setSearchInputValue(e.target.value)}
               InputProps={{
                 ...params.InputProps,
                 startAdornment: (
@@ -159,9 +151,7 @@ const DealSearch = () => {
                       <IconButton
                         size="small"
                         htmlColor="#fff"
-                        className={`${classes.toggleBtn} ${stateApp.dealDisplayType === "table" &&
-                          classes.activeBtn
-                          }`}
+                        className={`${classes.toggleBtn} ${stateApp.dealDisplayType === "table" && classes.activeBtn}`}
                         //temporarily commenting out until list view exists
                         onClick={() => setDealDisplayType("table")}
                       >
@@ -172,9 +162,7 @@ const DealSearch = () => {
                       <IconButton
                         size="small"
                         htmlColor="#fff"
-                        className={`${classes.toggleBtn} ${stateApp.dealDisplayType === "board" &&
-                          classes.activeBtn
-                          }`}
+                        className={`${classes.toggleBtn} ${stateApp.dealDisplayType === "board" && classes.activeBtn}`}
                         onClick={() => setDealDisplayType("board")}
                       >
                         <TableChartIcon />
@@ -184,7 +172,7 @@ const DealSearch = () => {
                 ),
               }}
             />
-          )
+          );
         }}
       />
     </>

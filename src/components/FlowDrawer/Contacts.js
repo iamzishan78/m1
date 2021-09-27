@@ -112,8 +112,9 @@ export default function Contacts(props) {
     if (nameAutValue) {
       props.addSelectedContact(nameAutValue);
       GettingContacts();
-      setMutationLoading(true);
+      // setMutationLoading(true);
       setAddContact(false);
+      setNameAutValue("");
     }
   }, [nameAutValue]);
 
@@ -143,9 +144,9 @@ export default function Contacts(props) {
 
   const GettingContacts = useCallback(() => {
     let contactnames = stateApp.activeDeal?.contacts?.map((value) => {
-      if (value.relatedObject?.entity?.name !== undefined) {
-        return value.relatedObject?.entity?.name;
-      } else if (value?.name && value?.name !== undefined) {
+      if (get(value, "relatedObject.entityDetail.name")) {
+        return value.relatedObject.entityDetail.name;
+      } else if (get(value, "name")) {
         return value.name;
       } else {
         return "Empty";
@@ -159,13 +160,13 @@ export default function Contacts(props) {
   }, [search, props, GettingContacts]);
 
   useEffect(() => {
-    if (!props.loading) {
-      setMutationLoading(false);
-    }
+    setMutationLoading(props.loading);
   }, [props.loading]);
-  const DeleteContact = async (dealid) => {
+
+  const DeleteContact = async (index) => {
+    const descriptorId = get(stateApp, `activeDeal.contacts[${index}].descriptorId`) || get(stateApp, `activeDeal.contacts[${index}]._id`);
     let result = await removeDealDescriptor({
-      variables: { id: dealid, relatedObjectType: "Contact" },
+      variables: { id: descriptorId, relatedObjectType: "Contact" },
       refetchQueries: ["getPipeline", "getContactDeals"],
       awaitRefetchQueries: true,
     });
@@ -322,7 +323,7 @@ export default function Contacts(props) {
                   ) : (
                     <ListItemSecondaryAction
                       onClick={() => {
-                        DeleteContact(stateApp.activeDeal?.contacts[i]?.descriptorId);
+                        DeleteContact(i);
                         setMutationLoading(stateApp.activeDeal?.contacts[i]?._id);
                       }}
                     >
