@@ -630,7 +630,7 @@ export default function ContactDetailCard(props) {
                   <StyleBadge>
                     <Avatar
                       className={classes.grey}
-                      name={`${contactData.firstName} ${contactData.lastName}`}
+                      name={`${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(' ')[0] : ''}`}
                       size="93"
                       round
                     />

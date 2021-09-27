@@ -107,6 +107,9 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 //icons
 import SearchIcon from "@material-ui/icons/Search";
 import GetAppIcon from "@material-ui/icons/GetApp";
+// import { ReactComponent as RequestPageIcon } from 'components/Shared/svgIcons/request_page_icon.svg';
+import RequestPageIcon from 'components/Shared/svgIcons/request_page';
+// import RequestPageIcon from 'components/Shared/svgIcons/request_page_icon';
 import PageviewIcon from "@material-ui/icons/Pageview";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import PostAddIcon from "@material-ui/icons/PostAdd";
@@ -2061,7 +2064,7 @@ function SubTable(props) {
                         <Avatar
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
-                          name={valueFormatter(`${tableMeta.rowData[10]}`)}
+                          name={valueFormatter(`${tableMeta.rowData[10] ? tableMeta.rowData[10] : tableMeta.rowData[8] ? tableMeta.rowData[8].split(' ')[0] : ''}`)}
                          // name={valueFormatter(`${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
                           size="35"
                           round
@@ -2504,7 +2507,7 @@ function SubTable(props) {
                       <FeatureFlag feature={FEATURES.IDICORE}>
                         <Button
                           color="secondary"
-                          startIcon={<AlternateEmailIcon />}
+                          startIcon={<RequestPageIcon color="white" />}
                           className={classes.multiSelectionTopBarButtons}
                           disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
                           onClick={() => {
@@ -2814,7 +2817,7 @@ function SubTable(props) {
                 <FeatureFlag feature={FEATURES.IDICORE}>
                   <Button
                     color="secondary"
-                    startIcon={<AlternateEmailIcon />}
+                    startIcon={<RequestPageIcon color="#B3B3B3" />}
                     className={classes.multiSelectionTopBarButtons}
                     disabled
                   >

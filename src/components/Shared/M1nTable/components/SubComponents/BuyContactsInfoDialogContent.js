@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { withStyles } from "@material-ui/core/styles";
 import { FormLabel } from "@material-ui/core";
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -22,7 +23,6 @@ import { FEATURES } from "components/Shared/FeatureFlag/common";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import Close from "@material-ui/icons/Close";
 
-
 const styles = (theme) => ({
   root: {
     margin: 0,
@@ -40,7 +40,9 @@ const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, updateMelissaTable, ...other } = props;
   return (
     <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h4" style = {{fontWeight: "bold"}}>{children}</Typography>
+      <Typography variant="h4" style={{ fontWeight: "bold" }}>
+        {children}
+      </Typography>
       {onClose ? (
         <IconButton
           aria-label="close"
@@ -55,34 +57,37 @@ const DialogTitle = withStyles(styles)((props) => {
   );
 });
 
-
-
-
 export default function BuyContactsInfoDialogContent(props) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [featureQuota, setFeatureQuota] = useState(null)
-  const [currentCredits, setCurrentCredits] = useState(-1)
+  const [featureQuota, setFeatureQuota] = useState(null);
+  const [currentCredits, setCurrentCredits] = useState(-1);
   const modalClass = Modals();
-  
-  const [getFeatureQuota, { loading, data: quota }] = useLazyQuery(GET_FEATURE_QUOTA);
+
+  const [getFeatureQuota, { loading, data: quota }] =
+    useLazyQuery(GET_FEATURE_QUOTA);
 
   useEffect(() => {
-    const feature = stateApp?.user?.features?.find(f => f.name === FEATURES.IDICORE)
+    const feature = stateApp?.user?.features?.find(
+      (f) => f.name === FEATURES.IDICORE
+    );
     getFeatureQuota({
       variables: {
         featureId: feature.id,
-        tenantId: stateApp.user.tenantId
+        tenantId: stateApp.user.tenantId,
       },
     });
-  },[])
+  }, []);
 
-  useEffect(()=>{
-    if(quota && quota.featureQuota){
-      setFeatureQuota(quota.featureQuota)
-      setCurrentCredits(quota.featureQuota.QuotaLimit - (quota.featureQuota.QuotaPending + quota.featureQuota.QuotaUsed))
+  useEffect(() => {
+    if (quota && quota.featureQuota) {
+      setFeatureQuota(quota.featureQuota);
+      setCurrentCredits(
+        quota.featureQuota.QuotaLimit -
+          (quota.featureQuota.QuotaPending + quota.featureQuota.QuotaUsed)
+      );
     }
-  },[quota])
+  }, [quota]);
 
   const [getPersonData, { data: personsData }] = useMutation(GETPERSONDATA, {
     onCompleted: (data) => {
@@ -98,18 +103,22 @@ export default function BuyContactsInfoDialogContent(props) {
     },
   });
 
-  const [getIdICoreData, { data: idiCoreData }] = useMutation(GET_IDICORE_DATA);
+  const [getIdICoreData, { data: idiCoreData, loading: idiLoading }] =
+    useMutation(GET_IDICORE_DATA);
 
-  useEffect(()=>{
-    if(idiCoreData?.getIdiCoreData?.success && idiCoreData?.getIdiCoreData?.data?.length > 0){
+  useEffect(() => {
+    if (
+      idiCoreData?.getIdiCoreData?.success &&
+      idiCoreData?.getIdiCoreData?.data?.length > 0
+    ) {
       dispatch(showSuccessMessage("Data fetched successfully"));
       props.onClose();
-    } else if(idiCoreData?.getIdiCoreData?.success === false) {
+    } else if (idiCoreData?.getIdiCoreData?.success === false) {
       dispatch(showErrorMessage("Error occurred"));
-    }else if(idiCoreData?.getIdiCoreData?.success === true){
+    } else if (idiCoreData?.getIdiCoreData?.success === true) {
       dispatch(showErrorMessage("No data found against the contact"));
     }
-  },[idiCoreData])
+  }, [idiCoreData]);
 
   function loadPersonData() {
     let persons = [];
@@ -150,13 +159,11 @@ export default function BuyContactsInfoDialogContent(props) {
     // });
 
     getIdICoreData({
-      variables: { 
+      variables: {
         tenantId: stateApp.user.tenantId,
-        persons 
+        persons,
       },
-      refetchQueries: [
-        "getContactPurchaseData",
-      ],
+      refetchQueries: ["getContactPurchaseData"],
       awaitRefetchQueries: true,
     });
   }
@@ -169,92 +176,108 @@ export default function BuyContactsInfoDialogContent(props) {
 
   return (
     <React.Fragment>
-      <DialogTitle style={{backgroundColor: "#fff"}} id="customized-dialog-title">
-        {props.header ? props.header : 'Contact Info Purchase'}
-        <Close
-          fontSize="large"
-          className = {modalClass.closeIcon}
-          onClick={props.onClose}
+      {idiLoading ? (
+        <CircularProgress
+          size={80}
+          disableShrink
+          color="secondary"
         />
-      </DialogTitle>
-      <DialogContent>
-        <Grid container spacing={1}>
-        {props.header === 'Contact Data Integration' && (
-          <>
-          <Grid item xs={12}>
-            <h3 style={{ padding: 0, marginTop: "20px", marginBottom: 0 }}>
-              Available search credits
-            </h3>
-          </Grid>
-          <Grid item xs={12} className={modalClass.inputContainer}>
-            <FormLabel className={modalClass.inputLabel}>
-              Current Balance
-            </FormLabel>
-            <FormLabel className={modalClass.inputContent}>
-              {currentCredits} Credit
-              {currentCredits && currentCredits > 1 ? "s" : ""}
-            </FormLabel>
-          </Grid>
-          </>
-          )}
-          <Grid item xs={12} style={{ marginTop: "50px" }}>
-            <h3 style={{ margin: "0" }}>Selected contacts</h3>
-          </Grid>
-          {/* <Grid item xs={12} style={{ margin: 0, paddingTop: 0 }}>
+      ) : (
+        <>
+          <DialogTitle
+            style={{ backgroundColor: "#fff" }}
+            id="customized-dialog-title"
+          >
+            {props.header ? props.header : "Contact Info Purchase"}
+            <Close
+              fontSize="large"
+              className={modalClass.closeIcon}
+              onClick={props.onClose}
+            />
+          </DialogTitle>
+          <DialogContent>
+            <Grid container spacing={1}>
+              {props.header === "Contact Data Integration" && (
+                <>
+                  <Grid item xs={12}>
+                    <h3
+                      style={{ padding: 0, marginTop: "20px", marginBottom: 0 }}
+                    >
+                      Available search credits
+                    </h3>
+                  </Grid>
+                  <Grid item xs={12} className={modalClass.inputContainer}>
+                    <FormLabel className={modalClass.inputLabel}>
+                      Current Balance
+                    </FormLabel>
+                    <FormLabel className={modalClass.inputContent}>
+                      {currentCredits} Credit
+                      {currentCredits && currentCredits > 1 ? "s" : ""}
+                    </FormLabel>
+                  </Grid>
+                </>
+              )}
+              <Grid item xs={12} style={{ marginTop: "50px" }}>
+                <h3 style={{ margin: "0" }}>Selected contacts</h3>
+              </Grid>
+              {/* <Grid item xs={12} style={{ margin: 0, paddingTop: 0 }}>
             <FormLabel>
               {props.rows && props.rows.length ? props.rows.length : ""}{" "}
               selected 
             </FormLabel>
           </Grid> */}
-          {props.rows &&
-            props.rows.map((row, index) => (
-              <Grid item xs={12} className={modalClass.inputContainer}>
-                <FormLabel className={modalClass.inputLabel}>
-                  {`${row.firstName} ${row.lastName}`}
-                </FormLabel>
-                <FormLabel className={modalClass.inputContent}>
-                  <DeleteOutlinedIcon
-                    fontSize="small"
-                    style={{ cursor: "pointer", float: "right" }}
-                    onClick={() => {
-                      let reducedRows = [...props.rows];
-                      reducedRows.splice(index, 1);
-                      props.setRows(reducedRows);
-                    }}
-                  />
-                </FormLabel>
+              {props.rows &&
+                props.rows.map((row, index) => (
+                  <Grid item xs={12} className={modalClass.inputContainer}>
+                    <FormLabel className={modalClass.inputLabel}>
+                      {`${row.firstName} ${row.lastName}`}
+                    </FormLabel>
+                    <FormLabel className={modalClass.inputContent}>
+                      <DeleteOutlinedIcon
+                        fontSize="small"
+                        style={{ cursor: "pointer", float: "right" }}
+                        onClick={() => {
+                          let reducedRows = [...props.rows];
+                          reducedRows.splice(index, 1);
+                          props.setRows(reducedRows);
+                        }}
+                      />
+                    </FormLabel>
+                  </Grid>
+                ))}
+              <Grid item xs={12} className={modalClass.greyedInputContainer}>
+                <h3 style={{ float: "left", margin: "5px" }}>TOTAL</h3>
+                <h3 style={{ float: "right", margin: "5px" }}>
+                  {props.rows && props.rows.length ? props.rows.length : ""}{" "}
+                  CREDIT
+                  {props.rows && props.rows.length && props.rows.length > 1
+                    ? "S"
+                    : ""}
+                </h3>
               </Grid>
-            ))}
-          <Grid item xs={12} className={modalClass.greyedInputContainer}>
-            <h3 style={{ float: "left", margin: "5px" }}>TOTAL</h3>
-            <h3 style={{ float: "right", margin: "5px" }}>
-              {props.rows && props.rows.length ? props.rows.length : ""} CREDIT
-              {props.rows && props.rows.length && props.rows.length > 1
-                ? "S"
-                : ""}
-            </h3>
-          </Grid>
-        </Grid>
-      </DialogContent>
-      <DialogActions className={modalClass.actionButtons}>
-        <Button
-          onClick={() => {
-            props.onClose();
-          }}
-          color="primary"
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={() => {
-            loadPersonData();
-          }}
-          color="secondary"
-          variant="contained"
-        >
-          Buy Now
-        </Button>
-      </DialogActions>
+            </Grid>
+          </DialogContent>
+          <DialogActions className={modalClass.actionButtons}>
+            <Button
+              onClick={() => {
+                props.onClose();
+              }}
+              color="primary"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                loadPersonData();
+              }}
+              color="secondary"
+              variant="contained"
+            >
+              Buy Now
+            </Button>
+          </DialogActions>
+        </>
+      )}
     </React.Fragment>
   );
 }
