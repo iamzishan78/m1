@@ -33,6 +33,7 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
   const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
 
   const name = watch("name");
+  const rottenness = watch("rottenness");
 
   useEffect(() => {
     if (name && flowErrors.name) {
@@ -171,9 +172,10 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
                   control={
                     <Switch
                       {...field}
-                      checked={watch("rottenness")}
+                      checked={rottenness}
                       size="small"
                       onChange={({ target }) => setValue("rottenness", target.checked)}
+                      defaultChecked={(openPipeDialog === true && selectedPipe.rottenness !== false) || openPipeDialog !== true}
                     />
                   }
                   label="Show rotten indicator on card"

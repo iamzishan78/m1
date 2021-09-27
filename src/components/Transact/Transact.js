@@ -1,6 +1,7 @@
 import React, { Fragment, useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
+import { get } from "lodash";
 
 import { AppContext } from "../../AppContext";
 import { TransactContext } from "./TransactContext";
@@ -8,8 +9,6 @@ import Board from "react-trello";
 import { makeStyles } from "@material-ui/core/styles";
 import { UPDATESTAGEDEALDESCRIPTORS } from "../../graphQL/useMutationUpdateStageDealDescriptors";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Typography from "@material-ui/core/CircularProgress";
-import Grid from "@material-ui/core/Grid";
 
 import AddDealDialog from "components/Transact/components/DealDialog/AddDealDialog";
 import "./index.css";
@@ -150,7 +149,7 @@ export default function Transact() {
   const classes = useStyles();
   let history = useHistory();
   const dispatch = useDispatch();
-  const { pipeToShow, pipeToShowTab, openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
+  const { pipeToShow, pipeToShowTab, selectedPipe } = useSelector(({ Flow }) => Flow);
   console.log("PIPETOSHOW: ", pipeToShow);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateTransact] = useContext(TransactContext);
@@ -500,22 +499,25 @@ export default function Transact() {
   };
 
   const getCardColor = (rotting, stageChangeDate) => {
+    if (!selectedPipe.rottenness) return "rgb(242, 242, 242)";
+
     let cardColor = "limegreen";
-    let rottingDate = null;
-    rottingDate = moment(stageChangeDate).add(rotting, "days");
+    if (rotting && stageChangeDate) {
+      let rottingDate = null;
+      rottingDate = moment(stageChangeDate).add(rotting, "days");
 
-    let total = rottingDate.diff(moment(stageChangeDate), "days");
-    let current = rottingDate.diff(moment(), "days"); // swap date values if doesn't work as intended
+      let total = rottingDate.diff(moment(stageChangeDate), "days");
+      let current = rottingDate.diff(moment(), "days"); // swap date values if doesn't work as intended
 
-    let percentageDone = ((total - current) / total) * 100;
+      let percentageDone = ((total - current) / total) * 100;
 
-    if (percentageDone >= 100) cardColor = "red";
-    else if (percentageDone >= 75) cardColor = "yellow";
-
+      if (percentageDone >= 100) cardColor = "red";
+      else if (percentageDone >= 75) cardColor = "yellow";
+    }
     return cardColor;
   };
 
-  const GetCard = React.memo(({ cardProps }) => {
+  const GetCard = React.memo((cardProps) => {
     const CardClasses = useStyles(cardProps);
     const { metadata, title, description, id, laneId } = cardProps;
     const cardPrice = metadata && metadata.offerPrice ? metadata.offerPrice : 0;
@@ -546,10 +548,7 @@ export default function Transact() {
 
     const lane = filteredBoardTransactData.lanes.find((lane) => lane.id === laneId);
 
-    let cardColor = "limegreen";
-    if (lane?.metadata?.rotting && stageChangeDate) {
-      cardColor = getCardColor(lane.metadata.rotting, stageChangeDate);
-    }
+    const cardColor = getCardColor(get(lane, "metadata.rotting"), stageChangeDate);
 
     return (
       <article
@@ -679,7 +678,7 @@ export default function Transact() {
                 }}
                 components={{
                   LaneHeader: (laneProps) => getLaneHeader(laneProps),
-                  Card: (cardProps) => <GetCard cardProps={cardProps} />,
+                  Card: (cardProps) => <GetCard {...cardProps} />,
                 }}
 
                 //onCardAdd = {handleCardAdd}
