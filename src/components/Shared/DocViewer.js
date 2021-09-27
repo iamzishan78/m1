@@ -18,7 +18,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 const useStyles = makeStyles((theme) => ({
   paper: {
     backgroundColor: theme.palette.background.paper,
-    height: "98vh !important",
+    height: "100vh !important",
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
     overflow: "scroll",
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
     border: "0px",
     inset: "unset",
-    width: "calc(100vw - 540px) ",
+    width: "calc(100vw - 650px)",
   },
   paperTwo: {
     backgroundColor: theme.palette.background.paper,
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DocViewer = ({ DocStyle = { top: "56% ", left: "40% ", transform: `translate(1%, -101%)` }, divCondition = false }) => {
+const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondition = false }) => {
   const classes = useStyles();
   const [numPages, setNumPages] = useState(null);
   let [pageNumber, setPageNumber] = useState(1);
@@ -117,7 +117,6 @@ const DocViewer = ({ DocStyle = { top: "56% ", left: "40% ", transform: `transla
           disableEnforceFocus={true}
           keepMounted={true}
           disableBackdropClick={true}
-          // className="CustomeModal"
         >
           <div style={DocStyle} className={classes.paper}>
             <div className={classes.ZoomIcons}>
