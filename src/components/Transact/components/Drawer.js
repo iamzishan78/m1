@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Drawer(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles(props);
+  const { dealSettingsNumber } = props;
 
   const drawerIcons = {
     // Comments: (props) => <MessageIcon {...props} />,
@@ -104,6 +105,7 @@ export default function Drawer(props) {
           horizontal: "right",
         }}
         color="primary"
+        badgeContent={dealSettingsNumber}
       >
         <CheckBoxIcon {...props} />
       </Badge>
@@ -121,7 +123,6 @@ export default function Drawer(props) {
     //   </Badge>
     // ),
   };
-
   return (
     <div className={classes.root}>
       {Object.keys(drawerIcons).map((key) => (

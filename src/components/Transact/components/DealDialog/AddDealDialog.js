@@ -1166,7 +1166,7 @@ function AddDealDialog(props) {
             isTransactPage={props.isTransactPage}
           />
           <div>
-            <Drawer />
+            <Drawer dealSettingsNumber={10} />
             <div className={classes.contentRoot}>
               {props.isTransactPage &&
               stateApp.transactBarView !== "Deal" &&
