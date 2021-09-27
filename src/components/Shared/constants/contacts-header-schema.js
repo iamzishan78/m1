@@ -547,6 +547,18 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "isPurchased",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
   // {
   //   name: "isTracked",
   //   label: "Track",

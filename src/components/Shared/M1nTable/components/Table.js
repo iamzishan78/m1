@@ -2129,6 +2129,13 @@ function SubTable(props) {
                           <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
                         </p>
                       )}
+                      {props.targetLabel === "contact" && column.name === "name" && (
+                        <span>
+                          {tableMeta.rowData[49] &&  (
+                            <RequestPageIcon color="grey" />
+                          )}
+                        </span>
+                      )}
 
                       {/* {props.targetLabel === "documents" &&
                         column.name === "fileName" && (
