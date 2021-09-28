@@ -41,13 +41,15 @@ export default function ContactDataMissingDialog(props) {
             onClick={props.onClose}
           />
         </DialogTitle>
+
+
         <DialogContent>
           <h3 className={modalClass.inputLabel}>
             Required Fields (First Name, Last Name and Address) are missing for following contacts:
           </h3>
           {props.contacts.map(contact => {
             return (
-              <div>{`${get(contact,'firstName', '')} ${get(contact,'lastName','')}`} {getMissingKeys(contact)}</div>
+              <div> {`${get(contact,'firstName', '')} ${get(contact,'lastName','')}`}   {getMissingKeys(contact)}  {`${get(contact,'address1', '')}`} {`${get(contact,'city', '')}`} {`${get(contact,'state', '')}`} {`${get(contact,'zip', '')}`}     </div>
             )
           })}
           
