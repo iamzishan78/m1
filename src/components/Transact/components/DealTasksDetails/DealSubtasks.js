@@ -75,13 +75,6 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
   const approver = users.find((user) => user?.value === task.assignee);
   const [showTaskActions, setShow] = useState(false);
   const [isDatePopup, setDatePopup] = useState(false);
-
-  useEffect(() => {
-    document.getElementsByClassName("MuiPopover-paper")[0].addEventListener("click", (event) => {
-      console.log("click");
-    });
-  }, []);
-
   const truncate = (str, n) => (str.length > n ? str.substr(0, n - 1) + "..." : str);
   const onHoverTask = (state) => setShow(state);
 
