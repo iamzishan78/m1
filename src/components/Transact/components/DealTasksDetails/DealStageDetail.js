@@ -135,15 +135,11 @@ function DealStageDetail({ settings, index, users, extendedTaskIndex, user, acti
     });
     setNewSubtask({ index: -1, value: !isNewSubtask.value });
   };
+  const isExpanded = index === extendedTaskIndex && !_.isEmpty(stateTransact.selectedTask);
 
   return (
     <div style={{ borderTop: "1px solid lightgrey" }}>
-      <Accordion
-        defaultExpanded={false}
-        className={
-          index === extendedTaskIndex && !_.isEmpty(stateTransact.selectedTask) ? classes.accordionColored : classes.accordionColorReset
-        }
-      >
+      <Accordion defaultExpanded={isExpanded} className={isExpanded ? classes.accordionColored : classes.accordionColorReset}>
         <AccordionSummary aria-controls="panel1a-content2" id="panel1a-header2" expandIcon={<ExpandMore />}>
           <Typography className={classes.laneName}>{settings.stageName}</Typography>
         </AccordionSummary>
