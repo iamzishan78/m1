@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { withStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { FormLabel } from "@material-ui/core";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { Grid } from "@material-ui/core";
@@ -21,6 +21,8 @@ import { GET_FEATURE_QUOTA } from "graphQL/useQueryGetFeatureQuota";
 import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import ErrorIcon from "@material-ui/icons/Error";
 import Close from "@material-ui/icons/Close";
 
 const styles = (theme) => ({
@@ -35,6 +37,19 @@ const styles = (theme) => ({
     color: theme.palette.grey[500],
   },
 });
+
+const useStyles = makeStyles((theme) => ({
+  iconsSuccess:{
+    "& svg" : {
+      fill: '#04b004 !important'
+    }
+  },
+  iconsError:{
+    "& svg" : {
+      fill: 'red !important'
+    }
+  }
+}));
 
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, updateMelissaTable, ...other } = props;
@@ -59,9 +74,11 @@ const DialogTitle = withStyles(styles)((props) => {
 
 export default function BuyContactsInfoDialogContent(props) {
   const dispatch = useDispatch();
+  const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [featureQuota, setFeatureQuota] = useState(null);
   const [buyNowClicked, setBuyNowClicked] = useState(false);
+  const [dataFetched, setDataFetched] = useState(false);
   const [currentCredits, setCurrentCredits] = useState(-1);
   const modalClass = Modals();
 
@@ -90,20 +107,6 @@ export default function BuyContactsInfoDialogContent(props) {
     }
   }, [quota]);
 
-  const [getPersonData, { data: personsData }] = useMutation(GETPERSONDATA, {
-    onCompleted: (data) => {
-      props.onClose();
-      if (data.getPersonData.allSuccess) {
-        if (props.updateMelissaTable) {
-          props.updateMelissaTable();
-        }
-        dispatch(showSuccessMessage("All records saved successfully"));
-      } else {
-        dispatch(showErrorMessage("Error occurred"));
-      }
-    },
-  });
-
   const [getIdICoreData, { data: idiCoreData, loading: idiLoading }] =
     useMutation(GET_IDICORE_DATA);
 
@@ -112,11 +115,13 @@ export default function BuyContactsInfoDialogContent(props) {
       idiCoreData?.getIdiCoreData?.success &&
       idiCoreData?.getIdiCoreData?.data?.length > 0
     ) {
+      setDataFetched(true)
       dispatch(showSuccessMessage("Data fetched successfully"));
-      props.onClose();
     } else if (idiCoreData?.getIdiCoreData?.success === false) {
+      setDataFetched(true)
       dispatch(showErrorMessage("Error occurred"));
     } else if (idiCoreData?.getIdiCoreData?.success === true) {
+      setDataFetched(true)
       dispatch(showErrorMessage("No data found against the contact"));
     }
   }, [idiCoreData]);
@@ -134,30 +139,8 @@ export default function BuyContactsInfoDialogContent(props) {
         country: row.country,
         postal: row.zip,
       };
-
-      // if (
-      //   (!person.address || !person.city || !person.state) &&
-      //   !person.postal
-      // ) {
-      //   dispatch(
-      //     showErrorMessage(
-      //       "Invalid data: [state, city, address] or [ZIP code] required"
-      //     )
-      //   );
-      //   return;
-      // }
-
       persons.push(person);
     }
-
-    // getPersonData({
-    //   variables: { persons },
-    //   refetchQueries: [
-    //     "getLastMelissaRecord",
-    //     "getMelissaRecordsCountForContactIds",
-    //   ],
-    //   awaitRefetchQueries: true,
-    // });
 
     getIdICoreData({
       variables: {
@@ -214,12 +197,6 @@ export default function BuyContactsInfoDialogContent(props) {
               <Grid item xs={12} style={{ marginTop: "50px" }}>
                 <h3 style={{ margin: "0" }}>Selected contacts</h3>
               </Grid>
-              {/* <Grid item xs={12} style={{ margin: 0, paddingTop: 0 }}>
-            <FormLabel>
-              {props.rows && props.rows.length ? props.rows.length : ""}{" "}
-              selected 
-            </FormLabel>
-          </Grid> */}
               {props.rows &&
                 props.rows.map((row, index) => (
                   <Grid item xs={12} className={modalClass.inputContainer}>
@@ -227,15 +204,30 @@ export default function BuyContactsInfoDialogContent(props) {
                       {`${row.firstName} ${row.lastName}`}
                     </FormLabel>
                     <FormLabel className={modalClass.inputContent}>
-                      <DeleteOutlinedIcon
-                        fontSize="small"
-                        style={{ cursor: "pointer", float: "right" }}
-                        onClick={() => {
-                          let reducedRows = [...props.rows];
-                          reducedRows.splice(index, 1);
-                          props.setRows(reducedRows);
-                        }}
-                      />
+                      {dataFetched && (
+                        <>
+                          {idiCoreData.getIdiCoreData.data?.find(contact => contact.contactId === row._id) ? (
+                            <span className={classes.iconsSuccess}>
+                            <CheckCircleIcon/>
+                          </span>
+                          ) : (
+                            <span className={classes.iconsError}>
+                            <ErrorIcon  />
+                          </span>
+                          )}
+                        </>
+                      )}
+                      {!dataFetched && (
+                        <DeleteOutlinedIcon
+                          fontSize="small"
+                          style={{ cursor: "pointer", float: "right" }}
+                          onClick={() => {
+                            let reducedRows = [...props.rows];
+                            reducedRows.splice(index, 1);
+                            props.setRows(reducedRows);
+                          }}
+                        />
+                      )}
                     </FormLabel>
                   </Grid>
                 ))}
