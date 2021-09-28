@@ -61,6 +61,7 @@ export default function BuyContactsInfoDialogContent(props) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [featureQuota, setFeatureQuota] = useState(null);
+  const [buyNowClicked, setBuyNowClicked] = useState(false);
   const [currentCredits, setCurrentCredits] = useState(-1);
   const modalClass = Modals();
 
@@ -163,7 +164,7 @@ export default function BuyContactsInfoDialogContent(props) {
         tenantId: stateApp.user.tenantId,
         persons,
       },
-      refetchQueries: ["getContactPurchaseData"],
+      refetchQueries: ["getContactPurchaseData","getPaginatedContacts", "paginatedContacts"],
       awaitRefetchQueries: true,
     });
   }
@@ -176,13 +177,6 @@ export default function BuyContactsInfoDialogContent(props) {
 
   return (
     <React.Fragment>
-      {idiLoading ? (
-        <CircularProgress
-          size={80}
-          disableShrink
-          color="secondary"
-        />
-      ) : (
         <>
           <DialogTitle
             style={{ backgroundColor: "#fff" }}
@@ -269,15 +263,28 @@ export default function BuyContactsInfoDialogContent(props) {
             <Button
               onClick={() => {
                 loadPersonData();
+                setBuyNowClicked(true)
               }}
+              disabled={buyNowClicked || idiLoading}
               color="secondary"
               variant="contained"
             >
               Buy Now
             </Button>
+            {idiLoading && (
+                <CircularProgress
+                  size={24}
+                  style={{
+                    position: 'absolute',
+                    marginTop: '2px',
+                    marginRight: '35px',
+                    color: 'green',
+                  }}
+                />
+              )}
+
           </DialogActions>
         </>
-      )}
     </React.Fragment>
   );
 }
