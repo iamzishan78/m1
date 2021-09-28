@@ -34,7 +34,8 @@ const ENTER_KEY = 13;
 
 const useStyles = makeStyles((theme) => ({
   summaryCard: {
-    backgroundColor: 'white', paddingLeft: '18px', paddingTop: '8px'
+    backgroundColor: 'white', paddingLeft: "10px",
+    paddingRight: "10px", paddingTop: '8px',
   },
   summaryDetailCard: {
     paddingLeft: '18px', paddingTop: '8px'

@@ -71,8 +71,8 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "100%",
     margin: "0px",
-    padding: "0px",
-    borderStyle: "none",
+    padding: "0px"
+    // borderStyle: "none",
   },
   rowGrey: {
     background: "#f7f8f9",
@@ -90,6 +90,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "12px",
     lineHeight: "18px",
     color: "black",
+    borderRight: "1px solid rgba(224, 224, 224, 1)"
   },
   cell2: {
     border: "0px",
