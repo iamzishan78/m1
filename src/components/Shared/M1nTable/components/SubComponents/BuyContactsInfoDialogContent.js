@@ -24,6 +24,7 @@ import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import ErrorIcon from "@material-ui/icons/Error";
 import Close from "@material-ui/icons/Close";
+import {Tooltip} from "@material-ui/core";
 
 const styles = (theme) => ({
   root: {
@@ -116,13 +117,13 @@ export default function BuyContactsInfoDialogContent(props) {
       idiCoreData?.getIdiCoreData?.data?.length > 0
     ) {
       setDataFetched(true)
-      dispatch(showSuccessMessage("Data fetched successfully"));
+      dispatch(showSuccessMessage("Contact data fetched successfully"));
     } else if (idiCoreData?.getIdiCoreData?.success === false) {
       setDataFetched(true)
-      dispatch(showErrorMessage("Error occurred"));
+      dispatch(showErrorMessage("An error occurred - please try again"));
     } else if (idiCoreData?.getIdiCoreData?.success === true) {
       setDataFetched(true)
-      dispatch(showErrorMessage("No data found against the contact"));
+      dispatch(showErrorMessage("No data found for selected contact(s)"));
     }
   }, [idiCoreData]);
 
@@ -219,11 +220,15 @@ export default function BuyContactsInfoDialogContent(props) {
                         <>
                           {idiCoreData.getIdiCoreData.data?.find(contact => contact.contactId === row._id) ? (
                             <span className={classes.iconsSuccess}>
+                           <Tooltip title= 'Data found for contact' >
                             <CheckCircleIcon/>
+                          </Tooltip>
                           </span>
                           ) : (
                             <span className={classes.iconsError}>
+                          <Tooltip title= 'No data found for contact' >
                             <ErrorIcon  />
+                            </Tooltip>
                           </span>
                           )}
                         </>
