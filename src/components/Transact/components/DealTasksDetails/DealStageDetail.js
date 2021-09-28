@@ -139,7 +139,7 @@ function DealStageDetail({ settings, index, users, extendedTaskIndex, user, acti
   return (
     <div style={{ borderTop: "1px solid lightgrey" }}>
       <Accordion
-        defaultExpanded={true}
+        defaultExpanded={false}
         className={
           index === extendedTaskIndex && !_.isEmpty(stateTransact.selectedTask) ? classes.accordionColored : classes.accordionColorReset
         }

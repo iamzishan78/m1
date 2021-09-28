@@ -9,6 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 
 import Grid from "@material-ui/core/Grid";
 import AddIcon from "@material-ui/icons/Add";
+import DetailsIcon from "@material-ui/icons/Settings";
 import DragIndicator from "@material-ui/icons/DragIndicator";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import RootRef from "@material-ui/core/RootRef";
@@ -230,6 +231,7 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
                           <TableCell align="left">Rotting in&nbsp;(days)</TableCell>
                           <TableCell align="left">Stage Status</TableCell>
                           <TableCell padding="checkbox"></TableCell>
+                          <TableCell padding="checkbox"></TableCell>
                           {/* <TableCell padding="checkbox"></TableCell> */}
                           {/* <TableCell align="left">Auto-Assign</TableCell> */}
                         </TableRow>
@@ -319,6 +321,12 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
                                         }}
                                         className={classes.removeIconButton}
                                       />
+                                    </Tooltip>
+                                  </TableCell>
+
+                                  <TableCell padding="checkbox">
+                                    <Tooltip title="Stage Details" placement="top">
+                                      <DetailsIcon />
                                     </Tooltip>
                                   </TableCell>
                                 </TableRow>
