@@ -86,7 +86,13 @@ const useStyles = makeStyles((theme) => ({
 
     "& .MuiTabs-indicator": {
       // marginLeft: "14px !important",
-      bottom: '20px !important'
+      bottom: '10px !important'
+    },
+    "& .MuiTab-root": {
+      padding: "15px 12px !important"
+    },
+    "& .MuiAppBar-root": {
+      height: "60px"
     },
 
     "&::-webkit-scrollbar": {

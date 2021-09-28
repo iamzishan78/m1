@@ -6703,14 +6703,14 @@ function Map() {
           </div>
         )
       }
-      {stateApp.selectedUnit !== null &&
+      {stateApp.selectedUnit?.shapeLabel &&
         stateApp.expandedCard && (
           <div className={classes.draggable}>
             <ExpandableCardProvider
               expanded={true}
               handleCloseExpandableCard={handleCloseExpandableCard}
               component={<UnitCardProvider ></UnitCardProvider >}
-              title={stateApp.selectedUnit.shapeLabel}
+              title={stateApp.selectedUnit?.shapeLabel}
               subTitle=""
               parent="map"
               position="relative"
@@ -6719,7 +6719,7 @@ function Map() {
               zIndex={99}
               cardWidthExpanded="50vw"
               cardHeightExpanded="calc(100vh - 64px)"
-              targetSourceId={stateApp.selectedUnit.id}
+              targetSourceId={stateApp.selectedUnit?.id}
               targetLabel="unit"
               deleteParcel={deleteParcel}
             ></ExpandableCardProvider>
