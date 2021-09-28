@@ -2132,7 +2132,7 @@ function SubTable(props) {
                       {props.targetLabel === "contact" && column.name === "name" && (
                         <span>
                           {tableMeta.rowData[49] &&  (
-                            <RequestPageIcon color="grey" />
+                            <RequestPageIcon color="grey" fontSize='8px'/>
                           )}
                         </span>
                       )}
@@ -2514,7 +2514,7 @@ function SubTable(props) {
                       <FeatureFlag feature={FEATURES.IDICORE}>
                         <Button
                           color="secondary"
-                          startIcon={<RequestPageIcon color="white" />}
+                          startIcon={<RequestPageIcon color="white"/>}
                           className={classes.multiSelectionTopBarButtons}
                           disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
                           onClick={() => {
