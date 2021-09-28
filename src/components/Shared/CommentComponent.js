@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px 5px 10px 0px",
     // marginRight: "60px",
     // marginBottom: "10px",
-    marginLeft: '20px'
+    marginLeft: '3px'
   },
   commentTime: {
     marginLeft: "10px",
@@ -315,7 +315,7 @@ export default function CommentComponent(props) {
                       onMouseLeave={() => setShowCommentActionId(null)}
                     >
                       <Grid item xs={1}>
-                        <IconButton style={{ marginTop: "3px", marginLeft: "12px" }}>
+                        <IconButton >
                           {profilesInfo[eachComment.user.email]?.profileImage ||
                             eachComment.isNew ? (
                             <Avatar
@@ -431,7 +431,7 @@ export default function CommentComponent(props) {
           <Grid item xs={11} className={classes.paddingLeft10}>
             <div
               className={classes.border}
-              style={{ width: '500px', paddingBottom: '20px' }}
+              style={{ paddingBottom: '20px' }}
               onClick={() => {
                 if (!showActions) {
                   setShowActions(true);

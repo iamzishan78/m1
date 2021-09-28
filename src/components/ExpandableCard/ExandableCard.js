@@ -30,6 +30,8 @@ import ContactSearch from "./components/ContactSearch";
 // contexts 
 import { AppContext } from "../../AppContext";
 import { MapControlsContext } from "../MapControls/MapControlsContext";
+import { Avatar, Box, Grid } from "@material-ui/core";
+import FolderIcon from '@material-ui/icons/Folder';
 
 
 
@@ -101,8 +103,16 @@ function ExpandableCard(props) {
     }
   }, [props.title, props.targetLabel]);
 
-
-
+  let backgroundColor = '#112040'
+  let headerIcons = {}
+  // if (targetLabel === "unit") {
+  //   backgroundColor = 'white'
+  //   headerIcons = {
+  //     '& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary': {
+  //       color: '#7f7f7f !important',
+  //     }
+  //   }
+  // }
 
 
   const useStyles = makeStyles((theme) => ({
@@ -119,10 +129,10 @@ function ExpandableCard(props) {
       transition: "width 0.1s, height 0.1s, left 0.1s, top 0.1s",
       width: width,
       height: props.expanded ? height : "inherit",
-      background: "#112040",
+      background: backgroundColor,
       borderStyle: "solid",
       borderWidth: "thin",
-      borderColor: "#112040",
+      borderColor: backgroundColor,
       "& .MuiCardHeader-action": {
         alignSelf: "left",
       },
@@ -145,11 +155,13 @@ function ExpandableCard(props) {
         right: "10px",
         top: "5px",
       },
+      ...headerIcons
     },
     subheader: {
       fontFamily: "Poppins",
       color: "#FFFFFF",
       fontSize: "11px",
+
     },
     content: {
       transition: "height 0.1s",
@@ -290,7 +302,7 @@ function ExpandableCard(props) {
         expandedCard: false,
         viewDoc: null,
       }));
-      stateApp.selectedParcel?.id && history.replace({ pathname: '/'})
+      stateApp.selectedParcel?.id && history.replace({ pathname: '/' })
     }
     props.handleCloseExpandableCard();
     //if EC is inside map popup you need to close it
@@ -310,22 +322,44 @@ function ExpandableCard(props) {
           marginRight: "48px",
         }}
       >
-        {(targetLabel !== "contact"
+        {(targetLabel === "unit"
         ) &&
+          <Grid container spacing={2} alignItems="center">
+            <Grid item><Avatar color='#1a2341'>
+              <FolderIcon fontColor='#1a2341' />
+            </Avatar>
+            </Grid>
+            <Grid item>
+              <Box textTransform='capitalize' fontWeight='bold' fontSize='19px'>
+                {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
+              </Box>
+              <Box >{title.length > 30 ? `${title.substr(0, 35)}...` : title}</Box>
+              <Box fontWeight='bold' >Unit</Box>
+            </Grid>
+          </Grid>
+
+        }
+
+        {
+          (targetLabel !== "contact" && targetLabel !== "unit"
+          ) &&
           <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
         }
 
-        {(targetLabel === "contact"
-          && parent !== 'table'
-        ) && <ContactSearch />}
+        {
+          (targetLabel === "contact"
+            && parent !== 'table'
+          ) && <ContactSearch />
+        }
 
-        {(targetLabel === "contact"
-          && parent !== 'table'
-        ) &&
+        {
+          (targetLabel === "contact"
+            && parent !== 'table'
+          ) &&
           <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
         }
 
-      </div>
+      </div >
     );
   };
 
@@ -546,6 +580,7 @@ function ExpandableCard(props) {
                   && targetLabel !== "well"
                   && targetLabel !== "expandedWell"
                   && targetLabel !== "parcel"
+                  && targetLabel !== "unit"
                   && targetLabel !== "expandedParcel"
                   && targetLabel !== "recent_submitted_permits"
                   ? (

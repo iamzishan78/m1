@@ -82,16 +82,15 @@ export default function CommentsWithIcon(props) {
         <Badge
           badgeContent={props.iconZiseSmall ? null : commentsCounter}
           color="secondary"
-          // variant={props.iconZiseSmall ? "dot" : "standard"}s
+        // variant={props.iconZiseSmall ? "dot" : "standard"}s
         >
           <IconButton
             size={props.iconZiseSmall ? "small" : "medium"}
             color="primary"
-            className={`${classes.icons}  ${
-              openDialog || (commentsCounter && commentsCounter > 0)
+            className={`${classes.icons}  ${openDialog || (commentsCounter && commentsCounter > 0)
                 ? classes.iconSelected
                 : ""
-            }`}
+              }`}
             onClick={() => {
               setOpenDialog(true);
             }}
