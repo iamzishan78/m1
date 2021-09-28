@@ -76,6 +76,12 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
   const [showTaskActions, setShow] = useState(false);
   const [isDatePopup, setDatePopup] = useState(false);
 
+  useEffect(() => {
+    document.getElementsByClassName("MuiPopover-paper")[0].addEventListener("click", (event) => {
+      console.log("click");
+    });
+  }, []);
+
   const truncate = (str, n) => (str.length > n ? str.substr(0, n - 1) + "..." : str);
   const onHoverTask = (state) => setShow(state);
 
@@ -128,7 +134,7 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
           </Grid>
           <Grid item xs={5} className={classes.subTaskRightGrid}>
             {(task.dueDate || showTaskActions) && (
-              <span onClick={() => setDatePopup(!isDatePopup)} style={{ cursor: "pointer" }}>
+              <span style={{ cursor: "pointer" }}>
                 <KeyboardDatePicker
                   disableToolbar
                   variant="inline"
@@ -140,6 +146,8 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
                   disabled
                   keyboardIcon={task.dueDate && <></>}
                   open={isDatePopup}
+                  onClick={() => setDatePopup(!isDatePopup)}
+                  onClose={() => setDatePopup(!isDatePopup)}
                   onChange={(date) => handleUpdateSubtask({ ...task, dueDate: date ? String(date["_d"]) : "" })}
                 />
               </span>
