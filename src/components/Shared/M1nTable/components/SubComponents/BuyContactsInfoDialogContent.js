@@ -127,29 +127,40 @@ export default function BuyContactsInfoDialogContent(props) {
   }, [idiCoreData]);
 
   function loadPersonData() {
-    let persons = [];
-    for (const row of props.rows) {
-      let person = {
-        id: row._id,
-        firstName: row.firstName,
-        lastName: row.lastName,
-        address: row.address1,
-        city: row.city,
-        state: row.state,
-        country: row.country,
-        postal: row.zip,
-      };
-      persons.push(person);
-    }
+    if(props.rows.length > currentCredits){
+      dispatch(showErrorMessage(`Your remaning credits are ${currentCredits} but you are trying to use ${props.rows.length}`));
+    }else{
+      let persons = [];
+      for (const row of props.rows) {
+        let person = {
+          id: row._id,
+          firstName: row.firstName,
+          lastName: row.lastName,
+          address: row.address1,
+          city: row.city,
+          state: row.state,
+          country: row.country,
+          postal: row.zip,
+        };
+        persons.push(person);
+      }
+  
+      setBuyNowClicked(true)
+      
+      const feature = stateApp?.user?.features?.find(
+        (f) => f.name === FEATURES.IDICORE
+      );
 
-    getIdICoreData({
-      variables: {
-        tenantId: stateApp.user.tenantId,
-        persons,
-      },
-      refetchQueries: ["getContactPurchaseData","getPaginatedContacts", "paginatedContacts"],
-      awaitRefetchQueries: true,
-    });
+      getIdICoreData({
+        variables: {
+          featureId: feature.id,
+          tenantId: stateApp.user.tenantId,
+          persons,
+        },
+        refetchQueries: ["getContactPurchaseData","getPaginatedContacts", "paginatedContacts", "featureQuota", "getFeatureQuota"],
+        awaitRefetchQueries: true,
+      }); 
+    }
   }
 
   useEffect(() => {
@@ -255,7 +266,6 @@ export default function BuyContactsInfoDialogContent(props) {
             <Button
               onClick={() => {
                 loadPersonData();
-                setBuyNowClicked(true)
               }}
               disabled={buyNowClicked || idiLoading}
               color="secondary"
