@@ -243,6 +243,7 @@ const MelissaTable = ({ ...props }) => {
                             content={value.data}
                             linkType={value.linkType}
                             isPurchased={props.header === "Purchased Data" }
+                            disabled={props.header === "Purchased Data" }
                           >
                             {value.inner}
                           </FieldContent>
@@ -272,6 +273,7 @@ const MelissaTable = ({ ...props }) => {
                               content={value.data}
                               linkType={value.linkType}
                               isPurchased={props.header === "Purchased Data" }
+                              disabled={props.header === "Purchased Data" }
                             >
                               {value.inner}
                             </FieldContent>
