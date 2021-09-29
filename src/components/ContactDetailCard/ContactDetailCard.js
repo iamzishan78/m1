@@ -469,11 +469,7 @@ export default function ContactDetailCard(props) {
   };
 
   const getName=(contact)=>{
-    if(!contact.firstName && !contact.lastName){
-      return contact.name
-    }else{
-      return `${get(contact,'firstName', '')} ${get(contact,'lastName','')}`
-    }
+    return contact.name || `${get(contact,'firstName', '')} ${get(contact,'lastName','')}`
   }
   return contactData ? (
     <>
@@ -630,7 +626,7 @@ export default function ContactDetailCard(props) {
                   <StyleBadge>
                     <Avatar
                       className={classes.grey}
-                      name={`${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(' ')[0] : ''}`}
+                      name={contactData.name || `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(' ')[0] : ''}`}
                       size="93"
                       round
                     />

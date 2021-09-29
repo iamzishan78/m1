@@ -145,7 +145,7 @@ export default function AddContactDialogContent(props) {
   useEffect(() => {
     if (
       (activeTapIndex === 1 && existingContact.name !== "") ||
-      (activeTapIndex === 0 && newContact.firstName.trim() !== "" && newContact.lastName.trim() !== "")
+      (activeTapIndex === 0 && newContact.firstName.trim() !== "" /*&& newContact.lastName.trim() !== ""*/)
       //   &&
       // !validated
     ) {
