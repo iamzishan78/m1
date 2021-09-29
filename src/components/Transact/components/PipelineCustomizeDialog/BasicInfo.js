@@ -151,7 +151,7 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
                       {...field}
                       icon={<CheckBoxOutlineBlank fontSize="small" />}
                       checkedIcon={<CheckBox fontSize="small" />}
-                      checked={watch("IsDefault")}
+                      checked={!!watch("IsDefault")}
                       size="small"
                       onChange={({ target }) => setValue("IsDefault", target.checked)}
                     />

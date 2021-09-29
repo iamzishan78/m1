@@ -157,7 +157,7 @@ const SidePanel = () => {
         dispatch(showWarningMessage("There are deals associated to the pipelines, please remove them first."));
       else setModal(true);
     }
-  }, [dataDealsCountByPipeline]);
+  }, [dataDealsCountByPipeline, dispatch]);
 
   useEffect(() => {
     if (selectedPipe) {

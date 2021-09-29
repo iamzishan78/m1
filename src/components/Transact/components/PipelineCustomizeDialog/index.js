@@ -15,7 +15,7 @@ import { deepEqualObjects } from "components/Shared/functions";
 
 import { AppContext } from "AppContext";
 import { DEALSCOUNTINAPIPE } from "graphQL/useQueryNonDeletedDealsCountInAPipeline";
-import { UPDATEPIPELINES } from "graphQL/useMutationUpdatePipelines";
+import { UPDATEPIPELINES, UPDATE_PIPELINE } from "graphQL/useMutationUpdatePipelines";
 import { ADD_PIPELINE } from "graphQL/useMutationAddPipeline";
 import { ADDSTAGES } from "graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "graphQL/useMutationUpdateStages";
@@ -83,6 +83,7 @@ const PipelineCustomDialog = (props) => {
   const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
     fetchPolicy: "network-only",
   });
+  const [updatePipeline] = useMutation(UPDATE_PIPELINE);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [addPipeline] = useMutation(ADD_PIPELINE);
   const [addStages] = useMutation(ADDSTAGES);
@@ -254,27 +255,28 @@ const PipelineCustomDialog = (props) => {
       let success = true;
       let allPromises = [];
 
-      if (pipeToUpdate)
-        //// if not necessary now
+      if (pipeToUpdate) {
+        if (pipeToUpdate.IsDefault) pipeToUpdate = { ...pipeToUpdate, position: 0 };
         allPromises.push(
           new Promise((resolve, reject) => {
-            updatePipelines({
+            updatePipeline({
               variables: {
-                pipelines: [pipeToUpdate],
+                pipeline: pipeToUpdate,
               },
               refetchQueries: ["getPipelines", "getPipeline"], //// separete latter to the end all promises
               awaitRefetchQueries: true,
             }).then((result) => {
               const {
-                data: { updatePipelines },
+                data: { updatePipeline },
               } = result;
 
-              if (updatePipelines?.success === false) success = false;
+              if (updatePipeline?.success === false) success = false;
 
               resolve();
             });
           })
         );
+      }
 
       if (stagesToAdd && stagesToAdd.length > 0)
         allPromises.push(

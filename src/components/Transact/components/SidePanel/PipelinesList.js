@@ -125,7 +125,7 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
     } else {
       setMultiSelection([selectedPipe?._id]);
     }
-    history.push(`/flow/${newPipeline._id}`)
+    history.push(`/flow/${newPipeline._id}`);
   };
 
   const handleChange = (newItems) => {
