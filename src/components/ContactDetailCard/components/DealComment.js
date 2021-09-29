@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
   },
   commentBtn: {
-    cssFloat: "right",
+    "float": "right",
     right: "10px",
     bottom: "10px",
     marginBottom: -20,
@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "12px",
   },
   floatRight: {
-    cssFloat: "right",
+    "float": "right",
   },
   cursorPointer: {
     cursor: "pointer",

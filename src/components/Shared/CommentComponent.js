@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useContext, Fragment } from "react";
+import React, { useState, useEffect, useContext, Fragment, useRef } from "react";
 
 import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import { SizeMe } from 'react-sizeme'
 import { CircularProgress, Menu, MenuItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
@@ -38,8 +39,8 @@ const useStyles = makeStyles((theme) => ({
   comment: {
     maxHeight: "290px",
     overflow: "auto",
-    padding: "5px 10px",
-    marginRight: "60px",
+    padding: "5px 10px"
+    // marginRight: "60px",
   },
   noBorder: {
     border: "none",
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
   },
   commentBtn: {
-    cssFloat: "right",
+    "float": "right",
     right: "10px",
     bottom: "10px",
     marginBottom: -20,
@@ -58,9 +59,11 @@ const useStyles = makeStyles((theme) => ({
 
   },
   paddingLeft10: {
-    paddingLeft: "20px !important",
-    paddingTop: "3px !important",
-
+    paddingLeft: "8px !important",
+    paddingTop: "0px !important",
+  },
+  marginRight10: {
+    marginRight: "10px !important",
   },
   moreComment: {
     padding: "10px",
@@ -83,14 +86,14 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px 5px 10px 0px",
     // marginRight: "60px",
     // marginBottom: "10px",
-    marginLeft: '3px'
+    marginLeft: '10px'
   },
   commentTime: {
     marginLeft: "10px",
     fontSize: "12px",
   },
   floatRight: {
-    cssFloat: "right",
+    "float": "right",
   },
   cursorPointer: {
     cursor: "pointer",
@@ -123,6 +126,8 @@ export default function CommentComponent(props) {
     fetchPolicy: "cache-first",
   });
   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, { fetchPolicy: "no-cache" });
+
+  const [width, setWidth] = useState(0)
 
   useEffect(() => {
     if (targetSourceId) {
@@ -218,7 +223,7 @@ export default function CommentComponent(props) {
             return line.trim();
           }
         })
-        .join("\n")}.`;
+        .join("\n")}`;
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -280,202 +285,212 @@ export default function CommentComponent(props) {
   };
 
   return (
-    <div className={classes.container}>
-      <div className={classes.comment} >
-        {!loadingComments ? (
-          <>
-            {!showAllComments && commentsArray.length > 3 && (
-              <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
-                <span
-                  onClick={() => {
-                    setShowAllComments(true);
-                  }}
-                >
-                  {getCount()} more comments
-                </span>
-              </div>
-            )}
-            {showAllComments && commentsArray.length > 3 && (
-              <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
-                <span onClick={() => setShowAllComments(false)}>
-                  Hide Earlier Comments
-                </span>
-              </div>
-            )}
+    <SizeMe>{({ size }) =>
+      <div className={classes.container} >
+        {setWidth(size.width)}
+        <div className={classes.comment} >
+          {!loadingComments ? (
+            <>
+              {!showAllComments && commentsArray.length > 3 && (
+                <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
+                  <span
+                    onClick={() => {
+                      setShowAllComments(true);
+                    }}
+                  >
+                    {getCount()} more comments
+                  </span>
+                </div>
+              )}
+              {showAllComments && commentsArray.length > 3 && (
+                <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
+                  <span onClick={() => setShowAllComments(false)}>
+                    Hide Earlier Comments
+                  </span>
+                </div>
+              )}
 
-            {commentsArray.map((eachComment, index) => {
-              let indexToShow = commentsArray.length > 3 ? commentsArray.length - 3 : 0;
-              return (
-                <Fragment key={index}>
-                  {(showAllComments || index >= indexToShow) && (
-                    <Grid
-                      container
-                      className={classes.gridStyle}
-                      onMouseOver={() => setShowCommentActionId(eachComment._id)}
-                      onMouseLeave={() => setShowCommentActionId(null)}
-                    >
-                      <Grid item xs={1}>
-                        <IconButton >
-                          {profilesInfo[eachComment.user.email]?.profileImage ||
-                            eachComment.isNew ? (
-                            <Avatar
-                              src={eachComment.isNew ? profileImage : profilesInfo[eachComment.user.email].profileImage}
-                              size="38"
-                              round
-                            />
-                          ) : (
-                            <Avatar name={eachComment.user.name} size="38" round />
-                          )}
-                        </IconButton>
-                      </Grid>
-                      <Grid item xs={11} className={classes.paddingLeft10}>
-                        <div>
-                          <span className={classes.bold}>{eachComment.user.name}</span>
-                          <ReactTimeAgo
-                            className={classes.commentTime}
-                            date={
-                              new Date(
-                                new Intl.DateTimeFormat("en-US", {
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "2-digit",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                }).format(eachComment.ts)
-                              )
-                            }
-                            locale="en-US"
-                          />
-                          {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
-                          {eachComment.user.email === stateApp.user.email &&
-                            showCommentActionId === eachComment._id &&
-                            editCommentId !== eachComment._id && (
-                              <div className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}>
-                                <ActionMenu
-                                  eachComment={eachComment}
-                                  setEditCommentId={setEditCommentId}
-                                  setEditComment={setEditComment}
-                                  deleteComment={deleteComment}
-                                />
-                              </div>
+              {commentsArray.map((eachComment, index) => {
+                let indexToShow = commentsArray.length > 3 ? commentsArray.length - 3 : 0;
+                return (
+                  <Fragment key={index}>
+                    {(showAllComments || index >= indexToShow) && (
+
+                      <Grid
+                        container
+                        className={classes.gridStyle}
+                        onMouseOver={() => setShowCommentActionId(eachComment._id)}
+                        onMouseLeave={() => setShowCommentActionId(null)}
+
+                      >
+
+                        <Grid item md={size.width < 400 ? 2 : 1} xs={2}>
+                          <IconButton >
+                            {profilesInfo[eachComment.user.email]?.profileImage ||
+                              eachComment.isNew ? (
+                              <Avatar
+                                src={eachComment.isNew ? profileImage : profilesInfo[eachComment.user.email].profileImage}
+                                size="38"
+                                round
+                              />
+                            ) : (
+                              <Avatar name={eachComment.user.name} size="38" round />
                             )}
-                        </div>
-                        {editCommentId !== eachComment._id ? (
-                          <div className={`${classes.whiteSpace}`}>{eachComment.comment}</div>
-                        ) : (
-                          <div className={classes.border}>
-                            <TextField
-                              margin="dense"
-                              variant="outlined"
-                              value={editComment}
-                              fullWidth
-                              rows={2}
-                              rowsMax={3}
-                              multiline
-                              placeholder="Add a question or post an update ..."
-                              onChange={(e) => {
-                                setEditComment(e.target.value);
-                              }}
-                              InputProps={{
-                                classes: { notchedOutline: classes.noBorder },
-                              }}
+                          </IconButton>
+                        </Grid>
+                        <Grid item md={size.width < 400 ? 10 : 11} className={classes.paddingLeft10}>
+                          <div>
+                            <span className={classes.bold}>{eachComment.user.name}</span>
+                            <ReactTimeAgo
+                              className={classes.commentTime}
+                              date={
+                                new Date(
+                                  new Intl.DateTimeFormat("en-US", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "2-digit",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }).format(eachComment.ts)
+                                )
+                              }
+                              locale="en-US"
                             />
-
-                            <Button
-                              className={classes.commentBtn}
-                              variant="contained"
-                              color="primary"
-                              onClick={() => {
-                                updateComment(editComment);
-                              }}
-                            >
-                              Save Changes
-                            </Button>
-
-                            <Button
-                              className={classes.commentBtn}
-                              variant="contained"
-                              onClick={() => {
-                                setEditComment("");
-                                setEditCommentId("");
-                              }}
-                            >
-                              Cancel
-                            </Button>
+                            {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+                            {eachComment.user.email === stateApp.user.email &&
+                              showCommentActionId === eachComment._id &&
+                              editCommentId !== eachComment._id && (
+                                <div className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}>
+                                  <ActionMenu
+                                    eachComment={eachComment}
+                                    setEditCommentId={setEditCommentId}
+                                    setEditComment={setEditComment}
+                                    deleteComment={deleteComment}
+                                  />
+                                </div>
+                              )}
                           </div>
-                        )}
+                          {editCommentId !== eachComment._id ? (
+                            <div className={`${classes.whiteSpace}`}>{eachComment.comment}</div>
+                          ) : (
+                            <div className={classes.border}>
+                              <TextField
+                                margin="dense"
+                                variant="outlined"
+                                value={editComment}
+                                fullWidth
+                                rows={2}
+                                rowsMax={3}
+                                multiline
+                                placeholder="Add a question or post an update ..."
+                                onChange={(e) => {
+                                  setEditComment(e.target.value);
+                                }}
+                                InputProps={{
+                                  classes: { notchedOutline: classes.noBorder },
+                                }}
+                              />
+
+                              <Button
+                                className={classes.commentBtn}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => {
+                                  updateComment(editComment);
+                                }}
+                              >
+                                Save Changes
+                              </Button>
+
+                              <Button
+                                className={classes.commentBtn}
+                                variant="contained"
+                                onClick={() => {
+                                  setEditComment("");
+                                  setEditCommentId("");
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          )}
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  )}
-                </Fragment>
-              );
-            })}
-          </>
-        ) : (
-          <CircularProgress color="secondary"></CircularProgress>
-        )}
-      </div>
-      <div style={{ paddingBottom: '20px' }}>
-        <Grid container>
-          <Grid item xs={1}>
-            <IconButton className={classes.commentView}
-            // style={{ top: "3px" }}
-            >
-              {profileImage ? (
-                <Avatar src={profileImage} size="38" round />
-              ) : (
-                <Avatar name={stateApp.user.name} size="38" round />
-              )}
-            </IconButton>
-          </Grid>
-          <Grid item xs={11} className={classes.paddingLeft10}>
-            <div
-              className={classes.border}
-              style={{ paddingBottom: '20px' }}
-              onClick={() => {
-                if (!showActions) {
-                  setShowActions(true);
-                }
-              }}
-              onBlur={() => {
-                if (showActions && !comment) {
-                  setShowActions(false);
-                }
-              }}
-            >
-              <TextField
-                margin="dense"
-                variant="outlined"
-                value={comment}
-                fullWidth
-                rows={showActions ? 2 : 1}
-                rowsMax={3}
-                multiline
-                placeholder="Add a question or post an update"
-                onChange={(e) => {
-                  setComment(e.target.value);
+
+
+
+                    )}
+                  </Fragment>
+                );
+              })}
+            </>
+          ) : (
+            <CircularProgress color="secondary"></CircularProgress>
+          )}
+        </div>
+        <div style={{ paddingBottom: '20px' }}>
+          <Grid container>
+            <Grid item md={size.width < 400 ? 2 : 1}>
+              <IconButton className={classes.commentView}
+              // style={{ top: "3px" }}
+              >
+                {profileImage ? (
+                  <Avatar src={profileImage} size="38" round />
+                ) : (
+                  <Avatar name={stateApp.user.name} size="38" round />
+                )}
+              </IconButton>
+            </Grid>
+            <Grid item md={size.width < 400 ? 10 : 11} className={classes.paddingLeft10}>
+              <div
+                className={classes.border}
+                style={{ paddingBottom: '20px', width: '95%' }}
+                onClick={() => {
+                  if (!showActions) {
+                    setShowActions(true);
+                  }
                 }}
-                InputProps={{
-                  classes: { notchedOutline: classes.noBorder },
+                onBlur={() => {
+                  if (showActions && !comment) {
+                    setShowActions(false);
+                  }
                 }}
-              />
-              {showActions && (
-                <Button
-                  className={classes.commentBtn}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    addNewComment(comment);
+              >
+                <TextField
+                  margin="dense"
+                  variant="outlined"
+                  value={comment}
+                  fullWidth
+                  rows={showActions ? 2 : 1}
+                  rowsMax={3}
+                  multiline
+                  placeholder="Add a question or post an update"
+                  onChange={(e) => {
+                    setComment(e.target.value);
                   }}
-                >
-                  Comment
-                </Button>
-              )}
-            </div>
+                  InputProps={{
+                    classes: { notchedOutline: classes.noBorder },
+                  }}
+                />
+                {showActions && (
+                  <Button
+                    className={classes.commentBtn}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      addNewComment(comment);
+                    }}
+                  >
+                    Comment
+                  </Button>
+                )}
+              </div>
+            </Grid>
           </Grid>
-        </Grid>
+        </div>
+
       </div>
-    </div>
+    }</SizeMe>
   );
 }
 

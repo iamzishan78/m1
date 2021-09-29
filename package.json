@@ -99,6 +99,7 @@
     "react-router-dom": "^5.2.0",
     "react-router-redux": "^4.0.8",
     "react-scripts": "^4.0.3",
+    "react-sizeme": "^3.0.2",
     "react-sortable-hoc": "^1.11.0",
     "react-sortly": "^3.0.4",
     "react-time-ago": "^7.1.1",
