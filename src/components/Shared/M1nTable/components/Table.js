@@ -3487,7 +3487,25 @@ function SubTable(props) {
             setRows={setExpandedObject}
           />
         )}
+        {openDialog === "asign" && (
+          <AssignOwnerToContactDrawer
+            onClose={handleCloseDialog}
+            rows={expandedObject}
+            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+            setRows={setExpandedObject}
+          />
+        )}
+        {openDialog === "merge" && (
+          <MergeContactDrawer
+            onClose={handleCloseDialog}
+            rows={expandedObject}
+            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+            setRows={setExpandedObject}
+          />
+        )}
         {openDialog &&
+          openDialog !== "asign" &&
+          openDialog !== "merge" &&
           openDialog !== "addContact" &&
           openDialog !== "contactDataMissing" && 
           openDialog !== "multipleOwnerToContact" && 
@@ -3784,23 +3802,6 @@ function SubTable(props) {
                   rows={expandedObject}
                   setRows={setExpandedObject}
                   setSelectedRow={setSelectedRow}
-                />
-              )}
-
-              {openDialog === "asign" && (
-                <AssignOwnerToContactDrawer
-                  onClose={handleCloseDialog}
-                  rows={expandedObject}
-                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-                  setRows={setExpandedObject}
-                />
-              )}
-              {openDialog === "merge" && (
-                <MergeContactDrawer
-                  onClose={handleCloseDialog}
-                  rows={expandedObject}
-                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-                  setRows={setExpandedObject}
                 />
               )}
               {openDialog === "sendMailers" && (
