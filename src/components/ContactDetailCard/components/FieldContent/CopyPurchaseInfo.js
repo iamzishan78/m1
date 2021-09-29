@@ -24,10 +24,13 @@ const useStyles = makeStyles((theme) => ({
     pencilIcon: {
         fontSize: "22px",
       },
+    keysMenu:{
+        height: "350px"
+    }
   }));
   
 
-function CopyPurchaseInfo({ contactId, content }) {
+function CopyPurchaseInfo({ contactId, content, updateContact, userId }) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const [search, setSearch] = useState("");
@@ -61,6 +64,7 @@ function CopyPurchaseInfo({ contactId, content }) {
         </IconButton>
       </Tooltip>
       <Menu
+        className={classes.keysMenu}
         id={contactId}
         anchorEl={anchorEl}
         keepMounted
@@ -95,11 +99,31 @@ function CopyPurchaseInfo({ contactId, content }) {
           }}
         />
         {Object.entries(fields).map(([key, row]) => {
-          return key.toLowerCase().includes(search.toLowerCase()) ? (
+          return !row.hideFromPurchase && key.toLowerCase().includes(search.toLowerCase()) ? (
             <div
               className={classes.menuItem}
               onClick={(e) => {
-                console.log('Data', content, key, row)
+                let entries = Object.entries(content);
+                let rowEntries = Object.entries(row.data);
+                const key = rowEntries[0][0]
+                const value = entries[0][1]
+                let trimmedEditContent = {
+                  _id: contactId,
+                  lastUpdateBy: userId,
+                  [key]: value
+                };
+                updateContact({
+                  variables: {
+                    contact: trimmedEditContent,
+                    ignoreResponse: true,
+                  },
+                  refetchQueries: [
+                    "getPaginatedContacts",
+                    "getContact",
+                    "getparcelOwners",
+                  ],
+                  awaitRefetchQueries: false,
+                })
                 handleClose();
               }}
             >

@@ -137,16 +137,19 @@ export const getBasicInfoExpContent = (contactData) => {
         contactOwnerId: contactData?.contactOwnerId,
       },
       linkType: LinkTypes.None,
+      hideFromPurchase: true
     },
     "Created By": {
       data: { createByRow: getCreateByRow(contactData) },
       linkType: LinkTypes.None,
       inner: getCreateByRow(contactData),
+      hideFromPurchase: true
     },
     "Last Updated By": {
       data: { lastUpdateByRow: getLastUpdateByRow(contactData) },
       linkType: LinkTypes.None,
       inner: getLastUpdateByRow(contactData),
+      hideFromPurchase: true
     },
   };
 };

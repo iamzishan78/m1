@@ -434,7 +434,7 @@ export default function FieldContent({
         fieldType == FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
       }
       {
-        isPurchased && <CopyPurchaseInfo handleUpdating={handleUpdating} content={content} contactId={id} />
+        isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId}  content={content} contactId={id} />
       }
 
       {!childrenLeft && !onlyChildren && children ? children : ""}
