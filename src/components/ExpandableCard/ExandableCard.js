@@ -105,14 +105,15 @@ function ExpandableCard(props) {
 
   let backgroundColor = '#112040'
   let headerIcons = {}
-  // if (targetLabel === "unit") {
-  //   backgroundColor = 'white'
-  //   headerIcons = {
-  //     '& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary': {
-  //       color: '#7f7f7f !important',
-  //     }
-  //   }
-  // }
+  let headerLabelColor = '#ababab'
+  if (targetLabel === "unit") {
+    backgroundColor = 'white'
+    headerIcons = {
+      '& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary': {
+        color: '#7f7f7f !important',
+      }
+    }
+  }
 
 
   const useStyles = makeStyles((theme) => ({
@@ -136,11 +137,15 @@ function ExpandableCard(props) {
       "& .MuiCardHeader-action": {
         alignSelf: "left",
       },
+      "& .MuiCardHeader-root": {
+        borderBottom: '1px solid rgba(224, 224, 224, 1)',
+      },
       zIndex: 1250 // https://material-ui.com/customization/z-index/
     },
     title: {
       fontFamily: "Poppins",
       color: "#FFFFFF",
+
       fontSize: [
         "Contact",
         "Contact Details",
@@ -149,6 +154,7 @@ function ExpandableCard(props) {
       ].includes(title)
         ? "20px"
         : "15px",
+
     },
     headerIcons: {
       "& .MuiBadge-anchorOriginTopRightRectangle": {
@@ -191,6 +197,27 @@ function ExpandableCard(props) {
     },
     iconPolygon: {
       color: "#FFFFFF", stroke: "#FFFFFF", fill: "#FFFFFF", marginRight: '10px'
+    },
+    unitTitle: {
+      '& .name': {
+        color: '#1a2341',
+        textTransform: 'capitalize', fontWeight: 'bold', fontSize: '19px'
+      },
+      '& .description': {
+        color: headerLabelColor,
+      },
+      '& .type': {
+        color: headerLabelColor,
+        fontWeight: 'bold'
+      },
+      '& .MuiAvatar-root': {
+        width: '65px',
+        height: '65px'
+      },
+      '& .MuiSvgIcon-root': {
+        color: '#1a2341',
+        fontSize: '2.3rem'
+      }
     }
   }));
 
@@ -324,20 +351,19 @@ function ExpandableCard(props) {
       >
         {(targetLabel === "unit"
         ) &&
-          <Grid container spacing={2} alignItems="center">
+          <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
             <Grid item><Avatar color='#1a2341'>
               <FolderIcon fontColor='#1a2341' />
             </Avatar>
             </Grid>
             <Grid item>
-              <Box textTransform='capitalize' fontWeight='bold' fontSize='19px'>
+              <Box className='name'>
                 {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
               </Box>
-              <Box >{title.length > 30 ? `${title.substr(0, 35)}...` : title}</Box>
-              <Box fontWeight='bold' >Unit</Box>
+              <Box className='description'>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</Box>
+              <Box className='type' >Unit</Box>
             </Grid>
           </Grid>
-
         }
 
         {

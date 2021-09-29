@@ -36,24 +36,31 @@ const useStyles = makeStyles((theme) => ({
   summaryCard: {
     backgroundColor: 'white', paddingLeft: "10px",
     paddingRight: "10px", paddingTop: '8px',
+    paddingBottom: '40px'
   },
   summaryDetailCard: {
     paddingLeft: '18px', paddingTop: '8px'
   },
   summaryValue: {
     display: "inline-flex",
-    bottom: "3px",
+    bottom: "5px",
     position: "relative",
     marginRight: "5px",
+    fontWeight: "bold",
+    color: '#848484'
   },
   descriptionInput: {
     width: '100%',
     '& .MuiTextField-root': {
       backgroundColor: '#fffcdc'
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+      border: 'none'
     }
   },
   icon: {
-    color: "#757575"
+    color: "#757575",
+    fontSize: "26px"
   },
   tags: {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -387,7 +394,7 @@ export default function UnitDetailCard(props) {
                       value={unitProperties.description}
                       multiline
                       fullWidth
-                      rows={11}
+                      rows={17}
                       variant="outlined"
                       onChange={(e) => {
                         setProperties({ ...unitProperties, description: e.target.value });

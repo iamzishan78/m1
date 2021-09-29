@@ -86,8 +86,9 @@ const useStyles = makeStyles((theme) => ({
     border: "0px",
     fontFamily: "Poppins",
     fontStyle: "normal",
+    width: '43%',
     fontWeight: "bolder",
-    fontSize: "12px",
+    fontSize: "13px",
     lineHeight: "18px",
     color: "black",
     borderRight: "1px solid rgba(224, 224, 224, 1)"
