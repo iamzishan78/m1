@@ -13,6 +13,7 @@ import { AppContext } from "AppContext";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon'
 import MergeHistory from 'components/ContactDetailCard/components/FieldContent/MergeHistory'
+import CopyPurchaseInfo from 'components/ContactDetailCard/components/FieldContent/CopyPurchaseInfo'
 import { textFieldLabels, getHrefValue, LinkTypes, FieldTypes } from 'components/ContactDetailCard/components/FieldContent/helper'
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style'
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -21,6 +22,7 @@ import {timeZoneOptions} from  './timeZoneList';
 export default function FieldContent({
   children,
   id,
+  isPurchased,
   entity,
   melissaRecordId = null,
   melissaAddressRecordId = null,
@@ -34,6 +36,7 @@ export default function FieldContent({
   fieldType = FieldTypes.Contact,
   isEdited = false,
   isMerged = false,
+  disabled,
   ...props
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
@@ -418,7 +421,7 @@ export default function FieldContent({
             : ""
           : textArray.join(", ")
         : `${name ? name + " " : ""} Not Available`}
-      {!onlyChildren && (
+      {!onlyChildren && !disabled && (
         <PencilEditIcon
           handleUpdating={handleUpdating}
           anchorEl={edit}
@@ -429,6 +432,9 @@ export default function FieldContent({
       )}
       {
         fieldType == FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
+      }
+      {
+        isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId}  content={content} contactId={id} />
       }
 
       {!childrenLeft && !onlyChildren && children ? children : ""}
@@ -447,7 +453,7 @@ export default function FieldContent({
             <a
               href={getHrefValue(textArray.join(", "), linkType)}
               target="_blank"
-              className={classes.noTextDecoration}
+              className={classes.noTextDecoration} rel="noreferrer"
             >
               {renderOutput}
             </a>

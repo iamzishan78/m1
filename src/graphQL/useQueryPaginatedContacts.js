@@ -28,6 +28,7 @@ export const PAGINATEDCONTACTSQUERY = gql`
           country
           state
           zip
+          isPurchased
           title
           firstName
           lastName

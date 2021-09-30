@@ -106,7 +106,7 @@ const ContactsHeadCells = [
   },
   {
     name: "name",
-    label: "Full Name",
+    label: "Name",
     // editable: true,
     options: {
       sort: true,
@@ -168,6 +168,7 @@ const ContactsHeadCells = [
     label: "Company Name",
     options: {
       // display: true,
+      display: false,
       filter: false,
       searchable: false,
       sort: true,
@@ -541,6 +542,18 @@ const ContactsHeadCells = [
       filter: false,
       searchable: false,
       sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
+    name: "isPurchased",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
       download: false,
       print: false,
       viewColumns: false,

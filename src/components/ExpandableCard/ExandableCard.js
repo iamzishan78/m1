@@ -126,7 +126,7 @@ function ExpandableCard(props) {
       "& .MuiCardHeader-action": {
         alignSelf: "left",
       },
-      zIndex: 1250 // https://material-ui.com/customization/z-index/
+      zIndex: 1222 // https://material-ui.com/customization/z-index/
     },
     title: {
       fontFamily: "Poppins",

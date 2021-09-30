@@ -22,11 +22,11 @@ import ProfileActions from "./ProfileActions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: 0,
+    margin: 0
     // padding: theme.spacing(2),
   },
   image: {
-    width: "400px",
+    width: "400px"
     // height: "300px",
   },
   thumb: {
@@ -94,7 +94,7 @@ const ImageModalContent = () => {
   const [completedCrop, setCompletedCrop] = useState(null);
   const {
     selectedImage,
-    fields: { fullname, displayname },
+    fields: { fullname, displayName },
   } = stateProfile;
 
   const onLoad = useCallback((img) => {
@@ -195,7 +195,7 @@ const ImageModalContent = () => {
                 </Grid>
                 <Grid item xs zeroMinWidth>
                   <Typography noWrap>{fullname}</Typography>
-                  <Typography noWrap>{displayname}</Typography>
+                  <Typography noWrap>{displayName}</Typography>
                 </Grid>
               </Grid>
             </Paper>
