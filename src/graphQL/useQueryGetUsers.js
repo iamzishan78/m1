@@ -12,6 +12,7 @@ export const GETMONGOUSERS = gql`
       _id
       email
       name
+      displayName
       ts
     }
   }

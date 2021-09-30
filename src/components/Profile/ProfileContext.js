@@ -1,15 +1,15 @@
 import React, { createContext, useState } from "react";
 import Profile from './Profile';
 
-const ProfileContext = createContext([{}, () => {}]);
+const ProfileContext = createContext([{}, () => { }]);
 const ProfileContextProvider = (props) => {
   const [stateProfile, setStateProfile] = useState({
     fields: {
       fullname: "",
       firstname: "",
-      middlename:"",
+      middlename: "",
       lastname: "",
-      displayname: "",
+      displayName: "",
       activity: "",
       timezone: "",
       profileImage: "",
@@ -21,13 +21,13 @@ const ProfileContextProvider = (props) => {
       city: "",
       state: "",
       phone: "",
-      mobilephone:"",
-      workphone:"",
-      company : "",
+      mobilephone: "",
+      workphone: "",
+      company: "",
       jobTitle: "",
       industry: "",
       isAccreditedInvestor: "",
-      investingExperience: [], 
+      investingExperience: [],
       CREexperience: "",
       emailNotifications: "",
       employer: "",
@@ -37,7 +37,7 @@ const ProfileContextProvider = (props) => {
       investingPreferences: [],
     },
     isImageModalOpen: false,
-    isSaving:false,
+    isSaving: false,
   });
 
   return (

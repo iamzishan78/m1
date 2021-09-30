@@ -97,6 +97,8 @@ import ActivitySearch from "./components/ActivitySearch";
 import DocumentSearch from "./components/DocumentSearch";
 import ContactSearch from "./components/ContactSearch";
 import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const theme = createMuiTheme({
   overrides: {
@@ -1073,6 +1075,8 @@ export default function Navigation(props) {
           My Account
         </Typography>
       </MenuItem>
+      {/* <FeatureFlag feature={FEATURES.USER_MANAGEMENT}>
+      </FeatureFlag> */}
       {(stateApp?.user?.roles?.includes("Owner") || stateApp?.user?.roles?.includes("Admin")) && (
         <MenuItem
           className={classes.userMenuItem}

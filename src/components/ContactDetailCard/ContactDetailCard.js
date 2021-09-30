@@ -5,8 +5,9 @@ import React, { useContext, useState, useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 // mui core components
-import { Grid } from "@material-ui/core";
+import { Grid, Menu, MenuItem } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { useHistory } from "react-router-dom";
 
 // internal components
@@ -19,6 +20,7 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
+import { CONTACT_PURCHASE_DATA } from "graphQL/useQueryContactPurchaseData";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { LASTMELISSARECORD } from "../../graphQL/useQueryGetMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -45,6 +47,7 @@ import DealsNew from "./components/DealsNew";
 import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
 import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
+import ContactDataMissingDialog from "./components/ContactDataMissingDialog";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
 import DocViewer from "../Shared/DocViewer";
@@ -53,11 +56,14 @@ import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Link from "@material-ui/core/Link";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
+import get from "lodash/get";
 
 import { truncate } from "components/Shared/functions";
 // contexts
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -235,6 +241,9 @@ const useStyles = makeStyles((theme) => ({
       width: "100%",
     },
   },
+  dialog: {
+    zIndex: "9999999999 !important",
+  },
   linkClass: {},
   expTardTopBarNav: {
     fontWeight: "normal",
@@ -283,6 +292,13 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": { color: "#757575" },
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
+  menuIcon: {
+    padding: "0px !important",
+    margin: "0px !important",
+    minWidth: "0px !important",
+    background: "white !important",
+    color: "black !important",
+  },
 }));
 
 export default function ContactDetailCard(props) {
@@ -296,6 +312,7 @@ export default function ContactDetailCard(props) {
   const { selectedPipe } = useSelector(({ Flow }) => Flow);
   const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [transactData, setTransactData] = useState();
   const [transactId, setTransactId] = useState();
   const [contactData, setContactData] = useState(null);
@@ -303,10 +320,12 @@ export default function ContactDetailCard(props) {
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
+  const [purchaseData, setPurchaseData] = useState([]);
 
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
 
   const [getContact, { loading, data }] = useLazyQuery(CONTACT);
+  const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
   // const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
   //   TRANSACTIONDATA
   // );
@@ -318,6 +337,13 @@ export default function ContactDetailCard(props) {
   });
   const [updateContact] = useMutation(UPDATECONTACT);
 
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const handleClickRightDialogOpen = (childrenToOpen) => {
     setRightDialogOpen(childrenToOpen);
   };
@@ -362,6 +388,11 @@ export default function ContactDetailCard(props) {
           contactId: stateApp.selectedContact,
         },
       });
+      getContactPurchaseData({
+        variables: {
+          contactId: stateApp.selectedContact,
+        },
+      });
     } else if (contactId) {
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -369,6 +400,12 @@ export default function ContactDetailCard(props) {
       }));
     }
   }, [contactId, getContact, setStateApp, stateApp.selectedContact]);
+
+  useEffect(() => {
+    if (contactPurchaseData?.getContactPurchaseData?.length > 0) {
+      setPurchaseData(contactPurchaseData?.getContactPurchaseData);
+    }
+  }, [contactPurchaseData]);
 
   useEffect(() => {
     if (data && data.contact) {
@@ -424,6 +461,10 @@ export default function ContactDetailCard(props) {
     let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
 
     return fileExtension;
+  };
+
+  const getName = (contact) => {
+    return contact.name || `${get(contact, "firstName", "")} ${get(contact, "lastName", "")}`;
   };
   return contactData ? (
     <>
@@ -504,7 +545,7 @@ export default function ContactDetailCard(props) {
               Contacts
             </Link>
 
-            <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{contactData.name}</Typography>
+            <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{getName(contactData)}</Typography>
           </Breadcrumbs>
         </div>
       </div>
@@ -545,19 +586,63 @@ export default function ContactDetailCard(props) {
                   </a>
                 )}
 
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    handleExpandClick("deleteConfirmation");
+                <Button className={classes.menuIcon} onClick={handleClick}>
+                  <MoreVertIcon aria-controls="simple-menu" aria-haspopup="true" />
+                </Button>
+
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
                   }}
                 >
-                  Delete
-                </Button>
+                  <FeatureFlag feature={FEATURES.IDICORE}>
+                    <MenuItem
+                      className={classes.userMenuItem}
+                      onClick={(e) => {
+                        if (!contactData.firstName || !contactData.lastName || !contactData.address1) {
+                          handleExpandClick("contactDataMissing");
+                        } else {
+                          handleExpandClick("buyContactsInfo");
+                        }
+                        handleClose();
+                      }}
+                    >
+                      Purchase contact data
+                    </MenuItem>
+                  </FeatureFlag>
+                  <MenuItem
+                    className={classes.userMenuItem}
+                    onClick={(e) => {
+                      handleClose();
+                      handleExpandClick("deleteConfirmation");
+                    }}
+                  >
+                    Delete contact
+                  </MenuItem>
+                </Menu>
               </div>
               <div>
                 <div className={classes.userIcon}>
                   <StyleBadge>
-                    <Avatar className={classes.grey} name={contactData.name} size="93" round />
+                    <Avatar
+                      className={classes.grey}
+                      name={
+                        contactData.name ||
+                        `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`
+                      }
+                      size="93"
+                      round
+                    />
                   </StyleBadge>
                 </div>
                 <div className={classes.userName}>
@@ -567,7 +652,8 @@ export default function ContactDetailCard(props) {
                       noMargin
                       id={contactData._id}
                       entity={contactData.entity}
-                      content={{ name: contactData.name }}
+                      content={{ name: getName(contactData) }}
+                      disabled
                     >
                       {(contactData.facebook || contactData.twitter || contactData.linkedIn) && (
                         <span className={classes.socialMediaSection}>
@@ -657,7 +743,7 @@ export default function ContactDetailCard(props) {
 
             {/*/////////// section 3 //////////// */}
             <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px" }}>
-              <ContactDetailedInfo contactData={contactData} />
+              <ContactDetailedInfo purchaseData={purchaseData} contactData={contactData} />
             </Grid>
             {/*/////////// new section - lead stage //////////// */}
             <Grid item xs={12} className={`${classes.border}`}>
@@ -811,37 +897,41 @@ export default function ContactDetailCard(props) {
           )}
         </div>
 
-        {openDialog && (
-          <Dialog className={classes.dialog} open={openDialog ? true : false} onClose={handleCloseDialog} fullWidth={true} maxWidth={"sm"}>
-            {openDialog === "buyContactsInfo" && (
-              <BuyContactsInfoDialogContent
-                onClose={handleCloseDialog}
-                rows={[contactData]}
-                setRows={() => {}}
-                updateMelissaTable={() => {
-                  getLastMelissaRecord({
-                    variables: {
-                      contactId: stateApp.selectedContact,
+        {openDialog === "buyContactsInfo" && (
+          <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
+            <BuyContactsInfoDialogContent
+              header="Contact Data Integration"
+              onClose={handleCloseDialog}
+              rows={[contactData]}
+              setRows={() => {}}
+              updateMelissaTable={() => {
+                getLastMelissaRecord({
+                  variables: {
+                    contactId: stateApp.selectedContact,
+                  },
+                });
+                updateContact({
+                  variables: {
+                    contact: {
+                      _id: stateApp.selectedContact,
+                      lastUpdateBy: stateApp.user.mongoId,
                     },
-                  });
-                  updateContact({
-                    variables: {
-                      contact: {
-                        _id: stateApp.selectedContact,
-                        lastUpdateBy: stateApp.user.mongoId,
-                      },
-                      ignoreResponse: true,
-                    },
-                    refetchQueries: ["getPaginatedContacts", "getContact"],
-                    awaitRefetchQueries: false,
-                  });
-                }}
-              />
-            )}
-            {openDialog === "deleteConfirmation" && (
-              <ConfirmationDialog openDialog={openDialog} handleDialogClose={setOpenDialog} id={contactData._id} />
-            )}
-          </Dialog>
+                    ignoreResponse: true,
+                  },
+                  refetchQueries: ["getPaginatedContacts", "getContact"],
+                  awaitRefetchQueries: false,
+                });
+              }}
+            />
+          </RightDialog>
+        )}
+
+        {openDialog === "deleteConfirmation" && (
+          <ConfirmationDialog openDialog={openDialog} handleDialogClose={setOpenDialog} id={contactData._id} />
+        )}
+
+        {openDialog === "contactDataMissing" && (
+          <ContactDataMissingDialog openDialog={openDialog} onClose={handleCloseDialog} contacts={[{ ...contactData }]} />
         )}
 
         {/* //// ViewAll in a right dialog //// */}
