@@ -334,12 +334,7 @@ const ShapeActionsPopup = (props) => {
 
   const calculateShapeCenter = (shapeCoordinates) => polylabel(shapeCoordinates);
 
-  const saveAndOpenParcelDetail = () => {
-    if (!user._id) {
-      return;
-    }
-    let abstractShape = stateApp.currentFeature;
-
+  const getAbstractGeoSource = (abstractShape) => {
     if (!abstractShape.properties.State) {
       const featuresList = stateApp.map.getSource("abstract_geo_source")._data.features;
       const foundFeatures = featuresList.filter((feature) => {
@@ -356,13 +351,15 @@ const ShapeActionsPopup = (props) => {
       );
       if (result?.feature?.properties) abstractShape.properties = result.feature.properties;
     }
+    return abstractShape
+  }
 
+  const getParcelUnitName = (abstractShape) => {
     const properties = abstractShape?.properties;
     let township = properties?.Township;
     let range = properties?.Range;
     let section = properties?.ShortName;
-
-    let parcelName, originalProperties;
+    let parcelName
     if (abstractShape.properties.State === "TX") {
       parcelName = abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
     } else if (township && range && section) {
@@ -370,6 +367,19 @@ const ShapeActionsPopup = (props) => {
     } else {
       parcelName = "PLSS Default Name";
     }
+    return parcelName
+  }
+
+  const saveAndOpenParcelDetail = () => {
+    if (!user._id) {
+      return;
+    }
+    let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
+
+
+
+    let originalProperties;
+    let parcelName = getParcelUnitName(abstractShape)
     originalProperties = [abstractShape.properties];
 
     const featureId = hat();
@@ -429,7 +439,12 @@ const ShapeActionsPopup = (props) => {
     if (!user._id) {
       return;
     }
-    let abstractShape = stateApp.currentFeature;
+    let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
+    let unitInfo = ''
+    if (abstractShape?.properties?.County && abstractShape?.properties?.State) {
+      unitInfo = `${abstractShape?.properties?.County}, ${abstractShape?.properties?.State} - BLK ${abstractShape?.properties?.Block}, SEC ${abstractShape?.properties?.Section}`
+    }
+    let unitName = getParcelUnitName(abstractShape)
 
     const featureId = hat();
     const newShapeFeature = {
@@ -437,9 +452,11 @@ const ShapeActionsPopup = (props) => {
       type: "Feature",
       geometry: abstractShape.geometry,
       properties: {
+        originalProperties: abstractShape.properties,
+        unitInfo,
         type: "unit",
-        shapeLabel: 'Default Name',
-        uNumber: "",
+        shapeLabel: unitName,
+        uNumber: unitName,
         uName: "",
         uType: "",
         uOperator: "",
@@ -456,7 +473,7 @@ const ShapeActionsPopup = (props) => {
     const customLayerData = {
       shape: JSON.stringify(newShapeFeature),
       layer: "unit",
-      name: 'Default Name',
+      name: unitName,
       user: user._id,
     };
 

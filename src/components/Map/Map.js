@@ -1013,12 +1013,10 @@ function Map() {
                 "interpolate",
                 ["linear"],
                 ["zoom"],
-                9,
-                16,
-                11,
-                32,
+                12,
+                12,
                 15,
-                54
+                28
               ]
             }
           }
@@ -6271,6 +6269,19 @@ function Map() {
     });
   };
 
+  const deleteCustomLayer = (id) => {
+    updateCustomLayer({
+      variables: {
+        customLayerId: id,
+        customLayer: {
+          IsDeleted: true,
+        },
+      },
+      refetchQueries: ["getCustomLayers"],
+      awaitRefetchQueries: true,
+    });
+  };
+
   const handleCloseSpatialDataCard = (complete = true) => {
     setStateApp((state) => ({
       ...state,
@@ -6739,7 +6750,7 @@ function Map() {
               cardHeightExpanded="calc(100vh - 64px)"
               targetSourceId={stateApp.selectedParcel.id}
               targetLabel="parcel"
-              deleteParcel={deleteParcel}
+              deleteCustomLayer={deleteCustomLayer}
             ></ExpandableCardProvider>
           </div>
         )
@@ -6752,7 +6763,7 @@ function Map() {
               handleCloseExpandableCard={handleCloseExpandableCard}
               component={<UnitCardProvider ></UnitCardProvider >}
               title={stateApp.selectedUnit?.shapeLabel}
-              subTitle=""
+              subTitle={stateApp.selectedUnit?.unitInfo}
               parent="map"
               position="relative"
               cardTop={0}
@@ -6762,7 +6773,7 @@ function Map() {
               cardHeightExpanded="calc(100vh - 64px)"
               targetSourceId={stateApp.selectedUnit?.id}
               targetLabel="unit"
-              deleteParcel={deleteParcel}
+              deleteCustomLayer={deleteCustomLayer}
             ></ExpandableCardProvider>
           </div>
         )
@@ -6865,7 +6876,7 @@ function Map() {
                     cardHeightExpanded="calc(100vh - 64px)"
                     targetSourceId={stateApp.selectedParcel.id}
                     targetLabel="parcel"
-                    deleteParcel={deleteParcel}
+                    deleteCustomLayer={deleteCustomLayer}
                   ></ExpandableCardProvider>
                 )}
               </PortalD>

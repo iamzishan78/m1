@@ -105,12 +105,34 @@ function ExpandableCard(props) {
 
   let backgroundColor = '#112040'
   let headerIcons = {}
+  let icons = {}
   let headerLabelColor = '#ababab'
   if (targetLabel === "unit") {
     backgroundColor = 'white'
     headerIcons = {
-      '& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary': {
+      '& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary, & .MuiIconButton-label ': {
+        // "&:hover": {
+        //   backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
+        // },
         color: '#7f7f7f !important',
+        'svg': {
+          fill: '#7f7f7f !important'
+        }
+
+      },
+      '& .MuiIconButton-root, & .MuiButtonBase-root': {
+        "&:hover": {
+          backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
+        },
+      },
+      '& .MuiIconButton-label svg': {
+        color: '#7f7f7f !important',
+        fill: '#7f7f7f !important'
+      }
+    }
+    icons = {
+      "&:hover": {
+        backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
       }
     }
   }
@@ -193,10 +215,12 @@ function ExpandableCard(props) {
       "&:hover": {
         backgroundColor: "#031d40",
       },
+      ...icons,
       color: "white",
     },
     iconPolygon: {
-      color: "#FFFFFF", stroke: "#FFFFFF", fill: "#FFFFFF", marginRight: '10px'
+      color: "#FFFFFF", stroke: "#FFFFFF", fill: "#FFFFFF"
+      // , marginRight: '10px'
     },
     unitTitle: {
       '& .name': {
@@ -360,7 +384,7 @@ function ExpandableCard(props) {
               <Box className='name'>
                 {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
               </Box>
-              <Box className='description'>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</Box>
+              <Box className='description'>{subTitle}</Box>
               <Box className='type' >Unit</Box>
             </Grid>
           </Grid>
@@ -400,9 +424,9 @@ function ExpandableCard(props) {
   };
 
   const deleteFunc = async () => {
-    if (targetLabel === "parcel" || targetLabel === "expandedParcel") {
+    if (targetLabel === "parcel" || targetLabel === "unit" || targetLabel === "expandedParcel") {
       setDeleteLoading(true);
-      await deleteParcel();
+      await deleteCustomLayer();
       setDeleteLoading(false);
 
       // For clearing out selected abstract land grids
@@ -428,8 +452,8 @@ function ExpandableCard(props) {
     }
   };
 
-  const deleteParcel = async () => {
-    await props.deleteParcel(targetSourceId)
+  const deleteCustomLayer = async () => {
+    await props.deleteCustomLayer(targetSourceId)
     handleClose();
   };
 
@@ -503,14 +527,14 @@ function ExpandableCard(props) {
           action={
             <div className={classes.headerIcons}>
               {
-                targetLabel === 'parcel' && (
-                  <Tooltip title={'Edit Parcel'} placement="top">
+                (targetLabel === 'parcel' || targetLabel === 'unit') && (
+                  <Tooltip title={`Edit ${targetLabel}`} placement="top">
                     <IconButton
-                      size="small"
+                      // size="small"
                       onClick={() => {
                         handleEditParcelShape();
                       }}
-                      aria-label={'Edit Parcel'}
+                      aria-label={`Edit ${targetLabel}`}
                     >
                       <DrawPoly className={classes.iconPolygon} />
                     </IconButton>
@@ -579,7 +603,7 @@ function ExpandableCard(props) {
 
 
               {stateExpandableCard.expanded &&
-                ["activity", "parcel", "expandedParcel"].includes(targetLabel) &&
+                ["activity", "parcel", "expandedParcel", "unit"].includes(targetLabel) &&
                 title !== "Add Activity" && (
                   <Tooltip title={`Delete ${targetLabel}`} placement="top">
                     {isDeletingCustomLayer || deleteLoading ? (
@@ -625,7 +649,7 @@ function ExpandableCard(props) {
                   ) : (isExpanded === false && targetLabel !== "activity") ? (
                     <Tooltip title={"Expand"} placement="top">
                       <IconButton
-                        size="small"
+                        // size="small"
                         onClick={handleExpand}
                         aria-label="expand"
                         className={classes.icons}

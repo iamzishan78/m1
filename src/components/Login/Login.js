@@ -24,7 +24,7 @@ const localStyles = makeStyles((theme) => ({
   myRoot: {
     display: "inline",
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "center"
     //overflowY: 'auto',
   },
   height_100: {
@@ -61,7 +61,7 @@ const localStyles = makeStyles((theme) => ({
     textAlign: "center",
     display: "flex",
     height: "100%",
-    flexDirection: "column",
+    flexDirection: "column"
     // "&::-webkit-scrollbar": {
     //   width: "0 !important",
     // },
@@ -142,7 +142,7 @@ const Login = (props) => {
   // useEffect(() => {
   //   setStateApp({...stateApp, loading});
   // },[loading])
-  
+
   let history = props.history;
 
   useEffect(() => {
@@ -153,14 +153,14 @@ const Login = (props) => {
           const accountObj = tokenResponse
             ? tokenResponse.account
             : (() => {
-                const currentAccounts = stateApp.myMSALObj.getAllAccounts();
-                return currentAccounts && currentAccounts.length === 1
-                  ? currentAccounts[0]
-                  : (() => {
-                      // hoose account code here
-                      return;
-                    })();
-              })();
+              const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+              return currentAccounts && currentAccounts.length === 1
+                ? currentAccounts[0]
+                : (() => {
+                  // hoose account code here
+                  return;
+                })();
+            })();
 
           if (accountObj) {
 
@@ -168,7 +168,7 @@ const Login = (props) => {
             // "acr" claim in the token tells us what policy is used (NOTE: for new policies (v2.0), use "tfp" instead of "acr")
             // To learn more about b2c tokens, visit https://docs.microsoft.com/en-us/azure/active-directory-b2c/tokens-overview
             if (tokenResponse && tokenResponse.idTokenClaims && tokenResponse.idTokenClaims.tfp === b2cPolicies.forgotPassword) {
-              
+
               // stateApp.myMSALObj.clearCache();
               // stateApp.myMSALObj.account = null;
               const logoutRequest = {
@@ -205,7 +205,7 @@ const Login = (props) => {
             } else {
               console.log(
                 "tokenResponse was not null but did not have any tokens: " +
-                  tokenResponse
+                tokenResponse
               );
             }
             setLoading(false);
@@ -221,13 +221,13 @@ const Login = (props) => {
             console.log(stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword))
 
             stateApp.myMSALObj.loginRedirect({ authority: stateApp.myMSALObj.config.auth.authority.replace(b2cPolicies.signIn, b2cPolicies.forgotPassword) });
-            
+
             return;
           }
 
           if (error.errorMessage && error.errorMessage.includes("AADB2C90085")) {
             console.log("retrying with forced login bypassing session cookies")
-            
+
             let request = loginRequest()
             request.extraQueryParameters = { prompt: "login" }
             stateApp.myMSALObj.loginRedirect(request);
@@ -239,21 +239,21 @@ const Login = (props) => {
           const currentAccount = currentAccounts && currentAccounts.length === 1
             ? currentAccounts[0]
             : undefined
-      
+
           const logoutRequest = {
             account: currentAccount
           };
-      
+
           sessionStorage.clear();
           localStorage.clear();
-      
+
           // Need to call this all the time on exception to clear msal cache
           // in particular when cancelling login to change workspaces
           stateApp.myMSALObj.logout(logoutRequest);
-      
+
           // window.location.replace(window.location.origin);
           setLoading(false);
-          
+
         });
     } else {
       if (stateApp.myMSALObj === false) setLoading(false);
@@ -365,19 +365,19 @@ const Login = (props) => {
 
 
     const authUser = {}
-    authUser.issuerUserId = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'http://schemas.microsoft.com/identity/claims/objectidentifier'});
+    authUser.issuerUserId = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'http://schemas.microsoft.com/identity/claims/objectidentifier' });
     if (authUser.issuerUserId) { authUser.issuerUserId = authUser.issuerUserId.val }
-    authUser.issuerTenantId = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'http://schemas.microsoft.com/identity/claims/tenantid'});
+    authUser.issuerTenantId = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'http://schemas.microsoft.com/identity/claims/tenantid' });
     if (authUser.issuerTenantId) { authUser.issuerTenantId = authUser.issuerTenantId.val }
-    authUser.b2cEmail = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'emails'});
+    authUser.b2cEmail = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'emails' });
     if (authUser.b2cEmail) { authUser.b2cEmail = authUser.b2cEmail.val }
-    authUser.b2bEmail = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'preferred_username'});
+    authUser.b2bEmail = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'preferred_username' });
     if (authUser.b2bEmail) { authUser.b2bEmail = authUser.b2bEmail.val }
-    authUser.b2cName = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'displayName'});
+    authUser.b2cName = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'displayName' });
     if (authUser.b2cName) { authUser.b2cName = authUser.b2cName.val }
-    authUser.b2bName = graphQLProfileResponse.user_claims.find(({typ}) => { return typ === 'name'})
+    authUser.b2bName = graphQLProfileResponse.user_claims.find(({ typ }) => { return typ === 'name' })
     if (authUser.b2bName) { authUser.b2bName = authUser.b2bName.val }
-    authUser.roles = graphQLProfileResponse.user_claims.filter(({typ}) => { return typ === 'roles'})
+    authUser.roles = graphQLProfileResponse.user_claims.filter(({ typ }) => { return typ === 'roles' })
     if (authUser.roles) { authUser.roles = authUser.roles.map(role => role.val) }
 
     const mongoUser = await getMongoDBUser(
@@ -454,7 +454,6 @@ const Login = (props) => {
       },
       body: JSON.stringify({ query: mutation, variables: { user } }),
     };
-
     return await fetch(stateApp.apolloClientEndpoint, options)
       .then((response) => response.json())
       .then((response) => {
@@ -613,9 +612,9 @@ const Login = (props) => {
           ready={loadingSigInButton}
           handleAADSignIn={handledAADSignIn}
           tenant={
-            !stateApp.myMSALObj 
-            ? queryString.parse(props.location.search).tenant 
-            : undefined}
+            !stateApp.myMSALObj
+              ? queryString.parse(props.location.search).tenant
+              : undefined}
         />
 
         <div>
@@ -658,13 +657,13 @@ const Login = (props) => {
               </Typography>
             </div>
             <div>
-              <a href={`mailto:support@m1neral.com`} target="_blank">
+              <a href={`mailto:support@m1neral.com`} target="_blank" rel="noreferrer">
                 <Button
                   variant="contained"
                   disableElevation
                   type="submit"
                   style={{
-                    float: "left",
+                    cssFloat: "left",
                     marginTop: "35px",
                     marginLeft: "65px",
                   }}
@@ -691,9 +690,9 @@ const Login = (props) => {
           ? `${localClass.height_100} ${localClass.myRoot}`
           : localClass.myRoot
       }
-      
+
     >
-      <div className={localClass.rootNewUser} 
+      <div className={localClass.rootNewUser}
       // style={{ overflowY: "scroll !important"}}
       >{renderBody}</div>
 
@@ -715,11 +714,11 @@ const Login = (props) => {
         </div>
 
         <div className={localClass.termsAndPrivacy}>
-          <a href="https://m1neral.com/TOS.pdf" target="_blank">
+          <a href="https://m1neral.com/TOS.pdf" target="_blank" rel="noreferrer">
             Terms of Service
           </a>
           {" | "}
-          <a href="https://m1neral.com/Privacy.pdf" target="_blank">
+          <a href="https://m1neral.com/Privacy.pdf" target="_blank" rel="noreferrer">
             Privacy Policy
           </a>
         </div>
