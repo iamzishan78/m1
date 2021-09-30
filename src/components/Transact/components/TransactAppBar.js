@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
       margin: "0 10px 0 0",
     },
   },
-
   toggleBtn: {
     borderRadius: 5,
     border: "1px solid #1CB6DA",
@@ -119,7 +118,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#011133",
     color: "#fff",
     transition: "200ms all",
-
     "&:hover": {
       backgroundColor: "#263451",
     },

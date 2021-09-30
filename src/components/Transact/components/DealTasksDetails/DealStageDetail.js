@@ -1,21 +1,20 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import _ from "underscore";
 import { get } from "lodash";
-import { useMutation } from "@apollo/client";
 
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, Grid, Typography, TextField, InputAdornment, Accordion, AccordionSummary, AccordionDetails } from "@material-ui/core";
+import { Grid, Typography, TextField, InputAdornment, Accordion, AccordionSummary, AccordionDetails } from "@material-ui/core";
 import { ExpandMore } from "@material-ui/icons";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import ProgressBar from "../../../Shared/ui/ProgressBar";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
 import DealSubtasks from "components/Transact/components/DealTasksDetails/DealSubtasks";
+import NewSubtask from "components/Transact/components/Common/NewSubtask";
 
 import { TransactContext } from "components/Transact/TransactContext";
-import { ADD_DEAL_SUBTASK } from "graphQL/useMutationDealSubtask";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   laneName: {
     fontWeight: "bold",
     margin: "10px 0px 10px 0px",
@@ -59,9 +58,6 @@ const useStyles = makeStyles((theme) => ({
   dealOwnerLabel: {
     marginLeft: 4,
   },
-  addSubTaskButton: {
-    marginBottom: "10px",
-  },
   notes: {
     backgroundColor: "#FFFCDC",
     display: "block",
@@ -88,20 +84,8 @@ const useStyles = makeStyles((theme) => ({
 
 function DealStageDetail({ settings, index, users, extendedTaskIndex, user, activeDeal, updateStageDealDescriptor }) {
   const classes = useStyles();
-  const [isNewSubtask, setNewSubtask] = useState({ index: -1, value: false });
   const approver = users.find((user) => user?.value === settings.stageDealDescriptor.approver);
   const [stateTransact, setStateTransact] = useContext(TransactContext);
-
-  const [addSubtask, { data: addedSubtask }] = useMutation(ADD_DEAL_SUBTASK);
-
-  useEffect(() => {
-    if (addedSubtask && !activeDeal._id) {
-      setStateTransact((stateTransact) => ({
-        ...stateTransact,
-        dealToCreate: { _id: addedSubtask.task.pipeline },
-      }));
-    }
-  }, [activeDeal._id, addedSubtask, setStateTransact]);
 
   const handleChangeSettings = (setting, params) => {
     const descriptor = {
@@ -121,19 +105,6 @@ function DealStageDetail({ settings, index, users, extendedTaskIndex, user, acti
       refetchQueries: ["dealSettings"],
       awaitRefetchQueries: true,
     });
-  };
-
-  const handleNewSubtask = (setting, params) => {
-    addSubtask({
-      variables: {
-        task: params,
-        stageId: setting._id,
-        dealId: activeDeal._id,
-      },
-      refetchQueries: ["dealSettings"],
-      awaitRefetchQueries: true,
-    });
-    setNewSubtask({ index: -1, value: !isNewSubtask.value });
   };
   const isExpanded = index === extendedTaskIndex && !_.isEmpty(stateTransact.selectedTask);
 
@@ -230,29 +201,7 @@ function DealStageDetail({ settings, index, users, extendedTaskIndex, user, acti
             <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
               <DealSubtasks tasks={settings.tasks} users={users} />
             </Grid>
-            {isNewSubtask.index === index && isNewSubtask.value && (
-              <Grid item xs={12} className={classes.addSubTaskButton}>
-                <TextField
-                  margin="dense"
-                  variant="outlined"
-                  label="Enter Subtask Name"
-                  fullWidth
-                  autoFocus
-                  onBlur={() => setNewSubtask({ index: -1, value: !isNewSubtask.value })}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleNewSubtask(settings, { name: e.target.value });
-                    }
-                  }}
-                />
-              </Grid>
-            )}
-            <Grid item xs={12} className={classes.addSubTaskButton}>
-              <Button size="small" style={{ color: "grey" }} onClick={() => setNewSubtask({ index, value: !isNewSubtask.value })}>
-                + Add New Subtask
-              </Button>
-            </Grid>
+            <NewSubtask index={index} activeDeal={activeDeal} setStateTransact={setStateTransact} settings={settings} />
           </Grid>
         </AccordionDetails>
       </Accordion>

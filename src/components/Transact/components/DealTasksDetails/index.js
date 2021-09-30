@@ -88,10 +88,10 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user, ...rest }) {
 
   return (
     <div className={classes.root}>
-      <CardActions style={{ paddingBottom: 15, padding: "0px 30px" }}>
+      <CardActions style={{ paddingBottom: 15, padding: "0px 30px", display: "block" }}>
         <Grid container direction="row" justify="space-between" alignItems="center">
-          <Grid item xs={8} style={{ marginBottom: "15px" }}>
-            <h3 style={{ height: "8px" }}>Overall Progress</h3>
+          <Grid item xs={8} style={{ margin: "15px 0px" }}>
+            <h3>Overall Progress</h3>
             <ProgressBar value={evaluateOverallProgress()} isNumeric />
           </Grid>
           {/* <Grid item xs={6} style={{ textAlign: "right" }}>

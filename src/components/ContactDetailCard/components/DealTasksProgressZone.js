@@ -115,7 +115,7 @@ export default function LaneProgressZone(props) {
                           <>
                             <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
                               {settings.stageDealDescriptor.approver && users.length ? (
-                                <CustomAvatar email={approver.email} text={approver.text.toString()} />
+                                <CustomAvatar email={approver?.email} text={approver?.text.toString()} />
                               ) : (
                                 <AccountCircle fontSize="default" />
                               )}

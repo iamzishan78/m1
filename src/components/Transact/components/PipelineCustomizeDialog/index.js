@@ -2,14 +2,15 @@ import React, { useState, useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { Grid, Typography, IconButton, Tab, Tabs, Dialog } from "@material-ui/core";
-import { Close as CloseIcon, Delete as DeleteIcon } from "@material-ui/icons/";
+import { Grid, Typography, IconButton, Tab, Tabs, Dialog, Breadcrumbs, Link } from "@material-ui/core";
+import { Close as CloseIcon, Delete as DeleteIcon, NavigateNext as NavigateNextIcon } from "@material-ui/icons/";
 import { makeStyles } from "@material-ui/core/styles";
 
 import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "actions";
 import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import BaicInfoPanel from "components/Transact/components/PipelineCustomizeDialog/BasicInfo";
-import LanesInfoPanel from "components/Transact/components/PipelineCustomizeDialog/LanesInfo";
+import DealStagesPanel from "components/Transact/components/PipelineCustomizeDialog/DealStages";
+import StageDetails from "components/Transact/components/PipelineCustomizeDialog/StageDetails";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { deepEqualObjects } from "components/Shared/functions";
 
@@ -20,6 +21,11 @@ import { ADD_PIPELINE } from "graphQL/useMutationAddPipeline";
 import { ADDSTAGES } from "graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "graphQL/useMutationUpdateStages";
 import { CREATE_PIPELINE_DESCRIPTORS, UPDATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
+
+const DIALOG_WIDTHS = {
+  BASIC: "450px",
+  LANES: "1100px",
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,12 +75,13 @@ const a11yProps = (index) => ({
 const PipelineCustomDialog = (props) => {
   const dispatch = useDispatch();
   const [tab, setTab] = useState(0);
-  const [width, setDialogWidth] = useState("450px");
+  const [width, setDialogWidth] = useState(DIALOG_WIDTHS.BASIC);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteFunc, setDeleteFunc] = useState(null);
   const [stages, setStages] = useState([]);
   const [flowErrors, setFlowErrors] = useState([]);
   const [stagesError, setStageError] = useState(false);
+  const [selectedStageForDetail, setStage] = useState(null);
   const { control, reset, setValue, getValues, watch } = useForm("FLOWLINE_FORM");
 
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -98,6 +105,12 @@ const PipelineCustomDialog = (props) => {
   }, [reset]);
 
   useEffect(() => {
+    if (selectedStageForDetail) {
+      setDialogWidth(DIALOG_WIDTHS.BASIC);
+    }
+  }, [selectedStageForDetail]);
+
+  useEffect(() => {
     if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
       setStateApp((state) => ({
         ...state,
@@ -115,8 +128,8 @@ const PipelineCustomDialog = (props) => {
 
   const handleChange = (event, tab) => {
     if (tab === 0) {
-      setDialogWidth("450px");
-    } else setDialogWidth("1100px");
+      setDialogWidth(DIALOG_WIDTHS.BASIC);
+    } else setDialogWidth(DIALOG_WIDTHS.LANES);
     setTab(tab);
   };
 
@@ -388,39 +401,67 @@ const PipelineCustomDialog = (props) => {
                 </Grid>
               </Grid>
             </div>
-            <Tabs
-              value={tab}
-              onChange={handleChange}
-              aria-label="simple tabs example"
-              indicatorColor="primary"
-              textColor="primary"
-              variant="fullWidth"
-            >
-              {FLOWLINE_CUSTOM_TABS.map((tab, index) => (
-                <Tab label={tab.label} {...a11yProps(tab.value)} />
-              ))}
-            </Tabs>
-            <div className={classes.panelInfo}>
-              <div style={{ display: tab !== 0 ? "none" : "" }}>
-                <BaicInfoPanel
-                  control={control}
-                  reset={reset}
-                  setValue={setValue}
-                  watch={watch}
-                  flowErrors={flowErrors}
-                  setFlowErrors={setFlowErrors}
-                />
-              </div>
-              <div style={{ display: tab === 0 ? "none" : "" }}>
-                <LanesInfoPanel
-                  showWarningMessage={showWarningMessage}
-                  stages={stages}
-                  setStages={setStages}
-                  stagesError={stagesError}
-                  setStageError={setStageError}
-                />
-              </div>
-            </div>
+            {!selectedStageForDetail ? (
+              <>
+                <Tabs
+                  value={tab}
+                  onChange={handleChange}
+                  aria-label="simple tabs example"
+                  indicatorColor="primary"
+                  textColor="primary"
+                  variant="fullWidth"
+                >
+                  {FLOWLINE_CUSTOM_TABS.map((tab, index) => (
+                    <Tab label={tab.label} {...a11yProps(tab.value)} />
+                  ))}
+                </Tabs>
+                <div className={classes.panelInfo}>
+                  <div style={{ display: tab !== 0 ? "none" : "" }}>
+                    <BaicInfoPanel
+                      control={control}
+                      reset={reset}
+                      setValue={setValue}
+                      watch={watch}
+                      flowErrors={flowErrors}
+                      setFlowErrors={setFlowErrors}
+                    />
+                  </div>
+                  <div style={{ display: tab === 0 ? "none" : "" }}>
+                    <DealStagesPanel
+                      showWarningMessage={showWarningMessage}
+                      stages={stages}
+                      setStages={setStages}
+                      stagesError={stagesError}
+                      setStageError={setStageError}
+                      setStage={setStage}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ marginLeft: "23px" }}>
+                  <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+                    <Link
+                      style={{
+                        marginLeft: "5px",
+                        fontSize: "16px",
+                        cursor: "pointer",
+                      }}
+                      color="inherit"
+                      onClick={() => {
+                        setStage(null);
+                        setDialogWidth(DIALOG_WIDTHS.LANES);
+                      }}
+                    >
+                      Lanes
+                    </Link>
+                    <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{selectedStageForDetail.name}</Typography>
+                  </Breadcrumbs>
+                </div>
+                <StageDetails />
+              </>
+            )}
           </div>
         </RightDialog>
       ) : (

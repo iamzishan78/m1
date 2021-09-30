@@ -53,6 +53,13 @@ const useStyles = makeStyles((theme) => ({
       color: "red",
     },
   },
+  settingIcon: {
+    color: "gray",
+    "&:hover": {
+      cursor: "pointer",
+      color: "black",
+    },
+  },
   list: {
     padding: 0,
   },
@@ -116,7 +123,7 @@ String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-export default function LanesInfoPanel({ showWarningMessage, stages, setStages, stagesError, setStageError }) {
+export default function LanesInfoPanel({ showWarningMessage, stages, setStages, stagesError, setStageError, setStage }) {
   const dispatch = useDispatch();
   const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
   const [, setStateApp] = useContext(AppContext);
@@ -139,13 +146,13 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
         deleteFunc();
       }
     }
-  }, [dataDealsCountByStage]);
+  }, [dataDealsCountByStage, deleteFunc, dispatch, setStateApp, showWarningMessage]);
 
   useEffect(() => {
     if (openPipeDialog && selectedPipe && openPipeDialog !== "newPipe") {
       if (selectedPipe.stages) setStages(selectedPipe.stages);
     }
-  }, [openPipeDialog, selectedPipe]);
+  }, [openPipeDialog, selectedPipe, setStages]);
 
   const removeStage = (stage, index) => {
     if (stages.length === 1) dispatch(showWarningMessage("The stage can't be deleted, the pipeline needs at least one stage."));
@@ -182,7 +189,7 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
       return;
     }
 
-    const { reorderedStages, stagesToUpdate } = reorder(stages, result.source.index, result.destination.index);
+    const { reorderedStages } = reorder(stages, result.source.index, result.destination.index);
     //// saving state
     setStages([...reorderedStages]);
   };
@@ -326,7 +333,7 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
 
                                   <TableCell padding="checkbox">
                                     <Tooltip title="Stage Details" placement="top">
-                                      <DetailsIcon />
+                                      <DetailsIcon onClick={() => setStage(stage)} className={classes.settingIcon} />
                                     </Tooltip>
                                   </TableCell>
                                 </TableRow>

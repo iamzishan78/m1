@@ -2131,11 +2131,13 @@ function SubTable(props) {
                         </p>
                       )}
                       {props.targetLabel === "contact" && column.name === "name" && (
-                        <span>
-                          {tableMeta.rowData[49] &&  (
-                            <RequestPageIcon color="grey" fontSize='8px'/>
-                          )}
-                        </span>
+                        <FeatureFlag feature={FEATURES.IDICORE}>
+                          <span>
+                            {tableMeta.rowData[49] &&  (
+                              <RequestPageIcon color="grey" fontSize='8px'/>
+                            )}
+                          </span>
+                        </FeatureFlag>
                       )}
 
                       {/* {props.targetLabel === "documents" &&

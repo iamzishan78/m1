@@ -743,7 +743,7 @@ export default function ContactDetailCard(props) {
 
             {/*/////////// section 3 //////////// */}
             <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px" }}>
-              <ContactDetailedInfo purchaseData={purchaseData} contactData={contactData} />
+              <ContactDetailedInfo user={stateApp.user} purchaseData={purchaseData} contactData={contactData} />
             </Grid>
             {/*/////////// new section - lead stage //////////// */}
             <Grid item xs={12} className={`${classes.border}`}>
