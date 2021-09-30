@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, alpha } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import GavelIcon from '@material-ui/icons/Gavel';
@@ -29,6 +29,10 @@ import TodayOutlinedIcon from '@material-ui/icons/TodayOutlined';
 import Tags from "components/Shared/Tagger";
 import CommentComponent from "components/Shared/CommentComponent";
 import UnitTableInfo from './UnitTableInfo'
+import InputBase from '@material-ui/core/InputBase';
+import AddIcon from '@material-ui/icons/Add';
+import SearchIcon from '@material-ui/icons/Search';
+import { Button } from "@material-ui/core";
 
 const ENTER_KEY = 13;
 
@@ -194,14 +198,64 @@ const useStyles = makeStyles((theme) => ({
         }
       }
     }
+  },
+
+  search: {
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    // backgroundColor: alpha(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(1),
+      width: 'auto',
+    },
+  },
+  searchIcon: {
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputRoot: {
+    color: 'inherit',
+  },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: props => props.search.length > 0 ? '15ch' : '0.9px',
+      '&:focus': {
+        backgroundColor: alpha(theme.palette.common.white, 0.15),
+        width: '15ch',
+      },
+    },
+  },
+  addDataButton: {
+    backgroundColor: 'white',
+    color: 'black',
+    textTransform: "capitalize",
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.common.white, 0.15),
+    }
   }
 }));
 
 export default function UnitDetailCard(props) {
-  const classes = useStyles();
+
   const dispatch = useDispatch();
   const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
   const [uniObj, setUniObj] = useState();
+  const [search, setSearch] = useState('');
   const [unitProperties, setProperties] = useState();
   const [originalProperties, setOriginalProperties] = useState(null);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -210,6 +264,8 @@ export default function UnitDetailCard(props) {
   const [updateCustomLayer, { data: updatedUnit }] = useMutation(
     UPDATECUSTOMLAYER,
   );
+
+  const classes = useStyles({ search });
 
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
     CUSTOMLAYER,
@@ -301,7 +357,7 @@ export default function UnitDetailCard(props) {
   const Header = () => (
     <TabButtons
       labels={[
-        "Parcel Ownership",
+        "Unit Ownership",
         "Potential Ownership",
       ]}
       value={selectedTab}
@@ -334,21 +390,9 @@ export default function UnitDetailCard(props) {
 
   return uniObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
-      <Grid
-        item
-        xs={12}
-        style={{
-          padding: "10px 15px 0px 15px",
-        }}
-        className={classes.border}
-      >
+      <Grid item xs={12} style={{ padding: "10px 15px 0px 15px" }} className={classes.border}>
         <div className={classes.tags}>
-          <Tags
-            width="100%"
-            targetSourceId={props.id}
-            targetLabel="unit"
-            publicLeftBottom
-          />
+          <Tags width="100%" targetSourceId={props.id} targetLabel="unit" publicLeftBottom />
         </div>
       </Grid>
       <Grid item sm={12}>
@@ -358,29 +402,57 @@ export default function UnitDetailCard(props) {
           tabPanels={[
             <Grid container spacing={2} direction="row" className={classes.summaryCard}>
               <Grid item md={7} sm={12}>
-                <Grid container spacing={2} direction="column" >
+                <Grid container spacing={1} direction="column" >
                   <Grid item>
-                    <Grid container spacing={2} className={classes.summaryDetailCard}>
+                    <Grid container direction="row" justifyContent="space-between" alignItems="center">
                       <Grid item>
-                        <div className={classes.summaryValue}> 3 </div>
-                        <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
+                        <Grid container spacing={2} className={classes.summaryDetailCard}>
+                          <Grid item>
+                            <div className={classes.summaryValue}> 3 </div>
+                            <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
+                          </Grid>
+                          <Grid item>
+                            <div className={classes.summaryValue}> 3 </div>
+                            <PersonIcon className={classes.icon} opacity="1.0" small />
+                          </Grid>
+                          <Grid item>
+                            <div className={classes.summaryValue}> 3 </div>
+                            <InsertDriveFileOutlinedIcon className={classes.icon} opacity="1.0" small />
+                          </Grid>
+                          <Grid item>
+                            <div className={classes.summaryValue}> 3 </div>
+                            <TodayOutlinedIcon className={classes.icon} opacity="1.0" small />
+                          </Grid>
+                        </Grid>
                       </Grid>
                       <Grid item>
-                        <div className={classes.summaryValue}> 3 </div>
-                        <PersonIcon className={classes.icon} opacity="1.0" small />
-                      </Grid>
-                      <Grid item>
-                        <div className={classes.summaryValue}> 3 </div>
-                        <InsertDriveFileOutlinedIcon className={classes.icon} opacity="1.0" small />
-                      </Grid>
-                      <Grid item>
-                        <div className={classes.summaryValue}> 3 </div>
-                        <TodayOutlinedIcon className={classes.icon} opacity="1.0" small />
+                        <Grid>
+                          <div className={classes.search}>
+                            <div className={classes.searchIcon}>
+                              <SearchIcon />
+                            </div>
+                            <InputBase
+                              placeholder="Search…"
+                              value={search}
+                              onChange={(e) => setSearch(e.target.value)}
+                              classes={{
+                                root: classes.inputRoot,
+                                input: classes.inputInput,
+                              }}
+                              inputProps={{ 'aria-label': 'search' }}
+                            />
+                          </div>
+                        </Grid>
                       </Grid>
                     </Grid>
                   </Grid>
                   <Grid item>
                     <UnitTableInfo updateUnit={updateUnit} unitProperties={unitProperties} setProperties={setProperties} />
+                  </Grid>
+                  <Grid item>
+                    <Button variant="contained" color="primary" component="span" className={classes.addDataButton} startIcon={<AddIcon />}>
+                      Add Data
+                    </Button>
                   </Grid>
                 </Grid>
               </Grid>

@@ -162,7 +162,7 @@ function ExpandableCard(props) {
       "& .MuiCardHeader-root": {
         borderBottom: '1px solid rgba(224, 224, 224, 1)',
       },
-      zIndex: 1250 // https://material-ui.com/customization/z-index/
+      zIndex: 1222 // https://material-ui.com/customization/z-index/
     },
     title: {
       fontFamily: "Poppins",

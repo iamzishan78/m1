@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
-import { AppContext } from "../../AppContext";
+import { AppContext, apolloClientEndpointDev, isDev, setApolloHeaders } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import SignInCard from "./SignInCard";
@@ -19,6 +19,7 @@ import {
   authGraphQLRequest,
 } from "./AADAuthConfig";
 import * as msal from "@azure/msal-browser";
+import { GET_LOGGED_IN_USER } from "graphQL/useMutationLoggedInUser";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -272,7 +273,6 @@ const Login = (props) => {
         myMSALObj = new msal.PublicClientApplication(
           msalConfig(tenant)
         );
-
         setStateApp({
           ...stateApp,
           myMSALObj,
@@ -339,7 +339,7 @@ const Login = (props) => {
     }
 
     const authGraphQLResponse = await callAuthGraphQL(
-      `${new URL(stateApp.apolloClientEndpoint).origin}/.auth/login/aad`,
+      `${new URL(stateApp.apolloOriginalClientEndpoint).origin}/.auth/login/aad`,
       authGraphQLToken.idToken,
       authGraphQLToken.accessToken
     ).catch((error) => {
@@ -352,7 +352,7 @@ const Login = (props) => {
     }
 
     const graphQLProfileResponse = await callProfileGraphQL(
-      `${new URL(stateApp.apolloClientEndpoint).origin}/.auth/me`,
+      `${new URL(stateApp.apolloOriginalClientEndpoint).origin}/.auth/me`,
       authGraphQLResponse.authenticationToken
     ).catch((error) => {
       //do some error stuff
@@ -380,18 +380,24 @@ const Login = (props) => {
     authUser.roles = graphQLProfileResponse.user_claims.filter(({ typ }) => { return typ === 'roles' })
     if (authUser.roles) { authUser.roles = authUser.roles.map(role => role.val) }
 
-    const mongoUser = await getMongoDBUser(
+    const loginResp = await loginUser(
       {
         // issuerUserId: authUser.issuerUserId,
         // issuerTenantId: authUser.issuerTenantId,
         email: authUser.b2cEmail ?? authUser.b2bEmail,
         name: authUser.b2cName ?? authUser.b2bName
       },
-      authGraphQLResponse.authenticationToken
+      authGraphQLResponse.authenticationToken,
+      authGraphQLToken.idToken,
     ).catch((error) => {
       //do some error stuff
       console.log(error);
     });
+    let mongoUser, sessionData;
+    if (loginResp?.user) {
+      mongoUser = loginResp.user
+      sessionData = loginResp.sessionData
+    }
     if (!mongoUser) {
       //do some error stuff
       return;
@@ -401,11 +407,14 @@ const Login = (props) => {
       ...state,
       user: {
         id: accountObj.sub,
+        features: sessionData.features,
+        tenantId: sessionData.tenantId,
         mongoId: mongoUser._id,
         email: mongoUser.email,
         name: mongoUser.name,
         roles: authUser.roles,
         authToken: authGraphQLResponse.authenticationToken,
+        accessToken: authGraphQLToken.idToken,
         authTokenExpires: new Date(
           authGraphQLToken.expiresOn.setDate(
             authGraphQLToken.expiresOn.getDate() + 14
@@ -415,8 +424,7 @@ const Login = (props) => {
           id: request.tenantId,
           tenant: "M1neral",
           graphQL: {
-            endpoint:
-              "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
+            endpoint: "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
           },
         },
       },
@@ -431,37 +439,22 @@ const Login = (props) => {
     //setLoading(false);
   }
 
-  async function getMongoDBUser(user, accessToken) {
-    const mutation = `
-      mutation getFindOrCreateUser($user: UserInput) {
-        findOrCreateUser(user: $user) {
-          success
-          message
-          user {
-            _id
-            email
-            name
-            }
-          }
-        }
-       `;
+  async function loginUser(user, authToken, idToken) {
 
     var options = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-ZUMO-AUTH": accessToken,
       },
-      body: JSON.stringify({ query: mutation, variables: { user } }),
+      body: JSON.stringify({ query: GET_LOGGED_IN_USER, variables: { user } }),
     };
-    return await fetch(stateApp.apolloClientEndpoint, options)
+    let endpoint = stateApp.apolloClientEndpoint
+    options = setApolloHeaders(options, authToken, idToken)
+    return await fetch(endpoint, options)
       .then((response) => response.json())
       .then((response) => {
-        return response &&
-          response.data &&
-          response.data.findOrCreateUser &&
-          response.data.findOrCreateUser.success
-          ? response.data.findOrCreateUser.user
+        return response?.data?.login?.success
+          ? { user: response.data.login.user, sessionData: response.data.login.sessionData }
           : null;
       })
       .catch((error) => console.log(error));
@@ -663,7 +656,7 @@ const Login = (props) => {
                   disableElevation
                   type="submit"
                   style={{
-                    cssFloat: "left",
+                    "float": "left",
                     marginTop: "35px",
                     marginLeft: "65px",
                   }}

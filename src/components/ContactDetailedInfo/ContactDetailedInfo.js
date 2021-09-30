@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import FieldContent from "../ContactDetailCard/components/FieldContent";
 import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -12,9 +14,16 @@ import {
   Box,
   FormControlLabel,
   FormGroup,
-  Switch
+  Switch,
 } from "@material-ui/core";
+import moment from "moment";
 
+import {
+  getBasicInfoContent,
+  getBasicInfoExpContent,
+  getBasicPurchaseInfoContent,
+  getBasicPurchaseInfoExpContent,
+} from "components/ContactDetailedInfo/helper";
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -62,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     margin: "0 0 8px 22px",
-    "float": "right",
+    float: "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -78,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textBtn: {
     margin: "0 0 8px 0",
-    "float": "right",
+    float: "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -149,7 +158,7 @@ const useStyles = makeStyles((theme) => ({
   },
   showAll: {
     margin: "8px 0 0 0",
-    "float": "right",
+    float: "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
@@ -157,277 +166,300 @@ const useStyles = makeStyles((theme) => ({
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
   switchButtom: {
-    "float": "right",
+    float: "right",
     width: "fit-content",
     alignSelf: "flex-end",
     marginRight: 0,
     "& span.MuiTypography-body1": {
       fontSize: "0.9rem",
-      marginLeft: "5px"
+      marginLeft: "5px",
     },
   },
   switchTextDeselected: {
     color: "rgb(141, 141, 141)",
+  },
+  tab: {
+    border: "1px solid #C9C9C9",
+    padding: "3px 20px",
+    color: "#919191",
+    cursor: "pointer",
+  },
+  selectedTab: {
+    color: "white",
+    background: "#01B0F0",
+  },
+  viewSwitcher: {
+    width: "275px",
+    fontSize: "14px",
+    marginLeft: "10px",
   },
 }));
 
 export default function DetailInfo(props) {
   const [basicInfExp, setBasicInfExp] = useState(false);
   const [showEmpty, setShowEmpty] = useState(true);
+  const [selectedTab, setSelectedTab] = useState("Basic Info");
+  const [selectedPurchaseData, setSelectedPurchaseData] = useState("");
   const classes = useStyles();
   let history = useHistory();
   const [loading, setLoading] = useState(false);
-  const basicInfoContent = {
-    // "Full Name": {
-    //   data: {
-    //     title: props.contactData.title,
-    //     firstName: props.contactData.firstName,
-    //     middleName: props.contactData.middleName,
-    //     lastName: props.contactData.lastName,
-    //     suffix: props.contactData.suffix,
-    //   },
-    //   linkType: LinkTypes.None,
-    // },
-    "Primary Email": {
-      data: { primaryEmail: props.contactData.primaryEmail },
-      linkType: LinkTypes.Mail,
-    },
 
-    "Primary Mobile Phone": {
-      data: { mobilePhone: props.contactData.mobilePhone },
-      linkType: LinkTypes.None,
-    },
-    "Primary Home Phone": {
-      data: { homePhone: props.contactData.homePhone },
-      linkType: LinkTypes.None,
-    },
-    "Primary Work Phone": {
-      data: { AltPhone: props.contactData.AltPhone },
-      linkType: LinkTypes.None,
-    },
-    "Primary Address": {
-      data: {
-        address1: props.contactData.address1,
-        address2: props.contactData.address2,
-        city: props.contactData.city,
-        state: props.contactData.state,
-        zip: props.contactData.zip,
-        country: props.contactData.country,
-      },
-      linkType: LinkTypes.None,
-    },
-    "Secondary Address": {
-      data: {
-        address1Alt: props.contactData.address1Alt,
-        address2Alt: props.contactData.address2Alt,
-        cityAlt: props.contactData.cityAlt,
-        stateAlt: props.contactData.stateAlt,
-        zipAlt: props.contactData.zipAlt,
-        countryAlt: props.contactData.countryAlt,
-      },
-      linkType: LinkTypes.None,
-    },
-  };
+  useEffect(()=>{
+    if(props.purchaseData.length > 0){
+      setSelectedPurchaseData(props.purchaseData[0]._id)
+    }
 
-  const lastUpdateByRow =
-    props.contactData.lastUpdateBy &&
-      props.contactData.lastUpdateBy.name === null ? (
-        <span className={classes.userSmallLoader}>
-          <CircularProgress size={22} color="secondary" />
-        </span>
-      ) : (props.contactData.lastUpdateBy &&
-        props.contactData.lastUpdateBy.name) ||
-        props.contactData.lastUpdateAt ? (
-          `${props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name
-            ? props.contactData.lastUpdateBy.name
-            : ""
-          }
-    ${props.contactData.lastUpdateAt
-            ? " - " + anyToDate(props.contactData.lastUpdateAt).toLocaleString()
-            : ""
-          }`
-        ) : (
-          <p className={classes.notAvailableP}>Not Available</p>
-        );
+  },[props.purchaseData])
+  // const basicInfoContent = {
+  //   // "Full Name": {
+  //   //   data: {
+  //   //     title: props.contactData.title,
+  //   //     firstName: props.contactData.firstName,
+  //   //     middleName: props.contactData.middleName,
+  //   //     lastName: props.contactData.lastName,
+  //   //     suffix: props.contactData.suffix,
+  //   //   },
+  //   //   linkType: LinkTypes.None,
+  //   // },
+  //   "Primary Email": {
+  //     data: { primaryEmail: props.contactData.primaryEmail },
+  //     linkType: LinkTypes.Mail,
+  //   },
 
-  const createByRow =
-    props.contactData.createBy && props.contactData.createBy.name === null ? (
-      <span className={classes.userSmallLoader}>
-        <CircularProgress size={22} color="secondary" />
-      </span>
-    ) : (props.contactData.createBy && props.contactData.createBy.name) ||
-      props.contactData.createAt ? (
-          `${props.contactData.createBy && props.contactData.createBy.name
-            ? props.contactData.createBy.name
-            : ""
-          }
-    ${props.contactData.createAt
-            ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
-            : ""
-          }`
-        ) : (
-          <p className={classes.notAvailableP}>Not Available</p>
-        );
+  //   "Primary Mobile Phone": {
+  //     data: { mobilePhone: props.contactData.mobilePhone },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Primary Home Phone": {
+  //     data: { homePhone: props.contactData.homePhone },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Primary Work Phone": {
+  //     data: { AltPhone: props.contactData.AltPhone },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Primary Address": {
+  //     data: {
+  //       address1: props.contactData.address1,
+  //       address2: props.contactData.address2,
+  //       city: props.contactData.city,
+  //       state: props.contactData.state,
+  //       zip: props.contactData.zip,
+  //       country: props.contactData.country,
+  //     },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Secondary Address": {
+  //     data: {
+  //       address1Alt: props.contactData.address1Alt,
+  //       address2Alt: props.contactData.address2Alt,
+  //       cityAlt: props.contactData.cityAlt,
+  //       stateAlt: props.contactData.stateAlt,
+  //       zipAlt: props.contactData.zipAlt,
+  //       countryAlt: props.contactData.countryAlt,
+  //     },
+  //     linkType: LinkTypes.None,
+  //   },
+  // };
 
-  const basicInfoExpContent = {
-    "Email 2": {
-      data: { secondaryEmail: props.contactData.secondaryEmail },
-      linkType: LinkTypes.Mail,
-    },
-    "Email 3": {
-      data: { email3: props.contactData.email3 },
-      linkType: LinkTypes.None,
-    },
-    "Mobile Phone 2": {
-      data: { mobilephone2: props.contactData.mobilephone2 },
-      linkType: LinkTypes.None,
-    },
-    "Mobile Phone 3": {
-      data: { mobilephone3: props.contactData.mobilephone3 },
-      linkType: LinkTypes.None,
-    },
-    "Home Phone 2": {
-      data: { homePhone2: props.contactData.homePhone2 },
-      linkType: LinkTypes.None,
-    },
-    "Home Phone 3": {
-      data: { homePhone3: props.contactData.homePhone3 },
-      linkType: LinkTypes.None,
-    },
-    "Work Phone 2": {
-      data: { AltPhone2: props.contactData.AltPhone2 },
-      linkType: LinkTypes.None,
-    },
-    "Work Phone 3": {
-      data: { AltPhone3: props.contactData.AltPhone3 },
-      linkType: LinkTypes.None,
-    },
-    "Age": {
-      data: { age: props.contactData.age },
-      linkType: LinkTypes.None,
-    },
-    "Relative Names": {
-      data: { relatives: props.contactData.relatives },
-      linkType: LinkTypes.None,
-    },
-    // Notes: {
-    //   data: { notes: props.contactData.notes },
-    //   linkType: LinkTypes.None,
-    // },
+  // const lastUpdateByRow =
+  //   props.contactData.lastUpdateBy &&
+  //     props.contactData.lastUpdateBy.name === null ? (
+  //       <span className={classes.userSmallLoader}>
+  //         <CircularProgress size={22} color="secondary" />
+  //       </span>
+  //     ) : (props.contactData.lastUpdateBy &&
+  //       props.contactData.lastUpdateBy.name) ||
+  //       props.contactData.lastUpdateAt ? (
+  //         `${props.contactData.lastUpdateBy && props.contactData.lastUpdateBy.name
+  //           ? props.contactData.lastUpdateBy.name
+  //           : ""
+  //         }
+  //   ${props.contactData.lastUpdateAt
+  //           ? " - " + anyToDate(props.contactData.lastUpdateAt).toLocaleString()
+  //           : ""
+  //         }`
+  //       ) : (
+  //         <p className={classes.notAvailableP}>Not Available</p>
+  //       );
 
+  // const createByRow =
+  //   props.contactData.createBy && props.contactData.createBy.name === null ? (
+  //     <span className={classes.userSmallLoader}>
+  //       <CircularProgress size={22} color="secondary" />
+  //     </span>
+  //   ) : (props.contactData.createBy && props.contactData.createBy.name) ||
+  //     props.contactData.createAt ? (
+  //         `${props.contactData.createBy && props.contactData.createBy.name
+  //           ? props.contactData.createBy.name
+  //           : ""
+  //         }
+  //   ${props.contactData.createAt
+  //           ? " - " + anyToDate(props.contactData.createAt).toLocaleString()
+  //           : ""
+  //         }`
+  //       ) : (
+  //         <p className={classes.notAvailableP}>Not Available</p>
+  //       );
 
-    "LinkedIn Profile": {
-      data: { linkedIn: props.contactData.linkedIn },
-      linkType: LinkTypes.Simple,
-      // inner: props.contactData.linkedIn && (
-      //   <a
-      //     href={`${
-      //       !props.contactData.linkedIn.startsWith("http") &&
-      //       !props.contactData.linkedIn.startsWith("//")
-      //         ? "//"
-      //         : ""
-      //     }${props.contactData.linkedIn}`}
-      //     target="_blank"
-      //   >
-      //     {props.contactData.linkedIn}
-      //   </a>
-      // ),
-    },
-    "Facebook Profile": {
-      data: { facebook: props.contactData.facebook },
-      linkType: LinkTypes.Simple,
-      // inner: props.contactData.facebook && (
-      //   <a
-      //     href={`${
-      //       !props.contactData.facebook.startsWith("http") &&
-      //       !props.contactData.facebook.startsWith("//")
-      //         ? "//"
-      //         : ""
-      //     }${props.contactData.facebook}`}
-      //     target="_blank"
-      //   >
-      //     {props.contactData.facebook}
-      //   </a>
-      // ),
-    },
-    "Twitter Profile": {
-      data: { twitter: props.contactData.twitter },
-      linkType: LinkTypes.Simple,
-      // inner: props.contactData.twitter && (
-      //   <a
-      //     href={`${
-      //       !props.contactData.twitter.startsWith("http") &&
-      //       !props.contactData.twitter.startsWith("//")
-      //         ? "//"
-      //         : ""
-      //     }${props.contactData.twitter}`}
-      //     target="_blank"
-      //   >
-      //     {props.contactData.twitter}
-      //   </a>
-      // ),
-    },
-    Website: {
-      data: { website: props.contactData.website },
-      linkType: LinkTypes.None,
-    },
+  // const basicInfoExpContent = {
+  //   "Email 2": {
+  //     data: { secondaryEmail: props.contactData.secondaryEmail },
+  //     linkType: LinkTypes.Mail,
+  //   },
+  //   "Email 3": {
+  //     data: { email3: props.contactData.email3 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Mobile Phone 2": {
+  //     data: { mobilephone2: props.contactData.mobilephone2 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Mobile Phone 3": {
+  //     data: { mobilephone3: props.contactData.mobilephone3 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Home Phone 2": {
+  //     data: { homePhone2: props.contactData.homePhone2 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Home Phone 3": {
+  //     data: { homePhone3: props.contactData.homePhone3 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Work Phone 2": {
+  //     data: { AltPhone2: props.contactData.AltPhone2 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Work Phone 3": {
+  //     data: { AltPhone3: props.contactData.AltPhone3 },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Age": {
+  //     data: { age: props.contactData.age },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Relative Names": {
+  //     data: { relatives: props.contactData.relatives },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   // Notes: {
+  //   //   data: { notes: props.contactData.notes },
+  //   //   linkType: LinkTypes.None,
+  //   // },
 
-    // "Company Name": {
-    //   data: { companyName: props.contactData.companyName },
-    //   linkType: LinkTypes.None,
-    // },
-    // "Job Title": {
-    //   data: { jobTitle: props.contactData.jobTitle },
-    //   linkType: LinkTypes.None,
-    // },
-    // "Lead Stage": {
-    //   data: { leadStage: props.contactData.leadStage },
-    //   linkType: LinkTypes.None,
-    // },
-    "Industry Type": {
-      data: { industryType: props.contactData.industryType },
-      linkType: LinkTypes.None,
-    },
+  //   "LinkedIn Profile": {
+  //     data: { linkedIn: props.contactData.linkedIn },
+  //     linkType: LinkTypes.Simple,
+  //     // inner: props.contactData.linkedIn && (
+  //     //   <a
+  //     //     href={`${
+  //     //       !props.contactData.linkedIn.startsWith("http") &&
+  //     //       !props.contactData.linkedIn.startsWith("//")
+  //     //         ? "//"
+  //     //         : ""
+  //     //     }${props.contactData.linkedIn}`}
+  //     //     target="_blank"
+  //     //   >
+  //     //     {props.contactData.linkedIn}
+  //     //   </a>
+  //     // ),
+  //   },
+  //   "Facebook Profile": {
+  //     data: { facebook: props.contactData.facebook },
+  //     linkType: LinkTypes.Simple,
+  //     // inner: props.contactData.facebook && (
+  //     //   <a
+  //     //     href={`${
+  //     //       !props.contactData.facebook.startsWith("http") &&
+  //     //       !props.contactData.facebook.startsWith("//")
+  //     //         ? "//"
+  //     //         : ""
+  //     //     }${props.contactData.facebook}`}
+  //     //     target="_blank"
+  //     //   >
+  //     //     {props.contactData.facebook}
+  //     //   </a>
+  //     // ),
+  //   },
+  //   "Twitter Profile": {
+  //     data: { twitter: props.contactData.twitter },
+  //     linkType: LinkTypes.Simple,
+  //     // inner: props.contactData.twitter && (
+  //     //   <a
+  //     //     href={`${
+  //     //       !props.contactData.twitter.startsWith("http") &&
+  //     //       !props.contactData.twitter.startsWith("//")
+  //     //         ? "//"
+  //     //         : ""
+  //     //     }${props.contactData.twitter}`}
+  //     //     target="_blank"
+  //     //   >
+  //     //     {props.contactData.twitter}
+  //     //   </a>
+  //     // ),
+  //   },
+  //   Website: {
+  //     data: { website: props.contactData.website },
+  //     linkType: LinkTypes.None,
+  //   },
 
-    "Campaign Name": {
-      data: { campaignName: props.contactData.campaignName },
-      linkType: LinkTypes.None,
-    },
-    "Lead Source": {
-      data: { leadSource: props.contactData.leadSource },
-      linkType: LinkTypes.None,
-    },
+  //   // "Company Name": {
+  //   //   data: { companyName: props.contactData.companyName },
+  //   //   linkType: LinkTypes.None,
+  //   // },
+  //   // "Job Title": {
+  //   //   data: { jobTitle: props.contactData.jobTitle },
+  //   //   linkType: LinkTypes.None,
+  //   // },
+  //   // "Lead Stage": {
+  //   //   data: { leadStage: props.contactData.leadStage },
+  //   //   linkType: LinkTypes.None,
+  //   // },
+  //   "Industry Type": {
+  //     data: { industryType: props.contactData.industryType },
+  //     linkType: LinkTypes.None,
+  //   },
 
-    "Time Zone": {
-      data: { timeZone: props.contactData.timeZone },
-      linkType: LinkTypes.None,
-    },
-    Territory: {
-      data: { territory: props.contactData.territory },
-      linkType: LinkTypes.None,
-    },
-    Status: {
-      data: { status: props.contactData.status },
-      linkType: LinkTypes.None,
-    },
-    "Contact Owner": {
-      data: {
-        contactOwner: props.contactData.contactOwner,
-        contactOwnerId: props.contactData.contactOwnerId
-      },
-      linkType: LinkTypes.None,
-    },
-    "Created By": {
-      data: { createByRow },
-      linkType: LinkTypes.None,
-      inner: createByRow,
-    },
-    "Last Updated By": {
-      data: { lastUpdateByRow },
-      linkType: LinkTypes.None,
-      inner: lastUpdateByRow,
-    },
-  };
+  //   "Campaign Name": {
+  //     data: { campaignName: props.contactData.campaignName },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Lead Source": {
+  //     data: { leadSource: props.contactData.leadSource },
+  //     linkType: LinkTypes.None,
+  //   },
+
+  //   "Time Zone": {
+  //     data: { timeZone: props.contactData.timeZone },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   Territory: {
+  //     data: { territory: props.contactData.territory },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   Status: {
+  //     data: { status: props.contactData.status },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Contact Owner": {
+  //     data: {
+  //       contactOwner: props.contactData.contactOwner,
+  //       contactOwnerId: props.contactData.contactOwnerId
+  //     },
+  //     linkType: LinkTypes.None,
+  //   },
+  //   "Created By": {
+  //     data: { createByRow },
+  //     linkType: LinkTypes.None,
+  //     inner: createByRow,
+  //   },
+  //   "Last Updated By": {
+  //     data: { lastUpdateByRow },
+  //     linkType: LinkTypes.None,
+  //     inner: lastUpdateByRow,
+  //   },
+  // };
 
   useEffect(() => {
     setLoading(true);
@@ -435,20 +467,19 @@ export default function DetailInfo(props) {
       setLoading(false);
     }
     update();
-  }, [props.contactData])
-
-
+  }, [props.contactData]);
 
   const handleEmptyFields = () => {
     setShowEmpty(!showEmpty);
-  }
+  };
 
   const ToggleEmptyFieldButton = () => {
     return (
       <FormGroup style={{ display: "block" }}>
         <FormControlLabel
-          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""
-            } ${!showEmpty ? classes.switchTextDeselected : ""}`}
+          className={`${classes.switchButtom}${
+            props.publicLeftBottom ? classes.publicLeftBottom : ""
+          } ${!showEmpty ? classes.switchTextDeselected : ""}`}
           control={
             <React.Fragment>
               <AntSwitch
@@ -462,155 +493,350 @@ export default function DetailInfo(props) {
           }
           label="Show empty fields"
           labelPlacement="end"
-
         />
       </FormGroup>
     );
   };
 
+  const tabs =
+    props.purchaseData.length > 0
+      ? ["Basic Info", "Purchased Info"]
+      : ["Basic Info"];
+
   return (
     <div className={classes.root}>
       <Grid item xs={12} style={{ minHeight: "28px" }}>
-        <h4 style={{ margin: "0 0 10px 0", "float": "left" }}>
-          Basic Information
-        </h4>
+        {tabs.map((tab) => {
+          return (
+            <span
+              className={`${classes.tab} ${
+                selectedTab === tab ? classes.selectedTab : ""
+              }`}
+              onClick={() => setSelectedTab(tab)}
+            >
+              {tab}
+            </span>
+          );
+        })}
+        {selectedTab === "Purchased Info" && (
+          <Select
+            className={classes.viewSwitcher}
+            value={selectedPurchaseData}
+            onChange={(e) => {
+              setSelectedPurchaseData(e.target.value);
+            }}
+          >
+            {props.purchaseData.map((purchaseData) => {
+              return (
+                <MenuItem  value={purchaseData._id}>
+                  IDI Data -{" "}
+                  {moment(purchaseData.sysDateTime).format(
+                    "MM/DD/YYYY hh:mm:ss a"
+                  )}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        )}
+
         <Box display="flex" justifyContent="flex-end">
           <ToggleEmptyFieldButton />
           <h4
             className={classes.viewAll}
-            onClick={() => { history.push(`/contact/details/${props.contactData._id}/detailedInformation`) }}
+            onClick={() => {
+              history.push(
+                `/contact/details/${props.contactData._id}/detailedInformation`
+              );
+            }}
           >
             View All
-        </h4>
+          </h4>
         </Box>
       </Grid>
 
+      {selectedTab === "Basic Info" && (
+        <>
+          <Grid item xs={12} container className={classes.dataSect} spacing={0}>
+            {!loading &&
+              getBasicInfoContent(props.contactData) &&
+              Object.entries(getBasicInfoContent(props.contactData)).map(
+                ([key, row]) => {
+                  if (showEmpty) {
+                    return (
+                      <React.Fragment>
+                        <Grid item xs={3} className="fieldName">
+                          <p className="dataLabels">{key}</p>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <FieldContent
+                            id={props.contactData._id}
+                            entity={props.contactData.entity}
+                            isMerged={!!props.contactData.mergedContacts}
+                            content={row.data}
+                            linkType={row.linkType}
+                            isPurchased={selectedTab === "Purchased Info"}
+                          />
+                        </Grid>
+                      </React.Fragment>
+                    );
+                  } else {
+                    let objName = Object.keys(row.data)[0];
+                    if (
+                      row.data[objName] != undefined &&
+                      row.data[objName] != `""` &&
+                      row.data[objName] != "" &&
+                      row.data[objName] != "" &&
+                      row.data[objName].length != 0 &&
+                      row.data[objName] != null
+                    ) {
+                      return (
+                        <React.Fragment>
+                          <Grid item xs={3} className="fieldName">
+                            <p className="dataLabels">{key}</p>
+                          </Grid>
+                          <Grid item xs={9}>
+                            <FieldContent
+                              id={props.contactData._id}
+                              entity={props.contactData.entity}
+                              isMerged={!!props.contactData.mergedContacts}
+                              content={row.data}
+                              linkType={row.linkType}
+                            />
+                          </Grid>
+                        </React.Fragment>
+                      );
+                    }
+                  }
+                }
+              )}
 
-      <Grid item xs={12} container className={classes.dataSect} spacing={0}>
-        {!loading && basicInfoContent &&
-          Object.entries(basicInfoContent).map(([key, row]) => {
-            if (showEmpty) {
-              return (
-                <React.Fragment>
-                  <Grid item xs={3} className="fieldName">
-                    <p className="dataLabels">{key}</p>
-                  </Grid>
-                  <Grid item xs={9}>
-                    <FieldContent
-                      id={props.contactData._id}
-                      entity={props.contactData.entity}
-                      isMerged={!!props.contactData.mergedContacts}
-                      content={row.data}
-                      linkType={row.linkType}
-                    />
-                  </Grid>
-                </React.Fragment>
+            {basicInfExp && (
+              <>
+                {Object.entries(getBasicInfoExpContent(props.contactData)).map(
+                  ([key, row]) => {
+                    if (showEmpty) {
+                      return (
+                        <React.Fragment key={key}>
+                          <Grid item xs={3} className="fieldName">
+                            <p className="dataLabels">{key}</p>
+                          </Grid>
+                          <Grid item xs={9}>
+                            <FieldContent
+                              onlyChildren={row.inner ? true : false}
+                              id={props.contactData._id}
+                              entity={props.contactData.entity}
+                              isMerged={!!props.contactData.mergedContacts}
+                              content={row.data}
+                              linkType={row.linkType}
+                            >
+                              {row.inner}
+                            </FieldContent>
+                          </Grid>
+                        </React.Fragment>
+                      );
+                    } else {
+                      let objName = Object.keys(row.data)[0];
+
+                      if (
+                        row.data[objName] != undefined &&
+                        row.data[objName] != `""` &&
+                        row.data[objName] != "" &&
+                        row.data[objName] != "" &&
+                        row.data[objName].length != 0 &&
+                        row.data[objName] != null
+                      ) {
+                        return (
+                          <React.Fragment key={key}>
+                            <Grid item xs={3} className="fieldName">
+                              <p className="dataLabels">{key}</p>
+                            </Grid>
+                            <Grid item xs={9}>
+                              <FieldContent
+                                onlyChildren={row.inner ? true : false}
+                                id={props.contactData._id}
+                                entity={props.contactData.entity}
+                                isMerged={!!props.contactData.mergedContacts}
+                                content={row.data}
+                                linkType={row.linkType}
+                              >
+                                {row.inner}
+                              </FieldContent>
+                            </Grid>
+                          </React.Fragment>
+                        );
+                      }
+                    }
+                  }
+                )}
+              </>
+            )}
+          </Grid>
+          <Grid item xs={12}>
+            <h4
+              className={classes.showAll}
+              onClick={() => {
+                setBasicInfExp(!basicInfExp);
+              }}
+            >
+              Show {!basicInfExp ? "More" : "Less"}
+              {!basicInfExp ? (
+                <ExpandMoreIcon style={{ position: "relative", top: "8px" }} />
+              ) : (
+                <ExpandLessIcon style={{ position: "relative", top: "8px" }} />
+              )}
+            </h4>
+          </Grid>
+        </>
+      )}
+
+      {selectedTab === "Purchased Info" && (
+        <>
+          <Grid item xs={12} container className={classes.dataSect} spacing={0}>
+            {!basicInfExp && getBasicPurchaseInfoContent(
+              props.purchaseData.find(
+                (purchaseData) => purchaseData._id === selectedPurchaseData
               )
-            } else {
-              let objName = Object.keys(row.data)[0];
-              if (row.data[objName] != undefined
-                && row.data[objName] != `""`
-                && row.data[objName] != ''
-                && row.data[objName] != ""
-                && row.data[objName].length != 0
-                && row.data[objName] != null
-              ) {
-                return (
-                  <React.Fragment>
-                    <Grid item xs={3} className="fieldName">
-                      <p className="dataLabels">{key}</p>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <FieldContent
-                        id={props.contactData._id}
-                        entity={props.contactData.entity}
-                        isMerged={!!props.contactData.mergedContacts}
-                        content={row.data}
-                        linkType={row.linkType}
-                      />
-                    </Grid>
-                  </React.Fragment>
+            ) &&
+              Object.entries(
+                getBasicPurchaseInfoContent(
+                  props.purchaseData.find(
+                    (purchaseData) => purchaseData._id === selectedPurchaseData
+                  )
                 )
-              }
-            }
-
-          })}
-
-        {basicInfExp && (
-          <>
-            {Object.entries(basicInfoExpContent).map(([key, row]) => {
-              if (showEmpty) {
-                return (
-                  <React.Fragment key={key}>
-                    <Grid item xs={3} className="fieldName">
-                      <p className="dataLabels">{key}</p>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <FieldContent
-                        onlyChildren={row.inner ? true : false}
-                        id={props.contactData._id}
-                        entity={props.contactData.entity}
-                        isMerged={!!props.contactData.mergedContacts}
-                        content={row.data}
-                        linkType={row.linkType}
-                      >
-                        {row.inner}
-                      </FieldContent>
-                    </Grid>
-                  </React.Fragment>
-                )
-              } else {
-                let objName = Object.keys(row.data)[0];
-
-                if (row.data[objName] != undefined
-                  && row.data[objName] != `""`
-                  && row.data[objName] != ''
-                  && row.data[objName] != ""
-                  && row.data[objName].length != 0
-                  && row.data[objName] != null
-                ) {
+              ).map(([key, row]) => {
+                if (showEmpty) {
                   return (
-
-                    <React.Fragment key={key}>
+                    <React.Fragment>
                       <Grid item xs={3} className="fieldName">
                         <p className="dataLabels">{key}</p>
                       </Grid>
                       <Grid item xs={9}>
                         <FieldContent
-                          onlyChildren={row.inner ? true : false}
                           id={props.contactData._id}
                           entity={props.contactData.entity}
-                          isMerged={!!props.contactData.mergedContacts}
                           content={row.data}
                           linkType={row.linkType}
-                        >
-                          {row.inner}
-                        </FieldContent>
+                          disabled
+                          isPurchased
+                        />
                       </Grid>
                     </React.Fragment>
-                  )
+                  );
+                } else {
+                  let objName = Object.keys(row.data)[0];
+                  if (
+                    row.data[objName] != undefined &&
+                    row.data[objName] != `""` &&
+                    row.data[objName] != "" &&
+                    row.data[objName] != "" &&
+                    row.data[objName].length != 0 &&
+                    row.data[objName] != null
+                  ) {
+                    return (
+                      <React.Fragment>
+                        <Grid item xs={3} className="fieldName">
+                          <p className="dataLabels">{key}</p>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <FieldContent
+                            id={props.contactData._id}
+                            entity={props.contactData.entity}
+                            content={row.data}
+                            linkType={row.linkType}
+                            disabled
+                            isPurchased
+                          />
+                        </Grid>
+                      </React.Fragment>
+                    );
+                  }
                 }
-              }
+              })}
 
-            })}
-          </>
-        )}
-      </Grid>
-      <Grid item xs={12}>
-        <h4
-          className={classes.showAll}
-          onClick={() => {
-            setBasicInfExp(!basicInfExp);
-          }}
-        >
-          Show {!basicInfExp ? "More" : "Less"}
-          {!basicInfExp ? (
-            <ExpandMoreIcon style={{ position: "relative", top: "8px" }} />
-          ) : (
-              <ExpandLessIcon style={{ position: "relative", top: "8px" }} />
+            {basicInfExp && (
+              <>
+                {Object.entries(
+                  getBasicPurchaseInfoExpContent(props.purchaseData.find(
+                    (purchaseData) => purchaseData._id === selectedPurchaseData
+                  ))
+                ).map(([key, row]) => {
+                  if (showEmpty) {
+                    return (
+                      <React.Fragment key={key}>
+                        <Grid item xs={3} className="fieldName">
+                          <p className="dataLabels">{key}</p>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <FieldContent
+                            onlyChildren={row.inner ? true : false}
+                            id={props.contactData._id}
+                            entity={props.contactData.entity}
+                            isMerged={!!props.contactData.mergedContacts}
+                            content={row.data}
+                            linkType={row.linkType}
+                            disabled
+                            isPurchased
+                          >
+                            {row.inner}
+                          </FieldContent>
+                        </Grid>
+                      </React.Fragment>
+                    );
+                  } else {
+                    let objName = Object.keys(row.data)[0];
+
+                    if (
+                      row.data[objName] != undefined &&
+                      row.data[objName] != `""` &&
+                      row.data[objName] != "" &&
+                      row.data[objName] != "" &&
+                      row.data[objName].length != 0 &&
+                      row.data[objName] != null
+                    ) {
+                      return (
+                        <React.Fragment key={key}>
+                          <Grid item xs={3} className="fieldName">
+                            <p className="dataLabels">{key}</p>
+                          </Grid>
+                          <Grid item xs={9}>
+                            <FieldContent
+                              onlyChildren={row.inner ? true : false}
+                              id={props.contactData._id}
+                              entity={props.contactData.entity}
+                              isMerged={!!props.contactData.mergedContacts}
+                              content={row.data}
+                              linkType={row.linkType}
+                              disabled
+                              isPurchased
+                            >
+                              {row.inner}
+                            </FieldContent>
+                          </Grid>
+                        </React.Fragment>
+                      );
+                    }
+                  }
+                })}
+              </>
             )}
-        </h4>
-      </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <h4
+              className={classes.showAll}
+              onClick={() => {
+                setBasicInfExp(!basicInfExp);
+              }}
+            >
+              Show {!basicInfExp ? "More" : "Less"}
+              {!basicInfExp ? (
+                <ExpandMoreIcon style={{ position: "relative", top: "8px" }} />
+              ) : (
+                <ExpandLessIcon style={{ position: "relative", top: "8px" }} />
+              )}
+            </h4>
+          </Grid>
+        </>
+      )}
     </div>
   );
-};
+}

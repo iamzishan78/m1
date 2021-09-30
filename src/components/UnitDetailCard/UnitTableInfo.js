@@ -71,7 +71,8 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "100%",
     margin: "0px",
-    padding: "0px"
+    padding: "0px",
+    border: '1px solid rgba(224, 224, 224, 1)'
     // borderStyle: "none",
   },
   rowGrey: {

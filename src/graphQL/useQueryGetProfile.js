@@ -9,7 +9,7 @@ export const GETPROFILE = gql`
                 email
                 phone
                 profileImage
-                displayname
+                displayName
                 _id
                 timezone
                 activity

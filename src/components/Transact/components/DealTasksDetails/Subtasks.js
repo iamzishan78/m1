@@ -195,7 +195,6 @@ const Subtasks = (props) => {
   const [updateSubtask] = useMutation(UPDATE_DEAL_SUBTASK);
 
   useEffect(() => {
-    debugger;
     setItems(tasks.map((t, index) => ({ ...t, id: `${index + 1}`, depth: 0 })));
   }, [tasks]);
 
