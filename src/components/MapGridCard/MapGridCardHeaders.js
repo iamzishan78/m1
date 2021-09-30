@@ -16,7 +16,7 @@ export const ownersColumnHeaders = [
     label: "Name",
   },
   {
-    name: "OwnerType",
+    name: "ownershipType",
     label: "Owner Type",
   },
   {

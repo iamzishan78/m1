@@ -30,7 +30,7 @@ const SuggestedOwnersHeadCells = [
   },
   { name: "name", label: "Name" },
   {
-    name: "OwnerType",
+    name: "ownershipType",
     label: "Owner Type",
   },
   {
