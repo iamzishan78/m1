@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import CardMedia from "@material-ui/core/CardMedia";
@@ -61,6 +61,13 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "50%",
     objectFit: "contain",
   },
+  removeImage: {
+    "&:hover": {
+      color: '#00abed',
+      cursor: "pointer",
+      textDecoration: "underline"
+    }
+  },
 }));
 
 const ProfileContent = () => {
@@ -68,11 +75,11 @@ const ProfileContent = () => {
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
   const [app] = useContext(AppContext);
   const {
-    fields: { fullname, displayname, jobTitle, phone, profileImage}
+    fields: { fullname, displayName, jobTitle, phone, profileImage }
   } = stateProfile;
   const onChange = ({ name, value }) => {
     let disectFullname = {};
-    
+
     if (name === "fullname") {
       let temp = value.split(" ");
       if (temp.length === 1) {
@@ -80,7 +87,7 @@ const ProfileContent = () => {
       } else if (temp.length === 2) {
         disectFullname['firstname'] = temp[0];
         disectFullname['lastname'] = temp[1];
-      } else if (temp.length >= 3){
+      } else if (temp.length >= 3) {
         disectFullname['firstname'] = temp[0];
         disectFullname['middlename'] = temp[1];
         disectFullname['firstname'] = temp[2];
@@ -89,7 +96,8 @@ const ProfileContent = () => {
 
     setStateProfile({
       ...stateProfile,
-      fields: { ...stateProfile.fields,
+      fields: {
+        ...stateProfile.fields,
         [name]: value,
         ...disectFullname
       },
@@ -108,6 +116,16 @@ const ProfileContent = () => {
       );
       reader.readAsDataURL(e.target.files[0]);
     }
+  };
+
+  const clearImage = (e) => {
+    setStateProfile({
+      ...stateProfile,
+      fields: {
+        ...stateProfile.fields,
+        profileImage: null,
+      },
+    });
   };
 
   const formatPhone = (number) => {
@@ -157,8 +175,8 @@ const ProfileContent = () => {
             label={"Display Name"}
             placeholder={"Display Name"}
             helperText={"This could be your nickname or first name"}
-            name="displayname"
-            value={displayname}
+            name="displayName"
+            value={displayName}
             onChange={({ target }) => onChange(target)}
           />
           <Box pb={2.5} />
@@ -233,6 +251,14 @@ const ProfileContent = () => {
               Upload an image
             </Button>
           </label>
+          {profileImage?.length > 0 && (
+            <Box textAlign="center" paddingTop={1}>
+              <Typography variant="body2" className={classes.removeImage} onClick={clearImage}>
+                Remove Image
+              </Typography>
+            </Box>
+          )}
+
         </Grid>
         {/* <Grid item sm={12} style={{paddingTop: 10, color: '#1daee1'}}>
           <Link to="/myaccount">

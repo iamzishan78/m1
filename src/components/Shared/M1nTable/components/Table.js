@@ -32,6 +32,7 @@ import Button from "@material-ui/core/Button";
 import EmailRoundedIcon from "@material-ui/icons/EmailRounded";
 import MergeTypeIcon from "@material-ui/icons/MergeType";
 import AssignmentIndOutlinedIcon from "@material-ui/icons/AssignmentIndOutlined";
+import AlternateEmailIcon from '@material-ui/icons/AlternateEmail';
 import ContactPhoneRoundedIcon from "@material-ui/icons/ContactPhoneRounded";
 import BuyContactsInfoDialogContent from "./SubComponents/BuyContactsInfoDialogContent";
 import PrintLabelsDialogContent from "./SubComponents/PrintLabelsDialogContent";
@@ -68,6 +69,7 @@ import moment from "moment";
 import MergeContactDrawer from "./SubComponents/MergeContactDrawer";
 import MultipleOwnerToContactDrawer from "./SubComponents/MultipleOwnerToContactDrawer";
 import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDrawer";
+import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 
@@ -91,6 +93,8 @@ import convert_date from "../../../Shared/valueformatters/convert_date.js";
 import get_file_icon from "../../../Shared/functions/get_file_icon.js";
 
 import RightDialog from "../../../ContactDetailCard/components/RightDialog";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 // queries
 import { OWNERSLATSLONS } from "../../../../graphQL/useQueryOwnerLatsLonsArray";
@@ -103,6 +107,9 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 //icons
 import SearchIcon from "@material-ui/icons/Search";
 import GetAppIcon from "@material-ui/icons/GetApp";
+// import { ReactComponent as RequestPageIcon } from 'components/Shared/svgIcons/request_page_icon.svg';
+import RequestPageIcon from 'components/Shared/svgIcons/request_page';
+// import RequestPageIcon from 'components/Shared/svgIcons/request_page_icon';
 import PageviewIcon from "@material-ui/icons/Pageview";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import PostAddIcon from "@material-ui/icons/PostAdd";
@@ -433,7 +440,7 @@ const useStyles = makeStyles((theme) => ({
   },
   clickableCell: {
     cursor: "pointer",
-    padding: "10px 30px 0px 10px",
+    padding: "10px 10px 10px 10px",
     position: "relative",
     minWidth: "100px",
     borderRadius: "7px",
@@ -443,12 +450,17 @@ const useStyles = makeStyles((theme) => ({
     },
     fontWeight: "bold",
   },
+  companyName:{
+    fontSize: "12px",
+    color: "#000000",
+    fontWeight: "normal",
+  },
   docDateText: {
     // cursor: "pointer",
     padding: "0px 30px 10px 10px",
     marginTop: "-10px",
     position: "relative",
-    justifyContent: "flex-end",
+    justifyContent: "flex-end"
     // minWidth: "100px",
     // borderRadius: "7px",
     // color: "#17aadd",
@@ -456,7 +468,7 @@ const useStyles = makeStyles((theme) => ({
     //   textDecoration: "underline",
     // },
     // fontWeight: "bold",
-  },
+  }
   // filenamediv: {
   //   cursor: "pointer",
   //   padding: "10px 30px 10px 10px",
@@ -487,6 +499,7 @@ function SubTable(props) {
 
   // function state
   const [trueTargetLabel, TrueTargetLabel] = useState(null);
+  const [contactDataMissing, setContactDataMissing] = useState([]);
   const [rowsPerPage, RowsPerPage] = useState(props.startPaginationAt);
   const [firstMount, FirstMount] = useState(true);
   const [title, Title] = useState("");
@@ -1054,7 +1067,7 @@ function SubTable(props) {
           <div></div>
         )}
         <MenuItem className={classes.userMenuItem} onClick={(e) => handleExpandClick(null, null, null, "deleteUser")}>
-          Delete User
+          Inactivate User
         </MenuItem>
       </Menu>
     );
@@ -1171,6 +1184,19 @@ function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   return (
                     <span style={{ padding: 10 }}>{tableMeta.rowData[5] ? moment(tableMeta.rowData[5]).format("MM/DD/YYYY") : ""}</span>
+                  );
+                },
+              };
+            }
+            break;
+          }
+          case "lastLogin": {
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value) => {
+                  return (
+                    <span style={{ padding: 10 }}>{value ? moment(value).format("MM/DD/YYYY HH:MM A") : ""}</span>
                   );
                 },
               };
@@ -1858,6 +1884,9 @@ function SubTable(props) {
                               //  console.log(,'value Div click')
                               const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1];
                               if (type === "pdf") {
+                                if(props.addAble.type === 'document'){
+                                  window.history.pushState('', '', `/documents/${row_line._id}/view`);
+                                }
                                 setStateApp((state) => ({
                                   ...state,
                                   pdfView: rows.find((row) => row._id === row_line._id),
@@ -2035,7 +2064,8 @@ function SubTable(props) {
                         <Avatar
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
-                          name={valueFormatter(value)}
+                          name={valueFormatter(tableMeta.rowData[8]) || valueFormatter(`${tableMeta.rowData[10] ? tableMeta.rowData[10] : tableMeta.rowData[8] ? tableMeta.rowData[8].split(' ')[0] : ''}`)}
+                         // name={valueFormatter(`${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
                           size="35"
                           round
                         />
@@ -2056,7 +2086,7 @@ function SubTable(props) {
                           nonEditable={!column.editable}
                         />
                       )}
-                      {props.targetLabel === "contact" && column.name !== "name" && (
+                      {props.targetLabel === "contact"  && column.name !== "name"&& (
                         <CellContentEdition
                           id={tableMeta.rowData[0]}
                           content={{ [column.name]: valueFormatter(value) }}
@@ -2091,8 +2121,23 @@ function SubTable(props) {
                             handleOpenExpandableCard();
                           }}
                         >
-                          {value}
+                          {tableMeta.rowData[8] ||
+                          !tableMeta.rowData[10] && !tableMeta.rowData[12] ? (
+                            `${tableMeta.rowData[8] ? tableMeta.rowData[8]: ''}`
+                          ):(
+                            `${tableMeta.rowData[10] ? tableMeta.rowData[10]: ''} ${tableMeta.rowData[12] ? tableMeta.rowData[12]: ''}`
+                          )}
+                          <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
                         </p>
+                      )}
+                      {props.targetLabel === "contact" && column.name === "name" && (
+                        <FeatureFlag feature={FEATURES.IDICORE}>
+                          <span>
+                            {tableMeta.rowData[49] &&  (
+                              <RequestPageIcon color="grey" fontSize='8px'/>
+                            )}
+                          </span>
+                        </FeatureFlag>
                       )}
 
                       {/* {props.targetLabel === "documents" &&
@@ -2469,6 +2514,32 @@ function SubTable(props) {
                   {props.header !== "Active Users" && props.header !== "Documents" && (
                     <>
                       {/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
+                      <FeatureFlag feature={FEATURES.IDICORE}>
+                        <Button
+                          color="secondary"
+                          startIcon={<RequestPageIcon color="white"/>}
+                          className={classes.multiSelectionTopBarButtons}
+                          disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+                          onClick={() => {
+                            const rows = getSelectedRows()
+                            const contacts = []
+                            for(let i=0; i<rows.length; i++){
+                              if(!rows[i].firstName || !rows[i].lastName || !rows[i].address1){
+                                contacts.push(rows[i]);
+                              }
+                            }
+                            setContactDataMissing(contacts)
+                            if(contacts.length > 0){
+                              handleExpandClick(null, null, getSelectedRows(), "contactDataMissing");
+                            }else{
+                              handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData");
+                            }
+                            
+                          }}
+                        >
+                          Contact Data
+                        </Button>
+                      </FeatureFlag>
                       <Button
                         color="secondary"
                         startIcon={<AssignmentIndOutlinedIcon />}
@@ -2613,6 +2684,13 @@ function SubTable(props) {
       }
       if (props.addAble.type === "ownerToParcel") {
         buttonLabel = "+ ADD INTEREST OWNER";
+        menuOptions = { text: "Import Interest Owners", isShow: true, action: () => {
+          setStateNav((stateNav) => ({
+            ...stateNav,
+            bulkUploadFromMap: true,
+          }));
+          routeChange("/bulkupload")
+        }};
       }
       if (props.addAble.type === "suggestedOwnerToParcel") {
         buttonLabel = "+ ADD TO PARCEL";
@@ -2674,7 +2752,7 @@ function SubTable(props) {
 
       return (
         <>
-          <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
+          <div style={{ display: "inline", cssFloat: "left", marginRight: "15px", marginTop: "5px" }}>
             {props.addAble.type === "parcelInterest" && (
               <Button color="secondary" className={classes.multiSelectionTopBarButtons} disabled={true} onClick={() => { }}>
                 {buttonLabel}
@@ -2707,7 +2785,6 @@ function SubTable(props) {
             )}
             {(props.addAble.type === "wellInterest" ||
               props.addAble.type === "deals" ||
-              props.addAble.type === "ownerToParcel" ||
               props.addAble.type === "suggestedOwnerToParcel" ||
               (props.addAble && props.parent === "UserManagement")) && (
                 <Button
@@ -2719,7 +2796,9 @@ function SubTable(props) {
                   {buttonLabel}
                 </Button>
               )}
-            {props.addAble.type === "contact" && <ButtonDropDown options={options} />}
+            {(props.addAble.type === "contact" ||
+             props.addAble.type === "ownerToParcel") && 
+             <ButtonDropDown options={options} />}
 
             {props.header === "Documents" && (
               // <ButtonDropDown options={options} onClick={() => {
@@ -2738,13 +2817,23 @@ function SubTable(props) {
                   }}
                 >
                   <PostAddIcon></PostAddIcon>
-                Add Document
-              </Button>
+                  Add Document
+                </Button>
               </ButtonGroup>
             )}
 
             {props.addAble.type === "contact" && (
               <>
+                <FeatureFlag feature={FEATURES.IDICORE}>
+                  <Button
+                    color="secondary"
+                    startIcon={<RequestPageIcon color="#B3B3B3" />}
+                    className={classes.multiSelectionTopBarButtons}
+                    disabled
+                  >
+                    Contact Data
+                  </Button>
+                </FeatureFlag>
                 <Button
                   color="secondary"
                   startIcon={<AssignmentIndOutlinedIcon />}
@@ -3352,6 +3441,17 @@ function SubTable(props) {
             />
           </RightDialog>
         )}
+        {openDialog && openDialog === "buyContactsInfoData" && (
+          <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
+            <BuyContactsInfoDialogContent
+              header="Contact Data Integration"
+              onClose={handleCloseDialog}
+              rows={expandedObject}
+              setRows={setExpandedObject}
+              setSelectedRow={setSelectedRow}
+            />
+          </RightDialog>
+        )}
         {openDialog && openDialog === "addOwnerToParcel" && (
           <AddParcelOwnerDialogContent
             onClose={() => {
@@ -3371,10 +3471,51 @@ function SubTable(props) {
         // popups that overlay the screen due to actions from the grid 
         // examples would be grid tags or grid comments  */}
 
+        {openDialog === "addContact" && props.targetLabel === "contact" && (
+          <AddContactDialogContent onClose={handleCloseDialog} parent={props.addAble.parent} />
+        )}
+
+        {openDialog === "contactDataMissing" && (
+          <ContactDataMissingDialog
+            openDialog={openDialog}
+            onClose={handleCloseDialog}
+            contacts={contactDataMissing}
+          />
+        )}
+        {openDialog === "multipleOwnerToContact" && (
+          <MultipleOwnerToContactDrawer
+            onClose={handleCloseDialog}
+            rows={expandedObject}
+            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+            setRows={setExpandedObject}
+          />
+        )}
+        {openDialog === "asign" && (
+          <AssignOwnerToContactDrawer
+            onClose={handleCloseDialog}
+            rows={expandedObject}
+            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+            setRows={setExpandedObject}
+          />
+        )}
+        {openDialog === "merge" && (
+          <MergeContactDrawer
+            onClose={handleCloseDialog}
+            rows={expandedObject}
+            setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+            setRows={setExpandedObject}
+          />
+        )}
         {openDialog &&
+          openDialog !== "asign" &&
+          openDialog !== "merge" &&
+          openDialog !== "addContact" &&
+          openDialog !== "contactDataMissing" && 
+          openDialog !== "multipleOwnerToContact" && 
           openDialog !== "addDeals" &&
           openDialog !== "sendMailers" &&
           openDialog !== "buyContactsInfo" &&
+          openDialog !== "buyContactsInfoData" &&
           openDialog !== "addOwnerToParcel" && (
             <Dialog
               // style={{zIndex: 99998}}
@@ -3487,10 +3628,6 @@ function SubTable(props) {
                 >
                   {`Do you want to create a new Contact from this Owner?`}
                 </MakeItAContactConfirmationDialogContent>
-              )}
-
-              {openDialog === "addContact" && props.targetLabel === "contact" && (
-                <AddContactDialogContent onClose={handleCloseDialog} parent={props.addAble.parent} />
               )}
 
               {/* {openDialog === "addOwnerToParcel" && (
@@ -3670,31 +3807,6 @@ function SubTable(props) {
                   setSelectedRow={setSelectedRow}
                 />
               )}
-
-              {openDialog === "asign" && (
-                <AssignOwnerToContactDrawer
-                  onClose={handleCloseDialog}
-                  rows={expandedObject}
-                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-                  setRows={setExpandedObject}
-                />
-              )}
-              {openDialog === "merge" && (
-                <MergeContactDrawer
-                  onClose={handleCloseDialog}
-                  rows={expandedObject}
-                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-                  setRows={setExpandedObject}
-                />
-              )}
-              {openDialog === "multipleOwnerToContact" && (
-                <MultipleOwnerToContactDrawer
-                  onClose={handleCloseDialog}
-                  rows={expandedObject}
-                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
-                  setRows={setExpandedObject}
-                />
-              )}
               {openDialog === "sendMailers" && (
                 <SendMailersDialogContent
                   onClose={handleCloseDialog}
@@ -3724,7 +3836,7 @@ function SubTable(props) {
               )}
               {openDialog === "deleteUser" && (
                 <DeleteConfirmationDialogContent
-                  header={`Delete User${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""}`}
+                  header={`Inactivate User${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""}`}
                   onClose={handleCloseDialog}
                   deleteFunc={() => {
                     props.deleteFunc(selectedUser.id);
@@ -3734,7 +3846,7 @@ function SubTable(props) {
                   setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
                 >
                   {selectedUser !== null
-                    ? `Remove '${selectedUser.displayName}' from list?`
+                    ? `Remove system access for '${selectedUser.displayName}' ?`
                     : `Are you sure you want to delete selected user${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""}?`}
                 </DeleteConfirmationDialogContent>
               )}

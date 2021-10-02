@@ -8,7 +8,7 @@ import Board from "react-trello";
 import { makeStyles } from "@material-ui/core/styles";
 import { UPDATESTAGEDEALDESCRIPTORS } from "../../graphQL/useMutationUpdateStageDealDescriptors";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import AddDealDialog from "../ContactDetailCard/components/AddDealDialog";
+import AddDealDialog from "components/Transact/components/AddDealDialog";
 import "./index.css";
 import TransactAppBar from "./components/TransactAppBar";
 import SidePanel from "./components/SidePanel";
@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
         overflowX: "scroll",
         overflowY: "hidden",
         "&::-webkit-scrollbar": {
-          height: "0.4em",
+          height: "0.75em",
         },
         "&::-webkit-scrollbar-track": {
           "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
@@ -413,7 +413,7 @@ export default function Transact() {
 
     let formattedDate = null;
 
-    if (metadata?.closeDate) formattedDate = moment.parseZone(new Date(metadata.closeDate)).format("MM/DD/yyyy");
+    if (metadata?.closeDate) formattedDate = moment.parseZone(new Date(metadata.closeDate)).format("MM/DD/YY");
 
     let owner = null;
     let ownerId = null;
@@ -459,16 +459,28 @@ export default function Transact() {
             )}
           </div>
           <div className={classes.cardSubheading}>
-            <span>{formattedPrice}</span>
-            {formattedDate && (
+          
+          {formattedDate && (
               <>
                 <br />
                 <span>
-                  Est. Close {"  "}
+                  Est. Close {"   "}
                   <span style={{ fontWeight: "normal" }}>{formattedDate}</span>
                 </span>
               </>
             )}
+
+          {formattedPrice && (
+            <>
+             <br />
+
+             <span>
+                  Offer Price {" "}
+            <span style={{ fontWeight: "normal" }}>{formattedPrice}</span>
+            </span>
+            </>
+            )}
+
           </div>
         </header>
         <div className={classes.cardDescStyle}>{desc}</div>

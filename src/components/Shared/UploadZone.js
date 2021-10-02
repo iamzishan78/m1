@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { DropzoneAreaBase } from "material-ui-dropzone";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { CircularProgress } from "@material-ui/core";
-import { showErrorMessage, showWarningMessage } from "../../actions";
+import { showErrorMessage } from "../../actions";
 import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
 import { Container } from "@material-ui/core";
+import { BlockBlobClient } from "@azure/storage-blob";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		paddingTop: "28px",
 		"& .MuiContainer-root": {
 			paddingLeft: "0px",
 			paddingRight: "0px",
@@ -76,19 +76,19 @@ export default function UploadZone(props) {
 			const file_name = addFileData.addFileDescriptor.file.name;
 
 			if (file_id) {
-				fetch(uri, {
-					headers: {
-						"X-Ms-Blob-Content-Disposition": `attachment; filename="${file_name}"`,
-						"X-Ms-Blob-Type": "BlockBlob",
-						"X-Ms-Meta-Internalkey": interal_key,
-						"X-Ms-Version": "2015-02-21",
+				const blockBlobClient = new BlockBlobClient(uri);
+				blockBlobClient.uploadBrowserData(inputFile, {
+					maxSingleShotSize: 4 * 1024 * 1024,
+					blobHTTPHeaders: {
+						blobContentDisposition: `attachment; filename="${file_name}"`
 					},
-					method: "PUT",
-					body: inputFile,
+					metadata: {
+						Internalkey: interal_key
+					}
 				})
 					.then((res) => {
 						console.log(res);
-						if (res?.status === 201) {
+						if (res?._response?.status === 201) {
 							// props.getRecentFiles();
 							if (props.setFileData) {
 								props.setFileData(addFileData);

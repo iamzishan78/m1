@@ -5,7 +5,7 @@ import DescriptionIcon from "@material-ui/icons/DescriptionSharp";
 import CheckmarkIcon from "@material-ui/icons/CheckBoxOutlined";
 import ShareIcon from "@material-ui/icons/Share";
 import FolderIcon from "@material-ui/icons/Folder";
-import HomeIcon from '@material-ui/icons/HomeOutlined';
+import HomeIcon from "@material-ui/icons/HomeOutlined";
 import IdentityIcon from "@material-ui/icons/PermIdentity";
 import FlowIcon from "@material-ui/icons/Repeat";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px",
     position: "absolute",
     right: 0,
-    top: props => props.top || '108px',
+    top: (props) => props.top || "108px",
     zIndex: 1223,
     backgroundColor: "rgb(240,245,248)",
   },
@@ -40,17 +40,22 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "rgb(206, 212, 217)",
       transition: "0.25s background-color",
     },
-
+  },
+  activeIcon: {
     "& svg": {
       fill: "rgb(23, 170, 221) !important",
+    },
+  },
+  inactiveIcon: {
+    "& svg": {
+      fill: "rgba(146, 158, 170, 1) !important",
     },
   },
 }));
 
 export default function Drawer(props) {
-  const classes = useStyles(props);
-
   const [stateApp, setStateApp] = useContext(AppContext);
+  const classes = useStyles(props);
 
   const drawerIcons = {
     // Comments: (props) => <MessageIcon {...props} />,
@@ -121,11 +126,13 @@ export default function Drawer(props) {
     <div className={classes.root}>
       {Object.keys(drawerIcons).map((key) => (
         <Tooltip title={key} placement="left">
-          <div className={classes.icon} onClick={() => setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))}>
+          <div
+            className={`${classes.icon} ${stateApp.transactBarView === key ? classes.activeIcon : classes.inactiveIcon}`}
+            onClick={() => setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))}
+          >
             {drawerIcons[key]({
               opacity: "1",
               height: "30",
-              fill: "rgb(23, 170, 221)",
             })}
           </div>
         </Tooltip>

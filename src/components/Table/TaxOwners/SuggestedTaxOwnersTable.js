@@ -119,7 +119,7 @@ function SuggestedOwnerTable(props) {
       owners = owners.map((o) => {
         let owner = { ...o };
         owner.isContact = false;
-
+        owner.ownershipType = owner.OwnerType
         owner = props.setGenricData(owner, owner.globalOwnerId, ['comments', 'tracks', 'tags', 'ifAreContacts']);
 
         return owner;

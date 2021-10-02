@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-import { AppProvider, AppContext } from "./AppContext";
+import { AppProvider, AppContext, setApolloHeaders } from "./AppContext";
 import { Switch, Route } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 //components
 import Login from "./components/Login/Login";
-import LoginB2C from "./components/Login/LoginB2C";
 import SignUpCard from "./components/Login/SignUpCard";
 import ForgotPassword from "./components/Login/ForgotPassword";
 import NavigationProvider from "./components/Navigation/NavigationProvider";
@@ -94,17 +93,20 @@ const theme = createMuiTheme({
   },
   overrides: {
     MuiCssBaseline: {
-      '@global': {
-        '*::-webkit-scrollbar': {
+      "@global": {
+        "*::-webkit-scrollbar": {
           height: "0.4em",
-          width: "0.4em"
+          width: "0.4em",
         },
-        '*::-webkit-scrollbar-track': {
-          "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+        "*::-webkit-scrollbar-track": {
+          "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0)",
         },
-        '*::-webkit-scrollbar-thumb': {
+        "*::-webkit-scrollbar-thumb": {
+          backgroundColor: "#d3d3d3",
+          borderRadius: 5
+        },
+        '*::-webkit-scrollbar-thumb:active': {
           backgroundColor: "#929292",
-          borderRadius: 5,
         }
       },
     },
@@ -126,13 +128,13 @@ const SetApolloClient = (props) => {
 
   useEffect(() => {
     if (stateApp.user) {
-      props.setApolloClientToken(stateApp.user.authToken);
+      props.setApolloClientToken(stateApp.user.authToken, stateApp.user.accessToken);
     }
   }, [stateApp.user]);
 
   useEffect(() => {
     let draggableArea = document.getElementById("root");
-    if (window.location.pathname === "/") {
+    if (window.location.pathname === "/" || window.location.pathname.startsWith('/map/')) {
       draggableArea.style.overflow = "hidden";
     } else {
       draggableArea.style.overflow = "visible";
@@ -183,12 +185,14 @@ const PrivateRoute = ({ component, ...options }) => {
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now() && apolloClient?.link?.options?.headers?.["X-ZUMO-AUTH"]
       ? component
       : (() => {
-        return stateApp.myMSALB2CObj ? LoginB2C : Login;
+        return Login;
       })();
 
   return (
     <div>
-      <Route {...options} component={finalComponent} />
+      <Route {...options} render={(props) => (
+          React.createElement(finalComponent, { ...options, ...props})
+      )} />
     </div>
   );
 };
@@ -197,23 +201,27 @@ function App() {
   const [stateApp] = useContext(AppContext);
   const [apolloClient, setApolloClient] = useState(null);
   const [apolloClientToken, setApolloClientToken] = useState(null);
+  const [apolloClientIdToken, setApolloIdClientToken] = useState(null);
   const [apolloClientEndpoint, setApolloClientEndpoint] = useState(null);
   //const apolloDevEndpoint = "https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA==";
   //set default to core until login is complete and we can get the tenant's endpoint
   //const apolloEndpoint = "https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA==";
   const updateApolloClientEndpoint = (endpoint) => {
     setApolloClientEndpoint(endpoint);
-    updateApolloClient(endpoint, apolloClientToken);
+    updateApolloClient(endpoint, apolloClientToken, apolloClientIdToken);
   };
 
-  const updateApolloClientToken = (token) => {
+  const updateApolloClientToken = (token, idToken) => {
     setApolloClientToken(token);
-    updateApolloClient(apolloClientEndpoint, token);
+    setApolloIdClientToken(idToken);
+    updateApolloClient(apolloClientEndpoint, token, idToken);
   };
 
-  const updateApolloClient = (endpoint, token) => {
-    // uncomment to run against local
-    endpoint = "http://localhost:7071/api/m1graph";
+  const updateApolloClient = (endpoint, token, idToken) => {
+
+    if (apolloClient && token) {
+      apolloClient.link.options = setApolloHeaders(apolloClient.link.options, token, idToken)
+    }
 
     if (!apolloClient) {
       let client = new ApolloClient({
@@ -253,10 +261,6 @@ function App() {
         });
       });
     }
-
-    if (apolloClient && token) {
-      apolloClient.link.options.headers = { "X-ZUMO-AUTH": token };
-    }
   };
 
   return (
@@ -277,9 +281,8 @@ function App() {
                 <ConnectedRouter history={history}>
                   <Switch>
                     <NavigationProvider>
-                      <PrivateRoute exact path="/" component={MapProvider} />
+                      <PrivateRoute title="Map" exact path={["/", "/map/parcels/:parcelId"]} component={MapProvider} />
                       <Route exact path="/signup" component={SignUpCard} />
-                      <Route exact path="/loginb2c" component={LoginB2C} />
                       <Route exact path="/forgotpassword" component={ForgotPassword} />
                       <PrivateRoute exact path="/track" component={TrackProvider} />
                       <PrivateRoute exact path="/flow" component={TransactProvider} />
@@ -292,7 +295,7 @@ function App() {
                       <PrivateRoute exact path="/title" component={TitleOpinionProvider} />
                       <PrivateRoute exact path="/alerts" component={AlertsProvider} />
                       <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider} />
-                      <PrivateRoute exact path="/contacts" component={ContactsProvider} />
+                      <PrivateRoute title="Contacts" exact path="/contacts" component={ContactsProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId" component={ContactDetailsProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/detailedInformation" component={ContactDetailedInfoProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/recentActivites" component={ContactRecentActivitiesProvider} />
@@ -307,7 +310,7 @@ function App() {
                       <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} />
                       <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
                       <PrivateRoute exact path="/studio" component={StudioProvider} />
-                      <PrivateRoute exact path="/bulkupload" component={BulkUpload} />
+                      <PrivateRoute title="Bulk Upload" exact path="/bulkupload" component={BulkUpload} />
                       <PrivateRoute exact path="/agreement" component={AgreementProvider} />
                       {/* <Route component={NotFoundRedirect} /> */}
                     </NavigationProvider>
