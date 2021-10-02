@@ -23,6 +23,7 @@ import { useDispatch } from "react-redux";
 import { showErrorMessage } from "../../../actions";
 import { getDefaultSettings } from './addUserHelper'
 import Loader from "components/Loaders";
+import { BlockBlobClient } from "@azure/storage-blob";
 
 const Alert = (props) => {
   return <MuiAlert elevation={5} variant="filled" {...props} />;
@@ -142,21 +143,25 @@ export default function AddUserData(props) {
         const url = fileData.addFile.file.uri;
         const interal_key = fileData.addFile.file.internalKey;
         const file_id = fileData.addFile.file.id;
+        const file_name = fileData.addFile.file.name;
 
         if (file_id) {
           const content = JSON.stringify(fileContent);
 
-          fetch(url, {
-            headers: {
-              "Content-Type": "text/plain; charset=UTF-8",
-              "X-Ms-Blob-Type": "BlockBlob",
-              "X-Ms-Meta-Internalkey": interal_key,
-              "X-Ms-Version": "2015-02-21",
+          const blockBlobClient = new BlockBlobClient(url);
+          blockBlobClient.uploadBrowserData(content, {
+            maxSingleShotSize: 4 * 1024 * 1024,
+            blobHTTPHeaders: {
+              blobContentDisposition: `attachment; filename="${file_name}"`,
+              blobContentType: "text/plain; charset=UTF-8"
             },
-            method: "PUT",
-            body: content,
+            metadata: {
+              Internalkey: interal_key
+            }
           })
-            .then((response) => response.text())
+            .then((response) => {
+              return response._response.bodyAsText
+            })
             .then((response) => {
               let type = fileContent.featureTypes[0]
               const sourceProps = layerName + uuid() + "_source"
