@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, Fragment } from "react";
+import React, { useState, useEffect, useContext, Fragment, useCallback } from "react";
 import { get } from "lodash";
 import _ from "underscore";
 import { useHistory } from "react-router-dom";
@@ -1111,6 +1111,14 @@ function AddDealDialog(props) {
     setNewCommentsIds(comments);
   };
 
+  const getSubtaskNumber = useCallback(() => {
+    let subtasks = 0;
+    get(dealSettings, "dealSettings", []).forEach((s) => {
+      subtasks += s.tasks?.length;
+    });
+    return subtasks;
+  }, [dealSettings]);
+
   return (
     <>
       {deleteDialogOpen && (
@@ -1165,7 +1173,7 @@ function AddDealDialog(props) {
             setTitleFocus={setTitleFocus}
             isTransactPage={props.isTransactPage}
           />
-          <Drawer dealSettingsNumber={10} />
+          <Drawer dealSettingsNumber={getSubtaskNumber()} />
           <div className={classes.contentRoot}>
             {props.isTransactPage &&
             stateApp.transactBarView !== "Deal" &&
