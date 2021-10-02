@@ -8,6 +8,7 @@ export const ADDFILE = gql`
       error
       file {
         id
+        name
         uri
         internalKey
       }
