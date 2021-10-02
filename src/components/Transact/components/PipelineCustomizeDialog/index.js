@@ -177,6 +177,7 @@ const PipelineCustomDialog = (props) => {
 
   const handleSaveOrUpdate = () => {
     const formStates = getValues();
+    formStates.IsDefault = formStates.IsDefault === undefined ? false : formStates.IsDefault;
     if (!formStates.name) {
       setFlowErrors((flowErrors) => ({ ...flowErrors, name: true }));
       return;
