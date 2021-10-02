@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { Grid, Typography, TextField, InputAdornment } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
-
+import { ADD_TASK, UPDATE_TASK } from "graphQL/useMutationStageTask";
+import { STAGE_TASK_TEMPLATE } from "graphQL/useQueryTask";
 import NewSubtask from "components/Transact/components/Common/NewSubtask";
 
 const useStyles = makeStyles(() => ({
@@ -78,8 +80,35 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function StageDetails({ selectedStage = {}, users = [] }) {
+function StageDetails({ selectedStageForDetail = {}, users = [] }) {
   const classes = useStyles();
+  const [createTask] = useMutation(ADD_TASK);
+  const [updateTask] = useMutation(UPDATE_TASK);
+  const [getTaskTemplate, { data: stageTaskTemplate }] = useLazyQuery(STAGE_TASK_TEMPLATE);
+
+  useEffect(() => {
+    if (selectedStageForDetail) {
+      getTaskTemplate({
+        variables: {
+          stageId: selectedStageForDetail._id,
+          pipelineId: "3g458j9994394",
+        },
+      });
+    }
+  }, [selectedStageForDetail]);
+
+  useEffect(() => {
+    console.log("stageTaskTemplate", stageTaskTemplate);
+  }, [stageTaskTemplate]);
+
+  // useEffect(() => {
+  //   getTaskTemplate();
+  //   return () => {
+  //     setTimeout(() => {
+  //       console.log("consoling...");
+  //     }, 5000);
+  //   };
+  // }, []);
 
   return (
     <Grid container justify="space-between" direction="row" display="flex" className={classes.root}>

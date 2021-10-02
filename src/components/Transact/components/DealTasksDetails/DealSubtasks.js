@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
+export const SubtaskItem = ({ task, handleUpdateSubtask, users, canDrag = true, handleDragEnd }) => {
   const approver = users.find((user) => user?.value === task.assignee);
   const [showTaskActions, setShow] = useState(false);
   const [isDatePopup, setDatePopup] = useState(false);
@@ -98,12 +98,14 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
         className={classes.subTaskRoot}
         onMouseLeave={() => onHoverTask(false)}
         onMouseEnter={() => onHoverTask(true)}
-        ref={(ref) => drop(preview(ref))}
+        ref={(ref) => canDrag && drop(preview(ref))}
       >
         <Grid container direction="row" justify="flex-start" alignItems="center">
-          <ListItemIcon ref={drag} style={{ minWidth: "30px" }}>
-            <DragIndicator style={{ cursor: "move" }} />
-          </ListItemIcon>
+          {canDrag && (
+            <ListItemIcon ref={drag} style={{ minWidth: "30px" }}>
+              <DragIndicator style={{ cursor: "move" }} />
+            </ListItemIcon>
+          )}
           <Grid item xs={6} className={classes.subTaskLeftGrid}>
             <FormControlLabel
               control={

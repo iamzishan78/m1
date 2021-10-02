@@ -459,7 +459,7 @@ const PipelineCustomDialog = (props) => {
                     <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{selectedStageForDetail.name}</Typography>
                   </Breadcrumbs>
                 </div>
-                <StageDetails />
+                <StageDetails selectedStageForDetail={selectedStageForDetail} />
               </>
             )}
           </div>

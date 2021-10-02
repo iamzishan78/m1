@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NewSubtask = memo(({ index, activeDeal = {}, setStateTransact, settings = [], isTemplate = false }) => {
+const NewSubtask = memo(({ index, activeDeal = {}, setStateTransact, settings = [], taskTemplate }) => {
   const classes = useStyles();
   const [isNewSubtask, setNewSubtask] = useState({ index: -1, value: false });
 
@@ -27,17 +27,13 @@ const NewSubtask = memo(({ index, activeDeal = {}, setStateTransact, settings = 
   }, [activeDeal._id, addedSubtask, setStateTransact]);
 
   const handleNewSubtask = (task) => {
-    // we will be using stage deal descriptor
-    //? pipelineType = pipeline
-    //? descriptorType = task
-    //? relatedObjectType = stage
-    //? isTemplate = true
     addSubtask({
       variables: {
         task,
         stageId: settings._id,
         dealId: activeDeal._id,
-        isTemplate,
+        isTemplate: !!taskTemplate,
+        templateRef: taskTemplate._id,
       },
       refetchQueries: ["dealSettings"],
       awaitRefetchQueries: true,
@@ -46,18 +42,18 @@ const NewSubtask = memo(({ index, activeDeal = {}, setStateTransact, settings = 
   };
 
   const showFieldToAdd = () => {
-    if (isTemplate) setNewSubtask(true);
+    if (!!taskTemplate) setNewSubtask(true);
     else setNewSubtask({ index, value: !isNewSubtask.value });
   };
 
   const hideFieldToAdd = () => {
-    if (isTemplate) setNewSubtask(false);
+    if (!!taskTemplate) setNewSubtask(false);
     else setNewSubtask({ index: -1, value: !isNewSubtask.value });
   };
 
   return (
     <>
-      {isTemplate ||
+      {!!taskTemplate ||
         (isNewSubtask.index === index && isNewSubtask.value && (
           <Grid item xs={12} className={classes.addSubTaskButton}>
             <TextField
