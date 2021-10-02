@@ -321,6 +321,12 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
                                   </TableCell>
 
                                   <TableCell padding="checkbox">
+                                    <Tooltip title="Stage Details" placement="top">
+                                      <DetailsIcon onClick={() => setStage(stage)} className={classes.settingIcon} />
+                                    </Tooltip>
+                                  </TableCell>
+
+                                  <TableCell padding="checkbox">
                                     <Tooltip title="Remove Stage" placement="top">
                                       <RemoveCircleOutlineIcon
                                         onClick={() => {
@@ -328,12 +334,6 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
                                         }}
                                         className={classes.removeIconButton}
                                       />
-                                    </Tooltip>
-                                  </TableCell>
-
-                                  <TableCell padding="checkbox">
-                                    <Tooltip title="Stage Details" placement="top">
-                                      <DetailsIcon onClick={() => setStage(stage)} className={classes.settingIcon} />
                                     </Tooltip>
                                   </TableCell>
                                 </TableRow>
