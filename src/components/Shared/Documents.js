@@ -386,7 +386,6 @@ export default function Documents(props) {
   }, [viewFileResult]);
 
   useEffect(() => {
-    // if (fileRequestCounter ===1) {
     let filtered = viewFileResultt?.viewFiles?.filter((doc) => doc.name.toLowerCase().includes(documentSearch.toLowerCase()));
 
     let filteredMerged = filtered?.map((doc) => {
@@ -399,7 +398,6 @@ export default function Documents(props) {
       };
     });
     setFilteredDocuments(filteredMerged);
-    // }
   }, [documentSearch, viewFileResultt?.viewFiles, viewFileLoading]);
 
   const getDate = (dateTime) => {
@@ -495,13 +493,6 @@ export default function Documents(props) {
             {filteredDocuments
               ?.filter((file) => file.state !== "pending")
               ?.map((file, key) => {
-                // if (viewFileLoading)
-                //   return (
-                //     <div style={{ display: "flex", justifyContent: "center" }}>
-                //       <CircularProgress size="20px" />
-                //     </div>
-                //   );
-
                 let fileExtension = file?.name?.slice(file.name.lastIndexOf(".") + 1)?.toLowerCase();
 
                 return (
