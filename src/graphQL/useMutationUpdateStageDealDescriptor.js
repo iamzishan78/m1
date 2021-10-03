@@ -1,18 +1,8 @@
 import gql from "graphql-tag";
 
-export const UPDATESTAGEDEALDESCRIPTOR = gql`
-  mutation updateStageDealDescriptor(
-    $descriptorId: ID
-    $relatedObject: ID
-    $position: Int
-    $pipeline: ID
-  ) {
-    updateStageDealDescriptor(
-      descriptorId: $descriptorId
-      relatedObject: $relatedObject
-      position: $position
-      pipeline: $pipeline
-    ) {
+export const UPDATE_STAGE_DEAL_DESCRIPTOR = gql`
+  mutation updateStageDealDescriptor($descriptor: JSON) {
+    updateStageDealDescriptor(descriptor: $descriptor) {
       success
       message
       error

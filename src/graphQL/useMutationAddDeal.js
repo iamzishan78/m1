@@ -11,7 +11,8 @@ export const ADDDEAL = gql`
     $contactName: String
     $position: Int
     $userId: ID
-    $files: JSON
+    $files: JSON,
+    $comments: JSON,
   ) {
     addDeal(
       deal: $deal
@@ -23,7 +24,8 @@ export const ADDDEAL = gql`
       contactName: $contactName
       position: $position
       userId: $userId
-      files: $files
+      files: $files,
+      comments: $comments
     ) {
       success
       message

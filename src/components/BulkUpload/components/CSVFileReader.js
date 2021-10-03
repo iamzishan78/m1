@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../../AppContext";
+import { NavigationContext } from "../../Navigation/NavigationContext";
 import { Button, Grid } from "@material-ui/core";
 import { CSVReader, CSVDownloader } from "react-papaparse";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
@@ -159,7 +160,7 @@ const mainContent = {
   padding: "14px 0px 0px  0px",
 };
 
-const csvColumns = `Full Name,First Name,Last Name,Middle Name,Suffix,Age,Relative Names,Primary Address 1,Primary Address 2,City,State,Zip,Country,Primary Email,Email 2,Email 3,Primary Home Phone,Home Phone 2,Home Phone 3,Primary Mobile Phone,Mobile Phone 2,Mobile Phone 3,Primary Work Phone,Work Phone 2,Work Phone 3,Company Name,Job Title,Industry Type,LinkedIn Profile,Facebook Profile,Twitter Profile,Lead Source,Territory,Campaign Name,Website,Contact Owner`
+const csvColumns = `Contact Id,Full Name,First Name,Last Name,Middle Name,Suffix,Age,Relative Names,Primary Address 1,Primary Address 2,City,State,Zip,Country,Primary Email,Email 2,Email 3,Primary Home Phone,Home Phone 2,Home Phone 3,Primary Mobile Phone,Mobile Phone 2,Mobile Phone 3,Primary Work Phone,Work Phone 2,Work Phone 3,Company Name,Job Title,Industry Type,LinkedIn Profile,Facebook Profile,Twitter Profile,Lead Source,Territory,Campaign Name,Website,Contact Owner,Parcel Id,Parcel Name,Surface Interest,Mineral Interest,Royalty Interest,Overriding Royalty,Record Title,Operating Rights,Net Revenue Interest,Net Acres,Net Royalty Acres,Depth From,Depth To,QTR1,QTR2,QTR3,QTR4`
 const StyledTableCell = withStyles((theme) => ({
   head: {
     fontWeight: "bold",
@@ -177,6 +178,7 @@ const StyledTableCell = withStyles((theme) => ({
 export default function CSVFileReader(props) {
   const dispatch = useDispatch();
   let [stateApp, setStateApp] = useContext(AppContext);
+  const [stateNav, setStateNav] = useContext(NavigationContext);
   const classes = useStyles();
   let unmounted = useRef(false);
 
@@ -190,6 +192,10 @@ export default function CSVFileReader(props) {
     if (!unmounted.current) {
       if (data && data.length <= 10001) {
         mapped_headers_from_CSV(data);
+        stateNav.bulkUploadFromMap && data.forEach((data) => Object.assign(data.data, {
+          ...(stateApp.selectedParcel?.id) && { 'Parcel Id': stateApp.selectedParcel?.id },
+          ...(stateApp.selectedParcel?.shapeLabel) && { 'Parcel Name': stateApp.selectedParcel?.shapeLabel }
+        }))
         setStateApp((state) => ({
           ...state,
           csvContactsList: data,

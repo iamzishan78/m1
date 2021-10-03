@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useContext, Fragment } from "react";
-import { useMutation, useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import hat from "hat";
@@ -14,54 +14,11 @@ import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
 import { addCustomShapeProperties } from "../DrawShapes/drawShapesHelpers";
 
-import { gql } from "@apollo/client";
-
 const DrawShapesPopup = (props) => {
   const { classes, children } = props;
   const [, setUser] = useState({ _id: "" });
   const [stateApp, setStateApp] = useContext(AppContext);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
-  // const [upsertCustomLayer, { data: customLayerInsertedData, loading: isSavingParcel }] = useMutation(UPSERTCUSTOMLAYER, {
-  //   update(
-  //     cache,
-  //     {
-  //       data: {
-  //         upsertCustomLayer: { customLayer },
-  //       },
-  //     }
-  //   ) {
-  //     cache.modify({
-  //       fields: {
-  //         allCustomLayers(existingCustomLayers = [], { readField }) {
-  //           const newCustomLayerRef = cache.writeFragment({
-  //             data: customLayer,
-  //             fragment: gql`
-  //               fragment NewCustomLayer on CustomLayer {
-  //                 _id
-  //                 shape
-  //                 name
-  //                 layer
-  //                 user {
-  //                   _id
-  //                   name
-  //                   email
-  //                 }
-  //               }
-  //             `,
-  //           });
-
-  //           // Quick safety check - if the new comment is already
-  //           // present in the cache, we don't need to add it again.
-  //           if (existingCustomLayers.some((ref) => readField("id", ref) === customLayer._id)) {
-  //             return existingCustomLayers;
-  //           }
-
-  //           return [...existingCustomLayers, newCustomLayerRef];
-  //         },
-  //       },
-  //     });
-  //   },
-  // });
 
   const availableShapes = useMemo(
     () => [
@@ -92,32 +49,6 @@ const DrawShapesPopup = (props) => {
     ],
     [stateApp.mapVars.zoom, stateApp.multiSelectLandGrids]
   );
-
-  // useEffect(() => {
-  //   if (!customLayerInsertedData) {
-  //     return;
-  //   }
-  //   if (customLayerInsertedData.upsertCustomLayer && customLayerInsertedData.upsertCustomLayer.customLayer) {
-  //     setStateApp((state) => ({
-  //       ...state,
-  //       popupOpen: false,
-  //     }));
-
-  //     const customLayer = customLayerInsertedData.upsertCustomLayer.customLayer;
-  //     const feature = JSON.parse(customLayer.shape);
-  //     feature.id = customLayer._id;
-  //     feature.properties.id = customLayer._id;
-  //     setStateApp((state) => ({
-  //       ...state,
-  //       selectedParcel: feature.properties,
-  //     }));
-  //     setStateApp((state) => ({
-  //       ...state,
-  //       popupOpen: true,
-  //       expandedCard: true,
-  //     }));
-  //   }
-  // }, [customLayerInsertedData]);
 
   useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.email) {

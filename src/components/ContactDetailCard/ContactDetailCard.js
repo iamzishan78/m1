@@ -5,8 +5,9 @@ import React, { useContext, useState, useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 // mui core components
-import { Grid } from "@material-ui/core";
+import { Grid, Menu, MenuItem } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { useHistory } from "react-router-dom";
 
 // internal components
@@ -19,6 +20,7 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
+import { CONTACT_PURCHASE_DATA } from "graphQL/useQueryContactPurchaseData";
 import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
 import { LASTMELISSARECORD } from "../../graphQL/useQueryGetMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -28,7 +30,6 @@ import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubCompo
 import Documents from "../Shared/Documents";
 import ParcelsCard from "./components/ParcelsCard";
 import LeadStage from "../Shared/LeadStage";
-import RecentConversations from "../Shared/RecentConversations";
 import Divider from "@material-ui/core/Divider";
 import RightDialog from "./components/RightDialog";
 import Dialog from "@material-ui/core/Dialog";
@@ -46,20 +47,23 @@ import DealsNew from "./components/DealsNew";
 import WellsCard from "./components/WellsCard";
 import RecentActivities from "../RecentActivities/RecentActivities";
 import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
+import ContactDataMissingDialog from "./components/ContactDataMissingDialog";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
 import DocViewer from "../Shared/DocViewer";
-import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
-import ArrowRight from "../Shared/svgIcons/arrow-right";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Link from "@material-ui/core/Link";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
+import get from "lodash/get";
 
+import { truncate } from "components/Shared/functions";
 // contexts
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -118,13 +122,13 @@ const useStyles = makeStyles((theme) => ({
   },
   userIcon: {
     marginRight: "15px",
-    "float": "left",
+    float: "left",
   },
   userName: {
     color: "#919191",
     minWidth: "50%",
     maxWidth: "calc( 100% - 400px)",
-    "float": "left",
+    float: "left",
     "& h2": {
       margin: "0",
       color: "#202020",
@@ -192,7 +196,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     zIndex: "600",
     height: "0",
-    "float": "right",
+    float: "right",
     color: "#757575",
     "& a": {
       textDecoration: "none !important",
@@ -209,8 +213,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiButton-contained:hover": {
       color: "#1da2cf",
       backgroundColor: "rgba(0, 0, 0, 0.08)",
-      boxShadow:
-        "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
+      boxShadow: "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
     },
   },
   userSmallLoader: {
@@ -238,9 +241,10 @@ const useStyles = makeStyles((theme) => ({
       width: "100%",
     },
   },
-  linkClass: {
-
+  dialog: {
+    zIndex: "9999999999 !important",
   },
+  linkClass: {},
   expTardTopBarNav: {
     fontWeight: "normal",
     flexGrow: 1,
@@ -266,8 +270,7 @@ const useStyles = makeStyles((theme) => ({
     left: "-13px",
     backgroundColor: theme.palette.secondary.main,
     color: "#fff",
-    boxShadow:
-      "0px 2px 7px 2px rgba(0,0,0,0.15), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
+    boxShadow: "0px 2px 7px 2px rgba(0,0,0,0.15), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
     padding: "5px",
     "& svg": { fontSize: "1rem" },
     "&:hover": {
@@ -282,12 +285,19 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     margin: "0 0 8px 0",
-    "float": "right",
+    float: "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
     fontWeight: "normal",
     "&:hover": { color: "#757575" },
     transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+  },
+  menuIcon: {
+    padding: "0px !important",
+    margin: "0px !important",
+    minWidth: "0px !important",
+    background: "white !important",
+    color: "black !important",
   },
 }));
 
@@ -296,17 +306,13 @@ export default function ContactDetailCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
-  const dispatch = useDispatch();
   let history = useHistory();
-  const contactId =
-    history.location.pathname.split("/")[
-    history.location.pathname.split("/").length - 1
-    ];
-  const shrinkRightColumn = useSelector(
-    ({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn
-  );
+  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
+  const shrinkRightColumn = useSelector(({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn);
+  const { selectedPipe } = useSelector(({ Flow }) => Flow);
   const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [transactData, setTransactData] = useState();
   const [transactId, setTransactId] = useState();
   const [contactData, setContactData] = useState(null);
@@ -314,26 +320,30 @@ export default function ContactDetailCard(props) {
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
+  const [purchaseData, setPurchaseData] = useState([]);
 
-  const [expCardSubComponentTitle, setExpCardSubComponentTitle] =
-    useState(null);
+  const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
 
   const [getContact, { loading, data }] = useLazyQuery(CONTACT);
+  const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
   // const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
   //   TRANSACTIONDATA
   // );
 
-  const [getTransactionData, { data: tData, tLoading }] =
-    useLazyQuery(TRANSACTIONDATA);
+  const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(TRANSACTIONDATA);
 
-  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(
-    LASTMELISSARECORD,
-    {
-      fetchPolicy: "network-only",
-    }
-  );
+  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(LASTMELISSARECORD, {
+    fetchPolicy: "network-only",
+  });
   const [updateContact] = useMutation(UPDATECONTACT);
 
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const handleClickRightDialogOpen = (childrenToOpen) => {
     setRightDialogOpen(childrenToOpen);
   };
@@ -378,6 +388,11 @@ export default function ContactDetailCard(props) {
           contactId: stateApp.selectedContact,
         },
       });
+      getContactPurchaseData({
+        variables: {
+          contactId: stateApp.selectedContact,
+        },
+      });
     } else if (contactId) {
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -385,6 +400,12 @@ export default function ContactDetailCard(props) {
       }));
     }
   }, [contactId, getContact, setStateApp, stateApp.selectedContact]);
+
+  useEffect(() => {
+    if (contactPurchaseData?.getContactPurchaseData?.length > 0) {
+      setPurchaseData(contactPurchaseData?.getContactPurchaseData);
+    }
+  }, [contactPurchaseData]);
 
   useEffect(() => {
     if (data && data.contact) {
@@ -429,10 +450,21 @@ export default function ContactDetailCard(props) {
     return !!stateNav.contactFromMap;
   };
 
+  const getFlowlineReturnUrl = () => {
+    const searchParams = new URLSearchParams(window.location.search?.replace("?", ""));
+    const returnUrl = searchParams.get("return-url");
+    return returnUrl;
+  };
+  const isPrevUrlFlowline = getFlowlineReturnUrl() && stateApp.activeDeal?._id;
+
   const ExtenstionGetter = (name) => {
     let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
 
     return fileExtension;
+  };
+
+  const getName = (contact) => {
+    return contact.name || `${get(contact, "firstName", "")} ${get(contact, "lastName", "")}`;
   };
   return contactData ? (
     <>
@@ -445,12 +477,46 @@ export default function ContactDetailCard(props) {
             paddingLeft: "25px",
           }}
         >
-          {/* {checkModuleHistory() && } */}
-
-          <Breadcrumbs
-            separator={<NavigateNextIcon fontSize="small" />}
-            aria-label="breadcrumb"
-          >
+          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+            {isPrevUrlFlowline && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push("/flow")}
+              >
+                Flow
+              </Link>
+            )}
+            {isPrevUrlFlowline && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push(`/flow/${selectedPipe._id}`)}
+              >
+                {truncate(selectedPipe.name, 30)}
+              </Link>
+            )}
+            {isPrevUrlFlowline && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push(getFlowlineReturnUrl())}
+              >
+                {truncate(stateApp.activeDeal.name, 30)}
+              </Link>
+            )}
             {checkModuleHistory() && (
               <Link
                 style={{
@@ -460,13 +526,7 @@ export default function ContactDetailCard(props) {
                 }}
                 color="inherit"
                 onClick={() => {
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    // parcelDetailCardOpen: false,
-                  }));
-
                   history.push("/");
-
                   setStateNav((stateApp) => ({
                     ...stateApp,
                     contactFromMap: false,
@@ -477,8 +537,6 @@ export default function ContactDetailCard(props) {
               </Link>
             )}
 
-            {console.log("CURRENT MAP BREADCRUMB")}
-
             <Link
               style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer" }}
               color="inherit"
@@ -487,25 +545,17 @@ export default function ContactDetailCard(props) {
               Contacts
             </Link>
 
-            <Typography
-              style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}
-            >
-              {contactData.name}
-            </Typography>
+            <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{getName(contactData)}</Typography>
           </Breadcrumbs>
         </div>
       </div>
       <div className={classes.mainGridContainer}>
         {/*/////////// left column //////////// */}
 
-        {stateApp.viewDoc &&
-          ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
+        {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
           <div className={classes.leftColumn}>
             {" "}
-            <DocViewer
-              DocStyle={{ backgroundColor: "white !important", width: "70vw" }}
-              divCondition={true}
-            ></DocViewer>
+            <DocViewer DocStyle={{ backgroundColor: "white !important", width: "70vw" }} divCondition={true}></DocViewer>
           </div>
         ) : (
           <Grid container className={classes.leftColumn}>
@@ -536,21 +586,60 @@ export default function ContactDetailCard(props) {
                   </a>
                 )}
 
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    handleExpandClick("deleteConfirmation");
+                <Button className={classes.menuIcon} onClick={handleClick}>
+                  <MoreVertIcon aria-controls="simple-menu" aria-haspopup="true" />
+                </Button>
+
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
                   }}
                 >
-                  Delete
-                </Button>
+                  <FeatureFlag feature={FEATURES.IDICORE}>
+                    <MenuItem
+                      className={classes.userMenuItem}
+                      onClick={(e) => {
+                        if (!contactData.firstName || !contactData.lastName || !contactData.address1) {
+                          handleExpandClick("contactDataMissing");
+                        } else {
+                          handleExpandClick("buyContactsInfo");
+                        }
+                        handleClose();
+                      }}
+                    >
+                      Purchase contact data
+                    </MenuItem>
+                  </FeatureFlag>
+                  <MenuItem
+                    className={classes.userMenuItem}
+                    onClick={(e) => {
+                      handleClose();
+                      handleExpandClick("deleteConfirmation");
+                    }}
+                  >
+                    Delete contact
+                  </MenuItem>
+                </Menu>
               </div>
               <div>
                 <div className={classes.userIcon}>
                   <StyleBadge>
                     <Avatar
                       className={classes.grey}
-                      name={contactData.name}
+                      name={
+                        contactData.name ||
+                        `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`
+                      }
                       size="93"
                       round
                     />
@@ -563,53 +652,46 @@ export default function ContactDetailCard(props) {
                       noMargin
                       id={contactData._id}
                       entity={contactData.entity}
-                      content={{ name: contactData.name }}
+                      content={{ name: getName(contactData) }}
+                      disabled
                     >
-                      {(contactData.facebook ||
-                        contactData.twitter ||
-                        contactData.linkedIn) && (
-                          <span className={classes.socialMediaSection}>
-                            {contactData.facebook && (
-                              <a
-                                href={`${!contactData.facebook.startsWith("http") &&
-                                  !contactData.facebook.startsWith("//")
-                                  ? "//"
-                                  : ""
-                                  }${contactData.facebook}`}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                <FacebookIcon />
-                              </a>
-                            )}
-                            {contactData.twitter && (
-                              <a
-                                href={`${!contactData.twitter.startsWith("http") &&
-                                  !contactData.twitter.startsWith("//")
-                                  ? "//"
-                                  : ""
-                                  }${contactData.twitter}`}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                <TwitterIcon className={classes.twitterIcon} />
-                              </a>
-                            )}
-                            {contactData.linkedIn && (
-                              <a
-                                href={`${!contactData.linkedIn.startsWith("http") &&
-                                  !contactData.linkedIn.startsWith("//")
-                                  ? "//"
-                                  : ""
-                                  }${contactData.linkedIn}`}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                <LinkedInIcon />
-                              </a>
-                            )}
-                          </span>
-                        )}
+                      {(contactData.facebook || contactData.twitter || contactData.linkedIn) && (
+                        <span className={classes.socialMediaSection}>
+                          {contactData.facebook && (
+                            <a
+                              href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${
+                                contactData.facebook
+                              }`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <FacebookIcon />
+                            </a>
+                          )}
+                          {contactData.twitter && (
+                            <a
+                              href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${
+                                contactData.twitter
+                              }`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <TwitterIcon className={classes.twitterIcon} />
+                            </a>
+                          )}
+                          {contactData.linkedIn && (
+                            <a
+                              href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${
+                                contactData.linkedIn
+                              }`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <LinkedInIcon />
+                            </a>
+                          )}
+                        </span>
+                      )}
                     </FieldContent>
                   </h2>
                   <h4>
@@ -655,89 +737,51 @@ export default function ContactDetailCard(props) {
               className={classes.border}
             >
               <div className={classes.tags}>
-                <Tags
-                  width="100%"
-                  targetSourceId={contactData._id}
-                  targetLabel="contact"
-                  publicLeftBottom
-                />
+                <Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" publicLeftBottom />
               </div>
             </Grid>
 
             {/*/////////// section 3 //////////// */}
-            <Grid
-              item
-              xs={12}
-              container
-              className={classes.border}
-              spacing={0}
-              style={{ padding: "23px 28px" }}
-            >
-              <ContactDetailedInfo contactData={contactData} />
+            <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px" }}>
+              <ContactDetailedInfo user={stateApp.user} purchaseData={purchaseData} contactData={contactData} />
             </Grid>
             {/*/////////// new section - lead stage //////////// */}
             <Grid item xs={12} className={`${classes.border}`}>
               <div className={classes.SectMargin}>
                 <Grid item xs={12} style={{ minHeight: "33px" }}>
-                  <h4 style={{ margin: "0 0 13px 0", "float": "left" }}>
+                  <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
                     Lead Stage changed:{" "}
                     <span style={{ fontWeight: "normal" }}>
                       {anyToDate(
-                        contactData.lastUpdateLeadStageAt
-                          ? contactData.lastUpdateLeadStageAt
-                          : contactData.lastUpdateAt
+                        contactData.lastUpdateLeadStageAt ? contactData.lastUpdateLeadStageAt : contactData.lastUpdateAt
                       ).toLocaleString()}
                     </span>
                   </h4>
                 </Grid>
 
-                <Grid
-                  item
-                  xs={12}
-                  style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
-                >
-                  <LeadStage
-                    leadStage={
-                      contactData.leadStage ? contactData.leadStage : "New"
-                    }
-                    id={contactData._id}
-                  />
+                <Grid item xs={12} style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}>
+                  <LeadStage leadStage={contactData.leadStage ? contactData.leadStage : "New"} id={contactData._id} />
                 </Grid>
               </div>
             </Grid>
 
             {/*/////////// new section -associated interests and deals //////////// */}
-            <Grid
-              container
-              item
-              xs={12}
-              className={`${classes.border}`}
-              style={{ padding: "23px 28px" }}
-              spacing={0}
-            >
+            <Grid container item xs={12} className={`${classes.border}`} style={{ padding: "23px 28px" }} spacing={0}>
               <Grid item xs={12}>
-                <h4 style={{ margin: "0 0 13px 0", "float": "left" }}>
-                  Associated Interests &amp; Deals
-                </h4>
+                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>Associated Interests &amp; Deals</h4>
               </Grid>
 
               <Grid item xs={12}>
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
                     <Card raised style={{ minHeight: "165px", height: "100%" }}>
-                      <WellsCard
-                        handleOpenExpandableCard={handleOpenExpandableCard}
-                        contactData={contactData}
-                      />
+                      <WellsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
                     </Card>
                   </Grid>
                   {/* TEMP DELETION UNTIL CODE COMES */}
                   <Grid item xs={4}>
                     <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                      <ParcelsCard
-                        handleOpenExpandableCard={handleOpenExpandableCard}
-                        contactData={contactData}
-                      />
+                      <ParcelsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
                     </Card>
                   </Grid>
                   <Grid item xs={4}>
@@ -840,79 +884,59 @@ export default function ContactDetailCard(props) {
               </Grid> */}
 
               <Grid item xs={12} className={classes.Comments}>
-                <Comments
-                  targetSourceId={contactData._id}
-                  targetLabel="contact"
-                  detailCard
-                  top={2}
-                  viewAll={handleClickRightDialogOpen}
-                />
+                <Comments targetSourceId={contactData._id} targetLabel="contact" detailCard top={2} viewAll={handleClickRightDialogOpen} />
                 <Divider />
               </Grid>
 
               <Grid item xs={12} className={classes.Comments}>
                 {/* <DocViewer DocStyle={{top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(2.5%, -104.2%)`, width:'1320px',height:'816px'}}></DocViewer> */}
-                <Documents
-                  handleOpenExpandableCard={handleOpenExpandableCard}
-                  id={contactData._id}
-                  user_id={stateApp.user.email}
-                />
+                <Documents handleOpenExpandableCard={handleOpenExpandableCard} id={contactData._id} user_id={stateApp.user.email} />
                 <Divider />
               </Grid>
             </Grid>
           )}
         </div>
 
-        {openDialog && (
-          <Dialog
-            className={classes.dialog}
-            open={openDialog ? true : false}
-            onClose={handleCloseDialog}
-            fullWidth={true}
-            maxWidth={"sm"}
-          >
-            {openDialog === "buyContactsInfo" && (
-              <BuyContactsInfoDialogContent
-                onClose={handleCloseDialog}
-                rows={[contactData]}
-                setRows={() => { }}
-                updateMelissaTable={() => {
-                  getLastMelissaRecord({
-                    variables: {
-                      contactId: stateApp.selectedContact,
+        {openDialog === "buyContactsInfo" && (
+          <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
+            <BuyContactsInfoDialogContent
+              header="Contact Data Integration"
+              onClose={handleCloseDialog}
+              rows={[contactData]}
+              setRows={() => {}}
+              updateMelissaTable={() => {
+                getLastMelissaRecord({
+                  variables: {
+                    contactId: stateApp.selectedContact,
+                  },
+                });
+                updateContact({
+                  variables: {
+                    contact: {
+                      _id: stateApp.selectedContact,
+                      lastUpdateBy: stateApp.user.mongoId,
                     },
-                  });
-                  updateContact({
-                    variables: {
-                      contact: {
-                        _id: stateApp.selectedContact,
-                        lastUpdateBy: stateApp.user.mongoId,
-                      },
-                      ignoreResponse: true,
-                    },
-                    refetchQueries: ["getPaginatedContacts", "getContact"],
-                    awaitRefetchQueries: false,
-                  });
-                }}
-              />
-            )}
-            {openDialog === "deleteConfirmation" && (
-              <ConfirmationDialog
-                openDialog={openDialog}
-                handleDialogClose={setOpenDialog}
-                id={contactData._id}
-              />
-            )}
-          </Dialog>
+                    ignoreResponse: true,
+                  },
+                  refetchQueries: ["getPaginatedContacts", "getContact"],
+                  awaitRefetchQueries: false,
+                });
+              }}
+            />
+          </RightDialog>
+        )}
+
+        {openDialog === "deleteConfirmation" && (
+          <ConfirmationDialog openDialog={openDialog} handleDialogClose={setOpenDialog} id={contactData._id} />
+        )}
+
+        {openDialog === "contactDataMissing" && (
+          <ContactDataMissingDialog openDialog={openDialog} onClose={handleCloseDialog} contacts={[{ ...contactData }]} />
         )}
 
         {/* //// ViewAll in a right dialog //// */}
 
-        <RightDialog
-          open={rightDialogOpen ? true : false}
-          handleClickDialogClose={handleClickRightDialogClose}
-          width="450px"
-        >
+        <RightDialog open={rightDialogOpen ? true : false} handleClickDialogClose={handleClickRightDialogClose} width="450px">
           {rightDialogOpen === "comments" && (
             <Grid item xs={12} className={classes.Comments}>
               <Comments
@@ -925,13 +949,7 @@ export default function ContactDetailCard(props) {
           )}
         </RightDialog>
         {showExpandableCard && (
-          <Dialog
-            className={classes.dialogFullScreen}
-            fullWidth
-            maxWidth="xl"
-            open={showExpandableCard}
-            onClose={handleCloseDialog}
-          >
+          <Dialog className={classes.dialogFullScreen} fullWidth maxWidth="xl" open={showExpandableCard} onClose={handleCloseDialog}>
             <div
               style={{
                 width: "100%",
@@ -940,12 +958,10 @@ export default function ContactDetailCard(props) {
               }}
             >
               <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-                <Breadcrumbs
-                  separator={<NavigateNextIcon fontSize="small" />}
-                  aria-label="breadcrumb"
-                >
+                <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
                   {checkModuleHistory() && (
-                    <Link className={classes.linkClass}
+                    <Link
+                      className={classes.linkClass}
                       style={{
                         marginLeft: "5px",
                         fontSize: "16px",

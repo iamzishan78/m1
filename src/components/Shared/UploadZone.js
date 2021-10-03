@@ -1,38 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { DropzoneAreaBase } from "material-ui-dropzone";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { CircularProgress } from "@material-ui/core";
-import { showErrorMessage, showWarningMessage } from "../../actions";
+import { showErrorMessage } from "../../actions";
 import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
 import { Container } from "@material-ui/core";
+import { BlockBlobClient } from "@azure/storage-blob";
 
 const useStyles = makeStyles((theme) => ({
-	dropzoneClassDocs: {
-		"&:hover": { backgroundColor: "#dddddd" },
-		"& .MuiDropzoneArea-text": {
-			fontSize: "0.83em",
-			marginBlockStart: "1.67em",
-			marginBlockEnd: "1.67em",
-			fontWeight: "bold",
+	root: {
+		"& .MuiContainer-root": {
+			paddingLeft: "0px",
+			paddingRight: "0px",
+			"& .MuiDropzoneArea-root": {
+				width: "50px",
+				minHeight: "50px !important",
+				height: "50px !important",
+				borderRadius: "50%",
+				border: "none",
+				fontSize: "xx-large",
+				backgroundColor: "transparent",
+				color: "#c8c8c8",
+				"&:hover": {
+					backgroundColor: "#dddddd",
+				},
+			},
 		},
-		"& .MuiDropzoneArea-icon": { display: "none" },
-		// minHeight: "125px",
-		// width: "100%",
-		width: '465px',
-		padding: "10px 40px",
-		color: "#757575",
-		fontWeight: "normal",
-		backgroundColor: "#eee",
-		textAlign: "center",
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
-		// border: "2px dashed rgb(176, 176, 176)",
-		border: "2px dashed #dddddd",
-		marginBottom: "30px",
-		marginLeft: "15px"
 	},
 	dropzoneClassCRM: {
 		"&:hover": { backgroundColor: "#dddddd" },
@@ -52,30 +47,25 @@ const useStyles = makeStyles((theme) => ({
 		justifyContent: "center",
 		border: "2px dashed #dddddd",
 		marginBottom: "30px",
-
-
 	},
 }));
 
 export default function UploadZone(props) {
 	const dispatch = useDispatch();
 	const [inputFile, setInputFile] = useState(null);
-	const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
-		ADDDESCRIPTORFILE,
-		{
-			refetchQueries: ["getRecentContactFiles"],
-			awaitRefetchQueries: true,
-			//   onCompleted: () => {
-			//     // setTimeout(() => {
-			//     //   getRecentFiles({
-			//     //     variables: {
-			//     //       contactId: props.id,
-			//     //     },
-			//     //   });
-			//     // }, 3000);
-			//   },
-		}
-	);
+	const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(ADDDESCRIPTORFILE, {
+		refetchQueries: ["getRecentContactFiles"],
+		awaitRefetchQueries: true,
+		//   onCompleted: () => {
+		//     // setTimeout(() => {
+		//     //   getRecentFiles({
+		//     //     variables: {
+		//     //       contactId: props.id,
+		//     //     },
+		//     //   });
+		//     // }, 3000);
+		//   },
+	});
 
 	useEffect(() => {
 		if (addFileData && addFileData?.addFileDescriptor?.success) {
@@ -86,22 +76,22 @@ export default function UploadZone(props) {
 			const file_name = addFileData.addFileDescriptor.file.name;
 
 			if (file_id) {
-				fetch(uri, {
-					headers: {
-						"X-Ms-Blob-Content-Disposition": `attachment; filename="${file_name}"`,
-						"X-Ms-Blob-Type": "BlockBlob",
-						"X-Ms-Meta-Internalkey": interal_key,
-						"X-Ms-Version": "2015-02-21",
+				const blockBlobClient = new BlockBlobClient(uri);
+				blockBlobClient.uploadBrowserData(inputFile, {
+					maxSingleShotSize: 4 * 1024 * 1024,
+					blobHTTPHeaders: {
+						blobContentDisposition: `attachment; filename="${file_name}"`
 					},
-					method: "PUT",
-					body: inputFile,
+					metadata: {
+						Internalkey: interal_key
+					}
 				})
 					.then((res) => {
 						console.log(res);
-						if (res?.status == 201) {
+						if (res?._response?.status === 201) {
 							// props.getRecentFiles();
-							if(props.setFileData){
-								props.setFileData(addFileData)
+							if (props.setFileData) {
+								props.setFileData(addFileData);
 							}
 						} else dispatch(showErrorMessage("Upload failed"));
 					})
@@ -132,76 +122,72 @@ export default function UploadZone(props) {
 
 	const classes = useStyles();
 
-	console.log('PROPS UPLOAD', props)
-
 	return (
 		<>
+			<div className={props.customClass ? classes.root : null}>
+				<Container>
+					<DropzoneAreaBase
+						onAdd={handleFileInput}
+						// onDelete={(fileObj) => console.log("Removed File:", fileObj)}
+						showAlerts={props.relatedObjectType === "Contact"}
+						onAlert={(message, variant) => {
+							console.log(`${variant}: ${message}`);
+						}}
+						filesLimit={1}
+						dropzoneText={"+"}
+						// acceptedFiles={[
+						// 	"image/*",
+						// 	"video/*",
+						// 	"application/*",
+						// 	".*",
+						// 	".geojson",
+						// 	".csv",
+						// 	".pdf",
+						// 	".docx",
+						// 	".doc",
+						// 	".ppt",
+						// 	".pptx",
+						// 	".txt",
+						// 	".xls",
+						// 	".xlsx",
+						// 	".mdb",
 
-		{/* <div style={{width: '100px', height: '100px'}}> */}
+						// 	// shape
+						// 	".shp",
+						// 	".shx",
+						// 	".sbn",
+						// 	".fbn",
+						// 	".ain",
+						// 	".atx",
+						// 	".ixs",
 
-		<Container>
-			<DropzoneAreaBase
-				onAdd={handleFileInput}
-				// onDelete={(fileObj) => console.log("Removed File:", fileObj)}
-				showAlerts={props.relatedObjectType === "Contact"}
-				onAlert={(message, variant) => {
-					console.log(`${variant}: ${message}`);
-				}}
-				filesLimit={1}
-				dropzoneText={"+"}
-				// acceptedFiles={[
-				// 	"image/*",
-				// 	"video/*",
-				// 	"application/*",
-				// 	".*",
-				// 	".geojson",
-				// 	".csv",
-				// 	".pdf",
-				// 	".docx",
-				// 	".doc",
-				// 	".ppt",
-				// 	".pptx",
-				// 	".txt",
-				// 	".xls",
-				// 	".xlsx",
-				// 	".mdb",
+						// 	// phdwin
+						// 	".phd",
+						// 	".mod",
+						// 	".phb",
+						// 	".phz",
 
-				// 	// shape 
-				// 	".shp",
-				// 	".shx",
-				// 	".sbn",
-				// 	".fbn",
-				// 	".ain",
-				// 	".atx",
-				// 	".ixs",
+						// 	// IHS
+						// 	".98c",
 
-				// 	// phdwin
-				// 	".phd",
-				// 	".mod",
-				// 	".phb",
-				// 	".phz",
+						// 	// DRILLING INFO
+						// 	".DRI",
 
-				// 	// IHS
-				// 	".98c",
+						// 	// LASSER
+						// 	".PRN",
 
-				// 	// DRILLING INFO 
-				// 	".DRI",
+						// 	// DIVESTCO
+						// 	".pds",
 
-				// 	// LASSER 
-				// 	".PRN",
-
-				// 	// DIVESTCO 
-				// 	".pds",
-
-				// ]}
-				maxFileSize={104857600}
-				dropzoneClass={classes.dropzoneClassCRM}
-				// getFileAddedMessage={(value) => {
-				// 	alert("File is been added", value);
-				// }}
-			></DropzoneAreaBase>
-			</Container>
-			{/* </div> */}
+						// ]}
+						maxFileSize={104857600}
+						dropzoneClass={classes.dropzoneClassCRM}
+					// getFileAddedMessage={(value) => {
+					// 	alert("File is been added", value);
+					// }}
+					></DropzoneAreaBase>
+				</Container>
+			</div>
 
 			{addFileLoading && (
 				<div style={{ display: "flex", justifyContent: "center" }}>

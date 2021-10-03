@@ -102,6 +102,7 @@ function ShapeGridTaxOwnersTable(props) {
                 owner.commentsCounter = 0;
                 owner.tags = [[], 0];
                 owner.wellsCounter = [];
+                owner.ownershipType = owner.OwnerType;
                 owner.coordinates = {
                     objToPopulateSearchLayer: {
                         objectType: "owner",

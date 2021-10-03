@@ -8,7 +8,7 @@ import { TouchBackend } from "react-dnd-touch-backend";
 import { isMobile } from "react-device-detect";
 import { ContextProvider } from "react-sortly";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { Drawer, Typography, Grid, Tooltip, IconButton, InputBase, Dialog } from "@material-ui/core";
+import { Drawer, Typography, Grid, Tooltip, IconButton, InputBase, Dialog, List, ListItem, ListItemText } from "@material-ui/core";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import CreateNewFolderIcon from "@material-ui/icons/CreateNewFolder";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
@@ -26,6 +26,7 @@ import PipelinesList from "components/Transact/components/SidePanel/PipelinesLis
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { DEALSCOUNTINAPIPE } from "graphQL/useQueryNonDeletedDealsCountInAPipeline";
 import { AppContext } from "AppContext";
+import { TransactContext } from "components/Transact/TransactContext";
 
 const dnd = isMobile ? TouchBackend : HTML5Backend;
 const useStyles = makeStyles((theme) => ({
@@ -136,7 +137,8 @@ const SidePanel = () => {
   const [filteredPipelines, setPipelines] = useState([]);
   const [deleteDialogOpen, setModal] = useState(false);
 
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [, setStateTransact] = useContext(TransactContext);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
   const [duplicatePipelines] = useMutation(DUPLICATE_PIPELINES);
   const [updatePipelinesPositions] = useMutation(UPDATE_PIPELINES_POSITIONS);
@@ -155,14 +157,29 @@ const SidePanel = () => {
         dispatch(showWarningMessage("There are deals associated to the pipelines, please remove them first."));
       else setModal(true);
     }
-  }, [dataDealsCountByPipeline]);
+  }, [dataDealsCountByPipeline, dispatch]);
+
+  useEffect(() => {
+    if (selectedPipe) {
+      // Deselecting all flowwlines on ESC
+      document.removeEventListener("keydown", () => {});
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          setMultiSelection([selectedPipe._id]);
+          setStateApp((stateApp) => ({ ...stateApp, dealDialog: false }));
+        }
+      });
+    }
+  }, [selectedPipe]);
 
   const mapFLowlinesToProject = (pipelines) => {
     let projectIncludedPipelines = [],
-      projects = {};
+      projects = {},
+      projectsList = [];
     pipelines.forEach((pipe) => {
       if (pipe.projectId && !projects[pipe.projectId]) {
         projects[pipe.projectId] = true;
+        projectsList.push({ projectName: pipe.projectName, projectId: pipe.projectId });
         projectIncludedPipelines.push({
           projectName: pipe.projectName,
           projectId: pipe.projectId,
@@ -195,6 +212,7 @@ const SidePanel = () => {
         });
       }
     });
+    setStateTransact((stateTransact) => ({ ...stateTransact, projects: projectsList }));
     return projectIncludedPipelines;
   };
 
@@ -239,7 +257,7 @@ const SidePanel = () => {
         createPipelineDescriptors({
           variables: {
             descriptor: {
-              project: `Project ${moment().format("MM/DD/YYYY HH:m")}`,
+              projectName: `Project ${moment().format("MM/DD/YYYY HH:m")}`,
               pipelines: selectedPipelines,
               userId: stateApp.user.mongoId,
             },
@@ -275,6 +293,7 @@ const SidePanel = () => {
         break;
       case "Duplicate":
         const pipelinesToDuplicate = selectedPipelines.map((pipe) => ({
+          ...pipe,
           _id: pipe,
           name: filteredPipelines.find((p) => p._id === pipe).name,
         }));
@@ -387,11 +406,20 @@ const SidePanel = () => {
           onClose={() => setModal(false)}
           deleteFunc={handleDelete}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => { }}
+          setM1nSelectedRowsIndexes={() => {}}
         >
-          {selectedPipelines.length > 1
-            ? "Are you sure you want to delete the selected flowlines?"
-            : "Are you sure you want to delete the selected flowline?"}
+          <>
+            Are you sure you want to delete the following selected {selectedPipelines.length > 1 ? "flowlines" : "flowline"}?
+            <List dense={false}>
+              {pipelines
+                .filter((pipe) => selectedPipelines.includes(pipe._id))
+                .map((pipe, index) => (
+                  <ListItem key={index}>
+                    <ListItemText primary={pipe.name} />
+                  </ListItem>
+                ))}
+            </List>
+          </>
         </DeleteConfirmationDialogContent>
       </Dialog>
     </>

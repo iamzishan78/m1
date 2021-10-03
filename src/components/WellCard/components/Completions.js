@@ -115,7 +115,7 @@ export default function Completions(props) {
                 completionsData.map((row, index) =>  (
                       <TableRow key={index}>
                         <TableCell>
-                          {moment(row.CompletionDate).format("MM-DD-YYYY")}
+                          {moment(row.CompletionDate).isValid()  ?  moment(row.CompletionDate).format("MM/DD/YYYY")  : ""}
                         </TableCell>
                         <TableCell>
                           {row.LeaseId}

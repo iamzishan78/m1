@@ -5,8 +5,6 @@ import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
 import { Modals } from "../../../../../styles/Modal";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import FormLabel from "@material-ui/core/FormLabel";
 
 export default function DeleteConfirmationDialogContent(props) {
   const modalClass = Modals();
@@ -37,9 +35,9 @@ export default function DeleteConfirmationDialogContent(props) {
           onClick={() => {
             props.completelyDelete
               ? props.deleteFunc(
-                  props.m1nSelectedRowsIds,
-                  props.completelyDelete === "false" ? false : true
-                )
+                props.m1nSelectedRowsIds,
+                props.completelyDelete === "false" ? false : true
+              )
               : props.deleteFunc(props.m1nSelectedRowsIds);
             props.onClose();
             props.setM1nSelectedRowsIndexes([]);

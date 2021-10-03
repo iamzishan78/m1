@@ -158,7 +158,6 @@ function Search({ fetchSelectedWells }) {
 
   return (
     <Grid className={classes.grid} container direction="column" spacing={1} >
-
       <Grid item >
         <Typography className={classes.heading}>1. Search by interest owner or well name to associate interests to contacts</Typography>
       </Grid>

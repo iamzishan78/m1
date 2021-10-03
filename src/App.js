@@ -93,18 +93,18 @@ const theme = createMuiTheme({
   },
   overrides: {
     MuiCssBaseline: {
-      '@global': {
-        '*::-webkit-scrollbar': {
+      "@global": {
+        "*::-webkit-scrollbar": {
           height: "0.4em",
-          width: "0.4em"
+          width: "0.4em",
         },
-        '*::-webkit-scrollbar-track': {
+        "*::-webkit-scrollbar-track": {
           "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
         },
-        '*::-webkit-scrollbar-thumb': {
+        "*::-webkit-scrollbar-thumb": {
           backgroundColor: "#929292",
           borderRadius: 5,
-        }
+        },
       },
     },
   },
@@ -131,7 +131,7 @@ const SetApolloClient = (props) => {
 
   useEffect(() => {
     let draggableArea = document.getElementById("root");
-    if (window.location.pathname === "/") {
+    if (window.location.pathname === "/" || window.location.pathname.startsWith("/map/")) {
       draggableArea.style.overflow = "hidden";
     } else {
       draggableArea.style.overflow = "visible";
@@ -182,12 +182,12 @@ const PrivateRoute = ({ component, ...options }) => {
     stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now() && apolloClient?.link?.options?.headers?.["X-ZUMO-AUTH"]
       ? component
       : (() => {
-        return Login;
-      })();
+          return Login;
+        })();
 
   return (
     <div>
-      <Route {...options} component={finalComponent} />
+      <Route {...options} render={(props) => React.createElement(finalComponent, { ...options, ...props })} />
     </div>
   );
 };
@@ -213,9 +213,8 @@ function App() {
   };
 
   const updateApolloClient = (endpoint, token, idToken) => {
-
     if (apolloClient && token) {
-      apolloClient.link.options = setApolloHeaders(apolloClient.link.options, token, idToken)
+      apolloClient.link.options = setApolloHeaders(apolloClient.link.options, token, idToken);
     }
 
     if (!apolloClient) {
@@ -276,7 +275,7 @@ function App() {
                 <ConnectedRouter history={history}>
                   <Switch>
                     <NavigationProvider>
-                      <PrivateRoute exact path="/" component={MapProvider} />
+                      <PrivateRoute title="Map" exact path={["/", "/map/parcels/:parcelId"]} component={MapProvider} />
                       <Route exact path="/signup" component={SignUpCard} />
                       <Route exact path="/forgotpassword" component={ForgotPassword} />
                       <PrivateRoute exact path="/track" component={TrackProvider} />
@@ -290,8 +289,8 @@ function App() {
                       <PrivateRoute exact path="/title" component={TitleOpinionProvider} />
                       <PrivateRoute exact path="/alerts" component={AlertsProvider} />
                       <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider} />
-                      <PrivateRoute exact path="/contacts" component={ContactsProvider} />
-                      <PrivateRoute exact path="/contact/details/:contactId" component={ContactDetailsProvider} />
+                      <PrivateRoute title="Contacts" exact path="/contacts" component={ContactsProvider} />
+                      <PrivateRoute path="/contact/details/:contactId" component={ContactDetailsProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/detailedInformation" component={ContactDetailedInfoProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/recentActivites" component={ContactRecentActivitiesProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
@@ -305,7 +304,7 @@ function App() {
                       <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} />
                       <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
                       <PrivateRoute exact path="/studio" component={StudioProvider} />
-                      <PrivateRoute exact path="/bulkupload" component={BulkUpload} />
+                      <PrivateRoute title="Bulk Upload" exact path="/bulkupload" component={BulkUpload} />
                       <PrivateRoute exact path="/agreement" component={AgreementProvider} />
                       {/* <Route component={NotFoundRedirect} /> */}
                     </NavigationProvider>

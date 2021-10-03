@@ -12,17 +12,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
 
-import {
-  CircularProgress,
-  Dialog,
-  DialogTitle,
-  IconButton,
-  TextField,
-  withStyles,
-} from "@material-ui/core";
-import Autocomplete, {
-  createFilterOptions,
-} from "@material-ui/lab/Autocomplete";
+import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
+import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import UploadZone from "components/Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -161,8 +152,8 @@ const useStyles = makeStyles({
 
 export default function ParcelInstrument(props) {
   const instrumentInitial = {
-    instrumentType:"",
-    recordType:"",
+    instrumentType: "",
+    recordType: "",
     fromPartySummary: "",
     toPartySummary: "",
     effectiveDate: null,
@@ -187,17 +178,17 @@ export default function ParcelInstrument(props) {
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
-  const [getInstrumentTypes, { data: instrumentTypes }] = useLazyQuery(
-    INSTRUMENT_TYPE,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
+  const [getInstrumentTypes, { data: instrumentTypes }] = useLazyQuery(INSTRUMENT_TYPE, {
+    fetchPolicy: "no-cache",
+  });
   const [getRecordTypes, { data: recordTypes }] = useLazyQuery(RECORD_TYPE, {
     fetchPolicy: "no-cache",
   });
-  const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, { refetchQueries: [ "getParcelAgreement" ], awaitRefetchQueries: true });
-  const [updateParcelAgreement] = useMutation(UPDATE_PARCEL_AGREEMENT, { refetchQueries: [ "getParcelAgreement" ], awaitRefetchQueries: true });
+  const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, { refetchQueries: ["getParcelAgreement"], awaitRefetchQueries: true });
+  const [updateParcelAgreement] = useMutation(UPDATE_PARCEL_AGREEMENT, {
+    refetchQueries: ["getParcelAgreement"],
+    awaitRefetchQueries: true,
+  });
 
   useEffect(() => {
     getInstrumentTypes();
@@ -227,7 +218,7 @@ export default function ParcelInstrument(props) {
           volume,
           page,
           legalDescription,
-          fileId
+          fileId,
         } = stateApp.selectedAgreement;
         setNewInstrument({
           instrumentType,
@@ -299,10 +290,7 @@ export default function ParcelInstrument(props) {
   }))(Tooltip);
 
   const toggleDrawer = (anchor, open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
 
@@ -326,7 +314,7 @@ export default function ParcelInstrument(props) {
 
     const fileId = fileData?.addFileDescriptor?.file?.id;
     setLoader(true);
-    if(stateApp.selectedAgreement){
+    if (stateApp.selectedAgreement) {
       updateParcelAgreement({
         variables: {
           agreement: {
@@ -344,7 +332,7 @@ export default function ParcelInstrument(props) {
             volume: newInstrument.volume,
             fileId: fileId,
             fileName: fileData?.addFileDescriptor?.file?.name,
-            parcelId: props.parcelId
+            parcelId: props.parcelId,
           },
         },
         refetchQueries: ["getParcelAgreement"],
@@ -357,8 +345,8 @@ export default function ParcelInstrument(props) {
         }));
         setNewInstrument(instrumentInitial);
         setLoader(false);
-      })
-    }else{
+      });
+    } else {
       addParcelAgreement({
         variables: {
           agreement: {
@@ -376,7 +364,7 @@ export default function ParcelInstrument(props) {
             fileId: fileId || newInstrument.fileId,
             fileName: fileData?.addFileDescriptor?.file?.name,
             userId: stateApp.user.mongoId,
-            parcelId: props.parcelId
+            parcelId: props.parcelId,
           },
           refetchQueries: ["getParcelAgreement"],
           awaitRefetchQueries: true,
@@ -389,9 +377,9 @@ export default function ParcelInstrument(props) {
         }));
         setNewInstrument(instrumentInitial);
         setLoader(false);
-      })
+      });
     }
-  }
+  };
   return (
     <div>
       <Drawer anchor={"right"} open={true} ModalProps={{ onBackdropClick: handleClose }}>
@@ -419,13 +407,7 @@ export default function ParcelInstrument(props) {
                 alignItems: "center",
               }}
             >
-              <ListItemText>
-                {stateApp.selectedAgreement ? (
-                  <h3>Update Instrument</h3>
-                ) :(
-                  <h3>Add New Instrument</h3>
-                )}
-              </ListItemText>
+              <ListItemText>{stateApp.selectedAgreement ? <h3>Update Instrument</h3> : <h3>Add New Instrument</h3>}</ListItemText>
               {/* <ListItemIcon style={{ cursor: "pointer" }}>
                 <IconButton size="small" onClick={() => handleClose()}>
                   <CloseIcon></CloseIcon>
@@ -449,9 +431,7 @@ export default function ParcelInstrument(props) {
                     instrumentType: value,
                   });
                 }}
-                value={
-                  newInstrument.instrumentType ? newInstrument.instrumentType : ""
-                }
+                value={newInstrument.instrumentType ? newInstrument.instrumentType : ""}
               />
             </ListItem>
             <ListItem
@@ -509,11 +489,7 @@ export default function ParcelInstrument(props) {
                 format="MM/DD/YYYY"
                 margin="normal"
                 id="date-picker-inline"
-                value={
-                  newInstrument?.effectiveDate
-                    ? new Date(newInstrument.effectiveDate)
-                    : null
-                }
+                value={newInstrument?.effectiveDate ? new Date(newInstrument.effectiveDate) : null}
                 onChange={(date) => {
                   setNewInstrument({
                     ...newInstrument,
@@ -540,11 +516,7 @@ export default function ParcelInstrument(props) {
                 format="MM/DD/YYYY"
                 margin="normal"
                 id="date-picker-inline"
-                value={
-                  newInstrument?.executionDate
-                    ? new Date(newInstrument.executionDate)
-                    : null
-                }
+                value={newInstrument?.executionDate ? new Date(newInstrument.executionDate) : null}
                 onChange={(date) => {
                   setNewInstrument({
                     ...newInstrument,
@@ -571,11 +543,7 @@ export default function ParcelInstrument(props) {
                 format="MM/DD/YYYY"
                 margin="normal"
                 id="date-picker-inline"
-                value={
-                  newInstrument?.fileDate
-                    ? new Date(newInstrument.fileDate)
-                    : null
-                }
+                value={newInstrument?.fileDate ? new Date(newInstrument.fileDate) : null}
                 onChange={(date) => {
                   setNewInstrument({
                     ...newInstrument,
@@ -604,9 +572,7 @@ export default function ParcelInstrument(props) {
                     recordType: value,
                   });
                 }}
-                value={
-                  newInstrument.recordType ? newInstrument.recordType : ""
-                }
+                value={newInstrument.recordType ? newInstrument.recordType : ""}
               />
             </ListItem>
             <ListItem
@@ -690,89 +656,74 @@ export default function ParcelInstrument(props) {
           </List>
 
           {(newInstrument?.fileId || fileData) && (
-              <ListItem>
-                <div style={{ display: "flex", justifyContent: "start" }}>
-                  {viewFileSResult?.viewFiles?.map((value, key) => {
-                    let fileExtension = value?.name
-                      ?.slice(value.name.lastIndexOf(".") + 1)
-                      ?.toLowerCase();
-                    if (key <= 1) {
-                      return (
-                        <div key={key}>
-                          <LightTooltip
-                            title={
-                              <div className={classes.IconSection}>
-                                <IconButton
-                                  size="small"
-                                  onClick={() => {
-                                    //   setOpenDeleteConfirmDialog(true);
-                                    setFileIdToDelete(
-                                      stateApp.selectedAgreement.fileId
-                                    );
-                                  }}
-                                >
-                                  <DeleteIcon />
-                                </IconButton>
+            <ListItem>
+              <div style={{ display: "flex", justifyContent: "start" }}>
+                {viewFileSResult?.viewFiles?.map((value, key) => {
+                  let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
+                  if (key <= 1) {
+                    return (
+                      <div key={key}>
+                        <LightTooltip
+                          title={
+                            <div className={classes.IconSection}>
+                              <IconButton
+                                size="small"
+                                onClick={() => {
+                                  //   setOpenDeleteConfirmDialog(true);
+                                  setFileIdToDelete(stateApp.selectedAgreement.fileId);
+                                }}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
 
-                                <IconButton
-                                  disabled={false}
-                                  size="small"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    handleViewFile(value.id);
-                                  }}
-                                >
-                                  <GetAppIcon />
-                                </IconButton>
-                              </div>
-                            }
-                            interactive
-                          >
-                            <div>
-                              {new RegExp(
-                                ["jpg", "jpeg", "png", "bmp"].join("|")
-                              ).test(fileExtension) ? (
-                                <img
-                                  src={value.uri}
-                                  alt={value.name}
-                                  className={classes.forImage}
-                                ></img>
-                              ) : (
-                                <div
-                                  className={classes.forImageContainer}
-                                  onClick={() => {
-                                    console.log("STATE", stateApp);
-                                    if (fileExtension === "pdf") {
-                                      console.log("STATE PDR CLICKED");
-                                      // setStateApp({ ...stateApp, viewDoc: { uri: stateApp.selectedAgreement.fileUrl, name: stateApp.selectedAgreement.fileName } })
-                                      setStateApp((state) => ({
-                                        ...state,
-                                        pdfView: stateApp.selectedAgreement,
-                                      }));
-                                    } else {
-                                      handleViewFile(
-                                        stateApp.selectedAgreement.fileId
-                                      );
-                                    }
-                                  }}
-                                >
-                                  {get_file_icon(fileExtension)}
-                                </div>
-                              )}
-                              <div className={classes.imageSubText}>
-                                {value?.name?.length > 12
-                                  ? value.name.slice(0, 8) + "..."
-                                  : value.name}
-                              </div>
+                              <IconButton
+                                disabled={false}
+                                size="small"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleViewFile(value.id);
+                                }}
+                              >
+                                <GetAppIcon />
+                              </IconButton>
                             </div>
-                          </LightTooltip>
-                        </div>
-                      );
-                    }
-                  })}
-                </div>
-              </ListItem>
-            )}
+                          }
+                          interactive
+                        >
+                          <div>
+                            {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
+                              <img src={value.uri} alt={value.name} className={classes.forImage}></img>
+                            ) : (
+                              <div
+                                className={classes.forImageContainer}
+                                onClick={() => {
+                                  console.log("STATE", stateApp);
+                                  if (fileExtension === "pdf") {
+                                    console.log("STATE PDR CLICKED");
+                                    setStateApp((state) => ({
+                                      ...state,
+                                      pdfView: stateApp.selectedAgreement,
+                                    }));
+                                  } else {
+                                    handleViewFile(stateApp.selectedAgreement.fileId);
+                                  }
+                                }}
+                              >
+                                {get_file_icon(fileExtension)}
+                              </div>
+                            )}
+                            <div className={classes.imageSubText}>
+                              {value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}
+                            </div>
+                          </div>
+                        </LightTooltip>
+                      </div>
+                    );
+                  }
+                })}
+              </div>
+            </ListItem>
+          )}
 
           {!newInstrument?.fileId && !fileData && (
             <div className={classes.Uploadcomp}>
@@ -813,8 +764,8 @@ export default function ParcelInstrument(props) {
               // disabled={!fileData && !newInstrument.fileId}
               onClick={() => {
                 // if (fileData || newInstrument.fileId) {
-                  setLoader(true);
-                  handleSave();
+                setLoader(true);
+                handleSave();
                 // }
               }}
               className={classes.footerButton}
@@ -829,7 +780,7 @@ export default function ParcelInstrument(props) {
 }
 
 const AutoCompleteField = ({ setValue, value, options, ...other }) => {
-  console.log('options',options)
+  console.log("options", options);
   const useStyles = makeStyles({
     inputRoot: {
       backgroundColor: "#ffffff",
@@ -876,12 +827,7 @@ const AutoCompleteField = ({ setValue, value, options, ...other }) => {
         return option?._id === value?._id;
       }}
       renderOption={(option) => {
-        if (option._id === "newEntity")
-          return (
-            <Typography style={{ color: "midnightblue" }}>
-              Add '{option.name}'
-            </Typography>
-          );
+        if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
 
         return (
           <Grid container spacing={0}>

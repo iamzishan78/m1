@@ -394,7 +394,7 @@ const Login = (props) => {
       console.log(error);
     });
     let mongoUser, sessionData;
-    if (loginResp.user) {
+    if (loginResp?.user) {
       mongoUser = loginResp.user
       sessionData = loginResp.sessionData
     }
@@ -408,6 +408,7 @@ const Login = (props) => {
       user: {
         id: accountObj.sub,
         features: sessionData.features,
+        tenantId: sessionData.tenantId,
         mongoId: mongoUser._id,
         email: mongoUser.email,
         name: mongoUser.name,
@@ -649,7 +650,7 @@ const Login = (props) => {
               </Typography>
             </div>
             <div>
-              <a href={`mailto:support@m1neral.com`} target="_blank">
+              <a href={`mailto:support@m1neral.com`} target="_blank" rel="noreferrer">
                 <Button
                   variant="contained"
                   disableElevation
@@ -706,11 +707,11 @@ const Login = (props) => {
         </div>
 
         <div className={localClass.termsAndPrivacy}>
-          <a href="https://m1neral.com/TOS.pdf" target="_blank">
+          <a href="https://m1neral.com/TOS.pdf" target="_blank" rel="noreferrer">
             Terms of Service
           </a>
           {" | "}
-          <a href="https://m1neral.com/Privacy.pdf" target="_blank">
+          <a href="https://m1neral.com/Privacy.pdf" target="_blank" rel="noreferrer">
             Privacy Policy
           </a>
         </div>

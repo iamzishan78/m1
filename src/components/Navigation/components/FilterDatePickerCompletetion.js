@@ -5,9 +5,7 @@ import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
 import ClearIcon from "@material-ui/icons/Clear";
 import { IconButton } from "@material-ui/core";
-import { formatDiagnostics } from "typescript";
-import {useForm,Controller} from 'react-hook-form';
-
+import { useForm, Controller } from "react-hook-form";
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -26,15 +24,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const format = "MM/DD/YYYY"
-
+const format = "MM/DD/YYYY";
 
 export default function FilterDatePickerCompletetion(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [displayValue, setDisplayValue] = useState(null);
   const { control, watch, setValue, getValues } = useForm();
-
 
   useEffect(() => {
     let filter = null;
@@ -48,10 +44,7 @@ export default function FilterDatePickerCompletetion(props) {
         ["get", "completionDate"],
         stateNav.completetionDateFrom
           ? moment.parseZone(stateNav.completetionDateFrom).utc(true).valueOf()
-          : moment
-              .parseZone(new Date("1900-01-01T00:00:00"))
-              .utc(true)
-              .valueOf(),
+          : moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(),
       ]);
 
       //// completetionDateTo
@@ -64,10 +57,7 @@ export default function FilterDatePickerCompletetion(props) {
       ]);
     }
 
-    if (
-      JSON.stringify(stateNav.filterCompletetionDateRange) !==
-      JSON.stringify(filter)
-    )
+    if (JSON.stringify(stateNav.filterCompletetionDateRange) !== JSON.stringify(filter))
       setStateNav((stateNav) => ({
         ...stateNav,
         filterCompletetionDateRange: filter,
@@ -79,7 +69,6 @@ export default function FilterDatePickerCompletetion(props) {
       ...stateNav,
       completetionDateFrom: !date ? null : moment(date),
     }));
-
   };
 
   const handleEndDate = (date) => {
@@ -89,44 +78,44 @@ export default function FilterDatePickerCompletetion(props) {
     }));
   };
 
-
   return (
     <div className={classes.root}>
       <div className={classes.datesRow}>
-
-          <Controller
-            control={control}
-            name="completetionDateFrom"          
-            defaultValue={stateNav.completetionDateFrom}
-            render ={({onChange, onClick, value}
-            ) => (
-
+        <Controller
+          control={control}
+          name="completetionDateFrom"
+          defaultValue={stateNav.completetionDateFrom}
+          render={({ onChange, onClick, value }) => (
             <KeyboardDatePicker
               label={props.labelDates + " " + "From"}
-              className={`${classes.datePicker} ${
-                stateNav.completetionDateFrom ? classes.blue : ""
-              }`}
+              className={`${classes.datePicker} ${stateNav.completetionDateFrom ? classes.blue : ""}`}
               variant="inline"
-              value={ watch('completetionDateFrom')}
+              value={watch("completetionDateFrom")}
               onChange={(date) => {
-                setValue('completetionDateFrom',date);
-                if(!date || !date.isValid()){handleStartDate(null)}
-                if(date && date.isValid()){handleStartDate(date)}
-                return {value: date}
-            }}
+                setValue("completetionDateFrom", date);
+                if (!date || !date.isValid()) {
+                  handleStartDate(null);
+                }
+                if (date && date.isValid()) {
+                  handleStartDate(date);
+                }
+                return { value: date };
+              }}
               disableToolbar
               KeyboardButtonProps={{ "aria-label": "change date" }}
               autoOk="true"
-              format = {format}
+              format={format}
               PopoverProps={{ disablePortal: true }}
               fullWidth={true}
               InputProps={{
                 endAdornment: (
-                  <IconButton onClick={() => {
-                    setValue('completetionDateFrom',null);
-                    handleStartDate(null);
-              }}>                    
-                  <ClearIcon style={{ height: "22px", width: "22px" }} />
+                  <IconButton
+                    onClick={() => {
+                      setValue("completetionDateFrom", null);
+                      handleStartDate(null);
+                    }}
+                  >
+                    <ClearIcon style={{ height: "22px", width: "22px" }} />
                   </IconButton>
                 ),
               }}
@@ -134,30 +123,28 @@ export default function FilterDatePickerCompletetion(props) {
                 position: "start",
               }}
             />
-
-        )}
+          )}
         />
 
-
         <Controller
-            control={control}
-            name="completetionDateTo"          
-            defaultValue={stateNav.completetionDateTo}
-            render ={({onChange, onClick, value}
-            ) => (
-
+          control={control}
+          name="completetionDateTo"
+          defaultValue={stateNav.completetionDateTo}
+          render={({ onChange, onClick, value }) => (
             <KeyboardDatePicker
               label={props.labelDates + " " + "To"}
-              className={`${classes.datePicker} ${
-                stateNav.completetionDateTo ? classes.blue : ""
-              }`}
+              className={`${classes.datePicker} ${stateNav.completetionDateTo ? classes.blue : ""}`}
               variant="inline"
-              value={watch('completetionDateTo')}
+              value={watch("completetionDateTo")}
               onChange={(date) => {
-                setValue('completetionDateTo',date);
-                if(date && date.isValid()){handleEndDate(date)}
-                if(!date || !date.isValid()){handleEndDate(null)}
-                return {value: date}
+                setValue("completetionDateTo", date);
+                if (date && date.isValid()) {
+                  handleEndDate(date);
+                }
+                if (!date || !date.isValid()) {
+                  handleEndDate(null);
+                }
+                return { value: date };
               }}
               maxDate={moment()}
               disableToolbar
@@ -168,11 +155,13 @@ export default function FilterDatePickerCompletetion(props) {
               fullWidth={true}
               InputProps={{
                 endAdornment: (
-                  <IconButton onClick={() => {
-                    setValue('completetionDateTo',null);
-                    handleEndDate(null);
-                  }}>
-                  <ClearIcon style={{ height: "22px", width: "22px" }} />
+                  <IconButton
+                    onClick={() => {
+                      setValue("completetionDateTo", null);
+                      handleEndDate(null);
+                    }}
+                  >
+                    <ClearIcon style={{ height: "22px", width: "22px" }} />
                   </IconButton>
                 ),
               }}
@@ -180,11 +169,8 @@ export default function FilterDatePickerCompletetion(props) {
                 position: "start",
               }}
             />
-
-        )}
+          )}
         />
-
-
       </div>
     </div>
   );

@@ -1,11 +1,12 @@
 import gql from "graphql-tag";
 
 export const ADD_PIPELINE = gql`
-  mutation addPipeline($name: String, $stages: [JSON], $userId: ID) {
-    addPipeline(name: $name, stages: $stages, userId: $userId) {
+  mutation addPipeline($pipeline: JSON) {
+    addPipeline(pipeline: $pipeline) {
       success
       message
       error
+      pipeline
     }
   }
 `;

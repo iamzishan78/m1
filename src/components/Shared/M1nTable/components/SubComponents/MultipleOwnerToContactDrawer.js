@@ -102,7 +102,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const onConvert = () => {
     let ownerIds = rows.filter((row) => row.id !== primaryOwner.id);
     ownerIds.unshift(primaryOwner)
-    ownerIds = ownerIds.reduce((ids, row) => { ids.push(row.globalOwnerId || row.id); return ids; }, []);
+    ownerIds = ownerIds.reduce((ids, row) => { ids.push({id: row.globalOwnerId || row.id, ownershipType: row.ownershipType}); return ids; }, []);
 
     let existingContactId = null;
     let action = actionType
@@ -223,8 +223,9 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
                 <Grid item md={tab === TAB.NEW && ACTION.COMBINE ? 10 : 11}>
                   <Typography style={{ backgroundColor: "#edfbff" }}>
                     <Grid container alignItems='center' style={{ paddingLeft: 10 }}>
-                      <Grid item >{row.name || row.OwnerName}</Grid>
-                      <Grid item >{row.StreetAddress} {row.City}, {row.State} {row.Zip}</Grid>
+                      <div style={{ width: '100%' }}>{row.name || row.OwnerName}</div>
+                      <div>{row.StreetAddress} {row.City}, {row.State} {row.Zip}</div>
+                      
                     </Grid>
                   </Typography>
                 </Grid>

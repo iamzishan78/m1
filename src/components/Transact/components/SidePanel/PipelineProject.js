@@ -72,7 +72,6 @@ const PipelineProject = (props) => {
   };
 
   const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
-  // const { type, collapsed, name } = data;
 
   const [{ isDragging }, drag, preview] = useDrag({
     collect: (monitor) => {
@@ -126,7 +125,6 @@ const PipelineProject = (props) => {
                     defaultValue={project.projectName}
                     autoFocus
                     required
-                    // helperText={showError ? "Name is required!" : ""}
                     InputProps={{
                       className: classes.textFieldInput,
                       disableUnderline: true,
@@ -138,7 +136,7 @@ const PipelineProject = (props) => {
                         onUpdateProjectNameHandler(e.target.value);
                       }
                     }}
-                    onClick={event => event.stopPropagation()}
+                    onClick={(event) => event.stopPropagation()}
                     onBlur={() => setEdit({ able: false, mode: false })}
                   />
                 )}
@@ -156,7 +154,6 @@ const PipelineProject = (props) => {
               </Grid>
             </Grid>
           </AccordionSummary>
-          {/* <AccordionDetails className={classes.detailRoot}>{children}</AccordionDetails> */}
         </Accordion>
       </div>
     </Flipped>

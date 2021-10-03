@@ -1,15 +1,18 @@
 import React, { useMemo, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import gql from "graphql-tag";
 import moment from "moment";
+import Divider from "@material-ui/core/Divider";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import TextField from "@material-ui/core/TextField";
+import Tooltip from "@material-ui/core/Tooltip";
+import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import IconButton from "@material-ui/core/IconButton";
+import AddIcon from "@material-ui/icons/Add";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -22,7 +25,7 @@ import {
   faFileExcel,
   faFileArchive,
   faFileCode,
-  faFileImage
+  faFileImage,
 } from "@fortawesome/free-solid-svg-icons";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import GetAppIcon from "@material-ui/icons/GetApp";
@@ -31,7 +34,6 @@ import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
 import { ADDFILE } from "../../graphQL/useMutationAddFile";
 import { AppContext } from "../../AppContext";
-import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
 import { GETRECENTCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { DELETEDESCRIPTORFILE } from "../../graphQL/useMutationDeleteDescriptorFile";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "../../graphQL/useQueryViewFile";
@@ -48,15 +50,15 @@ const useStyles = makeStyles((theme) => ({
   },
   timelineItemRight: {
     "&:before": {
-      content: "none"
-    }
+      content: "none",
+    },
   },
   forImage: {
     width: "80px",
     height: "80px",
     backgroundColor: "transparent !important",
     border: "1px solid #999",
-    borderRadius: "12px"
+    borderRadius: "12px",
   },
   viewAll: {
     textDecoration: "underline",
@@ -66,28 +68,32 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     fontWeight: "normal",
     "&:hover": { color: "#757575" },
-    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms"
+    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   },
   timelineText: {
     "& .MuiTypography-body1": { fontSize: "0.85rem" },
     "& .MuiTypography-body2": { fontSize: "0.7rem" },
     "&  p": {
-      margin: "0"
-    }
+      margin: "0",
+    },
   },
   blue: {
-    color: theme.palette.secondary.main
+    color: theme.palette.secondary.main,
   },
   todayDot: {
-    fontSize: "8px"
+    fontSize: "8px",
   },
 
-  fileUploadSection: {
+  fileList: {
     minHeight: "50px",
     display: "flex",
     justifyContent: "space-between",
     flexDirection: "column",
-    width: "100%"
+    width: "100%",
+    padding: "15px 30px 30px 30px",
+    overflowY: "auto",
+    maxHeight: "54vh",
+    marginTop: "21px",
   },
   fileUploadTopSection: {
     minHeight: "50px",
@@ -95,28 +101,28 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    marginBottom: "23px"
+    marginBottom: "23px",
   },
   flexIcon: {
-    display: "flex"
+    display: "flex",
   },
   uploadTitle: {
     margin: "0",
     color: "#757575",
     fontWeight: "normal",
-    marginBottom: "8px"
+    marginBottom: "8px",
   },
   uploadSubtext: {
     color: "rgb(176, 176, 176)",
     margin: "0",
-    fontWeight: "normal"
+    fontWeight: "normal",
   },
   IconSection: {
     minHeight: "35px",
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
-    width: "fit-content"
+    width: "fit-content",
   },
   fileDrop: {
     minHeight: "125px",
@@ -130,18 +136,18 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     border: "2px dashed rgb(176, 176, 176)",
-    marginBottom: "30px"
+    marginBottom: "30px",
   },
   fileDropError: {
-    color: "red"
+    color: "red",
   },
-  forImage: {
-    width: "80px !important",
-    height: "80px !important",
-    backgroundColor: "transparent !important",
-    // border: "1px solid #999",
-    borderRadius: "10px !important"
-  },
+  // forImage: {
+  //   width: "80px !important",
+  //   height: "80px !important",
+  //   backgroundColor: "transparent !important",
+  //   // border: "1px solid #999",
+  //   borderRadius: "10px !important"
+  // },
   forImageContainer: {
     // width: "100px !important",
     // height: "100px !important",
@@ -170,16 +176,73 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "10px",
 
     "& svg": {
-      fill: "#999 !important"
-    }
+      fill: "#999 !important",
+    },
   },
   disabledDownload: {
     cursor: "auto !important",
     backgroundColor: "#e9e9e978 !important",
     "& svg": {
-      fill: "#d3d3d3ab !important"
-    }
-  }
+      fill: "#d3d3d3ab !important",
+    },
+  },
+  rootPadding: {
+    padding: "0px 25px",
+    maxHeight: "60px",
+  },
+  cardContent: {
+    "& .MuiCardContent-root": {
+      padding: 0,
+    },
+  },
+  docUploader: {
+    bottom: "0px !important",
+    position: "absolute",
+    width: "88%",
+  },
+  toolbarActions: {
+    display: "flex",
+    transition: theme.transitions.create("width"),
+  },
+  search: {
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    marginLeft: 0,
+    marginTop: 5,
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "auto",
+    },
+  },
+  iconSearch: {
+    height: "100%",
+    display: "flex",
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "rgba(121, 121, 121, 0.85)",
+    zIndex: 1,
+    "&:hover": {
+      color: "#fff",
+      cursor: "pointer",
+    },
+  },
+  inputRoot: {
+    color: "inherit",
+  },
+  inputInput: {
+    paddingLeft: `calc(1em + ${theme.spacing(2)}px)`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+
+    [theme.breakpoints.up("sm")]: {
+      width: "0ch",
+      "&:focus": {
+        width: "30ch",
+        height: "2ch",
+      },
+    },
+  },
 }));
 
 export default function Documents(props) {
@@ -189,6 +252,7 @@ export default function Documents(props) {
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [documentSearch, setDocumentSearch] = useState("");
+  const [isSearchActive, setSearchState] = useState(false);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
@@ -199,67 +263,47 @@ export default function Documents(props) {
     else return ["Contact", 2];
   }, [props.isTransactPage]);
 
-  const [getRecentFiles, { data: files, loading }] = useLazyQuery(
-    GETRECENTCONTACTFILES,
-    {
-      fetchPolicy: "cache-and-network",
-      onCompleted: ({ getFileDescriptors }) => {
-        let allActive = true;
+  const [getRecentFiles, { data: files, loading }] = useLazyQuery(GETRECENTCONTACTFILES, {
+    fetchPolicy: "cache-and-network",
+    onCompleted: ({ getFileDescriptors }) => {
+      let allActive = true;
 
-        console.log("File descriptors: ", getFileDescriptors);
-        if (getFileDescriptors)
-          for (let i = 0; i < getFileDescriptors.length; i++) {
-            if (getFileDescriptors[i].fileState !== "active") {
-              allActive = false;
-              break;
-            }
+      console.log("File descriptors: ", getFileDescriptors);
+      if (getFileDescriptors)
+        for (let i = 0; i < getFileDescriptors.length; i++) {
+          if (getFileDescriptors[i].fileState !== "active") {
+            allActive = false;
+            break;
           }
+        }
 
-        if (!allActive) {
-          if (fileRequestCounter <= 40) {
-            let waitBeforeRequestAgain = setTimeout(() => {
-              setFileRequestCounter(fileRequestCounter + 1);
-              getRecentFiles({
-                variables: {
-                  relatedObjectId: props.id,
-                  relatedObjectType,
-                  limit
-                }
-              });
-              clearTimeout(waitBeforeRequestAgain);
-            }, 1000);
-          } else {
-            setFileRequestCounter(1);
-            // dispatch(
-            //   showWarningMessage(
-            //     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
-            //   )
-            // );
-          }
-        } else setFileRequestCounter(1);
-      }
-    }
-  );
+      if (!allActive) {
+        if (fileRequestCounter <= 40) {
+          let waitBeforeRequestAgain = setTimeout(() => {
+            setFileRequestCounter(fileRequestCounter + 1);
+            getRecentFiles({
+              variables: {
+                relatedObjectId: props.id,
+                relatedObjectType,
+                limit,
+              },
+            });
+            clearTimeout(waitBeforeRequestAgain);
+          }, 1000);
+        } else {
+          setFileRequestCounter(1);
+          // dispatch(
+          //   showWarningMessage(
+          //     "Please wait a few seconds until the last uploaded file is ready, then reload the app"
+          //   )
+          // );
+        }
+      } else setFileRequestCounter(1);
+    },
+  });
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
-
-  // const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
-  //   ADDDESCRIPTORFILE,
-  //   {
-  //     refetchQueries: ["getRecentContactFiles"],
-  //     awaitRefetchQueries: true,
-  //     //   onCompleted: () => {
-  //     //     // setTimeout(() => {
-  //     //     //   getRecentFiles({
-  //     //     //     variables: {
-  //     //     //       contactId: props.id,
-  //     //     //     },
-  //     //     //   });
-  //     //     // }, 3000);
-  //     //   },
-  //   }
-  // );
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "no-cache"
+    fetchPolicy: "no-cache",
   });
 
   // const [viewFile, { data: viewFileData }] = useLazyQuery(VIEWFILEQUERY, {
@@ -270,15 +314,14 @@ export default function Documents(props) {
       variables: {
         relatedObjectId: props.id,
         relatedObjectType,
-        limit
-      }
+        limit,
+      },
     });
   }, [props.id]);
 
-  const [viewFiles, { data: viewFileResultt, loading: viewFileLoading }] =
-    useLazyQuery(VIEWFILESQUERY, {
-      fetchPolicy: "no-cache"
-    });
+  const [viewFiles, { data: viewFileResultt, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
+    fetchPolicy: "no-cache",
+  });
   useEffect(() => {
     if (files && files?.getFileDescriptors?.length > 0) {
       let ID = [];
@@ -288,7 +331,7 @@ export default function Documents(props) {
       }
 
       viewFiles({
-        variables: { fileIds: ID }
+        variables: { fileIds: ID },
       });
     }
   }, [files]);
@@ -317,10 +360,10 @@ export default function Documents(props) {
     if (fileIdToDelete) {
       deleteFile({
         variables: {
-          id: fileIdToDelete
+          id: fileIdToDelete,
         },
         refetchQueries: ["getRecentContactFiles", "getContactFiles"],
-        awaitRefetchQueries: true
+        awaitRefetchQueries: true,
       });
       setFileIdToDelete(null);
       setOpenDeleteConfirmDialog(false);
@@ -345,37 +388,35 @@ export default function Documents(props) {
   }, [viewFileResult]);
 
   useEffect(() => {
-    let filtered = viewFileResultt?.viewFiles?.filter((doc) =>
-      doc.name.toLowerCase().includes(documentSearch.toLowerCase())
-    );
+    let filtered = viewFileResultt?.viewFiles?.filter((doc) => doc.name.toLowerCase().includes(documentSearch.toLowerCase()));
 
     let filteredMerged = filtered?.map((doc) => {
-      let fileDescriptor = files?.getFileDescriptors?.find(
-        (file) => file.fileId === doc.id
-      );
+      let fileDescriptor = files?.getFileDescriptors?.find((file) => file.fileId === doc.id);
       return {
         ...doc,
         descriptorId: fileDescriptor?.descriptorId,
         state: fileDescriptor?.fileState,
-        dateTime: fileDescriptor?.dateTime
+        dateTime: fileDescriptor?.dateTime,
       };
     });
     setFilteredDocuments(filteredMerged);
   }, [documentSearch, viewFileResultt?.viewFiles]);
 
-  const ExtenstionGetter = (name) => {
-    let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
-
-    return fileExtension;
+  const getDate = (dateTime) => {
+    let _d;
+    _d = moment.unix(dateTime / 1000).format("MMM DD, YYYY");
+    if (_d === "Invalid date") {
+      _d = moment(dateTime).format("MMM DD, YYYY");
+    }
+    return _d;
   };
+
   return (
     <div className={classes.root} variant="outlined">
       {!props.isTransactPage && (
         <CardActions style={{ padding: "23px 23px 8px 23px" }}>
           <Grid item xs={12} style={{ minHeight: "35px" }}>
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
-              Recent Documents
-            </h4>
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Recent Documents</h4>
             <h4
               className={classes.viewAll}
               // onClick={(e) => {
@@ -401,161 +442,149 @@ export default function Documents(props) {
           relatedObjectType={relatedObjectType} //Contact or Deal
         />
       )}
-
-      <CardContent>
-        {props.isTransactPage && (
-          <UploadZone
-            relatedObjectId={props.id}
-            userId={userId}
-            relatedObjectType={relatedObjectType} //Contact or Deal
-          />
-        )}
-
-        {props.isTransactPage && (
-          <div style={{ marginBottom: "20px" }}>
-            <TextField
-              fullWidth
-              value={documentSearch}
-              onChange={(e) => setDocumentSearch(e.target.value)}
-              variant="outlined"
-              label={"Search Documents"}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
+      <div className={classes.cardContent}>
+        <CardContent>
+          <div className={classes.rootPadding}>
+            <Grid container direction="row" justify="space-between" alignItems="center">
+              {!isSearchActive && (
+                <Grid item xs={10} style={{ marginTop: "-28px" }}>
+                  <Typography variant="h6">Documents</Typography>
+                </Grid>
+              )}
+              <Grid item xs={1} style={{ marginTop: "-28px" }}>
+                <div className={classes.search}>
+                  <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput1").focus()}>
                     <SearchIcon />
-                  </InputAdornment>
-                )
-              }}
-              labelWidth={70}
-            />
-          </div>
-        )}
-        <div className={classes.fileUploadSection}>
-          {/* this is for view all */}
-          {filteredDocuments?.map((file, key) => {
-            if (file.state === "pending")
-              return (
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                  <CircularProgress size="20px" />
+                  </Tooltip>
+                  <InputBase
+                    id="searchInput1"
+                    autoComplete="off"
+                    placeholder="Search Documents"
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput,
+                    }}
+                    inputProps={{ "aria-label": "search" }}
+                    onFocus={() => setSearchState(true)}
+                    value={documentSearch}
+                    onBlur={() =>
+                      setTimeout(() => {
+                        setSearchState(false);
+                      }, 300)
+                    }
+                    onChange={(evt) => setDocumentSearch(evt.target.value)}
+                  />
                 </div>
-              );
+              </Grid>
+              <Grid item xs={1} style={{ marginTop: "7px" }}>
+                <UploadZone relatedObjectId={props.id} userId={userId} relatedObjectType={relatedObjectType} customClass />
+              </Grid>
+            </Grid>
+          </div>
+          <Divider />
+          <div className={classes.fileList}>
+            {/* this is for view all */}
+            {filteredDocuments?.map((file, key) => {
+              if (file.state === "pending")
+                return (
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <CircularProgress size="20px" />
+                  </div>
+                );
 
-            let fileExtension = file?.name
-              ?.slice(file.name.lastIndexOf(".") + 1)
-              ?.toLowerCase();
+              let fileExtension = file?.name?.slice(file.name.lastIndexOf(".") + 1)?.toLowerCase();
 
-            return (
-              <div key={file.id}>
-                <div className={classes.fileUploadTopSection}>
-                  <div className={classes.flexIcon}>
-                    {
-                      <div
-                        className={`${classes.greySquare} 
+              return (
+                <div key={file.id}>
+                  <div className={classes.fileUploadTopSection}>
+                    <div className={classes.flexIcon}>
+                      {
+                        <div
+                          className={`${classes.greySquare} 
                         // ${
                           file.state !== "active"
                           //   ? classes.disabledDownload
                           //   : ""
                         }`}
+                        >
+                          {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
+                            <img src={file.uri} alt={file.name} className={classes.forImage}></img>
+                          ) : (
+                            <div
+                              className={classes.forImageContainer}
+                              onClick={() => {
+                                if (file.state !== "active") return;
+
+                                if (fileExtension === "pdf") {
+                                  setStateApp({
+                                    ...stateApp,
+                                    viewDoc: { uri: file.uri, name: file.name },
+                                  });
+                                } else {
+                                  handleViewFile(file.id);
+                                }
+                              }}
+                            >
+                              {/* {fileExtension} */}
+                              {get_file_icon(fileExtension)}
+                            </div>
+                          )}
+                        </div>
+                      }
+                      <div
+                        className="DocumentTitle"
+                        onClick={() => {
+                          if (file.state !== "active") return;
+
+                          if (fileExtension === "pdf") {
+                            setStateApp({
+                              ...stateApp,
+                              viewDoc: { uri: file.uri, name: file.name },
+                            });
+                          } else {
+                            handleViewFile(file.id);
+                          }
+                        }}
                       >
-                        {new RegExp(
-                          ["jpg", "jpeg", "png", "bmp"].join("|")
-                        ).test(fileExtension) ? (
-                          <img
-                            src={file.uri}
-                            alt={file.name}
-                            className={classes.forImage}
-                          ></img>
-                        ) : (
-                          <div
-                            className={classes.forImageContainer}
-                            onClick={() => {
-                              if (file.state !== "active") return;
+                        {/* }}> */}
 
-                              if (fileExtension === "pdf") {
-                                setStateApp({
-                                  ...stateApp,
-                                  viewDoc: { uri: file.uri, name: file.name }
-                                });
-                              } else {
-                                handleViewFile(file.id);
-                              }
-                            }}
-                          >
-                            {/* {fileExtension} */}
-                            {get_file_icon(fileExtension)}
-                          </div>
-                        )}
+                        <h4 className={classes.uploadTitle}>{file?.name?.length > 22 ? file?.name?.slice(0, 20) + "..." : file?.name}</h4>
+                        {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
+                        <h5 className={classes.uploadSubtext}>{getDate(file.dateTime)}</h5>
                       </div>
-                    }
-                    <div
-                      className="DocumentTitle"
-                      // onClick={() => {
+                    </div>
+                    <div className={classes.IconSection}>
+                      <IconButton
+                        size="small"
+                        style={{ marginBottom: "8px" }}
+                        onClick={() => {
+                          setOpenDeleteConfirmDialog(true);
+                          setFileIdToDelete(file.descriptorId);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
 
-                      //   viewFileResultt?.viewFiles.map((value) => {
-
-                      //     if (value.id === file.id && ExtenstionGetter(file.name) === 'pdf') {
-                      //       setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: file.name } })
-                      //     }
-                      //     else {
-                      //       handleViewFile(file.id)
-                      //     }
-
-                      //   })
-
-                      onClick={() => {
-                        if (file.state !== "active") return;
-
-                        if (fileExtension === "pdf") {
-                          setStateApp({
-                            ...stateApp,
-                            viewDoc: { uri: file.uri, name: file.name }
-                          });
-                        } else {
-                          handleViewFile(file.id);
-                        }
-                      }}
-                    >
-                      {/* }}> */}
-
-                      <h4 className={classes.uploadTitle}>
-                        {file?.name?.length > 22
-                          ? file?.name?.slice(0, 20) + "..."
-                          : file?.name}
-                      </h4>
-                      {/* <h5 className={classes.uploadSubtext}>{file.userName}</h5> */}
-                      <h5 className={classes.uploadSubtext}>
-                        {moment
-                          .unix(file.dateTime / 1000)
-                          .format("MMM DD, YYYY")}
-                      </h5>
+                      {/* {!props.isTransactPage && ( */}
+                      <IconButton disabled={file.state !== "active"} size="small" onClick={() => handleViewFile(file.id)}>
+                        <GetAppIcon />
+                      </IconButton>
+                      {/* )} */}
                     </div>
                   </div>
-                  <div className={classes.IconSection}>
-                    <IconButton
-                      size="small"
-                      style={{ marginBottom: "8px" }}
-                      onClick={() => {
-                        setOpenDeleteConfirmDialog(true);
-                        setFileIdToDelete(file.descriptorId);
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-
-                    {/* {!props.isTransactPage && ( */}
-                    <IconButton
-                      disabled={file.state !== "active"}
-                      size="small"
-                      onClick={() => handleViewFile(file.id)}
-                    >
-                      <GetAppIcon />
-                    </IconButton>
-                    {/* )} */}
-                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+          <div className={classes.docUploader}>
+            {props.isTransactPage && (
+              <UploadZone
+                relatedObjectId={props.id}
+                userId={userId}
+                relatedObjectType={relatedObjectType} //Contact or Deal
+              />
+            )}
+          </div>
           <DeleteDocumentConfirmation
             open={openDeleteConfirmDialog}
             handleClose={handleDeleteCancel}
@@ -563,8 +592,8 @@ export default function Documents(props) {
               handleDeleteAccept();
             }}
           />
-        </div>
-      </CardContent>
+        </CardContent>
+      </div>
     </div>
   );
 }

@@ -49,8 +49,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-
 export default function Deals({ contact, ...props }) {
   const [wonDeals, setWonDeals] = useState([]); // deal closed
   const [lostDeals, setLostDeals] = useState([]); // deal rejected
@@ -74,11 +72,7 @@ export default function Deals({ contact, ...props }) {
   const stringData = JSON.stringify(data);
 
   useEffect(() => {
-    if (
-      !loading &&
-      data?.transactionData?.allData?.lanes &&
-      data.transactionData.allData.lanes.length > 0
-    ) {
+    if (!loading && data?.transactionData?.allData?.lanes && data.transactionData.allData.lanes.length > 0) {
       const lanes = data?.transactionData?.allData?.lanes;
 
       // get all deals
@@ -116,8 +110,7 @@ export default function Deals({ contact, ...props }) {
   const sumOpenDeals = () => {
     let sum = 0;
     activeDeals.forEach((card) => {
-      if (card.offerPrice && !isNaN(card.offerPrice))
-        sum += card.offerPrice
+      if (card.offerPrice && !isNaN(card.offerPrice)) sum += card.offerPrice;
       // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     });
     return vf_currency(sum);
@@ -126,8 +119,7 @@ export default function Deals({ contact, ...props }) {
   const sumWonDeals = () => {
     let sum = 0;
     wonDeals.forEach((card) => {
-      if (card.offerPrice && !isNaN(card.offerPrice))
-        sum += card.offerPrice
+      if (card.offerPrice && !isNaN(card.offerPrice)) sum += card.offerPrice;
       // (sum += parseFloat(card.label.split("$").join("").split(",").join("")))
     });
     return vf_currency(sum);
@@ -140,11 +132,7 @@ export default function Deals({ contact, ...props }) {
           transactionId: data.transactionData._id,
           transaction: { allData: newData, user: stateApp.user.mongoId },
         },
-        refetchQueries: [
-          "getTransactionData",
-          "getContact",
-          "getPaginatedContacts",
-        ],
+        refetchQueries: ["getTransactionData", "getContact", "getPaginatedContacts"],
         awaitRefetchQueries: true,
       });
     }
@@ -153,7 +141,6 @@ export default function Deals({ contact, ...props }) {
   const handleOpenDialog = (deal) => {
     const laneId = deal ? deal.laneId : null;
     const cardId = deal ? deal.id : null;
-
     setStateApp((stateApp) => ({
       ...stateApp,
       dealDialog: true,
@@ -185,7 +172,7 @@ export default function Deals({ contact, ...props }) {
                 variant="contained"
                 color="secondary"
                 onClick={handleOpenDialog}
-              // gutterBottom
+                // gutterBottom
               >
                 Add Deal
               </Button>
@@ -231,12 +218,7 @@ export default function Deals({ contact, ...props }) {
               <TableBody>
                 {allDeals.map((deal) => (
                   <TableRow key={deal.id}>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      className={classes.dealTitle}
-                      onClick={() => handleOpenDialog(deal)}
-                    >
+                    <TableCell component="th" scope="row" className={classes.dealTitle} onClick={() => handleOpenDialog(deal)}>
                       {deal.title}
                     </TableCell>
                     <TableCell>{deal.label}</TableCell>

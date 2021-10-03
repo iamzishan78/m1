@@ -112,7 +112,7 @@ function Layer({ layerMap, type, handleToggle }) {
                     (type === "layer" &&
                         (layer.layerSettings &&
                             layer.layerSettings.showable &&
-                            layer.identifier != "Tracked Owners"))
+                            layer.identifier !== "Tracked Owners"))
                 ) {
 
                     return (

@@ -15,7 +15,9 @@ import M1neralHeaders from "./M1neralHeaders";
 import ReviewCSV from "./ReviewCSV";
 import UploadStepperComponent from "./UploadStepperComponent";
 import { AppContext } from "../../../AppContext";
+import { NavigationContext } from "../../Navigation/NavigationContext";
 import { useHistory } from "react-router-dom";
+import { matchRoutes } from "react-router-config";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { showErrorMessage } from "actions";
 import { ADDBULKCONTACT } from "../../../graphQL/useMutationAddBulkContacts";
@@ -23,6 +25,7 @@ import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_UPLOAD_CONTACT_URI } from "graphQL/useQueryGetUploadContactUri";
 import { showSuccessMessage } from "../../../actions";
+import { BlockBlobClient } from "@azure/storage-blob";
 
 const QontoConnector = withStyles({
   alternativeLabel: {
@@ -169,13 +172,20 @@ const stepper_style = {
 export default function CustomizedSteppers(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const [stateNav, setStateNav] = React.useContext(NavigationContext);
+  const history = useHistory();
+  const previousRoute = matchRoutes(props.routes, history.pathHistory[1]);
+
   const [contactList, setContactList] = useState(null);
   const [jobId, setJobId] = useState(null);
+  const [processing, setProcessing] = useState(false)
 
   const steps = getSteps();
   const dispatch = useDispatch();
   // const [createBulkContacts] = useMutation(ADDBULKCONTACT);
-  const [getUploadContactUri, { data: contactUploadUri }] = useLazyQuery(GET_UPLOAD_CONTACT_URI);
+  const [getUploadContactUri, { data: contactUploadUri }] = useLazyQuery(GET_UPLOAD_CONTACT_URI, {
+    fetchPolicy: "no-cache",
+  });
   const [createJob, { data: createJobData }] = useMutation(CREATE_JOB);
   const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB);
 
@@ -183,7 +193,11 @@ export default function CustomizedSteppers(props) {
   let data_to_send = stateApp.csvContactsListToSend;
 
   useEffect(() => {
-    if(createJobData?.createJob){
+    console.log(updatedJob)
+  },[updatedJob])
+
+  useEffect(() => {
+    if(createJobData?.createJob && jobId){
       updateJob({
         variables: {
           job:{
@@ -193,10 +207,12 @@ export default function CustomizedSteppers(props) {
         }
       })
     }
-  },[createJobData])
+  },[createJobData, jobId])
 
   useEffect(() => {
-    if(contactUploadUri?.getUploadContactUri?.success){
+    if(contactUploadUri?.getUploadContactUri?.success &&
+       !processing){
+      setProcessing(true);
       setStateApp((state) => ({
         ...state,
         bulkUpload: !stateApp.bulkUpload,
@@ -207,19 +223,19 @@ export default function CustomizedSteppers(props) {
 
       setJobId(id)
       
-      fetch(uri, {
-        headers: {
-          "X-Ms-Blob-Content-Disposition": `attachment; filename="${id}"`,
-          "X-Ms-Blob-Type": "BlockBlob",
-          "X-Ms-Meta-Internalkey": interal_key,
-          "X-Ms-Version": "2015-02-21",
+      const blockBlobClient = new BlockBlobClient(uri);
+      blockBlobClient.uploadBrowserData(contactList, {
+        maxSingleShotSize: 4 * 1024 * 1024,
+        blobHTTPHeaders: {
+          blobContentDisposition: `attachment; filename="${id}"`
         },
-        method: "PUT",
-        body: contactList,
+        metadata: {
+          Internalkey: interal_key || ""
+        }
       })
         .then((res) => {
           console.log(res);
-          if (res?.status === 201) {
+          if (res?._response?.status === 201) {
               createJob({
                 variables: {
                   jobId: id,
@@ -243,6 +259,7 @@ export default function CustomizedSteppers(props) {
       });
       getUploadContactUri({
         variables: {
+          jobName: stateNav.bulkUploadFromMap ? 'Parcel Interests' : 'Contacts',
           userId: userID,
         },
       });
@@ -281,14 +298,14 @@ export default function CustomizedSteppers(props) {
     }
     if (stateApp.activeStepNumber === steps.length - 1) {
       handleReset();
-      routeChange("/contacts");
+      routeChange(previousRoute[0]?.match?.url);
     }
   };
 
   const handleBack = () => {
     if (stateApp.activeStepNumber === 0) {
       handleReset();
-      routeChange("/contacts");
+      routeChange(previousRoute[0]?.match?.url);
     } else {
       setStateApp((state) => ({
         ...state,
@@ -307,10 +324,8 @@ export default function CustomizedSteppers(props) {
     }));
   };
 
-  let history = useHistory();
-
   let routeChange = (route) => {
-    history.push(route);
+    history.push(route || '/');
   };
 
   return (

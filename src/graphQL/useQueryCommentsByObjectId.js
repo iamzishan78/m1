@@ -6,6 +6,7 @@ export const COMMENTSBYOBJECTIDQUERY = gql`
       _id
       comment
       ts
+      isEdited
       public
       user {
         name

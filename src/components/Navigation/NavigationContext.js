@@ -146,6 +146,7 @@ const initialValue = {
   wellsIdsFromTags: [],
   isUserManagementOpen: true,
   contactFromMap: false,
+  bulkUploadFromMap: false,
   filterIntersectingWellLines: []
 }
 

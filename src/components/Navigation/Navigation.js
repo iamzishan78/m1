@@ -791,7 +791,7 @@ export default function Navigation(props) {
   };
 
   useEffect(() => {
-    if (location.pathname === "/") {
+    if (location.pathname === "/" || location.pathname.startsWith('/map/')) {
       setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 1,
@@ -967,7 +967,7 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (location.pathname === "/") {
+    if (location.pathname === "/" || location.pathname.startsWith('/map/')) {
       setMatchLocation(true);
       setMatchFind(true);
     } else {

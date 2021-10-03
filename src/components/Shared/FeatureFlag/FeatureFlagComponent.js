@@ -5,7 +5,7 @@ export function FeatureFlag({ children, feature }) {
     const [stateApp] = useContext(AppContext);
     return (
         <>
-            {stateApp?.user?.features?.includes(feature) && <> {children}</>}
+            {stateApp?.user?.features?.find(f => f.name === feature) && <> {children}</>}
         </>
     );
 };
