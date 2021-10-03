@@ -4,13 +4,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import { useHistory } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
-import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
 import { CONTACTDEALS } from "../../../graphQL/useQueryContactDeals";
 import DealMoneyIcon from "../../Shared/svgIcons/DealMoneyIcon";
 import { AppContext } from "../../../AppContext";
 import DealsDetailCard from "../../DealsDetailCard/DealsDetailCard";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
-import AddDealDialog from "components/Transact/components/AddDealDialog";
+import AddDealDialog from "components/Transact/components/DealDialog/AddDealDialog";
 import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme) => ({
@@ -132,7 +131,7 @@ export default function Deals({ contact, ...props }) {
 
     return vf_currency(sum);
   };
-
+  console.log(document.referrer);
   return (
     <>
       <Button
@@ -155,9 +154,7 @@ export default function Deals({ contact, ...props }) {
       >
         <div className={classes.root}>
           <div>
-            <h4 style={{ marginTop: "0", float: "left" }}>
-              Deals ({allDeals.length})
-            </h4>
+            <h4 style={{ marginTop: "0", float: "left" }}>Deals ({allDeals.length})</h4>
             <IconButton
               style={{ marginTop: "0", alignItems: "right" }}
               size="small"
@@ -170,10 +167,7 @@ export default function Deals({ contact, ...props }) {
                 }));
               }}
             >
-              <AddIcon
-                style={{ marginTop: "0", alignItems: "right" }}
-                htmlColor="rgb(28 173 225 / 81%)"
-              />
+              <AddIcon style={{ marginTop: "0", alignItems: "right" }} htmlColor="rgb(28 173 225 / 81%)" />
             </IconButton>
           </div>
           <div className={classes.cardContent}>
@@ -188,17 +182,13 @@ export default function Deals({ contact, ...props }) {
                 Active Deals
                 {/* Active Deals ({activeDeals.length}) */}
                 <br />
-                <span className={classes.lastContactedSpan}>
-                  {sumOpenDeals() || vf_currency("0")}
-                </span>
+                <span className={classes.lastContactedSpan}>{sumOpenDeals() || vf_currency("0")}</span>
               </h5>
               <h5 className={classes.h5}>
                 Closed Deals
                 {/* Closed Deals ({wonDeals.length}) */}
                 <br />
-                <span className={classes.lastContactedSpan}>
-                  {sumWonDeals() || vf_currency("0")}
-                </span>
+                <span className={classes.lastContactedSpan}>{sumWonDeals() || vf_currency("0")}</span>
               </h5>
               {/* <h5 className={classes.h5}>
             Lost Deals ({lostDeals.length})
