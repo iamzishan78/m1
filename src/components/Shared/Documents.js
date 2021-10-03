@@ -90,10 +90,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     flexDirection: "column",
     width: "100%",
-    padding: "15px 30px 30px 30px",
+    padding: "15px 30px 15px 30px",
     overflowY: "auto",
     maxHeight: "54vh",
-    marginTop: "21px",
   },
   fileUploadTopSection: {
     minHeight: "50px",
@@ -260,10 +259,10 @@ export default function Documents(props) {
 
   const [relatedObjectType, limit] = useMemo(() => {
     if (props.isTransactPage) return ["Deal", 99];
-    else return ["Contact", 2];
+    else return ["Contact", 3];
   }, [props.isTransactPage]);
 
-  const [getRecentFiles, { data: files, loading }] = useLazyQuery(GETRECENTCONTACTFILES, {
+  const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
     fetchPolicy: "cache-and-network",
     onCompleted: ({ getFileDescriptors }) => {
       let allActive = true;
@@ -419,11 +418,6 @@ export default function Documents(props) {
             <h4 style={{ margin: "0 0 8px 0", float: "left" }}>Recent Documents</h4>
             <h4
               className={classes.viewAll}
-              // onClick={(e) => {
-              //   e.preventDefault();
-              //   props.viewAll("comments");
-              // }}
-
               onClick={() => {
                 history.push(`/contact/details/${props.id}/documents`);
                 setStateApp({ ...stateApp, viewDoc: null });
@@ -444,44 +438,52 @@ export default function Documents(props) {
       )}
       <div className={classes.cardContent}>
         <CardContent>
-          <div className={classes.rootPadding}>
-            <Grid container direction="row" justify="space-between" alignItems="center">
-              {!isSearchActive && (
-                <Grid item xs={10} style={{ marginTop: "-28px" }}>
-                  <Typography variant="h6">Documents</Typography>
+          {props.isTransactPage && (
+            <>
+              <div className={classes.rootPadding}>
+                <Grid container direction="row" justify="space-between" alignItems="center">
+                  {!isSearchActive && (
+                    <Grid item xs={10} style={{ marginTop: "-28px" }}>
+                      <Typography variant="h6">Documents</Typography>
+                    </Grid>
+                  )}
+                  <Grid item xs={1} style={{ marginTop: "-28px" }}>
+                    <div className={classes.search}>
+                      <Tooltip
+                        title="Search"
+                        className={classes.iconSearch}
+                        onClick={() => document.getElementById("searchInput1").focus()}
+                      >
+                        <SearchIcon />
+                      </Tooltip>
+                      <InputBase
+                        id="searchInput1"
+                        autoComplete="off"
+                        placeholder="Search Documents"
+                        classes={{
+                          root: classes.inputRoot,
+                          input: classes.inputInput,
+                        }}
+                        inputProps={{ "aria-label": "search" }}
+                        onFocus={() => setSearchState(true)}
+                        value={documentSearch}
+                        onBlur={() =>
+                          setTimeout(() => {
+                            setSearchState(false);
+                          }, 300)
+                        }
+                        onChange={(evt) => setDocumentSearch(evt.target.value)}
+                      />
+                    </div>
+                  </Grid>
+                  <Grid item xs={1} style={{ marginTop: "7px" }}>
+                    <UploadZone relatedObjectId={props.id} userId={userId} relatedObjectType={relatedObjectType} customClass />
+                  </Grid>
                 </Grid>
-              )}
-              <Grid item xs={1} style={{ marginTop: "-28px" }}>
-                <div className={classes.search}>
-                  <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput1").focus()}>
-                    <SearchIcon />
-                  </Tooltip>
-                  <InputBase
-                    id="searchInput1"
-                    autoComplete="off"
-                    placeholder="Search Documents"
-                    classes={{
-                      root: classes.inputRoot,
-                      input: classes.inputInput,
-                    }}
-                    inputProps={{ "aria-label": "search" }}
-                    onFocus={() => setSearchState(true)}
-                    value={documentSearch}
-                    onBlur={() =>
-                      setTimeout(() => {
-                        setSearchState(false);
-                      }, 300)
-                    }
-                    onChange={(evt) => setDocumentSearch(evt.target.value)}
-                  />
-                </div>
-              </Grid>
-              <Grid item xs={1} style={{ marginTop: "7px" }}>
-                <UploadZone relatedObjectId={props.id} userId={userId} relatedObjectType={relatedObjectType} customClass />
-              </Grid>
-            </Grid>
-          </div>
-          <Divider />
+              </div>
+              <Divider />
+            </>
+          )}
           <div className={classes.fileList}>
             {/* this is for view all */}
             {filteredDocuments?.map((file, key) => {
