@@ -64,18 +64,19 @@ export default function UploadZone(props) {
 
       if (file_id) {
         const blockBlobClient = new BlockBlobClient(uri);
-				blockBlobClient.uploadBrowserData(inputFile, {
-					maxSingleShotSize: 4 * 1024 * 1024,
-					blobHTTPHeaders: {
-						blobContentDisposition: `attachment; filename="${file_name}"`
-					},
-					metadata: {
-						Internalkey: interal_key
-					}
-				})
+        blockBlobClient
+          .uploadBrowserData(inputFile, {
+            maxSingleShotSize: 4 * 1024 * 1024,
+            blobHTTPHeaders: {
+              blobContentDisposition: `attachment; filename="${file_name}"`,
+            },
+            metadata: {
+              Internalkey: interal_key,
+            },
+          })
           .then((res) => {
             console.log(res);
-            if (res?._response?.status == 201) {
+            if (res?._response?.status === 201) {
               // props.getRecentFiles();
               if (!props.relatedObjectId && props.setUploadedFileData) {
                 props.setUploadedFileData(addFileData);

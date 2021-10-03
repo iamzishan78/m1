@@ -290,7 +290,7 @@ function App() {
                       <PrivateRoute exact path="/alerts" component={AlertsProvider} />
                       <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider} />
                       <PrivateRoute title="Contacts" exact path="/contacts" component={ContactsProvider} />
-                      <PrivateRoute path="/contact/details/:contactId" component={ContactDetailsProvider} />
+                      <PrivateRoute exact path="/contact/details/:contactId" component={ContactDetailsProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/detailedInformation" component={ContactDetailedInfoProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/recentActivites" component={ContactRecentActivitiesProvider} />
                       <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
