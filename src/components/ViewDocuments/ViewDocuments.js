@@ -14,7 +14,7 @@ import {
   OutlinedInput,
   TextField,
   InputAdornment,
-  IconButton
+  IconButton,
 } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SearchIcon from "@material-ui/icons/Search";
@@ -34,16 +34,16 @@ import get_file_icon from "../Shared/functions/get_file_icon.js";
 
 const useStyles = makeStyles((theme) => ({
   viewAllCard: {
-    backgroundColor: "#ffffff"
+    backgroundColor: "#ffffff",
   },
   header: {
     margin: "30px",
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   headerLeft: {
-    flex: 3
+    flex: 3,
   },
   headerRight: {
     flex: 1,
@@ -51,16 +51,16 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: "center",
     margin: "0",
     color: "#757575",
-    fontWeight: "normal"
+    fontWeight: "normal",
   },
   divider: {
     height: "2px",
     backgroundColor: "#cecece",
-    margin: "0px 30px 15px 30px"
+    margin: "0px 30px 15px 30px",
   },
   documentsList: {
     padding: 0,
-    margin: "0 30px"
+    margin: "0 30px",
   },
   document: {
     display: "flex",
@@ -68,11 +68,11 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     paddingBottom: "20px",
     paddingTop: "20px",
-    borderBottom: "1px solid #cecece"
+    borderBottom: "1px solid #cecece",
   },
   documentLeft: {
     display: "flex",
-    flexDirection: "row"
+    flexDirection: "row",
   },
   documentRight: {
     alignSelf: "center",
@@ -80,23 +80,23 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
-    width: "fit-content"
+    width: "fit-content",
   },
   disabledDownload: {
     cursor: "auto !important",
     color: "#d3d3d3ab !important",
-    backgroundColor: "#e9e9e978 !important"
+    backgroundColor: "#e9e9e978 !important",
   },
   fileText: {
     marginLeft: "20px",
-    alignSelf: "center"
+    alignSelf: "center",
   },
   forImage: {
     width: "100px !important",
     height: "100px !important",
     backgroundColor: "transparent !important",
     // border: "1px solid #999",
-    borderRadius: "10px !important"
+    borderRadius: "10px !important",
   },
   forImageContainer: {
     width: "100px !important",
@@ -111,7 +111,7 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "uppercase",
     paddingTop: "30px",
     cursor: "pointer",
-    marginBottom: "5px"
+    marginBottom: "5px",
   },
 
   greySquare: {
@@ -127,20 +127,20 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "10px",
 
     "& svg": {
-      fill: "#999 !important"
-    }
+      fill: "#999 !important",
+    },
   },
   uploadTitle: {
     margin: "0",
     color: "#757575",
     fontWeight: "normal",
-    marginBottom: "8px"
+    marginBottom: "8px",
   },
   uploadSubtext: {
     color: "rgb(176, 176, 176)",
     margin: "0",
-    fontWeight: "normal"
-  }
+    fontWeight: "normal",
+  },
 }));
 
 const docs = [
@@ -148,7 +148,7 @@ const docs = [
   { title: "Test Upload2.pdf" },
   { title: "Test Upload3.pdf" },
   { title: "Test Upload4.pdf" },
-  { title: "Test Upload5.pdf" }
+  { title: "Test Upload5.pdf" },
 ];
 
 export default function ViewDocuments(props) {
@@ -160,12 +160,12 @@ export default function ViewDocuments(props) {
   const userId = stateApp.user.mongoId;
 
   // queries
-  const [getAllFiles, { data: files }] = useLazyQuery(GETCONTACTFILES, {
-    fetchPolicy: "cache-and-network"
+  const [getAllFiles, { data: files, loading: filesLoading }] = useLazyQuery(GETCONTACTFILES, {
+    fetchPolicy: "cache-and-network",
   });
 
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "no-cache"
+    fetchPolicy: "no-cache",
   });
 
   useEffect(() => {
@@ -179,10 +179,9 @@ export default function ViewDocuments(props) {
       a.click();
     }
   }, [viewFileResult]);
-  const [viewFiles, { data: viewFileResultt, loading: viewFileLoading }] =
-    useLazyQuery(VIEWFILESQUERY, {
-      fetchPolicy: "no-cache"
-    });
+  const [viewFiles, { data: viewFileResultt, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
+    fetchPolicy: "no-cache",
+  });
   useEffect(() => {
     let ID = [];
     for (let i = 0; i < files?.getFileDescriptors.length; i++) {
@@ -190,7 +189,7 @@ export default function ViewDocuments(props) {
       ID.push(files?.getFileDescriptors[i].fileId);
     }
     viewFiles({
-      variables: { fileIds: ID }
+      variables: { fileIds: ID },
     });
     if (files) {
       setAllDocuments(files?.getFileDescriptors);
@@ -204,18 +203,14 @@ export default function ViewDocuments(props) {
     getAllFiles({
       variables: {
         relatedObjectId: props.contactId,
-        relatedObjectType: props.relatedObjectType
-          ? props.relatedObjectType
-          : "Contact"
-      }
+        relatedObjectType: props.relatedObjectType ? props.relatedObjectType : "Contact",
+      },
     });
   }, []);
 
   useEffect(() => {
     // Search logic (Search on change in search field text)
-    let filtered = allDocuments.filter((doc) =>
-      doc.fileName.toLowerCase().includes(documentSearch.toLowerCase())
-    );
+    let filtered = allDocuments.filter((doc) => doc.fileName.toLowerCase().includes(documentSearch.toLowerCase()));
     setFilteredDocuments(filtered);
 
     console.log("DOCS:", documentSearch, allDocuments);
@@ -235,7 +230,7 @@ export default function ViewDocuments(props) {
           top: "56% ",
           left: "40% ",
           width: "98vw ",
-          transform: `translate(1%, -101%)`
+          transform: `translate(1%, -101%)`,
         }}
       ></DocViewer>
 
@@ -252,7 +247,7 @@ export default function ViewDocuments(props) {
                 <InputAdornment position="start">
                   <SearchIcon />
                 </InputAdornment>
-              )
+              ),
             }}
             labelWidth={70}
           />
@@ -261,29 +256,27 @@ export default function ViewDocuments(props) {
       <div className={classes.divider} />
 
       <ul className={classes.documentsList}>
-        {filteredDocuments.map((doc) => {
-          console.log("FILE", doc);
-          if (doc.fileState !== "active")
+        {!!filesLoading && (
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <CircularProgress size="20px" />
+          </div>
+        )}
+        {filteredDocuments
+          ?.filter((doc) => doc.fileState === "active")
+          ?.map((doc) => {
+            console.log("FILE", doc);
             return (
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <CircularProgress size="20px" />
-              </div>
-            );
+              <li className={classes.document} key={doc.fileUrl}>
+                <div className={classes.documentLeft}>
+                  <div>
+                    {console.log("VALUE DOC", doc)}
+                    {console.log(
+                      "VALUE DOC TEST",
+                      new RegExp(["jpg", "jpeg", "png", "PNG", "bmp"].join("|")).test(ExtenstionGetter(doc.fileName))
+                    )}
 
-          return (
-            <li className={classes.document} key={doc.fileUrl}>
-              <div className={classes.documentLeft}>
-                <div>
-                  {console.log("VALUE DOC", doc)}
-                  {console.log(
-                    "VALUE DOC TEST",
-                    new RegExp(
-                      ["jpg", "jpeg", "png", "PNG", "bmp"].join("|")
-                    ).test(ExtenstionGetter(doc.fileName))
-                  )}
-
-                  {/* TEMP COMMENT OUT UNTIL WE GET THE CORRECT URI IN THE QUERY	 */}
-                  {/* {new RegExp(
+                    {/* TEMP COMMENT OUT UNTIL WE GET THE CORRECT URI IN THE QUERY	 */}
+                    {/* {new RegExp(
 										["jpg", "jpeg", "png", "bmp"].join("|")
 									).test(ExtenstionGetter(doc.fileName)) ? (
 										<img
@@ -307,70 +300,66 @@ export default function ViewDocuments(props) {
 										</div>
 									)} */}
 
-                  {
-                    <div
-                      className={classes.forImageContainer}
-                      onClick={() => {
-                        // TEMP COMMENT OUT UNTIL QUERY URI IS FIXED
-                        // if (ExtenstionGetter(doc.fileName) === 'pdf') {
-                        // 	setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
-                        // }
-                        // else {
-                        // 	handleViewFile(doc.fileId)
-                        // }
+                    {
+                      <div
+                        className={classes.forImageContainer}
+                        onClick={() => {
+                          // TEMP COMMENT OUT UNTIL QUERY URI IS FIXED
+                          // if (ExtenstionGetter(doc.fileName) === 'pdf') {
+                          // 	setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
+                          // }
+                          // else {
+                          // 	handleViewFile(doc.fileId)
+                          // }
 
-                        handleViewFile(doc.fileId);
-                      }}
-                    >
-                      {get_file_icon(ExtenstionGetter(doc.fileName))}
-                    </div>
-                  }
+                          handleViewFile(doc.fileId);
+                        }}
+                      >
+                        {get_file_icon(ExtenstionGetter(doc.fileName))}
+                      </div>
+                    }
+                  </div>
+
+                  <div
+                    className={classes.fileText.concat(" DocumentTitle")}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      // TEMP COMMENT OUT UNTI QUERY URI IS FIXED
+                      // if (ExtenstionGetter(doc.fileName) === 'pdf') {
+                      // 	setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
+                      // }
+                      // else {
+                      // 	handleViewFile(doc.fileId)
+                      // }
+
+                      handleViewFile(doc.fileId);
+                    }}
+                  >
+                    <h4 className={classes.uploadTitle}>{doc.fileName}</h4>
+                    {/* <h5 className={classes.uploadSubtext}>{doc.userName}</h5> */}
+                    <h5 className={classes.uploadSubtext}>{moment.unix(doc.dateTime / 1000).format("MMM DD, YYYY")}</h5>
+                  </div>
                 </div>
+                <div className={classes.documentRight}>
+                  <IconButton
+                    onClick={() => {
+                      props.setOpenDeleteConfirmDialog(true);
+                      props.setFileIdToDelete(doc.descriptorId);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
 
-                <div
-                  className={classes.fileText.concat(" DocumentTitle")}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    // TEMP COMMENT OUT UNTI QUERY URI IS FIXED
-                    // if (ExtenstionGetter(doc.fileName) === 'pdf') {
-                    // 	setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
-                    // }
-                    // else {
-                    // 	handleViewFile(doc.fileId)
-                    // }
-
-                    handleViewFile(doc.fileId);
-                  }}
-                >
-                  <h4 className={classes.uploadTitle}>{doc.fileName}</h4>
-                  {/* <h5 className={classes.uploadSubtext}>{doc.userName}</h5> */}
-                  <h5 className={classes.uploadSubtext}>
-                    {moment.unix(doc.dateTime / 1000).format("MMM DD, YYYY")}
-                  </h5>
+                  <IconButton
+                    disabled={doc.fileState !== "active" ? classes.disabledDownload : ""}
+                    onClick={() => handleViewFile(doc.fileId)}
+                  >
+                    <GetAppIcon />
+                  </IconButton>
                 </div>
-              </div>
-              <div className={classes.documentRight}>
-                <IconButton
-                  onClick={() => {
-                    props.setOpenDeleteConfirmDialog(true);
-                    props.setFileIdToDelete(doc.descriptorId);
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-
-                <IconButton
-                  disabled={
-                    doc.fileState !== "active" ? classes.disabledDownload : ""
-                  }
-                  onClick={() => handleViewFile(doc.fileId)}
-                >
-                  <GetAppIcon />
-                </IconButton>
-              </div>
-            </li>
-          );
-        })}
+              </li>
+            );
+          })}
       </ul>
     </div>
   );

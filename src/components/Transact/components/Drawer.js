@@ -78,7 +78,7 @@ export default function Drawer(props) {
           horizontal: "right",
         }}
         color="primary"
-        badgeContent={stateApp?.filesDescriptors?.length}
+        badgeContent={stateApp?.filesDescriptors?.filter((d) => d.fileState === "active")?.length}
       >
         <DescriptionIcon {...props} />
       </Badge>
