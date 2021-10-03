@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { makeStyles, alpha } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import GavelIcon from '@material-ui/icons/Gavel';
 import LocationIcon from '@material-ui/icons/Place';
 import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
 import { useDispatch } from "react-redux";
 import Taps from "../Shared/Taps";
 import TabPanels from "components/Shared/TabPanels"
@@ -19,20 +18,11 @@ import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsPa
 import ParcelDetailsDocumentTable from "components/Table/Documents/ParcelDetailsDocumentTable";
 import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
-import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 import { AppContext } from "../../AppContext";
+import set from 'lodash/set'
 
-import WellIcon from "../Shared/svgIcons/well";
-import PersonIcon from '@material-ui/icons/Person';
-import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
-import TodayOutlinedIcon from '@material-ui/icons/TodayOutlined';
 import Tags from "components/Shared/Tagger";
-import CommentComponent from "components/Shared/CommentComponent";
-import UnitTableInfo from './UnitTableInfo'
-import InputBase from '@material-ui/core/InputBase';
-import AddIcon from '@material-ui/icons/Add';
-import SearchIcon from '@material-ui/icons/Search';
-import { Button } from "@material-ui/core";
+import UnitSummary from "./UnitSummary";
 
 const ENTER_KEY = 13;
 
@@ -198,55 +188,6 @@ const useStyles = makeStyles((theme) => ({
         }
       }
     }
-  },
-
-  search: {
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    // backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(1),
-      width: 'auto',
-    },
-  },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  inputRoot: {
-    color: 'inherit',
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: props => props.search.length > 0 ? '15ch' : '0.9px',
-      '&:focus': {
-        backgroundColor: alpha(theme.palette.common.white, 0.15),
-        width: '15ch',
-      },
-    },
-  },
-  addDataButton: {
-    backgroundColor: 'white',
-    color: 'black',
-    textTransform: "capitalize",
-    '&:hover': {
-      backgroundColor: alpha(theme.palette.common.white, 0.15),
-    }
   }
 }));
 
@@ -255,17 +196,14 @@ export default function UnitDetailCard(props) {
   const dispatch = useDispatch();
   const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
   const [uniObj, setUniObj] = useState();
-  const [search, setSearch] = useState('');
-  const [unitProperties, setProperties] = useState();
-  const [originalProperties, setOriginalProperties] = useState(null);
+  const [properties, setProperties] = useState();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [tableDataState, setTableDataState] = useState({});
-  const [showSummary, setShowSummary] = useState(true);
   const [updateCustomLayer, { data: updatedUnit }] = useMutation(
     UPDATECUSTOMLAYER,
   );
 
-  const classes = useStyles({ search });
+  const classes = useStyles();
+  const showSummary = true
 
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
     CUSTOMLAYER,
@@ -300,11 +238,11 @@ export default function UnitDetailCard(props) {
     if (updatedUnit) {
       if (updatedUnit.updateCustomLayer?.success) {
         dispatch(showSuccessMessage("Successfully updated the parcel"));
-        setTableDataState({})
-
         // Updating stateapp parcel object
         const customLayer = updatedUnit.updateCustomLayer.customLayer;
         const feature = JSON.parse(customLayer.shape);
+        setProperties({ ...feature.properties });
+
         feature.id = customLayer._id;
         feature.properties.id = customLayer._id;
         feature.layer = { id: 'unit' }
@@ -318,40 +256,53 @@ export default function UnitDetailCard(props) {
     }
   }, [updatedUnit]);
 
-  useEffect(() => {
-    if (uniObj) {
-      const original_properties = getParcelOriginalProperties(uniObj.shape.properties);
-      setOriginalProperties(original_properties);
+  const updateProperties = (e, field, value) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const shape = uniObj.shape;
+    set(shape.properties, field, value)
+    shape.properties[field] = value;
+
+    const customLayer = {}
+
+    if (field === 'uName') {
+      setStateApp((state) => ({
+        ...state,
+        selectedUnit: { ...state.selectedUnit, shapeLabel: value },
+      }));
+      shape.properties.shapeLabel = value
+      customLayer.name = value;
     }
-  }, [uniObj]);
-
-  const updateUnit = (e, field, value) => {
-    if (e.keyCode === ENTER_KEY) {
-      e.preventDefault();
-      e.stopPropagation();
-      const shape = uniObj.shape;
-      shape.properties[field] = value;
-
-      const customLayer = {}
-
-      if (field === 'uName') {
-        setStateApp((state) => ({
-          ...state,
-          selectedUnit: { ...state.selectedUnit, shapeLabel: value },
-        }));
-        shape.properties.shapeLabel = value
-        customLayer.name = value;
-      }
-      customLayer.shape = JSON.stringify(shape)
+    customLayer.shape = JSON.stringify(shape)
 
 
-      updateCustomLayer({
-        variables: {
-          customLayerId: uniObj._id,
-          customLayer,
-        },
-      });
+    updateCustomLayer({
+      variables: {
+        customLayerId: uniObj._id,
+        customLayer,
+      },
+    });
+  };
+
+  const updateCustomProperties = (type, value, id) => {
+    const shape = uniObj.shape;
+    const customRow = properties.custom_data_arr.find((p) => p.id === id)
+    if (type === 'key') {
+      customRow.key = value
+    } else {
+      customRow.value = value
     }
+    properties.custom_data = {}
+    properties.custom_data_arr.forEach((data) => { properties.custom_data[data.key] = data.value })
+    const customLayer = {}
+    shape.properties = properties
+    customLayer.shape = JSON.stringify(shape)
+    updateCustomLayer({
+      variables: {
+        customLayerId: uniObj._id,
+        customLayer,
+      },
+    });
   };
 
   const Header = () => (
@@ -400,96 +351,8 @@ export default function UnitDetailCard(props) {
           tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Documents"]}
           openTabIdex={selectedTab}
           tabPanels={[
-            <Grid container spacing={2} direction="row" className={classes.summaryCard}>
-              <Grid item md={7} sm={12}>
-                <Grid container spacing={1} direction="column" >
-                  <Grid item>
-                    <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                      <Grid item>
-                        <Grid container spacing={2} className={classes.summaryDetailCard}>
-                          <Grid item>
-                            <div className={classes.summaryValue}> 3 </div>
-                            <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
-                          </Grid>
-                          <Grid item>
-                            <div className={classes.summaryValue}> 3 </div>
-                            <PersonIcon className={classes.icon} opacity="1.0" small />
-                          </Grid>
-                          <Grid item>
-                            <div className={classes.summaryValue}> 3 </div>
-                            <InsertDriveFileOutlinedIcon className={classes.icon} opacity="1.0" small />
-                          </Grid>
-                          <Grid item>
-                            <div className={classes.summaryValue}> 3 </div>
-                            <TodayOutlinedIcon className={classes.icon} opacity="1.0" small />
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                      <Grid item>
-                        <Grid>
-                          <div className={classes.search}>
-                            <div className={classes.searchIcon}>
-                              <SearchIcon />
-                            </div>
-                            <InputBase
-                              placeholder="Search…"
-                              value={search}
-                              onChange={(e) => setSearch(e.target.value)}
-                              classes={{
-                                root: classes.inputRoot,
-                                input: classes.inputInput,
-                              }}
-                              inputProps={{ 'aria-label': 'search' }}
-                            />
-                          </div>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid item>
-                    <UnitTableInfo updateUnit={updateUnit} unitProperties={unitProperties} setProperties={setProperties} />
-                  </Grid>
-                  <Grid item>
-                    <Button variant="contained" color="primary" component="span" className={classes.addDataButton} startIcon={<AddIcon />}>
-                      Add Data
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item md={5} sm={12}>
-                <Grid container spacing={2} direction="row">
-                  <Grid item className={classes.descriptionInput}>
-                    <TextField
-                      id="outlined-multiline-static"
-                      label="Description"
-                      defaultValue={unitProperties.description}
-                      value={unitProperties.description}
-                      multiline
-                      fullWidth
-                      rows={17}
-                      variant="outlined"
-                      onChange={(e) => {
-                        setProperties({ ...unitProperties, description: e.target.value });
-                      }}
-                      onKeyDown={(e) => {
-                        updateUnit(e, 'description', unitProperties.description);
-                      }}
-                      onFocus={() => { setTableDataState({ description: true }) }}
-                      InputProps={{
-                        endAdornment: (tableDataState.description === true &&
-                          <p className={classes.foodText}>
-                            <span>Return</span> to save
-                          </p>)
-                      }}
-                    />
-                  </Grid>
-                  <Grid item md={12}>
-                    <CommentComponent targetLabel={'unit'} targetSourceId={props.id} />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-            ,
+            <UnitSummary properties={properties} setProperties={setProperties} updateProperties={updateProperties}
+              updateCustomProperties={updateCustomProperties} />,
             <TabPanels
               value={selectedTab}
               panels={[
