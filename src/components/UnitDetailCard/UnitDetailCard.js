@@ -23,6 +23,7 @@ import set from 'lodash/set'
 
 import Tags from "components/Shared/Tagger";
 import UnitSummary from "./UnitSummary";
+import UnitOwnersTable from "components/Table/Unit/UnitOwnersTable";
 
 const ENTER_KEY = 13;
 
@@ -357,7 +358,15 @@ export default function UnitDetailCard(props) {
               value={selectedTab}
               panels={[
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <M1nTable parent="ownersPerParcel" customLayer={uniObj} dense header={<Header />} />
+                  <UnitOwnersTable
+                    customLayer={uniObj}
+                    parent="ownersPerOwner"
+                    targetLabel="unit"
+                    header={<Header />}
+                    setSelectedTab={setSelectedTab}
+                    dense
+                  />
+                  {/* <M1nTable parent="ownersPerOwner" customLayer={uniObj} dense header={<Header />} /> */}
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <SuggestedTaxOwnersTable

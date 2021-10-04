@@ -117,6 +117,7 @@ import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
 import { isPropertySignature } from "typescript";
+import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -450,7 +451,7 @@ const useStyles = makeStyles((theme) => ({
     },
     fontWeight: "bold",
   },
-  companyName:{
+  companyName: {
     fontSize: "12px",
     color: "#000000",
     fontWeight: "normal",
@@ -1792,7 +1793,7 @@ function SubTable(props) {
                             e.stopPropagation();
                             const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1];
                             if (type === "pdf") {
-                              if(props.addAble.type === 'document'){
+                              if (props.addAble.type === 'document') {
                                 window.history.pushState('', '', `/documents/${row_line._id}/view`);
                               }
                               setStateApp((state) => ({
@@ -1884,7 +1885,7 @@ function SubTable(props) {
                               //  console.log(,'value Div click')
                               const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1];
                               if (type === "pdf") {
-                                if(props.addAble.type === 'document'){
+                                if (props.addAble.type === 'document') {
                                   window.history.pushState('', '', `/documents/${row_line._id}/view`);
                                 }
                                 setStateApp((state) => ({
@@ -2065,7 +2066,7 @@ function SubTable(props) {
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
                           name={valueFormatter(tableMeta.rowData[8]) || valueFormatter(`${tableMeta.rowData[10] ? tableMeta.rowData[10] : tableMeta.rowData[8] ? tableMeta.rowData[8].split(' ')[0] : ''}`)}
-                         // name={valueFormatter(`${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
+                          // name={valueFormatter(`${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
                           size="35"
                           round
                         />
@@ -2086,7 +2087,7 @@ function SubTable(props) {
                           nonEditable={!column.editable}
                         />
                       )}
-                      {props.targetLabel === "contact"  && column.name !== "name"&& (
+                      {props.targetLabel === "contact" && column.name !== "name" && (
                         <CellContentEdition
                           id={tableMeta.rowData[0]}
                           content={{ [column.name]: valueFormatter(value) }}
@@ -2122,10 +2123,10 @@ function SubTable(props) {
                           }}
                         >
                           {tableMeta.rowData[8] ||
-                          !tableMeta.rowData[10] && !tableMeta.rowData[12] ? (
-                            `${tableMeta.rowData[8] ? tableMeta.rowData[8]: ''}`
-                          ):(
-                            `${tableMeta.rowData[10] ? tableMeta.rowData[10]: ''} ${tableMeta.rowData[12] ? tableMeta.rowData[12]: ''}`
+                            !tableMeta.rowData[10] && !tableMeta.rowData[12] ? (
+                            `${tableMeta.rowData[8] ? tableMeta.rowData[8] : ''}`
+                          ) : (
+                            `${tableMeta.rowData[10] ? tableMeta.rowData[10] : ''} ${tableMeta.rowData[12] ? tableMeta.rowData[12] : ''}`
                           )}
                           <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
                         </p>
@@ -2133,8 +2134,8 @@ function SubTable(props) {
                       {props.targetLabel === "contact" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
                           <span>
-                            {tableMeta.rowData[49] &&  (
-                              <RequestPageIcon color="grey" fontSize='8px'/>
+                            {tableMeta.rowData[49] && (
+                              <RequestPageIcon color="grey" fontSize='8px' />
                             )}
                           </span>
                         </FeatureFlag>
@@ -2517,24 +2518,24 @@ function SubTable(props) {
                       <FeatureFlag feature={FEATURES.IDICORE}>
                         <Button
                           color="secondary"
-                          startIcon={<RequestPageIcon color="white"/>}
+                          startIcon={<RequestPageIcon color="white" />}
                           className={classes.multiSelectionTopBarButtons}
                           disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
                           onClick={() => {
                             const rows = getSelectedRows()
                             const contacts = []
-                            for(let i=0; i<rows.length; i++){
-                              if(!rows[i].firstName || !rows[i].lastName || !rows[i].address1){
+                            for (let i = 0; i < rows.length; i++) {
+                              if (!rows[i].firstName || !rows[i].lastName || !rows[i].address1) {
                                 contacts.push(rows[i]);
                               }
                             }
                             setContactDataMissing(contacts)
-                            if(contacts.length > 0){
+                            if (contacts.length > 0) {
                               handleExpandClick(null, null, getSelectedRows(), "contactDataMissing");
-                            }else{
+                            } else {
                               handleExpandClick(null, null, getSelectedRows(), "buyContactsInfoData");
                             }
-                            
+
                           }}
                         >
                           Contact Data
@@ -2682,15 +2683,17 @@ function SubTable(props) {
       if (props.addAble && props.parent === "UserManagement") {
         buttonLabel = "+ ADD USER";
       }
-      if (props.addAble.type === "ownerToParcel") {
+      if (props.addAble.type === "ownerToParcel" || props.addAble.type === "ownerToUnit") {
         buttonLabel = "+ ADD INTEREST OWNER";
-        menuOptions = { text: "Import Interest Owners", isShow: true, action: () => {
-          setStateNav((stateNav) => ({
-            ...stateNav,
-            bulkUploadFromMap: true,
-          }));
-          routeChange("/bulkupload")
-        }};
+        menuOptions = {
+          text: "Import Interest Owners", isShow: true, action: () => {
+            setStateNav((stateNav) => ({
+              ...stateNav,
+              bulkUploadFromMap: true,
+            }));
+            routeChange("/bulkupload")
+          }
+        };
       }
       if (props.addAble.type === "suggestedOwnerToParcel") {
         buttonLabel = "+ ADD TO PARCEL";
@@ -2712,6 +2715,10 @@ function SubTable(props) {
         if (props.addAble.type && props.addAble.type === "ownerToParcel") {
           handleExpandClick(null, null, null, "addOwnerToParcel");
         }
+        if (props.addAble.type && props.addAble.type === "ownerToUnit") {
+          handleExpandClick(null, null, null, "addOwnerToUnit");
+        }
+
 
         if (props.addAble.type && props.addAble.type === "deals")
           setStateApp((stateApp) => ({
@@ -2797,8 +2804,9 @@ function SubTable(props) {
                 </Button>
               )}
             {(props.addAble.type === "contact" ||
-             props.addAble.type === "ownerToParcel") && 
-             <ButtonDropDown options={options} />}
+              props.addAble.type === "ownerToParcel" ||
+              props.addAble.type === "ownerToUnit") &&
+              <ButtonDropDown options={options} />}
 
             {props.header === "Documents" && (
               // <ButtonDropDown options={options} onClick={() => {
@@ -2878,7 +2886,7 @@ function SubTable(props) {
       }
 
       if (props.targetLabel === "activity") {
-        if (rows[dataIndex]?._id){
+        if (rows[dataIndex]?._id) {
           window.history.pushState('', '', `/activities/${rows[dataIndex]._id}`);
           setStateApp((stateApp) => ({
             ...stateApp,
@@ -2891,6 +2899,13 @@ function SubTable(props) {
       if ((props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") || props.targetLabel === "Parcel Ownership") {
         if (rows[dataIndex]?._id) {
           setOpenDialog("addOwnerToParcel");
+          setSelectedRow(rows[dataIndex]);
+        }
+      }
+
+      if (props.targetLabel === "Unit Ownership") {
+        if (rows[dataIndex]?._id) {
+          setOpenDialog("addOwnerToUnit");
           setSelectedRow(rows[dataIndex]);
         }
       }
@@ -2969,15 +2984,15 @@ function SubTable(props) {
           });
         }
 
-        temp_rows.splice(insertInBetween, 0, {data:cumulative_array})
+        temp_rows.splice(insertInBetween, 0, { data: cumulative_array })
 
         return temp_rows;
       } else {
-        const result_data =  data.sort((a, b) => {
+        const result_data = data.sort((a, b) => {
           return (a.data[colIndex] < b.data[colIndex] ? -1 : 1) * (order === "desc" ? 1 : -1);
         });
 
-        result_data.splice(insertInBetween,0,{ data: cumulative_array })
+        result_data.splice(insertInBetween, 0, { data: cumulative_array })
 
         return result_data
       }
@@ -3466,6 +3481,20 @@ function SubTable(props) {
             setSelectedRow={setSelectedRow}
           />
         )}
+        {openDialog && openDialog === "addOwnerToUnit" && (
+          <AddUnitOwnerDialogContent
+            onClose={() => {
+              setSelectedRow(null);
+              handleCloseDialog();
+            }}
+            handleExpandClick={handleExpandClick}
+            setM1nSelectedRowsIds={setM1nSelectedRowsIds}
+            customLayerId={props.addAble.customLayerId}
+            customLayer={props.addAble.customLayer}
+            selectedRow={selectedRow}
+            setSelectedRow={setSelectedRow}
+          />
+        )}
         {/* 
         // the dialog box listed below controls 
         // popups that overlay the screen due to actions from the grid 
@@ -3510,13 +3539,14 @@ function SubTable(props) {
           openDialog !== "asign" &&
           openDialog !== "merge" &&
           openDialog !== "addContact" &&
-          openDialog !== "contactDataMissing" && 
-          openDialog !== "multipleOwnerToContact" && 
+          openDialog !== "contactDataMissing" &&
+          openDialog !== "multipleOwnerToContact" &&
           openDialog !== "addDeals" &&
           openDialog !== "sendMailers" &&
           openDialog !== "buyContactsInfo" &&
           openDialog !== "buyContactsInfoData" &&
-          openDialog !== "addOwnerToParcel" && (
+          openDialog !== "addOwnerToParcel" &&
+          openDialog !== "addOwnerToUnit" && (
             <Dialog
               // style={{zIndex: 99998}}
               open={openDialog ? true : false}
@@ -3566,6 +3596,7 @@ function SubTable(props) {
                     ? "lg"
                     : openDialog === "addContact" ||
                       openDialog === "addOwnerToParcel" ||
+                      openDialog === "addOwnerToUnit" ||
                       openDialog === "deleteOwnersFromContact" ||
                       openDialog === "deleteContact" ||
                       openDialog === "deleteDocument" ||
