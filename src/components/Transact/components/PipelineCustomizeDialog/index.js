@@ -449,7 +449,6 @@ const PipelineCustomDialog = (props) => {
                         fontSize: "16px",
                         cursor: "pointer",
                       }}
-                      color="inherit"
                       onClick={() => {
                         setStage(null);
                         setDialogWidth(DIALOG_WIDTHS.LANES);
@@ -460,7 +459,7 @@ const PipelineCustomDialog = (props) => {
                     <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{selectedStageForDetail.name}</Typography>
                   </Breadcrumbs>
                 </div>
-                <StageDetails />
+                <StageDetails selectedStageForDetail={selectedStageForDetail} selectedPipe={selectedPipe} />
               </>
             )}
           </div>

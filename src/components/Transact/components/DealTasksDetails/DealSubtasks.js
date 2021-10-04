@@ -71,11 +71,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
+export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, canDrag = true }) => {
   const approver = users.find((user) => user?.value === task.assignee);
   const [showTaskActions, setShow] = useState(false);
   const [isDatePopup, setDatePopup] = useState(false);
-  const truncate = (str, n) => (str.length > n ? str.substr(0, n - 1) + "..." : str);
+  const truncate = (str, n) => (str?.length > n ? str.substr(0, n - 1) + "..." : str);
   const onHoverTask = (state) => setShow(state);
 
   const [{ isDragging }, drag, preview] = useDrag({
@@ -101,10 +101,12 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
         ref={(ref) => drop(preview(ref))}
       >
         <Grid container direction="row" justify="flex-start" alignItems="center">
-          <ListItemIcon ref={drag} style={{ minWidth: "30px" }}>
-            <DragIndicator style={{ cursor: "move" }} />
-          </ListItemIcon>
-          <Grid item xs={6} className={classes.subTaskLeftGrid}>
+          {canDrag && (
+            <ListItemIcon ref={drag} style={{ minWidth: "30px" }}>
+              <DragIndicator style={{ cursor: "move" }} />
+            </ListItemIcon>
+          )}
+          <Grid item xs={canDrag ? 6 : 7} className={classes.subTaskLeftGrid}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -195,7 +197,7 @@ const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd }) => {
 };
 
 const DealSubtasks = (props) => {
-  const { tasks, users } = props;
+  const { tasks, users, canDrag } = props;
   const [items, setItems] = useState([]);
 
   const [updateSubtask] = useMutation(UPDATE_DEAL_SUBTASK);
@@ -209,7 +211,7 @@ const DealSubtasks = (props) => {
       variables: {
         task,
       },
-      refetchQueries: ["dealSettings"],
+      refetchQueries: ["dealSettings", "getTaskTemplate"],
       awaitRefetchQueries: true,
     });
   };
@@ -231,7 +233,13 @@ const DealSubtasks = (props) => {
         <Flipper flipKey={items.map(({ id }) => id).join(".")}>
           <Sortly items={items} onChange={handleChange}>
             {(props) => (
-              <SubtaskItem task={props.data} handleUpdateSubtask={handleUpdateSubtask} users={users} handleDragEnd={handleDragEnd} />
+              <SubtaskItem
+                task={props.data}
+                handleUpdateSubtask={handleUpdateSubtask}
+                users={users}
+                handleDragEnd={handleDragEnd}
+                canDrag={canDrag}
+              />
             )}
           </Sortly>
         </Flipper>
