@@ -172,7 +172,7 @@ function DealStageDetail({ settings, index, users, extendedTaskIndex, user, acti
                         <>
                           <InputAdornment position="start">
                             {settings.stageDealDescriptor.approver ? (
-                              <CustomAvatar email={approver.email} text={approver.text.toString()} />
+                              <CustomAvatar email={approver?.email} text={approver?.text?.toString()} />
                             ) : (
                               <AccountCircle fontSize="default" />
                             )}

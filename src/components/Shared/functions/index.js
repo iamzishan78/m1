@@ -1,3 +1,5 @@
+import { BlockBlobClient } from "@azure/storage-blob";
+
 export * from "./deepEqual";
 export * from "./setStateIfDeepEqual";
 export * from "./getPolygonString";
@@ -24,19 +26,23 @@ export function addTrailingZeros(num) {
 export function uploadFileData(file, fileContent) {
   const url = file.uri;
   const interal_key = file.internalKey;
+  const file_name = file.name;
   // const content = JSON.stringify(fileContent.file);
   return new Promise((resolve, reject) => {
-    fetch(url, {
-      headers: {
-        "X-Ms-Blob-Content-Disposition": `attachment; filename="${fileContent.fileName}"`,
-        "X-Ms-Blob-Type": "BlockBlob",
-        "X-Ms-Meta-Internalkey": interal_key,
-        "X-Ms-Version": "2015-02-21",
-      },
-      method: "PUT",
-      body: fileContent.file,
-    })
-      .then((response) => response.text())
+    const blockBlobClient = new BlockBlobClient(url);
+    blockBlobClient
+      .uploadBrowserData(fileContent.file, {
+        maxSingleShotSize: 4 * 1024 * 1024,
+        blobHTTPHeaders: {
+          blobContentDisposition: `attachment; filename="${file_name}"`,
+        },
+        metadata: {
+          Internalkey: interal_key,
+        },
+      })
+      .then((response) => {
+        return response._response.bodyAsText;
+      })
       .then((response) => {
         resolve(response);
       })

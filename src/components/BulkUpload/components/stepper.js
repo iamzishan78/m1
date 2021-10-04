@@ -25,6 +25,7 @@ import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_UPLOAD_CONTACT_URI } from "graphQL/useQueryGetUploadContactUri";
 import { showSuccessMessage } from "../../../actions";
+import { BlockBlobClient } from "@azure/storage-blob";
 
 const QontoConnector = withStyles({
   alternativeLabel: {
@@ -222,19 +223,19 @@ export default function CustomizedSteppers(props) {
 
       setJobId(id)
       
-      fetch(uri, {
-        headers: {
-          "X-Ms-Blob-Content-Disposition": `attachment; filename="${id}"`,
-          "X-Ms-Blob-Type": "BlockBlob",
-          "X-Ms-Meta-Internalkey": interal_key,
-          "X-Ms-Version": "2015-02-21",
+      const blockBlobClient = new BlockBlobClient(uri);
+      blockBlobClient.uploadBrowserData(contactList, {
+        maxSingleShotSize: 4 * 1024 * 1024,
+        blobHTTPHeaders: {
+          blobContentDisposition: `attachment; filename="${id}"`
         },
-        method: "PUT",
-        body: contactList,
+        metadata: {
+          Internalkey: interal_key || ""
+        }
       })
         .then((res) => {
           console.log(res);
-          if (res?.status === 201) {
+          if (res?._response?.status === 201) {
               createJob({
                 variables: {
                   jobId: id,
