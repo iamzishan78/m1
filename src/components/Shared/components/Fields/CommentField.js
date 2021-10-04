@@ -237,7 +237,6 @@ export default function DealComment({
               variant="contained"
               color="primary"
               onClick={() => {
-                debugger
                 upsertComment(comment);
                 setNameAutValue({});
               }}

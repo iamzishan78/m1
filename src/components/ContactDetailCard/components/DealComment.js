@@ -260,6 +260,7 @@ export default function DealComment(props) {
         comment: {
           comment: newCommentCleaner(value),
           user: stateApp.user.mongoId,
+          commentedOn: targetSourceId,
           _id: editCommentId,
           isEdited: true,
         },
@@ -539,6 +540,7 @@ const ActionMenu = ({
         onClick={handleClick}
       />
       <Menu
+        style={{ zIndex: '1305'}}
         id={eachComment._id}
         anchorEl={anchorEl}
         keepMounted

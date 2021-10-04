@@ -1641,13 +1641,9 @@ function AddDealDialog(props) {
               </div>
             )}
           </div>
-          {stateApp.transactBarView === "Deal" && (
-
           <div style={{marginTop: 2,}}>
             <DealComment setNewCommentId={setNewCommentId} targetSourceId={stateApp.activeDeal?.cardId} />
           </div>
-
-          )}
         </RightDialog>
       </div>
     </>
