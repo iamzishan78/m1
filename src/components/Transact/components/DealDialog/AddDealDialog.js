@@ -1,57 +1,54 @@
-import React, { useState, useEffect, useContext, Fragment } from "react";
+import React, { useState, useEffect, useContext, Fragment, useCallback } from "react";
 import { get } from "lodash";
+import _ from "underscore";
 import { useHistory } from "react-router-dom";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import Divider from "@material-ui/core/Divider";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Select from "@material-ui/core/Select";
+
 import Grid from "@material-ui/core/Grid";
-import { AppContext } from "../../../AppContext";
-import { CONTACT } from "../../../graphQL/useQueryContact";
-import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
-import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
-import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
+import { AppContext } from "AppContext";
+import { TransactContext } from "components/Transact/TransactContext";
+import { CONTACT } from "graphQL/useQueryContact";
+import { ADDCONTACT } from "graphQL/useMutationAddContact";
+import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
+import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { Dialog, Avatar } from "@material-ui/core";
-import RightDialog from "../../ContactDetailCard/components/RightDialog";
+import RightDialog from "components/ContactDetailCard/components/RightDialog";
+import DealDialogHeader from "components/Transact/components/DealDialog/DealDialogHeader";
 import Drawer from "components/Transact/components/Drawer";
 import moment from "moment";
-import { setStateIfDeepEqual } from "../../Shared/functions";
+import { setStateIfDeepEqual } from "components/Shared/functions";
 
-import { TRACKBYOBJECTID } from "../../../graphQL/useQueryTrackByObjectId";
-import DealTasksProgressZone from "../../ContactDetailCard/components/DealTasksProgressZone";
-import DealComment from "../../ContactDetailCard/components/DealComment";
-import DealTasksDetails from "./DealTasksDetails";
-import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { TRACKBYOBJECTID } from "graphQL/useQueryTrackByObjectId";
+import DealTasksProgressZone from "components/ContactDetailCard/components/DealTasksProgressZone";
+import DealComments from "components/Transact/components/DealComments";
+import DealTasksDetails from "../DealTasksDetails";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
 import { ADDDEAL } from "graphQL/useMutationAddDeal";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { UPDATEDEAL } from "graphQL/useMutationUpdateDeal";
 import { UPSERTDEALDESCRIPTOR } from "graphQL/useMutationUpsertDealDescriptor";
-import { REMOVEDEALDESCRIPTOR } from "../../../graphQL/useMutationRemoveDealDescriptor";
+import { REMOVEDEALDESCRIPTOR } from "graphQL/useMutationRemoveDealDescriptor";
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
-import { setFlowState, showErrorMessage, showSuccessMessage } from "../../../actions";
+import { setFlowState, showErrorMessage, showSuccessMessage } from "actions";
 
 import { GETPIPELINES } from "graphQL/useQueryPipelines";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
-import Documents from "../../Shared/Documents";
-import AddDialogeUploadZone from "../../ContactDetailCard/components/AddDialogUploadZone";
+import Documents from "components/Shared/Documents";
+import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDialogUploadZone";
 import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GET_DEAL_SETTINGS } from "graphQL/useQueryGetDealSettings";
 import { GETDEAL } from "graphQL/useQueryDeal";
-import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
+import ExpandableCardProvider from "components/ExpandableCard/ExpandableCardProvider";
 import Contacts from "components/FlowDrawer/Contacts";
 import EventIcon from "@material-ui/icons/Event";
-import "./style/dialog.css";
+import "./dialog.css";
 import { faCloudShowersHeavy } from "@fortawesome/free-solid-svg-icons";
 
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
@@ -107,10 +104,6 @@ const useStyles = makeStyles((theme) => ({
   inputFieldCustomTextInput: {
     marginBottom: "7px",
   },
-  inputFieldDealName: {
-    width: "750px",
-    padding: "0px 30px 20px 30px",
-  },
   dateLabel: {
     transform: "translate(10px, 2px) scale(0.75) !important",
     backgroundColor: "#fff !important",
@@ -147,58 +140,11 @@ const useStyles = makeStyles((theme) => ({
   label: {
     backgroundColor: "white",
   },
-
-  closeIcon: {
-    fill: theme.palette.secondary.main,
-    "&:hover": {
-      fill: "red",
-    },
-  },
   topBtnGroup: {},
-  inputField: {
-    // marginBottom: "30px",
-    outline: "none",
-  },
-  dealStateOpenWon: {
-    padding: "8px 16px",
-    borderRadius: 5,
-    cursor: "pointer",
-    backgroundColor: "#d9d9d9",
-    "&:hover": {
-      backgroundColor: "#a6e5c3",
-      // borderStyle: "solid",
-      fontWeight: "bold",
-      color: "#54a83c",
-    },
-  },
-  dealStateOpenLost: {
-    padding: "8px 16px",
-    borderRadius: 5,
-    cursor: "pointer",
-    backgroundColor: "#d9d9d9",
-    "&:hover": {
-      backgroundColor: "#ffa8a8",
-      // borderStyle: "solid",
-      fontWeight: "bold",
-      color: "#f96060",
-    },
-  },
-  dealStateClosed: {
-    padding: "8px 16px",
-    borderRadius: 18,
-
-    // color: "#fff",
-  },
   gridStyle: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-  },
-  dealStateReopen: {
-    padding: "2px 10px",
-    cursor: "pointer",
-    borderRadius: 5,
-    border: "1px solid gray",
   },
   originationDate: {
     paddingBottom: "12px",
@@ -268,19 +214,6 @@ const useStyles = makeStyles((theme) => ({
   },
   icon: {
     display: "none",
-  },
-  dealNameRoot: {
-    fontWeight: "bold",
-    paddingLeft: 0,
-    textAlign: "left",
-    fontSize: "1.2rem",
-    "&.Mui-focused fieldset": {
-      border: "1px solid black",
-      backgroundColor: "transparent",
-    },
-    "&:hover": {
-      border: "1px solid black",
-    },
   },
   customDataTextInputRoot: {
     border: "1px solid #EBEBEB",
@@ -364,10 +297,9 @@ function AddDealDialog(props) {
   let history = useHistory();
   const classes = useStyles();
   const { selectedPipe, pipelines, pipeToShow } = useSelector(({ Flow }) => Flow);
-  const [isProgressDetail, toggleProgressDetail] = useState(null);
-  const [selectedContactToAdd, setSelectedContactToAdd] = useState(null);
   const [newCommentsIds, setNewCommentsIds] = useState([]);
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [title, setTitle] = useState(""); // title change from contact.name to dealName
   const [titleFocus, setTitleFocus] = useState(false);
   const [label, setLabel] = useState("");
@@ -408,11 +340,11 @@ function AddDealDialog(props) {
     fetchPolicy: "no-cache",
   });
 
-  const [addDeal, { data: dealData }] = useMutation(ADDDEAL);
+  const [addDeal, { data: dealData, loading: addDealLoading }] = useMutation(ADDDEAL);
   const [updateDeal, { loading: updateDealLoading }] = useMutation(UPDATEDEAL);
-  const [upsertDealDescriptor] = useMutation(UPSERTDEALDESCRIPTOR);
+  const [upsertDealDescriptor, { loading: upsertDealDescriptorLoading }] = useMutation(UPSERTDEALDESCRIPTOR);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
-  const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
+  const [updateStageDealDescriptor, { data: updatedStageDealDescriptor }] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
 
   const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
@@ -432,22 +364,22 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     getPipelines();
-  }, []);
+  }, [getPipelines]);
 
+  //? pre saving the deal id in case deal descriptors
+  //? are created before deal
   useEffect(() => {
-    console.log("===========");
-    console.log("FLOW TRANSACT BAR VIEW", stateApp.transactBarView);
-
-    if (stateApp.transactBarView !== "Deal") {
-      // handleValidate();
-
-      if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
-        addUpdateDeal(null, false);
-      }
-    } else {
-      toggleProgressDetail(false);
+    if (updatedStageDealDescriptor) {
+      const {
+        updateStageDealDescriptor: { stageDealDescriptors },
+      } = updatedStageDealDescriptor;
+      if (stageDealDescriptors)
+        setStateTransact((stateTransact) => ({
+          ...stateTransact,
+          dealToCreate: { _id: stageDealDescriptors.descriptorObject },
+        }));
     }
-  }, [stateApp.transactBarView]);
+  }, [updatedStageDealDescriptor]);
 
   useEffect(() => {
     getDeal({
@@ -462,26 +394,25 @@ function AddDealDialog(props) {
         ...stateApp,
         activeDeal: dealData?.addDeal?.deal,
       }));
+      setStateTransact((stateTransact) => ({
+        ...stateTransact,
+        dealToCreate: {},
+      }));
     }
   }, [dealData]);
 
   useEffect(() => {
     if (stateApp.activeDeal && pipelineId) {
       // fetching deal settings
+      const dealId = get(stateApp, "activeDeal._id", get(stateTransact, "dealToCreate._id"));
       getDealSettings({
         variables: {
-          dealId: stateApp.activeDeal._id,
+          dealId,
           pipelineId: pipelineId,
         },
       });
     }
-  }, [pipelineId, stateApp.activeDeal]);
-
-  useEffect(() => {
-    if (isProgressDetail) {
-      setStateApp((stateApp) => ({ ...stateApp, transactBarView: "Task Progress" }));
-    }
-  }, [isProgressDetail]);
+  }, [pipelineId, stateApp.activeDeal, stateTransact.dealToCreate]);
 
   useEffect(() => {
     if (pipelinesData) {
@@ -585,11 +516,6 @@ function AddDealDialog(props) {
     }
   }, [nameAutInputValue]);
 
-  const loadNextPage = async (pageVariables) => {
-    setIsNextPageLoading(true);
-    fetchMorePaginatedContacts(pageVariables);
-  };
-
   useEffect(() => {
     if (cData?.contact) {
       setNameAutValue(cData?.contact ? { name: cData.contact.name, _id: cData.contact._id } : {});
@@ -608,6 +534,17 @@ function AddDealDialog(props) {
   const [trackByObjectId, { loading: loadingTrack, data: dataTrack }] = useLazyQuery(TRACKBYOBJECTID);
 
   const [target, setTarget] = useState({});
+
+  useEffect(() => {
+    console.log("===========");
+    console.log("FLOW TRANSACT BAR VIEW", stateApp.transactBarView);
+
+    if (stateApp.transactBarView !== "Deal") {
+      if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
+        addUpdateDeal(null, false);
+      }
+    }
+  }, [stateApp.transactBarView]);
 
   useEffect(() => {
     if (dataTrack) {
@@ -754,7 +691,7 @@ function AddDealDialog(props) {
     //// stageId, pipelineId, ownerId, contactId
 
     if (pipelineId && stageId && title && title.trim() !== "") {
-      const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
+      const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?._id;
       let selectedDate = closeDate;
       if (closeDate instanceof Date) {
         selectedDate = moment(closeDate).format("YYYY-MM-DD");
@@ -932,7 +869,7 @@ function AddDealDialog(props) {
             .catch((reason) => {
               console.log(reason);
             });
-      } else {
+      } else if (!addDealLoading) {
         //// add a new deal
         let variables = {
           deal,
@@ -968,7 +905,7 @@ function AddDealDialog(props) {
           variables = { ...variables, comments: newCommentsIds };
         }
         addDeal({
-          variables,
+          variables: { ...variables, deal: { ...variables.deal, _id: get(stateTransact, "dealToCreate._id") } },
           refetchQueries: [
             "getPipeline",
             "getContactDeals",
@@ -1042,25 +979,15 @@ function AddDealDialog(props) {
   };
 
   const addSelectedContactToDeal = (contact) => {
-    // HERE
     upsertDealDescriptor({
       variables: {
-        dealId: cardId,
+        dealId: stateApp.activeDeal._id,
         relatedObject: [contact._id],
         relatedObjectType: "Contact",
         userId: stateApp.user.mongoId,
       },
-      refetchQueries: ["getPipeline", "getContactDeals"],
+      refetchQueries: ["getPipeline", "getContactDeals", "getDeal"],
       awaitRefetchQueries: true,
-    }).then((result) => {
-      const {
-        data: { upsertDealDescriptor },
-      } = result;
-
-      // if (upsertDealDescriptor?.success === false) success = false;
-      // resolve();
-
-      refetchDeal();
     });
   };
 
@@ -1078,9 +1005,9 @@ function AddDealDialog(props) {
 
   const getView = () => {
     if (stateApp.transactBarView === "Documents") {
-      return <Documents id={stateApp.activeDeal?.cardId} user_id={stateApp.user.email} isTransactPage={true} />;
+      return <Documents id={stateApp.activeDeal?._id} user_id={stateApp.user.email} isTransactPage={true} />;
     } else if (stateApp.transactBarView === "Contacts") {
-      return <Contacts addSelectedContact={addSelectedContactToDeal} loading={getDealLoading} getDeal={refetchDeal} />;
+      return <Contacts addSelectedContact={addSelectedContactToDeal} loading={upsertDealDescriptorLoading} getDeal={refetchDeal} />;
     } else if (stateApp.transactBarView === "Task Progress") {
       return (
         <DealTasksDetails
@@ -1089,6 +1016,8 @@ function AddDealDialog(props) {
           activeDeal={stateApp.activeDeal}
           dealSettings={get(dealSettings, "dealSettings", [])}
           user={stateApp.user}
+          updateStageDealDescriptor={updateStageDealDescriptor}
+          pipelineId={pipelineId}
         />
       );
     }
@@ -1182,145 +1111,13 @@ function AddDealDialog(props) {
     setNewCommentsIds(comments);
   };
 
-  const StickyHeader = () => (
-    <div>
-      <Grid item container xs={12} style={{ padding: "30px 14px 10px 25px" }}>
-        {!titleFocus && (
-          <>
-            <Grid item xs={6} style={{ minHeight: "35px" }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  float: "left",
-                }}
-              >
-                {(dealState === null || dealState === "open") && (
-                  <>
-                    <div
-                      className={classes.dealStateOpenWon}
-                      onClick={() => setDealState("won")}
-                      style={{
-                        marginRight: 8,
-                      }}
-                    >
-                      Won
-                    </div>
-
-                    <div className={classes.dealStateOpenLost} onClick={() => setDealState("lost")}>
-                      Lost
-                    </div>
-                  </>
-                )}
-                {dealState === "won" && (
-                  <>
-                    <div
-                      className={classes.dealStateClosed}
-                      style={{
-                        backgroundColor: "#a6e5c3",
-                        fontWeight: "bold",
-                        color: "#54a83c",
-                        marginRight: 8,
-                      }}
-                    >
-                      Won
-                    </div>
-                    <div className={classes.dealStateReopen} onClick={() => setDealState(null)}>
-                      Re-open
-                    </div>
-                  </>
-                )}
-                {dealState === "lost" && (
-                  <>
-                    <div
-                      className={classes.dealStateClosed}
-                      style={{
-                        backgroundColor: "#ffa8a8",
-                        // borderStyle: "solid",
-                        fontWeight: "bold",
-                        color: "#f96060",
-                        marginRight: 8,
-                      }}
-                    >
-                      Lost
-                    </div>
-                    <div className={classes.dealStateReopen} onClick={() => setDealState(null)}>
-                      Re-open
-                    </div>
-                  </>
-                )}
-              </div>
-            </Grid>
-            <Grid item xs={6} style={{ 
-              // minHeight: "35px", 
-              // padding: "30px 14px 10px 25px" 
-              }}>
-              {(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) && stateApp.activeDeal?.laneId && (
-                <>
-                  <IconButton
-                    disabled={updateDealLoading || addContactLoading}
-                    onClick={openConfirmationDialog}
-                    size="small"
-                    component="span"
-                    style={{
-                      background: "transparent",
-                      paddingLeft: "10px",
-                      align: "center",
-                      float: "right",
-                    }}
-                  >
-                    <DeleteIcon size="medium" className={classes.closeIcon} />
-                  </IconButton>
-                </>
-              )}
-            </Grid>
-          </>
-        )}
-      </Grid>
-      <Grid item container xs={12} style={{ padding: "0px 0px 0px 0px" }} alignItems="center">
-        {!((Object.keys(contact).length === 0 && contact.constructor === Object) || contact === null) && !props.isTransactPage && (
-          <TextField
-            variant="outlined"
-            margin="dense"
-            value={contact?.name}
-            label="Contact Name"
-            fullWidth
-            disabled
-            className={classes.inputField}
-          />
-        )}
-
-        <FormControl variant="outlined" className={classes.inputFieldDealName} style={{ marginLeft: "-15px" }} fullWidth size="small">
-          <TextField
-            margin="dense"
-            value={title}
-            variant="outlined"
-            placeholder="Click to enter deal name"
-            required
-            fullWidth
-            autoFocus
-            // error text that will prevent things
-            error={title && title !== "" ? false : true}
-            helperText={title && title !== "" ? "" : "Enter a deal name to get started"}
-            //   required
-            onChange={(e) => {
-              e.preventDefault();
-              setTitle(e.target.value);
-            }}
-            InputProps={{
-              classes: {
-                root: classes.dealNameRoot,
-                focused: classes.focused,
-                notchedOutline: classes.notchedOutline,
-              },
-            }}
-            onBlur={() => setTitleFocus(false)}
-          />
-        </FormControl>
-      </Grid>
-      <Divider />
-    </div>
-  );
+  const getSubtaskNumber = useCallback(() => {
+    let subtasks = 0;
+    get(dealSettings, "dealSettings", []).forEach((s) => {
+      subtasks += s.tasks?.length;
+    });
+    return subtasks;
+  }, [dealSettings]);
 
   return (
     <>
@@ -1361,83 +1158,98 @@ function AddDealDialog(props) {
           isTransactPage={props.isTransactPage}
           hiddenOverflow
         >
-          <StickyHeader />
-          <Drawer top={contact.name && !props.isTransactPage ? "160px" : "152px"} />
+          <DealDialogHeader
+            titleFocus={titleFocus}
+            dealState={dealState}
+            setDealState={setDealState}
+            classes={classes}
+            activeDeal={stateApp.activeDeal}
+            title={title}
+            setTitle={setTitle}
+            updateDealLoading={updateDealLoading}
+            addContactLoading={addContactLoading}
+            contact={contact}
+            openConfirmationDialog={openConfirmationDialog}
+            setTitleFocus={setTitleFocus}
+            isTransactPage={props.isTransactPage}
+          />
+          <Drawer dealSettingsNumber={getSubtaskNumber()} />
           <div className={classes.contentRoot}>
-            {props.isTransactPage && stateApp.transactBarView !== "Deal" && (stateApp.activeDeal?.cardId || stateApp.activeDeal?.id) ? (
+            {props.isTransactPage &&
+            stateApp.transactBarView !== "Deal" &&
+            (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
               <Fragment>{getView()}</Fragment>
             ) : (
               <div className={classes.inputFieldRoot}>
-
-                <div style={{marginTop: 5}}>
-                <FormControl variant="outlined" fullWidth size="small">
-                  <Grid container className={classes.gridStyle}>
-                    <Grid item xs={3}>
-                      <div>Owner</div>
+                <div style={{ marginTop: 5 }}>
+                  <FormControl variant="outlined" fullWidth size="small">
+                    <Grid container className={classes.gridStyle}>
+                      <Grid item xs={3}>
+                        <div>Owner</div>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Autocomplete
+                          options={users.filter((u) => u.text)}
+                          onChange={(e, user) => {
+                            setOwnerId(user?.value);
+                          }}
+                          value={users.find((user) => user?.value === ownerId) || null}
+                          getOptionLabel={(option) => option.text}
+                          getOptionSelected={(option) => option.value === ownerId}
+                          classes={{
+                            inputRoot: classes.dealOwnerRoot,
+                            focused: classes.dealOwnerRootFocused,
+                            popupIndicator: classes.popupIndicator,
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              margin="dense"
+                              {...params}
+                              variant="outlined"
+                              className={classes.inputFieldOwner}
+                              InputLabelProps={{
+                                ...params.InputLabelProps,
+                                shrink: true,
+                                classes: {
+                                  root: classes.dealOwnerLabel,
+                                },
+                              }}
+                              placeholder="Assign Owner"
+                              InputProps={{
+                                ...params.InputProps,
+                                startAdornment: (
+                                  <>
+                                    <InputAdornment position="start">
+                                      <Avatar className={classes.dealOwnerAvatar}>
+                                        {users.find((user) => user?.value === ownerId) ? (
+                                          <CustomAvatar
+                                            diglog={true}
+                                            email={users.find((user) => user?.value === ownerId).email}
+                                            text={
+                                              users
+                                                .find((user) => user?.value === ownerId)
+                                                .text.toString()
+                                                .toUpperCase()
+                                                .split(" ").length > 1
+                                                ? users.find((user) => user?.value === ownerId).text.toString()
+                                                : "Add Owner"
+                                            }
+                                          />
+                                        ) : (
+                                          "AO"
+                                        )}
+                                      </Avatar>
+                                    </InputAdornment>
+                                    {params.InputProps.startAdornment}
+                                  </>
+                                ),
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item xs={9}>
-                      <Autocomplete
-                        options={users.filter((u) => u.text)}
-                        onChange={(e, user) => {
-                          setOwnerId(user?.value);
-                        }}
-                        value={users.find((user) => user?.value === ownerId) || null}
-                        getOptionLabel={(option) => option.text}
-                        getOptionSelected={(option) => option.value === ownerId}
-                        classes={{
-                          inputRoot: classes.dealOwnerRoot,
-                          focused: classes.dealOwnerRootFocused,
-                          popupIndicator: classes.popupIndicator,
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            margin="dense"
-                            {...params}
-                            variant="outlined"
-                            className={classes.inputFieldOwner}
-                            InputLabelProps={{
-                              ...params.InputLabelProps,
-                              shrink: true,
-                              classes: {
-                                root: classes.dealOwnerLabel,
-                              },
-                            }}
-                            placeholder="Assign Owner"
-                            InputProps={{
-                              ...params.InputProps,
-                              startAdornment: (
-                                <>
-                                  <InputAdornment position="start">
-                                    <Avatar className={classes.dealOwnerAvatar}>
-                                      {users.find((user) => user?.value === ownerId) ? (
-                                        <CustomAvatar
-                                          diglog={true}
-                                          email={users.find((user) => user?.value === ownerId).email}
-                                          text={
-                                            users
-                                              .find((user) => user?.value === ownerId)
-                                              .text.toString()
-                                              .toUpperCase()
-                                              .split(" ").length > 1
-                                              ? users.find((user) => user?.value === ownerId).text.toString()
-                                              : "Add Owner"
-                                          }
-                                        />
-                                      ) : (
-                                        "AO"
-                                      )}
-                                    </Avatar>
-                                  </InputAdornment>
-                                  {params.InputProps.startAdornment}
-                                </>
-                              ),
-                            }}
-                          />
-                        )}
-                      />
-                    </Grid>
-                  </Grid>
-                </FormControl>
+                  </FormControl>
                 </div>
 
                 <FormControl variant="outlined" fullWidth size="small">
@@ -1606,47 +1418,37 @@ function AddDealDialog(props) {
                   className={classes.notes}
                 />
 
-                {/* {originationDate && (
-                  <div className={classes.originationDate}>Deal Creation Date: {moment(originationDate).format("M/DD/YYYY, hh:mmA")}</div>
-                )} */}
-
-
                 <div>
-
                   {/* This is the document zone  */}
-                  <div style={{marginTop: 20}}>
-                  <AddDialogeUploadZone
-                    isTransactPage={true}
-                    filesData={viewFileResult}
-                    id={stateApp.activeDeal?.cardId}
-                    loading={viewFileLoading}
-                    disabled={!stateApp.activeDeal?.cardId}
-                    handleOpenExpandableCard={handleOpenExpandableCard}
-                  />
+                  <div style={{ marginTop: 20 }}>
+                    <AddDialogeUploadZone
+                      isTransactPage={true}
+                      filesData={viewFileResult}
+                      id={stateApp.activeDeal?.cardId}
+                      loading={viewFileLoading}
+                      setUploadedFileData={setUploadedFileData}
+                      handleOpenExpandableCard={handleOpenExpandableCard}
+                    ></AddDialogeUploadZone>
                   </div>
-
 
                   {/* Here is flow lane form */}
-                  <div style={{marginTop: 15, marginBottom: 50}}>
-                  <DealTasksProgressZone
-                    toggleProgressDetail={toggleProgressDetail}
-                    dealSettings={get(dealSettings, "dealSettings", [])}
-                    users={users}
-                    activeDeal={stateApp.activeDeal}
-                  />
+                  <div style={{ marginTop: 15, marginBottom: 50 }}>
+                    <DealTasksProgressZone
+                      dealSettings={get(dealSettings, "dealSettings", [])}
+                      users={users}
+                      activeDeal={stateApp.activeDeal}
+                      updateStageDealDescriptor={updateStageDealDescriptor}
+                      pipelineId={pipelineId}
+                    />
                   </div>
-
-
                 </div>
               </div>
             )}
           </div>
           {stateApp.transactBarView === "Deal" && (
-
-          <div style={{marginTop: 2,}}>
-            <DealComment setNewCommentId={setNewCommentId} targetSourceId={stateApp.activeDeal?.cardId} />
-          </div>
-
+            <div style={{ marginTop: 2 }}>
+              <DealComments setNewCommentId={setNewCommentId} targetSourceId={stateApp.activeDeal?.cardId} />
+            </div>
           )}
         </RightDialog>
       </div>

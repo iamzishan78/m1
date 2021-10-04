@@ -43,8 +43,9 @@ const useStyles = makeStyles((theme) => ({
     borderStyle: "solid",
     borderColor: "#ced4da",
     fontSize: 16,
-    width: "auto",
+    width: "225px",
     padding: "10px 12px",
+    marginRight: "30px",
     transition: theme.transitions.create(["border-color", "box-shadow"]),
     "&:focus": {
       borderRadius: 4,
@@ -54,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
   button: {
     textTransform: "none",
     width: "100%",
+    textAlign: "center",
   },
   image: {
     width: '200px',
@@ -141,7 +143,7 @@ const ProfileContent = () => {
     <MuiDialogContent>
       <Grid container>
         <Grid item sm={7}>
-          <TextField
+          {/* <TextField
             InputLabelProps={{
               classes: { root: classes.label, focused: classes.focused },
               shrink: true,
@@ -158,7 +160,7 @@ const ProfileContent = () => {
             name="fullname"
             value={fullname}
             onChange={({ target }) => onChange(target)}
-          />
+          /> */}
           <Box pb={2.5} />
           <TextField
             InputLabelProps={{
@@ -174,7 +176,7 @@ const ProfileContent = () => {
             }}
             label={"Display Name"}
             placeholder={"Display Name"}
-            helperText={"This could be your nickname or first name"}
+           // helperText={"This could be your nickname or first name"}
             name="displayName"
             value={displayName}
             onChange={({ target }) => onChange(target)}
@@ -194,8 +196,8 @@ const ProfileContent = () => {
               classes: { root: classes.helperText },
             }}
             label={"What you do"}
-            placeholder={"Your Role or Title"}
-            helperText={"Let people know what you do"}
+            placeholder={"Your role or title"}
+            //helperText={"Let people know what you do"}
             name="jobTitle"
             value={jobTitle}
             onChange={({ target }) => onChange(target)}
@@ -216,7 +218,7 @@ const ProfileContent = () => {
             }}
             label={"Phone number"}
             placeholder={formatPhone("555-555-5555")}
-            helperText={"Enter your phone number"}
+            //helperText={"Enter your phone number"}
             name="phone"
             value={formatPhone(phone)}
             onChange={({ target }) => onChange(target)}

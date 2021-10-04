@@ -14,17 +14,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
 
-import {
-  CircularProgress,
-  Dialog,
-  DialogTitle,
-  IconButton,
-  TextField,
-  withStyles,
-} from "@material-ui/core";
-import Autocomplete, {
-  createFilterOptions,
-} from "@material-ui/lab/Autocomplete";
+import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
+import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -202,23 +193,17 @@ export default function DocumentDrawer(props) {
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
-  const [getDocumentTypes, { data: documentTypes }] = useLazyQuery(
-    DOCUMENT_TYPE,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
+  const [getDocumentTypes, { data: documentTypes }] = useLazyQuery(DOCUMENT_TYPE, {
+    fetchPolicy: "no-cache",
+  });
   const [updateDocument] = useMutation(UPDATE_DOCUMENT);
   const [getDocuments, { data: documents }] = useLazyQuery(GET_DOCUMENTS, {
     fetchPolicy: "no-cache",
   });
-	const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
-		CREATEDESCRIPTORFILE,
-		{
-			refetchQueries: ["getRecentContactFiles"],
-			awaitRefetchQueries: true,
-		}
-	);
+  const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(CREATEDESCRIPTORFILE, {
+    refetchQueries: ["getRecentContactFiles"],
+    awaitRefetchQueries: true,
+  });
 
   useEffect(() => {
     getDocuments({
@@ -265,16 +250,8 @@ export default function DocumentDrawer(props) {
         variables: { fileIds: ID },
       });
       if (stateApp.selectedDocument) {
-        const {
-          documentName,
-          dateTime,
-          documentNumber,
-          documentType,
-          partyName1,
-          partyName2,
-          fileId,
-          recordingInfo,
-        } = stateApp.selectedDocument;
+        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, recordingInfo } =
+          stateApp.selectedDocument;
         setSearch(documentName);
         setSelectedType("update");
         setNameAutValueParty1({
@@ -387,10 +364,9 @@ export default function DocumentDrawer(props) {
     }
   };
 
-  const [viewFiles, { data: viewFileSResult, loading: viewFileSLoading }] =
-    useLazyQuery(VIEWFILESQUERY, {
-      fetchPolicy: "no-cache",
-    });
+  const [viewFiles, { data: viewFileSResult, loading: viewFileSLoading }] = useLazyQuery(VIEWFILESQUERY, {
+    fetchPolicy: "no-cache",
+  });
 
   const LightTooltip = withStyles((theme) => ({
     tooltip: {
@@ -401,10 +377,7 @@ export default function DocumentDrawer(props) {
     },
   }))(Tooltip);
   const toggleDrawer = (anchor, open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
 
@@ -419,17 +392,8 @@ export default function DocumentDrawer(props) {
         variables: { fileIds: ID },
       });
       if (searchedDocument) {
-        const {
-          documentName,
-          dateTime,
-          documentNumber,
-          documentType,
-          partyName1,
-          partyName2,
-          fileId,
-          recordingInfo,
-          fileName,
-        } = searchedDocument;
+        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, recordingInfo, fileName } =
+          searchedDocument;
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
           _id: partyName1?._id,
@@ -448,7 +412,7 @@ export default function DocumentDrawer(props) {
           partyName1,
           partyName2,
           fileId,
-          fileName
+          fileName,
         });
       } else {
         setNewDocument(documentInitial);
@@ -500,11 +464,7 @@ export default function DocumentDrawer(props) {
                     setSearch("");
                     setNewDocument(documentInitial);
                   }}
-                  className={
-                    selectedType === "new"
-                      ? classes.selectedType
-                      : classes.unSelectedType
-                  }
+                  className={selectedType === "new" ? classes.selectedType : classes.unSelectedType}
                 >
                   New Document
                 </h4>
@@ -512,11 +472,7 @@ export default function DocumentDrawer(props) {
                   onClick={() => {
                     setSelectedType("existing");
                   }}
-                  className={
-                    selectedType === "existing"
-                      ? classes.selectedType
-                      : classes.unSelectedType
-                  }
+                  className={selectedType === "existing" ? classes.selectedType : classes.unSelectedType}
                   style={{ marginLeft: "20px" }}
                 >
                   Existing Document
@@ -585,9 +541,7 @@ export default function DocumentDrawer(props) {
                   }}
                   onChange={(event, newValue) => {
                     if (newValue) {
-                      const document = documents.getFiles.find(
-                        (doc) => doc.fileId === newValue._id
-                      );
+                      const document = documents.getFiles.find((doc) => doc.fileId === newValue._id);
                       onSearcSelected(document);
                     } else setNewDocument(documentInitial);
                   }}
@@ -692,11 +646,11 @@ export default function DocumentDrawer(props) {
             format="MM/DD/YYYY"
             margin="normal"
             id="date-picker-inline"
-            value={newDocument?.dateTime ? new Date(newDocument.dateTime): null}
+            value={newDocument?.dateTime ? new Date(newDocument.dateTime) : null}
             onChange={(date) => {
               setNewDocument({
                 ...newDocument,
-                dateTime: date ? String(date["_d"]) : '',
+                dateTime: date ? String(date["_d"]) : "",
               });
             }}
             KeyboardButtonProps={{
@@ -757,9 +711,7 @@ export default function DocumentDrawer(props) {
         <ListItem>
           <div style={{ display: "flex", justifyContent: "start" }}>
             {viewFileSResult?.viewFiles?.map((value, key) => {
-              let fileExtension = value?.name
-                ?.slice(value.name.lastIndexOf(".") + 1)
-                ?.toLowerCase();
+              let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
               if (key <= 1) {
                 return (
                   <div key={key}>
@@ -771,9 +723,7 @@ export default function DocumentDrawer(props) {
                             disabled={selectedType === "existing"}
                             onClick={() => {
                               setOpenDeleteConfirmDialog(true);
-                              setFileIdToDelete(
-                                stateApp.selectedDocument.fileId
-                              );
+                              setFileIdToDelete(stateApp.selectedDocument.fileId);
                             }}
                           >
                             <DeleteIcon />
@@ -794,14 +744,8 @@ export default function DocumentDrawer(props) {
                       interactive
                     >
                       <div>
-                        {new RegExp(
-                          ["jpg", "jpeg", "png", "bmp"].join("|")
-                        ).test(fileExtension) ? (
-                          <img
-                            src={value.uri}
-                            alt={value.name}
-                            className={classes.forImage}
-                          ></img>
+                        {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
+                          <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                         ) : (
                           <div
                             className={classes.forImageContainer}
@@ -809,26 +753,19 @@ export default function DocumentDrawer(props) {
                               console.log("STATE", stateApp);
                               if (fileExtension === "pdf") {
                                 console.log("STATE PDR CLICKED");
-                                // setStateApp({ ...stateApp, viewDoc: { uri: stateApp.selectedDocument.fileUrl, name: stateApp.selectedDocument.fileName } })
                                 setStateApp((state) => ({
                                   ...state,
                                   pdfView: stateApp.selectedDocument,
                                 }));
                               } else {
-                                handleViewFile(
-                                  stateApp.selectedDocument.fileId
-                                );
+                                handleViewFile(stateApp.selectedDocument.fileId);
                               }
                             }}
                           >
                             {get_file_icon(fileExtension)}
                           </div>
                         )}
-                        <div className={classes.imageSubText}>
-                          {value?.name?.length > 12
-                            ? value.name.slice(0, 8) + "..."
-                            : value.name}
-                        </div>
+                        <div className={classes.imageSubText}>{value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}</div>
                       </div>
                     </LightTooltip>
                   </div>
@@ -847,9 +784,7 @@ export default function DocumentDrawer(props) {
         <ListItem>
           <div style={{ display: "flex", justifyContent: "start" }}>
             {recentFiles?.map((value, key) => {
-              let fileExtension = value?.name
-                ?.slice(value.name.lastIndexOf(".") + 1)
-                ?.toLowerCase();
+              let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
               if (key <= 1) {
                 return (
                   <div key={key}>
@@ -884,14 +819,8 @@ export default function DocumentDrawer(props) {
                       <div>
                         {console.log("STATE", stateApp)}
 
-                        {new RegExp(
-                          ["jpg", "jpeg", "png", "bmp"].join("|")
-                        ).test(fileExtension) ? (
-                          <img
-                            src={value.uri}
-                            alt={value.name}
-                            className={classes.forImage}
-                          ></img>
+                        {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
+                          <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                         ) : (
                           <div
                             className={classes.forImageContainer}
@@ -910,11 +839,7 @@ export default function DocumentDrawer(props) {
                             {get_file_icon(fileExtension)}
                           </div>
                         )}
-                        <div className={classes.imageSubText}>
-                          {value?.name?.length > 12
-                            ? value.name.slice(0, 8) + "..."
-                            : value.name}
-                        </div>
+                        <div className={classes.imageSubText}>{value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}</div>
                       </div>
                     </LightTooltip>
                   </div>
@@ -962,11 +887,9 @@ export default function DocumentDrawer(props) {
           color="secondary"
           size="medium"
           disableElevation
-          disabled={
-            (!fileData && !newDocument.fileId) || (selectedType === "existing" && !newDocument.fileId)
-          }
+          disabled={(!fileData && !newDocument.fileId) || (selectedType === "existing" && !newDocument.fileId)}
           onClick={() => {
-            if(selectedType === "existing"){
+            if (selectedType === "existing") {
               addFile({
                 variables: {
                   fileName: newDocument.fileName,
@@ -988,7 +911,7 @@ export default function DocumentDrawer(props) {
                 setNewDocument(documentInitial);
                 setLoader(false);
               });
-            }else{
+            } else {
               if (fileData || newDocument.fileId) {
                 setLoader(true);
                 UpDatefileFN();
@@ -1006,11 +929,7 @@ export default function DocumentDrawer(props) {
   return (
     <div>
       <Drawer anchor={"right"} open={true}>
-        <Dialog
-          open={openDeleteConfirmDialog}
-          onClose={handleDeleteCancel}
-          style={{ zIndex: 99999999999 }}
-        >
+        <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
           <DeleteConfirmationDialogContent
             header="Delete Document"
             onClose={handleDeleteCancel}
@@ -1082,12 +1001,7 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
         return option?._id === value?._id;
       }}
       renderOption={(option) => {
-        if (option._id === "newEntity")
-          return (
-            <Typography style={{ color: "midnightblue" }}>
-              Add '{option.name}'
-            </Typography>
-          );
+        if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
 
         return (
           <Grid container spacing={0}>
@@ -1106,8 +1020,8 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
       onInputChange={onInputChange}
       filterOptions={(options, params) => {
         let inputValue = JSON.parse(JSON.stringify(value));
-        if(inputValue.name){
-          inputValue = inputValue.name
+        if (inputValue.name) {
+          inputValue = inputValue.name;
         }
         const filtered = filter(options, { ...params, inputValue });
         const isExist = loadashFilter(filtered, (filter) => {
@@ -1153,23 +1067,17 @@ const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
     setStateIfDeepEqual(NameAutInputValue, newState);
   };
 
-  const [
-    getPaginatedContacts,
+  const [getPaginatedContacts, { data: allContacts, loading: contactsLoading, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
+    PAGINATEDCONTACTSQUERY,
     {
-      data: allContacts,
-      loading: contactsLoading,
-      fetchMore: fetchMorePaginatedContacts,
-    },
-  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-  });
+      fetchPolicy: "cache-and-network",
+      nextFetchPolicy: "cache-first",
+    }
+  );
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([
-        ...allContacts?.paginatedContacts?.edges?.map((el) => el.node),
-      ]);
+      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
     }
     setIsNextPageLoading(false);

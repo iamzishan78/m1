@@ -1196,7 +1196,7 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value) => {
                   return (
-                    <span style={{ padding: 10 }}>{value ? moment(value).format("MM/DD/YYYY HH:MM A") : ""}</span>
+                    <span style={{ padding: 10 }}>{value ? moment(value).format('lll') : ""}</span>
                   );
                 },
               };
@@ -2131,11 +2131,13 @@ function SubTable(props) {
                         </p>
                       )}
                       {props.targetLabel === "contact" && column.name === "name" && (
-                        <span>
-                          {tableMeta.rowData[49] &&  (
-                            <RequestPageIcon color="grey" fontSize='8px'/>
-                          )}
-                        </span>
+                        <FeatureFlag feature={FEATURES.IDICORE}>
+                          <span>
+                            {tableMeta.rowData[49] &&  (
+                              <RequestPageIcon color="grey" fontSize='8px'/>
+                            )}
+                          </span>
+                        </FeatureFlag>
                       )}
 
                       {/* {props.targetLabel === "documents" &&

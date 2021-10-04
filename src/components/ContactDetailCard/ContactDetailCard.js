@@ -30,7 +30,6 @@ import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubCompo
 import Documents from "../Shared/Documents";
 import ParcelsCard from "./components/ParcelsCard";
 import LeadStage from "../Shared/LeadStage";
-import RecentConversations from "../Shared/RecentConversations";
 import Divider from "@material-ui/core/Divider";
 import RightDialog from "./components/RightDialog";
 import Dialog from "@material-ui/core/Dialog";
@@ -57,8 +56,9 @@ import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Link from "@material-ui/core/Link";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
-import get from 'lodash/get';
+import get from "lodash/get";
 
+import { truncate } from "components/Shared/functions";
 // contexts
 import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
@@ -213,8 +213,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiButton-contained:hover": {
       color: "#1da2cf",
       backgroundColor: "rgba(0, 0, 0, 0.08)",
-      boxShadow:
-        "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
+      boxShadow: "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
     },
   },
   userSmallLoader: {
@@ -271,8 +270,7 @@ const useStyles = makeStyles((theme) => ({
     left: "-13px",
     backgroundColor: theme.palette.secondary.main,
     color: "#fff",
-    boxShadow:
-      "0px 2px 7px 2px rgba(0,0,0,0.15), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
+    boxShadow: "0px 2px 7px 2px rgba(0,0,0,0.15), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
     padding: "5px",
     "& svg": { fontSize: "1rem" },
     "&:hover": {
@@ -308,15 +306,10 @@ export default function ContactDetailCard(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
-  const dispatch = useDispatch();
   let history = useHistory();
-  const contactId =
-    history.location.pathname.split("/")[
-      history.location.pathname.split("/").length - 1
-    ];
-  const shrinkRightColumn = useSelector(
-    ({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn
-  );
+  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
+  const shrinkRightColumn = useSelector(({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn);
+  const { selectedPipe } = useSelector(({ Flow }) => Flow);
   const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -329,8 +322,7 @@ export default function ContactDetailCard(props) {
   const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
   const [purchaseData, setPurchaseData] = useState([]);
 
-  const [expCardSubComponentTitle, setExpCardSubComponentTitle] =
-    useState(null);
+  const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
 
   const [getContact, { loading, data }] = useLazyQuery(CONTACT);
   const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
@@ -338,15 +330,11 @@ export default function ContactDetailCard(props) {
   //   TRANSACTIONDATA
   // );
 
-  const [getTransactionData, { data: tData, tLoading }] =
-    useLazyQuery(TRANSACTIONDATA);
+  const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(TRANSACTIONDATA);
 
-  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(
-    LASTMELISSARECORD,
-    {
-      fetchPolicy: "network-only",
-    }
-  );
+  const [getLastMelissaRecord, { data: mData }] = useLazyQuery(LASTMELISSARECORD, {
+    fetchPolicy: "network-only",
+  });
   const [updateContact] = useMutation(UPDATECONTACT);
 
   const handleClick = (event) => {
@@ -404,7 +392,7 @@ export default function ContactDetailCard(props) {
         variables: {
           contactId: stateApp.selectedContact,
         },
-      })
+      });
     } else if (contactId) {
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -462,15 +450,22 @@ export default function ContactDetailCard(props) {
     return !!stateNav.contactFromMap;
   };
 
+  const getFlowlineReturnUrl = () => {
+    const searchParams = new URLSearchParams(window.location.search?.replace("?", ""));
+    const returnUrl = searchParams.get("return-url");
+    return returnUrl;
+  };
+  const isPrevUrlFlowline = getFlowlineReturnUrl() && stateApp.activeDeal?._id;
+
   const ExtenstionGetter = (name) => {
     let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
 
     return fileExtension;
   };
 
-  const getName=(contact)=>{
-    return contact.name || `${get(contact,'firstName', '')} ${get(contact,'lastName','')}`
-  }
+  const getName = (contact) => {
+    return contact.name || `${get(contact, "firstName", "")} ${get(contact, "lastName", "")}`;
+  };
   return contactData ? (
     <>
       <div className={classes.header}>
@@ -482,12 +477,46 @@ export default function ContactDetailCard(props) {
             paddingLeft: "25px",
           }}
         >
-          {/* {checkModuleHistory() && } */}
-
-          <Breadcrumbs
-            separator={<NavigateNextIcon fontSize="small" />}
-            aria-label="breadcrumb"
-          >
+          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+            {isPrevUrlFlowline && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push("/flow")}
+              >
+                Flow
+              </Link>
+            )}
+            {isPrevUrlFlowline && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push(`/flow/${selectedPipe._id}`)}
+              >
+                {truncate(selectedPipe.name, 30)}
+              </Link>
+            )}
+            {isPrevUrlFlowline && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push(getFlowlineReturnUrl())}
+              >
+                {truncate(stateApp.activeDeal.name, 30)}
+              </Link>
+            )}
             {checkModuleHistory() && (
               <Link
                 style={{
@@ -497,13 +526,7 @@ export default function ContactDetailCard(props) {
                 }}
                 color="inherit"
                 onClick={() => {
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    // parcelDetailCardOpen: false,
-                  }));
-
                   history.push("/");
-
                   setStateNav((stateApp) => ({
                     ...stateApp,
                     contactFromMap: false,
@@ -514,8 +537,6 @@ export default function ContactDetailCard(props) {
               </Link>
             )}
 
-            {console.log("CURRENT MAP BREADCRUMB")}
-
             <Link
               style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer" }}
               color="inherit"
@@ -524,25 +545,17 @@ export default function ContactDetailCard(props) {
               Contacts
             </Link>
 
-            <Typography
-              style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}
-            >
-              {getName(contactData)}
-            </Typography>
+            <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{getName(contactData)}</Typography>
           </Breadcrumbs>
         </div>
       </div>
       <div className={classes.mainGridContainer}>
         {/*/////////// left column //////////// */}
 
-        {stateApp.viewDoc &&
-        ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
+        {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
           <div className={classes.leftColumn}>
             {" "}
-            <DocViewer
-              DocStyle={{ backgroundColor: "white !important", width: "70vw" }}
-              divCondition={true}
-            ></DocViewer>
+            <DocViewer DocStyle={{ backgroundColor: "white !important", width: "70vw" }} divCondition={true}></DocViewer>
           </div>
         ) : (
           <Grid container className={classes.leftColumn}>
@@ -574,10 +587,7 @@ export default function ContactDetailCard(props) {
                 )}
 
                 <Button className={classes.menuIcon} onClick={handleClick}>
-                  <MoreVertIcon
-                    aria-controls="simple-menu"
-                    aria-haspopup="true"
-                  />
+                  <MoreVertIcon aria-controls="simple-menu" aria-haspopup="true" />
                 </Button>
 
                 <Menu
@@ -599,9 +609,9 @@ export default function ContactDetailCard(props) {
                     <MenuItem
                       className={classes.userMenuItem}
                       onClick={(e) => {
-                        if(!contactData.firstName || !contactData.lastName || !contactData.address1){
+                        if (!contactData.firstName || !contactData.lastName || !contactData.address1) {
                           handleExpandClick("contactDataMissing");
-                        }else{
+                        } else {
                           handleExpandClick("buyContactsInfo");
                         }
                         handleClose();
@@ -626,7 +636,10 @@ export default function ContactDetailCard(props) {
                   <StyleBadge>
                     <Avatar
                       className={classes.grey}
-                      name={contactData.name || `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(' ')[0] : ''}`}
+                      name={
+                        contactData.name ||
+                        `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`
+                      }
                       size="93"
                       round
                     />
@@ -642,18 +655,13 @@ export default function ContactDetailCard(props) {
                       content={{ name: getName(contactData) }}
                       disabled
                     >
-                      {(contactData.facebook ||
-                        contactData.twitter ||
-                        contactData.linkedIn) && (
+                      {(contactData.facebook || contactData.twitter || contactData.linkedIn) && (
                         <span className={classes.socialMediaSection}>
                           {contactData.facebook && (
                             <a
-                              href={`${
-                                !contactData.facebook.startsWith("http") &&
-                                !contactData.facebook.startsWith("//")
-                                  ? "//"
-                                  : ""
-                              }${contactData.facebook}`}
+                              href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${
+                                contactData.facebook
+                              }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -662,12 +670,9 @@ export default function ContactDetailCard(props) {
                           )}
                           {contactData.twitter && (
                             <a
-                              href={`${
-                                !contactData.twitter.startsWith("http") &&
-                                !contactData.twitter.startsWith("//")
-                                  ? "//"
-                                  : ""
-                              }${contactData.twitter}`}
+                              href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${
+                                contactData.twitter
+                              }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -676,12 +681,9 @@ export default function ContactDetailCard(props) {
                           )}
                           {contactData.linkedIn && (
                             <a
-                              href={`${
-                                !contactData.linkedIn.startsWith("http") &&
-                                !contactData.linkedIn.startsWith("//")
-                                  ? "//"
-                                  : ""
-                              }${contactData.linkedIn}`}
+                              href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${
+                                contactData.linkedIn
+                              }`}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -735,25 +737,13 @@ export default function ContactDetailCard(props) {
               className={classes.border}
             >
               <div className={classes.tags}>
-                <Tags
-                  width="100%"
-                  targetSourceId={contactData._id}
-                  targetLabel="contact"
-                  publicLeftBottom
-                />
+                <Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" publicLeftBottom />
               </div>
             </Grid>
 
             {/*/////////// section 3 //////////// */}
-            <Grid
-              item
-              xs={12}
-              container
-              className={classes.border}
-              spacing={0}
-              style={{ padding: "23px 28px" }}
-            >
-              <ContactDetailedInfo purchaseData={purchaseData} contactData={contactData} />
+            <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px" }}>
+              <ContactDetailedInfo user={stateApp.user} purchaseData={purchaseData} contactData={contactData} />
             </Grid>
             {/*/////////// new section - lead stage //////////// */}
             <Grid item xs={12} className={`${classes.border}`}>
@@ -763,61 +753,35 @@ export default function ContactDetailCard(props) {
                     Lead Stage changed:{" "}
                     <span style={{ fontWeight: "normal" }}>
                       {anyToDate(
-                        contactData.lastUpdateLeadStageAt
-                          ? contactData.lastUpdateLeadStageAt
-                          : contactData.lastUpdateAt
+                        contactData.lastUpdateLeadStageAt ? contactData.lastUpdateLeadStageAt : contactData.lastUpdateAt
                       ).toLocaleString()}
                     </span>
                   </h4>
                 </Grid>
 
-                <Grid
-                  item
-                  xs={12}
-                  style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}
-                >
-                  <LeadStage
-                    leadStage={
-                      contactData.leadStage ? contactData.leadStage : "New"
-                    }
-                    id={contactData._id}
-                  />
+                <Grid item xs={12} style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}>
+                  <LeadStage leadStage={contactData.leadStage ? contactData.leadStage : "New"} id={contactData._id} />
                 </Grid>
               </div>
             </Grid>
 
             {/*/////////// new section -associated interests and deals //////////// */}
-            <Grid
-              container
-              item
-              xs={12}
-              className={`${classes.border}`}
-              style={{ padding: "23px 28px" }}
-              spacing={0}
-            >
+            <Grid container item xs={12} className={`${classes.border}`} style={{ padding: "23px 28px" }} spacing={0}>
               <Grid item xs={12}>
-                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-                  Associated Interests &amp; Deals
-                </h4>
+                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>Associated Interests &amp; Deals</h4>
               </Grid>
 
               <Grid item xs={12}>
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
                     <Card raised style={{ minHeight: "165px", height: "100%" }}>
-                      <WellsCard
-                        handleOpenExpandableCard={handleOpenExpandableCard}
-                        contactData={contactData}
-                      />
+                      <WellsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
                     </Card>
                   </Grid>
                   {/* TEMP DELETION UNTIL CODE COMES */}
                   <Grid item xs={4}>
                     <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                      <ParcelsCard
-                        handleOpenExpandableCard={handleOpenExpandableCard}
-                        contactData={contactData}
-                      />
+                      <ParcelsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
                     </Card>
                   </Grid>
                   <Grid item xs={4}>
@@ -920,23 +884,13 @@ export default function ContactDetailCard(props) {
               </Grid> */}
 
               <Grid item xs={12} className={classes.Comments}>
-                <Comments
-                  targetSourceId={contactData._id}
-                  targetLabel="contact"
-                  detailCard
-                  top={2}
-                  viewAll={handleClickRightDialogOpen}
-                />
+                <Comments targetSourceId={contactData._id} targetLabel="contact" detailCard top={2} viewAll={handleClickRightDialogOpen} />
                 <Divider />
               </Grid>
 
               <Grid item xs={12} className={classes.Comments}>
                 {/* <DocViewer DocStyle={{top:'56% ', left:'40% ', backgroundColor:'white !important',transform: `translate(2.5%, -104.2%)`, width:'1320px',height:'816px'}}></DocViewer> */}
-                <Documents
-                  handleOpenExpandableCard={handleOpenExpandableCard}
-                  id={contactData._id}
-                  user_id={stateApp.user.email}
-                />
+                <Documents handleOpenExpandableCard={handleOpenExpandableCard} id={contactData._id} user_id={stateApp.user.email} />
                 <Divider />
               </Grid>
             </Grid>
@@ -944,11 +898,7 @@ export default function ContactDetailCard(props) {
         </div>
 
         {openDialog === "buyContactsInfo" && (
-          <RightDialog
-            open={openDialog ? true : false}
-            handleClickDialogClose={handleCloseDialog}
-            width={"700px"}
-          >
+          <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
             <BuyContactsInfoDialogContent
               header="Contact Data Integration"
               onClose={handleCloseDialog}
@@ -977,28 +927,16 @@ export default function ContactDetailCard(props) {
         )}
 
         {openDialog === "deleteConfirmation" && (
-          <ConfirmationDialog
-            openDialog={openDialog}
-            handleDialogClose={setOpenDialog}
-            id={contactData._id}
-          />
+          <ConfirmationDialog openDialog={openDialog} handleDialogClose={setOpenDialog} id={contactData._id} />
         )}
 
         {openDialog === "contactDataMissing" && (
-          <ContactDataMissingDialog
-            openDialog={openDialog}
-            onClose={handleCloseDialog}
-            contacts={[{...contactData}]}
-          />
+          <ContactDataMissingDialog openDialog={openDialog} onClose={handleCloseDialog} contacts={[{ ...contactData }]} />
         )}
 
         {/* //// ViewAll in a right dialog //// */}
 
-        <RightDialog
-          open={rightDialogOpen ? true : false}
-          handleClickDialogClose={handleClickRightDialogClose}
-          width="450px"
-        >
+        <RightDialog open={rightDialogOpen ? true : false} handleClickDialogClose={handleClickRightDialogClose} width="450px">
           {rightDialogOpen === "comments" && (
             <Grid item xs={12} className={classes.Comments}>
               <Comments
@@ -1011,13 +949,7 @@ export default function ContactDetailCard(props) {
           )}
         </RightDialog>
         {showExpandableCard && (
-          <Dialog
-            className={classes.dialogFullScreen}
-            fullWidth
-            maxWidth="xl"
-            open={showExpandableCard}
-            onClose={handleCloseDialog}
-          >
+          <Dialog className={classes.dialogFullScreen} fullWidth maxWidth="xl" open={showExpandableCard} onClose={handleCloseDialog}>
             <div
               style={{
                 width: "100%",
@@ -1026,10 +958,7 @@ export default function ContactDetailCard(props) {
               }}
             >
               <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-                <Breadcrumbs
-                  separator={<NavigateNextIcon fontSize="small" />}
-                  aria-label="breadcrumb"
-                >
+                <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
                   {checkModuleHistory() && (
                     <Link
                       className={classes.linkClass}

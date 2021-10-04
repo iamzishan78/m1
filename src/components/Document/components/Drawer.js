@@ -32,10 +32,8 @@ import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 
-// functions 
+// functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
-
-
 
 const filter = createFilterOptions();
 
@@ -160,7 +158,7 @@ export default function DocumentDrawer() {
     partyName1: "",
     partyName2: "",
     fileId: "",
-  }
+  };
   const [fileData, setFileData] = useState(null);
   const [newDocument, setNewDocument] = useState(documentInitial);
 
@@ -196,7 +194,6 @@ export default function DocumentDrawer() {
     }
   }, [fileData]);
 
-
   useEffect(() => {
     getDocumentTypes();
   }, [getDocumentTypes]);
@@ -229,15 +226,15 @@ export default function DocumentDrawer() {
         refetchQueries: ["getESDocuments"],
         awaitRefetchQueries: true,
       }).then(() => {
-        setFileData(null)
+        setFileData(null);
         setStateApp({
           ...stateApp,
           DocumentDrawer: false,
           selectedDocument: {},
         });
-        setNameAutValueParty1({ name: "", _id: null })
-        setNameAutValueParty2({ name: "", _id: null })
-        setNewDocument(documentInitial)
+        setNameAutValueParty1({ name: "", _id: null });
+        setNameAutValueParty2({ name: "", _id: null });
+        setNewDocument(documentInitial);
         setLoader(false);
       });
     }
@@ -250,7 +247,7 @@ export default function DocumentDrawer() {
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
-    setNewDocument(documentInitial)
+    setNewDocument(documentInitial);
   };
   const handleClose = () => {
     setStateApp({
@@ -258,10 +255,10 @@ export default function DocumentDrawer() {
       DocumentDrawer: false,
       selectedDocument: {},
     });
-    setFileData(null)
-    setNameAutValueParty1({ name: "", _id: null })
-    setNameAutValueParty2({ name: "", _id: null })
-    setNewDocument(documentInitial)
+    setFileData(null);
+    setNameAutValueParty1({ name: "", _id: null });
+    setNameAutValueParty2({ name: "", _id: null });
+    setNewDocument(documentInitial);
   };
 
   const handleDeleteAccept = () => {
@@ -284,9 +281,9 @@ export default function DocumentDrawer() {
           selectedDocument: {},
         });
         setFileIdToDelete(null);
-        setNewDocument(documentInitial)
-        setNameAutValueParty1({ name: "", _id: null })
-        setNameAutValueParty2({ name: "", _id: null })
+        setNewDocument(documentInitial);
+        setNameAutValueParty1({ name: "", _id: null });
+        setNameAutValueParty2({ name: "", _id: null });
         setOpenDeleteConfirmDialog(false);
         setLoader(false);
       });
@@ -320,7 +317,8 @@ export default function DocumentDrawer() {
         variables: { fileIds: ID },
       });
       if (stateApp.selectedDocument) {
-        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, recordingInfo } = stateApp.selectedDocument;
+        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, recordingInfo } =
+          stateApp.selectedDocument;
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
           _id: partyName1?._id,
@@ -341,7 +339,7 @@ export default function DocumentDrawer() {
           fileId,
         });
       } else {
-        setNewDocument(documentInitial)
+        setNewDocument(documentInitial);
       }
     }
   }, [stateApp.selectedDocument]);
@@ -361,7 +359,6 @@ export default function DocumentDrawer() {
 
     setState({ ...state, [anchor]: open });
   };
-
 
   const DocumentDetail = (anchor) => (
     <div
@@ -479,7 +476,7 @@ export default function DocumentDrawer() {
             onChange={(date) => {
               setNewDocument({
                 ...newDocument,
-                dateTime: date ? String(date["_d"]) : '',
+                dateTime: date ? String(date["_d"]) : "",
               });
             }}
             KeyboardButtonProps={{
@@ -487,7 +484,6 @@ export default function DocumentDrawer() {
             }}
           />
         </ListItem>
-
 
         {/* TEMPORARY COMMENT OUT UNTIL FEATURE IS FIXED */}
         {/* <ListItem
@@ -530,11 +526,7 @@ export default function DocumentDrawer() {
             }}
           />
         </ListItem>
-
       </List>
-
-
-
 
       {stateApp.selectedDocument?.fileId || fileData ? (
         <ListItem>
@@ -575,33 +567,25 @@ export default function DocumentDrawer() {
                         {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
                           <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                         ) : (
-                          <div className={classes.forImageContainer}
-
+                          <div
+                            className={classes.forImageContainer}
                             onClick={() => {
-
-                              console.log('STATE', stateApp)
-                              if (fileExtension === 'pdf') {
-
-                                console.log('STATE PDR CLICKED')
-                                // setStateApp({ ...stateApp, viewDoc: { uri: stateApp.selectedDocument.fileUrl, name: stateApp.selectedDocument.fileName } })
+                              console.log("STATE", stateApp);
+                              if (fileExtension === "pdf") {
+                                console.log("STATE PDR CLICKED");
                                 setStateApp((state) => ({
                                   ...state,
-                                  pdfView: stateApp.selectedDocument
+                                  pdfView: stateApp.selectedDocument,
                                 }));
+                              } else {
+                                handleViewFile(stateApp.selectedDocument.fileId);
                               }
-                              else {
-                                handleViewFile(
-                                  stateApp.selectedDocument.fileId
-                                )
-                              }
-                            }}>
-
+                            }}
+                          >
                             {get_file_icon(fileExtension)}
                           </div>
                         )}
-                        <div className={classes.imageSubText}>
-                          {value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}
-                        </div>
+                        <div className={classes.imageSubText}>{value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}</div>
                       </div>
                     </LightTooltip>
                   </div>
@@ -640,11 +624,11 @@ export default function DocumentDrawer() {
                           <IconButton
                             disabled={false}
                             size="small"
-                          // onClick={() =>
-                          //   handleViewFile(
-                          //     files?.getFileDescriptors[key].fileId
-                          //   )
-                          // }
+                            // onClick={() =>
+                            //   handleViewFile(
+                            //     files?.getFileDescriptors[key].fileId
+                            //   )
+                            // }
                           >
                             <GetAppIcon />
                           </IconButton>
@@ -653,64 +637,54 @@ export default function DocumentDrawer() {
                       interactive
                     >
                       <div>
-                        {console.log('STATE', stateApp)}
+                        {console.log("STATE", stateApp)}
 
                         {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
                           <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                         ) : (
-                          <div className={classes.forImageContainer}
-
+                          <div
+                            className={classes.forImageContainer}
                             onClick={() => {
-
-                              console.log('STATE', stateApp)
-                              if (fileExtension === 'pdf') {
-                                setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } })
+                              console.log("STATE", stateApp);
+                              if (fileExtension === "pdf") {
+                                setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } });
+                              } else {
+                                handleViewFile();
                               }
-                              else {
-                                handleViewFile(
-                                  // files?.getFileDescriptors[key].fileId
-                                )
-                              }
-                            }}>
-
+                            }}
+                          >
                             {get_file_icon(fileExtension)}
                           </div>
                         )}
-                        <div className={classes.imageSubText}>
-                          {value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}
-                        </div>
+                        <div className={classes.imageSubText}>{value?.name?.length > 12 ? value.name.slice(0, 8) + "..." : value.name}</div>
                       </div>
                     </LightTooltip>
                   </div>
                 );
               }
             })}
-
           </div>
         </ListItem>
       )}
-
 
       {!stateApp.selectedDocument?.fileId && !fileData ? (
         <div className={classes.Uploadcomp}>
           <UploadZone
             style={{
-              // width: "75px !important", 
+              // width: "75px !important",
               // height: "50px !important",
-              paddingLeft: "50px"
-
+              paddingLeft: "50px",
             }}
             userId={stateApp.user.mongoId}
             setFileData={setFileData}
-          // relatedObjectId={props.id}
-          // userId={userId}
-          // relatedObjectType={relatedObjectType} //Contact or Deal
-          // loading={props.loading}
-          // disabled={props.disabled}
+            // relatedObjectId={props.id}
+            // userId={userId}
+            // relatedObjectType={relatedObjectType} //Contact or Deal
+            // loading={props.loading}
+            // disabled={props.disabled}
           />
         </div>
       ) : null}
-
 
       <div className={classes.dialogFooter}>
         <Button
@@ -746,7 +720,6 @@ export default function DocumentDrawer() {
           Save
         </Button>
       </div>
-
     </div>
   );
 
@@ -754,17 +727,13 @@ export default function DocumentDrawer() {
     <div>
       {/* <ClickAwayListener onClickAway={() => {handleClose()}}> */}
       <Drawer anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
-        <Dialog
-          open={openDeleteConfirmDialog}
-          onClose={handleDeleteCancel}
-          style={{ zIndex: 99999999999 }}
-        >
+        <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
           <DeleteConfirmationDialogContent
             header="Delete Document"
             onClose={handleDeleteCancel}
             deleteFunc={handleDeleteAccept}
             m1nSelectedRowsIds={[document._id]}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
             Do you want to delete the selected documents?
           </DeleteConfirmationDialogContent>
@@ -847,7 +816,7 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
       filterOptions={(options, params) => {
         let inputValue = JSON.parse(JSON.stringify(value));
         if (inputValue.name) {
-          inputValue = inputValue.name
+          inputValue = inputValue.name;
         }
         const filtered = filter(options, { ...params, inputValue });
         const isExist = loadashFilter(filtered, (filter) => {

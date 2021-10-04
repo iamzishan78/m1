@@ -55,12 +55,10 @@ const useStyles = makeStyles((theme) => ({
     bottom: "10px",
     marginBottom: -20,
     background: "#24afdf",
-
   },
   paddingLeft10: {
     paddingLeft: "20px !important",
     paddingTop: "3px !important",
-
   },
   moreComment: {
     padding: "10px",
@@ -83,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px 5px 10px 0px",
     // marginRight: "60px",
     // marginBottom: "10px",
-    marginLeft: '20px'
+    marginLeft: "20px",
   },
   commentTime: {
     marginLeft: "10px",
@@ -200,24 +198,7 @@ export default function DealComment(props) {
     return array;
   };
 
-  const newCommentCleaner = (value) =>
-    value.trim()[value.trim().length - 1] === "."
-      ? value
-        .split("\n")
-        .map((line) => {
-          if (line.trim() !== ".") {
-            return line.trim();
-          }
-        })
-        .join("\n")
-      : `${value
-        .split("\n")
-        .map((line) => {
-          if (line.trim() !== ".") {
-            return line.trim();
-          }
-        })
-        .join("\n")}.`;
+  const newCommentCleaner = (value) => value.trim();
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -254,12 +235,12 @@ export default function DealComment(props) {
     setEditCommentId("");
   };
 
-  const addNewComment = (value) => {
+  const addNewComment = () => {
     setLoadingComments(true);
     upsertComment({
       variables: {
         comment: {
-          comment: newCommentCleaner(value),
+          comment: newCommentCleaner(comment),
           public: true,
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
@@ -280,7 +261,7 @@ export default function DealComment(props) {
 
   return (
     <div className={classes.container}>
-      <div className={classes.comment} >
+      <div className={classes.comment}>
         {!loadingComments ? (
           <>
             {!showAllComments && commentsArray.length > 3 && (
@@ -296,9 +277,7 @@ export default function DealComment(props) {
             )}
             {showAllComments && commentsArray.length > 3 && (
               <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
-                <span onClick={() => setShowAllComments(false)}>
-                  Hide Earlier Comments
-                </span>
+                <span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
               </div>
             )}
 
@@ -315,8 +294,7 @@ export default function DealComment(props) {
                     >
                       <Grid item xs={1}>
                         <IconButton style={{ marginTop: "3px", marginLeft: "12px" }}>
-                          {profilesInfo[eachComment.user.email]?.profileImage ||
-                            eachComment.isNew ? (
+                          {profilesInfo[eachComment.user.email]?.profileImage || eachComment.isNew ? (
                             <Avatar
                               src={eachComment.isNew ? profileImage : profilesInfo[eachComment.user.email].profileImage}
                               size="38"
@@ -414,23 +392,20 @@ export default function DealComment(props) {
           <CircularProgress color="secondary"></CircularProgress>
         )}
       </div>
-      <div style={{ paddingBottom: '20px' }}>
+      <div style={{ paddingBottom: "20px" }}>
         <Grid container>
           <Grid item xs={1}>
-            <IconButton className={classes.commentView}
+            <IconButton
+              className={classes.commentView}
             // style={{ top: "3px" }}
             >
-              {profileImage ? (
-                <Avatar src={profileImage} size="38" round />
-              ) : (
-                <Avatar name={stateApp.user.name} size="38" round />
-              )}
+              {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
             </IconButton>
           </Grid>
           <Grid item xs={11} className={classes.paddingLeft10}>
             <div
               className={classes.border}
-              style={{ width: '500px', paddingBottom: '20px' }}
+              style={{ width: "500px", paddingBottom: "20px" }}
               onClick={() => {
                 if (!showActions) {
                   setShowActions(true);
@@ -459,14 +434,7 @@ export default function DealComment(props) {
                 }}
               />
               {showActions && (
-                <Button
-                  className={classes.commentBtn}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    addNewComment(comment);
-                  }}
-                >
+                <Button className={classes.commentBtn} variant="contained" color="primary" onClick={addNewComment}>
                   Comment
                 </Button>
               )}
