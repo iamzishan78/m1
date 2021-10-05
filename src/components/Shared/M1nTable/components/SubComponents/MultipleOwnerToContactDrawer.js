@@ -15,6 +15,7 @@ import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from "graphQL/useMutationConvertMultitpleOwnerToContact";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import Loader from "components/Loaders";
+import Tags from "components/Shared/Tagger";
 // import Typography from '@material-ui/core/Typography';
 
 const styles = () => ({
@@ -56,6 +57,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const [nameAutInputValue, NameAutInputValue] = useState("");
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
+  const [newTagsIds, setNewTagsIds] = useState([]);
 
   const [convertMultitpleOwnerToContact] = useMutation(CONVERT_MULTITPLE_OWNER_TO_CONTACT);
 
@@ -112,7 +114,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     }
     Loader.createToast('contact-creation', 'Contact Creation in Progress')
     convertMultitpleOwnerToContact({
-      variables: { ownerIds, existingContactId, contactOwner, action, userId: stateApp.user.mongoId },
+      variables: { ownerIds, existingContactId, contactOwner, action, userId: stateApp.user.mongoId, tagsIds: newTagsIds },
       refetchQueries: ["checkIfOwnersAreContacts"],
       awaitRefetchQueries: true
     }).then(
@@ -135,6 +137,13 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     onClose();
     setLoading(false);
   };
+
+  const setTagId = (id) => {
+    const ids = JSON.parse(JSON.stringify(newTagsIds))
+    ids.push(id);
+    debugger
+    setNewTagsIds(ids);
+  }
 
   return (
     <RightDialog open={true}>
@@ -260,6 +269,9 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
               </Grid>
             </Box>
           }
+          <Box p={3} pt={3}>
+            <Tags setTagId={setTagId} targetLabel="contacts" targetSourceId="new" />
+          </Box>
 
           {((tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)) &&
             <Typography style={{ fontWeight: "bold", color: "red", marginTop: '40px', marginLeft: '25px' }}>

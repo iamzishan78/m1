@@ -224,7 +224,7 @@ export default function Transact() {
       }
 
       if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
-        let activePipeline = {};
+        let activePipeline = undefined;
 
         if (pipelineId) {
           activePipeline = pipelinesData.pipelines.find((p) => p._id === pipelineId);
@@ -235,9 +235,9 @@ export default function Transact() {
             activePipeline = pipelinesData.pipelines.find((p) => p._id === selectedPipe._id);
           } else activePipeline = pipelinesData.pipelines[0];
         }
-        if (laneId && cardId) {
+        if (activePipeline && laneId && cardId) {
           history.push(`/flow/${activePipeline._id}/lane/${laneId}/card/${cardId}`);
-        } else {
+        } else if (activePipeline) {
           history.push(`/flow/${activePipeline._id}`);
         }
 
@@ -530,7 +530,7 @@ export default function Transact() {
     let owner = null;
     let ownerId = null;
     let ownerEmail = null;
-    let ownerObject = metadata?.owners[0] ? metadata?.owners[0] : null;
+    let ownerObject = metadata?.owners?.[0] ? metadata?.owners[0] : null;
 
     if (ownerObject && ownerObject.relatedObject?.name) {
       owner = ownerObject.relatedObject.name;

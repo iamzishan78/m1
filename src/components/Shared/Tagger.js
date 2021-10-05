@@ -164,7 +164,7 @@ export default function Tags(props) {
       fetchPolicy: "cache-and-network",
     }
   );
-  const [upsertTag] = useMutation(UPSERTTAG);
+  const [upsertTag, { data: upsertedTag }] = useMutation(UPSERTTAG);
   const [removeTag] = useMutation(REMOVETAG);
 
   ///////////////////// START FETCHING TAGS DATA ////////////////////////////////////////////
@@ -187,6 +187,17 @@ export default function Tags(props) {
       });
     }
   }, [props.targetSourceId, props.multipleIds]);
+
+  useEffect(() => {
+    if(upsertedTag?.upsertTag?.tag && props.targetSourceId === 'new'){
+      const tags = JSON.parse(JSON.stringify(tagsArray));
+      tags.push(upsertedTag.upsertTag.tag);
+      setTagsArray(tags);
+      if(props.setTagId){
+        props.setTagId(upsertedTag.upsertTag.tag._id)
+      }
+    }
+  },[upsertedTag])
 
   useEffect(() => {
     if (dataTags && dataTags.tagsByObjectId) {
@@ -307,7 +318,7 @@ export default function Tags(props) {
               tag: tagText,
               public: publicTag,
               user: stateApp.user.mongoId,
-              taggedOn: props.targetSourceId,
+              taggedOn: props.targetSourceId === 'new' ? undefined : props.targetSourceId,
               objectType: props.targetLabel,
             },
           },
