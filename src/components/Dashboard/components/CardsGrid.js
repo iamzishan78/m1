@@ -11,6 +11,7 @@ import TwitterCard from "./TwitterCard";
 import StockCard from "./StockCard";
 import RigsCard from "./RigsCard"
 import RSSFeed from "./RssFeed"
+import Notifications from "./Notifications"
 import PermitsCard from "./PermitsCard"
 
 const useStyles = makeStyles(() => ({
@@ -92,7 +93,7 @@ const CardGrid = () => {
     { el: <StockCard title={3} />, size: "x", key: 4 },
     { el: <TwitterCard title={2} />, size: "x", key: 5 },
     { el: <RSSFeed title={4} />, size: "x", key: 6 },
-       
+    { el: <Notifications title={7} />, size: "x", key: 7 },
     
     
   ]);
