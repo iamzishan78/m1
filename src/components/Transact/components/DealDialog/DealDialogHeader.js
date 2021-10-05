@@ -102,7 +102,7 @@ const DealDialogHeader = ({
   const classes = useStyles({ title });
 
   return (
-    <div>
+    <div style={{ marginRight: "60px" }}>
       <Grid item container xs={12} style={{ padding: "30px 14px 10px 25px" }}>
         {!titleFocus && (
           <>
