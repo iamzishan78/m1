@@ -1173,8 +1173,8 @@ function AddDealDialog(props) {
             setTitleFocus={setTitleFocus}
             isTransactPage={props.isTransactPage}
           />
-          <Drawer dealSettingsNumber={getSubtaskNumber()} />
           <div className={classes.contentRoot}>
+            <Drawer dealSettingsNumber={getSubtaskNumber()} />
             {props.isTransactPage &&
             stateApp.transactBarView !== "Deal" &&
             (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
