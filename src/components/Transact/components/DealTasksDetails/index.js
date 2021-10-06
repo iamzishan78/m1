@@ -21,106 +21,6 @@ const useStyles = makeStyles((theme) => ({
   newFlowLane: {
     cursor: "pointer",
   },
-  laneName: {
-    fontWeight: "bold",
-    margin: "10px 0px 10px 0px",
-    fontSize: "large",
-  },
-  laneDetail: {},
-  laneDetailRow: {
-    margin: "5px 0px 5px 0px",
-    display: "flex",
-    alignItems: "center",
-    "& .MuiTypography-body2": {
-      minWidth: "80px !important",
-    },
-  },
-  inputFieldOwner: {
-    marginBottom: "7px",
-    width: "200px",
-    backgroundColor: "#efefef",
-  },
-  dealOwnerRoot: {
-    border: "1px solid #EBEBEB",
-    '&[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input:first-child': {
-      paddingLeft: 26,
-    },
-
-    "& .MuiOutlinedInput-notchedOutline": {
-      border: 0,
-    },
-    "&:hover.MuiOutlinedInput-root": {
-      backgroundColor: "#EBEBEB",
-    },
-    "&:hover .MuiAutocomplete-popupIndicator": {
-      visibility: "visible",
-      padding: "2px",
-      marginRight: "-2px",
-    },
-  },
-  dealOwnerRootFocused: {
-    "& .MuiOutlinedInput-notchedOutline": {
-      border: "1px solid black",
-    },
-  },
-  dealOwnerLabel: {
-    marginLeft: 4,
-  },
-  subTaskRoot: {
-    width: "100%",
-    height: "40px",
-  },
-  subTaskLeftGrid: {
-    "& .MuiFormControlLabel-root": {
-      marginRight: 0,
-    },
-  },
-  subTaskRightGrid: {
-    alignItems: "right",
-    "& .MuiIconButton-root": {
-      height: "25px",
-      width: "25px",
-      margin: "5px",
-    },
-    "& .MuiTextField-root": {
-      marginTop: "2px",
-      marginBottom: 0,
-      width: "132px",
-    },
-    "& .MuiInput-underline:before": {
-      borderBottom: "none !important",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottom: "none !important",
-    },
-    "& .MuiFormHelperText-root": {
-      display: "none !important",
-    },
-  },
-  addSubTaskButton: {
-    marginBottom: "10px",
-  },
-  avatarButton: {
-    "& .MuiIconButton-label": {
-      width: "auto",
-      "& span": {
-        paddingTop: "6px",
-      },
-    },
-  },
-  notes: {
-    backgroundColor: "#FFFCDC",
-    display: "block",
-    width: "100%",
-    marginTop: 25,
-
-    "& .MuiOutlinedInput-root": {
-      width: "100%",
-      "& fieldset": {
-        borderColor: "white",
-      },
-    },
-  },
   accordion: {
     minHeight: "35px !important",
     "& .MuiPaper-elevation1": {
@@ -133,25 +33,14 @@ const useStyles = makeStyles((theme) => ({
       borderBottomLeftRadius: "0px !important",
     },
   },
-  accordionColored: {
-    // "& .MuiAccordion-root": {
-    backgroundColor: "aliceblue",
-    // },
-  },
-  accordionColorReset: {
-    backgroundColor: "transparent",
-    webkitTransition: "background-color 1000ms linear",
-    msTransition: "background-color 1000ms linear",
-    transition: "background-color 1000ms linear",
-  },
   cardContent: {
     padding: 0,
     overflowY: "overlay",
-    maxHeight: "82vh",
+    maxHeight: "79vh",
   },
 }));
 
-function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
+function DealTasksDetails({ users, activeDeal, dealSettings, user, ...rest }) {
   // Transact Context
   const [stateTransact, setStateTransact] = useContext(TransactContext);
   const [extendedTaskIndex] = useState(dealSettings.findIndex((ds) => ds?._id === stateTransact.selectedTask?._id) || 0);
@@ -185,20 +74,24 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
   // };
 
   const evaluateOverallProgress = () => {
-    let progress = 0;
+    let totalSubtasks = 0,
+      completedSubtasks = 0;
     dealSettings.forEach((setting) => {
-      progress += setting.progress;
+      completedSubtasks += setting.tasks.filter((t) => t.isCompleted).length;
+      totalSubtasks += setting.tasks.length;
     });
-    progress = ((progress / (100 * dealSettings.length)) * 100).toFixed(2);
-    return progress;
+    if (totalSubtasks === 0) return 0;
+    let overallProgress = (completedSubtasks / totalSubtasks) * 100;
+    overallProgress = Number.isInteger(overallProgress) ? overallProgress : overallProgress.toFixed(2);
+    return overallProgress;
   };
 
   return (
     <div className={classes.root}>
-      <CardActions style={{ paddingBottom: 15, padding: "0px 30px" }}>
+      <CardActions style={{ paddingBottom: 15, padding: "0px 30px", display: "block" }}>
         <Grid container direction="row" justify="space-between" alignItems="center">
-          <Grid item xs={8} style={{ marginBottom: "15px" }}>
-            <h3 style={{ height: "8px" }}>Overall Progress</h3>
+          <Grid item xs={8} style={{ margin: "15px 0px" }}>
+            <h3>Overall Progress</h3>
             <ProgressBar value={evaluateOverallProgress()} isNumeric />
           </Grid>
           {/* <Grid item xs={6} style={{ textAlign: "right" }}>
@@ -225,11 +118,11 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user }) {
             <DealStageDetail
               settings={settings}
               index={index}
-              stateTransact={stateTransact}
               extendedTaskIndex={extendedTaskIndex}
               user={user}
               users={users}
               activeDeal={activeDeal}
+              {...rest}
             />
           </div>
         ))}

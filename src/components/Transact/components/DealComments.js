@@ -57,12 +57,10 @@ const useStyles = makeStyles((theme) => ({
     bottom: "10px",
     marginBottom: -20,
     background: "#24afdf",
-
   },
   paddingLeft10: {
     paddingLeft: "20px !important",
     paddingTop: "3px !important",
-
   },
   moreComment: {
     padding: "10px",
@@ -85,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px 5px 10px 0px",
     // marginRight: "60px",
     // marginBottom: "10px",
-    marginLeft: '20px'
+    marginLeft: "20px",
   },
   commentTime: {
     marginLeft: "10px",
@@ -129,10 +127,7 @@ export default function DealComment(props) {
   const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
   });
-  const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
-    COMMENTSBYOBJECTIDQUERY,
-    { fetchPolicy: "no-cache" }
-  );
+  const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
     getAllMongoUsers();
@@ -205,12 +200,7 @@ export default function DealComment(props) {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (
-      profiledata &&
-      profiledata.data &&
-      profiledata.data.profileByEmail &&
-      profiledata.data.profileByEmail.profile
-    ) {
+    if (profiledata && profiledata.data && profiledata.data.profileByEmail && profiledata.data.profileByEmail.profile) {
       const {
         data: {
           profileByEmail: {
@@ -234,24 +224,7 @@ export default function DealComment(props) {
     return array;
   };
 
-  const newCommentCleaner = (value) =>
-    value.trim()[value.trim().length - 1] === "."
-      ? value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")
-      : `${value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")}`;
+  const newCommentCleaner = (value) => value.trim();
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -265,11 +238,7 @@ export default function DealComment(props) {
           isEdited: true,
         },
       },
-      refetchQueries: [
-        "getCommentsByObjectId",
-        "getCommentsCounter",
-        "getCommentsByObjectsIds",
-      ],
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -284,11 +253,7 @@ export default function DealComment(props) {
       variables: {
         commentId: id,
       },
-      refetchQueries: [
-        "getCommentsByObjectId",
-        "getCommentsCounter",
-        "getCommentsByObjectsIds",
-      ],
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -297,23 +262,19 @@ export default function DealComment(props) {
     setEditCommentId("");
   };
 
-  const addNewComment = (value) => {
+  const addNewComment = () => {
     setLoadingComments(true);
     upsertComment({
       variables: {
         comment: {
-          comment: newCommentCleaner(value),
+          comment: newCommentCleaner(comment),
           public: true,
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           objectType: props.targetLabel,
         },
       },
-      refetchQueries: [
-        "getCommentsByObjectId",
-        "getCommentsCounter",
-        "getCommentsByObjectsIds",
-      ],
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -327,11 +288,11 @@ export default function DealComment(props) {
 
   return (
     <div className={classes.container}>
-      <div className={classes.comment} >
+      <div className={classes.comment}>
         {!loadingComments ? (
           <>
             {!showAllComments && commentsArray.length > 3 && (
-              <div className={classes.moreComment} style={{marginTop: 10, marginBottom: 10}}>
+              <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
                 <span
                   onClick={() => {
                     setShowAllComments(true);
@@ -342,56 +303,38 @@ export default function DealComment(props) {
               </div>
             )}
             {showAllComments && commentsArray.length > 3 && (
-              <div className={classes.moreComment} style={{marginTop: 10, marginBottom: 10}}>
-                <span onClick={() => setShowAllComments(false)}>
-                  Hide Earlier Comments
-                </span>
+              <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
+                <span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
               </div>
             )}
 
             {commentsArray.map((eachComment, index) => {
-              let indexToShow =
-                commentsArray.length > 3 ? commentsArray.length - 3 : 0;
-                debugger
+              let indexToShow = commentsArray.length > 3 ? commentsArray.length - 3 : 0;
               return (
                 <Fragment key={index}>
                   {(showAllComments || index >= indexToShow) && (
                     <Grid
                       container
                       className={classes.gridStyle}
-                      onMouseOver={() =>
-                        setShowCommentActionId(eachComment._id)
-                      }
+                      onMouseOver={() => setShowCommentActionId(eachComment._id)}
                       onMouseLeave={() => setShowCommentActionId(null)}
                     >
                       <Grid item xs={1}>
-                        <IconButton style={{ marginTop: "3px", marginLeft: "12px"}}>
-                          {profilesInfo[eachComment.user.email]?.profileImage ||
-                          eachComment.isNew ? (
+                        <IconButton style={{ marginTop: "3px", marginLeft: "12px" }}>
+                          {profilesInfo[eachComment.user.email]?.profileImage || eachComment.isNew ? (
                             <Avatar
-                              src={
-                                eachComment.isNew
-                                  ? profileImage
-                                  : profilesInfo[eachComment.user.email]
-                                      .profileImage
-                              }
+                              src={eachComment.isNew ? profileImage : profilesInfo[eachComment.user.email].profileImage}
                               size="38"
                               round
                             />
                           ) : (
-                            <Avatar
-                              name={eachComment.user.name}
-                              size="38"
-                              round
-                            />
+                            <Avatar name={eachComment.user.name} size="38" round />
                           )}
                         </IconButton>
                       </Grid>
                       <Grid item xs={11} className={classes.paddingLeft10}>
                         <div>
-                          <span className={classes.bold}>
-                            {eachComment.user.name}
-                          </span>
+                          <span className={classes.bold}>{eachComment.user.name}</span>
                           <ReactTimeAgo
                             className={classes.commentTime}
                             date={
@@ -407,17 +350,11 @@ export default function DealComment(props) {
                             }
                             locale="en-US"
                           />
-                          {eachComment.isEdited && (
-                            <span className={classes.commentTime}>
-                              (Edited)
-                            </span>
-                          )}
+                          {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
                           {eachComment.user.email === stateApp.user.email &&
                             showCommentActionId === eachComment._id &&
                             editCommentId !== eachComment._id && (
-                              <div
-                                className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}
-                              >
+                              <div className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}>
                                 <ActionMenu
                                   eachComment={eachComment}
                                   setEditCommentId={setEditCommentId}
@@ -454,23 +391,20 @@ export default function DealComment(props) {
           <CircularProgress color="secondary"></CircularProgress>
         )}
       </div>
-      <div  style = {{paddingBottom: '20px'}}>
+      <div style={{ paddingBottom: "20px" }}>
         <Grid container>
           <Grid item xs={1}>
-            <IconButton className={classes.commentView} 
-            // style={{ top: "3px" }}
+            <IconButton
+              className={classes.commentView}
+              // style={{ top: "3px" }}
             >
-              {profileImage ? (
-                <Avatar src={profileImage} size="38" round />
-              ) : (
-                <Avatar name={stateApp.user.name} size="38" round />
-              )}
+              {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
             </IconButton>
           </Grid>
           <Grid item xs={11} className={classes.paddingLeft10}>
             <div
               className={classes.border}
-              style = {{width: '500px', paddingBottom: '20px'}}
+              style={{ width: "500px", paddingBottom: "20px" }}
               onClick={() => {
                 if (!showActions) {
                   setShowActions(true);

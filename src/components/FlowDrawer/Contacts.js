@@ -89,7 +89,7 @@ export default function Contacts(props) {
   const [nameAutValue, setNameAutValue] = useState("");
   const [nameAutInputValue, setNameAutInputValue] = useState("");
   const [addContact, setAddContact] = useState(false);
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [mutationLoading, setMutationLoading] = useState(false);
   const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
@@ -112,8 +112,9 @@ export default function Contacts(props) {
     if (nameAutValue) {
       props.addSelectedContact(nameAutValue);
       GettingContacts();
-      setMutationLoading(true);
+      // setMutationLoading(true);
       setAddContact(false);
+      setNameAutValue("");
     }
   }, [nameAutValue]);
 
@@ -143,9 +144,9 @@ export default function Contacts(props) {
 
   const GettingContacts = useCallback(() => {
     let contactnames = stateApp.activeDeal?.contacts?.map((value) => {
-      if (value.relatedObject?.entity?.name !== undefined) {
-        return value.relatedObject?.entity?.name;
-      } else if (value?.name && value?.name !== undefined) {
+      if (get(value, "relatedObject.entityDetail.name")) {
+        return value.relatedObject.entityDetail.name;
+      } else if (get(value, "name")) {
         return value.name;
       } else {
         return "Empty";
@@ -159,13 +160,13 @@ export default function Contacts(props) {
   }, [search, props, GettingContacts]);
 
   useEffect(() => {
-    if (!props.loading) {
-      setMutationLoading(false);
-    }
+    setMutationLoading(props.loading);
   }, [props.loading]);
-  const DeleteContact = async (dealid) => {
+
+  const DeleteContact = async (index) => {
+    const descriptorId = get(stateApp, `activeDeal.contacts[${index}].descriptorId`) || get(stateApp, `activeDeal.contacts[${index}]._id`);
     let result = await removeDealDescriptor({
-      variables: { id: dealid, relatedObjectType: "Contact" },
+      variables: { id: descriptorId, relatedObjectType: "Contact" },
       refetchQueries: ["getPipeline", "getContactDeals"],
       awaitRefetchQueries: true,
     });
@@ -176,49 +177,103 @@ export default function Contacts(props) {
       setMutationLoading(false);
     }
   };
+
+  const gotoContact = (index) => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedContact: stateApp.activeDeal?.contacts[index]?._id,
+      dealDialog: false,
+      transactBarView: "Deal",
+    }));
+    history.push(`/contact/details/${stateApp.activeDeal?.contacts[index]?._id}?return-url=${history.location.pathname}`);
+  };
+
   return (
     <>
       <Grid container direction="row" justify="space-between" alignItems="center" className={classes.rootPadding}>
-        {!isSearchActive && (
-          <Grid item xs={10}>
-            <Typography variant="h6">Contacts</Typography>
+        {!addContact && (
+          <React.Fragment>
+            {!isSearchActive && (
+              <Grid item xs={10}>
+                <Typography variant="h6">Contacts</Typography>
+              </Grid>
+            )}
+            <Grid item xs={1}>
+              <div className={classes.search}>
+                <Tooltip
+                  title="Search"
+                  className={classes.iconSearch}
+                  onClick={() => {
+                    if (!isSearchActive) {
+                      document.getElementById("searchInputDocuments").focus();
+                    }
+                  }}
+                >
+                  <SearchIcon />
+                </Tooltip>
+                <InputBase
+                  id="searchInputDocuments"
+                  autoComplete="off"
+                  placeholder="Search Contacts"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  inputProps={{ "aria-label": "search" }}
+                  onFocus={() => setSearchState(true)}
+                  value={search}
+                  onBlur={() =>
+                    setTimeout(() => {
+                      setSearchState(false);
+                    }, 300)
+                  }
+                  onChange={(evt) => setSearch(evt.target.value)}
+                />
+              </div>
+            </Grid>
+          </React.Fragment>
+        )}
+        {addContact && (
+          <Grid item xs={11}>
+            <AutocompEntityNamesVirtualizeList
+              mongoEntitiesArray={mongoEntitiesArray}
+              setMongoEntitiesArray={setMongoEntitiesArray}
+              nameAutValue={nameAutValue}
+              setNameAutValue={setNameAutValue}
+              nameAutInputValue={nameAutInputValue}
+              setNameAutInputValue={setNameAutInputValue}
+              variant="outlined"
+              label="Contact Name"
+              hasNextPage={hasNextPage}
+              isNextPageLoading={isNextPageLoading}
+              loadNextPage={loadNextPage}
+              disabled={props.loading}
+              addNew={true}
+              addNewOnClick={(value) => {
+                const contact = { name: value };
+                addNewContact({
+                  variables: {
+                    contact: {
+                      ...contact,
+                      createBy: stateApp.user.mongoId,
+                      lastUpdateBy: stateApp.user.mongoId,
+                    },
+                  },
+                  refetchQueries: ["getPaginatedContacts", "getContact"],
+                  awaitRefetchQueries: true,
+                });
+              }}
+              onBlur={() => setAddContact((addContact) => !addContact)}
+            />
           </Grid>
         )}
         <Grid item xs={1}>
-          <div className={classes.search}>
-            <Tooltip
-              title="Search"
-              className={classes.iconSearch}
-              onClick={() => {
-                if (!isSearchActive) {
-                  document.getElementById("searchInputDocuments").focus();
-                }
-              }}
-            >
-              <SearchIcon />
-            </Tooltip>
-            <InputBase
-              id="searchInputDocuments"
-              autoComplete="off"
-              placeholder="Search Contacts"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ "aria-label": "search" }}
-              onFocus={() => setSearchState(true)}
-              value={search}
-              onBlur={() =>
-                setTimeout(() => {
-                  setSearchState(false);
-                }, 300)
-              }
-              onChange={(evt) => setSearch(evt.target.value)}
-            />
-          </div>
-        </Grid>
-        <Grid item xs={1}>
-          <IconButton onClick={() => setAddContact((addContact) => !addContact)}>
+          <IconButton
+            onClick={() => {
+              setAddContact((addContact) => !addContact);
+              setSearch("");
+            }}
+          >
             <AddIcon size="large" />
           </IconButton>
         </Grid>
@@ -227,39 +282,6 @@ export default function Contacts(props) {
       <div className={classes.list}>
         <Grid container className={classes.actionGrid}>
           <Grid item xs={12}>
-            {addContact && (
-              <>
-                <AutocompEntityNamesVirtualizeList
-                  mongoEntitiesArray={mongoEntitiesArray}
-                  setMongoEntitiesArray={setMongoEntitiesArray}
-                  nameAutValue={nameAutValue}
-                  setNameAutValue={setNameAutValue}
-                  nameAutInputValue={nameAutInputValue}
-                  setNameAutInputValue={setNameAutInputValue}
-                  variant="outlined"
-                  label="Contact Name"
-                  hasNextPage={hasNextPage}
-                  isNextPageLoading={isNextPageLoading}
-                  loadNextPage={loadNextPage}
-                  disabled={props.loading}
-                  addNew={true}
-                  addNewOnClick={(value) => {
-                    const contact = { name: value };
-                    addNewContact({
-                      variables: {
-                        contact: {
-                          ...contact,
-                          createBy: stateApp.user.mongoId,
-                          lastUpdateBy: stateApp.user.mongoId,
-                        },
-                      },
-                      refetchQueries: ["getPaginatedContacts", "getContact"],
-                      awaitRefetchQueries: true,
-                    });
-                  }}
-                />
-              </>
-            )}
             {mutationLoading === true && (
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <CircularProgress size="20px" />
@@ -287,7 +309,7 @@ export default function Contacts(props) {
                       cursor: "pointer",
                     }}
                     color="primary"
-                    onClick={() => history.push(`/contact/details/${stateApp.activeDeal?.contacts[i]?._id}`)}
+                    onClick={() => gotoContact(i)}
                   >
                     {c}
                   </Link>
@@ -295,13 +317,13 @@ export default function Contacts(props) {
                   {mutationLoading === stateApp.activeDeal?.contacts[i]?._id ? (
                     <ListItemSecondaryAction>
                       <IconButton edge="end" aria-label="delete">
-                        <CircularProgress></CircularProgress>
+                        <CircularProgress />
                       </IconButton>
                     </ListItemSecondaryAction>
                   ) : (
                     <ListItemSecondaryAction
                       onClick={() => {
-                        DeleteContact(stateApp.activeDeal?.contacts[i]?.descriptorId);
+                        DeleteContact(i);
                         setMutationLoading(stateApp.activeDeal?.contacts[i]?._id);
                       }}
                     >

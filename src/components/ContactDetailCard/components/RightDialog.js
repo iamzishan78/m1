@@ -25,7 +25,8 @@ export default function AlertDialogSlide(props) {
         margin: "0 !important",
         borderTopRightRadius: "0 !important",
         overflowX: "hidden",
-        overflowY: props.hiddenOverflow ? "hidden" : "auto"
+        overflowY: props.hiddenOverflow ? "hidden" : "auto",
+        transition: "width 0.5s",
       },
       "& .MuiListItem-container": {
         borderBottom: "1px solid #c7c7c7",

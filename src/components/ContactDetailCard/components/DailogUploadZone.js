@@ -40,22 +40,19 @@ const useStyles = makeStyles((theme) => ({
 export default function UploadZone(props) {
   const dispatch = useDispatch();
   const [inputFile, setInputFile] = useState(null);
-  const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(
-    ADDDESCRIPTORFILE,
-    {
-      refetchQueries: ["getRecentContactFiles"],
-      awaitRefetchQueries: true,
-      //   onCompleted: () => {
-      //     // setTimeout(() => {
-      //     //   getRecentFiles({
-      //     //     variables: {
-      //     //       contactId: props.id,
-      //     //     },
-      //     //   });
-      //     // }, 3000);
-      //   },
-    }
-  );
+  const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(ADDDESCRIPTORFILE, {
+    refetchQueries: ["getRecentContactFiles"],
+    awaitRefetchQueries: true,
+    //   onCompleted: () => {
+    //     // setTimeout(() => {
+    //     //   getRecentFiles({
+    //     //     variables: {
+    //     //       contactId: props.id,
+    //     //     },
+    //     //   });
+    //     // }, 3000);
+    //   },
+  });
 
   useEffect(() => {
     if (addFileData && addFileData?.addFileDescriptor?.success) {
@@ -67,22 +64,23 @@ export default function UploadZone(props) {
 
       if (file_id) {
         const blockBlobClient = new BlockBlobClient(uri);
-				blockBlobClient.uploadBrowserData(inputFile, {
-					maxSingleShotSize: 4 * 1024 * 1024,
-					blobHTTPHeaders: {
-						blobContentDisposition: `attachment; filename="${file_name}"`
-					},
-					metadata: {
-						Internalkey: interal_key
-					}
-				})
+        blockBlobClient
+          .uploadBrowserData(inputFile, {
+            maxSingleShotSize: 4 * 1024 * 1024,
+            blobHTTPHeaders: {
+              blobContentDisposition: `attachment; filename="${file_name}"`,
+            },
+            metadata: {
+              Internalkey: interal_key,
+            },
+          })
           .then((res) => {
             console.log(res);
-            if (res?._response?.status == 201) {
+            if (res?._response?.status === 201) {
               // props.getRecentFiles();
-              if(!props.relatedObjectId && props.setUploadedFileData){
-								props.setUploadedFileData(addFileData)
-							}
+              if (!props.relatedObjectId && props.setUploadedFileData) {
+                props.setUploadedFileData(addFileData);
+              }
             } else dispatch(showErrorMessage("Upload failed"));
           })
           .catch((err) => console.log(err));
@@ -97,11 +95,6 @@ export default function UploadZone(props) {
 
       if (inputFile && fileName) {
         setInputFile(inputFile);
-         console.log(props.userId,'add show')
-         console.log(props.relatedObjectId,'add show')
-
-         console.log(props.relatedObjectType,'add show')
-         console.log(fileName,'add show')
 
         addFile({
           variables: {
@@ -127,53 +120,53 @@ export default function UploadZone(props) {
           console.log(`${variant}: ${message}`);
         }}
         filesLimit={1}
-        dropzoneProps={{ 
-          disabled: props.loading || addFileLoading || props.disabled
+        dropzoneProps={{
+          disabled: props.loading || addFileLoading || props.disabled,
         }}
         dropzoneText={"+"}
         // acceptedFiles={[
-				// 	"image/*",
-				// 	"video/*",
-				// 	"application/*",
-				// 	".*",
-				// 	".geojson",
-				// 	".csv",
-				// 	".pdf",
-				// 	".docx",
-				// 	".doc",
-				// 	".ppt",
-				// 	".pptx",
-				// 	".txt",
-				// 	".xls",
-				// 	".xlsx",
-				// 	".mdb",
+        // 	"image/*",
+        // 	"video/*",
+        // 	"application/*",
+        // 	".*",
+        // 	".geojson",
+        // 	".csv",
+        // 	".pdf",
+        // 	".docx",
+        // 	".doc",
+        // 	".ppt",
+        // 	".pptx",
+        // 	".txt",
+        // 	".xls",
+        // 	".xlsx",
+        // 	".mdb",
 
-				// 	// shape 
-				// 	".shp",
-				// 	".shx",
-				// 	".sbn",
-				// 	".fbn",
-				// 	".ain",
-				// 	".atx",
-				// 	".ixs",
+        // 	// shape
+        // 	".shp",
+        // 	".shx",
+        // 	".sbn",
+        // 	".fbn",
+        // 	".ain",
+        // 	".atx",
+        // 	".ixs",
 
-				// 	// phdwin
-				// 	".phd",
-				// 	".mod",
-				// 	".phb",
-				// 	".phz",
+        // 	// phdwin
+        // 	".phd",
+        // 	".mod",
+        // 	".phb",
+        // 	".phz",
 
-				// 	// IHS
-				// 	".98c",
+        // 	// IHS
+        // 	".98c",
 
-				// 	// DRILLING INFO 
-				// 	".DRI",
+        // 	// DRILLING INFO
+        // 	".DRI",
 
-				// 	// LASSER 
-				// 	".PRN",
+        // 	// LASSER
+        // 	".PRN",
 
-				// 	// DIVESTCO 
-				// 	".pds",
+        // 	// DIVESTCO
+        // 	".pds",
 
         // ]}
 
