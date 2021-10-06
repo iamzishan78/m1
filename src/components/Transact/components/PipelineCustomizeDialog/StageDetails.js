@@ -223,7 +223,7 @@ function StageDetails({ selectedStageForDetail = {}, selectedPipe }) {
             />
           </Grid>
           <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
-            <DealSubtasks tasks={templateSubtasks} users={users} canDrag={false} />
+            <DealSubtasks tasks={templateSubtasks} users={users} canDrag={false} isTemplate />
           </Grid>
           <NewSubtask relatedObject={selectedStageForDetail._id} taskTemplate={taskTemplate} pipeline={selectedPipe._id} isTemplate />
         </>
