@@ -224,7 +224,7 @@ export default function Transact() {
       }
 
       if (pipelinesData.pipelines && pipelinesData.pipelines.length > 0) {
-        let activePipeline = {};
+        let activePipeline = undefined;
 
         if (pipelineId) {
           activePipeline = pipelinesData.pipelines.find((p) => p._id === pipelineId);
@@ -235,9 +235,9 @@ export default function Transact() {
             activePipeline = pipelinesData.pipelines.find((p) => p._id === selectedPipe._id);
           } else activePipeline = pipelinesData.pipelines[0];
         }
-        if (laneId && cardId) {
+        if (activePipeline && laneId && cardId) {
           history.push(`/flow/${activePipeline._id}/lane/${laneId}/card/${cardId}`);
-        } else {
+        } else if (activePipeline) {
           history.push(`/flow/${activePipeline._id}`);
         }
 
@@ -530,7 +530,7 @@ export default function Transact() {
     let owner = null;
     let ownerId = null;
     let ownerEmail = null;
-    let ownerObject = metadata?.owners[0] ? metadata?.owners[0] : null;
+    let ownerObject = metadata?.owners?.[0] ? metadata?.owners[0] : null;
 
     if (ownerObject && ownerObject.relatedObject?.name) {
       owner = ownerObject.relatedObject.name;
@@ -558,7 +558,7 @@ export default function Transact() {
       >
         <header className={CardClasses.cardHeaderStyle}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span className={CardClasses.cardTitle}>{title.length > 30 ? `${title.substr(0, 40)}...` : title}</span>
+            <span className={CardClasses.cardTitle}>{title?.length > 30 ? `${title.substr(0, 40)}...` : title}</span>
             {owner && <CustomAvatar email={ownerEmail} text={owner} color={cardColors[ownerId]} />}
           </div>
 
