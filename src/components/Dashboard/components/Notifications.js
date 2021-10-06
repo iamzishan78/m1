@@ -220,20 +220,20 @@ const Notifications = () => {
                           <IconButton
                             style={{ marginTop: "4px", marginLeft: "14px" }}
                           >
-                            {profilesInfo[user.email]?.profileImage ? (
+                            {profilesInfo[user?.email]?.profileImage ? (
                               <Avatar
-                                src={profilesInfo[user.email].profileImage}
+                                src={profilesInfo[user?.email].profileImage}
                                 size="38"
                                 round
                               />
                             ) : (
-                              <Avatar name={user.name} size="38" round />
+                              <Avatar name={user?.name} size="38" round />
                             )}
                           </IconButton>
                         </Grid>
                         <Grid item xs={11} className={classes.paddingLeft10}>
                           <div>
-                            <span className={classes.bold}>{user.name}</span>
+                            <span className={classes.bold}>{user?.name}</span>
                             <ReactTimeAgo
                               className={classes.commentTime}
                               date={
@@ -264,6 +264,8 @@ const Notifications = () => {
                               id: _id,
                               state: "UNREAD",
                             },
+                            refetchQueries: ["getNotifications"],
+                            awaitRefetchQueries: false,
                           });
                         }}
                       >
@@ -278,6 +280,8 @@ const Notifications = () => {
                               id: _id,
                               state: "ARCHIVED",
                             },
+                            refetchQueries: ["getNotifications"],
+                            awaitRefetchQueries: false,
                           });
                         }}
                       >
