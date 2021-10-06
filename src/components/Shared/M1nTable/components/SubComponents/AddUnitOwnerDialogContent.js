@@ -14,9 +14,9 @@ import get from "lodash/get";
 import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { ADD_OWNER_TOA_UNIT } from "graphQL/useMutationAddOwnerToAUnit";
+import { ADD_OWNER_TOA_SHAPE } from "graphQL/useMutationAddOwnerToAShape";
 import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
-import { UPDATE_UNIT_OWNER } from "graphQL/useMutationUpdateUnitOwner";
+import { UPDATE_SHAPE_OWNER } from "graphQL/useMutationUpdateShapeOwner";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "../../../../../actions";
@@ -134,9 +134,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
-  const [addOwnerToAUnit, { data: mutationData }] = useMutation(ADD_OWNER_TOA_UNIT);
+  const [addOwnerToAShape, { data: mutationData }] = useMutation(ADD_OWNER_TOA_SHAPE);
 
-  const [updateUnitOwner, { data: updateData }] = useMutation(UPDATE_UNIT_OWNER);
+  const [updateShapeOwner, { data: updateData }] = useMutation(UPDATE_SHAPE_OWNER);
 
   useEffect(() => {
     if (get(addContactData, "addContact.contact")) {
@@ -237,9 +237,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
       if (selectedRow) {
         ownerToAdd._id = selectedRow._id;
-        updateUnitOwner({
+        updateShapeOwner({
           variables: {
-            unitOwner: {
+            shapeType: 'Unit',
+            shapeOwner: {
               ...ownerToAdd,
               createBy: stateApp.user.mongoId,
               lastUpdateBy: stateApp.user.mongoId,
@@ -249,9 +250,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           awaitRefetchQueries: true,
         });
       } else {
-        addOwnerToAUnit({
+        addOwnerToAShape({
           variables: {
-            unitOwner: {
+            shapeType: 'Unit',
+            shapeOwner: {
               ...ownerToAdd,
               createBy: stateApp.user.mongoId,
               lastUpdateBy: stateApp.user.mongoId,

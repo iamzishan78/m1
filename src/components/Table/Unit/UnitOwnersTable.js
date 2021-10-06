@@ -14,7 +14,7 @@ import { SHAPE_OWNERS } from "graphQL/useQueryPaginatedShapeOwners";
 import { SHAPEOWNERSCOUNT } from "graphQL/useQueryShapeOwnersCount";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { ADDOWNERTOAPARCEL } from "graphQL/useMutationAddOwnerToAParcel";
-import { UNIT_OWNERS_QUERY } from "../../../graphQL/useQueryUnitOwners";
+import { SHAPE_OWNERS_QUERY } from "../../../graphQL/useQueryShapeOwners";
 import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from "graphQL/useMutationConvertMultitpleOwnerToContact";
 
 import {
@@ -71,7 +71,7 @@ function UnitOwnersTable(props) {
       },
     }
   );
-  const [getUnitOwners, { data: dataUnitOwners }] = useLazyQuery(UNIT_OWNERS_QUERY, {
+  const [getShapeOwners, { data: shapeTypeOwners }] = useLazyQuery(SHAPE_OWNERS_QUERY, {
     fetchPolicy: "cache-and-network",
   });
 
@@ -81,7 +81,7 @@ function UnitOwnersTable(props) {
     CONVERT_MULTITPLE_OWNER_TO_CONTACT
   );
 
-  const tableData = dataUnitOwners?.unitOwners;
+  const tableData = shapeTypeOwners?.shapeOwners;
 
   const addAble = {
     type: "ownerToUnit",
@@ -93,16 +93,17 @@ function UnitOwnersTable(props) {
 
   useEffect(() => {
 
-    getUnitOwners({
+    getShapeOwners({
       variables: {
         customLayerId: props.customLayer._id,
+        shapeType: 'Unit'
       },
     });
   }, [props.parent]);
 
   useEffect(() => {
-    if (tableData?.edges?.length > 0) {
-      const objectsIdsArray = tableData.map((owner) => owner.globalOwnerId);
+    if (tableData?.length > 0) {
+      const objectsIdsArray = tableData.map((owner) => owner._id);
       props.initializeGenericData(objectsIdsArray, ['comments', 'tags', 'ifAreContacts']);
     }
   }, [tableData]);
@@ -114,7 +115,7 @@ function UnitOwnersTable(props) {
         let owner = { ...o };
         owner.isContact = false;
         owner.ownershipType = owner.OwnerType
-        owner = props.setGenricData(owner, owner.globalOwnerId, ['comments', 'tracks', 'tags', 'ifAreContacts']);
+        owner = props.setGenricData(owner, owner._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
 
         return owner;
       });
@@ -195,16 +196,16 @@ function UnitOwnersTable(props) {
         meta.setPageInd(tableState.page);
         getPaginatedShapeOwners(pageVariables);
         break;
-      case "search":
-        break;
-      case "onSearchClose":
-        break;
-      case "propsUpdate":
-        break;
-      case "filterChange":
-        break;
-      case "resetFilters":
-        break;
+      // case "search":
+      //   break;
+      // case "onSearchClose":
+      //   break;
+      // case "propsUpdate":
+      //   break;
+      // case "filterChange":
+      //   break;
+      // case "resetFilters":
+      //   break;
       default:
     }
   };
@@ -213,99 +214,13 @@ function UnitOwnersTable(props) {
     rowsPerPageOptions:
       count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
     count: suggestedOwnersCount || count || 0,
-    serverSide: true,
+    serverSide: false,
+    searchable: true,
     filter: false,
   };
   ////////////-----Add your code section here-----///////////////////////
   const getWellOwnersByYear = (selectedYear) => {
     setSelectedYear(selectedYear);
-  };
-
-  const suggestedOwnerToParcel = async (m1nSelectedRowsIndexes, setSelectedRow) => {
-    const { rows } = props;
-    const selectedRows = [];
-    const globalOwnerIds = [];
-    for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
-      if (
-        !rows[m1nSelectedRowsIndexes[i]].isContact &&
-        !globalOwnerIds.includes(rows[m1nSelectedRowsIndexes[i]].globalOwnerId)
-      ) {
-        globalOwnerIds.push(rows[m1nSelectedRowsIndexes[i]].globalOwnerId);
-      } else {
-        selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
-      }
-    }
-    if (globalOwnerIds.length > 0) {
-      convertMultitpleOwnerToContact({
-        variables: {
-          ownerIds: globalOwnerIds,
-          existingContactId: null,
-          contactOwner: null,
-          action: "single",
-          userId: stateApp.user.mongoId,
-        },
-        refetchQueries: ["checkIfOwnersAreContacts"],
-        awaitRefetchQueries: true,
-      }).then(
-        async (res) => {
-          if (res.data && res.data.convertMultitpleOwnerToContact) {
-            const { success, message } =
-              res.data.convertMultitpleOwnerToContact;
-            if (success) {
-              const { data: checkIfOwnersAreContactsData } = await client.query(
-                {
-                  query: IFARECONTACTS,
-                  variables: {
-                    idsArray: globalOwnerIds,
-                  },
-                }
-              );
-              addParcel(checkIfOwnersAreContactsData.ifAreContacts);
-            }
-          }
-        },
-        (err) => {
-          console.log(err)
-        }
-      );
-    }
-    if (selectedRows.length > 0) {
-      addParcel(selectedRows);
-    }
-    setSelectedRow([])
-    props.setSelectedTab(0)
-  };
-
-  const addParcel = (selectedRows) => {
-    for (let i = 0; i < selectedRows.length; i++) {
-      const ownerToAdd = {
-        customLayer: props.customLayer._id,
-        depthFrom: "",
-        depthTo: "",
-        entity: "",
-        interest: null,
-        nma: null,
-        nra: null,
-        ownerEntity: selectedRows[i].isContact,
-        type: "",
-        isSuggested: true
-      };
-      addOwnerToAParcel({
-        variables: {
-          parcelOwner: {
-            ...ownerToAdd,
-            createBy: stateApp.user.mongoId,
-            lastUpdateBy: stateApp.user.mongoId,
-          },
-        },
-        refetchQueries: [
-          "getCustomLayer",
-          "getUnitOwners",
-          // "getContactParcelInterests",
-        ],
-        awaitRefetchQueries: true,
-      });
-    }
   };
 
   return (
@@ -329,7 +244,6 @@ function UnitOwnersTable(props) {
         orderByTracks={orderByTracks}
         startPaginationAt={null}
         onTableChange={onTableChange}
-        suggestedOwnerToParcel={suggestedOwnerToParcel}
         options={options}
         parent={props.parent}
         setColumnsBase={[]}

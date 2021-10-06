@@ -361,7 +361,8 @@ export default function UnitDetailCard(props) {
                   <UnitOwnersTable
                     customLayer={uniObj}
                     parent="ownersPerOwner"
-                    targetLabel="unit"
+                    shapeType='Unit'
+                    targetLabel="Unit Ownership"
                     header={<Header />}
                     setSelectedTab={setSelectedTab}
                     dense
@@ -372,6 +373,7 @@ export default function UnitDetailCard(props) {
                   <SuggestedTaxOwnersTable
                     customLayer={uniObj}
                     parent="potentialOwnersPerParcel"
+                    shapeType='Unit'
                     targetLabel="well"
                     header={<Header />}
                     setSelectedTab={setSelectedTab}

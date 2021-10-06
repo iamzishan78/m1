@@ -64,13 +64,13 @@ export const TableHOC = (Component) => {
         // }, [stateApp.user, props.targetLabel, props.showTracks]);
 
 
-        useEffect (() => {
-            if(constDataTracks?.tracksByObjectType){
+        useEffect(() => {
+            if (constDataTracks?.tracksByObjectType) {
                 const tracksIdArray = constDataTracks.tracksByObjectType.map((track) => track.trackOn);
                 setDataTracksIds(tracksIdArray);
                 setDataTracks(constDataTracks);
             }
-        },[constDataTracks])
+        }, [constDataTracks])
 
         useEffect(() => {
             setSearchedRows(rows)
@@ -99,6 +99,7 @@ export const TableHOC = (Component) => {
 
         useEffect(() => {
             SetDependencyUpdate(!dependencyUpdate)
+            console.log(dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks)
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
         const initializeGenericData = (ids, actions) => {

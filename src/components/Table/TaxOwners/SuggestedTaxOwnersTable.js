@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 // context
 import { AppContext } from "AppContext";
 
-import { Container } from "@material-ui/core";
+import { Container, Button } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 
@@ -13,7 +13,7 @@ import { useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
 import { SHAPE_OWNERS } from "graphQL/useQueryPaginatedShapeOwners";
 import { SHAPEOWNERSCOUNT } from "graphQL/useQueryShapeOwnersCount";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
-import { ADDOWNERTOAPARCEL } from "graphQL/useMutationAddOwnerToAParcel";
+import { ADD_OWNER_TOA_SHAPE } from "graphQL/useMutationAddOwnerToAShape";
 import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from "graphQL/useMutationConvertMultitpleOwnerToContact";
 
 import {
@@ -33,6 +33,17 @@ const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
   },
+  multiSelectionTopBarButtons: {
+    margin: "0px 5px",
+    fontWeight: "600",
+    backgroundColor: "rgba(1, 17, 51, 1)",
+    color: "#fff",
+    border: "1px solid #B3B3B3",
+    "&:hover": {
+      backgroundColor: "#263451",
+      color: "#fff",
+    },
+  },
 }));
 
 function SuggestedOwnerTable(props) {
@@ -45,6 +56,9 @@ function SuggestedOwnerTable(props) {
 
   // function states
   const [columns, Columns] = useState([]);
+  const [tableMeta, setMeta] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
@@ -70,8 +84,9 @@ function SuggestedOwnerTable(props) {
       },
     }
   );
-  const [addOwnerToAParcel, { data: mutationData }] =
-    useMutation(ADDOWNERTOAPARCEL);
+
+  const [addOwnerToAShape, { data: shapeOwnerData }] = useMutation(ADD_OWNER_TOA_SHAPE);
+
   const [convertMultitpleOwnerToContact] = useMutation(
     CONVERT_MULTITPLE_OWNER_TO_CONTACT
   );
@@ -84,7 +99,7 @@ function SuggestedOwnerTable(props) {
     },
   });
 
-  const addAble = { type: "suggestedOwnerToParcel" };
+  const addAble = {};
   const total = false;
   const orderByTracks = false;
 
@@ -138,6 +153,7 @@ function SuggestedOwnerTable(props) {
   ////////////Contact Wells end///////////////////////////////////////////////
 
   const onTableChange = (action, tableState, rows, meta) => {
+
     const pageVariables = {
       variables: {
         polygon: getPolygonString(props.customLayer?.shape),
@@ -211,6 +227,9 @@ function SuggestedOwnerTable(props) {
         break;
       case "resetFilters":
         break;
+      case "rowSelectionChange":
+        setSelectedRows(tableState.selectedRows.data)
+        break;
       default:
     }
   };
@@ -221,26 +240,67 @@ function SuggestedOwnerTable(props) {
     count: suggestedOwnersCount || count || 0,
     serverSide: true,
     filter: false,
+    customToolbar: () => {
+
+      return <div style={{ display: "inline", cssFloat: "left", marginRight: "15px", marginTop: "5px" }}>
+        <Button
+          color="secondary"
+          className={classes.multiSelectionTopBarButtons}
+          disabled={true}
+        // onClick={addAction}
+        >
+          + ADD TO {props.shapeType?.toUpperCase()}
+        </Button>
+      </div>
+    },
+    customToolbarSelect: ({ data }) => {
+
+      return <div style={{ height: "48px", display: "flex" }}>
+        <div style={{ marginTop: "6px", height: "35px", display: "flex", marginRight: "20px" }}>
+          <Button
+            color="secondary"
+            className={classes.multiSelectionTopBarButtons}
+            disabled={data.length < 1}
+            onClick={() => {
+              suggestedOwnerToShape(tableMeta.setSelectedRow);
+            }}
+          >
+            + ADD TO {props.shapeType?.toUpperCase()}
+          </Button>
+        </div>
+      </div>
+    }
   };
   ////////////-----Add your code section here-----///////////////////////
   const getWellOwnersByYear = (selectedYear) => {
     setSelectedYear(selectedYear);
   };
 
-  const suggestedOwnerToParcel = async (m1nSelectedRowsIndexes, setSelectedRow) => {
+  const suggestedOwnerToShape = async (setSelectedRow) => {
     const { rows } = props;
-    const selectedRows = [];
+    const selectedOwners = selectedRows.map((sR => rows[sR.dataIndex]))
     const globalOwnerIds = [];
-    for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+    const owners = []
+    selectedOwners.forEach((selectedOwner) => {
       if (
-        !rows[m1nSelectedRowsIndexes[i]].isContact &&
-        !globalOwnerIds.includes(rows[m1nSelectedRowsIndexes[i]].globalOwnerId)
+        !selectedOwner.isContact &&
+        !globalOwnerIds.includes(selectedOwner.globalOwnerId)
       ) {
-        globalOwnerIds.push(rows[m1nSelectedRowsIndexes[i]].globalOwnerId);
+        globalOwnerIds.push(selectedOwner.globalOwnerId);
       } else {
-        selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+        owners.push(selectedOwner);
       }
-    }
+    })
+    // for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+    //   if (
+    //     !rows[m1nSelectedRowsIndexes[i]].isContact &&
+    //     !globalOwnerIds.includes(rows[m1nSelectedRowsIndexes[i]].globalOwnerId)
+    //   ) {
+    //     globalOwnerIds.push(rows[m1nSelectedRowsIndexes[i]].globalOwnerId);
+    //   } else {
+    //     selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+    //   }
+    // }
     if (globalOwnerIds.length > 0) {
       convertMultitpleOwnerToContact({
         variables: {
@@ -266,7 +326,7 @@ function SuggestedOwnerTable(props) {
                   },
                 }
               );
-              addParcel(checkIfOwnersAreContactsData.ifAreContacts);
+              addShape(checkIfOwnersAreContactsData.ifAreContacts);
             }
           }
         },
@@ -275,30 +335,26 @@ function SuggestedOwnerTable(props) {
         }
       );
     }
-    if (selectedRows.length > 0) {
-      addParcel(selectedRows);
+    if (owners.length > 0) {
+      addShape(owners);
     }
-    setSelectedRow([])
     props.setSelectedTab(0)
   };
 
-  const addParcel = (selectedRows) => {
+  const addShape = (selectedRows) => {
     for (let i = 0; i < selectedRows.length; i++) {
       const ownerToAdd = {
         customLayer: props.customLayer._id,
-        depthFrom: "",
-        depthTo: "",
         entity: "",
-        interest: null,
-        nma: null,
         nra: null,
         ownerEntity: selectedRows[i].isContact,
         type: "",
         isSuggested: true
       };
-      addOwnerToAParcel({
+      addOwnerToAShape({
         variables: {
-          parcelOwner: {
+          shapeType: props.shapeType,
+          shapeOwner: {
             ...ownerToAdd,
             createBy: stateApp.user.mongoId,
             lastUpdateBy: stateApp.user.mongoId,
@@ -306,8 +362,8 @@ function SuggestedOwnerTable(props) {
         },
         refetchQueries: [
           "getCustomLayer",
-          "getparcelOwners",
-          "getContactParcelInterests",
+          "getShapeOwners",
+          `getContact${props.shapeType}Interests`,
         ],
         awaitRefetchQueries: true,
       });
@@ -335,7 +391,6 @@ function SuggestedOwnerTable(props) {
         orderByTracks={orderByTracks}
         startPaginationAt={null}
         onTableChange={onTableChange}
-        suggestedOwnerToParcel={suggestedOwnerToParcel}
         options={options}
         parent={props.parent}
         setColumnsBase={[]}

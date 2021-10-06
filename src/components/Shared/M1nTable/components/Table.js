@@ -1712,7 +1712,7 @@ function SubTable(props) {
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
                         ? tableMeta.rowData[1]
-                        : props.parent === "ownersPerParcel"
+                        : props.parent === "ownersPerParcel" || props.parent === "ownersPerUnit"
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
 
@@ -2080,6 +2080,7 @@ function SubTable(props) {
                           entityId={
                             props.targetLabel === "Parcel Interest" ||
                               props.targetLabel === "Parcel Ownershipship" ||
+                              props.targetLabel === "Unit Ownershipship" ||
                               props.targetLabel === "contact"
                               ? tableMeta.rowData[1]
                               : null
@@ -3229,7 +3230,7 @@ function SubTable(props) {
       }
 
       if (props.onTableChange) {
-        props.onTableChange(action, tableState, props.rows, { pageInd, setPageInd, setRowsPerPage });
+        props.onTableChange(action, tableState, props.rows, { pageInd, setPageInd, setRowsPerPage, m1nSelectedRowsIds, m1nSelectedRowsIndexes, setSelectedRow });
       }
     },
   };
