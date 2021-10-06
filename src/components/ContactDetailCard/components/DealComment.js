@@ -352,6 +352,7 @@ export default function DealComment(props) {
             {commentsArray.map((eachComment, index) => {
               let indexToShow =
                 commentsArray.length > 3 ? commentsArray.length - 3 : 0;
+                debugger
               return (
                 <Fragment key={index}>
                   {(showAllComments || index >= indexToShow) && (
@@ -497,7 +498,7 @@ export default function DealComment(props) {
   );
 }
 
-const CommentText = ({ eachComment, users }) => {
+export const CommentText = ({ eachComment, users }) => {
   const classes = useStyles();
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>

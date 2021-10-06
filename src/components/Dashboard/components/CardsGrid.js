@@ -93,7 +93,7 @@ const CardGrid = () => {
     { el: <StockCard title={3} />, size: "x", key: 4 },
     { el: <TwitterCard title={2} />, size: "x", key: 5 },
     { el: <RSSFeed title={4} />, size: "x", key: 6 },
-    { el: <Notifications title={7} />, size: "x", key: 7 },
+    { el: <Notifications title={7} />, size: "2x", key: 7 },
     
     
   ]);
