@@ -13,7 +13,7 @@ import TabButtons from "components/Shared/TabPanels/TabButtons"
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
-import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwnersTable";
+import SuggestedShapeTaxOwnersTable from "components/Table/TaxOwners/SuggestedShapeTaxOwnersTable";
 import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
 import ParcelDetailsDocumentTable from "components/Table/Documents/ParcelDetailsDocumentTable";
 import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
@@ -370,7 +370,7 @@ export default function UnitDetailCard(props) {
                   {/* <M1nTable parent="ownersPerOwner" customLayer={uniObj} dense header={<Header />} /> */}
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <SuggestedTaxOwnersTable
+                  <SuggestedShapeTaxOwnersTable
                     customLayer={uniObj}
                     parent="potentialOwnersPerParcel"
                     shapeType='Unit'
