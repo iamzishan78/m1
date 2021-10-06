@@ -14,7 +14,7 @@ import { useHistory } from "react-router-dom";
 import Avatar from "react-avatar";
 import Tooltip from "@material-ui/core/Tooltip";
 
-import { CommentText } from "components/ContactDetailCard/components/DealComment";
+import { CommentText } from "components/Transact/components/DealComments";
 import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
 import { UPDATE_NOTIFICATION_STATUS } from "graphQL/useMutationUpdateNotificationStatus";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
