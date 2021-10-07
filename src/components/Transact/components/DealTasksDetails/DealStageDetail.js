@@ -201,7 +201,7 @@ function DealStageDetail({ settings, index, users, extendedTaskIndex, user, acti
             <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
               <DealSubtasks tasks={settings.tasks} users={users} />
             </Grid>
-            <NewSubtask index={index} activeDeal={activeDeal} setStateTransact={setStateTransact} settings={settings} />
+            <NewSubtask index={index} activeDeal={activeDeal} relatedObject={settings._id} />
           </Grid>
         </AccordionDetails>
       </Accordion>

@@ -4,8 +4,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import moment from "moment";
 import Divider from "@material-ui/core/Divider";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import TextField from "@material-ui/core/TextField";
 import Tooltip from "@material-ui/core/Tooltip";
 import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
@@ -16,21 +14,8 @@ import AddIcon from "@material-ui/icons/Add";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFilePdf,
-  faFilePowerpoint,
-  faFileWord,
-  faFile,
-  faFileExcel,
-  faFileArchive,
-  faFileCode,
-  faFileImage,
-} from "@fortawesome/free-solid-svg-icons";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import ViewDocuments from "../ViewDocuments/ViewDocuments";
-import { useDropzone } from "react-dropzone";
 import DeleteDocumentConfirmation from "./DeleteDocumentConfirmation";
 import { AppContext } from "../../AppContext";
 import { GETRECENTCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
@@ -509,7 +494,7 @@ export default function Documents(props) {
                         }`}
                           >
                             {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
-                              <img src={file.uri} alt={file.name} className={classes.forImage}></img>
+                              <img src={file.uri} alt={file.name} className={classes.forImage} onClick={() => handleViewFile(file.id)} />
                             ) : (
                               <div
                                 className={classes.forImageContainer}

@@ -9,7 +9,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "actions";
 import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import BaicInfoPanel from "components/Transact/components/PipelineCustomizeDialog/BasicInfo";
-import DealStagesPanel from "components/Transact/components/PipelineCustomizeDialog/DealStages";
+import DealStagesPanel from "components/Transact/components/PipelineCustomizeDialog/Stages";
 import StageDetails from "components/Transact/components/PipelineCustomizeDialog/StageDetails";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { deepEqualObjects } from "components/Shared/functions";
@@ -449,7 +449,6 @@ const PipelineCustomDialog = (props) => {
                         fontSize: "16px",
                         cursor: "pointer",
                       }}
-                      color="inherit"
                       onClick={() => {
                         setStage(null);
                         setDialogWidth(DIALOG_WIDTHS.LANES);
@@ -460,7 +459,7 @@ const PipelineCustomDialog = (props) => {
                     <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{selectedStageForDetail.name}</Typography>
                   </Breadcrumbs>
                 </div>
-                <StageDetails />
+                <StageDetails selectedStageForDetail={selectedStageForDetail} selectedPipe={selectedPipe} />
               </>
             )}
           </div>
