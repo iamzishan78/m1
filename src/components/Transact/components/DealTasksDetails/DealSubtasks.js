@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, canDrag = true, isTemplate = false }) => {
-  const approver = users.find((user) => user?.value === task.assignee);
+  const approver = users.find((user) => user?.value === task.assignee) || {};
   const [showTaskActions, setShow] = useState(false);
   const [isDatePopup, setDatePopup] = useState(false);
   const truncate = (str, n) => (str?.length > n ? str.substr(0, n - 1) + "..." : str);
@@ -219,18 +219,19 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
               <Grid item>
                 {(task.assignee || showTaskActions || task.timeframe || task.dueDate) && (
                   <span>
-                    <PopupState variant="SubtaskAssigneePopover" popupId="SubtaskAssigneePopover">
+                    <PopupState variant="popper" popupId="SubtaskAssigneePopover">
                       {(popupState) => (
                         <>
                           <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
                             {task.assignee ? (
-                              <CustomAvatar email={approver.email} text={approver.text.toString()} />
+                              <CustomAvatar email={approver.email} text={approver.text?.toString()} />
                             ) : (
                               <AccountCircle fontSize="default" />
                             )}
                           </IconButton>
                           <Popover
                             {...bindPopover(popupState)}
+                            getContentAnchorEl={null}
                             anchorOrigin={{
                               vertical: "bottom",
                               horizontal: "center",
