@@ -1,6 +1,7 @@
 import React, { memo, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import Divider from "@material-ui/core/Divider";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
@@ -9,7 +10,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 // import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 
 const getDealNameFieldHeight = (title) => {
@@ -80,12 +80,12 @@ const useStyles = makeStyles((theme) => ({
   notchedOutline: {
     border: 0,
   },
-  menuItem: {
+  menu: {
     "& .MuiListItem-root": {
       "& .MuiListItemIcon-root": {
         minWidth: "30px",
         "& .MuiSvgIcon-root": {
-          fill: "red",
+          fill: "red !important",
         },
       },
     },
@@ -93,6 +93,12 @@ const useStyles = makeStyles((theme) => ({
   dialogActions: {
     display: "flex",
     justifyContent: "flex-end",
+    "& svg": {
+      fill: "#d9d9d9",
+      "&:hover": {
+        fill: "#b5b2b2",
+      },
+    },
   },
 }));
 
@@ -217,15 +223,18 @@ const DealDialogHeader = ({
                     }}
                     onClick={handleClickDialogClose}
                   >
-                    <KeyboardArrowRight size="medium" />
+                    <KeyboardTabBlackIcon />
                   </IconButton>
                   <Menu
-                    id="laneProgressMenu"
+                    id="dealMenu"
                     anchorEl={anchorEl}
                     keepMounted
                     open={Boolean(anchorEl)}
                     onClose={handleMenuClose}
-                    className={classes.menuItem}
+                    className={classes.menu}
+                    getContentAnchorEl={null}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                    transformOrigin={{ vertical: "top", horizontal: "center" }}
                   >
                     <MenuItem onClick={openConfirmationDialog}>
                       <ListItemIcon>
