@@ -68,6 +68,13 @@ body {
   z-index: 9999999999 !important;
 }
 
-.red{
-  color: red
+#TaskTemplateDatePopover {
+  z-index: 1301 !important;
+}
+#SubtaskAssigneePopover {
+  z-index: 1301 !important;
+}
+
+.red {
+  color: red;
 }

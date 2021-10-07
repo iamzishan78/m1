@@ -7,9 +7,10 @@ import { ContextProvider } from "react-sortly";
 import Sortly, { useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import { Flipper, Flipped } from "react-flip-toolkit";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, IconButton, Popover, List, ListItem, ListItemText, Tooltip, ListItemIcon } from "@material-ui/core";
+import { Grid, IconButton, Popover, List, ListItem, ListItemText, Tooltip, ListItemIcon, Typography, TextField } from "@material-ui/core";
 import DragIndicator from "@material-ui/icons/DragIndicator";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import CelendarIcon from "@material-ui/icons/Event";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -58,9 +59,6 @@ const useStyles = makeStyles((theme) => ({
       display: props.task.dueDate ? "none" : "",
     },
   }),
-  addSubTaskButton: {
-    marginBottom: "10px",
-  },
   avatarButton: {
     "& .MuiIconButton-label": {
       width: "auto",
@@ -69,9 +67,12 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  taskTemplateDatePopover: {
+    cursor: "pointer",
+  },
 }));
 
-export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, canDrag = true }) => {
+export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, canDrag = true, isTemplate = false }) => {
   const approver = users.find((user) => user?.value === task.assignee);
   const [showTaskActions, setShow] = useState(false);
   const [isDatePopup, setDatePopup] = useState(false);
@@ -128,8 +129,8 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
             </Tooltip>
           </Grid>
           <Grid item xs={5} className={classes.subTaskRightGrid}>
-            {(task.dueDate || showTaskActions) && (
-              <span style={{ cursor: "pointer" }}>
+            {!isTemplate && (task.dueDate || showTaskActions) && (
+              <span className={classes.taskTemplateDatePopover}>
                 <KeyboardDatePicker
                   disableToolbar
                   variant="inline"
@@ -147,48 +148,112 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
                 />
               </span>
             )}
-            {(task.assignee || showTaskActions) && (
-              <span>
-                <PopupState variant="popover" popupId="demo-popup-popover">
-                  {(popupState) => (
-                    <>
-                      <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
-                        {task.assignee ? (
-                          <CustomAvatar email={approver.email} text={approver.text.toString()} />
-                        ) : (
-                          <AccountCircle fontSize="default" />
-                        )}
-                      </IconButton>
-                      <Popover
-                        {...bindPopover(popupState)}
-                        anchorOrigin={{
-                          vertical: "bottom",
-                          horizontal: "center",
-                        }}
-                        transformOrigin={{
-                          vertical: "top",
-                          horizontal: "center",
-                        }}
-                      >
-                        <List style={{ maxHeight: 450 }}>
-                          {users.map((user) => (
-                            <ListItem
-                              button
-                              onClick={() => {
-                                handleUpdateSubtask({ ...task, assignee: user.value, assignedDate: new Date().toString() });
-                                popupState.close();
-                              }}
-                            >
-                              <ListItemText primary={user.text} />
-                            </ListItem>
-                          ))}
-                        </List>
-                      </Popover>
-                    </>
-                  )}
-                </PopupState>
-              </span>
-            )}
+            <Grid container direction="row" justify="flex-end" alignItems="center">
+              <Grid item>
+                {isTemplate && (
+                  <>
+                    {task.timeframe ? (
+                      <Typography color="textSecondary">+ {task.timeframe} days</Typography>
+                    ) : (
+                      showTaskActions && (
+                        <PopupState variant="TaskTemplateDatePopover" popupId="TaskTemplateDatePopover">
+                          {(popupState) => (
+                            <>
+                              <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
+                                <CelendarIcon size="medium" />
+                              </IconButton>
+                              <Popover
+                                {...bindPopover(popupState)}
+                                anchorOrigin={{
+                                  vertical: "bottom",
+                                  horizontal: "center",
+                                }}
+                                transformOrigin={{
+                                  vertical: "top",
+                                  horizontal: "center",
+                                }}
+                              >
+                                <div style={{ padding: "5px", width: "300px" }}>
+                                  <Grid container alignItems="center" style={{ textAlign: "center" }}>
+                                    <Grid item xs={4} style={{ alignSelf: "center" }}>
+                                      <Typography color="textSecondary">Due in +</Typography>
+                                    </Grid>
+                                    <Grid item xs={5}>
+                                      <Typography color="textSecondary">
+                                        <TextField
+                                          type="number"
+                                          margin="dense"
+                                          variant="outlined"
+                                          className={classes.inputFieldOwner}
+                                          placeholder="Days"
+                                          onKeyDown={(e) => {
+                                            if (e.keyCode === 13) {
+                                              e.preventDefault();
+                                              handleUpdateSubtask({ ...task, timeframe: e.target.value });
+                                            }
+                                          }}
+                                        />
+                                      </Typography>
+                                    </Grid>
+                                    <Grid item xs={3} style={{ alignSelf: "center" }}>
+                                      <Typography color="textSecondary">days</Typography>
+                                    </Grid>
+                                  </Grid>
+                                </div>
+                              </Popover>
+                            </>
+                          )}
+                        </PopupState>
+                      )
+                    )}
+                  </>
+                )}
+              </Grid>
+              <Grid item>
+                {(task.assignee || showTaskActions) && (
+                  <span>
+                    <PopupState variant="SubtaskAssigneePopover" popupId="SubtaskAssigneePopover">
+                      {(popupState) => (
+                        <>
+                          <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
+                            {task.assignee ? (
+                              <CustomAvatar email={approver.email} text={approver.text.toString()} />
+                            ) : (
+                              <AccountCircle fontSize="default" />
+                            )}
+                          </IconButton>
+                          <Popover
+                            {...bindPopover(popupState)}
+                            anchorOrigin={{
+                              vertical: "bottom",
+                              horizontal: "center",
+                            }}
+                            transformOrigin={{
+                              vertical: "top",
+                              horizontal: "center",
+                            }}
+                          >
+                            <List style={{ maxHeight: 450 }}>
+                              {users.map((user) => (
+                                <ListItem
+                                  button
+                                  onClick={() => {
+                                    handleUpdateSubtask({ ...task, assignee: user.value, assignedDate: new Date().toString() });
+                                    popupState.close();
+                                  }}
+                                >
+                                  <ListItemText primary={user.text} />
+                                </ListItem>
+                              ))}
+                            </List>
+                          </Popover>
+                        </>
+                      )}
+                    </PopupState>
+                  </span>
+                )}
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </div>
@@ -197,7 +262,7 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
 };
 
 const DealSubtasks = (props) => {
-  const { tasks, users, canDrag } = props;
+  const { tasks, users, canDrag, isTemplate } = props;
   const [items, setItems] = useState([]);
 
   const [updateSubtask] = useMutation(UPDATE_DEAL_SUBTASK);
@@ -239,6 +304,7 @@ const DealSubtasks = (props) => {
                 users={users}
                 handleDragEnd={handleDragEnd}
                 canDrag={canDrag}
+                isTemplate={isTemplate}
               />
             )}
           </Sortly>
