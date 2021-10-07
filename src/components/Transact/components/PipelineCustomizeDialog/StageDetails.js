@@ -209,7 +209,7 @@ function StageDetails({ selectedStageForDetail = {}, selectedPipe }) {
                       <>
                         <InputAdornment position="start">
                           {taskTemplate?.assignee ? (
-                            <CustomAvatar email={approver.email} text={approver.text.toString()} />
+                            <CustomAvatar email={approver?.email} text={approver?.text?.toString()} />
                           ) : (
                             <AccountCircle fontSize="default" />
                           )}

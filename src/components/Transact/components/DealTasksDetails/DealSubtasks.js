@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiIconButton-label": {
       width: "auto",
       "& span": {
-        paddingTop: "6px",
+        paddingTop: "5px",
       },
     },
   },
@@ -130,28 +130,9 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
             </Tooltip>
           </Grid>
           <Grid item xs={5} className={classes.subTaskRightGrid}>
-            {!isTemplate && (task.dueDate || showTaskActions) && (
-              <span className={classes.taskTemplateDatePopover}>
-                <KeyboardDatePicker
-                  disableToolbar
-                  variant="inline"
-                  format="MM/DD/YY"
-                  margin="normal"
-                  allowKeyboardControl={false}
-                  value={task.dueDate || ""}
-                  emptyLabel
-                  disabled
-                  keyboardIcon={task.dueDate && <></>}
-                  open={isDatePopup}
-                  onClick={() => setDatePopup(!isDatePopup)}
-                  onClose={() => setDatePopup(!isDatePopup)}
-                  onChange={(date) => handleUpdateSubtask({ ...task, dueDate: date ? String(date["_d"]) : "" })}
-                />
-              </span>
-            )}
             <Grid container direction="row" justify="flex-end" alignItems="center">
               <Grid item>
-                {isTemplate && (
+                {isTemplate ? (
                   <PopupState variant="TaskTemplateDatePopover" popupId="TaskTemplateDatePopover">
                     {(popupState) => (
                       <>
@@ -214,6 +195,30 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
                       </>
                     )}
                   </PopupState>
+                ) : (
+                  !isTemplate &&
+                  (task.dueDate || showTaskActions) && (
+                    <span className={classes.taskTemplateDatePopover}>
+                      <KeyboardDatePicker
+                        disableToolbar
+                        variant="inline"
+                        format="MM/DD/YY"
+                        margin="normal"
+                        allowKeyboardControl={false}
+                        value={task.dueDate || ""}
+                        emptyLabel
+                        disabled
+                        keyboardIcon={task.dueDate && <></>}
+                        open={isDatePopup}
+                        onClick={() => setDatePopup(!isDatePopup)}
+                        onClose={() => setDatePopup(!isDatePopup)}
+                        onChange={(date) => {
+                          handleUpdateSubtask({ ...task, dueDate: date ? String(date["_d"]) : "" });
+                          setDatePopup(!isDatePopup);
+                        }}
+                      />
+                    </span>
+                  )
                 )}
               </Grid>
               <Grid item>
