@@ -69,10 +69,9 @@ body {
   z-index: 9999999999 !important;
 }
 
-#TaskTemplateDatePopover {
-  z-index: 1301 !important;
-}
-#SubtaskAssigneePopover {
+#TaskTemplateDatePopover,
+#SubtaskAssigneePopover,
+.MuiPopover-root {
   z-index: 1301 !important;
 }
 

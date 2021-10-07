@@ -53,11 +53,12 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user, ...rest }) {
   useEffect(() => {
     if (stateTransact.selectedTask && selectedTaskRef.current) {
       setTimeout(() => {
-        selectedTaskRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "start",
-        });
+        selectedTaskRef.current &&
+          selectedTaskRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "start",
+          });
       }, 100);
       setTimeout(() => {
         setStateTransact((state) => ({ ...state, selectedTask: {} }));

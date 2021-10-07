@@ -129,7 +129,6 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "60px",
   },
   inputFieldRoot: {
-    "& .MuiDialog-root": {},
     padding: "15px 25px 0px",
   },
   progress: {

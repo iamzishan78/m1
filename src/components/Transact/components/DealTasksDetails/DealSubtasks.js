@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiIconButton-label": {
       width: "auto",
       "& span": {
-        paddingTop: "6px",
+        paddingTop: "5px",
       },
     },
   },
@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, canDrag = true, isTemplate = false }) => {
-  const approver = users.find((user) => user?.value === task.assignee);
+  const approver = users.find((user) => user?.value === task.assignee) || {};
   const [showTaskActions, setShow] = useState(false);
   const [isDatePopup, setDatePopup] = useState(false);
   const truncate = (str, n) => (str?.length > n ? str.substr(0, n - 1) + "..." : str);
@@ -92,6 +92,11 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
 
   const [, drop] = useDrop();
   const classes = useStyles({ muted: useIsClosestDragging() || isDragging, task });
+  const [timeframe, setTimeframe] = useState();
+
+  useEffect(() => {
+    if (!showTaskActions) setDatePopup(false);
+  }, [showTaskActions]);
 
   return (
     <Flipped flipId={task.id}>
@@ -129,101 +134,113 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
             </Tooltip>
           </Grid>
           <Grid item xs={5} className={classes.subTaskRightGrid}>
-            {!isTemplate && (task.dueDate || showTaskActions) && (
-              <span className={classes.taskTemplateDatePopover}>
-                <KeyboardDatePicker
-                  disableToolbar
-                  variant="inline"
-                  format="MM/DD/YY"
-                  margin="normal"
-                  allowKeyboardControl={false}
-                  value={task.dueDate || ""}
-                  emptyLabel
-                  disabled
-                  keyboardIcon={task.dueDate && <></>}
-                  open={isDatePopup}
-                  onClick={() => setDatePopup(!isDatePopup)}
-                  onClose={() => setDatePopup(!isDatePopup)}
-                  onChange={(date) => handleUpdateSubtask({ ...task, dueDate: date ? String(date["_d"]) : "" })}
-                />
-              </span>
-            )}
             <Grid container direction="row" justify="flex-end" alignItems="center">
               <Grid item>
-                {isTemplate && (
-                  <>
-                    {task.timeframe ? (
-                      <Typography color="textSecondary">+ {task.timeframe} days</Typography>
-                    ) : (
-                      showTaskActions && (
-                        <PopupState variant="TaskTemplateDatePopover" popupId="TaskTemplateDatePopover">
-                          {(popupState) => (
-                            <>
-                              <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
-                                <CelendarIcon size="medium" />
-                              </IconButton>
-                              <Popover
-                                {...bindPopover(popupState)}
-                                anchorOrigin={{
-                                  vertical: "bottom",
-                                  horizontal: "center",
-                                }}
-                                transformOrigin={{
-                                  vertical: "top",
-                                  horizontal: "center",
-                                }}
-                              >
-                                <div style={{ padding: "5px", width: "300px" }}>
-                                  <Grid container alignItems="center" style={{ textAlign: "center" }}>
-                                    <Grid item xs={4} style={{ alignSelf: "center" }}>
-                                      <Typography color="textSecondary">Due in +</Typography>
-                                    </Grid>
-                                    <Grid item xs={5}>
-                                      <Typography color="textSecondary">
-                                        <TextField
-                                          type="number"
-                                          margin="dense"
-                                          variant="outlined"
-                                          className={classes.inputFieldOwner}
-                                          placeholder="Days"
-                                          onKeyDown={(e) => {
-                                            if (e.keyCode === 13) {
-                                              e.preventDefault();
-                                              handleUpdateSubtask({ ...task, timeframe: e.target.value });
-                                            }
-                                          }}
-                                        />
-                                      </Typography>
-                                    </Grid>
-                                    <Grid item xs={3} style={{ alignSelf: "center" }}>
-                                      <Typography color="textSecondary">days</Typography>
-                                    </Grid>
-                                  </Grid>
-                                </div>
-                              </Popover>
-                            </>
-                          )}
-                        </PopupState>
-                      )
+                {isTemplate ? (
+                  <PopupState variant="TaskTemplateDatePopover" popupId="TaskTemplateDatePopover">
+                    {(popupState) => (
+                      <>
+                        {task.timeframe ? (
+                          <Typography color="textSecondary" style={{ cursor: "pointer" }} {...bindTrigger(popupState)}>
+                            + {task.timeframe} days
+                          </Typography>
+                        ) : (
+                          showTaskActions && (
+                            <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
+                              <CelendarIcon size="medium" />
+                            </IconButton>
+                          )
+                        )}
+                        <Popover
+                          {...bindPopover(popupState)}
+                          anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "center",
+                          }}
+                          transformOrigin={{
+                            vertical: "top",
+                            horizontal: "center",
+                          }}
+                          onClose={() => {
+                            handleUpdateSubtask({ ...task, timeframe });
+                            popupState.close();
+                          }}
+                        >
+                          <div style={{ padding: "5px", width: "300px" }}>
+                            <Grid container alignItems="center" style={{ textAlign: "center" }}>
+                              <Grid item xs={4} style={{ alignSelf: "center" }}>
+                                <Typography color="textSecondary">Due in +</Typography>
+                              </Grid>
+                              <Grid item xs={5}>
+                                <Typography color="textSecondary">
+                                  <TextField
+                                    type="number"
+                                    margin="dense"
+                                    variant="outlined"
+                                    className={classes.inputFieldOwner}
+                                    placeholder="Days"
+                                    defaultValue={task.timeframe}
+                                    onChange={({ target: { value } }) => setTimeframe(value)}
+                                    onKeyDown={(e) => {
+                                      if (e.keyCode === 13) {
+                                        e.preventDefault();
+                                        handleUpdateSubtask({ ...task, timeframe: e.target.value });
+                                      }
+                                    }}
+                                  />
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={3} style={{ alignSelf: "center" }}>
+                                <Typography color="textSecondary">days</Typography>
+                              </Grid>
+                            </Grid>
+                          </div>
+                        </Popover>
+                      </>
                     )}
-                  </>
+                  </PopupState>
+                ) : (
+                  !isTemplate &&
+                  (task.dueDate || showTaskActions) && (
+                    <span className={classes.taskTemplateDatePopover}>
+                      <KeyboardDatePicker
+                        disableToolbar
+                        variant="inline"
+                        format="MM/DD/YY"
+                        margin="normal"
+                        allowKeyboardControl={false}
+                        value={task.dueDate || ""}
+                        emptyLabel
+                        disabled
+                        keyboardIcon={task.dueDate && <></>}
+                        open={isDatePopup}
+                        onClick={() => setDatePopup(!isDatePopup)}
+                        onClose={() => setDatePopup(!isDatePopup)}
+                        onChange={(date) => {
+                          handleUpdateSubtask({ ...task, dueDate: date ? String(date["_d"]) : "" });
+                          setDatePopup(!isDatePopup);
+                        }}
+                      />
+                    </span>
+                  )
                 )}
               </Grid>
               <Grid item>
-                {(task.assignee || showTaskActions) && (
+                {(task.assignee || showTaskActions || task.timeframe || task.dueDate) && (
                   <span>
-                    <PopupState variant="SubtaskAssigneePopover" popupId="SubtaskAssigneePopover">
+                    <PopupState variant="popper" popupId="SubtaskAssigneePopover">
                       {(popupState) => (
                         <>
                           <IconButton className={classes.avatarButton} {...bindTrigger(popupState)}>
                             {task.assignee ? (
-                              <CustomAvatar email={approver.email} text={approver.text.toString()} />
+                              <CustomAvatar email={approver.email} text={approver.text?.toString()} />
                             ) : (
                               <AccountCircle fontSize="default" />
                             )}
                           </IconButton>
                           <Popover
                             {...bindPopover(popupState)}
+                            getContentAnchorEl={null}
                             anchorOrigin={{
                               vertical: "bottom",
                               horizontal: "center",
