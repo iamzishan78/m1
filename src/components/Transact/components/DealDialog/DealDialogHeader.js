@@ -1,5 +1,6 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import Divider from "@material-ui/core/Divider";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
@@ -7,6 +8,8 @@ import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 // import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 
 const getDealNameFieldHeight = (title) => {
@@ -47,12 +50,6 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
     border: "1px solid gray",
   },
-  closeIcon: {
-    fill: theme.palette.secondary.main,
-    "&:hover": {
-      fill: "red",
-    },
-  },
   inputField: {
     outline: "none",
   },
@@ -83,6 +80,20 @@ const useStyles = makeStyles((theme) => ({
   notchedOutline: {
     border: 0,
   },
+  menuItem: {
+    "& .MuiListItem-root": {
+      "& .MuiListItemIcon-root": {
+        minWidth: "30px",
+        "& .MuiSvgIcon-root": {
+          fill: "red",
+        },
+      },
+    },
+  },
+  dialogActions: {
+    display: "flex",
+    justifyContent: "flex-end",
+  },
 }));
 
 const DealDialogHeader = ({
@@ -98,11 +109,21 @@ const DealDialogHeader = ({
   openConfirmationDialog,
   setTitleFocus,
   isTransactPage,
+  handleClickDialogClose,
 }) => {
   const classes = useStyles({ title });
+  const [anchorEl, setAnchorEl] = useState();
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
-    <div style={{ marginRight: "60px" }}>
+    <div>
       <Grid item container xs={12} style={{ padding: "30px 14px 10px 25px" }}>
         {!titleFocus && (
           <>
@@ -170,32 +191,49 @@ const DealDialogHeader = ({
                 )}
               </div>
             </Grid>
-            <Grid
-              item
-              xs={6}
-              style={
-                {
-                  // minHeight: "35px",
-                  // padding: "30px 14px 10px 25px"
-                }
-              }
-            >
+            <Grid item xs={6} className={classes.dialogActions}>
               {(activeDeal?.cardId || activeDeal?.id) && activeDeal?.laneId && (
                 <>
                   <IconButton
                     disabled={updateDealLoading || addContactLoading}
-                    onClick={openConfirmationDialog}
                     size="small"
                     component="span"
                     style={{
                       background: "transparent",
                       paddingLeft: "10px",
                       align: "center",
-                      float: "right",
                     }}
+                    onClick={handleMenuClick}
                   >
-                    <DeleteIcon size="medium" className={classes.closeIcon} />
+                    <MoreHorizIcon size="medium" />
                   </IconButton>
+                  <IconButton
+                    size="small"
+                    component="span"
+                    style={{
+                      background: "transparent",
+                      paddingLeft: "10px",
+                      align: "center",
+                    }}
+                    onClick={handleClickDialogClose}
+                  >
+                    <KeyboardArrowRight size="medium" />
+                  </IconButton>
+                  <Menu
+                    id="laneProgressMenu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                    className={classes.menuItem}
+                  >
+                    <MenuItem onClick={openConfirmationDialog}>
+                      <ListItemIcon>
+                        <DeleteIcon size="medium" />
+                      </ListItemIcon>
+                      <ListItemText>Delete</ListItemText>
+                    </MenuItem>
+                  </Menu>
                 </>
               )}
             </Grid>
