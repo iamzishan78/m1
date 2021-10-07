@@ -94,6 +94,10 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
   const classes = useStyles({ muted: useIsClosestDragging() || isDragging, task });
   const [timeframe, setTimeframe] = useState();
 
+  useEffect(() => {
+    if (!showTaskActions) setDatePopup(false);
+  }, [showTaskActions]);
+
   return (
     <Flipped flipId={task.id}>
       <div
