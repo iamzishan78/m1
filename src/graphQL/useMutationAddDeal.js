@@ -11,8 +11,8 @@ export const ADDDEAL = gql`
     $contactName: String
     $position: Int
     $userId: ID
-    $files: JSON,
-    $comments: JSON,
+    $files: JSON
+    $comments: JSON
   ) {
     addDeal(
       deal: $deal
@@ -24,7 +24,7 @@ export const ADDDEAL = gql`
       contactName: $contactName
       position: $position
       userId: $userId
-      files: $files,
+      files: $files
       comments: $comments
     ) {
       success
@@ -32,5 +32,11 @@ export const ADDDEAL = gql`
       deal
       error
     }
+  }
+`;
+
+export const CREATE_DEAL_DEFAULT_SETTINGS = gql`
+  mutation createDealDefaultSettings($stageDealDescriptors: [JSON], $dealId: ID) {
+    createDealDefaultSettings(stageDealDescriptors: $stageDealDescriptors, dealId: $dealId)
   }
 `;
