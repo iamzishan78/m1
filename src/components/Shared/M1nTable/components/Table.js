@@ -742,11 +742,11 @@ function SubTable(props) {
   //   setHandleSearchClose(() => handleSearchClose);
   // };
 
-  useEffect(() => {
-    if (props.header === "Contacts") {
-      handleSearch(stateApp.contactSearchQuery);
-    }
-  }, [stateApp.contactSearchQuery]);
+  // useEffect(() => {
+  //   if (props.header === "Contacts") {
+  //     handleSearch(stateApp.contactSearchQuery);
+  //   }
+  // }, [stateApp.contactSearchQuery]);
 
   // useEffect(() => {
   //   if (props.parent === "search") {
@@ -3003,7 +3003,7 @@ function SubTable(props) {
         setM1nSelectedRowsIds([]);
       }
 
-      if (props.header === "Contacts") {
+      if (props.header === "Contactss") {
         let filters = [];
         const leadSourceIndex = tableState.columns.findIndex((i) => i.name === "leadSource");
         const lastUpdateByIndex = tableState.columns.findIndex((i) => i.name === "lastUpdateBy.name");
@@ -3230,14 +3230,14 @@ function SubTable(props) {
     options.serverSide = true;
   }
 
-  if (props.header === "Contacts") {
-    options.rowsPerPageOptions =
-      props.contactsPageProps.contactsCount > 25 ? [10, 25, 50] : props.contactsPageProps.contactsCount > 10 ? [10, 25] : [10];
-    options.count = props.contactsPageProps.contactsCount;
-    options.serverSide = true;
-    //options.print = true;
-    //options.export = true;
-  }
+  // if (props.header === "Contacts") {
+  //   options.rowsPerPageOptions =
+  //     props.contactsPageProps.contactsCount > 25 ? [10, 25, 50] : props.contactsPageProps.contactsCount > 10 ? [10, 25] : [10];
+  //   options.count = props.contactsPageProps.contactsCount;
+  //   options.serverSide = true;
+  //   //options.print = true;
+  //   //options.export = true;
+  // }
 
   const displayCumulative = (data, total, cumulative, rowsPerPage = 25) => {
     let rows = data;
@@ -3392,8 +3392,9 @@ function SubTable(props) {
 
             search:
               (
-                props.header === 'Contacts'
-                || props.header === 'Deals'
+                // props.header === 'Contacts'
+                // || 
+                props.header === 'Deals'
                 || props.header === 'Activities'
                 || props.header === 'Monthly Production'
                 // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
