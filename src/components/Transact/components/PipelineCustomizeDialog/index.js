@@ -16,12 +16,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@material-ui/core";
-import {
-  Close as CloseIcon,
-  Delete as DeleteIcon,
-  NavigateNext as NavigateNextIcon,
-  MoreHoriz as MoreHorizIcon,
-} from "@material-ui/icons/";
+import { Delete as DeleteIcon, NavigateNext as NavigateNextIcon, MoreHoriz as MoreHorizIcon } from "@material-ui/icons/";
 import { makeStyles } from "@material-ui/core/styles";
 
 import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "actions";
