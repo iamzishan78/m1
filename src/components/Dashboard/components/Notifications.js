@@ -66,7 +66,8 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "10px",
   },
   paper: {
-    margin: "8px 4px",
+    margin: "12px 8px",
+    cursor: "pointer",
   },
   image: {
     maxHeight: "72px",
@@ -74,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "4px",
   },
   gridStyle: {
-    padding: "12px 0px",
+    padding: "8px 0px",
   },
   paddingLeft10: {
     paddingLeft: "20px !important",
@@ -157,7 +158,7 @@ const Notifications = () => {
   return (
     <Fragment>
       <CardHeader
-        action={<DragHandle />}
+       // action={<DragHandle />}
         title={`Notifications`}
         className={classes.header}
       />
@@ -179,7 +180,8 @@ const Notifications = () => {
           ) => {
             const user = users.find((user) => source.user === user._id);
             return (
-              <Paper key={i} className={classes.paper}>
+              <Paper key={i} className={classes.paper} >
+
                 <Grid
                   container
                   direction="row"
@@ -218,7 +220,7 @@ const Notifications = () => {
                       <Grid container className={classes.gridStyle}>
                         <Grid item xs={1}>
                           <IconButton
-                            style={{ marginTop: "4px", marginLeft: "14px" }}
+                            style={{ marginTop: "0px", marginLeft: "14px" }}
                           >
                             {profilesInfo[user?.email]?.profileImage ? (
                               <Avatar

@@ -196,7 +196,7 @@ const StockCard = ({ title }) => {
   return (
     <div>
     <CardHeader
-      action={<DragHandle />}
+      //action={<DragHandle />}
       title={`Market Pulse`}
       className={classes.header}
     />
