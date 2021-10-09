@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
       margin: "0px !important",
     },
     "& .MuiIconButton-root": {
-      padding: "0px !important",
+      padding: "10px !important",
     },
   },
   thumb: {
