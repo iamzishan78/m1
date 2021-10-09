@@ -11,6 +11,7 @@ import { Grid, IconButton, Popover, List, ListItem, ListItemText, Tooltip, ListI
 import DragIndicator from "@material-ui/icons/DragIndicator";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import CelendarIcon from "@material-ui/icons/Event";
+import CloseIcon from "@material-ui/icons/Close";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -268,6 +269,21 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
                       )}
                     </PopupState>
                   </span>
+                )}
+              </Grid>
+              <Grid item>
+                {showTaskActions && (
+                  <IconButton
+                    size="small"
+                    component="span"
+                    style={{
+                      background: "transparent",
+                      align: "center",
+                    }}
+                    onClick={() => handleUpdateSubtask({ ...task, IsDeleted: true })}
+                  >
+                    <CloseIcon size="medium" />
+                  </IconButton>
                 )}
               </Grid>
             </Grid>
