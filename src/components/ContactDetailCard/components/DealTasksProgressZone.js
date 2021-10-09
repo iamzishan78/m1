@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiIconButton-label": {
       width: "auto",
       "& span": {
-        paddingTop: "6px",
+        paddingTop: "5px",
       },
     },
   },
