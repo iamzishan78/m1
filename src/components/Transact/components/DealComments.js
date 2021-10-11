@@ -460,7 +460,16 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
   return (
     <>
       <ExpandMoreIcon aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} />
-      <Menu id={eachComment._id} anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
+      <Menu
+        id={eachComment._id}
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        getContentAnchorEl={null}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+      >
         <MenuItem
           onClick={(event) => {
             setEditCommentId(eachComment._id);

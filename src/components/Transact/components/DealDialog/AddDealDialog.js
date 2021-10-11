@@ -15,7 +15,7 @@ import { ADDCONTACT } from "graphQL/useMutationAddContact";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Dialog, Avatar } from "@material-ui/core";
+import { Dialog, Avatar, CircularProgress } from "@material-ui/core";
 import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import DealDialogHeader from "components/Transact/components/DealDialog/DealDialogHeader";
 import Drawer from "components/Transact/components/Drawer";
@@ -129,7 +129,6 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "60px",
   },
   inputFieldRoot: {
-    "& .MuiDialog-root": {},
     padding: "15px 25px 0px",
   },
   progress: {
@@ -351,7 +350,9 @@ function AddDealDialog(props) {
   });
 
   // DEAL SETTINGS
-  const [getDealSettings, { data: dealSettings }] = useLazyQuery(GET_DEAL_SETTINGS);
+  const [getDealSettings, { data: dealSettings, loading: dealSettingLoading }] = useLazyQuery(GET_DEAL_SETTINGS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   // CONTACT
 
@@ -1119,6 +1120,18 @@ function AddDealDialog(props) {
     return subtasks;
   }, [dealSettings]);
 
+  const handleClickDialogClose = () => {
+    if (!updateDealLoading && !addContactLoading) {
+      history.push(`${history.location.pathname.split("/lane")[0]}`);
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        dealDialog: false,
+        activeDeal: { cardId: null, laneId: null },
+      }));
+      handleClose();
+    }
+  };
+
   return (
     <>
       {deleteDialogOpen && (
@@ -1143,17 +1156,7 @@ function AddDealDialog(props) {
       <div className={classes.dealDetailRoot}>
         <RightDialog
           open={props.open}
-          handleClickDialogClose={() => {
-            if (!updateDealLoading && !addContactLoading) {
-              history.push(`${history.location.pathname.split("/lane")[0]}`);
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                dealDialog: false,
-                activeDeal: { cardId: null, laneId: null },
-              }));
-              handleClose();
-            }
-          }}
+          handleClickDialogClose={handleClickDialogClose}
           width="650px"
           isTransactPage={props.isTransactPage}
           hiddenOverflow
@@ -1172,6 +1175,7 @@ function AddDealDialog(props) {
             openConfirmationDialog={openConfirmationDialog}
             setTitleFocus={setTitleFocus}
             isTransactPage={props.isTransactPage}
+            handleClickDialogClose={handleClickDialogClose}
           />
           <div className={classes.contentRoot}>
             <Drawer dealSettingsNumber={getSubtaskNumber()} />
@@ -1433,13 +1437,19 @@ function AddDealDialog(props) {
 
                   {/* Here is flow lane form */}
                   <div style={{ marginTop: 15, marginBottom: 50 }}>
-                    <DealTasksProgressZone
-                      dealSettings={get(dealSettings, "dealSettings", [])}
-                      users={users}
-                      activeDeal={stateApp.activeDeal}
-                      updateStageDealDescriptor={updateStageDealDescriptor}
-                      pipelineId={pipelineId}
-                    />
+                    {dealSettingLoading ? (
+                      <div style={{ display: "flex", justifyContent: "center" }}>
+                        <CircularProgress size="20px" />
+                      </div>
+                    ) : (
+                      <DealTasksProgressZone
+                        dealSettings={get(dealSettings, "dealSettings", [])}
+                        users={users}
+                        activeDeal={stateApp.activeDeal}
+                        updateStageDealDescriptor={updateStageDealDescriptor}
+                        pipelineId={pipelineId}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
