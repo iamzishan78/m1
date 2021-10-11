@@ -15,7 +15,7 @@ import {
 import Loader from "components/Loaders";
 // Header Schemas
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
-import { GET_ES_DOCUMENTS_FILTER } from "graphQL/useQueryESDocumentsFilter";
+import { GET_ES_CONTACTS_FILTER } from "graphQL/useQueryESContactsFilter";
 import { REMOVE_CONTACTS } from "graphQL/useMutationRemoveContact";
 import { GET_ES_CONTACTS } from "graphQL/useQueryESContacts";
 
