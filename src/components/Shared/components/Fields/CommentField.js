@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "4px",
     height: "43px",
     overflowY: "auto",
-    width: "348px",
+    width: "477px",
   },
   commentBtn: {
     float: "right",

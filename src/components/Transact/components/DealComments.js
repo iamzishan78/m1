@@ -351,8 +351,7 @@ export default function DealComment(props) {
 
             {commentsArray.map((eachComment, index) => {
               let indexToShow =
-                commentsArray.length > 3 ? commentsArray.length - 3 : 0;
-                debugger
+                commentsArray.length > 3 ? commentsArray.length - 3 : 0; 
               return (
                 <Fragment key={index}>
                   {(showAllComments || index >= indexToShow) && (
@@ -508,7 +507,7 @@ export const CommentText = ({ eachComment, users }) => {
           const secondPart = word.split("}}")[1];
           let id = word.split("{{")[1];
           id = id.split("}}")[0];
-          return <span className="blue">{firstPart}@{users.find(user => user._id === id).name}{secondPart} </span>
+          return <span className="blue">{firstPart}@{users.find(user => user._id === id)?.name}{secondPart} </span>
         } else {
           return <span>{word} </span>;
         }
