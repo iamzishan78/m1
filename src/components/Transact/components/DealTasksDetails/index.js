@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   cardContent: {
     padding: 0,
     overflowY: "overlay",
-    maxHeight: "79vh",
+    maxHeight: "76vh",
   },
 }));
 
@@ -53,11 +53,12 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user, ...rest }) {
   useEffect(() => {
     if (stateTransact.selectedTask && selectedTaskRef.current) {
       setTimeout(() => {
-        selectedTaskRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "start",
-        });
+        selectedTaskRef.current &&
+          selectedTaskRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "start",
+          });
       }, 100);
       setTimeout(() => {
         setStateTransact((state) => ({ ...state, selectedTask: {} }));

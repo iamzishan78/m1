@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const ADD_TASK = gql`
-  mutation createTask($task: JSON) {
-    createTask(task: $task) {
+  mutation createTask($task: JSON, $pipelineId: ID, $stageId: ID) {
+    createTask(task: $task, pipelineId: $pipelineId, stageId: $stageId) {
       success
       message
       error

@@ -112,7 +112,9 @@ function DealStageDetail({ settings, index, users, extendedTaskIndex, user, acti
     <div style={{ borderTop: "1px solid lightgrey" }}>
       <Accordion defaultExpanded={isExpanded} className={isExpanded ? classes.accordionColored : classes.accordionColorReset}>
         <AccordionSummary aria-controls="panel1a-content2" id="panel1a-header2" expandIcon={<ExpandMore />}>
-          <Typography className={classes.laneName}>{settings.stageName}</Typography>
+          <Typography className={classes.laneName}>
+            {settings.stageName} ({settings.tasks.length})
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Grid container>
@@ -201,7 +203,7 @@ function DealStageDetail({ settings, index, users, extendedTaskIndex, user, acti
             <Grid item xl={12} sm={12} style={{ margin: "10px 0px 10px 0px" }}>
               <DealSubtasks tasks={settings.tasks} users={users} />
             </Grid>
-            <NewSubtask index={index} activeDeal={activeDeal} setStateTransact={setStateTransact} settings={settings} />
+            <NewSubtask index={index} activeDeal={activeDeal} relatedObject={settings._id} />
           </Grid>
         </AccordionDetails>
       </Accordion>
