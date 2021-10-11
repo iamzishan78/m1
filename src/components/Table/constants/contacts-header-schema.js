@@ -521,19 +521,19 @@ const ContactsHeadCells = [
     //     sort: false,
     //   },
     // },
-    // {
-    //   name: "tags",
-    //   label: "Tags ",
-    //   options: {
-    //     dbName: "tags.tag",
-    //     sort: true,
-    //     download: false,
-    //     print: false,
-    //     filterOptions: {
-    //       names: [],
-    //     },
-    //   },
-    // },
+    {
+      name: "tags",
+      label: "Tags ",
+      options: {
+        dbName: "tags.tag",
+        sort: true,
+        download: false,
+        print: false,
+        filterOptions: {
+          names: [],
+        },
+      },
+    },
     {
       name: "commentsCounter",
       label: " ",

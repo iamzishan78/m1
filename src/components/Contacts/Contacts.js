@@ -33,7 +33,7 @@ export default function Contacts() {
   return (
     <div className={classes.root}>
       {/* <M1nTable dense parent="Contacts" /> */}
-      <ContactsTable parent="Contacts" contactSearchQuery={stateApp.contactSearchQuery} />
+      <ContactsTable parent="Contacts" contactSearchQuery={stateApp.contactSearchQuery} userId={stateApp.user.mongoId} />
     </div>
   );
 }
