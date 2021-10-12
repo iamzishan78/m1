@@ -350,13 +350,13 @@ function AddDealDialog(props) {
   });
 
   // DEAL SETTINGS
-  const [getDealSettings, { data: dealSettings, loading: dealSettingLoading }] = useLazyQuery(GET_DEAL_SETTINGS, {
+  const [getDealSettings, { data: dealSettings }] = useLazyQuery(GET_DEAL_SETTINGS, {
     fetchPolicy: "cache-and-network",
   });
 
   // CONTACT
 
-  const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+  const [getPaginatedContacts, { data: allContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
@@ -1177,271 +1177,271 @@ function AddDealDialog(props) {
             isTransactPage={props.isTransactPage}
             handleClickDialogClose={handleClickDialogClose}
           />
-          <div className={classes.contentRoot}>
-            <Drawer dealSettingsNumber={getSubtaskNumber()} />
-            {props.isTransactPage &&
-            stateApp.transactBarView !== "Deal" &&
-            (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
-              <Fragment>{getView()}</Fragment>
-            ) : (
-              <div className={classes.inputFieldRoot}>
-                <div style={{ marginTop: 5 }}>
+          {addDealLoading ? (
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 5 }}>
+              <CircularProgress size="20px" />
+            </div>
+          ) : (
+            <div className={classes.contentRoot}>
+              <Drawer dealSettingsNumber={getSubtaskNumber()} />
+              {props.isTransactPage &&
+              stateApp.transactBarView !== "Deal" &&
+              (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
+                <Fragment>{getView()}</Fragment>
+              ) : (
+                <div className={classes.inputFieldRoot}>
+                  <div style={{ marginTop: 5 }}>
+                    <FormControl variant="outlined" fullWidth size="small">
+                      <Grid container className={classes.gridStyle}>
+                        <Grid item xs={3}>
+                          <div>Owner</div>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <Autocomplete
+                            options={users.filter((u) => u.text)}
+                            onChange={(e, user) => {
+                              setOwnerId(user?.value);
+                            }}
+                            value={users.find((user) => user?.value === ownerId) || null}
+                            getOptionLabel={(option) => option.text}
+                            getOptionSelected={(option) => option.value === ownerId}
+                            classes={{
+                              inputRoot: classes.dealOwnerRoot,
+                              focused: classes.dealOwnerRootFocused,
+                              popupIndicator: classes.popupIndicator,
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                margin="dense"
+                                {...params}
+                                variant="outlined"
+                                className={classes.inputFieldOwner}
+                                InputLabelProps={{
+                                  ...params.InputLabelProps,
+                                  shrink: true,
+                                  classes: {
+                                    root: classes.dealOwnerLabel,
+                                  },
+                                }}
+                                placeholder="Assign Owner"
+                                InputProps={{
+                                  ...params.InputProps,
+                                  startAdornment: (
+                                    <>
+                                      <InputAdornment position="start">
+                                        <Avatar className={classes.dealOwnerAvatar}>
+                                          {users.find((user) => user?.value === ownerId) ? (
+                                            <CustomAvatar
+                                              diglog={true}
+                                              email={users.find((user) => user?.value === ownerId).email}
+                                              text={
+                                                users
+                                                  .find((user) => user?.value === ownerId)
+                                                  .text.toString()
+                                                  .toUpperCase()
+                                                  .split(" ").length > 1
+                                                  ? users.find((user) => user?.value === ownerId).text.toString()
+                                                  : "Add Owner"
+                                              }
+                                            />
+                                          ) : (
+                                            "AO"
+                                          )}
+                                        </Avatar>
+                                      </InputAdornment>
+                                      {params.InputProps.startAdornment}
+                                    </>
+                                  ),
+                                }}
+                              />
+                            )}
+                          />
+                        </Grid>
+                      </Grid>
+                    </FormControl>
+                  </div>
+
                   <FormControl variant="outlined" fullWidth size="small">
                     <Grid container className={classes.gridStyle}>
                       <Grid item xs={3}>
-                        <div>Owner</div>
+                        <div>Close Date</div>
                       </Grid>
                       <Grid item xs={9}>
-                        <Autocomplete
-                          options={users.filter((u) => u.text)}
-                          onChange={(e, user) => {
-                            setOwnerId(user?.value);
+                        <TextField
+                          margin="dense"
+                          type="date"
+                          variant="outlined"
+                          value={closeDate}
+                          placeholder=""
+                          fullWidth
+                          className={classes.inputFieldDate}
+                          onChange={(e) => {
+                            setCloseDate(e.target.value);
                           }}
-                          value={users.find((user) => user?.value === ownerId) || null}
-                          getOptionLabel={(option) => option.text}
-                          getOptionSelected={(option) => option.value === ownerId}
-                          classes={{
-                            inputRoot: classes.dealOwnerRoot,
-                            focused: classes.dealOwnerRootFocused,
-                            popupIndicator: classes.popupIndicator,
+                          InputLabelProps={{
+                            shrink: true,
                           }}
-                          renderInput={(params) => (
-                            <TextField
-                              margin="dense"
-                              {...params}
-                              variant="outlined"
-                              className={classes.inputFieldOwner}
-                              InputLabelProps={{
-                                ...params.InputLabelProps,
-                                shrink: true,
-                                classes: {
-                                  root: classes.dealOwnerLabel,
-                                },
-                              }}
-                              placeholder="Assign Owner"
-                              InputProps={{
-                                ...params.InputProps,
-                                startAdornment: (
-                                  <>
-                                    <InputAdornment position="start">
-                                      <Avatar className={classes.dealOwnerAvatar}>
-                                        {users.find((user) => user?.value === ownerId) ? (
-                                          <CustomAvatar
-                                            diglog={true}
-                                            email={users.find((user) => user?.value === ownerId).email}
-                                            text={
-                                              users
-                                                .find((user) => user?.value === ownerId)
-                                                .text.toString()
-                                                .toUpperCase()
-                                                .split(" ").length > 1
-                                                ? users.find((user) => user?.value === ownerId).text.toString()
-                                                : "Add Owner"
-                                            }
-                                          />
-                                        ) : (
-                                          "AO"
-                                        )}
-                                      </Avatar>
-                                    </InputAdornment>
-                                    {params.InputProps.startAdornment}
-                                  </>
-                                ),
-                              }}
-                            />
-                          )}
+                          InputProps={{
+                            classes: {
+                              root: classes.dateRoot,
+                              focused: classes.focused,
+                              notchedOutline: classes.notchedOutline,
+                            },
+                          }}
                         />
                       </Grid>
                     </Grid>
                   </FormControl>
-                </div>
 
-                <FormControl variant="outlined" fullWidth size="small">
-                  <Grid container className={classes.gridStyle}>
-                    <Grid item xs={3}>
-                      <div>Close Date</div>
+                  <FormControl variant="outlined" fullWidth size="small">
+                    <Grid container className={classes.gridStyle}>
+                      <Grid item xs={3}>
+                        <div>Flowline</div>
+                      </Grid>
+
+                      <Grid item xs={9}>
+                        <TextField
+                          variant="outlined"
+                          margin="dense"
+                          select
+                          SelectProps={{
+                            native: true,
+                            classes: {
+                              icon: classes.icon,
+                            },
+                          }}
+                          size="small"
+                          value={pipelineId}
+                          className={classes.inputFieldFlowline}
+                          onChange={(e) => {
+                            settingNewPipeWithDefaultStage(e.target.value, true);
+                          }}
+                          InputProps={{
+                            classes: {
+                              root: classes.flowlineRoot,
+                              notchedOutline: classes.notchedOutlineFlow,
+                              focused: classes.notchedOutlineFlowFocused,
+                            },
+                          }}
+                          fullWidth
+                        >
+                          {selectedPipe && <option value={selectedPipe._id}>{selectedPipe.name}</option>}
+                          {sortedPipelines?.map((pipeline, i) => {
+                            if (selectedPipe && selectedPipe._id === pipeline._id) return <></>;
+                            return (
+                              <option value={pipeline._id} key={i}>
+                                {pipeline.name}
+                              </option>
+                            );
+                          })}
+                        </TextField>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={9}>
-                      <TextField
-                        margin="dense"
-                        type="date"
-                        variant="outlined"
-                        value={closeDate}
-                        placeholder=""
-                        fullWidth
-                        className={classes.inputFieldDate}
-                        onChange={(e) => {
-                          setCloseDate(e.target.value);
-                        }}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        InputProps={{
-                          classes: {
-                            root: classes.dateRoot,
-                            focused: classes.focused,
-                            notchedOutline: classes.notchedOutline,
-                          },
-                        }}
-                      />
+                  </FormControl>
+
+                  <FormControl variant="outlined" fullWidth size="small">
+                    <Grid container className={classes.gridStyle}>
+                      <Grid item xs={3}>
+                        <div>Flow Stage</div>
+                      </Grid>
+
+                      <Grid item xs={9}>
+                        <TextField
+                          margin="dense"
+                          variant="outlined"
+                          select
+                          SelectProps={{
+                            native: true,
+                            classes: {
+                              icon: classes.icon,
+                            },
+                          }}
+                          size="small"
+                          value={stageId}
+                          className={classes.inputFieldFlowStage}
+                          onChange={(e) => {
+                            settingNewStageAndFindNextAvailablePosition(e.target.value, true);
+                          }}
+                          InputProps={{
+                            classes: {
+                              root: classes.flowlineRoot,
+                              notchedOutline: classes.notchedOutlineFlow,
+                              focused: classes.notchedOutlineFlowFocused,
+                            },
+                          }}
+                          fullWidth
+                        >
+                          {stagesToChoose &&
+                            stagesToChoose.map((stage, i) => (
+                              <option value={stage._id} key={i}>
+                                {stage.name}
+                              </option>
+                            ))}
+                        </TextField>
+                      </Grid>
                     </Grid>
-                  </Grid>
-                </FormControl>
+                  </FormControl>
 
-                <FormControl variant="outlined" fullWidth size="small">
-                  <Grid container className={classes.gridStyle}>
-                    <Grid item xs={3}>
-                      <div>Flowline</div>
+                  <FormControl variant="outlined" fullWidth size="small">
+                    <Grid container className={classes.gridStyle}>
+                      <Grid item xs={3}>
+                        <div>Offer Price</div>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <TextField
+                          margin="dense"
+                          variant="outlined"
+                          value={label}
+                          error={isNaN(label)}
+                          helperText={isNaN(label) ? "Offer Price must be a valid number" : ""}
+                          className={classes.inputFieldCustomTextInput}
+                          fullWidth
+                          onChange={(e) => {
+                            setLabel(e.target.value);
+                          }}
+                          InputProps={{
+                            inputComponent: NumberFormatCustom,
+                            classes: {
+                              root: classes.customDataTextInputRoot,
+                              focused: classes.focused,
+                              notchedOutline: classes.notchedOutline,
+                            },
+                          }}
+                        />
+                      </Grid>
                     </Grid>
+                  </FormControl>
 
-                    <Grid item xs={9}>
-                      <TextField
-                        variant="outlined"
-                        margin="dense"
-                        select
-                        SelectProps={{
-                          native: true,
-                          classes: {
-                            icon: classes.icon,
-                          },
-                        }}
-                        size="small"
-                        value={pipelineId}
-                        className={classes.inputFieldFlowline}
-                        onChange={(e) => {
-                          settingNewPipeWithDefaultStage(e.target.value, true);
-                        }}
-                        InputProps={{
-                          classes: {
-                            root: classes.flowlineRoot,
-                            notchedOutline: classes.notchedOutlineFlow,
-                            focused: classes.notchedOutlineFlowFocused,
-                          },
-                        }}
-                        fullWidth
-                      >
-                        {selectedPipe && <option value={selectedPipe._id}>{selectedPipe.name}</option>}
-                        {sortedPipelines?.map((pipeline, i) => {
-                          if (selectedPipe && selectedPipe._id === pipeline._id) return <></>;
-                          return (
-                            <option value={pipeline._id} key={i}>
-                              {pipeline.name}
-                            </option>
-                          );
-                        })}
-                      </TextField>
-                    </Grid>
-                  </Grid>
-                </FormControl>
+                  <TextField
+                    margin="dense"
+                    variant="outlined"
+                    multiline
+                    rows={8}
+                    value={description}
+                    label="Description"
+                    fullWidth
+                    //   required
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                    }}
+                    className={classes.notes}
+                  />
 
-                <FormControl variant="outlined" fullWidth size="small">
-                  <Grid container className={classes.gridStyle}>
-                    <Grid item xs={3}>
-                      <div>Flow Stage</div>
-                    </Grid>
+                  <div>
+                    {/* This is the document zone  */}
+                    <div style={{ marginTop: 20 }}>
+                      <AddDialogeUploadZone
+                        isTransactPage={true}
+                        filesData={viewFileResult}
+                        id={stateApp.activeDeal?.cardId}
+                        loading={viewFileLoading}
+                        setUploadedFileData={setUploadedFileData}
+                        handleOpenExpandableCard={handleOpenExpandableCard}
+                      ></AddDialogeUploadZone>
+                    </div>
 
-                    <Grid item xs={9}>
-                      <TextField
-                        margin="dense"
-                        variant="outlined"
-                        select
-                        SelectProps={{
-                          native: true,
-                          classes: {
-                            icon: classes.icon,
-                          },
-                        }}
-                        size="small"
-                        value={stageId}
-                        className={classes.inputFieldFlowStage}
-                        onChange={(e) => {
-                          settingNewStageAndFindNextAvailablePosition(e.target.value, true);
-                        }}
-                        InputProps={{
-                          classes: {
-                            root: classes.flowlineRoot,
-                            notchedOutline: classes.notchedOutlineFlow,
-                            focused: classes.notchedOutlineFlowFocused,
-                          },
-                        }}
-                        fullWidth
-                      >
-                        {stagesToChoose &&
-                          stagesToChoose.map((stage, i) => (
-                            <option value={stage._id} key={i}>
-                              {stage.name}
-                            </option>
-                          ))}
-                      </TextField>
-                    </Grid>
-                  </Grid>
-                </FormControl>
-
-                <FormControl variant="outlined" fullWidth size="small">
-                  <Grid container className={classes.gridStyle}>
-                    <Grid item xs={3}>
-                      <div>Offer Price</div>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <TextField
-                        margin="dense"
-                        variant="outlined"
-                        value={label}
-                        error={isNaN(label)}
-                        helperText={isNaN(label) ? "Offer Price must be a valid number" : ""}
-                        className={classes.inputFieldCustomTextInput}
-                        fullWidth
-                        onChange={(e) => {
-                          setLabel(e.target.value);
-                        }}
-                        InputProps={{
-                          inputComponent: NumberFormatCustom,
-                          classes: {
-                            root: classes.customDataTextInputRoot,
-                            focused: classes.focused,
-                            notchedOutline: classes.notchedOutline,
-                          },
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                </FormControl>
-
-                <TextField
-                  margin="dense"
-                  variant="outlined"
-                  multiline
-                  rows={8}
-                  value={description}
-                  label="Description"
-                  fullWidth
-                  //   required
-                  onChange={(e) => {
-                    setDescription(e.target.value);
-                  }}
-                  className={classes.notes}
-                />
-
-                <div>
-                  {/* This is the document zone  */}
-                  <div style={{ marginTop: 20 }}>
-                    <AddDialogeUploadZone
-                      isTransactPage={true}
-                      filesData={viewFileResult}
-                      id={stateApp.activeDeal?.cardId}
-                      loading={viewFileLoading}
-                      setUploadedFileData={setUploadedFileData}
-                      handleOpenExpandableCard={handleOpenExpandableCard}
-                    ></AddDialogeUploadZone>
-                  </div>
-
-                  {/* Here is flow lane form */}
-                  <div style={{ marginTop: 15, marginBottom: 50 }}>
-                    {dealSettingLoading ? (
-                      <div style={{ display: "flex", justifyContent: "center" }}>
-                        <CircularProgress size="20px" />
-                      </div>
-                    ) : (
+                    {/* Here is flow lane form */}
+                    <div style={{ marginTop: 15, marginBottom: 50 }}>
                       <DealTasksProgressZone
                         dealSettings={get(dealSettings, "dealSettings", [])}
                         users={users}
@@ -1449,12 +1449,12 @@ function AddDealDialog(props) {
                         updateStageDealDescriptor={updateStageDealDescriptor}
                         pipelineId={pipelineId}
                       />
-                    )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
           {stateApp.transactBarView === "Deal" && (
             <div style={{ marginTop: 2 }}>
               <DealComments setNewCommentId={setNewCommentId} targetSourceId={stateApp.activeDeal?.cardId} />

@@ -45,12 +45,12 @@ const NewSubtask = memo(({ index, activeDeal = {}, relatedObject, pipeline, task
   };
 
   const showFieldToAdd = () => {
-    if (isTemplate) setNewSubtask(true);
+    if (!!taskTemplate) setNewSubtask(true);
     else setNewSubtask({ index, value: !isNewSubtask.value });
   };
 
   const hideFieldToAdd = () => {
-    if (isTemplate) setNewSubtask(false);
+    if (!!taskTemplate) setNewSubtask(false);
     else setNewSubtask({ index: -1, value: !isNewSubtask.value });
   };
 
