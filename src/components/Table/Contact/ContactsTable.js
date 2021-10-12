@@ -60,7 +60,7 @@ function ContactsTable(props) {
           keep_alive: "1micros",
         },
         search: props.contactSearchQuery
-          ? `name:${props.contactSearchQuery}`
+          ? `${props.contactSearchQuery}`
           : "",
       },
     });
@@ -97,7 +97,7 @@ function ContactsTable(props) {
                     column={column}
                     index={index}
                     onChange={onChange}
-                    query={GET_ES_DOCUMENTS_FILTER}
+                    query={GET_ES_CONTACTS_FILTER}
                   />
                 );
               },

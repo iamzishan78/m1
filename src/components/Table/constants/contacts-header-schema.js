@@ -107,10 +107,11 @@ const ContactsHeadCells = [
     {
       name: "name",
       label: "Name",
+      esKey: 'name.keyword',
       // editable: true,
       options: {
         sort: true,
-        filter: false,
+        filter: true,
       },
     },
     {
@@ -178,10 +179,11 @@ const ContactsHeadCells = [
       name: "fullContactAddress",
       label: "Primary Address",
       // editable: true,
+      esKey: 'address1.keyword',
       options: {
         dbName: "address1",
         sort: true,
-        filter: false,
+        filter: true,
       },
     },
   
@@ -200,9 +202,10 @@ const ContactsHeadCells = [
     {
       name: "homePhone",
       label: "Primary Home Phone",
+      esKey: 'homePhone.keyword',
       options: {
         // display: true,
-        filter: false,
+        filter: true,
         searchable: false,
         sort: true,
       },
@@ -210,9 +213,10 @@ const ContactsHeadCells = [
     {
       name: "mobilePhone",
       label: "Primary Mobile Phone",
+      esKey: 'mobilePhone.keyword',
       options: {
         // display: true,
-        filter: false,
+        filter: true,
         searchable: false,
         sort: true,
       },
@@ -221,9 +225,10 @@ const ContactsHeadCells = [
     {
       name: "AltPhone",
       label: "Primary Work Phone",
+      esKey: 'AltPhone.keyword',
       options: {
         // display: true,
-        filter: false,
+        filter: true,
         searchable: false,
         sort: true,
       },
@@ -231,9 +236,10 @@ const ContactsHeadCells = [
     {
       name: "primaryEmail",
       label: "Primary Email",
+      esKey: 'primaryEmail.keyword',
       options: {
         // display: true,
-        filter: false,
+        filter: true,
         searchable: false,
         sort: true,
       },
@@ -241,10 +247,11 @@ const ContactsHeadCells = [
     {
       name: "contactOwner",
       label: "Contact Owner",
+      esKey: 'contactOwners',
       options: {
         dbName: "contactOwners.name",
         // display: true,
-        filter: true,
+        filter: false,
         filterOptions: {
           names: [],
         },
@@ -478,6 +485,7 @@ const ContactsHeadCells = [
       options: {
         display: false,
         sort: false,
+        filter: false,
         filterOptions: {
           names: [],
         },
@@ -489,6 +497,7 @@ const ContactsHeadCells = [
       options: {
         display: false,
         sort: false,
+        filter: false,
         filterOptions: {
           names: [],
         },
@@ -529,6 +538,7 @@ const ContactsHeadCells = [
         sort: true,
         download: false,
         print: false,
+        filter: false,
         filterOptions: {
           names: [],
         },
