@@ -27,7 +27,7 @@ import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
 import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVE_CONTACTS } from "../../../graphQL/useMutationRemoveContact";
-import { REMOVEUSER } from "../../../graphQL/useMutationRemoveUser";
+import { REMOVE_USERS } from "../../../graphQL/useMutationRemoveUsers";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
 import { PARCELOWNERSQUERY } from "../../../graphQL/useQueryParcelOwners";
@@ -190,7 +190,7 @@ function M1nTable(props) {
   });
   const [getESDocuments, { data: DocumentsData }] = useLazyQuery(GET_ES_DOCUMENTS, { fetchPolicy: "no-cache" });
 
-  const [removeUser] = useMutation(REMOVEUSER);
+  const [removeUsers] = useMutation(REMOVE_USERS);
   const [getPaginatedContacts, { data: constDataContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     skip: true,
@@ -375,32 +375,32 @@ function M1nTable(props) {
         setColumns(
           cleanAvailableTags.length > 0
             ? TrackedOwnersHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filterOptions: {
-                        ...column.options.filterOptions,
-                        names: cleanAvailableTags,
-                      },
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
                     },
-                  };
-                }
-                return column;
-              })
+                  },
+                };
+              }
+              return column;
+            })
             : TrackedOwnersHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filter: false,
-                    },
-                  };
-                }
-                return column;
-              })
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
         );
 
         setStateApp((state) => ({
@@ -538,32 +538,32 @@ function M1nTable(props) {
           setColumns([
             ...(cleanAvailableTags.length > 0
               ? WellsHeadCells.map((column) => {
-                  if (column.name === "tags") {
-                    return {
-                      ...column,
-                      options: {
-                        ...column.options,
-                        filterOptions: {
-                          ...column.options.filterOptions,
-                          names: cleanAvailableTags,
-                        },
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
                       },
-                    };
-                  }
-                  return column;
-                })
+                    },
+                  };
+                }
+                return column;
+              })
               : WellsHeadCells.map((column) => {
-                  if (column.name === "tags") {
-                    return {
-                      ...column,
-                      options: {
-                        ...column.options,
-                        filter: false,
-                      },
-                    };
-                  }
-                  return column;
-                })),
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filter: false,
+                    },
+                  };
+                }
+                return column;
+              })),
             flyToColumn,
           ]);
 
@@ -803,32 +803,32 @@ function M1nTable(props) {
       setColumns([
         ...(cleanAvailableTags.length > 0
           ? ContactWellHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
-                    },
+            if (column.name === "tags") {
+              return {
+                ...column,
+                options: {
+                  ...column.options,
+                  filterOptions: {
+                    ...column.options.filterOptions,
+                    names: cleanAvailableTags,
                   },
-                };
-              }
-              return column;
-            })
+                },
+              };
+            }
+            return column;
+          })
           : ContactWellHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })),
+            if (column.name === "tags") {
+              return {
+                ...column,
+                options: {
+                  ...column.options,
+                  filter: false,
+                },
+              };
+            }
+            return column;
+          })),
         //flyToColumn,
       ]);
       setLoading(false);
@@ -961,32 +961,32 @@ function M1nTable(props) {
         setColumns(
           cleanAvailableTags.length > 0
             ? WellsHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filterOptions: {
-                        ...column.options.filterOptions,
-                        names: cleanAvailableTags,
-                      },
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
                     },
-                  };
-                }
-                return column;
-              })
+                  },
+                };
+              }
+              return column;
+            })
             : WellsHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filter: false,
-                    },
-                  };
-                }
-                return column;
-              })
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
         );
 
         setStateApp((state) => ({
@@ -1118,32 +1118,32 @@ function M1nTable(props) {
       setColumns(
         cleanAvailableTags.length > 0
           ? OwnersPerWellHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
-                    },
+            if (column.name === "tags") {
+              return {
+                ...column,
+                options: {
+                  ...column.options,
+                  filterOptions: {
+                    ...column.options.filterOptions,
+                    names: cleanAvailableTags,
                   },
-                };
-              }
-              return column;
-            })
+                },
+              };
+            }
+            return column;
+          })
           : OwnersPerWellHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              }
-              return column;
-            })
+            if (column.name === "tags") {
+              return {
+                ...column,
+                options: {
+                  ...column.options,
+                  filter: false,
+                },
+              };
+            }
+            return column;
+          })
       );
 
       setRows(wellOwners);
@@ -1694,22 +1694,22 @@ function M1nTable(props) {
           buildingColumns.push(
             cleanAvailableTags.length > 0
               ? {
-                  ...SearchsHeadCells[1],
-                  options: {
-                    ...SearchsHeadCells[1].options,
-                    filterOptions: {
-                      ...SearchsHeadCells[1].options.filterOptions,
-                      names: cleanAvailableTags,
-                    },
+                ...SearchsHeadCells[1],
+                options: {
+                  ...SearchsHeadCells[1].options,
+                  filterOptions: {
+                    ...SearchsHeadCells[1].options.filterOptions,
+                    names: cleanAvailableTags,
                   },
-                }
+                },
+              }
               : {
-                  ...SearchsHeadCells[1],
-                  options: {
-                    ...SearchsHeadCells[1].options,
-                    filter: false,
-                  },
-                }
+                ...SearchsHeadCells[1],
+                options: {
+                  ...SearchsHeadCells[1].options,
+                  filter: false,
+                },
+              }
           );
         }
 
@@ -1826,9 +1826,8 @@ function M1nTable(props) {
       const parcelOwners = dataParcelOwners.parcelOwners.map((o) => {
         let parcelOwner = { ...o };
         if (parcelOwner.qtr) {
-          parcelOwner.qtr_calls = `${parcelOwner.qtr[0] ? parcelOwner.qtr[0] : ""} ${parcelOwner.qtr[1] ? parcelOwner.qtr[1] : ""} ${
-            parcelOwner.qtr[2] ? parcelOwner.qtr[2] : ""
-          } ${parcelOwner.qtr[3] ? parcelOwner.qtr[3] : ""}`;
+          parcelOwner.qtr_calls = `${parcelOwner.qtr[0] ? parcelOwner.qtr[0] : ""} ${parcelOwner.qtr[1] ? parcelOwner.qtr[1] : ""} ${parcelOwner.qtr[2] ? parcelOwner.qtr[2] : ""
+            } ${parcelOwner.qtr[3] ? parcelOwner.qtr[3] : ""}`;
         }
         parcelOwner.commentsCounter = 0;
         parcelOwner.tags = [[], 0];
@@ -1908,46 +1907,46 @@ function M1nTable(props) {
       setColumns(
         cleanAvailableTags.length > 0
           ? OwnersPerParcelHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filterOptions: {
-                      ...column.options.filterOptions,
-                      names: cleanAvailableTags,
-                    },
+            if (column.name === "tags") {
+              return {
+                ...column,
+                options: {
+                  ...column.options,
+                  filterOptions: {
+                    ...column.options.filterOptions,
+                    names: cleanAvailableTags,
                   },
-                };
-              } else if (interestKeys.includes(column.name)) {
-                return {
-                  ...column,
-                  options: {
-                    setCellProps: () => ({ style: { minWidth: "130px", maxWidth: "140px" } }),
-                  },
-                };
-              }
-              return column;
-            })
+                },
+              };
+            } else if (interestKeys.includes(column.name)) {
+              return {
+                ...column,
+                options: {
+                  setCellProps: () => ({ style: { minWidth: "130px", maxWidth: "140px" } }),
+                },
+              };
+            }
+            return column;
+          })
           : OwnersPerParcelHeadCells.map((column) => {
-              if (column.name === "tags") {
-                return {
-                  ...column,
-                  options: {
-                    ...column.options,
-                    filter: false,
-                  },
-                };
-              } else if (interestKeys.includes(column.name)) {
-                return {
-                  ...column,
-                  options: {
-                    setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
-                  },
-                };
-              }
-              return column;
-            })
+            if (column.name === "tags") {
+              return {
+                ...column,
+                options: {
+                  ...column.options,
+                  filter: false,
+                },
+              };
+            } else if (interestKeys.includes(column.name)) {
+              return {
+                ...column,
+                options: {
+                  setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
+                },
+              };
+            }
+            return column;
+          })
       );
 
       setRows(parcelOwners);
@@ -2026,34 +2025,34 @@ function M1nTable(props) {
           setColumns(
             cleanAvailableTags.length > 0
               ? CustomWellsHeadCells.map((column) => {
-                  if (column.name === "tags") {
-                    return {
-                      ...column,
-                      options: {
-                        ...column.options,
-                        filterOptions: {
-                          ...column.options.filterOptions,
-                          names: cleanAvailableTags,
-                        },
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
                       },
-                    };
-                  }
-                  return column;
-                })
+                    },
+                  };
+                }
+                return column;
+              })
               : CustomWellsHeadCells.map((column) => {
-                  if (column.name === "tags") {
-                    return {
-                      ...column,
-                      options: {
-                        ...column.options,
-                        filterOptions: {
-                          ...column.options.filterOptions,
-                        },
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
                       },
-                    };
-                  }
-                  return column;
-                })
+                    },
+                  };
+                }
+                return column;
+              })
           );
         }
       }
@@ -2073,7 +2072,7 @@ function M1nTable(props) {
   //   }
   // }, [stateApp.selectedPolygonString]);
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   useEffect(() => {
     if (abstractWellData) {
@@ -2168,34 +2167,34 @@ function M1nTable(props) {
           setColumns(
             cleanAvailableTags.length > 0
               ? CustomWellsHeadCells.map((column) => {
-                  if (column.name === "tags") {
-                    return {
-                      ...column,
-                      options: {
-                        ...column.options,
-                        filterOptions: {
-                          ...column.options.filterOptions,
-                          names: cleanAvailableTags,
-                        },
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
+                        names: cleanAvailableTags,
                       },
-                    };
-                  }
-                  return column;
-                })
+                    },
+                  };
+                }
+                return column;
+              })
               : CustomWellsHeadCells.map((column) => {
-                  if (column.name === "tags") {
-                    return {
-                      ...column,
-                      options: {
-                        ...column.options,
-                        filterOptions: {
-                          ...column.options.filterOptions,
-                        },
+                if (column.name === "tags") {
+                  return {
+                    ...column,
+                    options: {
+                      ...column.options,
+                      filterOptions: {
+                        ...column.options.filterOptions,
                       },
-                    };
-                  }
-                  return column;
-                })
+                    },
+                  };
+                }
+                return column;
+              })
           );
         }
       }
@@ -2352,11 +2351,11 @@ function M1nTable(props) {
   ///////// Remove User ////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "UserManagement") {
-      setDeleteFunc(() => (userId) => {
-        if (userId) {
-          removeUser({
+      setDeleteFunc(() => (userIds) => {
+        if (userIds) {
+          removeUsers({
             variables: {
-              userId,
+              userIds,
             },
             refetchQueries: ["getAllUsers"],
             awaitRefetchQueries: true,
@@ -2792,32 +2791,32 @@ function M1nTable(props) {
         setColumns(
           cleanAvailableTags.length > 0
             ? WellInterests.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filterOptions: {
-                        ...column.options.filterOptions,
-                        names: cleanAvailableTags,
-                      },
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filterOptions: {
+                      ...column.options.filterOptions,
+                      names: cleanAvailableTags,
                     },
-                  };
-                }
-                return column;
-              })
+                  },
+                };
+              }
+              return column;
+            })
             : WellInterests.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filter: false,
-                    },
-                  };
-                }
-                return column;
-              })
+              if (column.name === "tags") {
+                return {
+                  ...column,
+                  options: {
+                    ...column.options,
+                    filter: false,
+                  },
+                };
+              }
+              return column;
+            })
         );
 
         setRows(wells);
