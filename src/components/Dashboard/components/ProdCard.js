@@ -41,7 +41,7 @@ const ProdCard = ({ title }) => {
   return (
     <div>
     <CardHeader
-      action={<DragHandle />}
+     // action={<DragHandle />}
       title={'Production by State/County'}
       className={classes.header}
     />

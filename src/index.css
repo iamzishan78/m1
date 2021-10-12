@@ -69,6 +69,15 @@ body {
   z-index: 9999999999 !important;
 }
 
+.blue{
+  color: #3FC0DF
+}
+.hideScroll::-webkit-scrollbar {
+  display: none;
+}
+.red{
+  color: red
+}
 #TaskTemplateDatePopover,
 #SubtaskAssigneePopover,
 .MuiPopover-root {

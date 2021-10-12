@@ -41,8 +41,8 @@ const RigsCard = ({ title }) => {
   return (
     <div>
     <CardHeader
-      action={<DragHandle />}
-      title={'Rigs by State/County'}
+      //action={<DragHandle />}
+      title={'Rigs by Region'}
       className={classes.header}
     />
 
