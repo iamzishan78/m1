@@ -322,11 +322,11 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
                                     {/* {stage.dealsStatus} */}
                                   </TableCell>
 
-                                  <TableCell padding="checkbox">
+                                  {/* <TableCell padding="checkbox">
                                     <Tooltip title="Stage Details" placement="top">
                                       <DetailsIcon onClick={() => setStage(stage)} className={classes.settingIcon} />
                                     </Tooltip>
-                                  </TableCell>
+                                  </TableCell> */}
 
                                   <TableCell padding="checkbox">
                                     <Tooltip title="Remove Stage" placement="top">
