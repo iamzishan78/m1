@@ -15,7 +15,10 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor:'#efefef',
-    // overflowY: 'scroll'
+    // overflowY: 'scroll',
+    "& .MuiList-padding":{
+      padding: '10px !important',
+    }
   },
   header: {    
     paddingTop: '25px',
