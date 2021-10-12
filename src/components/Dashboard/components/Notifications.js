@@ -28,7 +28,7 @@ import ReactTimeAgo from "react-time-ago";
 
 const useStyles = makeStyles((theme) => ({
   header: {
-    padding: "8px 8px 0 8px",
+    padding: "8px 8px 0 16px",
     backgroundColor: "#FFFFF",
     color: "black",
   },
@@ -96,6 +96,7 @@ const useStyles = makeStyles((theme) => ({
   },
   customTabs: {
     float: "right",
+    paddingRight: "30px",
     "& .MuiTab-root": {
       minWidth: "60px",
     },
