@@ -41,7 +41,7 @@ const PermitsCard = ({ title }) => {
   return (
     <div>
     <CardHeader
-      action={<DragHandle />}
+      //action={<DragHandle />}
       title={'Permits by State/County'}
       className={classes.header}
     />
