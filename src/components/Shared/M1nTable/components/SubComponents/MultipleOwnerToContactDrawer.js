@@ -141,7 +141,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const setTagId = (id) => {
     const ids = JSON.parse(JSON.stringify(newTagsIds))
     ids.push(id);
-    debugger
     setNewTagsIds(ids);
   }
 

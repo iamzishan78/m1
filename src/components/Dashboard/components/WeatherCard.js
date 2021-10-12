@@ -36,6 +36,7 @@ const useStyles = makeStyles(() => ({
   },
   temp: {
     alignSelf: "center",
+    textAlign: "right",
   },
   openweather: {
     color: "#d9530b",
@@ -171,19 +172,19 @@ const WeatherCard = () => {
           <Paper elevation={1} className={classes.wpaper}>
             <Grid item container direction="column">
               <Grid item container direction="row">
-                <Grid item sm={2} className={classes.wicon}>
+                {/* <Grid item sm={2} className={classes.wicon}>
                   {(currWeather && (
                     <Avatar alt="Weather" src={getIconUrl(currWeather.icon)} />
                   )) || <WbSunnyOutlinedIcon fontSize="large" />}
-                </Grid>
+                </Grid> */}
                 <Grid item sm={8}>
-                  <Typography variant="body1">{`${
+                  <Typography variant="h5">{`${
                     currWeather?.name || "N/A"
                   }, ${currWeather?.country || "N/A"}`}</Typography>
-                  <Typography
+                  {/* <Typography
                     className={classes.wdescription}
                     variant="body2"
-                  >{`${currWeather?.description || "N/A"}`}</Typography>
+                  >{`${currWeather?.description || "N/A"}`}</Typography> */}
                   {/* <Typography variant="caption">
                     Powered By{" "}
                     <Typography
@@ -194,8 +195,8 @@ const WeatherCard = () => {
                     </Typography>
                   </Typography> */}
                 </Grid>
-                <Grid item sm={2}>
-                  <Typography variant="h4" className={classes.temp}>
+                <Grid item sm={4}>
+                  <Typography variant="h5" className={classes.temp}>
                     {`${toFahr(currWeather.temp) || 0}`}&deg;
                   </Typography>
                 </Grid>
