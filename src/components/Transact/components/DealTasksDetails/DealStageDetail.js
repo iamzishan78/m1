@@ -82,10 +82,10 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function DealStageDetail({ settings, index, users, extendedTaskIndex, user, activeDeal, updateStageDealDescriptor }) {
+function DealStageDetail({ settings, index, users, extendedTaskIndex, user, activeDeal, updateStageDealDescriptor, pipelineId }) {
   const classes = useStyles();
   const approver = users.find((user) => user?.value === settings.stageDealDescriptor.approver);
-  const [stateTransact, setStateTransact] = useContext(TransactContext);
+  const [stateTransact] = useContext(TransactContext);
 
   const handleChangeSettings = (setting, params) => {
     const descriptor = {
@@ -94,7 +94,7 @@ function DealStageDetail({ settings, index, users, extendedTaskIndex, user, acti
       descriptorType: "Deal",
       relatedObjectType: "Stage",
       position: get(setting, "stageDealDescriptor.position", 0),
-      pipeline: get(activeDeal, "pipeline", null),
+      pipeline: pipelineId,
       pipelineType: "Pipeline",
       isDeleted: false,
       user: user.mongoId,

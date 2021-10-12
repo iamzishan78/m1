@@ -73,7 +73,7 @@ const TwitterCard = () => {
     <Fragment>
       <CardHeader
         className={classes.header}
-        action={<DragHandle />}
+       // action={<DragHandle />}
         title={`Twitter Feed`}
       />
       <Paper

@@ -105,7 +105,7 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
         className={classes.subTaskRoot}
         onMouseLeave={() => onHoverTask(false)}
         onMouseEnter={() => onHoverTask(true)}
-        ref={(ref) => drop(preview(ref))}
+        ref={(ref) => canDrag && drop(preview(ref))}
       >
         <Grid container direction="row" justify="flex-start" alignItems="center">
           {canDrag && (

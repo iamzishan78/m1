@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   cardContent: {
     padding: 0,
     overflowY: "overlay",
-    maxHeight: "79vh",
+    maxHeight: "76vh",
   },
 }));
 
