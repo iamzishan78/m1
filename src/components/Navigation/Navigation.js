@@ -1427,7 +1427,7 @@ export default function Navigation(props) {
               {profileImage ? (
                 <Avatar src={profileImage} size="38" round />
               ) : (
-                <Avatar name={stateApp.user.name} size="38" round />
+                <Avatar name={stateApp.user.displayName} size="38" round />
               )}
             </IconButton>
           </Toolbar>
