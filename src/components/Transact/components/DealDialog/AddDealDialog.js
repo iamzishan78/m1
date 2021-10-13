@@ -406,11 +406,12 @@ function AddDealDialog(props) {
         //? createDealDefaultSettings(stageDealDescriptors: $stageDealDescriptors, dealId: $dealId)
         const stageDealDescriptors = defaultSettings.map((setting) => ({
           //? creating stage deal descriptors json
-          relatedObject: setting.stageDealDescriptor.relatedObject,
+          relatedObject: setting._id,
           descriptorObject: deal._id,
-          pipeline: setting.stageDealDescriptor.pipeline,
-          approver: setting.stageDealDescriptor.descriptorObject.assignee,
+          pipeline: pipelineId,
+          approver: get(setting, "stageDealDescriptor.descriptorObject.assignee", null),
           tasks: setting.tasks,
+          isCurrent: setting._id === stageId,
         }));
         // api for default setting
         createDealDefaultSettings({

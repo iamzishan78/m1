@@ -7,7 +7,8 @@ import { AppContext } from "../../AppContext";
 import { TransactContext } from "./TransactContext";
 import Board from "react-trello";
 import { makeStyles } from "@material-ui/core/styles";
-import { UPDATESTAGEDEALDESCRIPTORS } from "../../graphQL/useMutationUpdateStageDealDescriptors";
+import { UPDATESTAGEDEALDESCRIPTORS } from "graphQL/useMutationUpdateStageDealDescriptors";
+import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 import AddDealDialog from "components/Transact/components/DealDialog/AddDealDialog";
@@ -166,6 +167,7 @@ export default function Transact() {
     fetchPolicy: "cache-and-network",
   });
   const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
+  const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
   const [updateDeal] = useMutation(UPDATEDEAL);
 
   const [getProfilesImages, profiledata] = useLazyQuery(GET_PROFILES_IMAGES, {
@@ -428,11 +430,17 @@ export default function Transact() {
     })();
 
     // update moved card descriptor
-    let movedCardDescriptor = {
-      _id: cardDetails.metadata.descriptorId,
-      relatedObject: targetLaneId,
-      position: unfilteredTargetPosition,
-    };
+    let movedCardDescriptor =
+      sourceLaneId === targetLaneId
+        ? {
+            _id: cardDetails.metadata.descriptorId,
+            relatedObject: targetLaneId,
+            position: unfilteredTargetPosition,
+          }
+        : {
+            _id: cardDetails.metadata.descriptorId,
+            isCurrent: false,
+          };
 
     // update unfilteredSourceLane descriptors
     // including dragging down in same lane
@@ -489,6 +497,20 @@ export default function Transact() {
         },
         refetchQueries: ["getPipeline", "getContactDeals"],
         // awaitRefetchQueries: true,
+      });
+
+      // Updating the next stage deal descriptor to isCurrent = true
+      updateStageDealDescriptor({
+        variables: {
+          descriptor: {
+            descriptorObject: cardId,
+            relatedObject: targetLaneId,
+            position: unfilteredTargetPosition,
+            isCurrent: true,
+          },
+        },
+        refetchQueries: ["dealSettings"],
+        awaitRefetchQueries: true,
       });
     }
   };
