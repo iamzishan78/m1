@@ -5588,7 +5588,8 @@ function Map() {
                 'type': 'vector',
                 'tiles': [
                   `https://m1neraldata.z22.web.core.windows.net/${response.latest}/{z}/{x}/{y}.pbf`
-                ]
+                ],
+                'maxzoom': 15
               });
               setStateApp((state) => ({
                 ...state,
