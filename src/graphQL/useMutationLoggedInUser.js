@@ -9,6 +9,8 @@ export const GET_LOGGED_IN_USER = `
         _id
         email
         name
+        displayName
+        adUserId
         }
       }
     }

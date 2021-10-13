@@ -406,12 +406,11 @@ const Login = (props) => {
     setStateApp((state) => ({
       ...state,
       user: {
+        ...mongoUser,
         id: accountObj.sub,
         features: sessionData.features,
         tenantId: sessionData.tenantId,
         mongoId: mongoUser._id,
-        email: mongoUser.email,
-        name: mongoUser.name,
         roles: authUser.roles,
         authToken: authGraphQLResponse.authenticationToken,
         accessToken: authGraphQLToken.idToken,
