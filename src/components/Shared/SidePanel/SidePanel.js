@@ -212,7 +212,7 @@ export default function SidePanel() {
         });
 
       setPanelItems(layerAndGroups);
-      setPanelTitle("Layer Visibility");
+      setPanelTitle("Layers");
       setPanelButton(panelButtons[panelType]);
       setHeaderFilters(null);
 

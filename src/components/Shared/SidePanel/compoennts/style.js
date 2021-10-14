@@ -191,6 +191,9 @@ export const StyledMenuHeaderItem = withStyles((theme) => ({
       background: "#17acdd",
       padding: "3px 10px",
     },
+    "& .MuiListItemText-primary": {
+      fontSize: "x-large",
+    },
   },
 }))(MenuItem);
 
