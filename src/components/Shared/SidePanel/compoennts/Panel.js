@@ -193,7 +193,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 
             {headerButton && (
               <StyledListItemSecondaryAction>
-                <Button onClick={headerButton.fn} color="secondary" startIcon={headerButton.icon}>
+                <Button onClick={headerButton.fn} color="secondary" varient="outlined" startIcon={headerButton.icon}>
                   {headerButton.text}
                 </Button>
               </StyledListItemSecondaryAction>
