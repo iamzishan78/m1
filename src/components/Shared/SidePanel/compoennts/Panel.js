@@ -4,6 +4,7 @@ import { useMutation } from "@apollo/client";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import { Tooltip, IconButton, Tab, Tabs, InputBase } from "@material-ui/core";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Button from "@material-ui/core/Button";
@@ -19,10 +20,21 @@ import MapBasicIcon from "../../svgIcons/MapBasicIcon";
 import Collapse from "@material-ui/core/Collapse";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
+import HeatmapIcon from "@material-ui/icons/Gradient";
+import BasemapIcon from "@material-ui/icons/Language";
+import SearchIcon from "@material-ui/icons/Search";
 
 import { deepEqualObjects } from "../../functions";
 import Layer from "./Layer";
-import { useStyles, StyledMenu, StyledMenuItem, StyledListItem2, StyledListItemSecondaryAction, StyledMenuHeaderItem } from "./style";
+import {
+  useStyles,
+  StyledMenu,
+  StyledMenuItem,
+  StyledListItem2,
+  StyledListItemSecondaryAction,
+  StyledMenuHeaderItem,
+  StyledMenuHActionHeader,
+} from "./style";
 import SortableLayer from "./SortableLayer";
 import { CircularProgress } from "@material-ui/core";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
@@ -35,44 +47,29 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
   const classes = useStyles();
 
   const [layerMap, setLayerMap] = useState([]);
-  const [open, setOpen] = useState(true);
   const [mapStyles, setMapStyles] = useState([]);
-
-  // useEffect(() => {
-  // 	if (type === "base") {
-  // 		const req = new Request(
-  // 			"https://api.mapbox.com/styles/v1/m1neral?access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw",
-  // 			{
-  // 				method: "GET",
-  // 				mode: "cors",
-  // 				headers: {
-  // 					Accept: "application/json",
-  // 					"Content-Type": "application/json",
-  // 					"Cache-Control": "max-age=0",
-  // 				},
-  // 			}
-  // 		);
-
-  // 		const abortController = new AbortController();
-  // 		const signal = abortController.signal;
-
-  // 		fetch(req, { signal: signal })
-  // 			.then((results) => results.json())
-  // 			.then((data) => {
-  // 				data = _.uniqBy(data, 'name');
-  // 				setMapStyles(data.slice(0, 5));
-  // 			});
-
-  // 		//clean up
-  // 		return function cleanup() {
-  // 			abortController.abort();
-  // 		};
-  // 	}
-  // }, [type]);
+  const [search, setSearch] = useState("");
+  const [searchState, setSearchState] = useState(false);
+  const [tab, setTab] = useState(0);
 
   useEffect(() => {
     if (stateApp.mapStyles && stateApp.mapStyles.length > 0) setMapStyles([...stateApp.mapStyles]);
   }, [stateApp.mapStyles]);
+
+  useEffect(() => {
+    switch (stateMapControls.selectedControl) {
+      case "layer":
+        setTab(0);
+        break;
+      case "heatMaps":
+        setTab(1);
+        break;
+      case "base":
+        setTab(2);
+        break;
+      default:
+    }
+  }, [stateMapControls.selectedControl]);
 
   useEffect(() => {
     if ((type === "layer" || type === "heatMaps" || type === "marketplace") && items) {
@@ -106,6 +103,23 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
       },
     });
   };
+
+  const layerIcons = React.useMemo(() => {
+    return [
+      {
+        action: "layer",
+        icon: <LayersIcon fontSize="small" />,
+      },
+      {
+        action: "heatMaps",
+        icon: <HeatmapIcon fontSize="small" />,
+      },
+      {
+        action: "base",
+        icon: <BasemapIcon fontSize="small" />,
+      },
+    ];
+  }, []);
 
   const getBasemapImageBox = () => {
     return (
@@ -168,6 +182,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
       </Droppable>
     </DragDropContext>
   );
+  const a11yProps = (index) => ({
+    id: `full-width-tab-${index}`,
+    "aria-controls": `full-width-tabpanel-${index}`,
+  });
   return (
     <div>
       <div
@@ -200,6 +218,56 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
             )}
           </StyledMenuHeaderItem>
 
+          {/* Layer Icons */}
+          <StyledMenuHActionHeader>
+            <Grid container direction="row" justify="space-between" alignItems="center" className={classes.toolbarActions}>
+              {!searchState && (
+                <Grid item>
+                  <Tabs
+                    value={tab}
+                    onChange={(event, tab) => setTab(tab)}
+                    aria-label="simple tabs example"
+                    indicatorColor="primary"
+                    textColor="primary"
+                    variant="fullWidth"
+                  >
+                    {layerIcons.map((action, index) => (
+                      <Tab
+                        icon={action.icon}
+                        {...a11yProps(index)}
+                        onClick={() => setStateMapControls((stateMapControls) => ({ ...stateMapControls, selectedControl: action.action }))}
+                      />
+                    ))}
+                  </Tabs>
+                </Grid>
+              )}
+              <Grid item>
+                <div className={classes.search}>
+                  <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput").focus()}>
+                    <SearchIcon />
+                  </Tooltip>
+                  <InputBase
+                    id="searchInput"
+                    placeholder="Search by Layer Name"
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput,
+                    }}
+                    inputProps={{ "aria-label": "search" }}
+                    onFocus={() => setSearchState(true)}
+                    value={search}
+                    onBlur={() =>
+                      setTimeout(() => {
+                        setSearchState(false);
+                      }, 200)
+                    }
+                    onChange={(evt) => setSearch(evt.target.value)}
+                  />
+                </div>
+              </Grid>
+            </Grid>
+          </StyledMenuHActionHeader>
+
           {/* base Stuff */}
           {type === "base" && getBasemapImageBox()}
 
@@ -212,7 +280,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
               </Box>
             )
           ) : type === "base" ? (
-            <Collapse in={open} timeout="auto" unmountOnExit>
+            <Collapse in={true} timeout="auto" unmountOnExit>
               {displayList}
             </Collapse>
           ) : (

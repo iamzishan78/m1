@@ -224,11 +224,11 @@ export default function SidePanel() {
         const isDestinationGroup = result.destination.droppableId !== "droppableM1";
 
         if (isDestinationGroup) {
-          let group = layerAndGroups.find((layer) => layer.groupId == result.destination.droppableId);
+          let group = layerAndGroups.find((layer) => layer.groupId === result.destination.droppableId);
           result.destination.index += group.groups[0].position;
         }
         if (isSourceGroup) {
-          let group = layerAndGroups.find((layer) => layer.groupId == result.source.droppableId);
+          let group = layerAndGroups.find((layer) => layer.groupId === result.source.droppableId);
           result.source.index += group.groups[0].position;
           // result.destination.index -= 1
         }

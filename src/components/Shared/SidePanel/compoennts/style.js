@@ -146,6 +146,58 @@ export const useStyles = makeStyles((theme) => ({
       borderRadius: 5,
     },
   },
+  toolbarActions: {
+    display: "flex",
+    alignItems: "left",
+    marginTop: "-7px",
+    transition: theme.transitions.create("width"),
+  },
+  action: {
+    width: "28px",
+    color: "rgba(121, 121, 121, 0.85)",
+    "&:hover": {
+      color: "#fff",
+    },
+  },
+  search: {
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    marginLeft: 0,
+    marginTop: 5,
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "auto",
+    },
+  },
+  iconSearch: {
+    height: "100%",
+    display: "flex",
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "rgba(121, 121, 121, 0.85)",
+    zIndex: 1,
+    "&:hover": {
+      color: "#fff",
+      cursor: "pointer",
+    },
+  },
+  inputRoot: {
+    color: "inherit",
+  },
+  inputInput: {
+    paddingLeft: `calc(1em + ${theme.spacing(2)}px)`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+
+    [theme.breakpoints.up("sm")]: {
+      width: "0ch",
+      "&:focus": {
+        width: "25ch",
+        height: "2ch",
+      },
+    },
+  },
 }));
 
 export const StyledMenu = withStyles({})((props) => <Paper elevation={0} variant="elevation" {...props} />);
@@ -193,6 +245,36 @@ export const StyledMenuHeaderItem = withStyles((theme) => ({
     },
     "& .MuiListItemText-primary": {
       fontSize: "x-large",
+    },
+  },
+}))(MenuItem);
+
+export const StyledMenuHActionHeader = withStyles((theme) => ({
+  root: {
+    display: "flex",
+    justifyContent: "flex-start",
+    backgroundColor: "#141d32",
+    "&:hover": {
+      backgroundColor: "#141d32",
+    },
+    "& .MuiTabs-root": {
+      "& .MuiTabs-scroller": {
+        "& .MuiTabs-flexContainer": {
+          width: "190px",
+          "& .MuiButtonBase-root": {
+            minWidth: "0px !important",
+          },
+          "& .MuiTab-textColorPrimary": {
+            color: "white",
+          },
+        },
+      },
+      "& .MuiTabs-indicator": {
+        marginLeft: "21px",
+        height: "5px",
+        width: "20px !important",
+        backgroundColor: "#1CB6DA",
+      },
     },
   },
 }))(MenuItem);
