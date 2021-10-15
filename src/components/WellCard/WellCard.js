@@ -785,6 +785,26 @@ function WellCard() {
                     </Typography>
                   </Link>
                   : ''}
+                  {wellData?.State === 'LA'
+                  ?
+                  <Link 
+                  href={"https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn="+wellData?.StateWellId}
+                    onClick={() => {
+                    }}
+                    variant="body2"
+                    target="_blank"
+
+                  >
+                    <Typography
+                      align="center"
+                      variant="subtitle2"
+                      className={classes.link_permit}
+                    >
+                      SONRIS Search Tool
+
+                    </Typography>
+                  </Link>
+                  : ''}
               </div>
             </CardContent>
           </Card>
