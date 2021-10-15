@@ -244,7 +244,7 @@ export const StyledMenuHeaderItem = withStyles((theme) => ({
       padding: "3px 10px",
     },
     "& .MuiListItemText-primary": {
-      fontSize: "x-large",
+      fontSize: "xx-large",
     },
   },
 }))(MenuItem);
@@ -254,6 +254,7 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-start",
     backgroundColor: "#141d32",
+    paddingLeft: "0px !important",
     "&:hover": {
       backgroundColor: "#141d32",
     },
