@@ -28,7 +28,7 @@ export const useStyles = makeStyles((theme) => ({
     height: "80px",
     color: "white",
     width: "20px",
-    marginTop: "50px",
+    marginTop: "103px",
     background: "#141d32",
     cursor: "pointer",
     display: "flex",
