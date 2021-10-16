@@ -3295,25 +3295,7 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    if (props.header === "Contacts") {
-      return (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "left" }}>
-          <Contact />
-          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-            <Typography
-              style={{
-                marginLeft: "10px",
-                fontSize: "16px",
-              }}
-              color="inherit"
-            >
-              {props.header}
-            </Typography>
-            <Typography style={{ color: "#18AADD", fontSize: "16px" }}>All {props.header}</Typography>
-          </Breadcrumbs>
-        </div>
-      );
-    } else if (props.header === "Documents") {
+    if (props.header === "Documents") {
       return (
         <div style={{ display: "flex", justifyContent: "left" }}>
           <DescriptionOutlinedIcon />
@@ -3352,7 +3334,7 @@ function SubTable(props) {
 
         <MUIDataTable
           className={tableStyle}
-          title={getHeaders()}
+          title={props.headerComponent ? props.headerComponent : getHeaders()}
           data={props.parent === "ownersPerParcel" ? searchedRows : rows ? rows : []}
           // columns={
           //   props.parent === "ownersPerParcel" ? false :
@@ -3416,8 +3398,8 @@ function SubTable(props) {
             ...(props.header === "Contacts" && {
               customSearchRender: (searchText, handleSearch, hideSearch, options) => {
                 registerSearchHandler(handleSearch);
-
-                return getHeaders();
+                const Component = props.headerComponent
+                return Component ? <Component {...props.headerProps} /> : getHeaders();
               },
             }),
             ...props.options,
