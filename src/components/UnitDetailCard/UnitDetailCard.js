@@ -24,6 +24,7 @@ import set from 'lodash/set'
 import Tags from "components/Shared/Tagger";
 import UnitSummary from "./UnitSummary";
 import UnitOwnersTable from "components/Table/Unit/UnitOwnersTable";
+import UnitWellInterestTable from "components/Table/Unit/UnitWellInterestTable";
 
 const ENTER_KEY = 13;
 
@@ -196,6 +197,7 @@ export default function UnitDetailCard(props) {
 
   const dispatch = useDispatch();
   const [selectedTab, setSelectedTab] = useState(props.selectTabIndex || 0);
+  const [selectedWellTab, setWellSelectedTab] = useState(0);
   const [uniObj, setUniObj] = useState();
   const [properties, setProperties] = useState();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -334,10 +336,16 @@ export default function UnitDetailCard(props) {
   );
 
   const WellHeader = () => (
-    <div className={classes.documentHeader}>
-      <LocationIcon />
-      <span>ASSOCIATED WELLS</span>
-    </div>
+    <TabButtons
+      labels={[
+        "Unit Wells",
+        "Potential Wells",
+      ]}
+      value={selectedWellTab}
+      setValue={(n) => {
+        setWellSelectedTab(n);
+      }}
+    />
   );
 
   return uniObj ? (
@@ -392,16 +400,33 @@ export default function UnitDetailCard(props) {
                 dense
               />
             </div>,
-            <div className={showSummary ? classes.subContent : classes.subContent2}>
-              <AssociatedWellsParcelTable
-                customLayer={uniObj}
-                parent="associatedWellsPerParcel"
-                targetLabel="well"
-                header={<WellHeader />}
-                showTracks
-                dense
-              />
-            </div>,
+            <TabPanels
+              value={selectedWellTab}
+              panels={[
+                <div className={showSummary ? classes.subContent : classes.subContent2}>
+                  <UnitWellInterestTable
+                    customLayer={uniObj}
+                    shapeType='Unit'
+                    parent="associatedWellsPerUnits"
+                    targetLabel="well"
+                    header={<WellHeader />}
+                    showTracks
+                    dense
+                  />
+                </div>,
+                <div className={showSummary ? classes.subContent : classes.subContent2}>
+                  <AssociatedWellsParcelTable
+                    customLayer={uniObj}
+                    shapeType='Unit'
+                    parent="associatedWellsPerParcel"
+                    targetLabel="well"
+                    header={<WellHeader />}
+                    showTracks
+                    dense
+                  />
+                </div>
+              ]}
+            />,
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
               <ParcelDetailsDocumentTable
                 customLayer={uniObj}

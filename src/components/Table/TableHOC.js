@@ -15,6 +15,7 @@ export const TableHOC = (Component) => {
     return function HOC(props) {
 
         const [rows, Rows] = useState([]);
+        const [addToTable, setAddToTable] = useState(false)
         const setRows = (newState) => { setStateIfDeepEqual(Rows, newState) };
         const [searchedRows, setSearchedRows] = useState([])
 

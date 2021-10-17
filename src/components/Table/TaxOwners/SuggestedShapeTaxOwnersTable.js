@@ -28,26 +28,11 @@ import { handleTagColumn } from "../helpers";
 // Utilities
 import isEmpty from "lodash/isEmpty";
 import { getPolygonString } from "components/Shared/functions";
+import { usetableStyles } from "../Styles";
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    padding: "0 !important",
-  },
-  multiSelectionTopBarButtons: {
-    margin: "0px 5px",
-    fontWeight: "600",
-    backgroundColor: "rgba(1, 17, 51, 1)",
-    color: "#fff",
-    border: "1px solid #B3B3B3",
-    "&:hover": {
-      backgroundColor: "#263451",
-      color: "#fff",
-    },
-  },
-}));
 
 function SuggestedShapeTaxOwnersTable(props) {
-  const classes = useStyles();
+  const classes = usetableStyles();
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);

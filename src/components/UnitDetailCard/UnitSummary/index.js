@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { v4 as uuid } from "uuid";
-import { makeStyles, alpha } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 
@@ -184,9 +184,9 @@ const useStyles = makeStyles((theme) => ({
     search: {
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
-        // backgroundColor: alpha(theme.palette.common.white, 0.15),
         '&:hover': {
-            backgroundColor: alpha(theme.palette.common.white, 0.25),
+            backgroundColor: theme.palette.common.white,
+            opacity: 0.15,
         },
         marginLeft: 0,
         width: '100%',
@@ -216,7 +216,8 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('sm')]: {
             width: props => props.search.length > 0 ? '15ch' : '0.9px',
             '&:focus': {
-                backgroundColor: alpha(theme.palette.common.white, 0.15),
+                backgroundColor: theme.palette.common.white,
+                opacity: 0.15,
                 width: '15ch',
             },
         },
@@ -226,7 +227,8 @@ const useStyles = makeStyles((theme) => ({
         color: 'black',
         textTransform: "capitalize",
         '&:hover': {
-            backgroundColor: alpha(theme.palette.common.white, 0.15),
+            backgroundColor: theme.palette.common.white,
+            opacity: 0.15,
         }
     }
 }));

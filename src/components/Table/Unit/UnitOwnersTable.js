@@ -196,16 +196,6 @@ function UnitOwnersTable(props) {
         meta.setPageInd(tableState.page);
         getPaginatedShapeOwners(pageVariables);
         break;
-      // case "search":
-      //   break;
-      // case "onSearchClose":
-      //   break;
-      // case "propsUpdate":
-      //   break;
-      // case "filterChange":
-      //   break;
-      // case "resetFilters":
-      //   break;
       default:
     }
   };
