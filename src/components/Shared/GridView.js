@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   TextField,
@@ -9,9 +9,11 @@ import {
   AccordionDetails,
   Button,
 } from "@material-ui/core";
+import moment from "moment";
 import SearchIcon from "@material-ui/icons/Search";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
+import { AppContext } from "../../AppContext";
 
 import LeftDialog from "components/Shared/LeftDialog";
 import { ADD_GRID_VIEW } from "graphQL/useMutationAddGridView";
@@ -38,8 +40,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function GridView({ selectedGridView, setSelectedGridView }) {
+function GridView({ selectedGridView, setSelectedGridView, setShowViewModal }) {
   const classes = useStyles();
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   const [allGridViews, setAllGridViews] = useState([]);
   const [addGridView, { data }] = useMutation(ADD_GRID_VIEW);
@@ -57,18 +60,25 @@ function GridView({ selectedGridView, setSelectedGridView }) {
 
   return (
     <LeftDialog open width="325px">
-      <Button
+      {/* <Button
         onClick={() => {
           addGridView({
             variables: {
               gridView: {
-                name: "firstView",
+                name: "Recently Added",
                 module: "Contacts",
-                type: "Custom",
+                type: "Default",
                 filters: [
                   {
-                    field: "name.keyword",
-                    value: "ANDREWS BRUCE",
+                    field: "createAt",
+                    value: {
+                      range: {
+                        createAt: {
+                          gte: "",
+                          lte: "",
+                        },
+                      },
+                    },
                   },
                 ],
               },
@@ -77,7 +87,7 @@ function GridView({ selectedGridView, setSelectedGridView }) {
         }}
       >
         add
-      </Button>
+      </Button> */}
       <TextField
         value={""}
         onChange={(e) => {}}
@@ -105,10 +115,43 @@ function GridView({ selectedGridView, setSelectedGridView }) {
           Default
         </AccordionSummary>
         <AccordionDetails className={classes.details}>
-          <div>All Contacts</div>
-          <div>My Contacts</div>
-          <div>Recently Added</div>
-          <div>Recently Modified</div>
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              setSelectedGridView({ name: 'All Contacts' });
+              setShowViewModal(false);
+            }}
+          >
+            All Contacts
+          </div>
+          {allGridViews.map((view) => {
+            return view.type === "Default" ? (
+              <div
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  const data = JSON.parse(JSON.stringify(view));
+                  if (data.name === "My Contacts") {
+                    data.filters[0].value = stateApp.user.name;
+                  }
+                  if (
+                    data.name === "Recently Modified" ||
+                    data.name === "Recently Added"
+                  ) {
+                    data.filters[0].value.range[data.filters[0].field].gte =
+                      moment().subtract(30, "days").toISOString();
+                    data.filters[0].value.range[data.filters[0].field].lte =
+                      moment().toISOString();
+                  }
+                  setSelectedGridView(data);
+                  setShowViewModal(false);
+                }}
+              >
+                {view.name}
+              </div>
+            ) : (
+              <></>
+            );
+          })}
         </AccordionDetails>
       </Accordion>
       <Accordion defaultExpanded style={{ margin: 0 }}>
@@ -122,13 +165,23 @@ function GridView({ selectedGridView, setSelectedGridView }) {
         </AccordionSummary>
         <AccordionDetails className={classes.details}>
           {allGridViews.map((view) => {
-            return (
-              <div onClick={() => setSelectedGridView(view)}>{view.name}</div>
+            return view.type === "Custom" ? (
+              <div
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  setSelectedGridView(view);
+                  setShowViewModal(false);
+                }}
+              >
+                {view.name}
+              </div>
+            ) : (
+              <></>
             );
           })}
-          <div>Out of state owners</div>
+          {/* <div>Out of state owners</div>
           <div>Follow up needed</div>
-          <div>Permian</div>
+          <div>Permian</div> */}
         </AccordionDetails>
       </Accordion>
     </LeftDialog>

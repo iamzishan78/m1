@@ -55,7 +55,7 @@ function ContactsTable(props) {
   // function states
   const [columns, Columns] = useState([]);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [selectedGridView, setSelectedGridView ] = useState(null);
+  const [selectedGridView, setSelectedGridView ] = useState({ name: 'All Contacts' });
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
@@ -106,10 +106,10 @@ function ContactsTable(props) {
       });
       props.setRows(JSON.parse(JSON.stringify(hits)));
       TableHeader.forEach((column) => {
-        const filter = get(selectedGridView?.filters?.find(filter => filter.field === column.esKey), 'value', '')
+        const value = get(selectedGridView?.filters?.find(filter => filter.field === column.esKey), 'value', '')
         let filterList =  []
-        if(filter){
-          filterList = [filter.value]
+        if(value){
+          filterList = [value]
         }
         if (column?.options?.filter) {
           column.options = {
@@ -214,6 +214,7 @@ function ContactsTable(props) {
   const headerProps = {
     showViewModal,
     setShowViewModal,
+    selectedGridView,
   };
 
   return (
@@ -224,7 +225,7 @@ function ContactsTable(props) {
         id={props.id ? props.id : props.parent}
       >
         {showViewModal && (
-          <GridView setSelectedGridView={setSelectedGridView} selectedGridView={selectedGridView} />
+          <GridView setSelectedGridView={setSelectedGridView} selectedGridView={selectedGridView} setShowViewModal={setShowViewModal} />
         )}
         <Table
           style={{ backgroundColor: "#fff" }}
@@ -253,7 +254,7 @@ function ContactsTable(props) {
   );
 }
 
-const HeaderComponent = ({ setShowViewModal, showViewModal }) => {
+const HeaderComponent = ({ selectedGridView, setShowViewModal, showViewModal }) => {
   const [showIcon, setShowIcon] = useState(false);
   return (
     <div
@@ -276,14 +277,12 @@ const HeaderComponent = ({ setShowViewModal, showViewModal }) => {
         >
           Contacts
         </Typography>
-        <div style={{ display: "flex" }}>
-          <Typography
-            style={{ color: "#18AADD", fontSize: "16px", cursor: "pointer" }}
+        <div style={{ display: "flex", color: "#18AADD", fontSize: "16px", cursor: "pointer" }}
             onClick={() => setShowViewModal(!showViewModal)}
             onMouseOver={() => setShowIcon(true)}
-            onMouseLeave={() => setShowIcon(false)}
-          >
-            <span>All Contacts</span>
+            onMouseLeave={() => setShowIcon(false)}>
+          <Typography>
+            <span>{selectedGridView.name}</span>
           </Typography>
           <span style={{ height: "0px", color: "#18AADD", fontSize: "16px", cursor: "pointer" }}>{showIcon && <ExpandMoreIcon />}</span>
         </div>
