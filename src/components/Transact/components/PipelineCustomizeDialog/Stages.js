@@ -69,6 +69,9 @@ const useStyles = makeStyles((theme) => ({
   settingGroup: {
     "& .MuiTypography-body1": { fontSize: "1.2rem !important" },
   },
+  smallWidthField: {
+    width: "13%",
+  },
 }));
 
 const reorder = (list, startPosition, endPosition) => {
@@ -253,7 +256,7 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
                                   <TableCell padding="checkbox" {...provided.dragHandleProps}>
                                     <DragIndicator />
                                   </TableCell>
-                                  <TableCell align="left">
+                                  <TableCell align="left" style={{ width: "40%" }}>
                                     <TextField
                                       error={stagesError && (!stage.name || stage.name === "")}
                                       variant="outlined"
@@ -271,11 +274,10 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
                                   </TableCell>
                                   {/* ******DO NOT DELETE - TEMPORARILY COMMENTING OUT UNTIL WE BUILD 'PROBABILITY' and 'ROTTENESS' FUCTIONALITY****** */}
 
-                                  <TableCell align="left">
+                                  <TableCell align="left" className={classes.smallWidthField}>
                                     <TextField
                                       variant="outlined"
                                       size="small"
-                                      fullWidth
                                       margin="none"
                                       value={stage.dealProbability}
                                       InputProps={{
@@ -287,7 +289,7 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
                                     />
                                   </TableCell>
 
-                                  <TableCell align="left">
+                                  <TableCell align="left" className={classes.smallWidthField}>
                                     <TextField
                                       variant="outlined"
                                       size="small"

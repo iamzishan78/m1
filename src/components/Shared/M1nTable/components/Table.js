@@ -3871,7 +3871,7 @@ function SubTable(props) {
                   header={`Inactivate User${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 ? "s" : ""}`}
                   onClose={handleCloseDialog}
                   deleteFunc={() => {
-                    props.deleteFunc(selectedUser.id);
+                    props.deleteFunc(m1nSelectedRowsIds);
                     closeMenu();
                   }}
                   m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}

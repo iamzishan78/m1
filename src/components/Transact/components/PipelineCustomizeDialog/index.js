@@ -2,16 +2,30 @@ import React, { useState, useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { Grid, Typography, IconButton, Tab, Tabs, Dialog, Breadcrumbs, Link } from "@material-ui/core";
-import { Close as CloseIcon, Delete as DeleteIcon, NavigateNext as NavigateNextIcon } from "@material-ui/icons/";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  Tab,
+  Tabs,
+  Dialog,
+  Breadcrumbs,
+  Link,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@material-ui/core";
+import { Delete as DeleteIcon, NavigateNext as NavigateNextIcon, MoreHoriz as MoreHorizIcon } from "@material-ui/icons/";
 import { makeStyles } from "@material-ui/core/styles";
 
 import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "actions";
 import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import BaicInfoPanel from "components/Transact/components/PipelineCustomizeDialog/BasicInfo";
-import DealStagesPanel from "components/Transact/components/PipelineCustomizeDialog/DealStages";
+import DealStagesPanel from "components/Transact/components/PipelineCustomizeDialog/Stages";
 import StageDetails from "components/Transact/components/PipelineCustomizeDialog/StageDetails";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { deepEqualObjects } from "components/Shared/functions";
 
 import { AppContext } from "AppContext";
@@ -54,6 +68,26 @@ const useStyles = makeStyles((theme) => ({
       fill: "red",
     },
   },
+  menu: {
+    "& .MuiListItem-root": {
+      "& .MuiListItemIcon-root": {
+        minWidth: "30px",
+        "& .MuiSvgIcon-root": {
+          fill: "red !important",
+        },
+      },
+    },
+  },
+  dialogActions: {
+    display: "flex",
+    justifyContent: "flex-end",
+    "& svg": {
+      fill: "#d9d9d9",
+      "&:hover": {
+        fill: "#b5b2b2",
+      },
+    },
+  },
 }));
 
 const FLOWLINE_CUSTOM_TABS = [
@@ -82,6 +116,7 @@ const PipelineCustomDialog = (props) => {
   const [flowErrors, setFlowErrors] = useState([]);
   const [stagesError, setStageError] = useState(false);
   const [selectedStageForDetail, setStage] = useState(null);
+  const [anchorEl, setAnchorEl] = useState();
   const { control, reset, setValue, getValues, watch } = useForm("FLOWLINE_FORM");
 
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -125,6 +160,9 @@ const PipelineCustomDialog = (props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataDealsCountByPipeline]);
+
+  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
 
   const handleChange = (event, tab) => {
     if (tab === 0) {
@@ -382,23 +420,49 @@ const PipelineCustomDialog = (props) => {
                     {openPipeDialog === "newPipe" ? "New Flowline" : "Edit Flowline"}
                   </Typography>
                 </Grid>
-                <Grid item>
-                  {openPipeDialog !== "newPipe" && (
-                    <IconButton
-                      size="small"
-                      component="span"
-                      style={{
-                        background: "transparent",
-                        align: "center",
-                      }}
-                      onClick={handleDeletePipe}
-                    >
-                      <DeleteIcon size="medium" className={classes.deleteIcon} />
-                    </IconButton>
-                  )}
-                  <IconButton size="small" onClick={handleClose}>
-                    <CloseIcon className={classes.closeIcon} fontSize="small" />
+                <Grid item xs={6} className={classes.dialogActions}>
+                  <IconButton
+                    size="small"
+                    component="span"
+                    style={{
+                      background: "transparent",
+                      paddingLeft: "10px",
+                      align: "center",
+                    }}
+                    onClick={handleMenuClick}
+                  >
+                    <MoreHorizIcon size="medium" />
                   </IconButton>
+                  <IconButton
+                    size="small"
+                    component="span"
+                    style={{
+                      background: "transparent",
+                      paddingLeft: "10px",
+                      align: "center",
+                    }}
+                    onClick={handleClose}
+                  >
+                    <KeyboardTabBlackIcon />
+                  </IconButton>
+                  <Menu
+                    id="dealMenu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                    className={classes.menu}
+                    getContentAnchorEl={null}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                    transformOrigin={{ vertical: "top", horizontal: "center" }}
+                  >
+                    <MenuItem onClick={handleDeletePipe}>
+                      <ListItemIcon>
+                        <DeleteIcon size="medium" />
+                      </ListItemIcon>
+                      <ListItemText>Delete</ListItemText>
+                    </MenuItem>
+                  </Menu>
                 </Grid>
               </Grid>
             </div>
@@ -449,7 +513,6 @@ const PipelineCustomDialog = (props) => {
                         fontSize: "16px",
                         cursor: "pointer",
                       }}
-                      color="inherit"
                       onClick={() => {
                         setStage(null);
                         setDialogWidth(DIALOG_WIDTHS.LANES);
@@ -460,7 +523,7 @@ const PipelineCustomDialog = (props) => {
                     <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{selectedStageForDetail.name}</Typography>
                   </Breadcrumbs>
                 </div>
-                <StageDetails />
+                <StageDetails selectedStageForDetail={selectedStageForDetail} selectedPipe={selectedPipe} />
               </>
             )}
           </div>

@@ -64,10 +64,26 @@ body {
   border-top: 6px solid #a52a20 !important;
 }
 
-#laneProgressMenu {
+#laneProgressMenu,
+#dealMenu {
   z-index: 9999999999 !important;
 }
 
+.blue{
+  color: #3FC0DF
+}
+.hideScroll::-webkit-scrollbar {
+  display: none;
+}
 .red{
   color: red
+}
+#TaskTemplateDatePopover,
+#SubtaskAssigneePopover,
+.MuiPopover-root {
+  z-index: 1301 !important;
+}
+
+.red {
+  color: red;
 }
