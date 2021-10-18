@@ -163,7 +163,7 @@ export const useStyles = makeStyles((theme) => ({
     position: "relative",
     borderRadius: theme.shape.borderRadius,
     marginLeft: 0,
-    marginTop: 5,
+    marginTop: 0,
     width: "100%",
     [theme.breakpoints.up("sm")]: {
       width: "auto",
@@ -241,10 +241,10 @@ export const StyledMenuHeaderItem = withStyles((theme) => ({
     "& .MuiButton-textPrimary": {
       color: theme.palette.common.white,
       background: "#17acdd",
-      padding: "3px 10px",
+      padding: "10px 8px 8px 0px",
     },
     "& .MuiListItemText-primary": {
-      fontSize: "xx-large",
+      fontSize: "x-large",
     },
   },
 }))(MenuItem);
@@ -261,7 +261,7 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
     "& .MuiTabs-root": {
       "& .MuiTabs-scroller": {
         "& .MuiTabs-flexContainer": {
-          width: "190px",
+          width: "115px",
           "& .MuiButtonBase-root": {
             minWidth: "0px !important",
           },
@@ -271,9 +271,9 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
         },
       },
       "& .MuiTabs-indicator": {
-        marginLeft: "21px",
+        marginLeft: "7px",
         height: "5px",
-        width: "20px !important",
+        width: "25px !important",
         backgroundColor: "#1CB6DA",
       },
     },
