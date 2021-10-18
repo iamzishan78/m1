@@ -1167,7 +1167,6 @@ function AddDealDialog(props) {
   }, [dealSettings]);
 
   const handleClickDialogClose = () => {
-    debugger
     if (!updateDealLoading && !addContactLoading) {
       if(history.location.pathname.includes('lane')){
         history.push(`${history.location.pathname.split("/lane")[0]}`);
@@ -1177,7 +1176,7 @@ function AddDealDialog(props) {
         dealDialog: false,
         activeDeal: { cardId: null, laneId: null },
       }));
-      // handleClose();
+      handleClose();
     }
   };
 

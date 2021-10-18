@@ -491,7 +491,7 @@ export default function ContactDetailCard(props) {
                 Flow
               </Link>
             )}
-            {isPrevUrlFlowline && (
+            {isPrevUrlFlowline && selectedPipe && (
               <Link
                 style={{
                   marginLeft: "5px",
@@ -499,9 +499,9 @@ export default function ContactDetailCard(props) {
                   cursor: "pointer",
                 }}
                 color="inherit"
-                onClick={() => history.push(`/flow/${selectedPipe._id}`)}
+                onClick={() => history.push(`/flow/${selectedPipe?._id}`)}
               >
-                {truncate(selectedPipe.name, 30)}
+                {truncate(get(selectedPipe,'name',''), 30)}
               </Link>
             )}
             {isPrevUrlFlowline && (
