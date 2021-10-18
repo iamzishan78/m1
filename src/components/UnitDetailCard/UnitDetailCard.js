@@ -25,6 +25,7 @@ import Tags from "components/Shared/Tagger";
 import UnitSummary from "./UnitSummary";
 import UnitOwnersTable from "components/Table/Unit/UnitOwnersTable";
 import UnitWellInterestTable from "components/Table/Unit/UnitWellInterestTable";
+import AssociatedWellsUnitTable from "components/Table/Wells/AssociatedWellsUnitTable";
 
 const ENTER_KEY = 13;
 
@@ -415,10 +416,10 @@ export default function UnitDetailCard(props) {
                   />
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <AssociatedWellsParcelTable
+                  <AssociatedWellsUnitTable
                     customLayer={uniObj}
                     shapeType='Unit'
-                    parent="associatedWellsPerParcel"
+                    parent="associatedWellsPerUnits"
                     targetLabel="well"
                     header={<WellHeader />}
                     showTracks

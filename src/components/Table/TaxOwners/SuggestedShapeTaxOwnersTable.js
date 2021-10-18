@@ -41,7 +41,6 @@ function SuggestedShapeTaxOwnersTable(props) {
 
   // function states
   const [columns, Columns] = useState([]);
-  const [tableMeta, setMeta] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
 
   const setColumns = (newState) => {
@@ -247,7 +246,7 @@ function SuggestedShapeTaxOwnersTable(props) {
             className={classes.multiSelectionTopBarButtons}
             disabled={data.length < 1}
             onClick={() => {
-              suggestedOwnerToShape(tableMeta.setSelectedRow);
+              suggestedOwnerToShape();
             }}
           >
             + ADD TO {props.shapeType?.toUpperCase()}
@@ -261,7 +260,7 @@ function SuggestedShapeTaxOwnersTable(props) {
     setSelectedYear(selectedYear);
   };
 
-  const suggestedOwnerToShape = async (setSelectedRow) => {
+  const suggestedOwnerToShape = async () => {
     const { rows } = props;
     const selectedOwners = selectedRows.map((sR => rows[sR.dataIndex]))
     const globalOwnerIds = [];
@@ -276,16 +275,6 @@ function SuggestedShapeTaxOwnersTable(props) {
         owners.push(selectedOwner);
       }
     })
-    // for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
-    //   if (
-    //     !rows[m1nSelectedRowsIndexes[i]].isContact &&
-    //     !globalOwnerIds.includes(rows[m1nSelectedRowsIndexes[i]].globalOwnerId)
-    //   ) {
-    //     globalOwnerIds.push(rows[m1nSelectedRowsIndexes[i]].globalOwnerId);
-    //   } else {
-    //     selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
-    //   }
-    // }
     if (globalOwnerIds.length > 0) {
       convertMultitpleOwnerToContact({
         variables: {
