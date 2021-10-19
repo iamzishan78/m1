@@ -28,7 +28,7 @@ import DealComments from "components/Transact/components/DealComments";
 import DealTasksDetails from "../DealTasksDetails";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { useDispatch, useSelector } from "react-redux";
-import { ADDDEAL } from "graphQL/useMutationAddDeal";
+import { ADDDEAL, CREATE_DEAL_DEFAULT_SETTINGS } from "graphQL/useMutationAddDeal";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { UPDATEDEAL } from "graphQL/useMutationUpdateDeal";
 import { UPSERTDEALDESCRIPTOR } from "graphQL/useMutationUpsertDealDescriptor";
@@ -340,6 +340,7 @@ function AddDealDialog(props) {
   });
 
   const [addDeal, { data: dealData, loading: addDealLoading }] = useMutation(ADDDEAL);
+  const [createDealDefaultSettings] = useMutation(CREATE_DEAL_DEFAULT_SETTINGS);
   const [updateDeal, { loading: updateDealLoading }] = useMutation(UPDATEDEAL);
   const [upsertDealDescriptor, { loading: upsertDealDescriptorLoading }] = useMutation(UPSERTDEALDESCRIPTOR);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
@@ -365,6 +366,11 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     getPipelines();
+    return () =>
+      setStateTransact((stateTransact) => ({
+        ...stateTransact,
+        dealToCreate: {},
+      }));
   }, [getPipelines]);
 
   //? pre saving the deal id in case deal descriptors
@@ -390,15 +396,55 @@ function AddDealDialog(props) {
 
   // For creating a deal
   useEffect(() => {
-    if (dealData) {
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        activeDeal: dealData?.addDeal?.deal,
-      }));
-      setStateTransact((stateTransact) => ({
-        ...stateTransact,
-        dealToCreate: {},
-      }));
+    if (dealData?.addDeal?.deal) {
+      const {
+        addDeal: { deal },
+      } = dealData;
+      const defaultSettings = get(dealSettings, "dealSettings", []);
+      if (defaultSettings.length > 0) {
+        // deal default settings
+        //? createDealDefaultSettings(stageDealDescriptors: $stageDealDescriptors, dealId: $dealId)
+        const stageDealDescriptors = defaultSettings.map((setting) => ({
+          //? creating stage deal descriptors json
+          relatedObject: setting._id,
+          descriptorObject: deal._id,
+          pipeline: pipelineId,
+          approver: get(setting, "stageDealDescriptor.descriptorObject.assignee", null),
+          tasks: setting.tasks,
+          isCurrent: setting._id === stageId,
+        }));
+        // api for default setting
+        createDealDefaultSettings({
+          variables: {
+            stageDealDescriptors,
+            dealId: deal._id,
+          },
+        }).then((result) => {
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            activeDeal: deal,
+          }));
+          setStateTransact((stateTransact) => ({
+            ...stateTransact,
+            dealToCreate: {},
+          }));
+          getDealSettings({
+            variables: {
+              dealId: deal._id,
+              pipelineId: pipelineId,
+            },
+          });
+        });
+      } else {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          activeDeal: deal,
+        }));
+        setStateTransact((stateTransact) => ({
+          ...stateTransact,
+          dealToCreate: {},
+        }));
+      }
     }
   }, [dealData]);
 

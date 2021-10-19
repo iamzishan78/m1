@@ -25,6 +25,10 @@ import OwnershipIcon from "./components/svgIcons/OwnershipIcon";
 import Link from "@material-ui/core/Link";
 import moment from "moment";
 
+import OilGasIcon from "./components/svgIcons/OilGasIcon";
+
+
+
 // queries 
 import { useLazyQuery } from "@apollo/client";
 
@@ -144,6 +148,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
+
+
+
 export default function PermitCard() {
 
   // context
@@ -187,14 +195,16 @@ export default function PermitCard() {
                 className={classes.text1}
                 variant="subtitle2"
               >
-                Well Status
+                Permit Status
               </Typography>
               <Typography
                 align="center"
                 className={classes.text2}
                 variant="caption"
               >
-                {'PERMIT - NEW DRILL'}
+                {stateApp.selectedPermit.PermitPurpose
+                  ? stateApp.selectedPermit.PermitPurpose
+                  : '--'}
               </Typography>
             </div>
 
@@ -222,11 +232,68 @@ export default function PermitCard() {
                   : '--'}
               </Typography>
             </div>
+
+    <div className={classes.iconContainer}>
+      <OilGasIcon htmlColor="black" fontSize="large"/>
+
+      <Typography
+        align="center"
+        className={classes.text1}
+        variant="subtitle2"
+      >
+        Well Type
+      </Typography>
+      <Typography
+        align="center"
+        className={classes.text2}
+        variant="caption"
+      >
+        {stateApp.selectedPermit.WellType
+          ? stateApp.selectedPermit.WellType.toUpperCase()
+          : "UNKNOWN"}
+      </Typography>
+      </div>
+
+
           </CardActions>
           <CardContent className={classes.content}>
             <Table className={classes.table} size="small" aria-label="well table">
               <TableBody>
 
+
+                <TableRow className={classes.rowGrey}>
+                  <TableCell className={classes.cell1} align="left">
+                    Permit #
+                  </TableCell>
+                  <TableCell className={classes.cell2} align="right">
+                    {stateApp.selectedPermit.PermitId
+                      ? stateApp.selectedPermit.PermitId
+                      : '--'}
+                  </TableCell>
+                </TableRow>
+
+                <TableRow className={classes.rowGray}>
+                  <TableCell className={classes.cell1} align="left">
+                    Lease Name
+                  </TableCell>
+                  <TableCell className={classes.cell2} align="right">
+                    {stateApp.selectedPermit.Lease
+                      ? stateApp.selectedPermit.Lease
+                      : '--'}
+                  </TableCell>
+                </TableRow>
+
+                <TableRow className={classes.rowGrey}>
+                  <TableCell className={classes.cell1} align="left">
+                    Well Number
+                  </TableCell>
+                  <TableCell className={classes.cell2} align="right">
+                    {stateApp.selectedPermit.WellNumber
+                      ? stateApp.selectedPermit.WellNumber.padStart(3,'0')
+                      : '--'}
+                  </TableCell>
+                </TableRow>
+                
                 <TableRow className={classes.rowGray}>
                   <TableCell className={classes.cell1} align="left">
                     API #
@@ -240,16 +307,16 @@ export default function PermitCard() {
 
                 <TableRow className={classes.rowGrey}>
                   <TableCell className={classes.cell1} align="left">
-                    Permit #
+                    County/Parish
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {stateApp.selectedPermit.PermitId
-                      ? stateApp.selectedPermit.PermitId
+                    {stateApp.selectedPermit.County 
+                      ? stateApp.selectedPermit.County + " (" + stateApp.selectedPermit.State + ")"
                       : '--'}
                   </TableCell>
                 </TableRow>
 
-                <TableRow className={classes.rowWhite}>
+                <TableRow className={classes.rowGray}>
                   <TableCell className={classes.cell1} align="left">
                     Operator
                   </TableCell>
@@ -260,7 +327,7 @@ export default function PermitCard() {
                   </TableCell>
                 </TableRow>
 
-                <TableRow className={classes.rowGrey}>
+                {/* <TableRow className={classes.rowGrey}>
                   <TableCell className={classes.cell1} align="left">
                     Well Type
                   </TableCell>
@@ -269,9 +336,9 @@ export default function PermitCard() {
                       ? stateApp.selectedPermit.WellType
                       : 'UNKNOWN'}
                   </TableCell>
-                </TableRow>
+                </TableRow> */}
 
-                <TableRow className={classes.rowWhite}>
+                <TableRow className={classes.rowGrey}>
                   <TableCell className={classes.cell1} align="left">
                     Submitted Date
                   </TableCell>
@@ -280,9 +347,9 @@ export default function PermitCard() {
                   </TableCell>
                 </TableRow>
 
-                <TableRow className={classes.rowGrey}>
+                <TableRow className={classes.rowGray}>
                   <TableCell className={classes.cell1} align="left">
-                    Total Depth [ft]
+                    Permit Depth
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
                     {stateApp.selectedPermit.TotalDepth
@@ -291,7 +358,7 @@ export default function PermitCard() {
                   </TableCell>
                 </TableRow>
 
-                <TableRow className={classes.rowWhite}>
+                {/* <TableRow className={classes.rowWhite}>
                   <TableCell className={classes.cell1} align="left">
                     Completed Depth [ft]
                   </TableCell>
@@ -300,13 +367,16 @@ export default function PermitCard() {
                       ? formatBOE(stateApp.selectedPermit.CompletionDepth)
                       : '--'}
                   </TableCell>
-                </TableRow>
+                </TableRow> */}
 
 
 
               </TableBody>
-            </Table>
+            </Table >
             <div>
+            {stateApp.selectedPermit?.State === 'TX'
+              ?
+
               <Link href=
 
                 {"http://webapps2.rrc.texas.gov/EWA/drillingPermitDetailAction.do?methodToCall=searchByUniversalDocNo&universalDocNo=" + stateApp.selectedPermit.UniversalDocNumber + "&rrcActionMan=H4sIAAAAAAAAAL1Qu27DMAz8mnQUJPkBLxyMop37CJrByKDYhCNAtgxK7gPQx5d2USB1OmfS8Y4ij5eUlKCTkgrUHVFbt9H68aWlrpFHWPkPPJlpClqwLCJ-miB6_77L6kqyrmGnHx8ONcNsgR1Z5-zYPyENNobnGenrZ6joPDflMGA8-27v741zTBRAGGca9_4VDbVnpiqQV16asKo19UFMhszwZtyMq0X2WJVZLqsFF3DC3o7hYOMyimf9qZXe1Jf9m6XqVgGE38NLmEyPdHHgv2moY7PtW6yCShqUTBmDHGQq-C2ZuP59gyy_AXdh05tZAgAA"}
@@ -328,6 +398,31 @@ export default function PermitCard() {
 
                 </Typography>
               </Link>
+              : ''}
+
+          {stateApp.selectedPermit?.State === 'LA'
+              ?
+
+              <Link 
+              href={"https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn="+stateApp.selectedPermit?.PermitId}
+                onClick={() => {
+                }}
+                variant="body2"
+                target="_blank"
+
+              >
+                <Typography
+                  align="center"
+                  variant="subtitle2"
+                  className={classes.link_permit}
+                >
+                  SONRIS Search Tool
+
+                </Typography>
+              </Link>
+              : ''}
+              
+
             </div>
           </CardContent>
         </Card>
