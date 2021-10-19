@@ -135,9 +135,6 @@ export const useStyles = makeStyles((theme) => ({
     "&::-webkit-scrollbar": {
       width: "0.75em",
     },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "0.75em",
-    // },
     "&::-webkit-scrollbar-track": {
       "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
     },
@@ -165,6 +162,7 @@ export const useStyles = makeStyles((theme) => ({
     marginLeft: 0,
     marginTop: 0,
     width: "100%",
+    color: "white",
     [theme.breakpoints.up("sm")]: {
       width: "auto",
     },
@@ -189,7 +187,6 @@ export const useStyles = makeStyles((theme) => ({
     paddingLeft: `calc(1em + ${theme.spacing(2)}px)`,
     transition: theme.transitions.create("width"),
     width: "100%",
-
     [theme.breakpoints.up("sm")]: {
       width: "0ch",
       "&:focus": {
@@ -253,11 +250,7 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
   root: {
     display: "flex",
     justifyContent: "flex-start",
-    backgroundColor: "#141d32",
-    paddingLeft: "0px !important",
-    "&:hover": {
-      backgroundColor: "#141d32",
-    },
+    backgroundColor: "#141d32 !important",
     "& .MuiTabs-root": {
       "& .MuiTabs-scroller": {
         "& .MuiTabs-flexContainer": {

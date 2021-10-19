@@ -4,7 +4,7 @@ import { useMutation } from "@apollo/client";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import { Tooltip, IconButton, Tab, Tabs, InputBase } from "@material-ui/core";
+import { Tooltip, Tab, Tabs, InputBase } from "@material-ui/core";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Button from "@material-ui/core/Button";
@@ -46,9 +46,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 
   const classes = useStyles();
 
+  const [filteredItems, setFilteredItems] = useState([]);
   const [layerMap, setLayerMap] = useState([]);
   const [mapStyles, setMapStyles] = useState([]);
-  const [search, setSearch] = useState("");
   const [searchState, setSearchState] = useState(false);
   const [tab, setTab] = useState(0);
 
@@ -72,12 +72,16 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
   }, [stateMapControls.selectedControl]);
 
   useEffect(() => {
-    if ((type === "layer" || type === "heatMaps" || type === "marketplace") && items) {
-      setLayerMap(items);
-    } else if (type === "base" && items) {
-      setLayerMap(items.filter((item) => item.name !== "Water" && item.name !== "Land"));
+    setFilteredItems(items);
+  }, [items]);
+
+  useEffect(() => {
+    if ((type === "layer" || type === "heatMaps" || type === "marketplace") && filteredItems) {
+      setLayerMap(filteredItems);
+    } else if (type === "base" && filteredItems) {
+      setLayerMap(filteredItems.filter((item) => item.name !== "Water" && item.name !== "Land"));
     }
-  }, [stateMapControls.selectedControl, items, stateApp.checkedBaseLayers, stateApp.checkedHeatLayers, type]);
+  }, [stateMapControls.selectedControl, filteredItems, stateApp.checkedBaseLayers, stateApp.checkedHeatLayers, type]);
 
   const togglePullout = () => {
     setStateMapControls((stateMapControls) => ({
@@ -103,6 +107,22 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
       },
     });
   };
+
+  const filterLayers = (search) => {
+    if (!search) setFilteredItems(items);
+    else {
+      switch (type) {
+        case "layer":
+          setFilteredItems(items.filter(i => i.layerName.toLowerCase().includes(search.toLowerCase())));
+          break;
+        case "base":
+        case "heatMaps":
+          setFilteredItems(items.filter(i => i.name.toLowerCase().includes(search.toLowerCase())));
+          break;
+        default:
+      }
+    }
+  }
 
   const layerIcons = React.useMemo(() => {
     return [
@@ -241,27 +261,29 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
                   </Tabs>
                 </Grid>
               )}
-              <Grid item>
+              <Grid item xs={searchState ? 12 : 1}>
                 <div className={classes.search}>
                   <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput").focus()}>
                     <SearchIcon />
                   </Tooltip>
                   <InputBase
                     id="searchInput"
+                    fullWidth
                     placeholder="Search by Layer Name"
                     classes={{
                       root: classes.inputRoot,
                       input: classes.inputInput,
                     }}
+                    autoComplete="off"
                     inputProps={{ "aria-label": "search" }}
                     onFocus={() => setSearchState(true)}
-                    value={search}
                     onBlur={() =>
                       setTimeout(() => {
                         setSearchState(false);
+                        filterLayers();
                       }, 200)
                     }
-                    onChange={(evt) => setSearch(evt.target.value)}
+                    onChange={(evt) => filterLayers(evt.target.value)}
                   />
                 </div>
               </Grid>
