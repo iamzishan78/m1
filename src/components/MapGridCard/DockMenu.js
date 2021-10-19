@@ -49,7 +49,8 @@ export default function DockMenu({ setSelectedDockMenu }) {
                 aria-label="delete"
                 aria-controls="fade-menu"
                 aria-haspopup="true"
-                onClick={handleClick}
+                onMouseEnter={handleClick}
+            // onClick={handleClick}
             >
                 <SelectedIcon fontSize="md" color="rgba(23, 170, 221, 1)" />
             </IconButton>
@@ -61,6 +62,7 @@ export default function DockMenu({ setSelectedDockMenu }) {
                 onClose={handleClose}
                 TransitionComponent={Fade}
                 style={{ marginTop: "35px" }}
+                getContentAnchorEl={null}
             >
                 <Box>
                     <Grid
@@ -75,14 +77,12 @@ export default function DockMenu({ setSelectedDockMenu }) {
                             return (
                                 <Grid item key={dockName}>
                                     <Tooltip title={dockName} placement="top">
-
                                         <IconButton onClick={() => { onIconSelect(dockName) }}>
                                             <Icon
                                                 fontSize="medium"
                                                 color={`${selectedDock === dockName ? "rgba(23, 170, 221, 1)" : ""}`}
                                             />
                                         </IconButton>
-                                        
                                     </Tooltip>
                                 </Grid>
                             );
