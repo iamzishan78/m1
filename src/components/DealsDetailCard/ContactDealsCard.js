@@ -16,7 +16,7 @@ import { CONTACT } from "graphQL/useQueryContact";
 
 export default function ContactDocumentsCard(props) {
   let history = useHistory();
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
   const [allDeals, setAllDeals] = useState([]);
@@ -135,7 +135,13 @@ export default function ContactDocumentsCard(props) {
               cursor: "pointer",
             }}
             color="inherit"
-            onClick={() => history.push(`/contact/details/${contactId}`)}
+            onClick={() => {
+              history.push(`/contact/details/${contactId}`)
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                selectedContact: contactId,
+              }));
+            }}
           >
             {contactData?.name}
           </Link>
