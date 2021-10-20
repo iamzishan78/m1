@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: props.muted ? 1 : 0,
   }),
   subTaskLeftGrid: {
+    width: "57% !important",
     "& .MuiFormControlLabel-root": {
       marginRight: 0,
     },
@@ -30,15 +31,15 @@ const useStyles = makeStyles((theme) => ({
   subTaskRightGrid: (props) => ({
     alignItems: "right",
     textAlign: "right",
+    width: "37%",
     "& .MuiIconButton-root": {
       height: "25px",
       width: "25px",
       margin: "5px",
     },
     "& .MuiTextField-root": {
-      marginTop: "2px",
+      margin: "2px 10px 0px 0px",
       marginBottom: 0,
-      width: "132px",
     },
     "& .MuiInput-underline:before": {
       borderBottom: "none !important",
@@ -123,7 +124,7 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
               <DragIndicator style={{ cursor: "move" }} />
             </ListItemIcon>
           )}
-          <Grid item xs={canDrag ? 7 : 8} className={classes.subTaskLeftGrid}>
+          <Grid item className={classes.subTaskLeftGrid}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -143,7 +144,7 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
             {!isEdit.isEditing ? (
               <>
                 <Tooltip title={task.name} placement="top">
-                  <span style={{ fontSize: "medium" }}>{truncate(task.name, 18)}</span>
+                  <span style={{ fontSize: "medium" }}>{truncate(task.name, 28)}</span>
                 </Tooltip>
                 {isEdit.index === task.index && isEdit.showIcon && (
                   <EditIcon
@@ -179,9 +180,9 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
               />
             )}
           </Grid>
-          <Grid item xs={4} className={classes.subTaskRightGrid}>
+          <Grid item className={classes.subTaskRightGrid}>
             <Grid container direction="row" justify="flex-end" alignItems="center">
-              <Grid item style={{ width: "90px" }}>
+              <Grid item>
                 {isTemplate ? (
                   <PopupState variant="TaskTemplateDatePopover" popupId="TaskTemplateDatePopover">
                     {(popupState) => (
