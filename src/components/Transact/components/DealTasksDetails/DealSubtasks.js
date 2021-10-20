@@ -114,7 +114,7 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
         <Grid
           container
           direction="row"
-          justify="flex-start"
+          justify="space-between"
           alignItems="center"
           onMouseEnter={() => setEdit({ ...isEdit, index: task.index, showIcon: true })}
           onMouseLeave={() => setEdit({ ...isEdit, index: -1, showIcon: false })}
@@ -144,7 +144,7 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
             {!isEdit.isEditing ? (
               <>
                 <Tooltip title={task.name} placement="top">
-                  <span style={{ fontSize: "medium" }}>{truncate(task.name, 28)}</span>
+                  <span style={{ fontSize: "medium" }}>{truncate(task.name, 23)}</span>
                 </Tooltip>
                 {isEdit.index === task.index && isEdit.showIcon && (
                   <EditIcon
@@ -373,22 +373,22 @@ const DealSubtasks = (props) => {
 
   return (
     // <DndProvider backend={HTML5Backend}>
-      <ContextProvider>
-        <Flipper flipKey={items.map(({ id }) => id).join(".")}>
-          <Sortly items={items} onChange={handleChange}>
-            {(props) => (
-              <SubtaskItem
-                task={props.data}
-                handleUpdateSubtask={handleUpdateSubtask}
-                users={users}
-                handleDragEnd={handleDragEnd}
-                canDrag={canDrag}
-                isTemplate={isTemplate}
-              />
-            )}
-          </Sortly>
-        </Flipper>
-      </ContextProvider>
+    <ContextProvider>
+      <Flipper flipKey={items.map(({ id }) => id).join(".")}>
+        <Sortly items={items} onChange={handleChange}>
+          {(props) => (
+            <SubtaskItem
+              task={props.data}
+              handleUpdateSubtask={handleUpdateSubtask}
+              users={users}
+              handleDragEnd={handleDragEnd}
+              canDrag={canDrag}
+              isTemplate={isTemplate}
+            />
+          )}
+        </Sortly>
+      </Flipper>
+    </ContextProvider>
     // </DndProvider>
   );
 };
