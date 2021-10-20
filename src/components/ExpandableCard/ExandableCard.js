@@ -294,6 +294,8 @@ function ExpandableCard(props) {
 
 
     if (props.targetLabel === "well" || props.targetLabel === "expandedWell") {
+      const newPath = `/map/wells/${stateApp.selectedWell.id}/${stateApp.wellSelectedCoordinates[1]}/${stateApp.wellSelectedCoordinates[0]}`;
+      history.location.pathname !== newPath && history.replace(newPath)
       setStateApp((state) => ({
         ...state,
         wellDetailCardOpen: true,
@@ -353,7 +355,8 @@ function ExpandableCard(props) {
         expandedCard: false,
         viewDoc: null,
       }));
-      stateApp.selectedParcel?.id && history.replace({ pathname: '/' })
+      // stateApp.selectedParcel?.id && history.replace({ pathname: '/' })
+      history.replace({ pathname: '/' })
     }
     props.handleCloseExpandableCard();
     //if EC is inside map popup you need to close it

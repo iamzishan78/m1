@@ -173,10 +173,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   useEffect(() => {
     let type = null;
-    if (mutationData && mutationData.addOwnerToAUnit) {
-      type = { name: "add", success: mutationData.addOwnerToAUnit.success };
-    } else if (updateData && updateData.updateUnitOwner) {
-      type = { name: "updat", success: updateData.updateUnitOwner.success };
+    if (mutationData && mutationData.addOwnerToAShape) {
+      type = { name: "add", success: mutationData.addOwnerToAShape.success };
+    } else if (updateData && updateData.updateShapeOwner) {
+      type = { name: "update", success: updateData.updateShapeOwner.success };
     }
 
     if (type) {

@@ -64,10 +64,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import Portal from "@material-ui/core/Portal";
 
 // queries
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
 import { WELLSQUERY } from "../../graphQL/useQueryWells";
 import { TRACKSBYOBJECTTYPE } from "../../graphQL/useQueryTracksByObjectType";
 import { OWNERSWELLSQUERY } from "../../graphQL/useQueryOwnersWells";
+import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 import { CUSTOMLAYERSQUERY } from "../../graphQL/useQueryCustomLayers";
 //import { PERMITSQUERY } from "../../graphQL/useQueryPermits";
 import { RECENT_SUBMITTED_PERMITS_QUERY } from "../../graphQL/useQueryRecentSubmittedPermits";
@@ -135,7 +136,7 @@ const random_hex_color_code = () => {
 };
 let hoveredAbstractId = null;
 
-function Map() {
+function Map({ type, paramId, lati, longi }) {
 
   // context states
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -143,10 +144,7 @@ function Map() {
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const history = useHistory();
-  const parcelId =
-    history.location.pathname.split("/")[
-    history.location.pathname.split("/").length - 1
-    ];
+  const client = useApolloClient();
 
   // function states
   const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
@@ -432,16 +430,34 @@ function Map() {
     };
   };
 
-  useEffect(() => {
-    if (!loading &&
-      parcelId !== "" &&
-      // parcelId !== stateApp.selectedParcel?.id &&
-      stateApp.customLayers.length > 0) {
-      console.log(parcelId)
-      const parcel = stateApp.customLayers.find(el => el._id === parcelId)
-      if (parcel) {
-        let jsonParcel = JSON.parse(parcel.shape)
-        let fitBounds = findBounds([jsonParcel]);
+  async function getCustomLayer() {
+    const keys = { parcels: 'selectedParcel', units: 'selectedUnit', wells: 'selectedWell' }
+
+    if (type === 'wells') {
+      const intervalObj = setInterval(function () {
+        if (map.getSource("wellsVT") && paramId?.toLowerCase() !== stateApp.selectedWellId) {
+          clearInterval(intervalObj)
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            selectedWellId: paramId.toLowerCase(),
+            wellSelectedCoordinates: [Number(longi), Number(lati)],
+          }))
+        }
+      }, 3000);
+      return
+    }
+    if (!stateApp[keys[type]] || paramId !== stateApp[keys[type]]?.id) {
+      const { data: layer } = await client.query(
+        {
+          query: CUSTOMLAYER,
+          variables: {
+            id: paramId,
+          },
+        }
+      );
+      if (layer?.customLayer) {
+        let jsonLayer = JSON.parse(layer.customLayer.shape)
+        let fitBounds = findBounds([jsonLayer]);
 
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -450,19 +466,26 @@ function Map() {
 
         setStateApp((stateApp) => ({
           ...stateApp,
-          selectedParcel: {
-            ...jsonParcel.properties,
-            feature: jsonParcel,
-            id: parcel._id
+          [keys[type]]: {
+            ...jsonLayer.properties,
+            feature: jsonLayer,
+            id: layer.customLayer._id
           },
           popupOpen: false,
           expandedCard: true,
-          // parcelDetailCardOpen: true,
-          // fitBounds: { ...fitBounds }
         }))
       }
     }
-  }, [loading, parcelId]);
+  }
+
+
+  useEffect(() => {
+    if (!loading && paramId
+      // parcelId !== stateApp.selectedParcel?.id
+    ) {
+      getCustomLayer()
+    }
+  }, [loading, paramId]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -1278,17 +1301,10 @@ function Map() {
           id: filteredLayer._id,
         }
 
-      if (feature.source === "parcels_source") {
-        setStateApp((state) => {
-          if (state.isDrawing) return state
-          return {
-            ...state,
-            selectedUserDefinedLayer: null,
-            selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
-          }
-        });
-      }
+
       if (feature.source === "units_source") {
+        const newPath = `/map/units/${feature.properties.id}`;
+        history.location.pathname !== newPath && history.replace(newPath)
         setStateApp((state) => {
           if (state.isDrawing) return state
           return {
@@ -1296,6 +1312,16 @@ function Map() {
             expandedCard: true,
             selectedUserDefinedLayer: null,
             selectedUnit: { ...feature.properties, feature: selectedUserDefinedLayer },
+          }
+        });
+      }
+      else if (feature.source === "parcels_source") {
+        setStateApp((state) => {
+          if (state.isDrawing) return state
+          return {
+            ...state,
+            selectedUserDefinedLayer: null,
+            selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
           }
         });
       }
@@ -4640,7 +4666,7 @@ function Map() {
       setStateApp((state) => ({
         ...state,
         popupOpen: true,
-        expandedCard: stateApp.activateWellDetailsFromTable ? true : false,
+        expandedCard: stateApp.activateWellDetailsFromTable || currentFeature.id === paramId ? true : false,
       }));
 
 

@@ -235,7 +235,8 @@ export default function DrawShapes() {
       setStateApp((state) => ({
         ...state,
         currentFeature: selectedUserDefinedLayer,
-        selectedAoi: selectedUserDefinedLayer,
+        // selectedParcel: selectedUserDefinedLayer.source === 'parcels_source' ? selectedUserDefinedLayer : null,
+        selectedAoi: selectedUserDefinedLayer.source === 'interests_source' ? selectedUserDefinedLayer : null,
       }));
       if (selectedUserDefinedLayer.source === "interests_source" && showShapeActionsPopup === true && selectedParcel === null) {
         toggleSpatialDataCard(true);
@@ -386,11 +387,11 @@ export default function DrawShapes() {
         </ClickAwayListener>
       )}
       {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
-      stateApp.currentFeature !== undefined &&
-      !stateApp.currentFeature.id?.includes("draw_polygon") &&
-      !stateApp.currentFeature.id?.includes("drag_circle") &&
-      !stateApp.currentFeature.id?.includes("draw_rectangle") &&
-      !stateApp.currentFeature.id?.includes("edit_polygon") ? (
+        stateApp.currentFeature !== undefined &&
+        !stateApp.currentFeature.id?.includes("draw_polygon") &&
+        !stateApp.currentFeature.id?.includes("drag_circle") &&
+        !stateApp.currentFeature.id?.includes("draw_rectangle") &&
+        !stateApp.currentFeature.id?.includes("edit_polygon") ? (
         <Fragment>
           {showSpatialDataCard &&
             stateApp.currentFeature?.properties?.sdType === "interest" && ( // for edit/create AOI
