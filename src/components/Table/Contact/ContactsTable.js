@@ -9,6 +9,7 @@ import {
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import get from 'lodash/get';
+import { Menu, MenuItem } from "@material-ui/core";
 
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
 import Contact from "components/Shared/svgIcons/contact";
@@ -256,6 +257,16 @@ function ContactsTable(props) {
 
 const HeaderComponent = ({ selectedGridView, setShowViewModal, showViewModal }) => {
   const [showIcon, setShowIcon] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
   return (
     <div
       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
@@ -277,16 +288,36 @@ const HeaderComponent = ({ selectedGridView, setShowViewModal, showViewModal }) 
         >
           Contacts
         </Typography>
-        <div style={{ display: "flex", color: "#18AADD", fontSize: "16px", cursor: "pointer" }}
-            onClick={() => setShowViewModal(!showViewModal)}
+        <div>
+          <div style={{ display: "flex", color: "#18AADD", fontSize: "16px", cursor: "pointer" }}
+            onClick={(event) => handleClick(event)}
             onMouseOver={() => setShowIcon(true)}
             onMouseLeave={() => setShowIcon(false)}>
-          <Typography>
-            <span>{selectedGridView.name}</span>
-          </Typography>
-          <span style={{ height: "0px", color: "#18AADD", fontSize: "16px", cursor: "pointer" }}>{showIcon && <ExpandMoreIcon />}</span>
-        </div>
-        
+            <Typography>
+              <span>{selectedGridView.name}</span>
+            </Typography>
+            <span style={{ height: "0px", color: "#18AADD", fontSize: "16px", cursor: "pointer" }}>{showIcon && <ExpandMoreIcon />}</span>
+          </div>
+          <Menu
+            style={{ zIndex: '1305'}}
+            id="menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            getContentAnchorEl={null}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            transformOrigin={{ vertical: "top", horizontal: "center" }}
+          >
+            <MenuItem style={{ width: '500px' }} onClick={handleClose} disabled={true}>
+              Update view
+            </MenuItem>
+            <MenuItem onClick={handleClose}>
+              Save as new view
+            </MenuItem>
+          </Menu>
+
+        </div>        
       </Breadcrumbs>
     </div>
   );
