@@ -372,7 +372,7 @@ const DealSubtasks = (props) => {
   };
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    // <DndProvider backend={HTML5Backend}>
       <ContextProvider>
         <Flipper flipKey={items.map(({ id }) => id).join(".")}>
           <Sortly items={items} onChange={handleChange}>
@@ -389,7 +389,7 @@ const DealSubtasks = (props) => {
           </Sortly>
         </Flipper>
       </ContextProvider>
-    </DndProvider>
+    // </DndProvider>
   );
 };
 

@@ -390,7 +390,7 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     getDeal({
-      variables: { id: stateApp.activeDeal.cardId },
+      variables: { id: stateApp.activeDeal?.cardId },
     });
   }, [getDeal]);
 
@@ -1167,7 +1167,9 @@ function AddDealDialog(props) {
 
   const handleClickDialogClose = () => {
     if (!updateDealLoading && !addContactLoading) {
-      history.push(`${history.location.pathname.split("/lane")[0]}`);
+      if(history.location.pathname.includes('lane')){
+        history.push(`${history.location.pathname.split("/lane")[0]}`);
+      }
       setStateApp((stateApp) => ({
         ...stateApp,
         dealDialog: false,
@@ -1229,7 +1231,7 @@ function AddDealDialog(props) {
           ) : (
             <div className={classes.contentRoot}>
               <Drawer dealSettingsNumber={getSubtaskNumber()} />
-              {props.isTransactPage &&
+              {
               stateApp.transactBarView !== "Deal" &&
               (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>

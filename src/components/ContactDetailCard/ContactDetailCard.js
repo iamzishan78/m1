@@ -325,6 +325,7 @@ export default function ContactDetailCard(props) {
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
 
   const [getContact, { loading, data }] = useLazyQuery(CONTACT);
+  const [getSecondContact, { data: secondContact }] = useLazyQuery(CONTACT);
   const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
   // const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(
   //   TRANSACTIONDATA
@@ -407,6 +408,18 @@ export default function ContactDetailCard(props) {
     }
   }, [contactPurchaseData]);
 
+  useEffect(()=>{
+    console.log('history.location.pathname',history)
+    if(history.location.search.includes("/contact/details")){
+      const id = history.location.search.split('?return-url=/contact/details/')[1].split('/')[0]
+      getSecondContact({
+        variables: {
+          contactId: id,
+        },
+      });
+    }
+  },[]);
+
   useEffect(() => {
     if (data && data.contact) {
       setContactData(data.contact);
@@ -478,7 +491,67 @@ export default function ContactDetailCard(props) {
           }}
         >
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-            {isPrevUrlFlowline && (
+            {isPrevUrlFlowline && get(secondContact,'contact.name', '') && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push("/contacts")}
+              >
+                Contacts
+              </Link>
+            )}
+            {isPrevUrlFlowline && get(secondContact,'contact.name', '') && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => {
+                  history.push(`/contact/details/${get(secondContact,'contact._id', '')}`);
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    selectedContact: get(secondContact,'contact._id', ''),
+                  }));
+                }}
+              >
+                {getName(secondContact.contact)}
+              </Link>
+            )}
+            {isPrevUrlFlowline && get(secondContact,'contact.name', '') && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => {
+                  history.push(history.location.search.split('?return-url=')[1]);
+                }}
+              >
+                Deals
+              </Link>
+            )}
+             {isPrevUrlFlowline && get(secondContact,'contact.name', '') && (
+              <Link
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                color="inherit"
+                onClick={() => history.push(history.location.search.split('?return-url=')[1])}
+              >
+                {truncate(stateApp.activeDeal.name, 30)}
+              </Link>
+            )}
+            {isPrevUrlFlowline && selectedPipe && (
               <Link
                 style={{
                   marginLeft: "5px",
@@ -491,7 +564,7 @@ export default function ContactDetailCard(props) {
                 Flow
               </Link>
             )}
-            {isPrevUrlFlowline && (
+            {isPrevUrlFlowline && selectedPipe && (
               <Link
                 style={{
                   marginLeft: "5px",
@@ -499,12 +572,12 @@ export default function ContactDetailCard(props) {
                   cursor: "pointer",
                 }}
                 color="inherit"
-                onClick={() => history.push(`/flow/${selectedPipe._id}`)}
+                onClick={() => history.push(`/flow/${selectedPipe?._id}`)}
               >
-                {truncate(selectedPipe.name, 30)}
+                {truncate(get(selectedPipe,'name',''), 30)}
               </Link>
             )}
-            {isPrevUrlFlowline && (
+            {isPrevUrlFlowline && selectedPipe && (
               <Link
                 style={{
                   marginLeft: "5px",
