@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
@@ -52,16 +52,32 @@ const useStyles = makeStyles((theme) => ({
     color: (props) => (props.white ? "rgb(1,17,51)" : "#FFFFFF"),
   },
 
-  indicator: {
-    backgroundColor: "#33b4e0",
-    height: "3px"
+  tab: {
+    display: "flex",
+    justifyContent: "center",
+    backgroundColor: "transparent",
   },
+
   tabPanel: {
     "& > div": {
       margin: "0px !important",
     },
   },
 }));
+
+
+const StyledTabs = withStyles(theme => ({
+  indicator: {
+    display: "flex",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+    "& > div": {
+      maxWidth: 80,
+      width: "100%",
+      backgroundColor: "#33b4e0",
+    }
+  }
+}))(props => <Tabs {...props} TabIndicatorProps={{ children: <div /> }} />);
 
 export default function Taps(props) {
   const classes = useStyles(props);
@@ -95,18 +111,17 @@ export default function Taps(props) {
         position="static"
         color="default"
       >
-        <Tabs
+        <StyledTabs
           value={value}
           onChange={handleChange}
           variant="scrollable"
           scrollButtons="auto"
-          classes={{ indicator: classes.indicator }}
           aria-label="scrollable auto tabs example"
         >
           {tabLabels.map((label, i) => {
             return <Tab key={i} label={label} {...a11yProps(i)} />;
           })}
-        </Tabs>
+        </StyledTabs>
       </AppBar>
 
       {tabPanels.map((panel, i) => (
