@@ -473,13 +473,11 @@ const Login = (props) => {
     return await fetch(endpoint, options)
       .then((response) => response.json())
       .then((response) => {
-        debugger;
         return response?.data?.userMapSettings?.settings
           ? response.data.userMapSettings.settings.settings
           : null;
       })
       .catch((error) => {
-        debugger;
         console.log(error)
       });
   }
@@ -493,30 +491,6 @@ const Login = (props) => {
       .catch(function (error) {
         console.log(error);
       });
-    console.log(loginResponse);
-    if (stateApp.myMSALObj.getAllAccounts()) {
-      return loginResponse;
-    }
-  }
-
-  async function ssoSilent(request) {
-    console.log("request made to ssoSilent at: " + new Date().toString());
-    console.log("scopes requested: " + request.scopes.toString());
-
-    stateApp.myMSALObj.config.auth.redirectUri = window.location.origin + "/auth.html";
-
-    const loginResponse = await stateApp.myMSALObj
-      .ssoSilent(request)
-      .catch(function (error) {
-        console.error("Silent Error: " + error);
-        if (error instanceof msal.InteractionRequiredAuthError) {
-          stateApp.myMSALObj.config.auth.redirectUri = window.location.origin;
-          stateApp.myMSALObj.loginRedirect(request)
-        }
-      });
-
-    stateApp.myMSALObj.config.auth.redirectUri = window.location.origin;
-
     console.log(loginResponse);
     if (stateApp.myMSALObj.getAllAccounts()) {
       return loginResponse;

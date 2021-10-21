@@ -4771,7 +4771,6 @@ function Map() {
         let id = mapEl.current.id;
 
         var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
-        // debugger;
         console.log("mapbox://styles/m1neral/" + mapStyles[index].id);
         const newMap = new mapboxgl.Map({
           container: `${id}`,
