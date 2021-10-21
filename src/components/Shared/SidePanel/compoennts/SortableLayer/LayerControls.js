@@ -1,28 +1,30 @@
 import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Checkbox from "@material-ui/core/Checkbox";
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
 import ClickIcon from "../../../svgIcons/cursor-click.js";
-import ColorControl from "../../../svgIcons/color-control.js";
 import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 import { deepEqualObjects } from "../../../functions";
 import { ifLayerHaveData } from "../common.js";
 import { AppContext } from "AppContext.js";
 
-import { Box, Grid } from "@material-ui/core";
-import DonutSmallIcon from '@material-ui/icons/DonutSmall';
+import { Grid } from "@material-ui/core";
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import { IconButton } from '@material-ui/core';
-
 
 const useStyles = makeStyles(() => ({
   disabledLayerTitle: {
     "& span": { color: "rgb(127, 149, 199) !important" },
   },
+  formControl: {
+    "& .MuiFormControlLabel-root": {
+      margin: "0px !important",
+    }
+  }
 }));
 
-const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
+const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) => {
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
 
@@ -84,23 +86,18 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
     }
   };
 
-  const control1 = layer.layerSettings?.colorable && (
-
+  const layerStylingControl = layer.layerSettings?.colorable && (
     <IconButton size='small'>
       <Tooltip title="Layer Styling" >
-        <DonutSmallIcon htmlColor="#12abe0" onClick={() => handleColorPicker(layer)} />
+        <ArrowForwardIosIcon htmlColor={isHover ? "white" : "#808ba3"} onClick={() => handleColorPicker(layer)} />
       </Tooltip>
     </IconButton>
-
   );
 
-  const control2 = (layer.layerSettings?.interaction?.interactionAble || layer.layerType === 'file layer') && (
-
+  const layerClickabilityControl = isHover && (layer.layerSettings?.interaction?.interactionAble || layer.layerType === 'file layer') && (
     <Tooltip title="Clickable" >
-
       <Checkbox
         icon={
-
           <CancelOutlinedIcon
             fontSize='small'
             htmlColor={
@@ -109,7 +106,6 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
                 : "#12abe0"
             }
           />
-
         }
         checkedIcon={
           <IconButton size='small'>
@@ -133,14 +129,12 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
         size='small'
       />
     </Tooltip>
-
   );
 
   return (
     <>
 
       <Grid container
-        spacing={1}
         style={{
           display: 'flex',
           flexDirection: 'row',
@@ -148,28 +142,10 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
           alignItems: 'center',
         }}
       >
-
-        <Grid item
-          xs
-          style={{
-          }}
-        >
-          {control2}
+        <Grid item xs={4}>
+          {layerClickabilityControl}
         </Grid>
-
-        <Grid item
-          xs
-          style={{
-          }}
-        >
-          {control1}
-        </Grid>
-
-        <Grid item
-          xs
-          style={{
-          }}
-        >
+        <Grid item xs={4} className={classes.formControl}>
           <FormControlLabel
             control={
               <Switch
@@ -187,13 +163,11 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer }) => {
               />
             }
           />
-
         </Grid>
-
-
-
+        <Grid item xs={4}>
+          {layerStylingControl}
+        </Grid>
       </Grid>
-
     </>
   );
 };

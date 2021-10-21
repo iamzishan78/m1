@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/styles";
-import { Box, Grid, ListItemIcon, ListItemText } from "@material-ui/core";
+import { Box, Grid, ListItemIcon } from "@material-ui/core";
 
 import { Flipped } from "react-flip-toolkit";
 import { useSelector } from "react-redux";
@@ -8,7 +8,6 @@ import { getLayerColor, ifLayerHaveData } from "../common";
 import { useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import { DragIndicator } from "@material-ui/icons";
 import LayerControls from "./LayerControls";
-import { truncate } from "components/Shared/functions";
 import { FormControlLabel } from "@material-ui/core";
 import { Switch } from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
@@ -16,9 +15,6 @@ import Typography from '@material-ui/core/Typography';
 // icons 
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -67,9 +63,10 @@ const useStyles = makeStyles((theme) => ({
 
 
 const LayerItem = React.memo((props) => {
+  const [hoverItemIndex, setHoverItem] = useState(-1);
   const colors = useSelector(({ MainMap }) => MainMap);
 
-  const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin, stateApp } = props;
+  const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin } = props;
   const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
   const { type, collapsed, name } = data;
 
@@ -104,9 +101,8 @@ const LayerItem = React.memo((props) => {
 
   return (
     <Flipped flipId={id}>
-      <div ref={(ref) => drop(preview(ref))}
+      <div ref={(ref) => drop(preview(ref))} onMouseEnter={() => setHoverItem(id)} onMouseLeave={() => setHoverItem(null)}
       >
-
         <Grid container
           className={classes.root}
           direction="row"
@@ -169,7 +165,7 @@ const LayerItem = React.memo((props) => {
             }}
           >
 
-            {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} />}
+            {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} isHover={hoverItemIndex === id} />}
 
             {type === "group" && (
 
