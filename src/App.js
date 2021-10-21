@@ -4,6 +4,8 @@ import { AppProvider, AppContext, setApolloHeaders } from "./AppContext";
 import { Switch, Route } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 //components
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import Login from "./components/Login/Login";
 import SignUpCard from "./components/Login/SignUpCard";
 import ForgotPassword from "./components/Login/ForgotPassword";
@@ -273,6 +275,7 @@ function App() {
               <MuiPickersUtilsProvider utils={MomentUtils}>
                 <ContactBulkProgress />
                 <ConnectedRouter history={history}>
+                <DndProvider backend={HTML5Backend}>
                   <Switch>
                     <NavigationProvider>
                       <PrivateRoute title="Map" exact path={["/", "/map/parcels/:parcelId"]} component={MapProvider} />
@@ -309,6 +312,7 @@ function App() {
                       {/* <Route component={NotFoundRedirect} /> */}
                     </NavigationProvider>
                   </Switch>
+                  </DndProvider>
                 </ConnectedRouter>
               </MuiPickersUtilsProvider>
             </MuiThemeProvider>
