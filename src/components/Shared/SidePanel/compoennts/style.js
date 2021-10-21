@@ -127,8 +127,8 @@ export const useStyles = makeStyles((theme) => ({
     // for layer panel
     backgroundColor: "#040e24",
     overflow: "auto",
-    height: "calc(100vh - 50px - 64px)",
-    maxheight: "calc(100vh - 50px - 64px)",
+    height: "calc(100vh - 167px)",
+    maxheight: "calc(100vh - 167px)",
     paddingTop: 10,
     paddingBottom: 10,
 
