@@ -329,7 +329,7 @@ function AddDealDialog(props) {
   console.log("pipelineId", pipelineId, selectedPipe);
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
-  const [getDeal, { data: getDealResult, loading: getDealLoading }] = useLazyQuery(GETDEAL, {
+  const [getDeal, { data: getDealResult }] = useLazyQuery(GETDEAL, {
     fetchPolicy: "no-cache",
   });
 
@@ -403,7 +403,6 @@ function AddDealDialog(props) {
       const defaultSettings = get(dealSettings, "dealSettings", []);
       if (defaultSettings.length > 0) {
         // deal default settings
-        //? createDealDefaultSettings(stageDealDescriptors: $stageDealDescriptors, dealId: $dealId)
         const stageDealDescriptors = defaultSettings.map((setting) => ({
           //? creating stage deal descriptors json
           relatedObject: setting._id,
@@ -413,7 +412,7 @@ function AddDealDialog(props) {
           tasks: setting.tasks,
           isCurrent: setting._id === stageId,
         }));
-        // api for default setting
+        // api call for default setting
         createDealDefaultSettings({
           variables: {
             stageDealDescriptors,
