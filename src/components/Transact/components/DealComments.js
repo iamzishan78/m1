@@ -214,7 +214,7 @@ export default function DealComment(props) {
   }, [profiledata]);
 
   const getPinnedComment = () => ({
-    user: stateApp.activeDeal.owners[0].relatedObject,
+    user: stateApp.activeDeal.user,
     isPinned: true,
     isPublic: true,
     ts: new Date(stateApp.activeDeal.createdOn),
@@ -235,21 +235,21 @@ export default function DealComment(props) {
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")
       : `${value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")}`;
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")}`;
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -430,7 +430,7 @@ export default function DealComment(props) {
           <Grid item xs={1}>
             <IconButton
               className={classes.commentView}
-              // style={{ top: "3px" }}
+            // style={{ top: "3px" }}
             >
               {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
             </IconButton>

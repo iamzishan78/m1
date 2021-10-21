@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { ContextProvider } from "react-sortly";
 import Sortly, { useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import { Flipper, Flipped } from "react-flip-toolkit";
