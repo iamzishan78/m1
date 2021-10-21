@@ -251,6 +251,7 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-start",
     backgroundColor: "#141d32 !important",
+    minHeight: "53px !important",
     "& .MuiTabs-root": {
       "& .MuiTabs-scroller": {
         "& .MuiTabs-flexContainer": {
