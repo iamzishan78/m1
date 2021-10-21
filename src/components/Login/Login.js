@@ -399,7 +399,7 @@ const Login = (props) => {
       //do some error stuff
       return;
     }
-    const userSettingsResp = await userSettings(mongoUser._id);
+    const userSettingsResp = await userSettings(mongoUser._id, authGraphQLResponse.authenticationToken, authGraphQLToken.idToken);
     if (userSettingsResp) {
       mapVars = { ...mapVars, styleId: userSettingsResp.activeBaseMap }
     }
@@ -461,7 +461,7 @@ const Login = (props) => {
       .catch((error) => console.log(error));
   }
 
-  async function userSettings(userId) {
+  async function userSettings(userId, authToken, idToken) {
     var options = {
       method: "POST",
       headers: {
@@ -470,6 +470,7 @@ const Login = (props) => {
       body: JSON.stringify({ query: USER_MAP_SETTINGS, variables: { user: userId } }),
     };
     let endpoint = stateApp.apolloClientEndpoint
+    options = setApolloHeaders(options, authToken, idToken)
     return await fetch(endpoint, options)
       .then((response) => response.json())
       .then((response) => {
