@@ -15,11 +15,11 @@ import {
   b2cPolicies,
   msalConfig,
   loginRequest,
-  readProfileRequest,
   authGraphQLRequest,
 } from "./AADAuthConfig";
 import * as msal from "@azure/msal-browser";
 import { GET_LOGGED_IN_USER } from "graphQL/useMutationLoggedInUser";
+import { USER_MAP_SETTINGS } from "graphQL/useQueryUserMapSettings";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -261,7 +261,7 @@ const Login = (props) => {
     }
   }, [stateApp.myMSALObj, signingIn]);
 
-  const handledAADSignIn = async (tenantName, updateTenantFlags) => {
+  const handleAADSignIn = async (tenantName, updateTenantFlags) => {
     let tenant = tenantsCredentials(tenantName);
     if (tenant) {
       setSigningIn(true);
@@ -389,11 +389,8 @@ const Login = (props) => {
       },
       authGraphQLResponse.authenticationToken,
       authGraphQLToken.idToken,
-    ).catch((error) => {
-      //do some error stuff
-      console.log(error);
-    });
-    let mongoUser, sessionData;
+    );
+    let mongoUser, sessionData, mapVars = stateApp.mapVars;
     if (loginResp?.user) {
       mongoUser = loginResp.user
       sessionData = loginResp.sessionData
@@ -401,6 +398,10 @@ const Login = (props) => {
     if (!mongoUser) {
       //do some error stuff
       return;
+    }
+    const userSettingsResp = await userSettings(mongoUser._id);
+    if (userSettingsResp) {
+      mapVars = { ...mapVars, styleId: userSettingsResp.activeBaseMap }
     }
 
     setStateApp((state) => ({
@@ -427,6 +428,7 @@ const Login = (props) => {
           },
         },
       },
+      mapVars
     }));
 
     setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
@@ -457,6 +459,29 @@ const Login = (props) => {
           : null;
       })
       .catch((error) => console.log(error));
+  }
+
+  async function userSettings(userId) {
+    var options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query: USER_MAP_SETTINGS, variables: { user: userId } }),
+    };
+    let endpoint = stateApp.apolloClientEndpoint
+    return await fetch(endpoint, options)
+      .then((response) => response.json())
+      .then((response) => {
+        debugger;
+        return response?.data?.userMapSettings?.settings
+          ? response.data.userMapSettings.settings.settings
+          : null;
+      })
+      .catch((error) => {
+        debugger;
+        console.log(error)
+      });
   }
 
   async function signInPopup(request) {
@@ -602,7 +627,7 @@ const Login = (props) => {
       <div className={localClass.cardContainer}>
         <SignInCard
           ready={loadingSigInButton}
-          handleAADSignIn={handledAADSignIn}
+          handleAADSignIn={handleAADSignIn}
           tenant={
             !stateApp.myMSALObj
               ? queryString.parse(props.location.search).tenant

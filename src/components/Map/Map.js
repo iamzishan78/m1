@@ -67,7 +67,6 @@ import { VIEWFILEQUERY } from "../../graphQL/useQueryViewFile";
 import { OWNERSQUERY } from "../../graphQL/useQueryOwners";
 import { ALLLAYERSETTINGSBYUSER } from "../../graphQL/useQueryAllLayerSettingsByUser";
 import { ABSTRACTGEOCONTAINSQUERY } from "../../graphQL/useQueryAbstractGeoContains";
-import { USER_MAP_SETTINGS } from "graphQL/useQueryUserMapSettings";
 
 // mutations
 import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
@@ -322,7 +321,6 @@ function Map() {
   const [getAbstractGeoContains, { data: abstractContainsData }] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
   const [getPLSSSecondDivisionGeo, { data: plssSecondDivisionData }] = useLazyQuery(PLSSSECONDDIVISIONGEO);
   const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(ALLLAYERSETTINGSBYUSER);
-  const [getUserMapSettings, { data: mapSettings }] = useLazyQuery(USER_MAP_SETTINGS);
 
   // mutations
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
@@ -1972,9 +1970,9 @@ function Map() {
         let baseFilter;
         stateApp?.layers?.find(
           (layer) =>
-            (baseFilter =
-              Array.isArray(layer?.layerPaintProps) &&
-              layer?.layerPaintProps?.find((layerPaintProp) => layerPaintProp?.id === filterLayer)?.filter)
+          (baseFilter =
+            Array.isArray(layer?.layerPaintProps) &&
+            layer?.layerPaintProps?.find((layerPaintProp) => layerPaintProp?.id === filterLayer)?.filter)
         );
         return baseFilter || [];
       };
@@ -4292,9 +4290,8 @@ function Map() {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
-            stateApp.mapboxglAccessToken
-          }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
+            }`;
 
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
@@ -4367,9 +4364,8 @@ function Map() {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
-            stateApp.mapboxglAccessToken
-          }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
+            }`;
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
           headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
@@ -4477,28 +4473,6 @@ function Map() {
       abortController.abort();
     };
   }, []);
-
-  useEffect(() => {
-    // getting user heatmap and basemap setting
-    if (stateApp.user && map)
-      getUserMapSettings({
-        variables: {
-          user: stateApp.user.mongoId,
-        },
-      });
-  }, [getUserMapSettings, stateApp.user, map]);
-
-  useEffect(() => {
-    if (get(mapSettings, "userMapSettings.settings")) {
-      const { settings } = mapSettings.userMapSettings.settings;
-      if (settings) {
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          mapVars: { ...stateApp.mapVars, styleId: settings.activeBaseMap },
-        }));
-      }
-    }
-  }, [mapSettings]);
 
   useEffect(() => {
     if (map) {
