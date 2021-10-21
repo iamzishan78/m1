@@ -62,6 +62,10 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: "20px !important",
     paddingTop: "3px !important",
   },
+  paddingCreateTask: {
+    paddingLeft: "20px !important",
+    paddingTop: "10px !important",
+  },
   moreComment: {
     padding: "10px",
     marginLeft: "35px",
@@ -357,10 +361,10 @@ export default function DealComment(props) {
                           )}
                         </IconButton>
                       </Grid>
-                      <Grid item xs={11} className={classes.paddingLeft10}>
+                      <Grid item xs={11} className={classes.paddingCreateTask} >
                         <div>
                           <span className={classes.bold}>{eachComment.user.name}</span>
-                          {eachComment.isPinned && <span> Created this task.</span>}
+                          {eachComment.isPinned && <span> created this task.</span>}
                           <ReactTimeAgo
                             className={classes.commentTime}
                             date={
