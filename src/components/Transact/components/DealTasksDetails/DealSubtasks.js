@@ -23,7 +23,9 @@ const useStyles = makeStyles((theme) => ({
     zIndex: props.muted ? 1 : 0,
   }),
   subTaskLeftGrid: {
-    width: "57% !important",
+    display: "flex",
+    width: "55% !important",
+    alignItems: "center",
     "& .MuiFormControlLabel-root": {
       marginRight: 0,
     },
@@ -31,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   subTaskRightGrid: (props) => ({
     alignItems: "right",
     textAlign: "right",
-    width: "37%",
+    width: "39%",
     "& .MuiIconButton-root": {
       height: "25px",
       width: "25px",
@@ -71,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
   },
   pencilIcon: {
-    margin: "0px 0px -5px 5px",
+    margin: "-5px 0px -5px 5px",
     cursor: "pointer",
   },
 }));
@@ -120,7 +122,7 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
           onMouseLeave={() => setEdit({ ...isEdit, index: -1, showIcon: false })}
         >
           {canDrag && (
-            <ListItemIcon ref={drag} style={{ minWidth: "30px" }}>
+            <ListItemIcon ref={drag} style={{ minWidth: 0 }}>
               <DragIndicator style={{ cursor: "move" }} />
             </ListItemIcon>
           )}
