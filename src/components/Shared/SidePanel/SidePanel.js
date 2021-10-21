@@ -9,425 +9,409 @@ import { UPDATELAYERSETTINGS } from "../../../graphQL/useMutationUpdateLayerSett
 import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyLayerSettings";
 import { makeStyles } from "@material-ui/core/styles";
 
-
-
 const reorder = (list, startIndex, endIndex) => {
-	const result = Array.from(list);
-	const [removed] = result.splice(startIndex, 1);
-	result.splice(endIndex, 0, removed);
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
 
-	return result;
+  return result;
 };
 
 const reorderLayers = (list, startPosition, endPosition) => {
-	const reorderedLayers = Array.from(list);
-	let startIndex = reorderedLayers.findIndex(
-		(layer) => layer.position == startPosition
-	);
-	let endIndex = reorderedLayers.findIndex(
-		(layer) => layer.position == endPosition
-	);
+  const reorderedLayers = Array.from(list);
+  let startIndex = reorderedLayers.findIndex((layer) => layer.position == startPosition);
+  let endIndex = reorderedLayers.findIndex((layer) => layer.position == endPosition);
 
-	//// switch positions between layers
-	let endI = endIndex;
-	while (endI > startIndex) {
-		let temp = reorderedLayers[endI].position;
-		reorderedLayers[endI] = {
-			...reorderedLayers[endI],
-			position: reorderedLayers[endI - 1].position,
-		};
-		reorderedLayers[endI - 1] = {
-			...reorderedLayers[endI - 1],
-			position: temp,
-		};
-		endI--;
-	}
-	while (endI < startIndex) {
-		let temp = reorderedLayers[endI].position;
-		reorderedLayers[endI] = {
-			...reorderedLayers[endI],
-			position: reorderedLayers[endI + 1].position,
-		};
-		reorderedLayers[endI + 1] = {
-			...reorderedLayers[endI + 1],
-			position: temp,
-		};
-		endI++;
-	}
+  //// switch positions between layers
+  let endI = endIndex;
+  while (endI > startIndex) {
+    let temp = reorderedLayers[endI].position;
+    reorderedLayers[endI] = {
+      ...reorderedLayers[endI],
+      position: reorderedLayers[endI - 1].position,
+    };
+    reorderedLayers[endI - 1] = {
+      ...reorderedLayers[endI - 1],
+      position: temp,
+    };
+    endI--;
+  }
+  while (endI < startIndex) {
+    let temp = reorderedLayers[endI].position;
+    reorderedLayers[endI] = {
+      ...reorderedLayers[endI],
+      position: reorderedLayers[endI + 1].position,
+    };
+    reorderedLayers[endI + 1] = {
+      ...reorderedLayers[endI + 1],
+      position: temp,
+    };
+    endI++;
+  }
 
-	//// reorder the stateApp.layers
-	const [removed] = reorderedLayers.splice(startIndex, 1);
-	reorderedLayers.splice(endIndex, 0, removed);
+  //// reorder the stateApp.layers
+  const [removed] = reorderedLayers.splice(startIndex, 1);
+  reorderedLayers.splice(endIndex, 0, removed);
 
-	//// separate the layers to update
-	let layersToUpdate = reorderedLayers
-		.filter(
-			(currentValue, index) =>
-				(startIndex < endIndex && startIndex <= index && index <= endIndex) ||
-				(startIndex > endIndex && startIndex >= index && index >= endIndex)
-		)
-		.map((layer) => ({ _id: layer._id, position: layer.position }));
+  //// separate the layers to update
+  let layersToUpdate = reorderedLayers
+    .filter(
+      (currentValue, index) =>
+        (startIndex < endIndex && startIndex <= index && index <= endIndex) ||
+        (startIndex > endIndex && startIndex >= index && index >= endIndex)
+    )
+    .map((layer) => ({ _id: layer._id, position: layer.position }));
 
-	return { reorderedLayers, layersToUpdate };
+  return { reorderedLayers, layersToUpdate };
 };
 
 export default function SidePanel() {
-	const [dragFunction, setDragFunction] = useState();
-	const [toggleFunction, setToggleFunction] = useState();
-	const [panelItems, setPanelItems] = useState();
-	const [panelButton, setPanelButton] = useState();
-	const [panelTitle, setPanelTitle] = useState();
-	const [headerFilters, setHeaderFilters] = useState();
+  const [dragFunction, setDragFunction] = useState();
+  const [toggleFunction, setToggleFunction] = useState();
+  const [panelItems, setPanelItems] = useState();
+  const [panelButton, setPanelButton] = useState();
+  const [panelTitle, setPanelTitle] = useState();
+  const [headerFilters, setHeaderFilters] = useState();
 
+  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
 
-	const [stateMapControls, setStateMapControls] = useContext(
-		MapControlsContext
-	);
+  const { selectedControl: panelType } = stateMapControls;
 
-	const { selectedControl: panelType } = stateMapControls;
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
+  const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
-	const [stateApp, setStateApp] = useContext(AppContext);
-	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
-	const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
+  const openAddLayer = () => {
+    setStateMapControls((stateMapControls) => ({
+      ...stateMapControls,
+      addLayer: true,
+    }));
+  };
 
-	const openAddLayer = () => {
-		setStateMapControls((stateMapControls) => ({
-			...stateMapControls,
-			addLayer: true,
-		}));
-	};
+  const panelButtons = {
+    layer: {
+      text: "Manager",
+      fn: openAddLayer,
+      icon: <AddLayerIcon />,
+    },
+  };
 
-	const panelButtons = {
-		layer: {
-			text: "Add Layer",
-			fn: openAddLayer,
-			icon: <AddLayerIcon />,
-		},
-	};
+  //   for BaseMap Panel
+  useEffect(() => {
+    if (panelType === "base") {
+      setPanelItems(stateApp.baseMapLayers);
+      setPanelTitle("Base Map");
+      setPanelButton(null);
+      setHeaderFilters(null);
 
-	//   for BaseMap Panel
-	useEffect(() => {
-		if (panelType === "base") {
-			setPanelItems(stateApp.baseMapLayers);
-			setPanelTitle("Base Map");
-			setPanelButton(null);
-			setHeaderFilters(null);
+      setDragFunction(() => (result) => {
+        // dropped outside the list
+        if (!result.destination) {
+          return;
+        }
 
-			setDragFunction(() => (result) => {
-				// dropped outside the list
-				if (!result.destination) {
-					return;
-				}
+        const items = reorder(stateApp.baseMapLayers, result.source.index, result.destination.index);
 
-				const items = reorder(
-					stateApp.baseMapLayers,
-					result.source.index,
-					result.destination.index
-				);
+        let checkedBaseLayers = stateApp.checkedBaseLayers.slice(0);
+        const sourceIndex = checkedBaseLayers.indexOf(result.source.index);
 
-				let checkedBaseLayers = stateApp.checkedBaseLayers.slice(0);
-				const sourceIndex = checkedBaseLayers.indexOf(result.source.index);
+        let direction = 0;
+        let from,
+          to = 0;
+        if (result.destination.index > result.source.index) {
+          direction = -1;
+          from = result.source.index;
+          to = result.destination.index;
+        } else {
+          direction = 1;
+          to = result.source.index;
+          from = result.destination.index;
+        }
 
-				let direction = 0;
-				let from,
-					to = 0;
-				if (result.destination.index > result.source.index) {
-					direction = -1;
-					from = result.source.index;
-					to = result.destination.index;
-				} else {
-					direction = 1;
-					to = result.source.index;
-					from = result.destination.index;
-				}
+        for (let i = 0; i < checkedBaseLayers.length; i++) {
+          if (checkedBaseLayers[i] <= to && checkedBaseLayers[i] >= from) {
+            checkedBaseLayers[i] += direction;
+          }
+        }
 
-				for (let i = 0; i < checkedBaseLayers.length; i++) {
-					if (checkedBaseLayers[i] <= to && checkedBaseLayers[i] >= from) {
-						checkedBaseLayers[i] += direction;
-					}
-				}
+        if (sourceIndex !== -1) {
+          checkedBaseLayers[sourceIndex] = result.destination.index;
+        }
 
-				if (sourceIndex !== -1) {
-					checkedBaseLayers[sourceIndex] = result.destination.index;
-				}
+        setStateApp({
+          ...stateApp,
+          baseMapLayers: items,
+          checkedBaseLayers: checkedBaseLayers,
+        });
+      });
 
-				setStateApp({
-					...stateApp,
-					baseMapLayers: items,
-					checkedBaseLayers: checkedBaseLayers,
-				});
-			});
+      setToggleFunction(() => ({ index }) => {
+        const currentIndex = stateApp.checkedBaseLayers.indexOf(index);
+        let newChecked = [...stateApp.checkedBaseLayers];
+        if (currentIndex === -1) {
+          newChecked.push(index);
+        } else {
+          newChecked.splice(currentIndex, 1);
+        }
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          checkedBaseLayers: newChecked,
+        }));
+      });
+    }
+  }, [panelType, stateApp.baseMapLayers, stateApp.checkedBaseLayers]);
 
-			setToggleFunction(() => ({ index }) => {
-				const currentIndex = stateApp.checkedBaseLayers.indexOf(index);
-				let newChecked = [...stateApp.checkedBaseLayers];
-				if (currentIndex === -1) {
-					newChecked.push(index);
-				} else {
-					newChecked.splice(currentIndex, 1);
-				}
-				setStateApp((stateApp) => ({
-					...stateApp,
-					checkedBaseLayers: newChecked,
-				}));
-			});
-		}
-	}, [panelType, stateApp.baseMapLayers, stateApp.checkedBaseLayers]);
+  //   for Layer Panel
+  useEffect(() => {
+    if (panelType === "layer" || panelType === null) {
+      const groupHandled = [];
+      const layerAndGroups = [];
+      stateApp.layers &&
+        stateApp.layers.forEach((item) => {
+          if (item.layerSettings) {
+            if (item.groupId && !groupHandled.includes(item.groupId)) {
+              groupHandled.push(item.groupId);
+              const groups = stateApp.layers.filter((i) => i.groupId === item.groupId);
+              const visiable = !!groups.find((i) => i.layerSettings.visiable);
+              const showable = !!groups.find((i) => i.layerSettings.showable);
+              layerAndGroups.push({
+                depth: 0,
+                type: "group",
+                collapsed: true,
+                showable,
+                visiable,
+                name: item.groupName,
+                id: item.groupId,
+              });
+              groups.forEach((item) => {
+                layerAndGroups.push({
+                  ...item,
+                  collapsed: true,
+                  name: item.layerName,
+                  showable: item.layerSettings.showable,
+                  visiable: item.layerSettings.visiable,
+                  depth: 1,
+                  type: "layer",
+                  id: item._id,
+                });
+              });
+            }
+            if (!item.groupId) {
+              const showable = item.layerSettings.showable && item.identifier != "Tracked Owners";
+              layerAndGroups.push({
+                ...item,
+                visiable: item.layerSettings.visiable,
+                showable,
+                name: item.layerName,
+                depth: 0,
+                type: "layer",
+                id: item._id,
+              });
+            }
+          }
+        });
 
-	//   for Layer Panel
-	useEffect(() => {
-		if (panelType === "layer" || panelType === null) {
-			const groupHandled = []
-			const layerAndGroups = []
-			stateApp.layers && stateApp.layers.forEach((item) => {
-				if (item.layerSettings) {
-					if (item.groupId && !groupHandled.includes(item.groupId)) {
-						groupHandled.push(item.groupId);
-						const groups = stateApp.layers.filter((i) => i.groupId === item.groupId)
-						const visiable = !!(groups.find((i) => i.layerSettings.visiable))
-						const showable = !!(groups.find((i) => i.layerSettings.showable))
-						layerAndGroups.push({
-							depth: 0,
-							type: 'group',
-							collapsed: true,
-							showable,
-							visiable,
-							name: item.groupName
-							, id: item.groupId
-						})
-						groups.forEach((item) => {
-							layerAndGroups.push({
-								...item,
-								collapsed: true,
-								name: item.layerName,
-								showable: item.layerSettings.showable,
-								visiable: item.layerSettings.visiable,
-								depth: 1,
-								type: 'layer',
-								id: item._id
-							})
-						})
-					}
-					if (!item.groupId) {
-						const showable = item.layerSettings.showable && item.identifier != "Tracked Owners"
-						layerAndGroups.push({ ...item, visiable: item.layerSettings.visiable, showable, name: item.layerName, depth: 0, type: 'layer', id: item._id })
-					}
-				}
-			})
+      setPanelItems(layerAndGroups);
+      setPanelTitle("Layers");
+      setPanelButton(panelButtons[panelType]);
+      setHeaderFilters(null);
 
-			setPanelItems(layerAndGroups);
-			setPanelTitle("Layer Visibility");
-			setPanelButton(panelButtons[panelType]);
-			setHeaderFilters(null);
+      setDragFunction(() => (result) => {
+        if (!result.destination) {
+          return;
+        }
+        const isSourceGroup = result.source.droppableId !== "droppableM1";
+        const isDestinationGroup = result.destination.droppableId !== "droppableM1";
 
-			setDragFunction(() => (result) => {
-				if (!result.destination) { return; }
-				const isSourceGroup = result.source.droppableId !== 'droppableM1'
-				const isDestinationGroup = result.destination.droppableId !== 'droppableM1'
+        if (isDestinationGroup) {
+          let group = layerAndGroups.find((layer) => layer.groupId === result.destination.droppableId);
+          result.destination.index += group.groups[0].position;
+        }
+        if (isSourceGroup) {
+          let group = layerAndGroups.find((layer) => layer.groupId === result.source.droppableId);
+          result.source.index += group.groups[0].position;
+          // result.destination.index -= 1
+        }
+        if (!isSourceGroup && !isDestinationGroup && layerAndGroups[result.source.index - 1]?.groupId) {
+          // let source = result.source.index;
+          let destination = result.destination.index;
+          let newOrder = { reorderedLayers: stateApp.layers };
+          let layersToUpdate = [];
+          layerAndGroups[result.source.index - 1].groups.forEach((layer, index) => {
+            newOrder = reorderLayers(newOrder.reorderedLayers, layer.position, destination++);
+            if (layerAndGroups[result.source.index - 1].groups.length - 1 === index) {
+              layersToUpdate = [...layersToUpdate, ...newOrder.layersToUpdate];
+            } else {
+              layersToUpdate.push(newOrder.layersToUpdate[0]);
+            }
+          });
+          setStateApp({
+            ...stateApp,
+            layers: [...newOrder.reorderedLayers],
+          });
+          updateManyUserLayerSettings({
+            variables: {
+              manySettings: layersToUpdate,
+            },
+          });
+        } else if (result.source.index !== result.destination.index) {
+          stateApp.layers.find((l, index) => {
+            if (l.position === result.source.index) {
+              if (isSourceGroup && !isDestinationGroup)
+                stateApp.layers[index] = { ...stateApp.layers[index], groupId: null, groupName: null };
+              if (!isSourceGroup && isDestinationGroup) {
+                const groupLayer = stateApp.layers.find((l) => l.groupId === result.destination.droppableId);
+                stateApp.layers[index] = { ...stateApp.layers[index], groupId: groupLayer.groupId, groupName: groupLayer.groupName };
+              }
+              return true;
+            }
+            return false;
+          });
 
-				if (isDestinationGroup) {
-					let group = layerAndGroups.find((layer) => layer.groupId == result.destination.droppableId)
-					result.destination.index += group.groups[0].position
-				}
-				if (isSourceGroup) {
-					let group = layerAndGroups.find((layer) => layer.groupId == result.source.droppableId)
-					result.source.index += group.groups[0].position
-					// result.destination.index -= 1
-				}
-				if (!isSourceGroup && !isDestinationGroup && layerAndGroups[result.source.index - 1]?.groupId) {
-					// let source = result.source.index;
-					let destination = result.destination.index;
-					let newOrder = { reorderedLayers: stateApp.layers };
-					let layersToUpdate = []
-					layerAndGroups[result.source.index - 1].groups.forEach((layer, index) => {
-						newOrder = reorderLayers(
-							newOrder.reorderedLayers,
-							layer.position,
-							destination++
-						);
-						if (layerAndGroups[result.source.index - 1].groups.length - 1 === index) {
-							layersToUpdate = [...layersToUpdate, ...newOrder.layersToUpdate]
-						} else {
-							layersToUpdate.push(newOrder.layersToUpdate[0])
-						}
-					})
-					setStateApp({
-						...stateApp,
-						layers: [...newOrder.reorderedLayers],
-					});
-					updateManyUserLayerSettings({
-						variables: {
-							manySettings: layersToUpdate,
-						},
-					});
-				}
+          const { reorderedLayers, layersToUpdate } = reorderLayers(stateApp.layers, result.source.index, result.destination.index);
 
-				else if (result.source.index !== result.destination.index) {
-					stateApp.layers.find((l, index) => {
-						if (l.position === result.source.index) {
-							if (isSourceGroup && !isDestinationGroup) stateApp.layers[index] = { ...stateApp.layers[index], groupId: null, groupName: null }
-							if (!isSourceGroup && isDestinationGroup) {
-								const groupLayer = stateApp.layers.find((l) => l.groupId === result.destination.droppableId)
-								stateApp.layers[index] = { ...stateApp.layers[index], groupId: groupLayer.groupId, groupName: groupLayer.groupName }
-							}
-							return true
-						}
-						return false
-					})
+          setStateApp({ ...stateApp, layers: [...reorderedLayers] });
 
-					const { reorderedLayers, layersToUpdate } = reorderLayers(
-						stateApp.layers,
-						result.source.index,
-						result.destination.index
-					);
+          updateManyUserLayerSettings({
+            variables: {
+              manySettings: layersToUpdate,
+            },
+          });
+        } else if (result.destination.droppableId !== result.source.droppableId) {
+          const layerIndex = stateApp.layers.findIndex((layer) => layer.position === result.source.index);
+          if (result.destination.droppableId !== "droppableM1") {
+            const groupLayer = stateApp.layers.find((l) => l.groupId === result.destination.droppableId);
 
-					setStateApp({ ...stateApp, layers: [...reorderedLayers] });
+            stateApp.layers[layerIndex] = { ...stateApp.layers[layerIndex], groupId: groupLayer.groupId, groupName: groupLayer.groupName };
+          } else {
+            stateApp.layers[layerIndex] = { ...stateApp.layers[layerIndex], groupId: null, groupName: null };
+          }
+          setStateApp({ ...stateApp, layers: [...stateApp.layers] });
+          updateLayerSettings({
+            variables: {
+              settings: {
+                _id: stateApp.layers[layerIndex]._id,
+                layerSettings: stateApp.layers[layerIndex].layerSettings,
+              },
+            },
+          });
+        }
+      });
 
-					updateManyUserLayerSettings({
-						variables: {
-							manySettings: layersToUpdate,
-						},
-					});
-				} else if (result.destination.droppableId !== result.source.droppableId) {
-					const layerIndex = stateApp.layers.findIndex((layer) => layer.position === result.source.index);
-					if (result.destination.droppableId !== 'droppableM1') {
-						const groupLayer = stateApp.layers.find((l) => l.groupId === result.destination.droppableId)
+      setToggleFunction(() => ({ layer, index }) => {
+        const currentLayers = [...stateApp.layers];
+        const updatedLayer = {
+          ...layer,
+          layerSettings: {
+            ...layer.layerSettings,
+            visiable: !layer.layerSettings.visiable,
+          },
+        };
 
-						stateApp.layers[layerIndex] = { ...stateApp.layers[layerIndex], groupId: groupLayer.groupId, groupName: groupLayer.groupName }
-					} else {
-						stateApp.layers[layerIndex] = { ...stateApp.layers[layerIndex], groupId: null, groupName: null }
-					}
-					setStateApp({ ...stateApp, layers: [...stateApp.layers] });
-					updateLayerSettings({
-						variables: {
-							settings: {
-								_id: stateApp.layers[layerIndex]._id,
-								layerSettings: stateApp.layers[layerIndex].layerSettings,
-							},
-						},
-					});
-				}
-			});
+        //// saving to stateApp
+        currentLayers[index] = updatedLayer;
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          layers: [...currentLayers],
+        }));
 
-			setToggleFunction(() => ({ layer, index }) => {
-				const currentLayers = [...stateApp.layers];
-				const updatedLayer = {
-					...layer,
-					layerSettings: {
-						...layer.layerSettings,
-						visiable: !layer.layerSettings.visiable,
-					},
-				};
+        // saving to mongo
+        updateLayerSettings({
+          variables: {
+            settings: {
+              _id: updatedLayer._id,
+              layerSettings: updatedLayer.layerSettings,
+            },
+          },
+        });
+      });
+    }
+  }, [panelType, stateApp.layers]);
 
-				//// saving to stateApp
-				currentLayers[index] = updatedLayer;
-				setStateApp((stateApp) => ({
-					...stateApp,
-					layers: [...currentLayers],
-				}));
+  //   for HeatMap Panel
+  useEffect(() => {
+    if (panelType === "heatMaps") {
+      setDragFunction(() => (result) => {
+        // dropped outside the list
+        if (!result.destination) {
+          return;
+        }
 
-				// saving to mongo
-				updateLayerSettings({
-					variables: {
-						settings: {
-							_id: updatedLayer._id,
-							layerSettings: updatedLayer.layerSettings,
-						},
-					},
-				});
-			});
-		}
-	}, [panelType, stateApp.layers,]);
+        const items = reorder(stateApp.heatLayers, result.source.index, result.destination.index);
 
-	//   for HeatMap Panel
-	useEffect(() => {
-		if (panelType === "heatMaps") {
-			setDragFunction(() => (result) => {
-				// dropped outside the list
-				if (!result.destination) {
-					return;
-				}
+        let checkedHeats = stateApp.checkedHeats.slice(0);
+        const sourceIndex = checkedHeats.indexOf(result.source.index);
 
-				const items = reorder(
-					stateApp.heatLayers,
-					result.source.index,
-					result.destination.index
-				);
+        let direction = 0;
+        let from,
+          to = 0;
+        if (result.destination.index > result.source.index) {
+          direction = -1;
+          from = result.source.index;
+          to = result.destination.index;
+        } else {
+          direction = 1;
+          to = result.source.index;
+          from = result.destination.index;
+        }
 
-				let checkedHeats = stateApp.checkedHeats.slice(0);
-				const sourceIndex = checkedHeats.indexOf(result.source.index);
+        for (let i = 0; i < checkedHeats.length; i++) {
+          if (checkedHeats[i] <= to && checkedHeats[i] >= from) {
+            checkedHeats[i] += direction;
+          }
+        }
 
-				let direction = 0;
-				let from,
-					to = 0;
-				if (result.destination.index > result.source.index) {
-					direction = -1;
-					from = result.source.index;
-					to = result.destination.index;
-				} else {
-					direction = 1;
-					to = result.source.index;
-					from = result.destination.index;
-				}
+        if (sourceIndex !== -1) {
+          checkedHeats[sourceIndex] = result.destination.index;
+        }
 
-				for (let i = 0; i < checkedHeats.length; i++) {
-					if (checkedHeats[i] <= to && checkedHeats[i] >= from) {
-						checkedHeats[i] += direction;
-					}
-				}
+        setStateApp({
+          ...stateApp,
+          heatLayers: items,
+          checkedHeats: checkedHeats,
+        });
+      });
+      setToggleFunction(() => ({ index }) => {
+        const currentIndex = stateApp.checkedHeats.indexOf(index);
+        const newChecked = [...stateApp.checkedHeats];
 
-				if (sourceIndex !== -1) {
-					checkedHeats[sourceIndex] = result.destination.index;
-				}
+        if (currentIndex === -1) {
+          newChecked.push(index);
+        } else {
+          newChecked.splice(currentIndex, 1);
+        }
+        setStateApp((stateApp) => ({ ...stateApp, checkedHeats: newChecked }));
+      });
+      setPanelItems(stateApp.heatLayers);
+      setPanelTitle("Heatmaps");
+      setPanelButton(null);
+      setHeaderFilters(null);
+    }
+  }, [panelType, stateApp.heatLayers, stateApp.checkedHeats]);
 
-				setStateApp({
-					...stateApp,
-					heatLayers: items,
-					checkedHeats: checkedHeats,
-				});
-			});
-			setToggleFunction(() => ({ index }) => {
-				const currentIndex = stateApp.checkedHeats.indexOf(index);
-				const newChecked = [...stateApp.checkedHeats];
+  // console.log("stateApp", stateApp);
 
-				if (currentIndex === -1) {
-					newChecked.push(index);
-				} else {
-					newChecked.splice(currentIndex, 1);
-				}
-				setStateApp((stateApp) => ({ ...stateApp, checkedHeats: newChecked }));
-			});
-			setPanelItems(stateApp.heatLayers);
-			setPanelTitle("Heatmaps");
-			setPanelButton(null);
-			setHeaderFilters(null);
-		}
-	}, [panelType, stateApp.heatLayers, stateApp.checkedHeats]);
+  //   for Marketplace Panel
+  useEffect(() => {
+    if (panelType === "marketplace") {
+      setDragFunction(() => {});
+      setToggleFunction(() => {});
+      // setPanelItems(stateApp.layers);
+      setPanelTitle("Marketplace");
+      setPanelButton(null);
+      setHeaderFilters(null);
+    }
+  }, [panelType]);
 
-	// console.log("stateApp", stateApp);
-
-	//   for Marketplace Panel
-	useEffect(() => {
-		if (panelType === "marketplace") {
-			setDragFunction(() => { });
-			setToggleFunction(() => { });
-			// setPanelItems(stateApp.layers);
-			setPanelTitle("Marketplace");
-			setPanelButton(null);
-			setHeaderFilters(null);
-		}
-	}, [panelType]);
-
-	return panelItems ? (
-
-		<Panel
-			type={panelType}
-			headerButton={panelButton}
-			headerFilters={headerFilters}
-			title={panelTitle}
-			items={panelItems}
-			onDragEnd={dragFunction}
-			handleToggle={toggleFunction}
-		/>
-	) : null;
+  return panelItems ? (
+    <Panel
+      type={panelType}
+      headerButton={panelButton}
+      headerFilters={headerFilters}
+      title={panelTitle}
+      items={panelItems}
+      onDragEnd={dragFunction}
+      handleToggle={toggleFunction}
+    />
+  ) : null;
 }

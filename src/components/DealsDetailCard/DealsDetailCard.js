@@ -7,7 +7,7 @@ import M1nTable from "../Shared/M1nTable/M1nTable";
 import DealDisplay from "./components/DealDisplay";
 import { CONTACTDEALS } from "../../graphQL/useQueryContactDeals";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
-
+import DocViewer from "../Shared/DocViewer";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -98,6 +98,7 @@ export default function DealsDetailCard(props) {
 
   return (
     <Grid container className={classes.gridWidthScroll} spacing={0}>
+      <DocViewer></DocViewer>
       <div className={classes.dealContainer}>
         <DealDisplay
           dealSum={activeSum}
