@@ -20,10 +20,9 @@ const DialogActions = withStyles((theme) => ({
 const ProfileActions = () => {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
-  const [appContext, setAppContext] = useContext(AppContext);
+  const [appContext, setStateApp] = useContext(AppContext);
 
   const [updateProfile] = useMutation(UPSERTPROFILE);
-  const history = useHistory();
   const { isSaving } = stateProfile;
   const { user } = appContext;
 
@@ -37,7 +36,15 @@ const ProfileActions = () => {
     await updateProfile({
       variables: { profileData: { ...stateProfile.fields, email: user.email } },
     });
+    setStateApp((state) => ({
+      ...state,
+      user: {
+        ...state.user,
+        ...stateProfile.fields, email: user.email
+      },
+    }));
     handleClose();
+
     setStateProfile({ ...stateProfile, isSaving: false });
   };
 

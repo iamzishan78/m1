@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
 import { Card, Button } from "@material-ui/core";
@@ -60,16 +59,11 @@ const useStyles = makeStyles((theme) => ({
       width: "0.75em",
       height: "0.75em",
     },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "1.0em",
-    // },
-    // "&::-webkit-scrollbar-track": {
-    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    // },
-          "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "#929292",
-          borderRadius: 10,
-      },
+
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#929292",
+      borderRadius: 10,
+    },
   },
 }));
 
@@ -220,23 +214,6 @@ const SignInCard = (props) => {
             value={tenant}
           />
           {renderAADButtonAndLoader}
-          {/* <div className={classes.cardFooter}>
-            Don't have an account?
-            <div>
-              <Link
-                to="/signup"
-                className={classes.signupLink}
-                onClick={() => {
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    signUpUserType: null,
-                  }));
-                }}
-              >
-                Sign Up Here
-              </Link>
-            </div>
-          </div>  */}
         </React.Fragment>
       ) : (
         <CircularProgress

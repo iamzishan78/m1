@@ -329,7 +329,7 @@ function AddDealDialog(props) {
   console.log("pipelineId", pipelineId, selectedPipe);
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
 
-  const [getDeal, { data: getDealResult, loading: getDealLoading }] = useLazyQuery(GETDEAL, {
+  const [getDeal, { data: getDealResult }] = useLazyQuery(GETDEAL, {
     fetchPolicy: "no-cache",
   });
 
@@ -390,7 +390,7 @@ function AddDealDialog(props) {
 
   useEffect(() => {
     getDeal({
-      variables: { id: stateApp.activeDeal.cardId },
+      variables: { id: stateApp.activeDeal?.cardId },
     });
   }, [getDeal]);
 
@@ -403,7 +403,6 @@ function AddDealDialog(props) {
       const defaultSettings = get(dealSettings, "dealSettings", []);
       if (defaultSettings.length > 0) {
         // deal default settings
-        //? createDealDefaultSettings(stageDealDescriptors: $stageDealDescriptors, dealId: $dealId)
         const stageDealDescriptors = defaultSettings.map((setting) => ({
           //? creating stage deal descriptors json
           relatedObject: setting._id,
@@ -413,7 +412,7 @@ function AddDealDialog(props) {
           tasks: setting.tasks,
           isCurrent: setting._id === stageId,
         }));
-        // api for default setting
+        // api call for default setting
         createDealDefaultSettings({
           variables: {
             stageDealDescriptors,
@@ -1168,7 +1167,9 @@ function AddDealDialog(props) {
 
   const handleClickDialogClose = () => {
     if (!updateDealLoading && !addContactLoading) {
-      history.push(`${history.location.pathname.split("/lane")[0]}`);
+      if(history.location.pathname.includes('lane')){
+        history.push(`${history.location.pathname.split("/lane")[0]}`);
+      }
       setStateApp((stateApp) => ({
         ...stateApp,
         dealDialog: false,
@@ -1230,7 +1231,7 @@ function AddDealDialog(props) {
           ) : (
             <div className={classes.contentRoot}>
               <Drawer dealSettingsNumber={getSubtaskNumber()} />
-              {props.isTransactPage &&
+              {
               stateApp.transactBarView !== "Deal" &&
               (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
