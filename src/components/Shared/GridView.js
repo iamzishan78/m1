@@ -16,6 +16,7 @@ import { AppContext } from "../../AppContext";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import LockIcon from "@material-ui/icons/Lock";
+import StarIcon from "@material-ui/icons/Star";
 import { Menu, MenuItem } from "@material-ui/core";
 
 import LeftDialog from "components/Shared/LeftDialog";
@@ -214,6 +215,7 @@ function GridView({
                   view={view}
                   setEditGridView={setEditGridView}
                   setViewName={setViewName}
+                  updateGridView={updateGridView}
                 />
               )
             ) : (
@@ -303,6 +305,7 @@ const CustomView = ({
   view,
   setEditGridView,
   setViewName,
+  updateGridView
 }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -321,15 +324,18 @@ const CustomView = ({
       onMouseOver={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
-      <div
-        style={{ cursor: "pointer" }}
-        onClick={() => {
-          setSelectedGridView(view);
-          setShowViewModal(false);
-        }}
-      >
-        {view.name}
-      </div>
+      <span style={{ display: "flex" }} className={classes.actionIcons}>
+        <div
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            setSelectedGridView(view);
+            setShowViewModal(false);
+          }}
+        >
+          {view.name} 
+        </div>
+        {view.isFavourite && (<StarIcon style={{ marginTop: "5px" }}  />)}
+      </span>
       {showActions && (
         <span className={classes.actionIcons}>
           {view.isPrivate ? <LockIcon /> : <LockOpenIcon />}
@@ -361,6 +367,15 @@ const CustomView = ({
           style={{ width: "250px" }}
           onClick={() => {
             handleClose();
+            updateGridView({
+              variables:{
+                gridView: {
+                  _id: view._id,
+                  isFavourite: true
+                }
+              },
+              refetchQueries: ["getGridViews"],
+            })
           }}
         >
           Set as favorite
@@ -369,6 +384,15 @@ const CustomView = ({
           style={{ width: "250px" }}
           onClick={() => {
             handleClose();
+            updateGridView({
+              variables:{
+                gridView: {
+                  _id: view._id,
+                  isPrivate: false
+                }
+              },
+              refetchQueries: ["getGridViews"],
+            })
           }}
         >
           Share with others
@@ -378,6 +402,15 @@ const CustomView = ({
           style={{ width: "250px" }}
           onClick={() => {
             handleClose();
+            updateGridView({
+              variables:{
+                gridView: {
+                  _id: view._id,
+                  isDeleted: true
+                }
+              },
+              refetchQueries: ["getGridViews"],
+            })
           }}
         >
           Delete view
