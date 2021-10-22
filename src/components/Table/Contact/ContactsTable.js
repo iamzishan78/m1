@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Container,
@@ -20,6 +20,7 @@ import Loader from "components/Loaders";
 import GridView from "components/Shared/GridView";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
+import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import { GET_ES_CONTACTS_FILTER } from "graphQL/useQueryESContactsFilter";
 import { REMOVE_CONTACTS } from "graphQL/useMutationRemoveContact";
 import { GET_ES_CONTACTS } from "graphQL/useQueryESContacts";
@@ -54,8 +55,11 @@ function ContactsTable(props) {
   const classes = useStyles();
 
   // function states
+  const selectedFilters = useRef([]);
+  const [filters, setFilters] = useState([]);
   const [columns, Columns] = useState([]);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [selectedGridView, setSelectedGridView ] = useState({ name: 'All Contacts' });
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
@@ -66,6 +70,7 @@ function ContactsTable(props) {
     GET_ES_CONTACTS,
     { fetchPolicy: "no-cache" }
   );
+  const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
   const [removeContact] = useMutation(REMOVE_CONTACTS);
 
   const tableData = ContactsData?.getESContacts;
@@ -100,24 +105,19 @@ function ContactsTable(props) {
   }, [tableData]);
 
   useEffect(() => {
-    if (tableData?.hits?.length) {
+    if (tableData?.hits) {
       const hits = tableData.hits.map((hit) => {
         hit = props.setGenricData(hit, hit._id, ["comments", "tracks", "tags"]);
         return hit;
       });
       props.setRows(JSON.parse(JSON.stringify(hits)));
-      TableHeader.forEach((column) => {
-        const value = get(selectedGridView?.filters?.find(filter => filter.field === column.esKey), 'value', '')
-        let filterList =  []
-        if(value){
-          filterList = [value]
-        }
+      TableHeader.forEach((column, index) => {
         if (column?.options?.filter) {
           column.options = {
             ...column.options,
             filter: true,
             filterType: "custom",
-            filterList,
+            filterList: filters[index],
             filterOptions: {
               display: (filterList, onChange, index, column) => {
                 column.filterKey = TableHeader.find(
@@ -134,6 +134,9 @@ function ContactsTable(props) {
                 );
               },
             },
+            onFilterChange: (columnChanged, filterList) => {
+              setFilters(filterList)
+            }
           };
         }
       });
@@ -143,7 +146,24 @@ function ContactsTable(props) {
     } else if (tableData?.length === 0) {
       props.setLoading(false);
     }
-  }, [tableData, props.dependencyUpdate]);
+  }, [ContactsData, tableData, props.dependencyUpdate]);
+
+  useEffect(() => {
+    if(selectedGridView?.filters){
+      columns.forEach((column, index) => {
+        const value = get(selectedGridView?.filters?.find(filter => filter.field === column.esKey), 'value', '')
+        let filterList =  []
+        if(value){
+          filterList = [value]
+        }
+        if (column?.options?.filter) {
+          column.options.filterList = filterList;
+        }
+      });
+  
+      setColumns(columns);
+    }
+  },[selectedGridView])
 
   const count = tableData?.total || 0;
   const options = {
@@ -163,6 +183,7 @@ function ContactsTable(props) {
       columns,
       getESContacts
     );
+    selectedFilters.current = tableActions?.pageESVariables?.variables?.filters
     switch (action) {
       case "search":
       case "sort":
@@ -214,8 +235,11 @@ function ContactsTable(props) {
 
   const headerProps = {
     showViewModal,
+    setShowSaveAsNew,
     setShowViewModal,
     selectedGridView,
+    updateGridView,
+    selectedFilters: selectedFilters.current
   };
 
   return (
@@ -226,7 +250,14 @@ function ContactsTable(props) {
         id={props.id ? props.id : props.parent}
       >
         {showViewModal && (
-          <GridView setSelectedGridView={setSelectedGridView} selectedGridView={selectedGridView} setShowViewModal={setShowViewModal} />
+          <GridView 
+            setSelectedGridView={setSelectedGridView} 
+            selectedGridView={selectedGridView} 
+            setShowViewModal={setShowViewModal} 
+            setShowSaveAsNew={setShowSaveAsNew} 
+            showSaveAsNew={showSaveAsNew}
+            selectedFilters={selectedFilters.current}
+          />
         )}
         <Table
           style={{ backgroundColor: "#fff" }}
@@ -255,7 +286,7 @@ function ContactsTable(props) {
   );
 }
 
-const HeaderComponent = ({ selectedGridView, setShowViewModal, showViewModal }) => {
+const HeaderComponent = ({ selectedGridView, setShowViewModal, showViewModal, setShowSaveAsNew, selectedFilters, updateGridView }) => {
   const [showIcon, setShowIcon] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -309,11 +340,29 @@ const HeaderComponent = ({ selectedGridView, setShowViewModal, showViewModal }) 
             anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
             transformOrigin={{ vertical: "top", horizontal: "center" }}
           >
-            <MenuItem style={{ width: '500px' }} onClick={handleClose} disabled={true}>
+            <MenuItem 
+              style={{ width: '250px' }} 
+              onClick={() => {
+                handleClose();
+                updateGridView({ 
+                  variables: {
+                    gridView: {
+                      _id: selectedGridView._id, 
+                      filters: selectedFilters
+                    }
+                  }
+                })
+              }} 
+              disabled={selectedGridView.type === 'Default'}
+            >
               Update view
             </MenuItem>
-            <MenuItem onClick={handleClose}>
-              Save as new view
+            <MenuItem onClick={() => {
+                handleClose();
+                setShowViewModal(true);
+                setShowSaveAsNew(true);
+              }}>
+                Save as new view
             </MenuItem>
           </Menu>
 

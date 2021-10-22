@@ -7,8 +7,6 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-
-
 export function AutoCompleteFilter({ filterList, onChange, index, column, query }) {
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
