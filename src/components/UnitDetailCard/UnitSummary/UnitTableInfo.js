@@ -32,39 +32,35 @@ const tableData = [
     options: ['Held by Production'],
     key: 'uStatus'
   }, {
-    label: 'Primary Operator',
-    type: 'text',
-    key: 'uPrimaryOperator'
-  }, {
-    label: 'Calculated Acres',
-    type: 'text',
-    key: 'uCalcAcres'
-  }, {
-    label: 'Field Name',
-    type: 'text',
-    key: 'uFieldName'
-  }, {
     label: 'Unit Acres',
     type: 'number',
     key: 'uUnitAcres'
-  }, {
-    label: 'Calc. Acres',
-    type: 'number',
+  },{
+    label: 'Calculated Acres',
+    type: 'text',
     key: 'uCalcAcres'
-  }, {
-    label: 'Net Royality Acres(NRA)',
-    type: 'number',
-    key: 'uNetRoyalityAcres'
-  }, {
+  },{
+    label: 'Current Operator',
+    type: 'text',
+    key: 'uPrimaryOperator'
+  },  {
+    label: 'Field Name',
+    type: 'text',
+    key: 'uFieldName'
+  },  {
     label: 'Unit Depth',
     type: 'number',
     key: 'uDepth'
-  }, {
+  },{
     label: 'Primary Bench',
     type: 'text',
     key: 'uPrimaryBench'
-  }, {
-    label: 'Unit Pricing(per NRA)',
+  },  {
+    label: 'Net Royalty Acres (NRA)',
+    type: 'number',
+    key: 'uNetRoyalityAcres'
+  },{
+    label: 'Unit Pricing (per NRA)',
     type: 'number',
     key: 'uUnitPricing'
   }
@@ -104,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: "Poppins",
     fontStyle: "normal",
     fontWeight: 300,
-    fontSize: "12px",
+    fontSize: "14px",
     lineHeight: "18px",
     color: "#75767A",
     height: '55px'
