@@ -49,6 +49,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
   const [filteredItems, setFilteredItems] = useState([]);
   const [layerMap, setLayerMap] = useState([]);
   const [mapStyles, setMapStyles] = useState([]);
+  const [search, setSearch] = useState("");
   const [searchState, setSearchState] = useState(false);
   const [tab, setTab] = useState(0);
 
@@ -206,6 +207,18 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
     id: `full-width-tab-${index}`,
     "aria-controls": `full-width-tabpanel-${index}`,
   });
+
+  const clearSearch = () => {
+    setTimeout(() => {
+      setSearch("");
+      setSearchState(false);
+      filterLayers();
+    }, 200);
+  };
+  const setSearchValue = (value) => {
+    setSearch();
+    filterLayers(value);
+  }
   return (
     <div>
       <div
@@ -270,6 +283,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
                     id="searchInput"
                     fullWidth
                     placeholder="Search by Layer Name"
+                    value={search}
                     classes={{
                       root: classes.inputRoot,
                       input: classes.inputInput,
@@ -277,13 +291,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
                     autoComplete="off"
                     inputProps={{ "aria-label": "search" }}
                     onFocus={() => setSearchState(true)}
-                    onBlur={() =>
-                      setTimeout(() => {
-                        setSearchState(false);
-                        filterLayers();
-                      }, 200)
-                    }
-                    onChange={(evt) => filterLayers(evt.target.value)}
+                    onBlur={clearSearch}
+                    onChange={(evt) => setSearchValue(evt.target.value)}
                   />
                 </div>
               </Grid>
