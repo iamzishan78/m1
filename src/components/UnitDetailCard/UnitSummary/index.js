@@ -183,10 +183,11 @@ const useStyles = makeStyles((theme) => ({
 
     search: {
         position: 'relative',
+
         borderRadius: theme.shape.borderRadius,
         '&:hover': {
             backgroundColor: theme.palette.common.white,
-            opacity: 0.15,
+            // opacity: 0.15,
         },
         marginLeft: 0,
         width: '100%',
@@ -199,12 +200,13 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0, 2),
         height: '100%',
         position: 'absolute',
-        pointerEvents: 'none',
+        // pointerEvents: 'none',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
     },
     inputRoot: {
+        cursor: 'pointer',
         color: 'inherit',
     },
     inputInput: {
@@ -217,8 +219,8 @@ const useStyles = makeStyles((theme) => ({
             width: props => props.search.length > 0 ? '15ch' : '0.9px',
             '&:focus': {
                 backgroundColor: theme.palette.common.white,
-                opacity: 0.15,
-                width: '15ch',
+                opacity: 0.75,
+                width: '15ch'
             },
         },
     },
