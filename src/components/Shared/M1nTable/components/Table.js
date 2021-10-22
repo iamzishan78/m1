@@ -2760,7 +2760,7 @@ function SubTable(props) {
 
       return (
         <>
-          <div style={{ display: "inline", cssFloat: "left", marginRight: "15px", marginTop: "5px" }}>
+          <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
             {props.addAble.type === "parcelInterest" && (
               <Button color="secondary" className={classes.multiSelectionTopBarButtons} disabled={true} onClick={() => { }}>
                 {buttonLabel}

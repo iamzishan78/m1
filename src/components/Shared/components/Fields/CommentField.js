@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiAutocomplete-endAdornment": {
       display: "none",
     },
-    "& .MuiInputBase-input": { color: "transparent", caretColor: "black" },
+    "& .MuiInputBase-input": { color: "red", caretColor: "black" },
   },
   customTextField: {
     "& textarea::placeholder": {
@@ -49,10 +49,10 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "4px",
     height: "43px",
     overflowY: "auto",
-    width: "477px",
+    width: (props) => props.fieldWidth ? props.fieldWidth : 'inherit',
   },
   commentBtn: {
-    float: "right",
+    "float": "right",
     right: "5px",
     bottom: "5px",
   },
@@ -66,9 +66,10 @@ export default function DealComment({
   isEdit,
   users,
   profilesInfo,
-  setEditCommentId
+  setEditCommentId,
+  fieldWidth
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ fieldWidth });
 
   const [filterValue, setFilterValue] = useState("");
   const [showOptions, setShowOptions] = useState(false);
@@ -220,11 +221,10 @@ export default function DealComment({
             />
             <div
               id="colorText"
-              className={`${
-                comment || showActions
-                  ? classes.commentInputFocusIn
-                  : classes.commentInputFocusOut
-              } ${classes.textDiv} hideScroll`}
+              className={`${comment || showActions
+                ? classes.commentInputFocusIn
+                : classes.commentInputFocusOut
+                } ${classes.textDiv} hideScroll`}
             ></div>
           </>
         )}

@@ -253,7 +253,7 @@ function AssociatedWellsUnitTable(props) {
         filter: false,
         // column: false, 
         customToolbar: () => {
-            return <div style={{ display: "inline", cssFloat: "left", marginRight: "15px", marginTop: "5px" }}>
+            return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
                 <Button color="secondary" className={classes.multiSelectionTopBarButtons} disabled={true} >
                     + ADD Wells TO {props.shapeType?.toUpperCase()}
                 </Button>

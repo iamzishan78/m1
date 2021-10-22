@@ -2,8 +2,6 @@ import React, { useState, useEffect, useContext, Fragment } from "react";
 
 import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
 import { CircularProgress, Menu, MenuItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
@@ -488,6 +486,7 @@ export default function DealComment(props) {
                 showActions={showActions}
                 setComment={setComment}
                 upsertComment={addNewComment}
+                fieldWidth='477px'
               />
             </div>
           </Grid>

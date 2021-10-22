@@ -313,7 +313,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             {selectedRow ? "Update" : "Add"} Unit Ownership
             {selectedRow && (
               <IconButton
-                style={{ cssFloat: "right", marginRight: "5px" }}
+                style={{ "float": "right", marginRight: "5px" }}
                 onClick={() => {
                   props.setM1nSelectedRowsIds([selectedRow._id]);
                   props.handleExpandClick(null, null, null, "deleteUnitOwnership");
