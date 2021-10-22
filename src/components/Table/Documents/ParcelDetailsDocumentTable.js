@@ -44,7 +44,7 @@ function ParcelDetailsDocumentTable(props) {
   const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
   const [searchedRows, setSearchedRows] = useState([])
   const [showDocumentSlider, setShowDocumentSlider] = useState(false)
-  const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
+  const [selectedYear, setSelectedYear] = useState(2021)  // production selected year state 
   const [numPages, setNumPages] = useState(null);
 
   // queries 
