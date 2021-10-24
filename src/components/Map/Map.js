@@ -79,7 +79,6 @@ import _ from "lodash";
 
 import parseLinkHeader from 'parse-link-header';
 import UnitCardProvider from "components/UnitDetailCard/UnitCardProvider";
-import parseLinkHeader from "parse-link-header";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
