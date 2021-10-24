@@ -9,22 +9,20 @@ import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import { Grid } from "@material-ui/core";
-import get from "lodash/get";
 
 import { AppContext } from "../../../../../AppContext";
 import { Modals } from "../../../../../styles/Modal";
-import { useMutation, useLazyQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { ADD_OWNER_TOA_SHAPE } from "graphQL/useMutationAddOwnerToAShape";
-import { ADDCONTACT } from "../../../../../graphQL/useMutationAddContact";
 import { UPDATE_SHAPE_OWNER } from "graphQL/useMutationUpdateShapeOwner";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "../../../../../actions";
-import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeList";
-import { PAGINATEDCONTACTSQUERY } from "../../../../../graphQL/useQueryPaginatedContacts";
 import { setStateIfDeepEqual } from "../../../functions";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { addTrailingZeros } from "components/Shared/functions";
+import { Controller, useForm } from "react-hook-form";
+import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -65,6 +63,8 @@ const useStyles = makeStyles((theme) => ({
 export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const { control, reset, setValue, register, getValues, watch } = useForm();
+
   const [newOwner, setNewOwner] = useState({
     working_interest: null,
     royalty_interest: null,
@@ -76,13 +76,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const [changedKeys, setChangedKeys] = useState({});
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
-  const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, NameAutInputValue] = useState("");
   const setNameAutInputValue = (newState) => {
     setStateIfDeepEqual(NameAutInputValue, newState);
   };
-  const [hasNextPage, setHasNextPage] = useState(true);
-  const [isNextPageLoading, setIsNextPageLoading] = useState(false);
 
   useEffect(() => {
     if (selectedRow) {
@@ -101,7 +98,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
 
-      setNewOwner({
+      reset({
         working_interest: working_interest || null,
         royalty_interest: royalty_interest || null,
         orri: orri || null,
@@ -111,7 +108,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         competitor_offer_price: competitor_offer_price || null,
         offer_price: offer_price || null,
         customLayer,
-      });
+      })
 
     }
   }, [selectedRow]);
@@ -124,52 +121,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   // CONTACT
 
-  const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-      nextFetchPolicy: "cache-first",
-    }
-  );
-
-  const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
   const [addOwnerToAShape, { data: mutationData }] = useMutation(ADD_OWNER_TOA_SHAPE);
 
   const [updateShapeOwner, { data: updateData }] = useMutation(UPDATE_SHAPE_OWNER);
-
-  useEffect(() => {
-    if (get(addContactData, "addContact.contact")) {
-      setNameAutValue({
-        name: addContactData.addContact.contact.name,
-        _id: addContactData.addContact.contact._id,
-      });
-    }
-  }, [addContactData]);
-
-  useEffect(() => {
-    if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
-      setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
-    }
-    setIsNextPageLoading(false);
-  }, [allContacts]);
-
-  useEffect(() => {
-    //will also run during initial mount
-    setIsNextPageLoading(true);
-    getPaginatedContacts({
-      variables: {
-        search: nameAutInputValue,
-      },
-    });
-  }, [nameAutInputValue]);
-
-  const loadNextPage = async (pageVariables) => {
-    setIsNextPageLoading(true);
-    fetchMorePaginatedContacts(pageVariables);
-    return null;
-  };
 
   useEffect(() => {
     let type = null;
@@ -215,7 +170,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     });
     setNameAutValue(null);
     setNameAutInputValue("");
-    setSelectedRow(null);
+    // setSelectedRow(null);
   };
 
   const handleClickDialogClose = () => {
@@ -226,9 +181,14 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const handleClickAdd = (e) => {
     e.preventDefault();
     if (nameAutValue) {
-      const ownerToAdd = { ...newOwner };
+      const ownerToAdd = { ...getValues() };
       // if (nameAutValue._id === "newEntity") ownerToAdd.name = nameAutValue.name;
       // else ownerToAdd.ownerEntity = nameAutValue._id;
+
+      Object.keys(ownerToAdd).forEach((key) => {
+        if (['working_interest', 'royalty_interest', 'orri', 'nri', 'nra'].includes(key))
+          ownerToAdd[key] = addTrailingZeros(ownerToAdd[key])
+      })
       if (nameAutValue._id && nameAutValue.name) {
         // now that we are using descriptors we ONLY want the contact _id
         ownerToAdd.ownerEntity = nameAutValue._id;
@@ -246,7 +206,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: ["getUnitOwners", "getContactUnitInterests", "getContactUnitInterest"],
+          refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"],
           awaitRefetchQueries: true,
         });
       } else {
@@ -259,13 +219,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               lastUpdateBy: stateApp.user.mongoId,
             },
           },
-          refetchQueries: [
-            "getCustomLayer",
-            // causing timing issue since getCustomLayer also calls this query
-            "getUnitOwners",
-            // "getContactUnitInterests",
-            // "getContactUnitInterest",
-          ],
+          refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"],
           awaitRefetchQueries: true,
         });
       }
@@ -303,6 +257,13 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     } else return calculatedNRA !== nra;
   }
 
+  // const royalty_interest = watch('royalty_interest')
+  // const orri = watch('orri')
+
+  // useEffect(() => {
+  //   setValue('nra', calculateNRA(royalty_interest, orri))
+  // }, [royalty_interest, orri])
+
   const classes = useStyles();
   const modalClass = Modals();
   return (
@@ -329,90 +290,104 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <h3>Name</h3>
-
-                <AutocompEntityNamesVirtualizeList
-                  mongoEntitiesArray={mongoEntitiesArray}
-                  setMongoEntitiesArray={setMongoEntitiesArray}
-                  nameAutValue={nameAutValue}
-                  setNameAutValue={setNameAutValue}
-                  nameAutInputValue={nameAutInputValue}
-                  setNameAutInputValue={setNameAutInputValue}
-                  hasNextPage={hasNextPage}
-                  isNextPageLoading={isNextPageLoading}
-                  loadNextPage={loadNextPage}
-                  addNew={true}
-                  addNewOnClick={(value) => {
-                    const contact = { name: value };
-                    addContact({
-                      variables: {
-                        contact: {
-                          ...contact,
-                          createBy: stateApp.user.mongoId,
-                          lastUpdateBy: stateApp.user.mongoId,
-                        },
-                      },
-                      refetchQueries: ["getPaginatedContacts", "getContact"],
-                      awaitRefetchQueries: true,
-                    });
-                  }}
-                />
+                <AutocompEntityNamesList userId={stateApp.user.mongoId} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
               </Grid>
               <Grid item xs={12}>
                 <h3>Working Interest</h3>
-                <TextField
-                  type="number"
-                  size="small"
-                  className={classes.maxWidth}
-                  value={newOwner.working_interest}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setNewOwner({
-                      ...newOwner,
-                      working_interest: value ? addTrailingZeros(e.target.value) : null,
-                    });
-                  }}
-                  onWheel={(e) => e.target.blur()}
+
+                <Controller
+                  control={control}
+                  name="working_interest"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          props.onChange(e.target.value)
+                        }
+                      }}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
                 <h3>Royalty Interest</h3>
-                <TextField
-                  type="number"
-                  size="small"
-                  className={classes.maxWidth}
-                  value={newOwner.royalty_interest}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setNewOwner({
-                      ...newOwner,
-                      royalty_interest: value ? addTrailingZeros(e.target.value) : null,
-                      nra: calculateNRA(value, newOwner.orri)
-                    });
-                  }}
-                  onWheel={(e) => e.target.blur()}
+                <Controller
+                  control={control}
+                  name="royalty_interest"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          props.onChange(e.target.value)
+                          setValue('nra', calculateNRA(e.target.value, getValues().orri))
+                        }
+                      }}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
                 <h3>Overriding Royalty Interest (ORRI)</h3>
-                <TextField
-                  type="number"
-                  size="small"
-                  className={classes.maxWidth}
-                  value={newOwner.orri}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setNewOwner({
-                      ...newOwner,
-                      orri: value ? addTrailingZeros(e.target.value) : null,
-                      nra: calculateNRA(value, newOwner.royalty_interest)
-                    });
-                  }}
-                  onWheel={(e) => e.target.blur()}
+                <Controller
+                  control={control}
+                  name="orri"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={props.value}
+                      inputRef={props.ref}
+                      // onWheel={(e) => e.target.blur()}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          props.onChange(e.target.value)
+                          setValue('nra', calculateNRA(getValues().royalty_interest, e.target.value))
+                        }
+                      }}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
                 <h3>Net Revenue Interest (NRI)</h3>
-                <TextField
+
+                <Controller
+                  control={control}
+                  name="nri"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={props.value}
+                      inputRef={props.ref}
+                      // onWheel={(e) => e.target.blur()}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          props.onChange(e.target.value)
+                        }
+                      }}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
+
+
+                {/* <TextField
                   type="number"
                   size="small"
                   className={classes.maxWidth}
@@ -425,109 +400,128 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     });
                   }}
                   onWheel={(e) => e.target.blur()}
-                />
+                /> */}
               </Grid>
               <Grid item xs={12}>
                 <h3>Net Royalty Acres (NRA)</h3>
-                <TextField
-                  id="standard-number"
-                  type="number"
-                  size="small"
-                  className={changedKeys.nra ? classes.baseValueChanged : classes.maxWidth}
-                  value={newOwner.nra}
-                  onChange={(e) => {
-                    const value = addTrailingZeros(e.target.value);
-                    setNewOwner({
-                      ...newOwner,
-                      nra: value || null,
-                    });
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        {changedKeys.nra && (
-                          <IconButton
-                            aria-label="toggle royality-acres"
-                            onClick={() => {
-                              const nra = calculateNRA(newOwner.royalty_interest, newOwner.orri);
-                              setNewOwner({
-                                ...newOwner,
-                                nra
-                              });
-                            }}
-                          >
-                            <AutorenewIcon />
-                          </IconButton>
-                        )}
-                      </InputAdornment>
-                    ),
-                  }}
-                  onWheel={(e) => e.target.blur()}
+                <Controller
+                  control={control}
+                  name="nra"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          props.onChange(e.target.value)
+                          setValue('nra', calculateNRA(e.target.value, getValues().orri))
+                        }
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            {changedKeys.nra && (
+                              <IconButton
+                                aria-label="toggle royality-acres"
+                                onClick={() => {
+                                  setValue('nra', calculateNRA(getValues().royalty_interest, getValues().orri))
+                                }}
+                              >
+                                <AutorenewIcon />
+                              </IconButton>
+                            )}
+                          </InputAdornment>
+                        ),
+                      }}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
                 />
+
               </Grid>
               <Grid item xs={12}>
                 <h3>Seller Asking Price</h3>
-                <TextField
-                  id="standard-number"
-                  type="number"
-                  size="small"
-                  className={changedKeys.nra ? classes.baseValueChanged : classes.maxWidth}
-                  value={newOwner.seller_asking_price}
-                  onChange={(e) => {
-                    const value = addTrailingZeros(e.target.value);
-                    setNewOwner({
-                      ...newOwner,
-                      seller_asking_price: value || null,
-                    });
-                  }}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                  }}
-                  onWheel={(e) => e.target.blur()}
+
+                <Controller
+                  control={control}
+                  name="seller_asking_price"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          props.onChange(e.target.value)
+                        }
+                      }}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                      }}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
                 />
               </Grid>
 
               <Grid item xs={12}>
                 <h3>Competitor Offer Price</h3>
-                <TextField
-                  id="standard-number"
-                  type="number"
-                  size="small"
-                  className={changedKeys.competitor_offer_price ? classes.baseValueChanged : classes.maxWidth}
-                  value={newOwner.competitor_offer_price}
-                  onChange={(e) => {
-                    const value = addTrailingZeros(e.target.value);
-                    setNewOwner({
-                      ...newOwner,
-                      competitor_offer_price: value || null,
-                    });
-                  }}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                  }}
-                  onWheel={(e) => e.target.blur()}
+                <Controller
+                  control={control}
+                  name="competitor_offer_price"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          props.onChange(e.target.value)
+                        }
+                      }}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                      }}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
                 />
               </Grid>
 
               <Grid item xs={12}>
                 <h3>Offer Price</h3>
-                <TextField
-                  id="standard-number"
-                  type="number"
-                  size="small"
-                  className={changedKeys.offer_price ? classes.baseValueChanged : classes.maxWidth}
-                  value={newOwner.offer_price}
-                  onChange={(e) => {
-                    const value = addTrailingZeros(e.target.value);
-                    setNewOwner({
-                      ...newOwner,
-                      offer_price: value || null,
-                    });
-                  }}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                  }}
-                  onWheel={(e) => e.target.blur()}
+
+                <Controller
+                  control={control}
+                  name="offer_price"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          props.onChange(e.target.value)
+                        }
+                      }}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                      }}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
                 />
               </Grid>
 

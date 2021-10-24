@@ -35,31 +35,31 @@ const tableData = [
     label: 'Unit Acres',
     type: 'number',
     key: 'uUnitAcres'
-  },{
+  }, {
     label: 'Calculated Acres',
     type: 'text',
-    key: 'uCalcAcres'
-  },{
+    key: 'shapeArea'
+  }, {
     label: 'Current Operator',
     type: 'text',
     key: 'uPrimaryOperator'
-  },  {
+  }, {
     label: 'Field Name',
     type: 'text',
     key: 'uFieldName'
-  },  {
+  }, {
     label: 'Unit Depth',
     type: 'number',
     key: 'uDepth'
-  },{
+  }, {
     label: 'Primary Bench',
     type: 'text',
     key: 'uPrimaryBench'
-  },  {
+  }, {
     label: 'Net Royalty Acres (NRA)',
     type: 'number',
     key: 'uNetRoyalityAcres'
-  },{
+  }, {
     label: 'Unit Pricing (per NRA)',
     type: 'number',
     key: 'uUnitPricing'

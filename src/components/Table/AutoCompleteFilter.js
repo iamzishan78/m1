@@ -68,7 +68,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query 
             value={value}
             inputValue={search}
             getOptionSelected={(option, value) => option.key === value.key}
-            getOptionLabel={(option) => option.key}
+            getOptionLabel={(option) => option?.key?.toString()}
             onChange={(e, value, reason) => {
                 if (reason === 'clear' || !value?.key) {
                     filterList[index].pop()

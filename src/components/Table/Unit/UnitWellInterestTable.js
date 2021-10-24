@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-
 // context
 
 import { Container, Button } from "@material-ui/core";
@@ -23,23 +21,16 @@ import { GET_ES_SHAPE_WELLS } from "graphQL/useQueryESShapeWells";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
 import { GET_ES_SHAPE_WELLS_FILTER } from "graphQL/useQueryESShapeWellsFilter";
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    padding: "0 !important"
-  },
-}));
 
 function UnitWellInterestTable(props) {
   const classes = usetableStyles();
   const [addToTable, setAddToTable] = useState(false)
-
 
   // function states 
   const [columns, Columns] = useState([]);
   const [selectedRow, selectRow] = useState([]);
 
   const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
-  const [selectedYear, setSelectedYear] = useState(2020)  // production selected year state 
 
   // queries 
 
@@ -49,15 +40,17 @@ function UnitWellInterestTable(props) {
     }
   });
 
-  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: ["getContactWells", "getPaginatedContactWellInterests", "getContactWellInterestsFilterOptions"], awaitRefetchQueries: true });
+  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, {
+    refetchQueries: ["getESShapeWells",
+      "getESShapeWellsFilter"], awaitRefetchQueries: true
+  });
   const tableData = ShapeWellsData?.getESShapeWells
 
   const addAble = {
     type: "wellInterest", customLayer: props.customLayer,
     customLayerId: props.customLayer._id,
   }
-  const total = false
-  const orderByTracks = false
+
   const startPaginationAt = 25
 
   ////////////Contact Wells begin///////////////////////////////////////////////
@@ -68,7 +61,7 @@ function UnitWellInterestTable(props) {
           first: startPaginationAt,
           keep_alive: "1micros"
         },
-        search: props.documentSearchQuery ? props.documentSearchQuery : ""
+        search: ""
       }
     });
   }, [props.parent]);
@@ -159,10 +152,7 @@ function UnitWellInterestTable(props) {
       selectRow({ ...props.rows[dataIndex] })
     }
   }
-  ////////////-----Add your code section here-----///////////////////////
-  const getWellOwnersByYear = (selectedYear) => {
-    setSelectedYear(selectedYear)
-  }
+
 
   const deleteFunc = (ids) => {
     for (let i = 0; i < ids.length; i++) {
@@ -206,26 +196,22 @@ function UnitWellInterestTable(props) {
         header={props.header}
         columns={columns}
         rows={props.rows}
-        total={total}
+        total={false}
         loading={props.loading}
         addAble={addAble}
         targetLabel={props.targetLabel}
         deleteFunc={deleteFunc}
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
-        orderByTracks={orderByTracks}
+        orderByTracks={false}
         startPaginationAt={null}
-        contactId={props.contactId}
         onTableChange={onTableChange}
         options={options}
         parent={props.parent}
         setColumnsBase={[]}
-        getWellOwnersByYear={getWellOwnersByYear}
       />
     </Container>
   );
 }
 
 export default React.memo(TableHOC(UnitWellInterestTable), deepEqualObjects);
-
-

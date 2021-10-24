@@ -1,217 +1,182 @@
-import React, { useContext, useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-
+import React, { useState, useEffect } from "react";
 // context
-import { AppContext } from "AppContext";
 
-import { Container } from "@material-ui/core";
+import { Container, Button } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 
-// QUERIES
-import { useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
-import { SHAPE_OWNERS } from "graphQL/useQueryPaginatedShapeOwners";
-import { SHAPEOWNERSCOUNT } from "graphQL/useQueryShapeOwnersCount";
-import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
-import { ADDOWNERTOAPARCEL } from "graphQL/useMutationAddOwnerToAParcel";
-import { SHAPE_OWNERS_QUERY } from "../../../graphQL/useQueryShapeOwners";
-import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from "graphQL/useMutationConvertMultitpleOwnerToContact";
+// QUERIES 
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
 
-import {
-  deepEqualObjects,
-  setStateIfDeepEqual,
-} from "components/Shared/functions";
+import { addTrailingZeros, deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 
-// Header Schemas
-import TableHeader from "components/Table/constants/ownersperunit-header-schema";
-import { handleTagColumn } from "../helpers";
+// Header Schemas 
+import TableHeader from 'components/Table/constants/ownersperunit-header-schema'
 
 // Utilities
-import isEmpty from "lodash/isEmpty";
-import { getPolygonString } from "components/Shared/functions";
+import { usetableStyles } from "../Styles";
+import AddUnitOwnerDialogContent from "components/Shared/M1nTable/components/SubComponents/AddUnitOwnerDialogContent";
+import { GET_ES_SHAPE_OWNERS } from "graphQL/useQueryESShapeOwners";
+import { AutoCompleteFilter } from "../AutoCompleteFilter";
+import { GET_ES_SHAPE_OWNERS_FILTER } from "graphQL/useQueryESShapeOwnersFilter";
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    padding: "0 !important",
-  },
-}));
+
 
 function UnitOwnersTable(props) {
-  const classes = useStyles();
+  const classes = usetableStyles();
+  const [addToTable, setAddToTable] = useState(false)
 
-  // contexts
-  const [stateApp, setStateApp] = useContext(AppContext);
-
-  const client = useApolloClient();
-
-  // function states
+  // function states 
   const [columns, Columns] = useState([]);
-  const setColumns = (newState) => {
-    setStateIfDeepEqual(Columns, newState);
-  };
-  const [selectedYear, setSelectedYear] = useState(2020); // production selected year state
-  const [count, setCount] = useState()  // local state for async count query
-  const [suggestedOwnersCount, setSuggestedOwnersCount] = useState()  // local state for async count query
+  const [selectedRow, selectRow] = useState([]);
 
-  // queries
-  const [getPaginatedShapeOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(
-    SHAPE_OWNERS,
-    {
-      fetchPolicy: "cache-and-network", skip: true,
-      onCompleted: (dataShapeOwners) => {
-        setCount((state, props) => {
-          let newState = state || dataShapeOwners?.paginatedShapeOwners?.edges?.length;
-          let newStateIncrement = !variablesShapeOwners?.pagination?.before &&
-            dataShapeOwners?.paginatedShapeOwners?.pageInfo?.hasNextPage
-            ? 1
-            : 0;
+  const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
-          return newState + newStateIncrement
-        })
-      },
+  // queries 
+
+  const [getESShapeOwners, { data: ShapeWellsData }] = useLazyQuery(GET_ES_SHAPE_OWNERS, {
+    fetchPolicy: "no-cache", onCompleted: () => {
+      props.setLoading(false);
     }
-  );
-  const [getShapeOwners, { data: shapeTypeOwners }] = useLazyQuery(SHAPE_OWNERS_QUERY, {
-    fetchPolicy: "cache-and-network",
   });
 
-  const [addOwnerToAParcel, { data: mutationData }] =
-    useMutation(ADDOWNERTOAPARCEL);
-  const [convertMultitpleOwnerToContact] = useMutation(
-    CONVERT_MULTITPLE_OWNER_TO_CONTACT
-  );
-
-  const tableData = shapeTypeOwners?.shapeOwners;
+  const [updateOwners] = useMutation(UPDATEWELLINTEREST, {
+    refetchQueries: ["getESShapeOwners",
+      "getESShapeOwnersFilter"], awaitRefetchQueries: true
+  });
+  const tableData = ShapeWellsData?.getESShapeOwners
 
   const addAble = {
-    type: "ownerToUnit",
-    customLayer: props.customLayer,
+    type: "wellInterest", customLayer: props.customLayer,
     customLayerId: props.customLayer._id,
-  };
-  const total = false;
-  const orderByTracks = false;
+  }
 
+  const startPaginationAt = 25
+
+  ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
-
-    getShapeOwners({
+    getESShapeOwners({
       variables: {
-        customLayerId: props.customLayer._id,
-        shapeType: 'Unit'
-      },
+        pagination: {
+          first: startPaginationAt,
+          keep_alive: "1micros"
+        },
+        search: ""
+      }
     });
   }, [props.parent]);
 
   useEffect(() => {
-    if (tableData?.length > 0) {
-      const objectsIdsArray = tableData.map((owner) => owner._id);
-      props.initializeGenericData(objectsIdsArray, ['comments', 'tags', 'ifAreContacts']);
+    if (tableData?.hits?.length > 0) {
+      const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
+      props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
     }
   }, [tableData]);
 
   useEffect(() => {
-    if (tableData?.length > 0) {
-      let owners = tableData
-      owners = owners.map((o) => {
-        let owner = { ...o };
-        owner.isContact = false;
-        owner.ownershipType = owner.OwnerType
-        owner = props.setGenricData(owner, owner._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
-
-        return owner;
+    if (tableData?.hits?.length > 0) {
+      let hits = tableData?.hits
+      hits = hits.map((hit) => {
+        Object.keys(hit).forEach((key) => {
+          if (['working_interest', 'royalty_interest', 'orri', 'nri', 'nra'].includes(key))
+            hit[key] = addTrailingZeros(hit[key])
+        })
+        hit = props.setGenricData(hit, hit._id, ['comments', 'tracks', 'tags']);
+        return hit;
       });
-      props.setRows(owners);
+      props.setRows(hits);
+      TableHeader.forEach((column) => {
+        if (column?.options?.filter) {
+          column.options = {
+            ...column.options,
+            filter: true,
+            filterType: 'custom',
+            filterOptions: {
+              display: (filterList, onChange, index, column) => {
+                column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
+                return (
+                  <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange} query={GET_ES_SHAPE_OWNERS_FILTER} />
+                );
+              }
+            }
+          }
+        }
+      })
 
-      const cleanAvailableTags = []; // get from backend
-      const columns = handleTagColumn(TableHeader, cleanAvailableTags);
-      setColumns(columns);
+      setColumns(TableHeader);
       props.setLoading(false);
-    } else if (tableData?.length === 0) {
+    }
+    else if (tableData?.length === 0) {
+      props.setRows([]);
       props.setLoading(false);
     }
   }, [tableData, props.dependencyUpdate]);
 
+
   ////////////Contact Wells end///////////////////////////////////////////////
 
   const onTableChange = (action, tableState, rows, meta) => {
-    const pageVariables = {
-      variables: {
-        polygon: getPolygonString(props.customLayer?.shape),
-        userId: stateApp.user.mongoId,
-        pagination: {
-          first: tableState.rowsPerPage,
-          after: null,
-        },
-        ...(!isEmpty(tableState.sortOrder)) && {
-          sort:
-          {
-            field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.dbName ||
-              tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
-            order:
-              tableState.sortOrder?.direction === "asc"
-                ? 1
-                : -1,
-          }
-        },
-
-        filters: {},
-      },
-    };
-
+    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESShapeOwners)
     switch (action) {
+      case "search":
+      case "sort":
+      case "filterChange":
+      case "resetFilters":
       case "changeRowsPerPage":
-        props.setLoading(true);
-        tableState.page = 0;
-        meta.setPageInd(tableState.page);
-        meta.setRowsPerPage(tableState.rowsPerPage);
-        getPaginatedShapeOwners(pageVariables);
+        tableActions.genericESAction();
         break;
       case "changePage":
-        props.setLoading(true);
-        if (tableState.page > meta.pageInd) {
-          setCount((state, props) => {
-            return (tableState.page + 1) * tableState.rowsPerPage
-          })
-        }
-        getPaginatedShapeOwners({
-          ...pageVariables,
-          variables: {
-            ...pageVariables.variables,
-            pagination: {
-              ...pageVariables.variables.pagination,
-              before:
-                props.rows && tableState.page < meta.pageInd
-                  ? props.rows[0]?.cursor
-                  : null,
-              after:
-                props.rows && tableState.page > meta.pageInd
-                  ? props.rows[props.rows.length - 1]?.cursor
-                  : null,
-            },
-          },
-        });
-        break;
-      case "sort":
-        props.setLoading(true);
-        tableState.page = 0;
-        meta.setPageInd(tableState.page);
-        getPaginatedShapeOwners(pageVariables);
+        tableActions.changeESPage();
         break;
       default:
     }
-  };
+  }
 
+  const count = tableData?.total || 0
   const options = {
-    rowsPerPageOptions:
-      count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
-    count: suggestedOwnersCount || count || 0,
-    serverSide: false,
+    rowsPerPageOptions: [10, 25, 50, 100],
+    count: count,
+    serverSide: true,
     searchable: true,
-    filter: false,
-  };
-  ////////////-----Add your code section here-----///////////////////////
-  const getWellOwnersByYear = (selectedYear) => {
-    setSelectedYear(selectedYear);
-  };
+    filter: true,
+    customToolbar: () => {
+
+      return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
+        <Button
+          color="secondary"
+          className={classes.multiSelectionTopBarButtons}
+          onClick={() => { setAddToTable(true); selectRow(null) }}
+        >
+          + ADD OWNER TO {props.shapeType?.toUpperCase()}
+        </Button>
+      </div>
+    },
+    onRowClick: (rowData, { dataIndex, rowIndex }) => {
+      setAddToTable(true)
+      selectRow({ ...props.rows[dataIndex] })
+    }
+  }
+
+
+  const deleteFunc = (ids) => {
+    for (let i = 0; i < ids.length; i++) {
+      // updateWellInterest({
+      //   variables: {
+      //     wellInterest: {
+      //       id: ids[i],
+      //       isDeleted: true
+      //     },
+      //   },
+      //   refetchQueries: [
+      //     "getESShapeOwners",
+      //     "getESShapeOwnersFilter"
+      //   ],
+      //   awaitRefetchQueries: true,
+      // });
+    }
+  }
+
 
   return (
     <Container
@@ -219,25 +184,37 @@ function UnitOwnersTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
+
+      {addToTable && <AddUnitOwnerDialogContent
+        open={addToTable}
+        width="450px"
+        shapeId={props.customLayer._id}
+        shapeType={props.shapeType}
+        selectedRow={selectedRow}
+        onClose={() =>
+          setAddToTable(false)
+        }
+      />}
+
+
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
         columns={columns}
         rows={props.rows}
-        total={total}
+        total={false}
         loading={props.loading}
         addAble={addAble}
         targetLabel={props.targetLabel}
-        deleteFunc={null}
+        deleteFunc={deleteFunc}
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
-        orderByTracks={orderByTracks}
+        orderByTracks={false}
         startPaginationAt={null}
         onTableChange={onTableChange}
         options={options}
         parent={props.parent}
         setColumnsBase={[]}
-        getWellOwnersByYear={getWellOwnersByYear}
       />
     </Container>
   );

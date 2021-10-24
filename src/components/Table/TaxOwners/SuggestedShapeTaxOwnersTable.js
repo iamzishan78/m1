@@ -201,8 +201,6 @@ function SuggestedShapeTaxOwnersTable(props) {
         meta.setPageInd(tableState.page);
         getPaginatedShapeOwners(pageVariables);
         break;
-      case "search":
-        break;
       case "onSearchClose":
         break;
       case "propsUpdate":
@@ -222,8 +220,9 @@ function SuggestedShapeTaxOwnersTable(props) {
     rowsPerPageOptions:
       count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
     count: suggestedOwnersCount || count || 0,
-    serverSide: true,
-    filter: false,
+    serverSide: false,
+    searchable: true,
+    filter: true,
     customToolbar: () => {
 
       return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>

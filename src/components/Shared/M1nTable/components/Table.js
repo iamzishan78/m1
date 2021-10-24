@@ -1970,7 +1970,7 @@ function SubTable(props) {
             {
               column.options = {
                 ...column.options,
-                customBodyRender: (value, tableMeta, updateValue) => {
+                customBodyRender: column?.options?.customBodyRender ? column.options.customBodyRender : (value, tableMeta, updateValue) => {
                   const valueFormatter = (v) => {
                     if (
                       (column.name === "status" && props.targetLabel === "deal") ||

@@ -241,7 +241,7 @@ export default function UnitDetailCard(props) {
   useEffect(() => {
     if (updatedUnit) {
       if (updatedUnit.updateCustomLayer?.success) {
-        dispatch(showSuccessMessage("Successfully updated the unit"));
+        dispatch(showSuccessMessage("Successfully updated the Unit"));
         // Updating stateapp parcel object
         const customLayer = updatedUnit.updateCustomLayer.customLayer;
         const feature = JSON.parse(customLayer.shape);
@@ -369,19 +369,18 @@ export default function UnitDetailCard(props) {
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <UnitOwnersTable
                     customLayer={uniObj}
-                    parent="ownersPerOwner"
+                    parent="ownersPerUnit"
                     shapeType='Unit'
                     targetLabel="Unit Ownership"
                     header={<Header />}
                     setSelectedTab={setSelectedTab}
                     dense
                   />
-                  {/* <M1nTable parent="ownersPerOwner" customLayer={uniObj} dense header={<Header />} /> */}
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <SuggestedShapeTaxOwnersTable
                     customLayer={uniObj}
-                    parent="potentialOwnersPerParcel"
+                    parent="potentialOwnersPerUnit"
                     shapeType='Unit'
                     targetLabel="well"
                     header={<Header />}
