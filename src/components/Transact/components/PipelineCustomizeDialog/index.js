@@ -70,6 +70,7 @@ const useStyles = makeStyles((theme) => ({
   },
   menu: {
     "& .MuiListItem-root": {
+      height: "35px",
       "& .MuiListItemIcon-root": {
         minWidth: "30px",
         "& .MuiSvgIcon-root": {

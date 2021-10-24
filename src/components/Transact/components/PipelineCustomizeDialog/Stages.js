@@ -76,8 +76,8 @@ const useStyles = makeStyles((theme) => ({
 
 const reorder = (list, startPosition, endPosition) => {
   const reorderedStages = Array.from(list);
-  let startIndex = reorderedStages.findIndex((layer) => layer.position == startPosition);
-  let endIndex = reorderedStages.findIndex((layer) => layer.position == endPosition);
+  let startIndex = reorderedStages.findIndex((layer) => layer.position === startPosition);
+  let endIndex = reorderedStages.findIndex((layer) => layer.position === endPosition);
 
   //// switch positions between stages
 

@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { ContextProvider } from "react-sortly";
 import Sortly, { useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import { Flipper, Flipped } from "react-flip-toolkit";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, IconButton, Popover, List, ListItem, ListItemText, Tooltip, ListItemIcon, Typography, TextField } from "@material-ui/core";
-import DragIndicator from "@material-ui/icons/DragIndicator";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import CelendarIcon from "@material-ui/icons/Event";
-import CloseIcon from "@material-ui/icons/Close";
+import { DragIndicator, AccountCircle, Event as CelendarIcon, Close as CloseIcon, Edit as EditIcon } from "@material-ui/icons";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -26,6 +21,9 @@ const useStyles = makeStyles((theme) => ({
     zIndex: props.muted ? 1 : 0,
   }),
   subTaskLeftGrid: {
+    display: "flex",
+    width: "55% !important",
+    alignItems: "center",
     "& .MuiFormControlLabel-root": {
       marginRight: 0,
     },
@@ -33,15 +31,15 @@ const useStyles = makeStyles((theme) => ({
   subTaskRightGrid: (props) => ({
     alignItems: "right",
     textAlign: "right",
+    width: "39%",
     "& .MuiIconButton-root": {
       height: "25px",
       width: "25px",
       margin: "5px",
     },
     "& .MuiTextField-root": {
-      marginTop: "2px",
+      margin: "2px 10px 0px 0px",
       marginBottom: 0,
-      width: "132px",
     },
     "& .MuiInput-underline:before": {
       borderBottom: "none !important",
@@ -55,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiInputBase-input": {
       textAlign: "right",
       cursor: "pointer",
+      maxWidth: "90px",
     },
     "& .MuiInputAdornment-root": {
       display: props.task.dueDate ? "none" : "",
@@ -71,12 +70,17 @@ const useStyles = makeStyles((theme) => ({
   taskTemplateDatePopover: {
     cursor: "pointer",
   },
+  pencilIcon: {
+    margin: "-5px 0px -5px 5px",
+    cursor: "pointer",
+  },
 }));
 
 export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, canDrag = true, isTemplate = false }) => {
   const approver = users.find((user) => user?.value === task.assignee) || {};
   const [showTaskActions, setShow] = useState(false);
   const [isDatePopup, setDatePopup] = useState(false);
+  const [isEdit, setEdit] = useState({ index: -1, isEditing: false, showIcon: false });
   const truncate = (str, n) => (str?.length > n ? str.substr(0, n - 1) + "..." : str);
   const onHoverTask = (state) => setShow(state);
 
@@ -107,13 +111,20 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
         onMouseEnter={() => onHoverTask(true)}
         ref={(ref) => canDrag && drop(preview(ref))}
       >
-        <Grid container direction="row" justify="flex-start" alignItems="center">
+        <Grid
+          container
+          direction="row"
+          justify="space-between"
+          alignItems="center"
+          onMouseEnter={() => setEdit({ ...isEdit, index: task.index, showIcon: true })}
+          onMouseLeave={() => setEdit({ ...isEdit, index: -1, showIcon: false })}
+        >
           {canDrag && (
-            <ListItemIcon ref={drag} style={{ minWidth: "30px" }}>
+            <ListItemIcon ref={drag} style={{ minWidth: 0 }}>
               <DragIndicator style={{ cursor: "move" }} />
             </ListItemIcon>
           )}
-          <Grid item xs={canDrag ? 6 : 7} className={classes.subTaskLeftGrid}>
+          <Grid item className={classes.subTaskLeftGrid}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -130,11 +141,46 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
                 />
               }
             />
-            <Tooltip title={task.name} placement="top">
-              <span style={{ fontSize: "medium" }}>{truncate(task.name, 18)}</span>
-            </Tooltip>
+            {!isEdit.isEditing ? (
+              <>
+                <Tooltip title={task.name} placement="top">
+                  <span style={{ fontSize: "medium" }}>{truncate(task.name, 23)}</span>
+                </Tooltip>
+                {isEdit.index === task.index && isEdit.showIcon && (
+                  <EditIcon
+                    fontSize="small"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setEdit({ ...isEdit, isEditing: true });
+                    }}
+                    className={classes.pencilIcon}
+                  />
+                )}
+              </>
+            ) : (
+              <TextField
+                size="small"
+                variant="outlined"
+                label="Press Enter To Save"
+                autoFocus
+                style={{ width: "90%" }}
+                defaultValue={task.name}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleUpdateSubtask({
+                      ...task,
+                      name: e.target.value,
+                    });
+                    setEdit({ ...isEdit, isEditing: false, index: -1 });
+                  }
+                }}
+                onClick={(event) => event.stopPropagation()}
+                onBlur={() => setEdit({ isEditing: false, index: -1 })}
+              />
+            )}
           </Grid>
-          <Grid item xs={5} className={classes.subTaskRightGrid}>
+          <Grid item className={classes.subTaskRightGrid}>
             <Grid container direction="row" justify="flex-end" alignItems="center">
               <Grid item>
                 {isTemplate ? (
@@ -301,7 +347,7 @@ const DealSubtasks = (props) => {
   const [updateSubtask] = useMutation(UPDATE_DEAL_SUBTASK);
 
   useEffect(() => {
-    setItems(tasks.map((t, index) => ({ ...t, id: `${index + 1}`, depth: 0 })));
+    setItems(tasks.map((t, index) => ({ ...t, id: `${index + 1}`, index, depth: 0 })));
   }, [tasks]);
 
   const handleUpdateSubtask = (task) => {
@@ -326,24 +372,24 @@ const DealSubtasks = (props) => {
   };
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <ContextProvider>
-        <Flipper flipKey={items.map(({ id }) => id).join(".")}>
-          <Sortly items={items} onChange={handleChange}>
-            {(props) => (
-              <SubtaskItem
-                task={props.data}
-                handleUpdateSubtask={handleUpdateSubtask}
-                users={users}
-                handleDragEnd={handleDragEnd}
-                canDrag={canDrag}
-                isTemplate={isTemplate}
-              />
-            )}
-          </Sortly>
-        </Flipper>
-      </ContextProvider>
-    </DndProvider>
+    // <DndProvider backend={HTML5Backend}>
+    <ContextProvider>
+      <Flipper flipKey={items.map(({ id }) => id).join(".")}>
+        <Sortly items={items} onChange={handleChange}>
+          {(props) => (
+            <SubtaskItem
+              task={props.data}
+              handleUpdateSubtask={handleUpdateSubtask}
+              users={users}
+              handleDragEnd={handleDragEnd}
+              canDrag={canDrag}
+              isTemplate={isTemplate}
+            />
+          )}
+        </Sortly>
+      </Flipper>
+    </ContextProvider>
+    // </DndProvider>
   );
 };
 

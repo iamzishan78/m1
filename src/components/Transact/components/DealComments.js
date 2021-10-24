@@ -55,12 +55,14 @@ const useStyles = makeStyles((theme) => ({
     bottom: "10px",
     marginBottom: -20,
     background: "#24afdf",
-
   },
   paddingLeft10: {
     paddingLeft: "20px !important",
     paddingTop: "3px !important",
-
+  },
+  paddingCreateTask: {
+    paddingLeft: "20px !important",
+    paddingTop: "10px !important",
   },
   moreComment: {
     padding: "10px",
@@ -83,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px 5px 10px 0px",
     // marginRight: "60px",
     // marginBottom: "10px",
-    marginLeft: '20px'
+    marginLeft: "20px",
   },
   commentTime: {
     marginLeft: "10px",
@@ -118,8 +120,7 @@ export default function DealComment(props) {
   const [loadingComments, setLoadingComments] = useState(true);
 
   const [removeComment] = useMutation(REMOVECOMMENT);
-  const [upsertComment, { data: newlyAddedComment }] =
-    useMutation(UPSERTCOMMENT);
+  const [upsertComment, { data: newlyAddedComment }] = useMutation(UPSERTCOMMENT);
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "cache-and-network",
   });
@@ -127,10 +128,7 @@ export default function DealComment(props) {
   const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
   });
-  const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
-    COMMENTSBYOBJECTIDQUERY,
-    { fetchPolicy: "no-cache" }
-  );
+  const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
     getAllMongoUsers();
@@ -166,9 +164,11 @@ export default function DealComment(props) {
 
   useEffect(() => {
     if (dataComments && dataComments.commentsByObjectId) {
-      setCommentsArray(
-        sortArrayBasedOnTs([...dataComments.commentsByObjectId])
-      );
+      const sortedComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId]);
+      if (stateApp.activeDeal._id && stateApp.activeDeal?.createdOn) {
+        sortedComments.unshift(getPinnedComment());
+      }
+      setCommentsArray(sortedComments);
     }
     setLoadingComments(false);
   }, [dataComments]);
@@ -203,12 +203,7 @@ export default function DealComment(props) {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (
-      profiledata &&
-      profiledata.data &&
-      profiledata.data.profileByEmail &&
-      profiledata.data.profileByEmail.profile
-    ) {
+    if (profiledata && profiledata.data && profiledata.data.profileByEmail && profiledata.data.profileByEmail.profile) {
       const {
         data: {
           profileByEmail: {
@@ -219,6 +214,13 @@ export default function DealComment(props) {
       setProfileImage(profileImage);
     }
   }, [profiledata]);
+
+  const getPinnedComment = () => ({
+    user: stateApp.activeDeal.user,
+    isPinned: true,
+    isPublic: true,
+    ts: new Date(stateApp.activeDeal.createdOn),
+  });
 
   const sortArrayBasedOnTs = (array) => {
     const compare = (a, b) => {
@@ -263,11 +265,7 @@ export default function DealComment(props) {
           isEdited: true,
         },
       },
-      refetchQueries: [
-        "getCommentsByObjectId",
-        "getCommentsCounter",
-        "getCommentsByObjectsIds",
-      ],
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -282,11 +280,7 @@ export default function DealComment(props) {
       variables: {
         commentId: id,
       },
-      refetchQueries: [
-        "getCommentsByObjectId",
-        "getCommentsCounter",
-        "getCommentsByObjectsIds",
-      ],
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -307,11 +301,7 @@ export default function DealComment(props) {
           objectType: props.targetLabel,
         },
       },
-      refetchQueries: [
-        "getCommentsByObjectId",
-        "getCommentsCounter",
-        "getCommentsByObjectsIds",
-      ],
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -325,7 +315,7 @@ export default function DealComment(props) {
 
   return (
     <div className={classes.container}>
-      <div className={classes.comment} >
+      <div className={classes.comment}>
         {!loadingComments ? (
           <>
             {!showAllComments && commentsArray.length > 3 && (
@@ -341,54 +331,38 @@ export default function DealComment(props) {
             )}
             {showAllComments && commentsArray.length > 3 && (
               <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
-                <span onClick={() => setShowAllComments(false)}>
-                  Hide Earlier Comments
-                </span>
+                <span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
               </div>
             )}
 
             {commentsArray.map((eachComment, index) => {
-              let indexToShow =
-                commentsArray.length > 3 ? commentsArray.length - 3 : 0;
+              let indexToShow = commentsArray.length > 3 ? commentsArray.length - 3 : 0;
               return (
                 <Fragment key={index}>
                   {(showAllComments || index >= indexToShow) && (
                     <Grid
                       container
                       className={classes.gridStyle}
-                      onMouseOver={() =>
-                        setShowCommentActionId(eachComment._id)
-                      }
+                      onMouseOver={() => setShowCommentActionId(eachComment._id)}
                       onMouseLeave={() => setShowCommentActionId(null)}
                     >
                       <Grid item xs={1}>
                         <IconButton style={{ marginTop: "3px", marginLeft: "12px" }}>
-                          {profilesInfo[eachComment.user.email]?.profileImage ||
-                            eachComment.isNew ? (
+                          {profilesInfo[eachComment.user.email]?.profileImage || eachComment.isNew ? (
                             <Avatar
-                              src={
-                                eachComment.isNew
-                                  ? profileImage
-                                  : profilesInfo[eachComment.user.email]
-                                    .profileImage
-                              }
+                              src={eachComment.isNew ? profileImage : profilesInfo[eachComment.user.email].profileImage}
                               size="38"
                               round
                             />
                           ) : (
-                            <Avatar
-                              name={eachComment.user.name}
-                              size="38"
-                              round
-                            />
+                            <Avatar name={eachComment.user.name} size="38" round />
                           )}
                         </IconButton>
                       </Grid>
-                      <Grid item xs={11} className={classes.paddingLeft10}>
+                      <Grid item xs={11} className={classes.paddingCreateTask} >
                         <div>
-                          <span className={classes.bold}>
-                            {eachComment.user.name}
-                          </span>
+                          <span className={classes.bold}>{eachComment.user.name}</span>
+                          {eachComment.isPinned && <span> created this task.</span>}
                           <ReactTimeAgo
                             className={classes.commentTime}
                             date={
@@ -404,41 +378,43 @@ export default function DealComment(props) {
                             }
                             locale="en-US"
                           />
-                          {eachComment.isEdited && (
-                            <span className={classes.commentTime}>
-                              (Edited)
-                            </span>
+                          {!eachComment.isPinned && (
+                            <>
+                              {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+                              {eachComment.user.email === stateApp.user.email &&
+                                showCommentActionId === eachComment._id &&
+                                editCommentId !== eachComment._id && (
+                                  <div className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}>
+                                    <ActionMenu
+                                      eachComment={eachComment}
+                                      setEditCommentId={setEditCommentId}
+                                      setEditComment={setEditComment}
+                                      deleteComment={deleteComment}
+                                    />
+                                  </div>
+                                )}
+                            </>
                           )}
-                          {eachComment.user.email === stateApp.user.email &&
-                            showCommentActionId === eachComment._id &&
-                            editCommentId !== eachComment._id && (
-                              <div
-                                className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}
-                              >
-                                <ActionMenu
-                                  eachComment={eachComment}
+                        </div>
+                        {!eachComment.isPinned && (
+                          <>
+                            {editCommentId !== eachComment._id ? (
+                              <CommentText users={users} eachComment={eachComment} />
+                            ) : (
+                              <div className={classes.border}>
+                                <CommentField
+                                  isEdit
+                                  profilesInfo={profilesInfo}
+                                  users={users}
+                                  comment={editComment}
+                                  showActions={showActions}
                                   setEditCommentId={setEditCommentId}
-                                  setEditComment={setEditComment}
-                                  deleteComment={deleteComment}
+                                  setComment={setEditComment}
+                                  upsertComment={updateComment}
                                 />
                               </div>
                             )}
-                        </div>
-                        {editCommentId !== eachComment._id ? (
-                          <CommentText users={users} eachComment={eachComment} />
-                        ) : (
-                          <div className={classes.border}>
-                            <CommentField
-                              isEdit
-                              profilesInfo={profilesInfo}
-                              users={users}
-                              comment={editComment}
-                              showActions={showActions}
-                              setEditCommentId={setEditCommentId}
-                              setComment={setEditComment}
-                              upsertComment={updateComment}
-                            />
-                          </div>
+                          </>
                         )}
                       </Grid>
                     </Grid>
@@ -451,23 +427,20 @@ export default function DealComment(props) {
           <CircularProgress color="secondary"></CircularProgress>
         )}
       </div>
-      <div style={{ paddingBottom: '20px' }}>
+      <div style={{ paddingBottom: "20px" }}>
         <Grid container>
           <Grid item xs={1}>
-            <IconButton className={classes.commentView}
+            <IconButton
+              className={classes.commentView}
             // style={{ top: "3px" }}
             >
-              {profileImage ? (
-                <Avatar src={profileImage} size="38" round />
-              ) : (
-                <Avatar name={stateApp.user.name} size="38" round />
-              )}
+              {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
             </IconButton>
           </Grid>
           <Grid item xs={11} className={classes.paddingLeft10}>
             <div
               className={classes.border}
-              style={{ width: '500px', paddingBottom: '20px' }}
+              style={{ width: "500px", paddingBottom: "20px" }}
               onClick={() => {
                 if (!showActions) {
                   setShowActions(true);
@@ -506,7 +479,12 @@ export const CommentText = ({ eachComment, users }) => {
           const secondPart = word.split("}}")[1];
           let id = word.split("{{")[1];
           id = id.split("}}")[0];
-          return <span className="blue">{firstPart}@{users.find(user => user._id === id)?.name}{secondPart} </span>
+          return (
+            <span className="blue">
+              {firstPart}@{users.find((user) => user._id === id)?.name}
+              {secondPart}{" "}
+            </span>
+          );
         } else {
           return <span>{word} </span>;
         }
@@ -515,12 +493,7 @@ export const CommentText = ({ eachComment, users }) => {
   );
 };
 
-const ActionMenu = ({
-  eachComment,
-  setEditCommentId,
-  setEditComment,
-  deleteComment,
-}) => {
+const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -533,13 +506,9 @@ const ActionMenu = ({
 
   return (
     <>
-      <ExpandMoreIcon
-        aria-controls={eachComment._id}
-        aria-haspopup="true"
-        onClick={handleClick}
-      />
+      <ExpandMoreIcon aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} />
       <Menu
-        style={{ zIndex: '1305' }}
+        style={{ zIndex: "1305" }}
         id={eachComment._id}
         anchorEl={anchorEl}
         keepMounted
@@ -558,10 +527,7 @@ const ActionMenu = ({
         >
           Edit Comment
         </MenuItem>
-        <MenuItem
-          textcolor="red"
-          onClick={() => deleteComment(eachComment._id)}
-        >
+        <MenuItem textcolor="red" onClick={() => deleteComment(eachComment._id)}>
           Delete Comment
         </MenuItem>
       </Menu>
