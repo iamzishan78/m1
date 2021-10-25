@@ -14,7 +14,7 @@ export default function AlertDialogSlide(props) {
       "& .MuiDialog-paper": {
         // backgroundColor: "#EBEBEB",
         position: "fixed",
-        top: "14% !important",
+        top: "15% !important",
         left: "5px !important",
         width: props.width ? String(props.width) : null,
         maxWidth: "100% !important",
