@@ -181,7 +181,8 @@ function ContactsTable(props) {
       meta,
       tableData,
       columns,
-      getESContacts
+      getESContacts,
+      selectedGridView
     );
     selectedFilters.current = tableActions?.pageESVariables?.variables?.filters
     switch (action) {

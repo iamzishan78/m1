@@ -176,7 +176,7 @@ export const TableHOC = (Component) => {
             return data
         };
 
-        const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery) => {
+        const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView={}) => {
             let pageESVariables = {
                 variables: {
                     search: tableState.searchText,
@@ -205,6 +205,11 @@ export const TableHOC = (Component) => {
                     pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
                 }
             })
+            if(selectedGridView?.filters && selectedGridView.type === 'Default') {
+                selectedGridView.filters.forEach(filter => {
+                    pageESVariables.variables.filters.push(filter)
+                })
+            }
             return {
                 pageESVariables,
                 genericESAction: () => {

@@ -247,7 +247,7 @@ const ContactsHeadCells = [
     {
       name: "contactOwner",
       label: "Contact Owner",
-      esKey: 'contactOwners',
+      esKey: 'contactOwners.name.keyword',
       options: {
         dbName: "contactOwners.name",
         // display: true,
