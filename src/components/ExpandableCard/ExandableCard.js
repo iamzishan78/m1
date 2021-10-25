@@ -98,7 +98,7 @@ function ExpandableCard(props) {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
-    if (props.targetLabel === "activity" || props.targetLabel === "parcel") {
+    if (props.targetLabel === "activity" || props.targetLabel === "parcel" || props.targetLabel === "unit") {
       setTitle(props.title);
     }
   }, [props.title, props.targetLabel]);
