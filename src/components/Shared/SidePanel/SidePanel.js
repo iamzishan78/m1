@@ -394,8 +394,8 @@ export default function SidePanel() {
   //   for Marketplace Panel
   useEffect(() => {
     if (panelType === "marketplace") {
-      setDragFunction(() => {});
-      setToggleFunction(() => {});
+      setDragFunction(() => { });
+      setToggleFunction(() => { });
       // setPanelItems(stateApp.layers);
       setPanelTitle("Marketplace");
       setPanelButton(null);
@@ -409,7 +409,7 @@ export default function SidePanel() {
       headerButton={panelButton}
       headerFilters={headerFilters}
       title={panelTitle}
-      items={panelItems}
+      panelItems={panelItems}
       onDragEnd={dragFunction}
       handleToggle={toggleFunction}
     />

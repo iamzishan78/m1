@@ -12,7 +12,7 @@ import { useMutation } from "@apollo/client";
 import { deepEqual } from "components/Shared/functions";
 import { useStyles } from '../style';
 
-const FileTree = ({ layerMap }) => {
+const FileTree = ({ layerMap, panelItems }) => {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
@@ -188,9 +188,9 @@ const FileTree = ({ layerMap }) => {
   };
 
   const updateLayer = (layer) => {
-    const currentLayers = [...items];
+    const currentLayers = [...panelItems];
     //// saving to stateApp
-    const index = items.findIndex((item) => item._id === layer._id);
+    const index = panelItems.findIndex((item) => item._id === layer._id);
     currentLayers[index] = layer;
     setItems(currentLayers);
     setStateApp((stateApp) => ({
