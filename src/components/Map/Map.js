@@ -6009,7 +6009,7 @@ function Map({ type, paramId, lati, longi }) {
   }, [stateApp.parcelDetailCardOpen]);
 
   useEffect(() => {
-    if (parcelBoundaryId && map) {
+    if (parcelBoundaryId && map && map.getSource("parcels_source")) {
       let mapSourceData = map.getSource("parcels_source")._data;
       const idx = mapSourceData.features.findIndex((feature) => feature.id === parcelBoundaryId);
       if (idx > -1) {
