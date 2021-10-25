@@ -251,6 +251,7 @@ function ContactsTable(props) {
       >
         {showViewModal && (
           <GridView 
+            handleClose={() => setShowViewModal(false)}
             setSelectedGridView={setSelectedGridView} 
             selectedGridView={selectedGridView} 
             setShowViewModal={setShowViewModal} 
@@ -353,7 +354,7 @@ const HeaderComponent = ({ selectedGridView, setShowViewModal, showViewModal, se
                   }
                 })
               }} 
-              disabled={selectedGridView.type === 'Default'}
+              disabled={selectedGridView.type === 'Default' || selectedGridView.name === 'All Contacts'}
             >
               Update view
             </MenuItem>

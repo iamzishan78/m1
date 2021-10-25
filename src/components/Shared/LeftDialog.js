@@ -26,7 +26,8 @@ export default function AlertDialogSlide(props) {
         transition: "width 0.5s",
       },
       "& .MuiBackdrop-root": {
-        display: "none"
+        // display: "none"
+        backgroundColor: 'transparent'
       },
       "& .MuiListItem-container": {
         borderBottom: "1px solid #c7c7c7",

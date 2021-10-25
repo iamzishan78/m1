@@ -18,6 +18,7 @@ import LockOpenIcon from "@material-ui/icons/LockOpen";
 import LockIcon from "@material-ui/icons/Lock";
 import StarIcon from "@material-ui/icons/Star";
 import { Menu, MenuItem } from "@material-ui/core";
+import { CircularProgress } from "@material-ui/core";
 
 import LeftDialog from "components/Shared/LeftDialog";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
@@ -71,6 +72,7 @@ function GridView({
   showSaveAsNew,
   setShowSaveAsNew,
   selectedFilters,
+  handleClose
 }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -79,8 +81,10 @@ function GridView({
   const [editGridView, setEditGridView] = useState(null);
   const [viewName, setViewName] = useState(`${selectedGridView.name}-copy`);
   const [addGridView, { data: newGridView }] = useMutation(ADD_GRID_VIEW);
-  const [getGridViews, { data: gridViews }] = useLazyQuery(GET_GRID_VIEWS);
-  const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
+  const [getGridViews, { data: gridViews, loading }] =
+    useLazyQuery(GET_GRID_VIEWS);
+  const [updateGridView, { data: updatedGridView }] =
+    useMutation(UPDATE_GRID_VIEW);
 
   useEffect(() => {
     getGridViews({
@@ -103,7 +107,7 @@ function GridView({
       setEditGridView(null);
       setSelectedGridView(updatedGridView.updateGridView.updatedGridView);
     }
-  },[updatedGridView]);
+  }, [updatedGridView]);
 
   useEffect(() => {
     if (gridViews?.getGridViews?.gridViews) {
@@ -119,120 +123,130 @@ function GridView({
   }, [showSaveAsNew]);
 
   return (
-    <LeftDialog open width="325px">
-      <TextField
-        value={""}
-        onChange={(e) => {}}
-        className={classes.searchField}
-        margin="dense"
-        variant="outlined"
-        placeholder="Search views"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment>
-              <IconButton size="small">
-                <SearchIcon htmlColor="#fff" />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      />
-      <Accordion defaultExpanded style={{ margin: 0 }}>
-        <AccordionSummary
-          expandIcon={<KeyboardArrowUpIcon></KeyboardArrowUpIcon>}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-          className={classes.summary}
-        >
-          Default
-        </AccordionSummary>
-        <AccordionDetails className={classes.details}>
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => {
-              setSelectedGridView({ name: "All Contacts" });
-              setShowViewModal(false);
+    <LeftDialog open width="325px" handleClickDialogClose={handleClose}>
+      {!loading ? (
+        <>
+          <TextField
+            value={""}
+            onChange={(e) => {}}
+            className={classes.searchField}
+            margin="dense"
+            variant="outlined"
+            placeholder="Search views"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment>
+                  <IconButton size="small">
+                    <SearchIcon htmlColor="#fff" />
+                  </IconButton>
+                </InputAdornment>
+              ),
             }}
-          >
-            <div>All Contacts</div>
-          </div>
-          {allGridViews.map((view) => {
-            return view.type === "Default" ? (
+          />
+          <Accordion defaultExpanded style={{ margin: 0 }}>
+            <AccordionSummary
+              expandIcon={<KeyboardArrowUpIcon></KeyboardArrowUpIcon>}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+              className={classes.summary}
+            >
+              Default
+            </AccordionSummary>
+            <AccordionDetails className={classes.details}>
               <div
                 style={{ cursor: "pointer" }}
                 onClick={() => {
-                  const data = JSON.parse(JSON.stringify(view));
-                  if (data.name === "My Contacts") {
-                    data.filters[0].value = stateApp.user.name;
-                  }
-                  if (
-                    data.name === "Recently Modified" ||
-                    data.name === "Recently Added"
-                  ) {
-                    data.filters[0].value.range[data.filters[0].field].gte =
-                      moment().subtract(30, "days").toISOString();
-                    data.filters[0].value.range[data.filters[0].field].lte =
-                      moment().toISOString();
-                  }
-                  setSelectedGridView(data);
+                  setSelectedGridView({ name: "All Contacts" });
                   setShowViewModal(false);
                 }}
               >
-                <div>{view.name}</div>
+                <div>All Contacts</div>
               </div>
-            ) : (
-              <></>
-            );
-          })}
-        </AccordionDetails>
-      </Accordion>
-      <Accordion defaultExpanded style={{ margin: 0 }}>
-        <AccordionSummary
-          expandIcon={<KeyboardArrowUpIcon></KeyboardArrowUpIcon>}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-          className={classes.summary}
-        >
-          Custom
-        </AccordionSummary>
-        <AccordionDetails className={classes.details}>
-          {allGridViews.map((view) => {
-            return view.type === "Custom" ? (
-              view._id === editGridView?._id ? (
+              {allGridViews.map((view) => {
+                return view.type === "Default" ? (
+                  <div
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      const data = JSON.parse(JSON.stringify(view));
+                      if (data.name === "My Contacts") {
+                        data.filters[0].value = stateApp.user.name;
+                      }
+                      if (
+                        data.name === "Recently Modified" ||
+                        data.name === "Recently Added"
+                      ) {
+                        data.filters[0].value.range[data.filters[0].field].gte =
+                          moment().subtract(30, "days").toISOString();
+                        data.filters[0].value.range[data.filters[0].field].lte =
+                          moment().toISOString();
+                      }
+                      setSelectedGridView(data);
+                      setShowViewModal(false);
+                    }}
+                  >
+                    <div>{view.name}</div>
+                  </div>
+                ) : (
+                  <></>
+                );
+              })}
+            </AccordionDetails>
+          </Accordion>
+          <Accordion defaultExpanded style={{ margin: 0 }}>
+            <AccordionSummary
+              expandIcon={<KeyboardArrowUpIcon></KeyboardArrowUpIcon>}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+              className={classes.summary}
+            >
+              Custom
+            </AccordionSummary>
+            <AccordionDetails className={classes.details}>
+              {allGridViews.map((view) => {
+                return view.type === "Custom" ? (
+                  view._id === editGridView?._id ? (
+                    <InputField
+                      editGridViewId={editGridView._id}
+                      setEditGridView={setEditGridView}
+                      viewName={viewName}
+                      setViewName={setViewName}
+                      addGridView={addGridView}
+                      selectedFilters={selectedFilters}
+                      user={stateApp.user.mongoId}
+                      setShowSaveAsNew={setShowSaveAsNew}
+                      updateGridView={updateGridView}
+                    />
+                  ) : (
+                    <CustomView
+                      setSelectedGridView={setSelectedGridView}
+                      setShowViewModal={setShowViewModal}
+                      view={view}
+                      setEditGridView={setEditGridView}
+                      setViewName={setViewName}
+                      updateGridView={updateGridView}
+                    />
+                  )
+                ) : (
+                  <></>
+                );
+              })}
+              {showSaveAsNew && (
                 <InputField
-                  editGridViewId={editGridView._id}
+                  setEditGridView={setEditGridView}
                   viewName={viewName}
                   setViewName={setViewName}
                   addGridView={addGridView}
                   selectedFilters={selectedFilters}
+                  setShowSaveAsNew={setShowSaveAsNew}
                   user={stateApp.user.mongoId}
-                  updateGridView={updateGridView}
                 />
-              ) : (
-                <CustomView
-                  setSelectedGridView={setSelectedGridView}
-                  setShowViewModal={setShowViewModal}
-                  view={view}
-                  setEditGridView={setEditGridView}
-                  setViewName={setViewName}
-                  updateGridView={updateGridView}
-                />
-              )
-            ) : (
-              <></>
-            );
-          })}
-          {showSaveAsNew && (
-            <InputField
-              viewName={viewName}
-              setViewName={setViewName}
-              addGridView={addGridView}
-              selectedFilters={selectedFilters}
-              user={stateApp.user.mongoId}
-            />
-          )}
-        </AccordionDetails>
-      </Accordion>
+              )}
+            </AccordionDetails>
+          </Accordion>
+        </>
+      ) : (
+        <CircularProgress></CircularProgress>
+      )}
     </LeftDialog>
   );
 }
@@ -246,6 +260,8 @@ const InputField = ({
   addGridView,
   selectedFilters,
   updateGridView,
+  setShowSaveAsNew,
+  setEditGridView,
   user,
 }) => {
   const classes = useStyles();
@@ -270,17 +286,17 @@ const InputField = ({
         event.stopPropagation();
         if (event.key === "Enter") {
           event.preventDefault();
-          if(editGridViewId){
+          if (editGridViewId) {
             updateGridView({
               variables: {
                 gridView: {
                   _id: editGridViewId,
-                  name: viewName
+                  name: viewName,
                 },
               },
               refetchQueries: ["getGridViews"],
             });
-          }else{
+          } else {
             addGridView({
               variables: {
                 gridView: {
@@ -295,6 +311,16 @@ const InputField = ({
             });
           }
         }
+        if (event.key === "Escape") {
+          setShowSaveAsNew(false);
+          setEditGridView(null)
+          setViewName('')
+        }
+      }}
+      onBlur={() => {
+        setShowSaveAsNew(false);
+        setViewName('')
+        setEditGridView(null)
       }}
     />
   );
@@ -305,7 +331,7 @@ const CustomView = ({
   view,
   setEditGridView,
   setViewName,
-  updateGridView
+  updateGridView,
 }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -332,9 +358,9 @@ const CustomView = ({
             setShowViewModal(false);
           }}
         >
-          {view.name} 
+          {view.name}
         </div>
-        {view.isFavourite && (<StarIcon style={{ marginTop: "5px" }}  />)}
+        {view.isFavourite && <StarIcon style={{ marginTop: "5px" }} />}
       </span>
       {showActions && (
         <span className={classes.actionIcons}>
@@ -368,14 +394,14 @@ const CustomView = ({
           onClick={() => {
             handleClose();
             updateGridView({
-              variables:{
+              variables: {
                 gridView: {
                   _id: view._id,
-                  isFavourite: true
-                }
+                  isFavourite: true,
+                },
               },
               refetchQueries: ["getGridViews"],
-            })
+            });
           }}
         >
           Set as favorite
@@ -385,14 +411,14 @@ const CustomView = ({
           onClick={() => {
             handleClose();
             updateGridView({
-              variables:{
+              variables: {
                 gridView: {
                   _id: view._id,
-                  isPrivate: false
-                }
+                  isPrivate: false,
+                },
               },
               refetchQueries: ["getGridViews"],
-            })
+            });
           }}
         >
           Share with others
@@ -403,14 +429,14 @@ const CustomView = ({
           onClick={() => {
             handleClose();
             updateGridView({
-              variables:{
+              variables: {
                 gridView: {
                   _id: view._id,
-                  isDeleted: true
-                }
+                  isDeleted: true,
+                },
               },
               refetchQueries: ["getGridViews"],
-            })
+            });
           }}
         >
           Delete view
