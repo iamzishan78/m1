@@ -48,8 +48,8 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     width: "100%",
     paddingTop: "15px",
-    "& .MuiFilledInput-input": {
-      padding: "12px 12px 10px",
+    "& .MuiOutlinedInput-input": {
+      padding: "5px",
     },
     "& .MuiFormHelperText-contained": {
       justifyContent: "flex-end",
@@ -78,6 +78,7 @@ function GridView({
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const [allGridViews, setAllGridViews] = useState([]);
+  const [filterGridView, setFilterGridView] = useState([]);
   const [search, setSearch] = useState('');
   const [editGridView, setEditGridView] = useState(null);
   const [viewName, setViewName] = useState(`${selectedGridView.name}-copy`);
@@ -112,23 +113,26 @@ function GridView({
 
   useEffect(() => {
     if (gridViews?.getGridViews?.gridViews) {
-      setAllGridViews(gridViews.getGridViews.gridViews);
+      const data = JSON.parse(JSON.stringify(gridViews.getGridViews.gridViews))
+      data.unshift({ name: 'All Contacts', type: 'Default' })
+      setAllGridViews(data);
+      setFilterGridView(data);
     }
   }, [gridViews]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      if (document.getElementById("fieldContentInput"))
-        document.getElementById("fieldContentInput").focus();
-    }, 100);
-  }, [showSaveAsNew]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     if (document.getElementById("fieldContentInput"))
+  //       document.getElementById("fieldContentInput").focus();
+  //   }, 100);
+  // }, [showSaveAsNew]);
 
   useEffect(() => {
-    if(gridViews?.getGridViews?.gridViews){
+    if(allGridViews){
       if(search){
-        setAllGridViews(gridViews?.getGridViews?.gridViews.filter(view => view.name.toLowerCase().includes(search.toLowerCase())))
+        setFilterGridView(allGridViews.filter(view => view.name.toLowerCase().includes(search.toLowerCase())))
       }else{
-        setAllGridViews(gridViews?.getGridViews?.gridViews)
+        setFilterGridView(allGridViews)
       }
     }
   },[search])
@@ -166,7 +170,7 @@ function GridView({
               Default
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
-              <div
+              {/* <div
                 style={{ cursor: "pointer" }}
                 onClick={() => {
                   setSelectedGridView({ name: "All Contacts" });
@@ -174,8 +178,8 @@ function GridView({
                 }}
               >
                 <div>All Contacts</div>
-              </div>
-              {allGridViews.map((view) => {
+              </div> */}
+              {filterGridView.map((view) => {
                 return view.type === "Default" ? (
                   <div
                     style={{ cursor: "pointer" }}
@@ -215,7 +219,7 @@ function GridView({
               Custom
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
-              {allGridViews.map((view) => {
+              {filterGridView.map((view) => {
                 return view.type === "Custom" ? (
                   view._id === editGridView?._id ? (
                     <InputField
@@ -288,7 +292,6 @@ const InputField = ({
       autoComplete="nope"
       fullWidth
       label={null}
-      multiline
       value={viewName}
       helperText={"Return to save"}
       onChange={(e) => {
@@ -330,11 +333,11 @@ const InputField = ({
           setViewName('')
         }
       }}
-      onBlur={() => {
-        setShowSaveAsNew(false);
-        setViewName('')
-        setEditGridView(null)
-      }}
+      // onBlur={() => {
+      //   setShowSaveAsNew(false);
+      //   setViewName('')
+      //   setEditGridView(null)
+      // }}
     />
   );
 };
