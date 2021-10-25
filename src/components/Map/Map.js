@@ -74,7 +74,7 @@ import { REMOVECUSTOMLAYER } from "../../graphQL/useMutationRemoveCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 
 import { PERMITDETAILQUERY } from "../../graphQL/useQueryRecentPermitDetails";
-import { drawShapeStyles } from "components/MapControls/commonHelper";
+import { drawShapeStyles, findBoundsMap } from "components/MapControls/commonHelper";
 import _ from "lodash";
 
 import parseLinkHeader from 'parse-link-header';
@@ -424,12 +424,9 @@ function Map({ type, paramId, lati, longi }) {
       );
       if (layer?.customLayer) {
         let jsonLayer = JSON.parse(layer.customLayer.shape)
-        let fitBounds = findBounds([jsonLayer]);
+        jsonLayer.id = jsonLayer._id
 
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          fitBounds: { ...fitBounds },
-        }));
+        findBoundsMap([jsonLayer], map)
 
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -438,6 +435,7 @@ function Map({ type, paramId, lati, longi }) {
             feature: jsonLayer,
             id: layer.customLayer._id
           },
+          shapeEdit: true,
           popupOpen: false,
           expandedCard: true,
         }))
@@ -1178,6 +1176,7 @@ function Map({ type, paramId, lati, longi }) {
       if (feature.source === "units_source") {
         const newPath = `/map/units/${feature.properties.id}`;
         history.location.pathname !== newPath && history.replace(newPath)
+        findBoundsMap([selectedUserDefinedLayer], map)
         setStateApp((state) => {
           if (state.isDrawing) return state
           return {
@@ -1187,6 +1186,8 @@ function Map({ type, paramId, lati, longi }) {
             selectedUnit: { ...feature.properties, feature: selectedUserDefinedLayer },
           }
         });
+
+        drawBoundary(map, selectedUserDefinedLayer);
       }
       else if (feature.source === "parcels_source") {
         setStateApp((state) => {

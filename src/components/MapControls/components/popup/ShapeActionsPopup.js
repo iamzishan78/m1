@@ -29,7 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMapGridCardState } from "actions";
 
 import { gql } from "@apollo/client";
-import { setFeatureProperty, drawShapeLayerToggle } from "components/MapControls/commonHelper";
+import { setFeatureProperty, drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
@@ -484,11 +484,14 @@ const ShapeActionsPopup = (props) => {
     let layers = [...stateApp.customLayers];
     layers.push(customLayerData);
 
+    findBoundsMap([newShapeFeature], stateApp.map)
+
     setStateApp((state) => ({
       ...state,
       selectedUnit: newShapeFeature.properties,
       customLayers: layers,
     }));
+    drawBoundary(stateApp.map, newShapeFeature);
     popupCloseAction();
   };
 
