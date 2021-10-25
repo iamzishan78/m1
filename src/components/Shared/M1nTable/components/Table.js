@@ -521,7 +521,7 @@ function SubTable(props) {
   const [cumulative, Cumulative] = useState({});
   const [columns, setColumns] = useState([]);
   const [tableStyle, setTableStyle] = useState(classes);
-  const [year, setYear] = React.useState(2020);
+  const [year, setYear] = React.useState(2021);
   const [total, Total] = useState(false);
   const [rows, Rows] = useState([]);
   const [isSearchOpen, openSearch] = useState(false);
@@ -3288,6 +3288,9 @@ function SubTable(props) {
           </MenuItem>
           <MenuItem selected={year === 2020} value={2020}>
             2020
+          </MenuItem>
+          <MenuItem selected={year === 2021} value={2021}>
+            2021
           </MenuItem>
         </Select>
       </Box>
