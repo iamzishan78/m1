@@ -78,6 +78,7 @@ function GridView({
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const [allGridViews, setAllGridViews] = useState([]);
+  const [search, setSearch] = useState('');
   const [editGridView, setEditGridView] = useState(null);
   const [viewName, setViewName] = useState(`${selectedGridView.name}-copy`);
   const [addGridView, { data: newGridView }] = useMutation(ADD_GRID_VIEW);
@@ -122,13 +123,25 @@ function GridView({
     }, 100);
   }, [showSaveAsNew]);
 
+  useEffect(() => {
+    if(gridViews?.getGridViews?.gridViews){
+      if(search){
+        setAllGridViews(gridViews?.getGridViews?.gridViews.filter(view => view.name.toLowerCase().includes(search.toLowerCase())))
+      }else{
+        setAllGridViews(gridViews?.getGridViews?.gridViews)
+      }
+    }
+  },[search])
+
   return (
     <LeftDialog open width="325px" handleClickDialogClose={handleClose}>
       {!loading ? (
         <>
           <TextField
-            value={""}
-            onChange={(e) => {}}
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
             className={classes.searchField}
             margin="dense"
             variant="outlined"
