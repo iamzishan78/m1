@@ -232,6 +232,9 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: theme.palette.common.white,
             opacity: 0.15,
         }
+    },
+    paddingLeft: {
+        paddingRight: "20px"
     }
 }));
 
@@ -257,8 +260,8 @@ export default function UnitSummary(props) {
         props.setProperties({ ...props.properties, custom_data_arr: [...props.properties.custom_data_arr] })
     }
 
-    return <Grid container spacing={2} direction="row" className={classes.summaryCard}>
-        <Grid item md={7} sm={12}>
+    return <Grid container direction="row" className={classes.summaryCard}>
+        <Grid item md={7} sm={12} className={classes.paddingLeft}>
             <Grid container spacing={1} direction="column" >
                 <Grid item>
                     <Grid container direction="row" justifyContent="space-between" alignItems="center">
