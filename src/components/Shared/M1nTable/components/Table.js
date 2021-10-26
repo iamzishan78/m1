@@ -2309,7 +2309,7 @@ function SubTable(props) {
     viewColumns: props.targetLabel !== "usermanagement",
 
     onColumnViewChange: (changedColumn, action) => {
-      if (props.parent === "Contacts" && columns && (action === "add" || action === "remove") && changedColumn)
+      if (props.parent === "Contactss" && columns && (action === "add" || action === "remove") && changedColumn)
         props.setColumnsBase([
           ...columns.map((column) => {
             if (column.name === changedColumn)
