@@ -338,13 +338,6 @@ export default function MapControls(props) {
     }
   };
 
-  const openAddLayerControl = () => {
-    const { addLayer } = stateMapControls;
-    if (addLayer) {
-      return <AddALayer />;
-    }
-  };
-
   useEffect(() => {
     if (stateApp.expandedCard) {
       handleFabClick()
@@ -397,7 +390,6 @@ export default function MapControls(props) {
       {stateMapControls.selectedLayer
         ? openColorPickerControl(stateMapControls.selectedLayer)
         : null}
-      {stateMapControls.addLayer ? openAddLayerControl() : null}
     </div>
   );
 }

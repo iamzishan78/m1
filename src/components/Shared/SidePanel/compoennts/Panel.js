@@ -24,6 +24,7 @@ import HeatmapIcon from "@material-ui/icons/Gradient";
 import BasemapIcon from "@material-ui/icons/Language";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
+import SecondaryPanel from "components/Shared/SecondaryPanel";
 
 import { deepEqualObjects } from "../../functions";
 import Layer from "./Layer";
@@ -89,6 +90,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       expandedPanel: !stateMapControls.expandedPanel,
+      addLayer: false
     }));
   };
 
@@ -235,7 +237,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
         }}
       >
         <StyledMenu
-          id="checklist-menu"
+          id="layer-side-panel"
           style={!stateMapControls.expandedPanel ? { display: "none" } : { minWidth: "425px" }}
           keepMounted
           open={Boolean(stateMapControls.selectedControl)}
@@ -329,10 +331,17 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
             displayList
           )}
         </StyledMenu>
+        <StyledMenu
+          id="layer-side-panel1"
+          keepMounted
+          open={Boolean(stateMapControls.selectedControl)}
+          style={{ display: stateMapControls.addLayer ? "flex" : "none", minWidth: "525px" }}
+        >
+          <SecondaryPanel />
+        </StyledMenu>
         <div className={classes.pulloutBox} onClick={togglePullout}>
           {stateMapControls.expandedPanel ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
         </div>
-        {/* // </ClickAwayListener> */}
       </div>
     </div>
   );

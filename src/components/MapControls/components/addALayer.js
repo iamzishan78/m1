@@ -3,13 +3,10 @@ import update from 'immutability-helper';
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
-import MuiAlert from "@material-ui/lab/Alert";
+import { Grid, Typography, Divider } from "@material-ui/core";
+import { Close as CloseButton } from "@material-ui/icons";
 import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import Checkbox from "@material-ui/core/Checkbox";
 import { Collapse } from "@material-ui/core";
 import List from "@material-ui/core/List";
@@ -43,17 +40,6 @@ import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 const GCS_North_American_1927 = 'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]'
 proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@conus,null +no_defs");
 proj4.defs(GCS_North_American_1927, proj4.defs("EPSG:4267"));
-
-const random_rgb = () => {
-  var o = Math.round,
-    r = Math.random,
-    s = 255;
-  return "rgb(" + o(r() * s) + "," + o(r() * s) + "," + o(r() * s) + ")";
-};
-
-const Alert = (props) => {
-  return <MuiAlert elevation={5} variant="filled" {...props} />;
-};
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -98,6 +84,16 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   uploaderText: { color: "#828282", fontSize: "1rem" },
+  contentRoot: {
+    padding: "15px",
+    maxHeight: "900px",
+    overflow: "overlay"
+  },
+  footer: {
+    position: "absolute",
+    bottom: "0px",
+    padding: "15px"
+  }
 }));
 
 const StyledListItem2 = withStyles((theme) => ({
@@ -107,9 +103,7 @@ const StyledListItem2 = withStyles((theme) => ({
     color: "#263451",
     border: "2px solid #263451",
     borderRadius: "5px",
-    // "&:hover": {
-    //   background: "#4B618F",
-    // },
+    marginBottom: "5px",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: "#263451",
     },
@@ -119,9 +113,6 @@ const StyledListItem2 = withStyles((theme) => ({
 const StyledListItem = withStyles((theme) => ({
   root: {
     fontFamily: "Poppins",
-    // "&:hover": {
-    //   background: "#ccc",
-    // },
     backgroundColor: theme.palette.common.white,
     borderBottom: "2px solid #ccc",
     padding: "0px",
@@ -141,7 +132,6 @@ const StyledListItem = withStyles((theme) => ({
 }))(ListItem);
 
 export default function AddLayer(props) {
-  const [isOpen, setIsOpen] = useState(true);
   const classes = useStyles();
 
   const [stateMapControls, setStateMapControls] = useContext(
@@ -163,7 +153,6 @@ export default function AddLayer(props) {
   }, [stateApp.layers]);
 
   const handleClose = () => {
-    setIsOpen(false);
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       addLayer: false,
@@ -171,7 +160,6 @@ export default function AddLayer(props) {
   };
 
   const windowClose = () => {
-    setIsOpen(false);
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       addLayer: false,
@@ -191,11 +179,11 @@ export default function AddLayer(props) {
     if (layer.type === 'group') {
       const value = !!(layer.layers.find((l) => l.layerSettings.showable))
       layer.layers.forEach((l) => {
-        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier == l.identifier);
+        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
         updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } }
       })
     } else {
-      const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier == layer.identifier);
+      const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
       updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } }
     }
 
@@ -206,11 +194,11 @@ export default function AddLayer(props) {
     const updatefn = {}
     if (layer.type === 'group') {
       layer.layers.forEach((l) => {
-        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier == l.identifier);
+        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
         updatefn[layerIndex] = { groupName: { $set: name } }
       })
     } else {
-      const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier == layer.identifier);
+      const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
       updatefn[layerIndex] = { layerName: { $set: name } }
     }
 
@@ -260,12 +248,12 @@ export default function AddLayer(props) {
     handleClose();
   };
 
-  const handleAddLayer = () => {
-    setStateMapControls({
-      ...stateMapControls,
-      selectedControl: "add",
-    });
-  };
+  // const handleAddLayer = () => {
+  //   setStateMapControls({
+  //     ...stateMapControls,
+  //     selectedControl: "add",
+  //   });
+  // };
 
   const parseGeoForTypesAndNames = (geo, name) => {
     const layerTypes = []
@@ -327,7 +315,7 @@ export default function AddLayer(props) {
       });
     } else if (fileName.endsWith(".zip")) {
       // load contiguous lower 48 us nadgrid
-      const nadgrid = await new Promise((resolve, reject) => {
+      await new Promise((resolve, reject) => {
         fetch(conus)
           .then((response) => {
             response.arrayBuffer()
@@ -398,11 +386,11 @@ export default function AddLayer(props) {
   }
 
   const M1Layers = React.useMemo(() => {
-    return currentLayers.filter((layer) => layer.layerCategory == "M1 Layer");
+    return currentLayers.filter((layer) => layer.layerCategory === "M1 Layer");
   }, [currentLayers]);
 
   const UdLayers = React.useMemo(() => {
-    const layers = currentLayers.filter((layer) => layer.layerCategory == "UD layer");
+    const layers = currentLayers.filter((layer) => layer.layerCategory === "UD layer");
     const groupHandled = []
     for (let index = 0; index < layers.length; index++) {
       const UdLayer = layers[index]
@@ -416,21 +404,29 @@ export default function AddLayer(props) {
     return layers.filter((UdLayer) => !(UdLayer.layerType === 'file layer' && UdLayer.groupId))
   }, [currentLayers]);
 
-  console.log("UdLayers", UdLayers)
-
   return (
     <>
-      <Dialog open={isOpen} onClose={windowClose}>
-        <DialogTitle>Layer Management</DialogTitle>
-        <DialogContent dividers>
-          <DialogContentText color="dark gray">
+      <div>
+        <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>
+          <Grid item>
+            <Typography variant="h5">Layer Manager</Typography>
+          </Grid>
+          <Grid item>
+            <IconButton size="small" onClick={windowClose}>
+              <CloseButton />
+            </IconButton>
+          </Grid>
+        </Grid>
+        <Divider />
+        <div className={classes.contentRoot}>
+          <div color="dark gray">
             Select one or more of the available layers below to add them to your
             current map view.
-          </DialogContentText>
+          </div>
 
           <DropzoneAreaBase
             onAdd={handleFileInput}
-            onDelete={(fileObj) => ("Removed File:", fileObj)}
+            onDelete={(fileObj) => console.log("Removed File:", fileObj)}
             onAlert={(message, variant) => {
             }}
             filesLimit={1}
@@ -492,7 +488,6 @@ export default function AddLayer(props) {
                 const labelId = `udlayer-list-label-${index}`;
                 if (layer.type === "group") {
                   return <Accordion>
-
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="panel1a-content"
@@ -554,7 +549,7 @@ export default function AddLayer(props) {
                   </Accordion>
                 }
                 //// remove the (layer.identifier!="Tracked Owners") if statement to show the tracked owers layer
-                if (layer.identifier != "Tracked Owners") {
+                if (layer.identifier !== "Tracked Owners") {
                   return (
                     <StyledListItem key={index} ContainerComponent="li">
                       <Checkbox
@@ -563,10 +558,10 @@ export default function AddLayer(props) {
                         onChange={() => changeShowAble(layer)}
                         inputProps={{ "aria-label": "primary checkbox" }}
                       />
-                      {layer.layerType == "file layer" ? <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} /> :
+                      {layer.layerType === "file layer" ? <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} /> :
                         <ListItemText id={labelId} primary={layer.layerName} />}
 
-                      {layer.layerType == "file layer" && (
+                      {layer.layerType === "file layer" && (
                         <ListItemSecondaryAction>
                           <Tooltip title="Delete" placement="top">
                             <IconButton
@@ -587,8 +582,8 @@ export default function AddLayer(props) {
               })}
             </List>
           </Collapse>
-        </DialogContent>
-        <DialogActions>
+        </div>
+        <div className={classes.footer}>
           <Button onClick={windowClose} color="primary">
             Close
           </Button>
@@ -600,8 +595,8 @@ export default function AddLayer(props) {
           >
             Apply
           </Button>
-        </DialogActions>
-      </Dialog>
+        </div>
+      </div>
       {/* //// delete confirmation dialog */}
       {openDeleteDialog && (
         <Dialog
