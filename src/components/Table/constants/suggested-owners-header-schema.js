@@ -28,26 +28,37 @@ const SuggestedOwnersHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "name", label: "Name" },
   {
-    name: "ownershipType",
-    label: "Owner Type",
+    name: "name", label: "Owner Name",
+    options: { setCellProps: () => ({ style: { minWidth: "200px" } }) }
   },
   {
-    name: "StreetAddress",
-    label: "Street Address",
+    name: "api", label: "Api Number",
+    options: { setCellProps: () => ({ style: { minWidth: "200px" } }) }
   },
   {
-    name: "City",
-    label: "City",
+    name: "propertyName",
+    label: "Well Name",
+    options: { setCellProps: () => ({ style: { minWidth: "175px" } }) }
   },
   {
-    name: "State",
-    label: "State",
+    name: "lease",
+    label: "Lease",
+    options: { setCellProps: () => ({ style: { minWidth: "175px" } }) }
   },
   {
-    name: "Zip",
-    label: "Zip Code",
+    name: "leaseNumber",
+    label: "Lease Number",
+    options: { setCellProps: () => ({ style: { minWidth: "175px" } }) }
+  },
+  { name: "interestType", label: "Type" },
+  {
+    name: "ownershipPercentage",
+    label: "Interest",
+  },
+  {
+    name: "appraisedValue",
+    label: "Tax Value",
   },
   {
     name: "tags",

@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 
 // context
 import { AppContext } from "AppContext";
@@ -10,8 +9,8 @@ import TableHOC from "components/Table/TableHOC";
 
 // QUERIES
 import { useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
-import { SHAPE_OWNERS } from "graphQL/useQueryPaginatedShapeOwners";
-import { SHAPEOWNERSCOUNT } from "graphQL/useQueryShapeOwnersCount";
+import { SHAPE_WELL_OWNERS } from "graphQL/useQueryPaginatedShapeWellOwners";
+import { SHAPE_WELL_OWNERS_COUNT } from "graphQL/useQueryShapeWellOwnersCount";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { ADD_OWNER_TOA_SHAPE } from "graphQL/useMutationAddOwnerToAShape";
 import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from "graphQL/useMutationConvertMultitpleOwnerToContact";
@@ -51,15 +50,15 @@ function SuggestedShapeTaxOwnersTable(props) {
   const [suggestedOwnersCount, setSuggestedOwnersCount] = useState()  // local state for async count query
 
   // queries
-  const [getPaginatedShapeOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(
-    SHAPE_OWNERS,
+  const [getPaginatedShapeWellOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(
+    SHAPE_WELL_OWNERS,
     {
       fetchPolicy: "cache-and-network", skip: true,
       onCompleted: (dataShapeOwners) => {
         setCount((state, props) => {
-          let newState = state || dataShapeOwners?.paginatedShapeOwners?.edges?.length;
+          let newState = state || dataShapeOwners?.paginatedShapeWellOwners?.edges?.length;
           let newStateIncrement = !variablesShapeOwners?.pagination?.before &&
-            dataShapeOwners?.paginatedShapeOwners?.pageInfo?.hasNextPage
+            dataShapeOwners?.paginatedShapeWellOwners?.pageInfo?.hasNextPage
             ? 1
             : 0;
 
@@ -75,11 +74,11 @@ function SuggestedShapeTaxOwnersTable(props) {
     CONVERT_MULTITPLE_OWNER_TO_CONTACT
   );
 
-  const tableData = dataShapeOwners?.paginatedShapeOwners;
-  const [getShapeOwnersCount, { data: dataShapeOwnersCount }] = useLazyQuery(SHAPEOWNERSCOUNT, {
+  const tableData = dataShapeOwners?.paginatedShapeWellOwners;
+  const [getShapeOwnersWellCount, { data: dataShapeOwnersCount }] = useLazyQuery(SHAPE_WELL_OWNERS_COUNT, {
     fetchPolicy: "cache-and-network", skip: true,
     onCompleted: (dataShapeOwnersCount) => {
-      setSuggestedOwnersCount(dataShapeOwnersCount?.shapeOwnersCount);
+      setSuggestedOwnersCount(dataShapeOwnersCount?.shapeWellOwnersCount);
     },
   });
 
@@ -91,13 +90,14 @@ function SuggestedShapeTaxOwnersTable(props) {
   useEffect(() => {
     const queryPoly = getPolygonString(props.customLayer?.shape)
 
-    getPaginatedShapeOwners({
+    getPaginatedShapeWellOwners({
       variables: {
         polygon: queryPoly,
         userId: stateApp.user.mongoId,
+        sort: {}
       },
     });
-    getShapeOwnersCount({
+    getShapeOwnersWellCount({
       variables: {
         polygon: queryPoly,
       },
@@ -168,7 +168,7 @@ function SuggestedShapeTaxOwnersTable(props) {
         tableState.page = 0;
         meta.setPageInd(tableState.page);
         meta.setRowsPerPage(tableState.rowsPerPage);
-        getPaginatedShapeOwners(pageVariables);
+        getPaginatedShapeWellOwners(pageVariables);
         break;
       case "changePage":
         props.setLoading(true);
@@ -177,7 +177,7 @@ function SuggestedShapeTaxOwnersTable(props) {
             return (tableState.page + 1) * tableState.rowsPerPage
           })
         }
-        getPaginatedShapeOwners({
+        getPaginatedShapeWellOwners({
           ...pageVariables,
           variables: {
             ...pageVariables.variables,
@@ -199,7 +199,7 @@ function SuggestedShapeTaxOwnersTable(props) {
         props.setLoading(true);
         tableState.page = 0;
         meta.setPageInd(tableState.page);
-        getPaginatedShapeOwners(pageVariables);
+        getPaginatedShapeWellOwners(pageVariables);
         break;
       case "onSearchClose":
         break;
@@ -283,7 +283,7 @@ function SuggestedShapeTaxOwnersTable(props) {
           action: "single",
           userId: stateApp.user.mongoId,
         },
-        refetchQueries: ["checkIfOwnersAreContacts"],
+        refetchQueries: ["checkIfOwnersAreContacts", "getESShapeOwners", "getESShapeOwnersFilter"],
         awaitRefetchQueries: true,
       }).then(
         async (res) => {
@@ -311,7 +311,7 @@ function SuggestedShapeTaxOwnersTable(props) {
     if (owners.length > 0) {
       addShape(owners);
     }
-    props.setSelectedTab(0)
+
   };
 
   const addShape = (selectedRows) => {
@@ -333,12 +333,10 @@ function SuggestedShapeTaxOwnersTable(props) {
             lastUpdateBy: stateApp.user.mongoId,
           },
         },
-        refetchQueries: [
-          "getCustomLayer",
-          "getShapeOwners",
-          `getContact${props.shapeType}Interests`,
-        ],
+        refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"],
         awaitRefetchQueries: true,
+      }).then(() => {
+        props.setSelectedTab(0)
       });
     }
   };

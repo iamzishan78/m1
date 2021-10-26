@@ -42,8 +42,7 @@ function UnitOwnersTable(props) {
   });
 
   const [updateOwners] = useMutation(UPDATEWELLINTEREST, {
-    refetchQueries: ["getESShapeOwners",
-      "getESShapeOwnersFilter"], awaitRefetchQueries: true
+    refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"], awaitRefetchQueries: true
   });
   const tableData = ShapeWellsData?.getESShapeOwners
 
