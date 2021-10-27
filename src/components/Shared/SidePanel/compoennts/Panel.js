@@ -222,6 +222,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     setSearch(value);
     filterLayers(value);
   }
+  const secondaryPanelState = React.useMemo(() => {
+    if (stateMapControls.addLayer || stateMapControls.selectedLayer) {
+      return true;
+    } else return false;
+  }, [stateMapControls.addLayer, stateMapControls.selectedLayer]);
+
   return (
     <div>
       <div
@@ -332,10 +338,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           )}
         </StyledMenu>
         <StyledMenu
-          id="layer-side-panel1"
+          id="layer-secondary-panel"
           keepMounted
-          open={Boolean(stateMapControls.selectedControl)}
-          style={{ display: stateMapControls.addLayer ? "flex" : "none", minWidth: "525px" }}
+          open={secondaryPanelState}
+          style={{ display: secondaryPanelState ? "flex" : "none", minWidth: "525px" }}
         >
           <SecondaryPanel />
         </StyledMenu>

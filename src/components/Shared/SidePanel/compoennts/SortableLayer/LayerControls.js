@@ -63,6 +63,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       selectedLayer: layer,
+      addLayer: false
     }));
   };
 
