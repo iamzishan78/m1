@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import update from 'immutability-helper';
+import update from "immutability-helper";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
@@ -19,25 +19,26 @@ import { UPDATEMANYLAYERSETTINGS } from "../../../graphQL/useMutationUpdateManyL
 import { useMutation } from "@apollo/client";
 import { DropzoneAreaBase } from "material-ui-dropzone";
 import shp from "shpjs";
-import geojsonMerge from '@mapbox/geojson-merge';
+import geojsonMerge from "@mapbox/geojson-merge";
 import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
-import Box from '@material-ui/core/Box';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Box from "@material-ui/core/Box";
+import Accordion from "@material-ui/core/Accordion";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
 import { truncate } from "components/Shared/functions";
 
-import proj4 from 'proj4';
+import proj4 from "proj4";
 // cra webpack hack to call this a png to get included in bundle
-import conus from '../../Shared/constants/nadgrids/conus.png';
+import conus from "../../Shared/constants/nadgrids/conus.png";
 import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 
-const GCS_North_American_1927 = 'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]'
+const GCS_North_American_1927 =
+  'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
 proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@conus,null +no_defs");
 proj4.defs(GCS_North_American_1927, proj4.defs("EPSG:4267"));
 
@@ -87,13 +88,13 @@ const useStyles = makeStyles((theme) => ({
   contentRoot: {
     padding: "15px",
     maxHeight: "900px",
-    overflow: "overlay"
+    overflow: "overlay",
   },
   footer: {
     position: "absolute",
     bottom: "0px",
-    padding: "15px"
-  }
+    padding: "15px",
+  },
 }));
 
 const StyledListItem2 = withStyles((theme) => ({
@@ -134,9 +135,7 @@ const StyledListItem = withStyles((theme) => ({
 export default function AddLayer(props) {
   const classes = useStyles();
 
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
+  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [openM1, setOpenM1] = React.useState(true);
   const [openUD, setOpenUD] = React.useState(true);
@@ -175,31 +174,31 @@ export default function AddLayer(props) {
   };
 
   const changeShowAble = (layer) => {
-    const updatefn = {}
-    if (layer.type === 'group') {
-      const value = !!(layer.layers.find((l) => l.layerSettings.showable))
+    const updatefn = {};
+    if (layer.type === "group") {
+      const value = !!layer.layers.find((l) => l.layerSettings.showable);
       layer.layers.forEach((l) => {
         const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
-        updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } }
-      })
+        updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } };
+      });
     } else {
       const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
-      updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } }
+      updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } };
     }
 
     setCurrentLayers(update(currentLayers, updatefn));
   };
 
   const changeLayerName = (layer, name) => {
-    const updatefn = {}
-    if (layer.type === 'group') {
+    const updatefn = {};
+    if (layer.type === "group") {
       layer.layers.forEach((l) => {
         const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
-        updatefn[layerIndex] = { groupName: { $set: name } }
-      })
+        updatefn[layerIndex] = { groupName: { $set: name } };
+      });
     } else {
       const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
-      updatefn[layerIndex] = { layerName: { $set: name } }
+      updatefn[layerIndex] = { layerName: { $set: name } };
     }
 
     setCurrentLayers(update(currentLayers, updatefn));
@@ -218,9 +217,8 @@ export default function AddLayer(props) {
           _id: currentLayers[i].layerId,
           layerName: currentLayers[i].layerName,
           groupName: currentLayers[i].groupName,
-        })
+        });
       }
-
     }
 
     //// saving to stateApp
@@ -233,9 +231,9 @@ export default function AddLayer(props) {
     if (layersToUpdate.length > 0) {
       updateManyLayer({
         variables: {
-          layers: layersToUpdate
+          layers: layersToUpdate,
         },
-      })
+      });
 
       updateManyUserLayerSettings({
         variables: {
@@ -243,7 +241,6 @@ export default function AddLayer(props) {
         },
       });
     }
-
 
     handleClose();
   };
@@ -256,40 +253,40 @@ export default function AddLayer(props) {
   // };
 
   const parseGeoForTypesAndNames = (geo, name) => {
-    const layerTypes = []
-    const fileNames = []
+    const layerTypes = [];
+    const fileNames = [];
     geo.features.forEach((feature) => {
       if (!feature.properties) {
-        feature.properties = {}
+        feature.properties = {};
       }
-      feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type }
+      feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type };
       if (!layerTypes.includes(feature.geometry.type)) {
-        layerTypes.push(feature.geometry.type)
+        layerTypes.push(feature.geometry.type);
       }
-    })
+    });
     layerTypes.forEach((layerType) => {
       if (layerTypes.length > 1) {
-        fileNames.push(`${geo.fileName || name} - ${layerType}`)
+        fileNames.push(`${geo.fileName || name} - ${layerType}`);
       } else {
-        fileNames.push(`${geo.fileName || name} `)
+        fileNames.push(`${geo.fileName || name} `);
       }
-    })
-    return { layerTypes, fileNames }
-  }
+    });
+    return { layerTypes, fileNames };
+  };
 
   const singleGeojson = (geojson, groupName) => {
-    const { layerTypes, fileNames } = parseGeoForTypesAndNames(geojson, groupName)
-    geojson.fileNames = fileNames
-    geojson.featureTypes = layerTypes
-    geojson.groupName = groupName
+    const { layerTypes, fileNames } = parseGeoForTypesAndNames(geojson, groupName);
+    geojson.fileNames = fileNames;
+    geojson.featureTypes = layerTypes;
+    geojson.groupName = groupName;
     return geojson;
-  }
+  };
 
   async function handleFileAsync(file) {
     let inputFile = null;
     let fileData = null;
     let fileName = null;
-    let fileType = null
+    let fileType = null;
     if (Array.isArray(file)) {
       inputFile = file[0].data;
       fileData = file[0].file;
@@ -301,7 +298,7 @@ export default function AddLayer(props) {
       fileName = fileName[fileName.length - 1];
     }
     let res;
-    fileName = fileName.toLowerCase()
+    fileName = fileName.toLowerCase();
     if (fileName.endsWith(".geojson")) {
       res = await new Promise((resolve, reject) => {
         fetch(inputFile)
@@ -309,7 +306,10 @@ export default function AddLayer(props) {
             return response.json();
           })
           .then((response) => {
-            resolve({ data: singleGeojson(response, fileName.replace('.geojson', '')), originalData: { file: fileData, fileName, fileType } })
+            resolve({
+              data: singleGeojson(response, fileName.replace(".geojson", "")),
+              originalData: { file: fileData, fileName, fileType },
+            });
           })
           .catch((error) => reject(error));
       });
@@ -318,39 +318,38 @@ export default function AddLayer(props) {
       await new Promise((resolve, reject) => {
         fetch(conus)
           .then((response) => {
-            response.arrayBuffer()
-              .then((buffer) => {
-                const nadgrid = proj4.nadgrid('conus', buffer);
-                resolve(nadgrid);
-              })
+            response.arrayBuffer().then((buffer) => {
+              const nadgrid = proj4.nadgrid("conus", buffer);
+              resolve(nadgrid);
+            });
           })
           .catch((err) => {
             console.error(err);
             resolve();
-          })
-      })
+          });
+      });
       // console.log(nadgrid);
 
       res = await new Promise((resolve, reject) => {
         fetch(inputFile).then((response) => {
           response.arrayBuffer().then((buffer) => {
             shp(buffer).then((geojson) => {
-              let allFileNames = []
-              let allLayerTypes = []
-              const name = fileName.replace('.zip', '')
+              let allFileNames = [];
+              let allLayerTypes = [];
+              const name = fileName.replace(".zip", "");
               if (Array.isArray(geojson)) {
                 geojson.forEach((geo) => {
-                  const { layerTypes, fileNames } = parseGeoForTypesAndNames(geo, name)
-                  allLayerTypes = allLayerTypes.concat(layerTypes)
-                  allFileNames = allFileNames.concat(fileNames)
-                })
-                const merged = geojsonMerge.merge(geojson)
-                merged.fileNames = allFileNames
-                merged.featureTypes = allLayerTypes
-                merged.groupName = fileName.replace('.zip', '')
-                resolve({ data: merged, originalData: { file: fileData, fileName, fileType } })
+                  const { layerTypes, fileNames } = parseGeoForTypesAndNames(geo, name);
+                  allLayerTypes = allLayerTypes.concat(layerTypes);
+                  allFileNames = allFileNames.concat(fileNames);
+                });
+                const merged = geojsonMerge.merge(geojson);
+                merged.fileNames = allFileNames;
+                merged.featureTypes = allLayerTypes;
+                merged.groupName = fileName.replace(".zip", "");
+                resolve({ data: merged, originalData: { file: fileData, fileName, fileType } });
               } else {
-                resolve({ data: singleGeojson(geojson, name), originalData: { file: fileData, fileName, fileType } })
+                resolve({ data: singleGeojson(geojson, name), originalData: { file: fileData, fileName, fileType } });
               }
             });
           });
@@ -368,8 +367,8 @@ export default function AddLayer(props) {
     let originalData;
     let fileContent = await handleFileAsync(fileObj);
     if (fileContent.originalData) {
-      originalData = fileContent.originalData
-      fileContent = fileContent.data
+      originalData = fileContent.originalData;
+      fileContent = fileContent.data;
     }
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -381,7 +380,7 @@ export default function AddLayer(props) {
         ...stateMapControls,
         layerAddControl: fileContent.featureTypes?.length > 1 ? "addGroup" : "add",
         fileUploadedContent: fileContent,
-        fileUploadedOriginalContent: originalData
+        fileUploadedOriginalContent: originalData,
       });
   }
 
@@ -391,17 +390,17 @@ export default function AddLayer(props) {
 
   const UdLayers = React.useMemo(() => {
     const layers = currentLayers.filter((layer) => layer.layerCategory === "UD layer");
-    const groupHandled = []
+    const groupHandled = [];
     for (let index = 0; index < layers.length; index++) {
-      const UdLayer = layers[index]
+      const UdLayer = layers[index];
       if (UdLayer.groupId && !groupHandled.includes(UdLayer.groupId)) {
         groupHandled.push(UdLayer.groupId);
-        const groupLayers = layers.filter((ul) => ul.groupId === UdLayer.groupId)
-        layers.splice(index, 0, { type: 'group', collapsed: true, name: UdLayer.groupName, id: UdLayer.groupId, layers: groupLayers })
-        index = 0
+        const groupLayers = layers.filter((ul) => ul.groupId === UdLayer.groupId);
+        layers.splice(index, 0, { type: "group", collapsed: true, name: UdLayer.groupName, id: UdLayer.groupId, layers: groupLayers });
+        index = 0;
       }
     }
-    return layers.filter((UdLayer) => !(UdLayer.layerType === 'file layer' && UdLayer.groupId))
+    return layers.filter((UdLayer) => !(UdLayer.layerType === "file layer" && UdLayer.groupId));
   }, [currentLayers]);
 
   return (
@@ -419,22 +418,17 @@ export default function AddLayer(props) {
         </Grid>
         <Divider />
         <div className={classes.contentRoot}>
-          <div color="dark gray">
-            Select one or more of the available layers below to add them to your
-            current map view.
-          </div>
+          <DropzoneAreaBase></DropzoneAreaBase>
+          <div color="dark gray">Select one or more of the available layers below to add them to your current map view.</div>
 
           <DropzoneAreaBase
             onAdd={handleFileInput}
             onDelete={(fileObj) => console.log("Removed File:", fileObj)}
-            onAlert={(message, variant) => {
-            }}
+            onAlert={(message, variant) => {}}
             filesLimit={1}
             dropzoneText={
               <span className={classes.uploaderText}>
-                To add a new user-defined layer, drag and drop a GeoJSON or
-                Shapefile or click to select file.
-
+                To add a new user-defined layer, drag and drop a GeoJSON or Shapefile or click to select file.
                 {/* //hiding for now as this functionality does not work currently
                 {" "}
                 <span
@@ -453,9 +447,7 @@ export default function AddLayer(props) {
             // acceptedFiles={[".geojson", ".zip", ".shp",]}
             maxFileSize={10000000}
             dropzoneClass={classes.dropzoneClass}
-          >
-
-          </DropzoneAreaBase>
+          />
           <StyledListItem2 button onClick={handleClickM1List}>
             <ListItemText primary="M1neral Layers" />
             {openM1 ? <ExpandLess /> : <ExpandMore />}
@@ -487,39 +479,39 @@ export default function AddLayer(props) {
               {UdLayers.map((layer, index) => {
                 const labelId = `udlayer-list-label-${index}`;
                 if (layer.type === "group") {
-                  return <Accordion>
-                    <AccordionSummary
-                      expandIcon={<ExpandMoreIcon />}
-                      aria-controls="panel1a-content"
-                      id="panel1a-header"
-                      style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
-                    >
-                      <Checkbox
-                        checked={!!(layer.layers.find((l) => l.layerSettings.showable))}
-                        color="dark gray"
-                        onClick={(event) => event.stopPropagation()}
-                        onChange={(e) => changeShowAble(layer)}
-                        inputProps={{ "aria-label": "primary checkbox" }}
-                      />
-                      <EditableTextField onChange={changeLayerName} item={layer} name={layer.name} />
-                      <ListItemSecondaryAction style={{ marginRight: '30px' }} onClick={(e) => e.stopPropagation()}>
-                        <Tooltip title="Delete" placement="top">
-                          <IconButton
-                            edge="end"
-                            size="small"
-                            onClick={() => {
-                              setOpenDeleteDialog(layer);
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </ListItemSecondaryAction>
-                    </AccordionSummary>
-                    <Box paddingLeft={2} paddingRight={2}>
-                      <List className={classes.list}>
-                        {
-                          layer.layers.map((groupLayer, index) =>
+                  return (
+                    <Accordion>
+                      <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                        style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
+                      >
+                        <Checkbox
+                          checked={!!layer.layers.find((l) => l.layerSettings.showable)}
+                          color="dark gray"
+                          onClick={(event) => event.stopPropagation()}
+                          onChange={(e) => changeShowAble(layer)}
+                          inputProps={{ "aria-label": "primary checkbox" }}
+                        />
+                        <EditableTextField onChange={changeLayerName} item={layer} name={layer.name} />
+                        <ListItemSecondaryAction style={{ marginRight: "30px" }} onClick={(e) => e.stopPropagation()}>
+                          <Tooltip title="Delete" placement="top">
+                            <IconButton
+                              edge="end"
+                              size="small"
+                              onClick={() => {
+                                setOpenDeleteDialog(layer);
+                              }}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </ListItemSecondaryAction>
+                      </AccordionSummary>
+                      <Box paddingLeft={2} paddingRight={2}>
+                        <List className={classes.list}>
+                          {layer.layers.map((groupLayer, index) => (
                             <StyledListItem key={index} ContainerComponent="li">
                               <Checkbox
                                 checked={groupLayer.layerSettings.showable}
@@ -542,11 +534,11 @@ export default function AddLayer(props) {
                                 </Tooltip>
                               </ListItemSecondaryAction>
                             </StyledListItem>
-                          )
-                        }
-                      </List>
-                    </Box>
-                  </Accordion>
+                          ))}
+                        </List>
+                      </Box>
+                    </Accordion>
+                  );
                 }
                 //// remove the (layer.identifier!="Tracked Owners") if statement to show the tracked owers layer
                 if (layer.identifier !== "Tracked Owners") {
@@ -558,8 +550,11 @@ export default function AddLayer(props) {
                         onChange={() => changeShowAble(layer)}
                         inputProps={{ "aria-label": "primary checkbox" }}
                       />
-                      {layer.layerType === "file layer" ? <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} /> :
-                        <ListItemText id={labelId} primary={layer.layerName} />}
+                      {layer.layerType === "file layer" ? (
+                        <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} />
+                      ) : (
+                        <ListItemText id={labelId} primary={layer.layerName} />
+                      )}
 
                       {layer.layerType === "file layer" && (
                         <ListItemSecondaryAction>
@@ -587,12 +582,7 @@ export default function AddLayer(props) {
           <Button onClick={windowClose} color="primary">
             Close
           </Button>
-          <Button
-            disabled={deepEqual(currentLayers, stateApp.layers)}
-            onClick={handleApplyChange}
-            autoFocus
-            color="primary"
-          >
+          <Button disabled={deepEqual(currentLayers, stateApp.layers)} onClick={handleApplyChange} autoFocus color="primary">
             Apply
           </Button>
         </div>
