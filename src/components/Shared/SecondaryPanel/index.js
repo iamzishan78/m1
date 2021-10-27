@@ -4,7 +4,7 @@ import { get } from "lodash";
 
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import AddALayer from "components/MapControls/components/addALayer";
-import LayerStyling from "components/MapControls/components/ColorPickerDialog";
+import LayerStyling from "components/MapControls/components/LayerStyling";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
