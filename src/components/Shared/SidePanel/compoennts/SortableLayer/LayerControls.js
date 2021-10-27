@@ -11,6 +11,8 @@ import { AppContext } from "AppContext.js";
 
 import { Grid } from "@material-ui/core";
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import KeyboardArrowRightIcon  from '@material-ui/icons/KeyboardArrowRight';
+
 import { IconButton } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
@@ -20,9 +22,11 @@ const useStyles = makeStyles(() => ({
   formControl: {
     "& .MuiFormControlLabel-root": {
       margin: "0px !important",
+      // backgroundColor: 'red',
     }
   }
 }));
+
 
 const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) => {
   const classes = useStyles();
@@ -89,7 +93,9 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
   const layerStylingControl = layer.layerSettings?.colorable && (
     <IconButton size='small'>
       <Tooltip title="Layer Styling" >
-        <ArrowForwardIosIcon htmlColor={isHover ? "white" : "#808ba3"} onClick={() => handleColorPicker(layer)} />
+        <KeyboardArrowRightIcon  
+        fontSize='small' 
+        htmlColor={isHover ? "white" : "#808ba3"} onClick={() => handleColorPicker(layer)} />
       </Tooltip>
     </IconButton>
   );
@@ -138,7 +144,8 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
         style={{
           display: 'flex',
           flexDirection: 'row',
-          justifyContent: 'flex-end',
+          // justifyContent: 'flex-end',
+          // justifyContent: 'center',
           alignItems: 'center',
         }}
       >

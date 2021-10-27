@@ -19,7 +19,9 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
     fontFamily: "Poppins",
-    backgroundColor: props.data.type === "group" ? "#2c3148" : "#040e24",
+    // backgroundColor: props.data.type === "group" ? "#2c3148" : "#040e24",
+    backgroundColor: props.data.type === "group" ? "#2c3148" : "#0e111a",
+
     // marginLeft: theme.spacing(props.depth * 2),
     color: props.muted ? theme.palette.primary.dark : "inherit",
     zIndex: props.muted ? 1 : 0,
