@@ -32,7 +32,7 @@ import MarkerIcon from "./sprites/marker-icon.png";
 import DefaultFiltersTest from "./filtersDefaultTest";
 import FilterControl from "./components/FilterControl";
 import ParcelCardProvider from "../ParcelsDetailCard/ParcelCardProvider";
-import { deepEqual, deepEqualObjects } from "../Shared/functions";
+import { copy, deepEqual, deepEqualObjects } from "../Shared/functions";
 import gjv from "geojson-validation";
 import { setMainMapState, showErrorMessage } from "../../actions";
 
@@ -424,6 +424,8 @@ function Map({ type, paramId, lati, longi }) {
       );
       if (layer?.customLayer) {
         let jsonLayer = JSON.parse(layer.customLayer.shape)
+        if (layer.customLayer.shapeJson)
+          jsonLayer = copy(layer.customLayer.shapeJson)
         jsonLayer.id = jsonLayer._id
 
         findBoundsMap([jsonLayer], map)
@@ -1168,7 +1170,7 @@ function Map({ type, paramId, lati, longi }) {
       if (filteredLayer)
         selectedUserDefinedLayer = {
           ...feature,
-          ...JSON.parse(filteredLayer.shape),
+          ...(filteredLayer.shapeJson || JSON.parse(filteredLayer.shape)),
           id: filteredLayer._id,
         };
 
@@ -5786,6 +5788,7 @@ function Map({ type, paramId, lati, longi }) {
       const customLayerId = update_layers[0]._id;
 
       const customLayerData = {
+        shapeJson: update_layer,
         shape: JSON.stringify(update_layer),
         layer: dataType,
         name: spatialData.shapeLabel,

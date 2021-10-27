@@ -209,7 +209,7 @@ const useStyles = makeStyles((theme) => ({
   parcelDocument: {
     "& .MuiTableRow-root": {
       "&>:nth-child(2) ": {
-        "& .fileName":{
+        "& .fileName": {
           width: "375px !important"
         }
       }
@@ -324,6 +324,7 @@ export default function ParcelsDetailCard(props) {
       shape.properties[field] = value;
 
       const customLayer = {
+        shapeJson: shape,
         shape: JSON.stringify(shape),
       }
 

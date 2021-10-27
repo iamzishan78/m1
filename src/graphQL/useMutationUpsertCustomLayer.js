@@ -8,6 +8,7 @@ export const UPSERTCUSTOMLAYER = gql`
       customLayer {
         _id
         shape
+        shapeJson
         name
         layer
         user {

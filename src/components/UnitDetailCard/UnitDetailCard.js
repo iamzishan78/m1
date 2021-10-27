@@ -26,6 +26,7 @@ import UnitSummary from "./UnitSummary";
 import UnitOwnersTable from "components/Table/Unit/UnitOwnersTable";
 import UnitWellInterestTable from "components/Table/Unit/UnitWellInterestTable";
 import AssociatedWellsUnitTable from "components/Table/Wells/AssociatedWellsUnitTable";
+import { copy } from "components/Shared/functions";
 
 const ENTER_KEY = 13;
 
@@ -226,13 +227,10 @@ export default function UnitDetailCard(props) {
 
   useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
-      let shape = dataCustomLayer.customLayer.shape;
-      if (typeof shape === "string") {
-        shape = JSON.parse(shape);
-      }
+      let shape = copy(dataCustomLayer.customLayer.shapeJson) || dataCustomLayer.customLayer.shape;
       setUniObj({
         ...dataCustomLayer.customLayer,
-        shape: shape,
+        shape
       });
       setProperties(shape.properties);
     }
@@ -278,6 +276,7 @@ export default function UnitDetailCard(props) {
       customLayer.name = value;
     }
     customLayer.shape = JSON.stringify(shape)
+    customLayer.shapeJson = shape
 
 
     updateCustomLayer({
@@ -301,6 +300,7 @@ export default function UnitDetailCard(props) {
     const customLayer = {}
     shape.properties = properties
     customLayer.shape = JSON.stringify(shape)
+    customLayer.shapeJson = shape
     updateCustomLayer({
       variables: {
         customLayerId: uniObj._id,

@@ -4,6 +4,7 @@ export const CUSTOMLAYER = gql`
   query getCustomLayer($id: ID) {
     customLayer(id: $id) {
       _id
+      shapeJson
       shape
       name
       layer

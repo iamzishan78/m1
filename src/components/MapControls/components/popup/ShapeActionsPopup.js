@@ -401,6 +401,7 @@ const ShapeActionsPopup = (props) => {
       },
     };
     const customLayerData = {
+      shapeJson: newShapeFeature,
       shape: JSON.stringify(newShapeFeature),
       layer: "parcel",
       name: parcelName,
@@ -471,6 +472,7 @@ const ShapeActionsPopup = (props) => {
       },
     };
     const customLayerData = {
+      shapeJson: newShapeFeature,
       shape: JSON.stringify(newShapeFeature),
       layer: "unit",
       name: unitName,
@@ -524,12 +526,14 @@ const ShapeActionsPopup = (props) => {
 
   const confirmEditing = () => {
     let { currentFeature, selectedAoi } = stateApp;
+    const shapeJson = {
+      ...currentFeature,
+      shapeArea: calculateLandArea(currentFeature),
+      shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates),
+    }
     const customLayerData = {
-      shape: JSON.stringify({
-        ...currentFeature,
-        shapeArea: calculateLandArea(currentFeature),
-        shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates),
-      }),
+      shapeJson,
+      shape: JSON.stringify(shapeJson),
       layer: selectedAoi.layer.id,
       user: stateApp.user.mongoId,
     };

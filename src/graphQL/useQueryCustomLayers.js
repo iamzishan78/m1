@@ -4,6 +4,7 @@ export const CUSTOMLAYERSQUERY = gql`
   query getCustomLayers {
     allCustomLayers {
       _id
+      shapeJson
       shape
       name
       layer

@@ -19,6 +19,10 @@ export function truncate(str, n) {
   return str.length > n ? str.substr(0, n - 1) + "..." : str;
 }
 
+export function copy(obj) {
+  return JSON.parse(JSON.stringify(obj))
+}
+
 export function addTrailingZeros(num) {
   return num ? num.toLocaleString("en", { useGrouping: false, minimumFractionDigits: 8, maximumFractionDigits: 20 }) : num;
 }
