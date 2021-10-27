@@ -411,12 +411,19 @@ function Map() {
           ...stateApp,
           fitBounds: { ...fitBounds },
         }));
+        jsonParcel.layer = { id: parcel.layer }
+        const feature = {
+          layer : { id: parcel.layer },
+          ...jsonParcel,
+          id: parcel._id,
+        };
 
         setStateApp((stateApp) => ({
           ...stateApp,
           selectedParcel: {
+            layer: { id: parcel.layer },
             ...jsonParcel.properties,
-            feature: jsonParcel,
+            feature,
             id: parcel._id,
           },
           popupOpen: false,
@@ -426,7 +433,7 @@ function Map() {
         }));
       }
     }
-  }, [loading, parcelId]);
+  }, [loading, parcelId, stateApp.customLayers]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
