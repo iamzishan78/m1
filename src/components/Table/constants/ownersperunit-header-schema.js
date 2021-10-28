@@ -1,3 +1,4 @@
+import vf_currency from "components/Shared/valueformatters/vf_currency";
 
 const OwnersPerUnitHeadCells = [
   {
@@ -35,11 +36,11 @@ const OwnersPerUnitHeadCells = [
   { name: "orri", esKey: 'orri', label: "ORRI", options: { filter: true } },
   { name: "nri", esKey: 'nri', label: "NRI", options: { filter: true } },
   { name: "nra", esKey: 'nra', label: "NRA", editable: true, options: { filter: true, setCellProps: () => ({ style: { maxWidth: "70px" } }) } },
-  { name: "seller_asking_price", esKey: 'seller_asking_price', label: "Seller Asking Price", options: { filter: true, customBodyRender: (value) => <span>{`${value ? `$${value}` : ''}`}</span> } },
-  { name: "competitor_offer_price", esKey: 'competitor_offer_price', label: "Competitor Offer Price", options: { filter: true, customBodyRender: (value) => <span>{`${value ? `$${value}` : ''}`}</span> } },
+  { name: "seller_asking_price", esKey: 'seller_asking_price', label: "Seller Asking Price", options: { filter: true, customBodyRender: (value) => vf_currency(value) } },
+  { name: "competitor_offer_price", esKey: 'competitor_offer_price', label: "Competitor Offer Price", options: { filter: true, customBodyRender: (value) => vf_currency(value) } },
   {
     name: "offer_price", esKey: 'offer_price', label: "Offer Price", options: {
-      filter: true, customBodyRender: (value) => <span>{`${value ? `$${value}` : ''}`}</span>,
+      filter: true, customBodyRender: (value) => vf_currency(value),
     }
   },
   {
