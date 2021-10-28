@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -14,6 +14,8 @@ import InputBase from '@material-ui/core/InputBase';
 import AddIcon from '@material-ui/icons/Add';
 import SearchIcon from '@material-ui/icons/Search';
 import { Button } from "@material-ui/core";
+import { useLazyQuery } from "@apollo/client";
+import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 
 const ENTER_KEY = 13;
 
@@ -245,6 +247,12 @@ export default function UnitSummary(props) {
 
     const classes = useStyles({ search });
 
+    const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
+
+    useEffect(() => {
+        getShapeSummaryDetails({ variables: { shapeId: props.id, shapeType: 'Unit' } })
+    }, [props.id])
+
     const addCustomData = () => {
         if (!props.properties.custom_data_arr) {
             props.properties.custom_data_arr = []
@@ -268,11 +276,11 @@ export default function UnitSummary(props) {
                         <Grid item>
                             <Grid container spacing={2} className={classes.summaryDetailCard}>
                                 <Grid item>
-                                    <div className={classes.summaryValue}> 3 </div>
+                                    <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeWells || 0} </div>
                                     <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
                                 </Grid>
                                 <Grid item>
-                                    <div className={classes.summaryValue}> 3 </div>
+                                    <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.shapeOwners || 0} </div>
                                     <PersonIcon className={classes.icon} opacity="1.0" small />
                                 </Grid>
                                 <Grid item>

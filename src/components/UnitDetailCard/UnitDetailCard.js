@@ -227,7 +227,8 @@ export default function UnitDetailCard(props) {
 
   useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
-      let shape = copy(dataCustomLayer.customLayer.shapeJson) || dataCustomLayer.customLayer.shape;
+      let shape = JSON.parse(dataCustomLayer.customLayer.shape);
+      if (dataCustomLayer.customLayer.shapeJson) shape = copy(dataCustomLayer.customLayer.shapeJson)
       setUniObj({
         ...dataCustomLayer.customLayer,
         shape

@@ -10,6 +10,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Tooltip from "@material-ui/core/Tooltip";
 import { showErrorMessage } from "actions";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
+import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 
 const tableData = [
   {
@@ -23,12 +24,12 @@ const tableData = [
     key: 'uNumber'
   }, {
     label: 'Unit Type',
-    type: 'select',
+    type: 'autocomplete',
     options: ['Drilling Unit'],
     key: 'uType'
   }, {
     label: 'Unit Status',
-    type: 'select',
+    type: 'autocomplete',
     options: ['Held by Production'],
     key: 'uStatus'
   }, {
@@ -243,32 +244,33 @@ export default function UnitTableInfo({ properties, updateProperties, updateCust
             onMouseEnter={() => { setEditIconState({ [`${data.key}key`]: true }) }}
             onMouseLeave={() => { setEditIconState({ [`${data.key}key`]: false }) }}
           >
-            {data.isCustom ? <> {
-              tableDataState[`${data.key}key`] ?
-                <TableTextField data={data} value={tableTempProperties[`${data.key}key`]} showMessage={tableDataState[`${data.key}key`] === true}
-                  onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} type='key' />
-                :
-                <div style={{ minWidth: '30px', cursor: "pointer" }} >
-                  <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                    <Grid item>
-                      {data.key || '-'}
+            {data.isCustom ?
+              <> {
+                tableDataState[`${data.key}key`] ?
+                  <TableTextField data={data} value={tableTempProperties[`${data.key}key`]} showMessage={tableDataState[`${data.key}key`] === true}
+                    onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} type='key' />
+                  :
+                  <div style={{ minWidth: '30px', cursor: "pointer" }} >
+                    <Grid container direction="row" justifyContent="space-between" alignItems="center">
+                      <Grid item>
+                        {data.key || '-'}
+                      </Grid>
+                      <Grid item>
+                        {editIconState[`${data.key}key`] && <Tooltip title={"Edit"} placement="top">
+                          <IconButton
+                            size="small"
+                            onClick={() => { setTableDataState({ [`${data.key}key`]: true }) }}
+                          >
+                            <CreateTwoToneIcon
+                              id="contPencilIcon"
+                              className={classes.pencilIcon}
+                            />
+                          </IconButton>
+                        </Tooltip>}
+                      </Grid>
                     </Grid>
-                    <Grid item>
-                      {editIconState[`${data.key}key`] && <Tooltip title={"Edit"} placement="top">
-                        <IconButton
-                          size="small"
-                          onClick={() => { setTableDataState({ [`${data.key}key`]: true }) }}
-                        >
-                          <CreateTwoToneIcon
-                            id="contPencilIcon"
-                            className={classes.pencilIcon}
-                          />
-                        </IconButton>
-                      </Tooltip>}
-                    </Grid>
-                  </Grid>
-                </div>
-            } </> : <>{data.label}</>
+                  </div>
+              } </> : <>{data.label}</>
             }
 
 
@@ -280,7 +282,7 @@ export default function UnitTableInfo({ properties, updateProperties, updateCust
             {
               tableDataState[data.key] ?
                 <>
-                  {data.type === 'select' ?
+                  {data.type === 'select' &&
                     <FormControl variant="outlined">
                       <Select
                         className={classes.select}
@@ -297,10 +299,20 @@ export default function UnitTableInfo({ properties, updateProperties, updateCust
                       >
                         {data.options.map((option) => <MenuItem value={option}>{option}</MenuItem>)}
                       </Select>
-                    </FormControl> :
-
+                    </FormControl>
+                  }  {(data.type === 'text' || data.type === 'number') &&
                     <TableTextField data={data} value={tableTempProperties[data.key]} showMessage={tableDataState[data.key] === true}
                       onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} type='value' />
+                  }
+
+                  {data.type === 'autocomplete' &&
+                    <>
+                      <AutoCompleteTypeComponent data={data} value={properties[data.key]} shapeType={'Unit'} typeKey={data.key}
+                        onChange={(e, value) => {
+                          e.keyCode = 13
+                          updateProperties(e, data.key, value.name);
+                        }} />
+                    </>
                   }
                 </> :
                 <div style={{ minWidth: '30px', cursor: "pointer" }} >

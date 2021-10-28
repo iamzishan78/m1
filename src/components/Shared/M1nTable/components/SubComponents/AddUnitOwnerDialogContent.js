@@ -199,8 +199,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd._id = selectedRow._id;
         updateShapeOwner({
           variables: {
-            shapeType: 'Unit',
+            shapeType: props.shapeType,
             shapeOwner: {
+              shapeId: props.shapeId,
               ...ownerToAdd,
               createBy: stateApp.user.mongoId,
               lastUpdateBy: stateApp.user.mongoId,
@@ -212,8 +213,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       } else {
         addOwnerToAShape({
           variables: {
-            shapeType: 'Unit',
+            shapeType: props.shapeType,
             shapeOwner: {
+              shapeId: props.shapeId,
               ...ownerToAdd,
               createBy: stateApp.user.mongoId,
               lastUpdateBy: stateApp.user.mongoId,
