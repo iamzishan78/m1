@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
+export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, ...props }) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
   const { control, reset, setValue, register, getValues, watch } = useForm();
@@ -236,12 +236,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     return netAcres;
   };
 
-  const calculateNRA = (interest1, interest2, mineralInterest = newOwner.mineral_interest) => {
+  const calculateNRA = (interest1, interest2, unitAcres = uAcres) => {
     if (!interest1 && !interest2) return null;
-    let netAcres = calculateNetAcres(mineralInterest),
-      nra = netAcres * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) * 8;
+    let nra = parseFloat(unitAcres || 1) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) * 8;
     nra = addTrailingZeros(nra.toFixed(8));
-
     return nra;
   };
 

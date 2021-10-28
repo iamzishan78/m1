@@ -35,7 +35,7 @@ const OwnersPerUnitHeadCells = [
   { name: "royalty_interest", esKey: 'royalty_interest', label: "Royalty Interest", options: { filter: true } },
   { name: "orri", esKey: 'orri', label: "ORRI", options: { filter: true } },
   { name: "nri", esKey: 'nri', label: "NRI", options: { filter: true } },
-  { name: "nra", esKey: 'nra', label: "NRA", editable: true, options: { filter: true, setCellProps: () => ({ style: { maxWidth: "70px" } }) } },
+  { name: "nra", esKey: 'nra', label: "NRA", editable: true, options: { filter: true } },
   { name: "seller_asking_price", esKey: 'seller_asking_price', label: "Seller Asking Price", options: { filter: true, customBodyRender: (value) => vf_currency(value) } },
   { name: "competitor_offer_price", esKey: 'competitor_offer_price', label: "Competitor Offer Price", options: { filter: true, customBodyRender: (value) => vf_currency(value) } },
   {

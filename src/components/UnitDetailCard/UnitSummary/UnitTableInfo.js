@@ -25,7 +25,6 @@ const tableData = [
   }, {
     label: 'Unit Type',
     type: 'autocomplete',
-    options: ['Drilling Unit'],
     key: 'uType'
   }, {
     label: 'Unit Status',
@@ -35,7 +34,7 @@ const tableData = [
   }, {
     label: 'Unit Acres',
     type: 'number',
-    key: 'uUnitAcres'
+    key: 'uAcres'
   }, {
     label: 'Calculated Acres',
     type: 'text',
