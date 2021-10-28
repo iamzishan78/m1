@@ -85,6 +85,7 @@ export default function SidePanel() {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       addLayer: true,
+      selectedLayer: null
     }));
   };
 

@@ -4,9 +4,10 @@ import { get } from "lodash";
 
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import AddALayer from "components/MapControls/components/addALayer";
+import LayerStyling from "components/MapControls/components/LayerStyling";
 
 const useStyles = makeStyles((theme) => ({
-  root: props => ({
+  root: (props) => ({
     position: "absolute",
     display: "flex",
     flexDirection: "row",
@@ -14,14 +15,12 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "1240",
     left: props.leftPixels,
     width: "525px",
-    height: "calc(100vh - 65px)"
-  })
+    height: "calc(100vh - 65px)",
+  }),
 }));
 
 const Secondarypanel = () => {
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
+  const [stateMapControls] = useContext(MapControlsContext);
 
   const leftPixels = useMemo(() => {
     return get(document.getElementById("layer-side-panel"), "style.minWidth", "0px");
@@ -31,9 +30,8 @@ const Secondarypanel = () => {
   const classes = useStyles({ leftPixels });
   return (
     <div className={classes.root}>
-      {stateMapControls.addLayer && (
-        <AddALayer />
-      )}
+      {stateMapControls.addLayer && <AddALayer />}
+      {stateMapControls.selectedLayer && <LayerStyling layer={stateMapControls.selectedLayer} />}
     </div>
   );
 };

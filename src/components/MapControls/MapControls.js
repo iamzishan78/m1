@@ -9,10 +9,8 @@ import EditIcon from "@material-ui/icons/Edit";
 import MenuIcon from "@material-ui/icons/Menu";
 import CancelIcon from "@material-ui/icons/Cancel";
 import { makeStyles } from "@material-ui/core/styles";
-import ColorPickerDialog from "./components/ColorPickerDialog";
 import AddUserData from "./components/addUserData";
 import AddUserGroupData from "./components/addUserGroupData";
-import AddALayer from "./components/addALayer";
 import DrawShapes from "./components/DrawShapes/DrawShapes";
 import GpsFixedIcon from "@material-ui/icons/GpsFixed";
 import GpsNotFixedIcon from "@material-ui/icons/GpsNotFixed";
@@ -80,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       color: "#fff",
       background: "rgba(1, 17, 51, 1.0)",
-    }
+    },
   },
   toggleButton: {
     backgroundColor: "rgba(1, 17, 51, 0)",
@@ -90,26 +88,22 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MapControls(props) {
   const dispatch = useDispatch();
-  const { mapGridCardActivated, mapGridCardActiveTap } = useSelector(
-    ({ MapGridCard }) => MapGridCard
-  );
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
+  const { mapGridCardActivated, mapGridCardActiveTap } = useSelector(({ MapGridCard }) => MapGridCard);
+  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles();
 
   useEffect(() => {
     if (stateApp.selectedUserDefinedLayer) {
-      setStateMapControls(state => ({ ...state, selectedMapControl: 'draw', selectedControl: 'layer' }));
+      setStateMapControls((state) => ({ ...state, selectedMapControl: "draw", selectedControl: "layer" }));
     }
   }, [stateApp.selectedUserDefinedLayer]);
 
   useEffect(() => {
     if (stateApp.selectedAbstracts.length > 0) {
-      setStateApp(state => ({ ...state, showDrawShapesPopup: true }));
-      setStateMapControls(state => ({ ...state, selectedMapControl: 'draw', selectedControl: 'layer' }));
+      setStateApp((state) => ({ ...state, showDrawShapesPopup: true }));
+      setStateMapControls((state) => ({ ...state, selectedMapControl: "draw", selectedControl: "layer" }));
     }
   }, [stateApp.selectedAbstracts]);
 
@@ -125,14 +119,12 @@ export default function MapControls(props) {
   };
 
   const handleCloseLeftSidePanel = () => {
-
-    // close layer manager  
+    // close layer manager
     setStateMapControls({
       ...stateMapControls,
       expandedPanel: false,
       anchorEl: null,
     });
-
   };
 
   const handleCloseShapeDrawer = () => {
@@ -165,14 +157,10 @@ export default function MapControls(props) {
       selectedAoi: null,
       featureOrMapShape: null,
     }));
-
-
   };
 
-
   const handleCloseDetailedCards = () => {
-
-    // close detailed cards 
+    // close detailed cards
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
@@ -182,20 +170,17 @@ export default function MapControls(props) {
       activateWellDetailsFromTable: false,
     }));
 
-    // close doc viewer 
+    // close doc viewer
     setStateApp((state) => ({
       ...state,
-      viewDoc: null
+      viewDoc: null,
     }));
-
   };
 
-
   const handleFabClick = (e, action) => {
-
     if (stateApp.expandedCard === true) {
-      handleCloseLeftSidePanel()
-      handleCloseShapeDrawer()
+      handleCloseLeftSidePanel();
+      handleCloseShapeDrawer();
     }
 
     if (e && action) {
@@ -203,9 +188,9 @@ export default function MapControls(props) {
 
       if (action === "track") {
         anchorEl = null;
-        handleCloseLeftSidePanel()
-        handleCloseShapeDrawer()
-        handleCloseDetailedCards()
+        handleCloseLeftSidePanel();
+        handleCloseShapeDrawer();
+        handleCloseDetailedCards();
 
         if (mapGridCardActiveTap === 1 && mapGridCardActivated) {
           dispatch(toggleMapGridCardAtived());
@@ -219,23 +204,15 @@ export default function MapControls(props) {
         }
       }
 
-
       if (action === "base" || action === "heatMaps" || action === "layer") {
-
         setStateMapControls({
           ...stateMapControls,
           selectedControl: action,
-          expandedPanel:
-            action === stateMapControls.selectedControl &&
-              stateMapControls.expandedPanel
-              ? false
-              : true,
+          expandedPanel: action === stateMapControls.selectedControl && stateMapControls.expandedPanel ? false : true,
           anchorEl: anchorEl,
         });
-        handleCloseDetailedCards()
+        handleCloseDetailedCards();
       }
-
-
 
       if (action === "draw") {
         setStateMapControls({
@@ -253,18 +230,15 @@ export default function MapControls(props) {
             editDraw: true,
           }));
         } else {
-          clearMapAndCloseShapeActionsPopup(stateApp, setStateApp)
+          clearMapAndCloseShapeActionsPopup(stateApp, setStateApp);
         }
       }
-
-
     }
 
     setStateApp((stateApp) => ({
       ...stateApp,
       toggle3d: action === "threed" ? !stateApp.toggle3d : stateApp.toggle3d,
-      toggleZoomOut:
-        action === "zoomout" ? !stateApp.toggleZoomOut : stateApp.toggleZoomOut,
+      toggleZoomOut: action === "zoomout" ? !stateApp.toggleZoomOut : stateApp.toggleZoomOut,
     }));
 
     if (stateApp.draw.getMode() !== "simple_select") {
@@ -276,12 +250,7 @@ export default function MapControls(props) {
   const createSpeedDialActions = () => {
     const actions = [
       {
-        icon:
-          mapGridCardActiveTap === 1 && mapGridCardActivated ? (
-            <GpsFixedIcon />
-          ) : (
-            <GpsNotFixedIcon />
-          ),
+        icon: mapGridCardActiveTap === 1 && mapGridCardActivated ? <GpsFixedIcon /> : <GpsNotFixedIcon />,
         name: "Tracked",
         action: "track",
       },
@@ -331,36 +300,23 @@ export default function MapControls(props) {
     ));
   };
 
-
-  const openColorPickerControl = (selectedLayer) => {
-    if (selectedLayer) {
-      return <ColorPickerDialog layer={selectedLayer} />;
-    }
-  };
-
   useEffect(() => {
     if (stateApp.expandedCard) {
-      handleFabClick()
+      handleFabClick();
     }
   }, [stateApp.expandedCard]);
 
-
-
   useEffect(() => {
-
     if (stateApp.openDrawShapesControl === true) {
-
       setStateMapControls((state) => ({
         ...state,
-        selectedMapControl: 'draw',
-        // openDrawShapesControl: true, 
+        selectedMapControl: "draw",
+        // openDrawShapesControl: true,
       }));
 
-      handleFabClick()
+      handleFabClick();
     }
   }, [stateApp.openDrawShapesControl]);
-
-
 
   return (
     <div>
@@ -368,13 +324,7 @@ export default function MapControls(props) {
         id="speed"
         ariaLabel="SpeedDial"
         className={classes.speedDial}
-        icon={
-          <MenuIcon
-            fontSize="small"
-            onClick={toggleSpeedDial}
-            className={classes.menuIcon}
-          />
-        }
+        icon={<MenuIcon fontSize="small" onClick={toggleSpeedDial} className={classes.menuIcon} />}
         onOpen={handleOpen}
         open={stateMapControls.openSpeedDial}
         direction="down"
@@ -384,12 +334,9 @@ export default function MapControls(props) {
       </SpeedDial>
       <SidePanel />
 
-      {stateMapControls.selectedMapControl === 'draw' ? <DrawShapes /> : null}
-      {stateMapControls.layerAddControl === 'add' ? <AddUserData /> : null}
-      {stateMapControls.layerAddControl === 'addGroup' ? <AddUserGroupData /> : null}
-      {stateMapControls.selectedLayer
-        ? openColorPickerControl(stateMapControls.selectedLayer)
-        : null}
+      {stateMapControls.selectedMapControl === "draw" ? <DrawShapes /> : null}
+      {stateMapControls.layerAddControl === "add" ? <AddUserData /> : null}
+      {stateMapControls.layerAddControl === "addGroup" ? <AddUserGroupData /> : null}
     </div>
   );
 }

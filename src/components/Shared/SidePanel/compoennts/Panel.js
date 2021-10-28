@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { TransitionGroup } from "react-transition-group";
 import RootRef from "@material-ui/core/RootRef";
 import { useMutation } from "@apollo/client";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
@@ -90,7 +91,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       expandedPanel: !stateMapControls.expandedPanel,
-      addLayer: false
+      addLayer: false,
     }));
   };
 
@@ -117,16 +118,16 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     else {
       switch (type) {
         case "layer":
-          setFilteredItems(panelItems.filter(i => i.layerName.toLowerCase().includes(search.toLowerCase())));
+          setFilteredItems(panelItems.filter((i) => i.layerName.toLowerCase().includes(search.toLowerCase())));
           break;
         case "base":
         case "heatMaps":
-          setFilteredItems(panelItems.filter(i => i.name.toLowerCase().includes(search.toLowerCase())));
+          setFilteredItems(panelItems.filter((i) => i.name.toLowerCase().includes(search.toLowerCase())));
           break;
         default:
       }
     }
-  }
+  };
 
   const layerIcons = React.useMemo(() => {
     return [
@@ -223,7 +224,13 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const setSearchValue = (value) => {
     setSearch(value);
     filterLayers(value);
-  }
+  };
+  const secondaryPanelState = React.useMemo(() => {
+    if (stateMapControls.addLayer || stateMapControls.selectedLayer) {
+      return true;
+    } else return false;
+  }, [stateMapControls.addLayer, stateMapControls.selectedLayer]);
+
   return (
     <div>
       <div
@@ -300,11 +307,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                   />
                   {searchState && (
                     <Tooltip title="Clear" className={classes.iconClear}>
-                      <IconButton
-                        size="small"
-                        htmlColor="white"
-                        onClick={clearSearch}
-                      >
+                      <IconButton size="small" htmlColor="white" onClick={clearSearch}>
                         <ClearIcon />
                       </IconButton>
                     </Tooltip>
@@ -339,12 +342,14 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           )}
         </StyledMenu>
         <StyledMenu
-          id="layer-side-panel1"
+          id="layer-secondary-panel"
           keepMounted
-          open={Boolean(stateMapControls.selectedControl)}
-          style={{ display: stateMapControls.addLayer ? "flex" : "none", minWidth: "525px" }}
+          open={secondaryPanelState}
+          style={{ display: secondaryPanelState ? "flex" : "none", minWidth: "525px" }}
         >
-          <SecondaryPanel />
+          <TransitionGroup transitionName="carousel" transitionEnterTimeout={800} transitionLeaveTimeout={500}>
+            <SecondaryPanel />
+          </TransitionGroup>
         </StyledMenu>
         <div className={classes.pulloutBox} onClick={togglePullout}>
           {stateMapControls.expandedPanel ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
