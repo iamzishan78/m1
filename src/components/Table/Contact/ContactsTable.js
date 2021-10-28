@@ -158,7 +158,9 @@ function ContactsTable(props) {
   useEffect(() => {
     if(selectedGridView?.filters){
       columns.forEach((column, index) => {
-        const value = get(selectedGridView?.filters?.find(filter => filter.field === column.esKey), 'value', '')
+        const value = get(selectedGridView?.filters?.find(filter => {
+          return JSON.stringify(filter.field) === JSON.stringify(column.esKey)
+        }), 'value', '')
         let filterList =  []
         if(value){
           filterList = [value]
