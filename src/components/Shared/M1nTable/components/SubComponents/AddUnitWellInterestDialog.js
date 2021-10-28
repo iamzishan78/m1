@@ -10,8 +10,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Grid from "@material-ui/core/Grid";
 import { CircularProgress, Dialog } from "@material-ui/core";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
-import PropTypes from "prop-types";
-import NumberFormat from "react-number-format";
 import { WELL_INTEREST_SELECT_OPTIONS } from "graphQL/useQueryWellInterestSelectOptions";
 import { ADD_SHAPE_WELL_INTEREST } from "graphQL/useMutationAddShapeWellInterest";
 import { UPDATE_SHAPE_WELL_INTEREST } from "graphQL/useMutationUpdateShapeWellInterest";
@@ -22,66 +20,8 @@ import { useForm, Controller } from "react-hook-form";
 import { AppContext } from "AppContext";
 import WellSearchApiField from "components/Shared/Forms/Fields/WellSearchApiField";
 import AutoCompleteFieldComponent from "components/Shared/Forms/Fields/AutoCompleteField";
+import { NumberFormatCustom } from "components/Shared/Forms/Formatting/NumberFormatCustom";
 
-
-
-function NumberFormatCustom(props) {
-  const { inputRef, onChange, name, ...other } = props;
-  console.log(props)
-  return (
-    <NumberFormat
-      {...other}
-      getInputRef={inputRef}
-      onValueChange={(values) => {
-        onChange({
-          target: {
-            name: props.name,
-            value: values.value,
-          },
-        });
-      }}
-    // thousandSeparator
-    // isNumericString
-    // prefix="$"
-    />
-  );
-}
-
-
-
-
-NumberFormatCustom.propTypes = {
-  inputRef: PropTypes.func.isRequired,
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
-function CurrencyFormatCustom(props) {
-  const { inputRef, onChange, name, ...other } = props;
-
-  return (
-    <NumberFormat
-      {...other}
-      getInputRef={inputRef}
-      onValueChange={(values) => {
-        onChange({
-          target: {
-            name: props.name,
-            value: values.value,
-          },
-        });
-      }}
-      thousandSeparator
-      isNumericString
-      prefix="$"
-    />
-  );
-}
-
-CurrencyFormatCustom.propTypes = {
-  inputRef: PropTypes.func.isRequired,
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
 
 const useStyles = makeStyles((theme) => ({
   dialogFooter: {

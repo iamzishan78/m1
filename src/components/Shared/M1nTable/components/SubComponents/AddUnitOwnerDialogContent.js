@@ -23,6 +23,7 @@ import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { addTrailingZeros } from "components/Shared/functions";
 import { Controller, useForm } from "react-hook-form";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
+import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -451,7 +452,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   render={(props) => (
                     <TextField
                       size="small"
-                      type="number"
                       value={props.value}
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
@@ -461,7 +461,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         }
                       }}
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        inputComponent: CurrencyFormatCustom,
                       }}
                       fullWidth
                       defaultValue=""
@@ -478,7 +478,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   render={(props) => (
                     <TextField
                       size="small"
-                      type="number"
                       value={props.value}
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
@@ -488,7 +487,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         }
                       }}
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        inputComponent: CurrencyFormatCustom,
                       }}
                       fullWidth
                       defaultValue=""
@@ -506,7 +505,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   render={(props) => (
                     <TextField
                       size="small"
-                      type="number"
                       value={props.value}
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
@@ -516,7 +514,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         }
                       }}
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        inputComponent: CurrencyFormatCustom,
                       }}
                       fullWidth
                       defaultValue=""
