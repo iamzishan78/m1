@@ -7,10 +7,10 @@ import FileTree from "./FileTree";
 import { ContextProvider } from "react-sortly";
 
 const dnd = isMobile ? TouchBackend : HTML5Backend;
-const SortableLayer = ({ layerMap }) => (
+const SortableLayer = ({ layerMap, panelItems }) => (
   <DndProvider backend={dnd}>
     <ContextProvider>
-      {layerMap.length > 0 && <FileTree layerMap={layerMap} />}
+      {layerMap.length > 0 && <FileTree layerMap={layerMap} panelItems={panelItems} />}
     </ContextProvider>
   </DndProvider>
 );

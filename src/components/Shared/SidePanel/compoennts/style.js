@@ -166,6 +166,7 @@ export const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       width: "auto",
     },
+    "& .MuiInputBase-root": { width: "93% !important" }
   },
   iconSearch: {
     height: "100%",
@@ -173,6 +174,14 @@ export const useStyles = makeStyles((theme) => ({
     position: "absolute",
     alignItems: "center",
     justifyContent: "center",
+    color: "rgba(121, 121, 121, 0.85)",
+    zIndex: 1,
+    "&:hover": {
+      color: "#fff",
+      cursor: "pointer",
+    },
+  },
+  iconClear: {
     color: "rgba(121, 121, 121, 0.85)",
     zIndex: 1,
     "&:hover": {
@@ -188,11 +197,8 @@ export const useStyles = makeStyles((theme) => ({
     transition: theme.transitions.create("width"),
     width: "100%",
     [theme.breakpoints.up("sm")]: {
-      width: "0ch",
-      "&:focus": {
-        width: "25ch",
-        height: "2ch",
-      },
+      width: "25ch",
+      height: "2ch",
     },
   },
 }));
