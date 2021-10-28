@@ -97,17 +97,24 @@ function ContactsTable(props) {
     });
   }, [getESContacts, props.parent, props.contactSearchQuery, selectedGridView]);
 
-  useEffect(() => {
-    if (tableData?.hits?.length) {
-      let objectsIdsArray = tableData.hits.map((el) => el._id);
-      props.initializeGenericData(objectsIdsArray, ["comments", "tags"]);
-    }
-  }, [tableData]);
+  const getContactsAddress = (contact) => {
+    let address = "https://www.google.com/maps/search/";
+    if (contact.address1) address = `${address}${contact.address1.replace(/ /g, "+")}`;
+    if (contact.city) address = `${address},+${contact.city.replace(/ /g, "+")}`;
+    if (contact.state) address = `${address},+${contact.state}`;
+    if (contact.zip) address = `${address}+${contact.zip}`;
+    return {
+      ...contact,
+      fullContactAddress: address,
+    };
+  }
 
   useEffect(() => {
     if (tableData?.hits) {
       const hits = tableData.hits.map((hit) => {
-        hit = props.setGenricData(hit, hit._id, ["comments", "tracks", "tags"]);
+        hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
+        hit.tags = hit.tags ? [[hit.tags.map(tag => tag.tag)], hit.tags.length] : [[],0]
+        hit.commentsCounter = hit.comments ? hit.comments.length : 0
         return hit;
       });
       props.setRows(JSON.parse(JSON.stringify(hits)));

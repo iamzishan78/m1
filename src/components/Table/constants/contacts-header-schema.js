@@ -179,7 +179,7 @@ const ContactsHeadCells = [
       name: "fullContactAddress",
       label: "Primary Address",
       // editable: true,
-      esKey: 'address1.keyword',
+      esKey: ['address1.keyword', 'city.keyword', 'state.keyword', 'zip.keyword'],
       options: {
         dbName: "address1",
         sort: true,
@@ -533,12 +533,13 @@ const ContactsHeadCells = [
     {
       name: "tags",
       label: "Tags ",
+      esKey: 'tags.tag.keyword',
       options: {
         dbName: "tags.tag",
         sort: true,
         download: false,
         print: false,
-        filter: false,
+        filter: true,
         filterOptions: {
           names: [],
         },
