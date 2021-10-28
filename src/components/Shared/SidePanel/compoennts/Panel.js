@@ -192,7 +192,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
         {(provided, snapshot) => (
           <RootRef rootRef={provided.innerRef}>
             {type === "base" && (
-              <List className={classes.list}>
+              <List 
+              className={classes.list}
+              >
                 <Layer layerMap={layerMap} type={type} handleToggle={handleToggle} />
               </List>
             )}
@@ -322,7 +324,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
             layerMap && layerMap[0]?.type ? (
               <SortableLayer layerMap={layerMap} panelItems={panelItems} />
             ) : (
-              <Box height="calc(100vh - 50px - 64px)" bgcolor="#040e24" display="flex" justifyContent="center">
+              <Box height="calc(100vh - 50px - 64px)" 
+              // bgcolor="#040e24"
+                            // bgcolor="red"
+
+
+              display="flex" justifyContent="center">
                 <CircularProgress style={{ top: "50%", position: "absolute" }} size={40} color="secondary" />
               </Box>
             )
