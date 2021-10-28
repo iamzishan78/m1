@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: props.data.type === "group" ? 20 : 18,
     position: "relative",
     fontWeight: props.data.type === "group" ? 600 : 500,
-    height: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : "35px",
+    height: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : "50px",
     overflow: "hidden",
     disabledLayerTitle: {
       "& span": { color: "rgb(127, 149, 199) !important" },
@@ -45,10 +45,11 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiTypography-root": {
       color: theme.palette.common.white,
     },
+    paddingLeft: '10px',
 
     // display: 'flex',
-    // justifyContent: 'center',
-    // alignItems: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
     // overflowX: "hidden",
     // cursor: "move",
     // padding: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : theme.spacing(0.5, 0),
@@ -136,7 +137,7 @@ const LayerItem = React.memo((props) => {
 
               <Box borderColor={getLayerColor(data, "layer", colors)} borderLeft={4}>
                 <ListItemIcon ref={drag} >
-                  <DragIndicator style={{ cursor: "move" }} />
+                  <DragIndicator style={{ cursor: "move", justifyContent: 'center' }} />
                 </ListItemIcon>
               </Box>
 

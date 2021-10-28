@@ -145,7 +145,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
           display: 'flex',
           flexDirection: 'row',
           // justifyContent: 'flex-end',
-          // justifyContent: 'center',
+          justifyContent: 'center',
           alignItems: 'center',
         }}
       >
