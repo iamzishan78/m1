@@ -438,11 +438,12 @@ function LayerStyling(props) {
       <div
         style={{
           position: "absolute",
+          right: "0px",
           bottom: "0px",
           padding: "15px",
         }}
       >
-        <Button autoFocus onClick={handleClose} color="primary">
+        <Button autoFocus onClick={handleClose} color="primary" >
           Cancel
         </Button>
         <Button autoFocus onClick={handleApplyChanges} color="primary">

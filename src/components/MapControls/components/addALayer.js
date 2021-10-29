@@ -71,9 +71,10 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": { backgroundColor: "aliceblue" },
     "& .MuiDropzoneArea-text": {
       margin: "10px",
+      marginTop: "20px"
     },
     "& .MuiDropzoneArea-icon": { display: "none" },
-    minHeight: "0",
+    minHeight: "120px",
     marginBottom: "15px",
     backgroundColor: "#e8edefe8",
   },
@@ -86,11 +87,12 @@ const useStyles = makeStyles((theme) => ({
   uploaderText: { color: "#828282", fontSize: "1rem" },
   contentRoot: {
     padding: "15px",
-    maxHeight: "900px",
+    maxHeight: "975px",
     overflow: "overlay"
   },
   footer: {
     position: "absolute",
+    right: "0px",
     bottom: "0px",
     padding: "15px"
   }
@@ -103,6 +105,7 @@ const StyledListItem2 = withStyles((theme) => ({
     color: "#263451",
     border: "2px solid #263451",
     borderRadius: "5px",
+    marginTop: "15px",
     marginBottom: "5px",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: "#263451",
@@ -419,12 +422,7 @@ export default function AddLayer(props) {
         </Grid>
         <Divider />
         <div className={classes.contentRoot}>
-          <div color="dark gray">
-            Select one or more of the available layers below to add them to your
-            current map view.
-          </div>
-
-          <DropzoneAreaBase
+           <DropzoneAreaBase
             onAdd={handleFileInput}
             onDelete={(fileObj) => console.log("Removed File:", fileObj)}
             onAlert={(message, variant) => {
@@ -454,8 +452,12 @@ export default function AddLayer(props) {
             maxFileSize={10000000}
             dropzoneClass={classes.dropzoneClass}
           >
-
           </DropzoneAreaBase>
+
+          <div color="dark gray">
+           Select one or more of the available layers below to add them to your
+           current map view.
+         </div>
           <StyledListItem2 button onClick={handleClickM1List}>
             <ListItemText primary="M1neral Layers" />
             {openM1 ? <ExpandLess /> : <ExpandMore />}
