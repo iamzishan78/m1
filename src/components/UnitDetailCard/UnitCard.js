@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
   card: {
     borderStyle: "none",
     height: "100%",
+    boxShadow: "none"
   },
   content: {
     padding: "0 !important",

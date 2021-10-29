@@ -37,7 +37,7 @@ const SuggestedOwnersHeadCells = [
     options: { setCellProps: () => ({ style: { minWidth: "200px" } }) }
   },
   {
-    name: "propertyName",
+    name: "wellName",
     label: "Well Name",
     options: { setCellProps: () => ({ style: { minWidth: "175px" } }) }
   },

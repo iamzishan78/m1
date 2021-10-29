@@ -307,9 +307,11 @@ export default function UnitTableInfo({ properties, updateProperties, updateCust
                   {data.type === 'autocomplete' &&
                     <>
                       <AutoCompleteTypeComponent data={data} value={properties[data.key]} shapeType={'Unit'} typeKey={data.key}
+                        onBlur={() => { setTableDataState({}); setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] }) }}
                         onChange={(e, value) => {
                           e.keyCode = 13
-                          updateProperties(e, data.key, value.name);
+                          if (value?.name)
+                            updateProperties(e, data.key, value.name);
                         }} />
                     </>
                   }

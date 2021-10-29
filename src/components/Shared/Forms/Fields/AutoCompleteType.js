@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     },
 });
 
-const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, ...other }) => {
+const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, onBlur, ...other }) => {
 
     const [types, setTypes] = useState([])
 
@@ -45,6 +45,7 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, ...oth
             value={{ _id: value, name: value }}
             disableListWrap
             classes={classes}
+            onBlur={onBlur}
             options={types?.map((type) => {
                 return { _id: type, name: type };
             }) || []}
@@ -113,6 +114,7 @@ const AutoCompleteTypeComponent = ({ onChange, value, shapeType, typeKey, ...oth
                         ...params.InputProps,
                     }}
                     fullWidth
+                    autoFocus
                     size="small"
                 />
             )}
