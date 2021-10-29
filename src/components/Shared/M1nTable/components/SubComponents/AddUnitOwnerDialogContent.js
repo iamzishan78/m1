@@ -239,7 +239,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   const calculateNRA = (interest1, interest2, unitAcres = uAcres) => {
     if (!interest1 && !interest2) return null;
-    let nra = parseFloat(unitAcres || 1) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) * 8;
+    let nra = parseFloat(unitAcres || 1) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0));
     nra = addTrailingZeros(nra.toFixed(8));
     return nra;
   };
@@ -305,10 +305,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       type="number"
                       value={props.value}
                       inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        if (e.target.value) {
-                          props.onChange(e.target.value)
-                        }
+                        props.onChange(e.target.value)
                       }}
                       fullWidth
                       defaultValue=""
@@ -327,11 +326,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       type="number"
                       value={props.value}
                       inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        if (e.target.value) {
-                          props.onChange(e.target.value)
-                          setValue('nra', calculateNRA(e.target.value, getValues().orri))
-                        }
+                        props.onChange(e.target.value)
+                        setValue('nra', calculateNRA(e.target.value, getValues().orri))
                       }}
                       fullWidth
                       defaultValue=""
@@ -350,12 +348,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       type="number"
                       value={props.value}
                       inputRef={props.ref}
-                      // onWheel={(e) => e.target.blur()}
+                      onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        if (e.target.value) {
-                          props.onChange(e.target.value)
-                          setValue('nra', calculateNRA(getValues().royalty_interest, e.target.value))
-                        }
+                        props.onChange(e.target.value)
+                        setValue('nra', calculateNRA(getValues().royalty_interest, e.target.value))
                       }}
                       fullWidth
                       defaultValue=""
@@ -375,11 +371,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       type="number"
                       value={props.value}
                       inputRef={props.ref}
-                      // onWheel={(e) => e.target.blur()}
+                      onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        if (e.target.value) {
-                          props.onChange(e.target.value)
-                        }
+                        props.onChange(e.target.value)
                       }}
                       fullWidth
                       defaultValue=""
@@ -414,11 +408,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       type="number"
                       value={props.value}
                       inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        if (e.target.value) {
-                          props.onChange(e.target.value)
-                          setValue('nra', calculateNRA(e.target.value, getValues().orri))
-                        }
+                        props.onChange(e.target.value)
+                        setValue('nra', calculateNRA(e.target.value, getValues().orri))
                       }}
                       InputProps={{
                         endAdornment: (
@@ -456,9 +449,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        if (e.target.value) {
-                          props.onChange(e.target.value)
-                        }
+                        props.onChange(e.target.value)
                       }}
                       InputProps={{
                         inputComponent: CurrencyFormatCustom,
@@ -482,9 +473,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        if (e.target.value) {
-                          props.onChange(e.target.value)
-                        }
+                        props.onChange(e.target.value)
                       }}
                       InputProps={{
                         inputComponent: CurrencyFormatCustom,
@@ -509,9 +498,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        if (e.target.value) {
-                          props.onChange(e.target.value)
-                        }
+                        props.onChange(e.target.value)
                       }}
                       InputProps={{
                         inputComponent: CurrencyFormatCustom,

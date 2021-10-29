@@ -248,6 +248,12 @@ export const TableHOC = (Component) => {
                         }
                     }
                     setSearchedRows(searchRows.filter(row => row.isFiltered !== false))
+                },
+                extendSearchQuery: (extraSearch) => {
+                    if (pageESVariables.variables.search)
+                        pageESVariables.variables.search = `${pageESVariables.variables.search} AND ${extraSearch}`
+                    else
+                        pageESVariables.variables.search = `${extraSearch}`
                 }
             }
         }

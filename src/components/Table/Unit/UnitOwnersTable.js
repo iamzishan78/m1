@@ -61,7 +61,7 @@ function UnitOwnersTable(props) {
           first: startPaginationAt,
           keep_alive: "1micros"
         },
-        search: ""
+        search: `shape._id:${props.customLayer._id}`
       }
     });
   }, [props.parent]);
@@ -123,9 +123,11 @@ function UnitOwnersTable(props) {
       case "filterChange":
       case "resetFilters":
       case "changeRowsPerPage":
+        tableActions.extendSearchQuery(`shape._id:${props.customLayer._id}`);
         tableActions.genericESAction();
         break;
       case "changePage":
+        tableActions.extendSearchQuery(`shape._id:${props.customLayer._id}`);
         tableActions.changeESPage();
         break;
       default:

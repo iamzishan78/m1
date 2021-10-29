@@ -329,7 +329,7 @@ function SuggestedShapeTaxOwnersTable(props) {
     const uAcres = props.customLayer?.shapeJson?.properties?.uAcres || 1
     for (let i = 0; i < selectedRows.length; i++) {
       const ownerToAdd = {
-        customLayer: props.customLayer._id,
+        shapeId: props.customLayer._id,
         entity: "",
         royalty_interest: selectedRows[i].interestType === 'ROYALTY INTEREST' ? selectedRows[i].ownershipPercentage : "",
         orri: selectedRows[i].interestType === 'OVERRIDING ROYALTY' ? selectedRows[i].ownershipPercentage : "",
