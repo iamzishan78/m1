@@ -83,7 +83,6 @@ function SuggestedShapeTaxOwnersTable(props) {
   });
 
   const addAble = {};
-  const total = false;
   const orderByTracks = false;
 
   ////////////Contact Wells begin///////////////////////////////////////////////
@@ -171,6 +170,7 @@ function SuggestedShapeTaxOwnersTable(props) {
         getPaginatedShapeWellOwners(pageVariables);
         break;
       case "changePage":
+      case "search":
         props.setLoading(true);
         if (tableState.page > meta.pageInd) {
           setCount((state, props) => {
@@ -181,6 +181,7 @@ function SuggestedShapeTaxOwnersTable(props) {
           ...pageVariables,
           variables: {
             ...pageVariables.variables,
+            search: tableState.searchText,
             pagination: {
               ...pageVariables.variables.pagination,
               before:
@@ -220,7 +221,7 @@ function SuggestedShapeTaxOwnersTable(props) {
     rowsPerPageOptions:
       count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
     count: suggestedOwnersCount || count || 0,
-    serverSide: false,
+    serverSide: true,
     searchable: true,
     filter: true,
     customToolbar: () => {
@@ -275,6 +276,7 @@ function SuggestedShapeTaxOwnersTable(props) {
       }
     })
     if (globalOwnerIds.length > 0) {
+      props.setLoading(true);
       convertMultitpleOwnerToContact({
         variables: {
           ownerIds: globalOwnerIds,
@@ -299,7 +301,15 @@ function SuggestedShapeTaxOwnersTable(props) {
                   },
                 }
               );
-              addShape(checkIfOwnersAreContactsData.ifAreContacts);
+              const contacts = checkIfOwnersAreContactsData.ifAreContacts.map((contact) => {
+                const selectedRow = selectedOwners.find((row) => row.globalOwnerId === contact.globalOwner)
+                return {
+                  ...contact,
+                  interestType: selectedRow.interestType,
+                  ownershipPercentage: selectedRow.ownershipPercentage
+                }
+              })
+              addShape(contacts)
             }
           }
         },
@@ -309,17 +319,21 @@ function SuggestedShapeTaxOwnersTable(props) {
       );
     }
     if (owners.length > 0) {
+      props.setLoading(true);
       addShape(owners);
     }
 
   };
 
   const addShape = (selectedRows) => {
+    const uAcres = props.customLayer?.shapeJson?.properties?.uAcres || 1
     for (let i = 0; i < selectedRows.length; i++) {
       const ownerToAdd = {
         customLayer: props.customLayer._id,
         entity: "",
-        nra: null,
+        royalty_interest: selectedRows[i].interestType === 'ROYALTY INTEREST' ? selectedRows[i].ownershipPercentage : "",
+        orri: selectedRows[i].interestType === 'OVERRIDING ROYALTY' ? selectedRows[i].ownershipPercentage : "",
+        nra: uAcres * selectedRows[i].ownershipPercentage,
         ownerEntity: selectedRows[i].isContact,
         type: "",
         isSuggested: true
@@ -336,6 +350,7 @@ function SuggestedShapeTaxOwnersTable(props) {
         refetchQueries: ["getESShapeOwners", "getESShapeOwnersFilter"],
         awaitRefetchQueries: true,
       }).then(() => {
+        props.setLoading(false);
         props.setSelectedTab(0)
       });
     }
@@ -352,7 +367,6 @@ function SuggestedShapeTaxOwnersTable(props) {
         header={props.header}
         columns={columns}
         rows={props.rows}
-        total={total}
         loading={props.loading}
         addAble={addAble}
         targetLabel={props.targetLabel}

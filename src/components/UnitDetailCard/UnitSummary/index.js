@@ -294,23 +294,21 @@ export default function UnitSummary(props) {
                             </Grid>
                         </Grid>
                         <Grid item>
-                            <Grid>
-                                <div className={classes.search}>
-                                    <div className={classes.searchIcon}>
-                                        <SearchIcon />
-                                    </div>
-                                    <InputBase
-                                        placeholder="Search…"
-                                        value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                        classes={{
-                                            root: classes.inputRoot,
-                                            input: classes.inputInput,
-                                        }}
-                                        inputProps={{ 'aria-label': 'search' }}
-                                    />
+                            <div className={classes.search}>
+                                <div className={classes.searchIcon}>
+                                    <SearchIcon />
                                 </div>
-                            </Grid>
+                                <InputBase
+                                    placeholder="Search…"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    classes={{
+                                        root: classes.inputRoot,
+                                        input: classes.inputInput,
+                                    }}
+                                    inputProps={{ 'aria-label': 'search' }}
+                                />
+                            </div>
                         </Grid>
                     </Grid>
                 </Grid>
