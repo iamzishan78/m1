@@ -272,7 +272,7 @@ export default function UnitSummary(props) {
         <Grid item md={7} sm={12} className={classes.paddingLeft}>
             <Grid container spacing={1} direction="column" >
                 <Grid item>
-                    <Grid container direction="row" justifyContent="space-between" alignItems="center">
+                    <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: "space-between"}}>
                         <Grid item>
                             <Grid container spacing={2} className={classes.summaryDetailCard}>
                                 <Grid item>
