@@ -28,6 +28,9 @@ import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
+    "& .MuiPaper-elevation1": {
+      boxShadow: "none !important",
+    }
   },
   details: {
     display: "block",
@@ -140,7 +143,7 @@ function GridView({
   return (
     <LeftDialog open width="325px" handleClickDialogClose={handleClose}>
       {!loading ? (
-        <>
+        <div className={classes.container}>
           <TextField
             value={search}
             onChange={(e) => {
@@ -260,7 +263,7 @@ function GridView({
               )}
             </AccordionDetails>
           </Accordion>
-        </>
+        </div>
       ) : (
         <CircularProgress></CircularProgress>
       )}
@@ -333,11 +336,11 @@ const InputField = ({
           setViewName('')
         }
       }}
-      // onBlur={() => {
-      //   setShowSaveAsNew(false);
-      //   setViewName('')
-      //   setEditGridView(null)
-      // }}
+      onBlur={() => {
+        setShowSaveAsNew(false);
+        setViewName('')
+        setEditGridView(null)
+      }}
     />
   );
 };
@@ -413,14 +416,14 @@ const CustomView = ({
               variables: {
                 gridView: {
                   _id: view._id,
-                  isFavourite: true,
+                  isFavourite: view.isFavourite ? false : true,
                 },
               },
               refetchQueries: ["getGridViews"],
             });
           }}
         >
-          Set as favorite
+          {view.isFavourite ? 'Remove as favorite' : 'Set as favorite'}
         </MenuItem>
         <MenuItem
           style={{ width: "250px" }}
