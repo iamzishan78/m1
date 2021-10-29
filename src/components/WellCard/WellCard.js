@@ -203,7 +203,7 @@ function WellCard() {
         ...state,
         selectedWell: dataWellSummary.wellSummaryDetail[0],
       }));
-      console.log('SUMMARY DETAIL',dataWellSummary )
+      console.log('SUMMARY DETAIL', dataWellSummary)
     } else {
       setWellData(null);
     }
@@ -261,7 +261,7 @@ function WellCard() {
                     className={classes.text2}
                     variant="caption"
                   >
-                        {wellData?.WellStatus || "--"}
+                    {wellData?.WellStatus || "--"}
 
                   </Typography>
                 </div>
@@ -345,7 +345,7 @@ function WellCard() {
                     className={classes.text2}
                     variant="caption"
                   >
-                        {wellData?.WellBoreProfile || "--"}
+                    {wellData?.WellBoreProfile || "--"}
 
                   </Typography>
                 </div>
@@ -364,7 +364,7 @@ function WellCard() {
                       County
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                        {wellData?.County || "--"}
+                      {wellData?.County || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowGrey}>
@@ -382,10 +382,10 @@ function WellCard() {
                     <TableCell className={classes.cell2} align="right">
                       {/* {wellData?.WellType || "--"} */}
                       {wellData?.State === 'NM'
-                            ?
-                            wellData?.ReportedWellType.toUpperCase() || "--"
+                        ?
+                        wellData?.ReportedWellType.toUpperCase() || "--"
 
-                  : wellData?.WellType || "--"}
+                        : wellData?.WellType || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowGrey}>
@@ -456,11 +456,8 @@ function WellCard() {
               <div   >
                 {wellData?.State === 'TX'
                   ?
-                  <Link 
-                    href={"http://webapps2.rrc.texas.gov/EWA/leaseDetailAction.do?searchType=apiNo&selTab=1&apiNo="    + wellData?.ApiNumber.substring(2) + "&distCode=7C&leaseNo=20848&methodToCall=displayLeaseDetail&rrcActionMan=H4sIAAAAAAAAALWPT0vDQBDFP009LjObbRoPcwii51aLIsHDNhlSYdsNs4lV2A_vtFIQ_5zE0zzeY2Z-LyMA2YyAhBcibd2Oz3F_20rXwBOd_ANv_DAkazQ2I7_6ZPr4MivqCjS3NLM31w-1yuIoDxzCJgqvJpa3j2umi5o62vG4jd06XvkQ1JiT8DjJfh3v2Eu7Vasi-AbRpFNaS5_M4MXv7n2YWNkW5ErMFTmEhcuX9PhlFf-dP525SzqvLX3P8onzx1L4l1LNb6-OdQmzJYRcqHAEea6zVOMdFVf0QucBAAA"}                   
-                    onClick={() => {
-                      console.info("I'm a button.");
-                    }}
+                  <Link
+                    href={"http://webapps2.rrc.texas.gov/EWA/leaseDetailAction.do?searchType=apiNo&selTab=1&apiNo=" + wellData?.ApiNumber.substring(2) + "&distCode=7C&leaseNo=20848&methodToCall=displayLeaseDetail&rrcActionMan=H4sIAAAAAAAAALWPT0vDQBDFP009LjObbRoPcwii51aLIsHDNhlSYdsNs4lV2A_vtFIQ_5zE0zzeY2Z-LyMA2YyAhBcibd2Oz3F_20rXwBOd_ANv_DAkazQ2I7_6ZPr4MivqCjS3NLM31w-1yuIoDxzCJgqvJpa3j2umi5o62vG4jd06XvkQ1JiT8DjJfh3v2Eu7Vasi-AbRpFNaS5_M4MXv7n2YWNkW5ErMFTmEhcuX9PhlFf-dP525SzqvLX3P8onzx1L4l1LNb6-OdQmzJYRcqHAEea6zVOMdFVf0QucBAAA"}
                     variant="body2"
                     target="_blank"
 
@@ -475,16 +472,12 @@ function WellCard() {
                     </Typography>
                   </Link>
                   : ''}
-                  
-                  {wellData?.State === 'NM'
-                  ?
-                  <Link 
 
-                    href={"https://wwwapps.emnrd.state.nm.us/ocd/ocdpermitting/data/WellDetails.aspx?api="+ wellData?.ApiNumber.substring(0,2) +"-"+wellData?.ApiNumber.substring(2,5) +"-"+wellData?.ApiNumber.substring(5)}
-                    
-                    onClick={() => {
-                      console.info("https://wwwapps.emnrd.state.nm.us/ocd/ocdpermitting/data/WellDetails.aspx?api="+ wellData?.ApiNumber.substring(0,2) +"-"+wellData?.ApiNumber.substring(2,5) +"-"+wellData?.ApiNumber.substring(5));
-                    }}
+                {wellData?.State === 'NM'
+                  ?
+                  <Link
+
+                    href={"https://wwwapps.emnrd.state.nm.us/ocd/ocdpermitting/data/WellDetails.aspx?api=" + wellData?.ApiNumber.substring(0, 2) + "-" + wellData?.ApiNumber.substring(2, 5) + "-" + wellData?.ApiNumber.substring(5)}
                     variant="body2"
                     target="_blank"
 
@@ -499,12 +492,12 @@ function WellCard() {
                     </Typography>
                   </Link>
                   : ''}
-                  {wellData?.State === 'LA'
+                {wellData?.State === 'LA'
                   ?
-                  <Link 
+                  <Link
 
-                    href={"https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn="+wellData?.StateWellId}
-                    
+                    href={"https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn=" + wellData?.StateWellId}
+
                     onClick={() => {
                     }}
                     variant="body2"
@@ -521,12 +514,12 @@ function WellCard() {
                     </Typography>
                   </Link>
                   : ''}
-                  {wellData?.State === 'OK'
+                {wellData?.State === 'OK'
                   ?
-                  <Link 
+                  <Link
 
                     href={"https://occpermit.com/WellBrowse/Home.aspx"}
-                    
+
                     onClick={() => {
                     }}
                     variant="body2"
@@ -543,12 +536,12 @@ function WellCard() {
                     </Typography>
                   </Link>
                   : ''}
-                  {wellData?.State === 'CO'
+                {wellData?.State === 'CO'
                   ?
-                  <Link 
+                  <Link
 
-                    href={"https://cogcc.state.co.us/cogisdb/Facility/FacilityDetail?api="+wellData?.ApiNumber.substring(2)}
-                    
+                    href={"https://cogcc.state.co.us/cogisdb/Facility/FacilityDetail?api=" + wellData?.ApiNumber.substring(2)}
+
                     onClick={() => {
                     }}
                     variant="body2"
@@ -568,9 +561,9 @@ function WellCard() {
 
                 {wellData?.State === 'WY'
                   ?
-                  <Link 
+                  <Link
 
-                    href={"https://pipeline.wyo.gov/Wellapino.cfm?napino="+ wellData?.ApiNumber.substring(3)+"&s1=Y"}
+                    href={"https://pipeline.wyo.gov/Wellapino.cfm?napino=" + wellData?.ApiNumber.substring(3) + "&s1=Y"}
 
                     onClick={() => {
                     }}
@@ -592,9 +585,9 @@ function WellCard() {
 
                 {wellData?.State === 'UT'
                   ?
-                  <Link 
+                  <Link
 
-                    href={"https://dataexplorer.ogm.utah.gov/DataMining.html?EntityType=Well&EntityKeyName=API&EntityKeyValue="+wellData?.ApiNumber+"&DETAILSONLY=True"}
+                    href={"https://dataexplorer.ogm.utah.gov/DataMining.html?EntityType=Well&EntityKeyName=API&EntityKeyValue=" + wellData?.ApiNumber + "&DETAILSONLY=True"}
 
                     onClick={() => {
                     }}
@@ -616,9 +609,9 @@ function WellCard() {
 
                 {wellData?.State === 'KS'
                   ?
-                  <Link 
+                  <Link
 
-                    href={"https://chasm.kgs.ku.edu/ords/qualified.well_page.DisplayWell?f_kid="+wellData?.StateWellId}
+                    href={"https://chasm.kgs.ku.edu/ords/qualified.well_page.DisplayWell?f_kid=" + wellData?.StateWellId}
 
                     onClick={() => {
                     }}
@@ -682,7 +675,7 @@ function WellCard() {
                   className={classes.text2}
                   variant="caption"
                 >
-                {wellData?.WellStatus || "--"}
+                  {wellData?.WellStatus || "--"}
                 </Typography>
               </div>
 
@@ -705,7 +698,7 @@ function WellCard() {
                   className={classes.text2}
                   variant="caption"
                 >
-                {wellData?.WellBoreProfile || "--"}
+                  {wellData?.WellBoreProfile || "--"}
                 </Typography>
               </div>
             </CardActions>
@@ -717,7 +710,7 @@ function WellCard() {
                       Permit #
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                    {wellData?.PermitNumber || "--"}
+                      {wellData?.PermitNumber || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowWhite}>
@@ -725,7 +718,7 @@ function WellCard() {
                       Operator
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                    {wellData?.CurrentOperator || "--"}
+                      {wellData?.CurrentOperator || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowGrey}>
@@ -733,7 +726,7 @@ function WellCard() {
                       Well Type
                     </TableCell>
                     <TableCell className={classes.cell2} align="right">
-                    {wellData?.WellType || "--"}
+                      {wellData?.WellType || "--"}
                     </TableCell>
                   </TableRow>
                   <TableRow className={classes.rowWhite}>
@@ -766,11 +759,8 @@ function WellCard() {
               <div   >
                 {wellData?.State === 'TX'
                   ?
-                  <Link 
+                  <Link
                     href={"http://webapps2.rrc.texas.gov/EWA/leaseDetailAction.do?searchType=apiNo&selTab=4096&apiNo=" + wellData?.ApiNumber.substring(2) + "&methodToCall=displayLeaseDetail&rrcActionMan=H4sIAAAAAAAAALWPS2vDQAyEf016XKRdJ3EOOpjSnPsILcX0sLGFE9hkjdZOWtgfXyUlUPo4lZ40zCDpm4wAZDMCEl6JNFUzbOP-vpG2hhc6-0de-75P1mhsBn71yXTxMHFVCZpbmtjlzVOl0p3kkUNYR-G7keXt45ppo6YF7XjYxHYVr30IakxJeBhlv4oP7KXZqFUSfIOo0zmtpEum9-J3jz6MrGxzcoC5JFe4cpEX9PxlFf-dP124Z3RZu_UdyyfOH0vhX0rVv7061SXMlhCyU1EQ5KnOmRrvJXOTh-cBAAA"}
-                    onClick={() => {
-                      console.info("I'm a button.");
-                    }}
                     variant="body2"
                     target="_blank"
 
@@ -785,10 +775,10 @@ function WellCard() {
                     </Typography>
                   </Link>
                   : ''}
-                  {wellData?.State === 'LA'
+                {wellData?.State === 'LA'
                   ?
-                  <Link 
-                  href={"https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn="+wellData?.StateWellId}
+                  <Link
+                    href={"https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn=" + wellData?.StateWellId}
                     onClick={() => {
                     }}
                     variant="body2"
