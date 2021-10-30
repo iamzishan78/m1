@@ -16,7 +16,6 @@ const ButtonDropDown = ({ options, children, onClick }) => {
 
   const handleClick = (event) => {
     options[selectedIndex].action(event);
-    console.info(`You clicked ${options[selectedIndex]}`);
     if (onClick) {
       onClick();
     }
