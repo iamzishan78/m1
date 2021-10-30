@@ -4,11 +4,11 @@ import {
   Container,
   Breadcrumbs,
   Typography,
-  IconButton
+  IconButton,
 } from "@material-ui/core";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import get from 'lodash/get';
+import get from "lodash/get";
 import { Menu, MenuItem } from "@material-ui/core";
 
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
@@ -24,6 +24,7 @@ import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import { GET_ES_CONTACTS_FILTER } from "graphQL/useQueryESContactsFilter";
 import { REMOVE_CONTACTS } from "graphQL/useMutationRemoveContact";
 import { GET_ES_CONTACTS } from "graphQL/useQueryESContacts";
+import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
 import {
   deepEqualObjects,
@@ -57,10 +58,12 @@ function ContactsTable(props) {
   // function states
   const selectedFilters = useRef([]);
   const [filters, setFilters] = useState([]);
-  const [columns, Columns] = useState([]);
+  const [columns, Columns] = useState(TableHeader);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
-  const [selectedGridView, setSelectedGridView ] = useState({ name: 'All Contacts' });
+  const [selectedGridView, setSelectedGridView] = useState({
+    name: "All Contacts",
+  });
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
@@ -70,7 +73,11 @@ function ContactsTable(props) {
     GET_ES_CONTACTS,
     { fetchPolicy: "no-cache" }
   );
-  const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
+  const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(
+    GET_CHECK_PURCHASE_DATA
+  );
+  const [updateGridView, { data: updatedGridView }] =
+    useMutation(UPDATE_GRID_VIEW);
   const [removeContact] = useMutation(REMOVE_CONTACTS);
 
   const tableData = ContactsData?.getESContacts;
@@ -92,33 +99,59 @@ function ContactsTable(props) {
           keep_alive: "1micros",
         },
         search: props.contactSearchQuery ? `${props.contactSearchQuery}` : "",
-        filters: selectedGridView?.filters? selectedGridView?.filters : [],
+        filters: selectedGridView?.filters ? selectedGridView?.filters : [],
       },
     });
   }, [getESContacts, props.parent, props.contactSearchQuery, selectedGridView]);
 
   const getContactsAddress = (contact) => {
     let address = "https://www.google.com/maps/search/";
-    if (contact.address1) address = `${address}${contact.address1.replace(/ /g, "+")}`;
-    if (contact.city) address = `${address},+${contact.city.replace(/ /g, "+")}`;
+    if (contact.address1)
+      address = `${address}${contact.address1.replace(/ /g, "+")}`;
+    if (contact.city)
+      address = `${address},+${contact.city.replace(/ /g, "+")}`;
     if (contact.state) address = `${address},+${contact.state}`;
     if (contact.zip) address = `${address}+${contact.zip}`;
     return {
       ...contact,
       fullContactAddress: address,
     };
-  }
+  };
+
+  useEffect(() => {
+    if (tableData?.hits) {
+      const objectsIdsArray = tableData.hits.map((contact) => contact._id);
+      getCheckPurchaseData({
+        variables: {
+          contactIds: objectsIdsArray,
+        },
+      });
+    }
+  }, [tableData]);
+
+  useEffect(() => {
+    if(ContactPurchaseData?.getCheckPurchaseData){
+      const rows = JSON.parse(JSON.stringify(props.rows))
+      for(let i=0; i<ContactPurchaseData?.getCheckPurchaseData.length; i++){
+        const index = rows.findIndex(row => row._id === ContactPurchaseData.getCheckPurchaseData[i])
+        rows[index].isPurchased = true
+      }
+      props.setRows(rows);
+    }
+  }, [ContactPurchaseData]);
 
   useEffect(() => {
     if (tableData?.hits) {
       const hits = tableData.hits.map((hit) => {
         hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
-        hit.tags = hit.tags ? [[hit.tags.map(tag => tag.tag)], hit.tags.length] : [[],0]
-        hit.commentsCounter = hit.comments ? hit.comments.length : 0
+        hit.tags = hit.tags
+          ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+          : [[], 0];
+        hit.commentsCounter = hit.comments ? hit.comments.length : 0;
         return hit;
       });
       props.setRows(JSON.parse(JSON.stringify(hits)));
-      TableHeader.forEach((column, index) => {
+      columns.forEach((column, index) => {
         if (column?.options?.filter) {
           column.options = {
             ...column.options,
@@ -142,13 +175,13 @@ function ContactsTable(props) {
               },
             },
             onFilterChange: (columnChanged, filterList) => {
-              setFilters(filterList)
-            }
+              setFilters(filterList);
+            },
           };
         }
       });
 
-      setColumns(TableHeader);
+      setColumns(columns);
       props.setLoading(false);
     } else if (tableData?.length === 0) {
       props.setLoading(false);
@@ -156,23 +189,29 @@ function ContactsTable(props) {
   }, [ContactsData, tableData, props.dependencyUpdate]);
 
   useEffect(() => {
-    if(selectedGridView?.filters){
+    if (selectedGridView?.filters) {
       columns.forEach((column, index) => {
-        const value = get(selectedGridView?.filters?.find(filter => {
-          return JSON.stringify(filter.field) === JSON.stringify(column.esKey)
-        }), 'value', '')
-        let filterList =  []
-        if(value){
-          filterList = [value]
+        const value = get(
+          selectedGridView?.filters?.find((filter) => {
+            return (
+              JSON.stringify(filter.field) === JSON.stringify(column.esKey)
+            );
+          }),
+          "value",
+          ""
+        );
+        let filterList = [];
+        if (value) {
+          filterList = [value];
         }
         if (column?.options?.filter) {
           column.options.filterList = filterList;
         }
       });
-  
+
       setColumns(columns);
     }
-  },[selectedGridView])
+  }, [selectedGridView]);
 
   const count = tableData?.total || 0;
   const options = {
@@ -183,6 +222,16 @@ function ContactsTable(props) {
     filter: true,
     searchText: props.contactSearchQuery,
   };
+
+  const viewColumnsChange = (tableColumns) => {
+    const displayColumns = tableColumns.filter(col => col.display === 'true')
+    for(let i=0; i< displayColumns.length; i++) {
+      const index = columns.findIndex(col => col.name === displayColumns[i].name)
+      columns[index].options.display = true
+    }
+    console.log('columns', columns)
+    setColumns(columns);
+}
   ////////////-----Add your code section here-----///////////////////////
   const onTableChange = (action, tableState, rows, meta) => {
     const tableActions = props.initializeTableActions(
@@ -193,7 +242,7 @@ function ContactsTable(props) {
       getESContacts,
       selectedGridView
     );
-    selectedFilters.current = tableActions?.pageESVariables?.variables?.filters
+    selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
     switch (action) {
       case "search":
       case "sort":
@@ -204,6 +253,9 @@ function ContactsTable(props) {
         break;
       case "changePage":
         tableActions.changeESPage();
+        break;
+      case "viewColumnsChange":
+        viewColumnsChange(tableState.columns);
         break;
       default:
     }
@@ -249,7 +301,7 @@ function ContactsTable(props) {
     setShowViewModal,
     selectedGridView,
     updateGridView,
-    selectedFilters: selectedFilters.current
+    selectedFilters: selectedFilters.current,
   };
 
   return (
@@ -260,12 +312,12 @@ function ContactsTable(props) {
         id={props.id ? props.id : props.parent}
       >
         {showViewModal && (
-          <GridView 
+          <GridView
             handleClose={() => setShowViewModal(false)}
-            setSelectedGridView={setSelectedGridView} 
-            selectedGridView={selectedGridView} 
-            setShowViewModal={setShowViewModal} 
-            setShowSaveAsNew={setShowSaveAsNew} 
+            setSelectedGridView={setSelectedGridView}
+            selectedGridView={selectedGridView}
+            setShowViewModal={setShowViewModal}
+            setShowSaveAsNew={setShowSaveAsNew}
             showSaveAsNew={showSaveAsNew}
             selectedFilters={selectedFilters.current}
           />
