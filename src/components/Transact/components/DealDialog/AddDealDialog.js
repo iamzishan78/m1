@@ -34,6 +34,7 @@ import { UPDATEDEAL } from "graphQL/useMutationUpdateDeal";
 import { UPSERTDEALDESCRIPTOR } from "graphQL/useMutationUpsertDealDescriptor";
 import { REMOVEDEALDESCRIPTOR } from "graphQL/useMutationRemoveDealDescriptor";
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
+import { UPDATESTAGEDEALDESCRIPTORS } from "graphQL/useMutationUpdateStageDealDescriptors";
 import { setFlowState, showErrorMessage, showSuccessMessage } from "actions";
 
 import { GETPIPELINES } from "graphQL/useQueryPipelines";
@@ -345,6 +346,7 @@ function AddDealDialog(props) {
   const [upsertDealDescriptor, { loading: upsertDealDescriptorLoading }] = useMutation(UPSERTDEALDESCRIPTOR);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
   const [updateStageDealDescriptor, { data: updatedStageDealDescriptor }] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
+  const [updateStageDealDescriptors, { data: updatedStageDealDescriptors }] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
 
   const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
@@ -846,15 +848,32 @@ function AddDealDialog(props) {
           //// updating the stageDealDescriptor
           allPromises.push(
             new Promise((resolve, reject) => {
+              const movedCardDescriptor = {
+                // _id: stateApp.activeDeal.descriptorId,
+                descriptorObject: stateApp.activeDeal._id,
+                descriptorType: "Deal",
+                relatedObject: stageId,
+                relatedObjectType: "Stage",
+                // position: dealPosition ? dealPosition : 0,
+                pipeline: pipelineId,
+                pipelineType: "Pipeline",
+                isCurrent: true,
+                user: stateApp.user.mongoId,
+              }
+
+              updateStageDealDescriptors({
+                variables: {
+                  stageDealDescriptors: [{
+                    _id: stateApp.activeDeal.descriptorId,
+                    isCurrent: false,
+                  }],
+                },
+                refetchQueries: ["getPipeline"],
+              })
+
               updateStageDealDescriptor({
                 variables: {
-                  descriptor: {
-                    descriptorObject: stateApp.activeDeal._id,
-                    relatedObject: stageId,
-                    position: dealPosition ? dealPosition : 0,
-                    pipeline: stateApp.activeDeal?.pipeline !== pipelineId ? pipelineId : null,
-                    pipelineType: "Pipeline",
-                  },
+                  descriptor: movedCardDescriptor
                 },
                 refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
