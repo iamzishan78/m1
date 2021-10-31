@@ -210,6 +210,12 @@ function ContactsTable(props) {
       });
 
       setColumns(columns);
+    }else{
+      columns.forEach((column, index) => {
+        if(column.options){
+          column.options.filterList = [];
+        }
+      })
     }
   }, [selectedGridView]);
 
@@ -224,12 +230,14 @@ function ContactsTable(props) {
   };
 
   const viewColumnsChange = (tableColumns) => {
-    const displayColumns = tableColumns.filter(col => col.display === 'true')
-    for(let i=0; i< displayColumns.length; i++) {
-      const index = columns.findIndex(col => col.name === displayColumns[i].name)
-      columns[index].options.display = true
+    for(let i=0; i< tableColumns.length; i++) {
+      if(tableColumns[i].display === 'true') {
+        columns[i].options.display = true
+      }else{
+        columns[i].options.display = false
+      } 
     }
-    console.log('columns', columns)
+    // console.log('columns', columns)
     setColumns(columns);
 }
   ////////////-----Add your code section here-----///////////////////////
