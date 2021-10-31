@@ -5,8 +5,7 @@ import moment from "moment";
 import { NavigationContext } from "../NavigationContext";
 import ClearIcon from "@material-ui/icons/Clear";
 import { IconButton } from "@material-ui/core";
-import {useForm,Controller} from 'react-hook-form';
-
+import { useForm, Controller } from "react-hook-form";
 
 const useStyles = makeStyles((theme) => ({
   datesRow: {
@@ -29,7 +28,6 @@ export default function FilterDatePickerPermit(props) {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const { control, watch, setValue, getValues } = useForm();
 
-
   useEffect(() => {
     let filter = null;
 
@@ -42,10 +40,7 @@ export default function FilterDatePickerPermit(props) {
         ["get", "permitApprovedDate"],
         stateNav.permitDateFrom
           ? moment.parseZone(stateNav.permitDateFrom).utc(true).valueOf()
-          : moment
-              .parseZone(new Date("1900-01-01T00:00:00"))
-              .utc(true)
-              .valueOf(),
+          : moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(),
       ]);
 
       //// permitDateTo
@@ -58,9 +53,7 @@ export default function FilterDatePickerPermit(props) {
       ]);
     }
 
-    if (
-      JSON.stringify(stateNav.filterPermitDateRange) !== JSON.stringify(filter)
-    )
+    if (JSON.stringify(stateNav.filterPermitDateRange) !== JSON.stringify(filter))
       setStateNav((stateNav) => ({
         ...stateNav,
         filterPermitDateRange: filter,
@@ -84,97 +77,97 @@ export default function FilterDatePickerPermit(props) {
   return (
     <div className={classes.root}>
       <div className={classes.datesRow}>
-
         <Controller
-            control={control}
-            name="permitDateFrom"          
-            defaultValue={stateNav.permitDateFrom}
-            render ={({onChange, onClick, value}
-            ) => (
-              <KeyboardDatePicker
-                label={props.labelDates + " " + "From"}
-                className={`${classes.datePicker} ${
-                  stateNav.permitDateFrom ? classes.blue : ""
-                }`}
-                maxDate={moment().subtract(1, "day")}
-                variant="inline"
-                value={watch('permitDateFrom')}
-                onChange={(date) => {
-                  setValue('permitDateFrom',date);
-                  if(date && date.isValid()){handleStartDate(date)}
-                  if(!date || !date.isValid()){handleStartDate(null)}
-                  return {value: date}
+          control={control}
+          name="permitDateFrom"
+          defaultValue={stateNav.permitDateFrom}
+          render={({ onChange, onClick, value }) => (
+            <KeyboardDatePicker
+              label={props.labelDates + " " + "From"}
+              className={`${classes.datePicker} ${stateNav.permitDateFrom ? classes.blue : ""}`}
+              maxDate={moment().subtract(1, "day")}
+              variant="inline"
+              value={watch("permitDateFrom")}
+              onChange={(date) => {
+                setValue("permitDateFrom", date);
+                if (date && date.isValid()) {
+                  handleStartDate(date);
+                }
+                if (!date || !date.isValid()) {
+                  handleStartDate(null);
+                }
+                return { value: date };
               }}
-                disableToolbar
-                KeyboardButtonProps={{ "aria-label": "change date" }}
-                autoOk="true"
-                format="MM/DD/YYYY"
-                PopoverProps={{ disablePortal: true }}
-                fullWidth={true}
-                InputProps={{
-                  endAdornment: (
-                    <IconButton onClick={() => {
-                      setValue('permitDateFrom',null);
+              disableToolbar
+              KeyboardButtonProps={{ "aria-label": "change date" }}
+              autoOk="true"
+              format="MM/DD/YYYY"
+              PopoverProps={{ disablePortal: true }}
+              fullWidth={true}
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    onClick={() => {
+                      setValue("permitDateFrom", null);
                       handleStartDate(null);
-                    }}>
-                      <ClearIcon style={{ height: "22px", width: "22px" }} />
-                    </IconButton>
-                  ),
-                }}
-                InputAdornmentProps={{
-                  position: "start",
-                }}
-              />
-              )}
-          />
-
-
-        <Controller
-            control={control}
-            name="permitDateTo"          
-            defaultValue={stateNav.firstProdDateTo}
-            render ={({onChange, onClick, value}
-            ) => (
-
-          <KeyboardDatePicker
-            label={props.labelDates + " " + "To"}
-            className={`${classes.datePicker} ${
-              stateNav.permitDateTo ? classes.blue : ""
-            }`}
-            variant="inline"
-            maxDate={moment()}
-            value={watch('permitDateTo')}
-            onChange={(date) => {
-              setValue('permitDateTo',date);
-              if(date && date.isValid()){handleEndDate(date)}
-              if(!date || !date.isValid()){handleEndDate(null)}
-              return {value: date}
-            }}
-            disableToolbar
-            KeyboardButtonProps={{ "aria-label": "change date" }}
-            autoOk="true"
-            format="MM/DD/YYYY"
-            PopoverProps={{ disablePortal: true }}
-            fullWidth={true}
-            InputProps={{
-              endAdornment: (
-                <IconButton onClick={() => {
-                        setValue('permitDateTo',null);
-                        handleEndDate(null);
-                }}>
-                  <ClearIcon style={{ height: "22px", width: "22px" }} />
-                </IconButton>
-              ),
-            }}
-            InputAdornmentProps={{
-              position: "start",
-            }}
-          />
-
-        )}
+                    }}
+                  >
+                    <ClearIcon style={{ height: "22px", width: "22px" }} />
+                  </IconButton>
+                ),
+              }}
+              InputAdornmentProps={{
+                position: "start",
+              }}
+            />
+          )}
         />
 
-
+        <Controller
+          control={control}
+          name="permitDateTo"
+          defaultValue={stateNav.permitDateTo}
+          render={({ onChange, onClick, value }) => (
+            <KeyboardDatePicker
+              label={props.labelDates + " " + "To"}
+              className={`${classes.datePicker} ${stateNav.permitDateTo ? classes.blue : ""}`}
+              variant="inline"
+              maxDate={moment()}
+              value={watch("permitDateTo")}
+              onChange={(date) => {
+                setValue("permitDateTo", date);
+                if (date && date.isValid()) {
+                  handleEndDate(date);
+                }
+                if (!date || !date.isValid()) {
+                  handleEndDate(null);
+                }
+                return { value: date };
+              }}
+              disableToolbar
+              KeyboardButtonProps={{ "aria-label": "change date" }}
+              autoOk="true"
+              format="MM/DD/YYYY"
+              PopoverProps={{ disablePortal: true }}
+              fullWidth={true}
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    onClick={() => {
+                      setValue("permitDateTo", null);
+                      handleEndDate(null);
+                    }}
+                  >
+                    <ClearIcon style={{ height: "22px", width: "22px" }} />
+                  </IconButton>
+                ),
+              }}
+              InputAdornmentProps={{
+                position: "start",
+              }}
+            />
+          )}
+        />
       </div>
     </div>
   );
