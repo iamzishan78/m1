@@ -60,23 +60,16 @@ const useStyles = makeStyles((theme) => ({
   disabledLayerTitle: {
     "& span": { color: "rgb(127, 149, 199) !important" },
   },
-  addLayerButton: {
-    padding: "20px",
-    marginBottom: "10px",
-    border: "2px dashed #999",
-    backgroundColor: "#f0f9ff",
-    width: "100%",
-    textTransform: "initial",
-  },
   dropzoneClass: {
-    "&:hover": { backgroundColor: "aliceblue" },
     "& .MuiDropzoneArea-text": {
-      margin: "10px",
+      marginTop: 0,
     },
-    "& .MuiDropzoneArea-icon": { display: "none" },
+    "& .MuiDropzoneArea-icon": {
+      display: "none",
+    },
     minHeight: "0",
-    marginBottom: "15px",
-    backgroundColor: "#e8edefe8",
+    marginBottom: "0px",
+    border: "none",
   },
   url: {
     textDecoration: "underline",
@@ -366,7 +359,7 @@ export default function AddLayer(props) {
     }));
     let originalData;
     let fileContent = await handleFileAsync(fileObj);
-    if (fileContent.originalData) {
+    if (fileContent?.originalData) {
       originalData = fileContent.originalData;
       fileContent = fileContent.data;
     }
@@ -404,29 +397,32 @@ export default function AddLayer(props) {
   }, [currentLayers]);
 
   return (
-    <>
-      <div>
-        <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>
-          <Grid item>
-            <Typography variant="h5">Layer Manager</Typography>
-          </Grid>
-          <Grid item>
-            <IconButton size="small" onClick={windowClose}>
-              <CloseButton />
-            </IconButton>
-          </Grid>
-        </Grid>
-        <Divider />
-        <div className={classes.contentRoot}>
-          <DropzoneAreaBase></DropzoneAreaBase>
-          <div color="dark gray">Select one or more of the available layers below to add them to your current map view.</div>
+    <DropzoneAreaBase
+      onAdd={handleFileInput}
+      onDelete={(fileObj) => console.log("Removed File:", fileObj)}
+      onAlert={(message, variant) => {}}
+      filesLimit={1}
+      maxFileSize={10000000}
+      dropzoneClass={classes.dropzoneClass}
+      // acceptedFiles={[".geojson", ".zip", ".shp",]}
+      dropzoneText={
+        <>
+          <div>
+            <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>
+              <Grid item>
+                <Typography variant="h5">Layer Manager</Typography>
+              </Grid>
+              <Grid item>
+                <IconButton size="small" onClick={windowClose}>
+                  <CloseButton />
+                </IconButton>
+              </Grid>
+            </Grid>
+            <Divider />
+            <div className={classes.contentRoot}>
+              {/* <DropzoneAreaBase dropzoneText={<span></span>}></DropzoneAreaBase> */}
+              <div color="dark gray">Select one or more of the available layers below to add them to your current map view.</div>
 
-          <DropzoneAreaBase
-            onAdd={handleFileInput}
-            onDelete={(fileObj) => console.log("Removed File:", fileObj)}
-            onAlert={(message, variant) => {}}
-            filesLimit={1}
-            dropzoneText={
               <span className={classes.uploaderText}>
                 To add a new user-defined layer, drag and drop a GeoJSON or Shapefile or click to select file.
                 {/* //hiding for now as this functionality does not work currently
@@ -443,168 +439,166 @@ export default function AddLayer(props) {
                 </span>{" "}
                 to enter an URL. */}
               </span>
-            }
-            // acceptedFiles={[".geojson", ".zip", ".shp",]}
-            maxFileSize={10000000}
-            dropzoneClass={classes.dropzoneClass}
-          />
-          <StyledListItem2 button onClick={handleClickM1List}>
-            <ListItemText primary="M1neral Layers" />
-            {openM1 ? <ExpandLess /> : <ExpandMore />}
-          </StyledListItem2>
-          <Collapse in={openM1} timeout="auto" unmountOnExit>
-            <List className={classes.list}>
-              {M1Layers.map((layer, index) => {
-                const labelId = `m1layer-list-label-${index}`;
-                return (
-                  <StyledListItem key={index} ContainerComponent="li">
-                    <Checkbox
-                      checked={layer.layerSettings.showable}
-                      color="dark gray"
-                      onChange={() => changeShowAble(layer)}
-                      inputProps={{ "aria-label": "primary checkbox" }}
-                    />
-                    <ListItemText id={labelId} primary={truncate(layer.layerName, 30)} />
-                  </StyledListItem>
-                );
-              })}
-            </List>
-          </Collapse>
-          <StyledListItem2 button onClick={handleClickUDList}>
-            <ListItemText primary="User Defined Layers" />
-            {openUD ? <ExpandLess /> : <ExpandMore />}
-          </StyledListItem2>
-          <Collapse in={openUD} timeout="auto" unmountOnExit>
-            <List className={classes.list}>
-              {UdLayers.map((layer, index) => {
-                const labelId = `udlayer-list-label-${index}`;
-                if (layer.type === "group") {
-                  return (
-                    <Accordion>
-                      <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel1a-content"
-                        id="panel1a-header"
-                        style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
-                      >
+
+              <StyledListItem2 button onClick={handleClickM1List}>
+                <ListItemText primary="M1neral Layers" />
+                {openM1 ? <ExpandLess /> : <ExpandMore />}
+              </StyledListItem2>
+              <Collapse in={openM1} timeout="auto" unmountOnExit>
+                <List className={classes.list}>
+                  {M1Layers.map((layer, index) => {
+                    const labelId = `m1layer-list-label-${index}`;
+                    return (
+                      <StyledListItem key={index} ContainerComponent="li">
                         <Checkbox
-                          checked={!!layer.layers.find((l) => l.layerSettings.showable)}
+                          checked={layer.layerSettings.showable}
                           color="dark gray"
-                          onClick={(event) => event.stopPropagation()}
-                          onChange={(e) => changeShowAble(layer)}
+                          onChange={() => changeShowAble(layer)}
                           inputProps={{ "aria-label": "primary checkbox" }}
                         />
-                        <EditableTextField onChange={changeLayerName} item={layer} name={layer.name} />
-                        <ListItemSecondaryAction style={{ marginRight: "30px" }} onClick={(e) => e.stopPropagation()}>
-                          <Tooltip title="Delete" placement="top">
-                            <IconButton
-                              edge="end"
-                              size="small"
-                              onClick={() => {
-                                setOpenDeleteDialog(layer);
-                              }}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          </Tooltip>
-                        </ListItemSecondaryAction>
-                      </AccordionSummary>
-                      <Box paddingLeft={2} paddingRight={2}>
-                        <List className={classes.list}>
-                          {layer.layers.map((groupLayer, index) => (
-                            <StyledListItem key={index} ContainerComponent="li">
-                              <Checkbox
-                                checked={groupLayer.layerSettings.showable}
-                                color="dark gray"
-                                onChange={() => changeShowAble(groupLayer)}
-                                inputProps={{ "aria-label": "primary checkbox" }}
-                              />
-                              <EditableTextField onChange={changeLayerName} item={groupLayer} name={groupLayer.layerName} />
-                              <ListItemSecondaryAction>
-                                <Tooltip title="Delete" placement="top">
-                                  <IconButton
-                                    edge="end"
-                                    size="small"
-                                    onClick={() => {
-                                      setOpenDeleteDialog(groupLayer);
-                                    }}
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                </Tooltip>
-                              </ListItemSecondaryAction>
-                            </StyledListItem>
-                          ))}
-                        </List>
-                      </Box>
-                    </Accordion>
-                  );
-                }
-                //// remove the (layer.identifier!="Tracked Owners") if statement to show the tracked owers layer
-                if (layer.identifier !== "Tracked Owners") {
-                  return (
-                    <StyledListItem key={index} ContainerComponent="li">
-                      <Checkbox
-                        checked={layer.layerSettings.showable}
-                        color="dark gray"
-                        onChange={() => changeShowAble(layer)}
-                        inputProps={{ "aria-label": "primary checkbox" }}
-                      />
-                      {layer.layerType === "file layer" ? (
-                        <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} />
-                      ) : (
-                        <ListItemText id={labelId} primary={layer.layerName} />
-                      )}
+                        <ListItemText id={labelId} primary={truncate(layer.layerName, 30)} />
+                      </StyledListItem>
+                    );
+                  })}
+                </List>
+              </Collapse>
+              <StyledListItem2 button onClick={handleClickUDList}>
+                <ListItemText primary="User Defined Layers" />
+                {openUD ? <ExpandLess /> : <ExpandMore />}
+              </StyledListItem2>
+              <Collapse in={openUD} timeout="auto" unmountOnExit>
+                <List className={classes.list}>
+                  {UdLayers.map((layer, index) => {
+                    const labelId = `udlayer-list-label-${index}`;
+                    if (layer.type === "group") {
+                      return (
+                        <Accordion>
+                          <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-controls="panel1a-content"
+                            id="panel1a-header"
+                            style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
+                          >
+                            <Checkbox
+                              checked={!!layer.layers.find((l) => l.layerSettings.showable)}
+                              color="dark gray"
+                              onClick={(event) => event.stopPropagation()}
+                              onChange={(e) => changeShowAble(layer)}
+                              inputProps={{ "aria-label": "primary checkbox" }}
+                            />
+                            <EditableTextField onChange={changeLayerName} item={layer} name={layer.name} />
+                            <ListItemSecondaryAction style={{ marginRight: "30px" }} onClick={(e) => e.stopPropagation()}>
+                              <Tooltip title="Delete" placement="top">
+                                <IconButton
+                                  edge="end"
+                                  size="small"
+                                  onClick={() => {
+                                    setOpenDeleteDialog(layer);
+                                  }}
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </ListItemSecondaryAction>
+                          </AccordionSummary>
+                          <Box paddingLeft={2} paddingRight={2}>
+                            <List className={classes.list}>
+                              {layer.layers.map((groupLayer, index) => (
+                                <StyledListItem key={index} ContainerComponent="li">
+                                  <Checkbox
+                                    checked={groupLayer.layerSettings.showable}
+                                    color="dark gray"
+                                    onChange={() => changeShowAble(groupLayer)}
+                                    inputProps={{ "aria-label": "primary checkbox" }}
+                                  />
+                                  <EditableTextField onChange={changeLayerName} item={groupLayer} name={groupLayer.layerName} />
+                                  <ListItemSecondaryAction>
+                                    <Tooltip title="Delete" placement="top">
+                                      <IconButton
+                                        edge="end"
+                                        size="small"
+                                        onClick={() => {
+                                          setOpenDeleteDialog(groupLayer);
+                                        }}
+                                      >
+                                        <DeleteIcon />
+                                      </IconButton>
+                                    </Tooltip>
+                                  </ListItemSecondaryAction>
+                                </StyledListItem>
+                              ))}
+                            </List>
+                          </Box>
+                        </Accordion>
+                      );
+                    }
+                    //// remove the (layer.identifier!="Tracked Owners") if statement to show the tracked owers layer
+                    if (layer.identifier !== "Tracked Owners") {
+                      return (
+                        <StyledListItem key={index} ContainerComponent="li">
+                          <Checkbox
+                            checked={layer.layerSettings.showable}
+                            color="dark gray"
+                            onChange={() => changeShowAble(layer)}
+                            inputProps={{ "aria-label": "primary checkbox" }}
+                          />
+                          {layer.layerType === "file layer" ? (
+                            <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} />
+                          ) : (
+                            <ListItemText id={labelId} primary={layer.layerName} />
+                          )}
 
-                      {layer.layerType === "file layer" && (
-                        <ListItemSecondaryAction>
-                          <Tooltip title="Delete" placement="top">
-                            <IconButton
-                              edge="end"
-                              size="small"
-                              onClick={() => {
-                                setOpenDeleteDialog(layer);
-                              }}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          </Tooltip>
-                        </ListItemSecondaryAction>
-                      )}
-                    </StyledListItem>
-                  );
-                }
-              })}
-            </List>
-          </Collapse>
-        </div>
-        <div className={classes.footer}>
-          <Button onClick={windowClose} color="primary">
-            Close
-          </Button>
-          <Button disabled={deepEqual(currentLayers, stateApp.layers)} onClick={handleApplyChange} autoFocus color="primary">
-            Apply
-          </Button>
-        </div>
-      </div>
-      {/* //// delete confirmation dialog */}
-      {openDeleteDialog && (
-        <Dialog
-          className={classes.dialog}
-          open={openDeleteDialog ? true : false}
-          onClose={() => {
-            setOpenDeleteDialog(false);
-          }}
-          fullWidth={true}
-          maxWidth={"sm"}
-        >
-          <DeleteConfirmationDialog
-            openDialog={openDeleteDialog ? true : false}
-            handleDialogClose={setOpenDeleteDialog}
-            layer={openDeleteDialog}
-          />
-        </Dialog>
-      )}
-    </>
+                          {layer.layerType === "file layer" && (
+                            <ListItemSecondaryAction>
+                              <Tooltip title="Delete" placement="top">
+                                <IconButton
+                                  edge="end"
+                                  size="small"
+                                  onClick={() => {
+                                    setOpenDeleteDialog(layer);
+                                  }}
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </ListItemSecondaryAction>
+                          )}
+                        </StyledListItem>
+                      );
+                    }
+                  })}
+                </List>
+              </Collapse>
+            </div>
+            <div className={classes.footer}>
+              <Button onClick={windowClose} color="primary">
+                Close
+              </Button>
+              <Button disabled={deepEqual(currentLayers, stateApp.layers)} onClick={handleApplyChange} autoFocus color="primary">
+                Apply
+              </Button>
+            </div>
+          </div>
+          {/* //// delete confirmation dialog */}
+          {openDeleteDialog && (
+            <Dialog
+              className={classes.dialog}
+              open={openDeleteDialog ? true : false}
+              onClose={() => {
+                setOpenDeleteDialog(false);
+              }}
+              fullWidth={true}
+              maxWidth={"sm"}
+            >
+              <DeleteConfirmationDialog
+                openDialog={openDeleteDialog ? true : false}
+                handleDialogClose={setOpenDeleteDialog}
+                layer={openDeleteDialog}
+              />
+            </Dialog>
+          )}
+        </>
+      }
+    />
   );
 }
