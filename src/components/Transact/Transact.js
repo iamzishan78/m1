@@ -511,6 +511,7 @@ export default function Transact() {
             pipelineType: "Pipeline",
             pipeline: selectedPipe._id,
             isCurrent: true,
+            user: cardDetails.metadata.user?._id,
           },
         },
         refetchQueries: ["dealSettings"],
