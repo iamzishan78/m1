@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -17,12 +17,9 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
 // contexts
 import { AppContext } from "../../../AppContext";
-import { NavigationContext } from "../NavigationContext";
 
 // queries
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { OWNERWELLSQUERY } from "../../../graphQL/useQueryOwnerWells ";
-import { WELLSQUERY } from "../../../graphQL/useQueryWells";
 import { OWNERSLATSLONS } from "../../../graphQL/useQueryOwnerLatsLonsArray";
 import { OPERATORSLATSLONS } from "../../../graphQL/useQueryOperatorLatsLonsArray";
 import { LEASELATSLONS } from "../../../graphQL/useQueryLeaseLatsLonsArray";
@@ -39,7 +36,7 @@ import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
 
 // custom components
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
-import { deepEqualObjects, deepEqual, setStateIfDeepEqual } from "../../Shared/functions";
+import { deepEqualObjects } from "../../Shared/functions";
 import WellIcon from "../../Shared/svgIcons/well";
 import LeaseGrayIcon from "../../Shared/svgIcons/lease-gray";
 import OperatorIcon from "../../Shared/svgIcons/operator";
@@ -51,12 +48,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Box from "@material-ui/core/Box";
 import { CircularProgress } from "@material-ui/core";
 import ClearIcon from "@material-ui/icons/Clear";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -180,12 +171,9 @@ const useStyles = makeStyles((theme) => ({
 
 function Search() {
   const dispatch = useDispatch();
-  const { mapGridCardActivated, mapGridCardActiveTap, searchInputValue, lastSearch, objToPopulateSearchLayer } = useSelector(
-    ({ MapGridCard }) => MapGridCard
-  );
+  const { mapGridCardActivated, mapGridCardActiveTap, searchInputValue, lastSearch } = useSelector(({ MapGridCard }) => MapGridCard);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [stateApp, setStateApp] = React.useContext(AppContext);
-  const [stateNav, setStateNav] = React.useContext(NavigationContext);
   const [value, setValue] = React.useState(null);
   const [searchOption, setSearchOption] = React.useState("wells");
   const [options, setOptions] = React.useState([]);
@@ -194,7 +182,7 @@ function Search() {
   const [maxMinOwnersScore, setMaxMinOwnersScore] = React.useState([0, 0]);
   const [maxMinOperatosScore, setMaxMinOperatosScore] = React.useState([0, 0]);
   const [maxMinLeasesScore, setMaxMinLeasesScore] = React.useState([0, 0]);
-  const [maxMinContactsScore, setMaxMinContactsScore] = React.useState([0, 0]);
+  const [maxMinContactsScore] = React.useState([0, 0]);
   const [maxMinMapboxSearchScore, setMaxMinMapboxSearchScore] = React.useState([0, 0]);
   const [searchHistoryList, setSearchHistoryList] = React.useState([]);
 
