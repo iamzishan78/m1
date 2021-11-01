@@ -239,7 +239,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   const calculateNRA = (interest1, interest2, unitAcres = uAcres) => {
     if (!interest1 && !interest2) return null;
-    let nra = parseFloat(unitAcres || 1) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0));
+    let nra = parseFloat(unitAcres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0));
     nra = addTrailingZeros(nra.toFixed(8));
     return nra;
   };

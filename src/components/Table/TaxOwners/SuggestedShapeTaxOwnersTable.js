@@ -20,6 +20,8 @@ import {
   setStateIfDeepEqual,
 } from "components/Shared/functions";
 
+import { addTrailingZeros } from "components/Shared/functions";
+
 // Header Schemas
 import TableHeader from "components/Table/constants/suggested-owners-header-schema";
 import { handleTagColumn } from "../helpers";
@@ -326,14 +328,17 @@ function SuggestedShapeTaxOwnersTable(props) {
   };
 
   const addShape = (selectedRows) => {
-    const uAcres = props.customLayer?.shapeJson?.properties?.uAcres || 1
+    const uAcres = props.customLayer?.shapeJson?.properties?.uAcres || 0
     for (let i = 0; i < selectedRows.length; i++) {
+      const ownershipPercentage = addTrailingZeros(selectedRows[i].ownershipPercentage.toFixed(8))
+      const nra = uAcres * selectedRows[i].ownershipPercentage
+
       const ownerToAdd = {
         shapeId: props.customLayer._id,
         entity: "",
-        royalty_interest: selectedRows[i].interestType === 'ROYALTY INTEREST' ? selectedRows[i].ownershipPercentage : "",
-        orri: selectedRows[i].interestType === 'OVERRIDING ROYALTY' ? selectedRows[i].ownershipPercentage : "",
-        nra: uAcres * selectedRows[i].ownershipPercentage,
+        royalty_interest: selectedRows[i].interestType === 'ROYALTY INTEREST' ? ownershipPercentage : "",
+        orri: selectedRows[i].interestType === 'OVERRIDING ROYALTY' ? ownershipPercentage : "",
+        nra: addTrailingZeros(nra.toFixed(8)),
         ownerEntity: selectedRows[i].isContact,
         type: "",
         isSuggested: true
