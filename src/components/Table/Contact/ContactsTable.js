@@ -58,6 +58,7 @@ function ContactsTable(props) {
   // function states
   const selectedFilters = useRef([]);
   const [filters, setFilters] = useState([]);
+  const [updateData, setUpdateData] = useState(false);
   const [columns, Columns] = useState(TableHeader);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
@@ -186,7 +187,7 @@ function ContactsTable(props) {
     } else if (tableData?.length === 0) {
       props.setLoading(false);
     }
-  }, [ContactsData, tableData, props.dependencyUpdate]);
+  }, [ContactsData, tableData, props.dependencyUpdate, updateData]);
 
   useEffect(() => {
     if (selectedGridView?.filters) {
@@ -194,8 +195,12 @@ function ContactsTable(props) {
         if(selectedGridView?.columns){
           if(selectedGridView.columns.includes(column.name)){
             column.options.display = true
+            if(column.esKey && !column.noFilter){
+              column.options.filter = true
+            }
           } else {
             column.options.display = false
+            column.options.filter = false
           }
         }
         const value = get(
@@ -224,6 +229,7 @@ function ContactsTable(props) {
         }
       })
     }
+    setUpdateData(!updateData);
   }, [selectedGridView]);
 
   const count = tableData?.total || 0;
@@ -240,10 +246,14 @@ function ContactsTable(props) {
     for(let i=0; i< tableColumns.length; i++) {
       if(tableColumns[i].display === 'true') {
         columns[i].options.display = true
+        if(columns[i].esKey && !columns[i].noFilter){
+          columns[i].options.filter = true
+        }
       }else{
         columns[i].options.display = false
       } 
     }
+    setUpdateData(!updateData);
     // console.log('columns', columns)
     setColumns(columns);
 }

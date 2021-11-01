@@ -76,7 +76,8 @@ function GridView({
   setShowSaveAsNew,
   selectedFilters,
   handleClose,
-  columns
+  columns,
+  setFilters
 }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -203,6 +204,7 @@ function GridView({
                       }
                       setSelectedGridView(data);
                       setShowViewModal(false);
+                      // setFilters([])
                     }}
                   >
                     <div>{view.name}</div>
