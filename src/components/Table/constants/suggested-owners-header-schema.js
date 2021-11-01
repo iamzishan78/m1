@@ -29,10 +29,6 @@ const SuggestedOwnersHeadCells = [
     },
   },
   {
-    name: "name", label: "Owner Name",
-    options: { setCellProps: () => ({ style: { minWidth: "200px" } }) }
-  },
-  {
     name: "api", label: "Api Number",
     options: { setCellProps: () => ({ style: { minWidth: "200px" } }) }
   },
@@ -50,6 +46,10 @@ const SuggestedOwnersHeadCells = [
     name: "leaseNumber",
     label: "Lease Number",
     options: { setCellProps: () => ({ style: { minWidth: "175px" } }) }
+  },
+  {
+    name: "name", label: "Owner Name",
+    options: { setCellProps: () => ({ style: { minWidth: "200px" } }) }
   },
   { name: "interestType", label: "Type" },
   {
