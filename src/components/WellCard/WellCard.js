@@ -316,9 +316,7 @@ function WellCard() {
                     className={classes.text2}
                     variant="caption"
                   >
-                    {stateApp.selectedWell.ownerCount
-                      ? stateApp.selectedWell.ownerCount
-                      : "--"}
+                    {wellData?.OwnerCount || "--"}
                   </Typography>
                 </div>
               </Button>
