@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { Container } from "@material-ui/core";
+import { 
+  Container,
+  Breadcrumbs,
+  Typography,
+  IconButton
+} from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import TableHOC from "components/Table/TableHOC";
+import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
+import { Menu, MenuItem } from "@material-ui/core";
 // QUERIES 
 import { useLazyQuery, useMutation } from "@apollo/client";
 
@@ -30,6 +39,8 @@ function DocumentsTable(props) {
   // function states 
   const [columns, Columns] = useState([]);
   const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
+  const [showSaveAsNew, setShowSaveAsNew] = useState(false);
+  const [selectedGridView, setSelectedGridView] = useState({name: "All Contacts"});
 
   // queries 
   const [getESDocuments, { data: DocumentsData, loading }] = useLazyQuery(GET_ES_DOCUMENTS, { fetchPolicy: "no-cache" });
@@ -134,6 +145,15 @@ function DocumentsTable(props) {
     }
   }
 
+  const headerProps = {
+    columns,
+    setShowSaveAsNew,
+    selectedGridView,
+    // updateGridView,
+    // selectedFilters: selectedFilters.current,
+  };
+
+
   return (
     <>
       <Container
@@ -144,6 +164,8 @@ function DocumentsTable(props) {
         <Table
           style={{ backgroundColor: "#fff" }}
           header={header}
+          headerComponent={HeaderComponent}
+          headerProps={headerProps}
           columns={columns}
           rows={props.searchedRows}
           total={total}
@@ -166,6 +188,94 @@ function DocumentsTable(props) {
     </>
   );
 }
+
+const HeaderComponent = ({ selectedGridView, setShowSaveAsNew, selectedFilters, updateGridView, columns }) => {
+  const [showIcon, setShowIcon] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  return (
+    <div
+      style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
+    >
+      <IconButton onClick={() => setShowViewModal(!showViewModal)}>
+        <DescriptionOutlinedIcon />
+      </IconButton>
+
+      <Breadcrumbs
+        separator={<NavigateNextIcon fontSize="small" />}
+        aria-label="breadcrumb"
+      >
+        <Typography
+          style={{
+            marginLeft: "10px",
+            fontSize: "16px",
+          }}
+          color="inherit"
+        >
+          Contacts
+        </Typography>
+        <div>
+          <div style={{ display: "flex", color: "#18AADD", fontSize: "16px", cursor: "pointer" }}
+            onClick={(event) => handleClick(event)}
+            onMouseOver={() => setShowIcon(true)}
+            onMouseLeave={() => setShowIcon(false)}>
+            <Typography>
+              <span>{selectedGridView.name}</span>
+            </Typography>
+            <span style={{ height: "0px", color: "#18AADD", fontSize: "16px", cursor: "pointer" }}>{showIcon && <ExpandMoreIcon />}</span>
+          </div>
+          <Menu
+            style={{ zIndex: '1305'}}
+            id="menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            getContentAnchorEl={null}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            transformOrigin={{ vertical: "top", horizontal: "center" }}
+          >
+            <MenuItem 
+              style={{ width: '250px' }} 
+              onClick={() => {
+                handleClose();
+                updateGridView({ 
+                  variables: {
+                    gridView: {
+                      _id: selectedGridView._id, 
+                      filters: selectedFilters,
+                      columns: columns.filter(col => col.options.display).map(col => col.name)
+                    }
+                  }
+                })
+              }} 
+              disabled={selectedGridView.type === 'Default' || selectedGridView.name === 'All Contacts'}
+            >
+              Update view
+            </MenuItem>
+            <MenuItem onClick={() => {
+                handleClose();
+                setShowViewModal(true);
+                setShowSaveAsNew(true);
+              }}>
+                Save as new view
+            </MenuItem>
+          </Menu>
+
+        </div>        
+      </Breadcrumbs>
+    </div>
+  );
+};
 
 export default React.memo(TableHOC(DocumentsTable), deepEqualObjects);
 
