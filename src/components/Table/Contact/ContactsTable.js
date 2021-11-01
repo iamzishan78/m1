@@ -191,6 +191,13 @@ function ContactsTable(props) {
   useEffect(() => {
     if (selectedGridView?.filters) {
       columns.forEach((column, index) => {
+        if(selectedGridView?.columns){
+          if(selectedGridView.columns.includes(column.name)){
+            column.options.display = true
+          } else {
+            column.options.display = false
+          }
+        }
         const value = get(
           selectedGridView?.filters?.find((filter) => {
             return (
@@ -304,6 +311,7 @@ function ContactsTable(props) {
   };
 
   const headerProps = {
+    columns,
     showViewModal,
     setShowSaveAsNew,
     setShowViewModal,
@@ -321,6 +329,7 @@ function ContactsTable(props) {
       >
         {showViewModal && (
           <GridView
+            columns={columns}
             handleClose={() => setShowViewModal(false)}
             setSelectedGridView={setSelectedGridView}
             selectedGridView={selectedGridView}
@@ -357,7 +366,7 @@ function ContactsTable(props) {
   );
 }
 
-const HeaderComponent = ({ selectedGridView, setShowViewModal, showViewModal, setShowSaveAsNew, selectedFilters, updateGridView }) => {
+const HeaderComponent = ({ selectedGridView, setShowViewModal, showViewModal, setShowSaveAsNew, selectedFilters, updateGridView, columns }) => {
   const [showIcon, setShowIcon] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -419,7 +428,8 @@ const HeaderComponent = ({ selectedGridView, setShowViewModal, showViewModal, se
                   variables: {
                     gridView: {
                       _id: selectedGridView._id, 
-                      filters: selectedFilters
+                      filters: selectedFilters,
+                      columns: columns.filter(col => col.options.display).map(col => col.name)
                     }
                   }
                 })

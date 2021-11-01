@@ -75,7 +75,8 @@ function GridView({
   showSaveAsNew,
   setShowSaveAsNew,
   selectedFilters,
-  handleClose
+  handleClose,
+  columns
 }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -235,6 +236,7 @@ function GridView({
                       user={stateApp.user.mongoId}
                       setShowSaveAsNew={setShowSaveAsNew}
                       updateGridView={updateGridView}
+                      columns={columns}
                     />
                   ) : (
                     <CustomView
@@ -259,6 +261,7 @@ function GridView({
                   selectedFilters={selectedFilters}
                   setShowSaveAsNew={setShowSaveAsNew}
                   user={stateApp.user.mongoId}
+                  columns={columns}
                 />
               )}
             </AccordionDetails>
@@ -283,6 +286,7 @@ const InputField = ({
   setShowSaveAsNew,
   setEditGridView,
   user,
+  columns
 }) => {
   const classes = useStyles();
   return (
@@ -324,6 +328,7 @@ const InputField = ({
                   type: "Custom",
                   user,
                   filters: selectedFilters,
+                  columns: columns.filter(col => col.options.display).map(col => col.name)
                 },
               },
               refetchQueries: ["getGridViews"],
