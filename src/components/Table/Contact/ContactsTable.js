@@ -58,7 +58,7 @@ function ContactsTable(props) {
   // function states
   const selectedFilters = useRef([]);
   const [filters, setFilters] = useState([]);
-  const [columns, Columns] = useState(TableHeader);
+  const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState({
@@ -130,11 +130,11 @@ function ContactsTable(props) {
   }, [tableData]);
 
   useEffect(() => {
-    if(ContactPurchaseData?.getCheckPurchaseData){
-      const rows = JSON.parse(JSON.stringify(props.rows))
-      for(let i=0; i<ContactPurchaseData?.getCheckPurchaseData.length; i++){
-        const index = rows.findIndex(row => row._id === ContactPurchaseData.getCheckPurchaseData[i])
-        rows[index].isPurchased = true
+    if (ContactPurchaseData?.getCheckPurchaseData) {
+      const rows = JSON.parse(JSON.stringify(props.rows));
+      for (let i = 0; i < ContactPurchaseData?.getCheckPurchaseData.length; i++) {
+        const index = rows.findIndex((row) => row._id === ContactPurchaseData.getCheckPurchaseData[i]);
+        rows[index].isPurchased = true;
       }
       props.setRows(rows);
     }
@@ -144,44 +144,14 @@ function ContactsTable(props) {
     if (tableData?.hits) {
       const hits = tableData.hits.map((hit) => {
         hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
-        hit.tags = hit.tags
+        hit.tags = hit.tags.length > 0
           ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
           : [[], 0];
         hit.commentsCounter = hit.comments ? hit.comments.length : 0;
         return hit;
       });
       props.setRows(JSON.parse(JSON.stringify(hits)));
-      columns.forEach((column, index) => {
-        if (column?.options?.filter) {
-          column.options = {
-            ...column.options,
-            filter: true,
-            filterType: "custom",
-            filterList: filters[index],
-            filterOptions: {
-              display: (filterList, onChange, index, column) => {
-                column.filterKey = TableHeader.find(
-                  (el) => el.name === column.name
-                )?.esKey;
-                return (
-                  <AutoCompleteFilter
-                    filterList={filterList}
-                    column={column}
-                    index={index}
-                    onChange={onChange}
-                    query={GET_ES_CONTACTS_FILTER}
-                  />
-                );
-              },
-            },
-            onFilterChange: (columnChanged, filterList) => {
-              setFilters(filterList);
-            },
-          };
-        }
-      });
-
-      setColumns(columns);
+      setColumnsData(JSON.parse(JSON.stringify(columns)));
       props.setLoading(false);
     } else if (tableData?.length === 0) {
       props.setLoading(false);
@@ -191,13 +161,7 @@ function ContactsTable(props) {
   useEffect(() => {
     if (selectedGridView?.filters) {
       columns.forEach((column, index) => {
-        if(selectedGridView?.columns){
-          if(selectedGridView.columns.includes(column.name)){
-            column.options.display = true
-          } else {
-            column.options.display = false
-          }
-        }
+        setColumnDisplayAndFilter(column);
         const value = get(
           selectedGridView?.filters?.find((filter) => {
             return (
@@ -215,16 +179,74 @@ function ContactsTable(props) {
           column.options.filterList = filterList;
         }
       });
-
-      setColumns(columns);
-    }else{
+    } else {
       columns.forEach((column, index) => {
-        if(column.options){
+        setColumnDisplayAndFilter(column);
+        if (column.options) {
           column.options.filterList = [];
         }
-      })
+      });
     }
+    setColumnsData(JSON.parse(JSON.stringify(columns)))
   }, [selectedGridView]);
+
+  const setColumnDisplayAndFilter = (column) => {
+    if (selectedGridView?.columns) {
+      if (selectedGridView.columns.includes(column.name)) {
+        column.options.display = true;
+        if (column.esKey && !column.noFilter) {
+          column.options.filter = true;
+        }
+      } else {
+        column.options.display = false;
+        column.options.filter = false;
+      }
+    }else{
+      if(TableHeader.find(col => col.name === column.name).options.display !== false) {
+        column.options.display = true;
+        if (column.esKey && !column.noFilter) {
+          column.options.filter = true;
+        }
+      }else{
+        column.options.display = false;
+        column.options.filter = false;
+      }
+    }
+  }
+
+
+  const setColumnsData = (columns) => {
+    columns.forEach((column, index) => {
+      if (column?.options?.filter) {
+        column.options = {
+          ...column.options,
+          filter: true,
+          filterType: "custom",
+          filterList: filters[index],
+          filterOptions: {
+            display: (filterList, onChange, index, column) => {
+              column.filterKey = TableHeader.find(
+                (el) => el.name === column.name
+              )?.esKey;
+              return (
+                <AutoCompleteFilter
+                  filterList={filterList}
+                  column={column}
+                  index={index}
+                  onChange={onChange}
+                  query={GET_ES_CONTACTS_FILTER}
+                />
+              );
+            },
+          },
+          onFilterChange: (columnChanged, filterList) => {
+            setFilters(filterList);
+          },
+        };
+      }
+    });
+    setColumns(columns);
+  };
 
   const count = tableData?.total || 0;
   const options = {
@@ -237,16 +259,18 @@ function ContactsTable(props) {
   };
 
   const viewColumnsChange = (tableColumns) => {
-    for(let i=0; i< tableColumns.length; i++) {
-      if(tableColumns[i].display === 'true') {
-        columns[i].options.display = true
-      }else{
-        columns[i].options.display = false
-      } 
+    for (let i = 0; i < tableColumns.length; i++) {
+      if (tableColumns[i].display === "true") {
+        columns[i].options.display = true;
+        if (columns[i].esKey && !columns[i].noFilter) {
+          columns[i].options.filter = true;
+        }
+      } else {
+        columns[i].options.display = false;
+      }
     }
-    // console.log('columns', columns)
-    setColumns(columns);
-}
+    setColumnsData(JSON.parse(JSON.stringify(columns)));
+  };
   ////////////-----Add your code section here-----///////////////////////
   const onTableChange = (action, tableState, rows, meta) => {
     const tableActions = props.initializeTableActions(
@@ -366,7 +390,15 @@ function ContactsTable(props) {
   );
 }
 
-const HeaderComponent = ({ selectedGridView, setShowViewModal, showViewModal, setShowSaveAsNew, selectedFilters, updateGridView, columns }) => {
+const HeaderComponent = ({
+  selectedGridView,
+  setShowViewModal,
+  showViewModal,
+  setShowSaveAsNew,
+  selectedFilters,
+  updateGridView,
+  columns,
+}) => {
   const [showIcon, setShowIcon] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -400,17 +432,33 @@ const HeaderComponent = ({ selectedGridView, setShowViewModal, showViewModal, se
           Contacts
         </Typography>
         <div>
-          <div style={{ display: "flex", color: "#18AADD", fontSize: "16px", cursor: "pointer" }}
+          <div
+            style={{
+              display: "flex",
+              color: "#18AADD",
+              fontSize: "16px",
+              cursor: "pointer",
+            }}
             onClick={(event) => handleClick(event)}
             onMouseOver={() => setShowIcon(true)}
-            onMouseLeave={() => setShowIcon(false)}>
+            onMouseLeave={() => setShowIcon(false)}
+          >
             <Typography>
               <span>{selectedGridView.name}</span>
             </Typography>
-            <span style={{ height: "0px", color: "#18AADD", fontSize: "16px", cursor: "pointer" }}>{showIcon && <ExpandMoreIcon />}</span>
+            <span
+              style={{
+                height: "0px",
+                color: "#18AADD",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+            >
+              {showIcon && <ExpandMoreIcon />}
+            </span>
           </div>
           <Menu
-            style={{ zIndex: '1305'}}
+            style={{ zIndex: "1305" }}
             id="menu"
             anchorEl={anchorEl}
             keepMounted
@@ -420,34 +468,40 @@ const HeaderComponent = ({ selectedGridView, setShowViewModal, showViewModal, se
             anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
             transformOrigin={{ vertical: "top", horizontal: "center" }}
           >
-            <MenuItem 
-              style={{ width: '250px' }} 
+            <MenuItem
+              style={{ width: "250px" }}
               onClick={() => {
                 handleClose();
-                updateGridView({ 
+                updateGridView({
                   variables: {
                     gridView: {
-                      _id: selectedGridView._id, 
+                      _id: selectedGridView._id,
                       filters: selectedFilters,
-                      columns: columns.filter(col => col.options.display).map(col => col.name)
-                    }
-                  }
-                })
-              }} 
-              disabled={selectedGridView.type === 'Default' || selectedGridView.name === 'All Contacts'}
+                      columns: columns
+                        .filter((col) => col.options.display)
+                        .map((col) => col.name),
+                    },
+                  },
+                });
+              }}
+              disabled={
+                selectedGridView.type === "Default" ||
+                selectedGridView.name === "All Contacts"
+              }
             >
               Update view
             </MenuItem>
-            <MenuItem onClick={() => {
+            <MenuItem
+              onClick={() => {
                 handleClose();
                 setShowViewModal(true);
                 setShowSaveAsNew(true);
-              }}>
-                Save as new view
+              }}
+            >
+              Save as new view
             </MenuItem>
           </Menu>
-
-        </div>        
+        </div>
       </Breadcrumbs>
     </div>
   );
