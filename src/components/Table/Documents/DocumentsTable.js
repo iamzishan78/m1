@@ -1,74 +1,80 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { 
-  Container,
-  Breadcrumbs,
-  Typography,
-  IconButton
-} from "@material-ui/core";
+import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import TableHOC from "components/Table/TableHOC";
-import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
-import { Menu, MenuItem } from "@material-ui/core";
-// QUERIES 
+import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
+// QUERIES
 import { useLazyQuery, useMutation } from "@apollo/client";
 
-import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
+import {
+  deepEqualObjects,
+  setStateIfDeepEqual,
+} from "components/Shared/functions";
+import GridView from "components/Shared/GridView";
+import { HeaderComponent } from "components/Table/helpers";
 
-// Header Schemas 
-import TableHeader from 'components/Table/constants/documents-header-schema.js'
+// Header Schemas
+import TableHeader from "components/Table/constants/documents-header-schema.js";
 import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
 import { GET_ES_DOCUMENTS_FILTER } from "graphQL/useQueryESDocumentsFilter";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
-
-
+import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    padding: "0 !important"
+    padding: "0 !important",
   },
 }));
 
 function DocumentsTable(props) {
   const classes = useStyles();
+  const selectedFilters = useRef([]);
 
-  // function states 
+  // function states
   const [columns, Columns] = useState([]);
-  const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
+  const setColumns = (newState) => {
+    setStateIfDeepEqual(Columns, newState);
+  };
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
-  const [selectedGridView, setSelectedGridView] = useState({name: "All Contacts"});
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedGridView, setSelectedGridView] = useState({
+    name: "All Documents",
+  });
 
-  // queries 
-  const [getESDocuments, { data: DocumentsData, loading }] = useLazyQuery(GET_ES_DOCUMENTS, { fetchPolicy: "no-cache" });
+  // queries
+  const [getESDocuments, { data: DocumentsData, loading }] = useLazyQuery(
+    GET_ES_DOCUMENTS,
+    { fetchPolicy: "no-cache" }
+  );
+  const [updateGridView, { data: updatedGridView }] =
+    useMutation(UPDATE_GRID_VIEW);
   const [updateDocument] = useMutation(UPDATE_DOCUMENT);
 
-  const tableData = DocumentsData?.getESFiles
+  const tableData = DocumentsData?.getESFiles;
 
-  const addAble = { parent: false, type: "document" }
-  const targetLabel = 'documents'
+  const addAble = { parent: false, type: "document" };
+  const targetLabel = "documents";
   const uploadIcon = true;
   const header = "Documents";
-  const dense = true
-  const total = false
-  const orderByTracks = false
-  const startPaginationAt = 25
+  const dense = true;
+  const total = false;
+  const orderByTracks = false;
+  const startPaginationAt = 25;
 
   useEffect(() => {
     getESDocuments({
       variables: {
         pagination: {
           first: startPaginationAt,
-          keep_alive: "1micros"
+          keep_alive: "1micros",
         },
-        search: props.documentSearchQuery ? props.documentSearchQuery : ""
-      }
-    })
-  }, [getESDocuments, props.parent, props.documentSearchQuery])
-
+        search: props.documentSearchQuery ? props.documentSearchQuery : "",
+      },
+    });
+  }, [getESDocuments, props.parent, props.documentSearchQuery]);
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
@@ -78,28 +84,35 @@ function DocumentsTable(props) {
           column.options = {
             ...column.options,
             filter: true,
-            filterType: 'custom',
+            filterType: "custom",
             filterOptions: {
               display: (filterList, onChange, index, column) => {
-                column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
+                column.filterKey = TableHeader.find(
+                  (el) => el.name === column.name
+                )?.esKey;
                 return (
-                  <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange} query={GET_ES_DOCUMENTS_FILTER} />
+                  <AutoCompleteFilter
+                    filterList={filterList}
+                    column={column}
+                    index={index}
+                    onChange={onChange}
+                    query={GET_ES_DOCUMENTS_FILTER}
+                  />
                 );
-              }
-            }
-          }
+              },
+            },
+          };
         }
-      })
+      });
 
       setColumns(TableHeader);
       props.setLoading(false);
-    }
-    else if (tableData?.length === 0) {
+    } else if (tableData?.length === 0) {
       props.setLoading(false);
     }
   }, [tableData, props.dependencyUpdate]);
 
-  const count = tableData?.total || 0
+  const count = tableData?.total || 0;
   const options = {
     rowsPerPageOptions: [10, 25, 50, 100],
     count: count,
@@ -107,10 +120,16 @@ function DocumentsTable(props) {
     search: false,
     filter: true,
     searchText: props.documentSearchQuery,
-  }
+  };
   ////////////-----Add your code section here-----///////////////////////
   const onTableChange = (action, tableState, rows, meta) => {
-    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESDocuments)
+    const tableActions = props.initializeTableActions(
+      tableState,
+      meta,
+      tableData,
+      columns,
+      getESDocuments
+    );
     switch (action) {
       case "search":
       case "sort":
@@ -124,7 +143,7 @@ function DocumentsTable(props) {
         break;
       default:
     }
-  }
+  };
 
   const deleteFunc = (documentIdsToDelete) => {
     if (documentIdsToDelete) {
@@ -134,25 +153,26 @@ function DocumentsTable(props) {
             document: {
               fileId: documentIdsToDelete[i],
               isDeleted: true,
-            }
+            },
           },
-          refetchQueries: [
-            "getESDocuments",
-          ],
+          refetchQueries: ["getESDocuments"],
           awaitRefetchQueries: true,
         });
       }
     }
-  }
+  };
 
   const headerProps = {
     columns,
+    Icon: DescriptionOutlinedIcon,
+    label: "Documents",
+    showViewModal,
     setShowSaveAsNew,
+    setShowViewModal,
     selectedGridView,
-    // updateGridView,
-    // selectedFilters: selectedFilters.current,
+    updateGridView,
+    selectedFilters: selectedFilters.current,
   };
-
 
   return (
     <>
@@ -161,6 +181,18 @@ function DocumentsTable(props) {
         className={classes.container}
         id={props.id ? props.id : props.parent}
       >
+        {showViewModal && (
+          <GridView
+            columns={columns}
+            handleClose={() => setShowViewModal(false)}
+            setSelectedGridView={setSelectedGridView}
+            selectedGridView={selectedGridView}
+            setShowViewModal={setShowViewModal}
+            setShowSaveAsNew={setShowSaveAsNew}
+            showSaveAsNew={showSaveAsNew}
+            selectedFilters={selectedFilters.current}
+          />
+        )}
         <Table
           style={{ backgroundColor: "#fff" }}
           header={header}
@@ -189,94 +221,4 @@ function DocumentsTable(props) {
   );
 }
 
-const HeaderComponent = ({ selectedGridView, setShowSaveAsNew, selectedFilters, updateGridView, columns }) => {
-  const [showIcon, setShowIcon] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [showViewModal, setShowViewModal] = useState(false);
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  return (
-    <div
-      style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
-    >
-      <IconButton onClick={() => setShowViewModal(!showViewModal)}>
-        <DescriptionOutlinedIcon />
-      </IconButton>
-
-      <Breadcrumbs
-        separator={<NavigateNextIcon fontSize="small" />}
-        aria-label="breadcrumb"
-      >
-        <Typography
-          style={{
-            marginLeft: "10px",
-            fontSize: "16px",
-          }}
-          color="inherit"
-        >
-          Contacts
-        </Typography>
-        <div>
-          <div style={{ display: "flex", color: "#18AADD", fontSize: "16px", cursor: "pointer" }}
-            onClick={(event) => handleClick(event)}
-            onMouseOver={() => setShowIcon(true)}
-            onMouseLeave={() => setShowIcon(false)}>
-            <Typography>
-              <span>{selectedGridView.name}</span>
-            </Typography>
-            <span style={{ height: "0px", color: "#18AADD", fontSize: "16px", cursor: "pointer" }}>{showIcon && <ExpandMoreIcon />}</span>
-          </div>
-          <Menu
-            style={{ zIndex: '1305'}}
-            id="menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            getContentAnchorEl={null}
-            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-            transformOrigin={{ vertical: "top", horizontal: "center" }}
-          >
-            <MenuItem 
-              style={{ width: '250px' }} 
-              onClick={() => {
-                handleClose();
-                updateGridView({ 
-                  variables: {
-                    gridView: {
-                      _id: selectedGridView._id, 
-                      filters: selectedFilters,
-                      columns: columns.filter(col => col.options.display).map(col => col.name)
-                    }
-                  }
-                })
-              }} 
-              disabled={selectedGridView.type === 'Default' || selectedGridView.name === 'All Contacts'}
-            >
-              Update view
-            </MenuItem>
-            <MenuItem onClick={() => {
-                handleClose();
-                setShowViewModal(true);
-                setShowSaveAsNew(true);
-              }}>
-                Save as new view
-            </MenuItem>
-          </Menu>
-
-        </div>        
-      </Breadcrumbs>
-    </div>
-  );
-};
-
 export default React.memo(TableHOC(DocumentsTable), deepEqualObjects);
-
-

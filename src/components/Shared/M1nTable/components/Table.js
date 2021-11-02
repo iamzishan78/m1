@@ -3299,11 +3299,11 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    if(props.header === 'Contacts') {
+    if(props.header === 'Contacts' || props.header === "Documents") {
       const HeaderComponent = props.headerComponent
       return <HeaderComponent {...props.headerProps} />
     }
-    if (props.header === "Documents") {
+    if (props.header === "Documentss") {
       return (
         <div style={{ display: "flex", justifyContent: "left" }}>
           <DescriptionOutlinedIcon />

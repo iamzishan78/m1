@@ -1,15 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Container,
-  Breadcrumbs,
-  Typography,
-  IconButton,
-} from "@material-ui/core";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { Container } from "@material-ui/core";
 import get from "lodash/get";
-import { Menu, MenuItem } from "@material-ui/core";
 
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
 import Contact from "components/Shared/svgIcons/contact";
@@ -18,6 +10,7 @@ import TableHOC from "components/Table/TableHOC";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
 import Loader from "components/Loaders";
 import GridView from "components/Shared/GridView";
+import { HeaderComponent } from 'components/Table/helpers'
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
@@ -336,6 +329,8 @@ function ContactsTable(props) {
 
   const headerProps = {
     columns,
+    Icon: Contact,
+    label: 'Contacts',
     showViewModal,
     setShowSaveAsNew,
     setShowViewModal,
@@ -390,120 +385,121 @@ function ContactsTable(props) {
   );
 }
 
-const HeaderComponent = ({
-  selectedGridView,
-  setShowViewModal,
-  showViewModal,
-  setShowSaveAsNew,
-  selectedFilters,
-  updateGridView,
-  columns,
-}) => {
-  const [showIcon, setShowIcon] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
+// const HeaderComponent = ({
+//   selectedGridView,
+//   setShowViewModal,
+//   showViewModal,
+//   setShowSaveAsNew,
+//   selectedFilters,
+//   updateGridView,
+//   columns,
+// }) => {
+//   const [showIcon, setShowIcon] = useState(false);
+//   const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+//   const handleClose = () => {
+//     setAnchorEl(null);
+//   };
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+//   const handleClick = (event) => {
+//     setAnchorEl(event.currentTarget);
+//   };
 
-  return (
-    <div
-      style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
-    >
-      <IconButton onClick={() => setShowViewModal(!showViewModal)}>
-        <Contact />
-      </IconButton>
+//   return (
+//     <div
+//       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
+//     >
+//       <IconButton onClick={() => setShowViewModal(!showViewModal)}>
+//         <Contact />
+//       </IconButton>
 
-      <Breadcrumbs
-        separator={<NavigateNextIcon fontSize="small" />}
-        aria-label="breadcrumb"
-      >
-        <Typography
-          style={{
-            marginLeft: "10px",
-            fontSize: "16px",
-          }}
-          color="inherit"
-        >
-          Contacts
-        </Typography>
-        <div>
-          <div
-            style={{
-              display: "flex",
-              color: "#18AADD",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            onClick={(event) => handleClick(event)}
-            onMouseOver={() => setShowIcon(true)}
-            onMouseLeave={() => setShowIcon(false)}
-          >
-            <Typography>
-              <span>{selectedGridView.name}</span>
-            </Typography>
-            <span
-              style={{
-                height: "0px",
-                color: "#18AADD",
-                fontSize: "16px",
-                cursor: "pointer",
-              }}
-            >
-              {showIcon && <ExpandMoreIcon />}
-            </span>
-          </div>
-          <Menu
-            style={{ zIndex: "1305" }}
-            id="menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            getContentAnchorEl={null}
-            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-            transformOrigin={{ vertical: "top", horizontal: "center" }}
-          >
-            <MenuItem
-              style={{ width: "250px" }}
-              onClick={() => {
-                handleClose();
-                updateGridView({
-                  variables: {
-                    gridView: {
-                      _id: selectedGridView._id,
-                      filters: selectedFilters,
-                      columns: columns
-                        .filter((col) => col.options.display)
-                        .map((col) => col.name),
-                    },
-                  },
-                });
-              }}
-              disabled={
-                selectedGridView.type === "Default" ||
-                selectedGridView.name === "All Contacts"
-              }
-            >
-              Update view
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleClose();
-                setShowViewModal(true);
-                setShowSaveAsNew(true);
-              }}
-            >
-              Save as new view
-            </MenuItem>
-          </Menu>
-        </div>
-      </Breadcrumbs>
-    </div>
-  );
-};
+//       <Breadcrumbs
+//         separator={<NavigateNextIcon fontSize="small" />}
+//         aria-label="breadcrumb"
+//       >
+//         <Typography
+//           style={{
+//             marginLeft: "10px",
+//             fontSize: "16px",
+//           }}
+//           color="inherit"
+//         >
+//           Contacts
+//         </Typography>
+//         <div>
+//           <div
+//             style={{
+//               display: "flex",
+//               color: "#18AADD",
+//               fontSize: "16px",
+//               cursor: "pointer",
+//             }}
+//             onClick={(event) => handleClick(event)}
+//             onMouseOver={() => setShowIcon(true)}
+//             onMouseLeave={() => setShowIcon(false)}
+//           >
+//             <Typography>
+//               <span>{selectedGridView.name}</span>
+//             </Typography>
+//             <span
+//               style={{
+//                 height: "0px",
+//                 color: "#18AADD",
+//                 fontSize: "16px",
+//                 cursor: "pointer",
+//               }}
+//             >
+//               {showIcon && <ExpandMoreIcon />}
+//             </span>
+//           </div>
+//           <Menu
+//             style={{ zIndex: "1305" }}
+//             id="menu"
+//             anchorEl={anchorEl}
+//             keepMounted
+//             open={Boolean(anchorEl)}
+//             onClose={handleClose}
+//             getContentAnchorEl={null}
+//             anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+//             transformOrigin={{ vertical: "top", horizontal: "center" }}
+//           >
+//             <MenuItem
+//               style={{ width: "250px" }}
+//               onClick={() => {
+//                 handleClose();
+//                 updateGridView({
+//                   variables: {
+//                     gridView: {
+//                       _id: selectedGridView._id,
+//                       filters: selectedFilters,
+//                       columns: columns
+//                         .filter((col) => col.options.display)
+//                         .map((col) => col.name),
+//                     },
+//                   },
+//                 });
+//               }}
+//               disabled={
+//                 selectedGridView.type === "Default" ||
+//                 selectedGridView.name === "All Contacts"
+//               }
+//             >
+//               Update view
+//             </MenuItem>
+//             <MenuItem
+//               onClick={() => {
+//                 handleClose();
+//                 setShowViewModal(true);
+//                 setShowSaveAsNew(true);
+//               }}
+//             >
+//               Save as new view
+//             </MenuItem>
+//           </Menu>
+//         </div>
+//       </Breadcrumbs>
+//     </div>
+//   );
+// };
+
 export default React.memo(TableHOC(ContactsTable), deepEqualObjects);
