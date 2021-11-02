@@ -1056,16 +1056,10 @@ function SubTable(props) {
         open={true}
         onClose={closeMenu}
       >
-        {user.lastLogin == null || user.lastLogin == undefined ? (
-          <div>
-            <MenuItem className={classes.userMenuItem} onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}>
-              Resend Invite
-            </MenuItem>
-            <Divider />
-          </div>
-        ) : (
-          <div></div>
-        )}
+        <MenuItem className={classes.userMenuItem} onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}>
+          Resend Invite
+        </MenuItem>
+        <Divider />
         <MenuItem className={classes.userMenuItem} onClick={(e) => handleExpandClick(null, null, null, "deleteUser")}>
           Inactivate User
         </MenuItem>
