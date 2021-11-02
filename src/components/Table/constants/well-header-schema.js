@@ -28,6 +28,8 @@ const WellsHeadCells = [
   // { name: "state", label: "State" },
   // { name: "county", label: "County" },
   { name: "wellName", label: "Well Name" },
+  { name: "leaseId", label: "Lease Number" },
+  { name: "lease", label: "Lease Name" },
   { name: "operator", label: "Operator", options: { dbName: "currentOperator" } },
   { name: "wellType", label: "Type" },
   { name: "wellBoreProfile", label: "Profile", },

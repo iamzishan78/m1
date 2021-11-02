@@ -423,6 +423,7 @@ export default function UnitDetailCard(props) {
                     targetLabel="well"
                     header={<WellHeader />}
                     showTracks
+                    setSelectedTab={setSelectedTab}
                     dense
                   />
                 </div>

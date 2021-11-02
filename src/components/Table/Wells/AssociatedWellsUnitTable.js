@@ -26,15 +26,10 @@ import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount.js";
 import { ADD_MULTI_WELLINTEREST_TO_SHAPE } from "graphQL/useMutationAddMultiWellInterestToShape.js";
 import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "actions/Notifications.js";
-
-const useStyles = makeStyles((theme) => ({
-    container: {
-        padding: "0 !important"
-    },
-}));
+import { usetableStyles } from "../Styles/index.js";
 
 function AssociatedWellsUnitTable(props) {
-    const classes = useStyles();
+    const classes = usetableStyles();
 
     // contexts
     const dispatch = useDispatch();
@@ -195,6 +190,7 @@ function AssociatedWellsUnitTable(props) {
                 );
                 break;
             case "changePage":
+            case "search":
                 props.setLoading(true);
                 if (tableState.page > meta.pageInd) {
                     setCount((state, props) => {
@@ -205,6 +201,7 @@ function AssociatedWellsUnitTable(props) {
                     ...pageVariables,
                     variables: {
                         ...pageVariables.variables,
+                        search: tableState.searchText,
                         pagination: {
                             ...pageVariables.variables.pagination,
                             before:
@@ -227,8 +224,6 @@ function AssociatedWellsUnitTable(props) {
                     pageVariables
                 );
                 break;
-            case "search":
-                break;
             case "onSearchClose":
                 break;
             case "propsUpdate":
@@ -250,7 +245,7 @@ function AssociatedWellsUnitTable(props) {
         count: stateApp.shapeGridWellsCount || count || 0,
         serverSide: true,
         // search: false, 
-        filter: false,
+        // filter: false,
         // column: false, 
         customToolbar: () => {
             return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
