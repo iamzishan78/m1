@@ -13,23 +13,24 @@ const UnitWellHeadCells = [
     },
   },
   {
-    name: "wellName", label: "Well", esKey: 'well.wellName.keyword', options: {
-      sort: true,
-      filter: true,
-    }
-  },
-  {
-    name: "apiNumber", label: "API", options: {
+    name: "apiNumber", label: "Api Number", options: {
       dbName: "well.apiNumber",
       sort: true,
       filter: false,
     }
   },
   {
-    name: "leaseId", label: "Lease Id", options: {
+    name: "wellName", label: "Well", esKey: 'well.wellName.keyword', options: {
+      sort: true,
+      filter: true,
+    }
+  },
+
+  {
+    name: "leaseId", label: "Lease Number", options: {
       dbName: "well.leaseId",
-      display: false,
-      filter: false,
+      display: true,
+      filter: true,
       searchable: false,
       sort: false,
       download: false,
@@ -40,8 +41,8 @@ const UnitWellHeadCells = [
   {
     name: "lease", label: "Lease Name", options: {
       dbName: "well.lease",
-      display: false,
-      filter: false,
+      display: true,
+      filter: true,
       searchable: false,
       sort: false,
       download: false,
@@ -63,13 +64,13 @@ const UnitWellHeadCells = [
   //     filter: false,
   //   }
   // },
-  {
-    name: "leaseAcres", label: "Lease Acres", options: {
-      dbName: "well.leaseAcres",
-      sort: true,
-      filter: false,
-    }
-  },
+  // {
+  //   name: "leaseAcres", label: "Lease Acres", options: {
+  //     dbName: "well.leaseAcres",
+  //     sort: true,
+  //     filter: false,
+  //   }
+  // },
   {
     name: "wellType", label: "Well Type", esKey: 'wellType.keyword', options: {
       sort: true,
@@ -99,32 +100,6 @@ const UnitWellHeadCells = [
       viewColumns: false,
     }
   },
-  // {
-  //   name: "type", label: "Type", options: {
-  //     sort: true,
-  //     filter: true,
-  //   }
-  // },
-  // {
-  //   name: "amount", label: "Amount", options: {
-  //     dbName: "interest",
-  //     sort: true,
-  //     filter: false,
-  //   }
-  // },
-  // {
-  //   name: "taxValue", label: "Tax Value", options: {
-  //     dbName: "value",
-  //     sort: true,
-  //     filter: false,
-  //   }
-  // },
-  // {
-  //   name: "nra", label: "NRA", options: {
-  //     sort: true,
-  //     filter: false,
-  //   }
-  // },
   {
     name: "year", label: "Year", options: {
       display: false,
@@ -206,7 +181,7 @@ const UnitWellHeadCells = [
     },
   },
   {
-    name: "detailCard",
+    name: "coordinates",
     label: " ",
     options: {
       filter: false,

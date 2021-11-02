@@ -4,8 +4,8 @@ const UnitCardContext = createContext([{}, () => { }])
 
 const UnitCardContextProvider = props => {
   const [stateCard, setStateCard] = useState({
-    selectedUnit: { shapeLabel: '' },
-    selectedUnitGeom: null,
+    selectedShape: { shapeLabel: '' },
+    selectedShapeGeom: null,
   })
   return (
     <UnitCardContext.Provider value={[stateCard, setStateCard]}>

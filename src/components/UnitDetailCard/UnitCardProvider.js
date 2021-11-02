@@ -13,7 +13,7 @@ export default function UnitCardProvider(props) {
     <UnitCardContextProvider>
       <UnitCard
         closeCard={handleCloseCard}
-        selectedUnit={props.selectedUnit}
+        selectedShape={props.selectedShape}
       />
     </UnitCardContextProvider>
   )

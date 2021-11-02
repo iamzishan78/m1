@@ -398,7 +398,7 @@ function Map({ type, paramId, lati, longi }) {
   };
 
   async function getCustomLayer() {
-    const keys = { parcels: 'selectedParcel', units: 'selectedUnit', wells: 'selectedWell' }
+    const keys = { parcels: 'selectedParcel', units: 'selectedShape', wells: 'selectedWell' }
 
     if (type === 'wells') {
       const intervalObj = setInterval(function () {
@@ -426,6 +426,8 @@ function Map({ type, paramId, lati, longi }) {
         let jsonLayer = JSON.parse(layer.customLayer.shape)
         if (layer.customLayer.shapeJson)
           jsonLayer = copy(layer.customLayer.shapeJson)
+
+        jsonLayer.layer = { id: jsonLayer.layer };
         jsonLayer.id = jsonLayer._id
 
         findBoundsMap([jsonLayer], map)
@@ -1176,16 +1178,16 @@ function Map({ type, paramId, lati, longi }) {
 
 
       if (feature.source === "units_source") {
-        const newPath = `/map/units/${feature.properties.id}`;
-        history.location.pathname !== newPath && history.replace(newPath)
-        findBoundsMap([selectedUserDefinedLayer], map)
         setStateApp((state) => {
           if (state.isDrawing) return state
+          const newPath = `/map/units/${feature.properties.id}`;
+          history.location.pathname !== newPath && history.replace(newPath)
+          findBoundsMap([selectedUserDefinedLayer], map)
           return {
             ...state,
             expandedCard: true,
             selectedUserDefinedLayer: null,
-            selectedUnit: { ...feature.properties, feature: selectedUserDefinedLayer },
+            selectedShape: { ...feature.properties, feature: selectedUserDefinedLayer },
           }
         });
 
@@ -6143,15 +6145,15 @@ function Map({ type, paramId, lati, longi }) {
           </div>
         )
       }
-      {stateApp.selectedUnit?.shapeLabel &&
+      {stateApp.selectedShape?.shapeLabel &&
         stateApp.expandedCard && (
           <div className={classes.draggable}>
             <ExpandableCardProvider
               expanded={true}
               handleCloseExpandableCard={handleCloseExpandableCard}
               component={<UnitCardProvider ></UnitCardProvider >}
-              title={stateApp.selectedUnit?.shapeLabel}
-              subTitle={stateApp.selectedUnit?.unitInfo}
+              title={stateApp.selectedShape?.shapeLabel}
+              subTitle={stateApp.selectedShape?.unitInfo}
               parent="map"
               position="relative"
               cardTop={0}
@@ -6159,7 +6161,7 @@ function Map({ type, paramId, lati, longi }) {
               zIndex={99}
               cardWidthExpanded="50vw"
               cardHeightExpanded="calc(100vh - 64px)"
-              targetSourceId={stateApp.selectedUnit?.id}
+              targetSourceId={stateApp.selectedShape?.id}
               targetLabel="unit"
               deleteCustomLayer={deleteCustomLayer}
             ></ExpandableCardProvider>

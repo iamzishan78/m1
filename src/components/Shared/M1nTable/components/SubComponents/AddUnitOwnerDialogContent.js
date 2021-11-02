@@ -233,7 +233,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   const calculateNetAcres = (interest) => {
     if (!interest) return null;
-    const netAcres = addTrailingZeros(stateApp.selectedUnit.sdGrossAcres ? (stateApp.selectedUnit.sdGrossAcres * interest).toFixed(8) : null);
+    const netAcres = addTrailingZeros(stateApp.selectedShape.sdGrossAcres ? (stateApp.selectedShape.sdGrossAcres * interest).toFixed(8) : null);
     return netAcres;
   };
 

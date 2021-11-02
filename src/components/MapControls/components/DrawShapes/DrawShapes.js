@@ -230,7 +230,7 @@ export default function DrawShapes() {
   }, [customLayerInsertedData]);
 
   useEffect(() => {
-    const { selectedUserDefinedLayer, showShapeActionsPopup, selectedParcel } = stateApp;
+    const { selectedUserDefinedLayer, showShapeActionsPopup, selectedParcel, selectedShape } = stateApp;
     if (selectedUserDefinedLayer) {
       setStateApp((state) => ({
         ...state,
@@ -238,7 +238,7 @@ export default function DrawShapes() {
         // selectedParcel: selectedUserDefinedLayer.source === 'parcels_source' ? selectedUserDefinedLayer : null,
         selectedAoi: selectedUserDefinedLayer.source === 'interests_source' ? selectedUserDefinedLayer : null,
       }));
-      if (selectedUserDefinedLayer.source === "interests_source" && showShapeActionsPopup === true && selectedParcel === null) {
+      if (selectedUserDefinedLayer.source === "interests_source" && showShapeActionsPopup === true && selectedParcel === null && selectedShape === null) {
         toggleSpatialDataCard(true);
       }
     }

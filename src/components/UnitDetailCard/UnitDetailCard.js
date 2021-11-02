@@ -251,7 +251,7 @@ export default function UnitDetailCard(props) {
         feature.layer = { id: 'unit' }
         setStateApp((state) => ({
           ...state,
-          selectedUnit: { ...feature.properties, feature },
+          selectedShape: { ...feature.properties, feature },
         }));
       } else {
         dispatch(showErrorMessage("Failed to update unit"));
@@ -271,7 +271,7 @@ export default function UnitDetailCard(props) {
     if (field === 'uName') {
       setStateApp((state) => ({
         ...state,
-        selectedUnit: { ...state.selectedUnit, shapeLabel: value },
+        selectedShape: { ...state.selectedShape, shapeLabel: value },
       }));
       shape.properties.shapeLabel = value
       customLayer.name = value;

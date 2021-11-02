@@ -326,9 +326,10 @@ function AddUnitInterestDialog(props) {
               as={<AutoCompleteFieldComponent />}
             />
 
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='leaseId' label={"Lease Number"} fullWidth defaultValue="" />
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='lease' label={"Lease Name"} fullWidth defaultValue="" />
 
-            <Controller
+            {/* <Controller
               control={control}
               name="leaseAcres"
               render={(props) => (
@@ -348,7 +349,7 @@ function AddUnitInterestDialog(props) {
                   }}
                 />
               )}
-            />
+            /> */}
 
           </div>
 

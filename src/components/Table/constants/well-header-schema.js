@@ -1,6 +1,18 @@
 
 const WellsHeadCells = [
   {
+    name: "wellId",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
+  {
     name: "id",
     options: {
       display: false,
