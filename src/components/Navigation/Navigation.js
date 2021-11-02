@@ -1,14 +1,13 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { NavigationContext } from "./NavigationContext";
 
-// contexts 
+// contexts
 import { AppContext } from "../../AppContext";
 import { MapGridContext } from "../../components/MapGridCard/MapGridContext.js";
 
-
 import { useHistory, useLocation } from "react-router-dom";
 import clsx from "clsx";
-import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
+import { useTheme } from "@material-ui/core/styles";
 
 //3rd party packages
 import PropTypes from "prop-types";
@@ -16,8 +15,6 @@ import styled from "styled-components";
 
 //@material-ui components
 import AppBar from "@material-ui/core/AppBar";
-import DashboardIcon from "@material-ui/icons/Dashboard";
-import LayersIcon from "@material-ui/icons/Layers";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Tab from "@material-ui/core/Tab";
@@ -36,44 +33,31 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
-import Drawer from "@material-ui/core/Drawer";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import PersonIcon from "@material-ui/icons/Person";
-import DescriptionIcon from '@material-ui/icons/Description';
+import MenuIcon from "@material-ui/icons/Menu";
 import { Link } from "react-router-dom";
 
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import { green } from "@material-ui/core/colors";
 import SupportCenterModal from "./components/SupportCenter";
+import { M1neralLogoNavNoAuth, useStyles } from "./Common";
 
 //icons
 import CloseIcon from "@material-ui/icons/Close";
-import SearchIcon from "@material-ui/icons/Search";
+
 import HeadsetIcon from "@material-ui/icons/Headset";
 import DesktopWindowsIcon from "@material-ui/icons/DesktopWindows";
 import GeographicIcon from "../Shared/svgIcons/geographic";
 import WellIcon from "../Shared/svgIcons/well";
 import ProductionIcon from "../Shared/svgIcons/production";
-import ValuationIcon from "../Shared/svgIcons/valuation";
 import OwnershipIcon from "../Shared/svgIcons/ownership";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import MenuIcon from "@material-ui/icons/Menu";
-import HeadsetMicIcon from "@material-ui/icons/HeadsetMic";
-import FlowIcon from "@material-ui/icons/Repeat";
-import ActivityIcon from "@material-ui/icons/Event";
 import ProfileProvider from "../Profile/ProfileProvider";
 import UserManagementProvider from "../UserManagement/UserManagementProvider";
 import FilterFormWell from "./components/FilterFormWell";
 import FilterFromGeo from "./components/FilterFromGeo";
 import FilterFormOwner from "./components/FilterFormOwner";
 import FilterFormProduction from "./components/FilterFormProduction";
-import FilterDefaults from "./components/FilterDefaults";
-import FilterFormValue from "./components/FilterFormValue";
 import FilterFormTags from "./components/FilterFormTags";
-import FilterFormAI from "./components/FilterFormAI";
 
 import DealSearch from "./components/DealSearch";
 import SearchBarWithToggleButton from "./components/SearchBarWithToggleButton";
@@ -81,598 +65,19 @@ import SearchBarWithToggleButton from "./components/SearchBarWithToggleButton";
 import Avatar from "react-avatar";
 import ContactFormModal from "./components/ContactFormModal";
 import { GET_PROFILE_IMAGE } from "../../graphQL/useQueryGetProfile";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 
 import CheckIcon from "@material-ui/icons/Check";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import Add from "@material-ui/icons/Add";
 
-import {
-  MuiThemeProvider,
-  createMuiTheme,
-  withStyles,
-} from "@material-ui/core/styles";
 import ActivitySearch from "./components/ActivitySearch";
 import DocumentSearch from "./components/DocumentSearch";
 import ContactSearch from "./components/ContactSearch";
 import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
-import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
-import { FEATURES } from "components/Shared/FeatureFlag/common";
+import SideNavigation from "./SideNavigation";
 
-const theme = createMuiTheme({
-  overrides: {
-    MuiButton: {
-      root: {
-        "&:hover": {
-          backgroundColor: "#fff",
-        },
-      },
-    },
-  },
-});
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-    width: "100%",
-    height: "100%",
-    paddingTop: "64px",
-  },
-  appBar: {
-    height: "64px",
-    background: "rgba(1, 17, 51, 1.0)",
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    paddingRight: "0 !important",
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    /* width: `calc(100% - ${drawerWidth}px)`, */
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  menuButton: {
-    marginRight: 36,
-  },
-  hide: {
-    display: "none",
-  },
-  drawer: {
-    background: "rgba(1, 17, 51, 1.0)",
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: "nowrap",
-  },
-
-  filterTabs: {
-    paddingRight: "25px",
-    position: "relative",
-    left: 0,
-  },
-
-  drawerOpenLogo: {
-    paddingLeft: "20px",
-    paddingTop: "10px",
-  },
-
-  iconArrow: {
-    // background: "rgba(23, 170, 221, 1)",
-    color: "gray",
-    textAlign: "right",
-    padding: "4px 0",
-    transition: "all 0.3s ease-in-out",
-    margin: "5px 15px 0px auto",
-    "&:hover": {
-      background: "unset",
-      color: "rgba(23, 170, 221, 1)",
-    },
-  },
-  menuIcon: {
-    position: "relative",
-    left: "-8px",
-    fontSize: "30px",
-  },
-  drawerOpen: {
-    // background: "rgba(255, 255, 255, 1.0)",
-    zIndex: "99999 !important",
-    background: "rgba(250, 250, 250, 1.0)",
-    width: drawerWidth,
-    height: "100%",
-    top: "0",
-    //boxShadow: "1px 0px 100vw black",
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerClose: {
-    background: "rgba(1, 17, 51, 1.0)",
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: "hidden",
-    /*width: theme.spacing(8) + 1,*/
-    width: "0%"
-    /*[theme.breakpoints.up('sm')]: {
-      width: theme.spacing(8) + 1
-    }*/
-  },
-  toolbar: {
-    display: "flex",
-    alignItems: "center"
-    // justifyContent: "flex-end",
-    // padding: theme.spacing(0, 1),
-    // ...theme.mixins.toolbar
-  },
-  content: {
-    flexGrow: 1,
-    width: "inherit",
-  },
-  grow1: {
-    flexGrow: 1,
-  },
-  grow2: {
-    flexGrow: 2,
-  },
-  title: {
-    display: "none",
-    [theme.breakpoints.up("sm")]: {
-      display: "block",
-    },
-  },
-  search: {
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    // "&:hover": {
-    //   backgroundColor: fade(theme.palette.common.white, 0.25),
-    // },
-    marginRight: theme.spacing(2),
-    marginLeft: 5,
-    width: ({ mapGridCardActivated }) =>
-      mapGridCardActivated ? "34%" : "34%",
-    transition: "width 0.5s",
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: 5
-      // width: "34%",
-    },
-  },
-  searchInput: {
-    width: "100%",
-    height: "100%",
-    "& .mapboxgl-ctrl-geocoder": {
-      backgroundColor: fade(theme.palette.common.white, 0),
-      borderRadius: theme.shape.borderRadius,
-      height: "100%",
-      width: "100%",
-      maxWidth: "100%",
-      "&:hover": {
-        // backgroundColor: fade(theme.palette.common.white, 0.25),
-      },
-      "& .mapboxgl-ctrl-geocoder--input": {
-        borderRadius: theme.shape.borderRadius,
-        width: "100%",
-        color: "#ffffff",
-        height: "35px",
-        fontSize: "17px",
-        "&::placeholder": {
-          color: "#788092",
-          textDecoration: "bold",
-        },
-        "&:-ms-input-placeholder": {
-          color: "#788092",
-        },
-        "&::-ms-input-placeholder": {
-          color: "#788092",
-        },
-      },
-      "& .mapboxgl-ctrl-geocoder--icon-search": {
-        fill: "#ffffff",
-        width: "23px",
-        height: "23px",
-        top: "5px",
-      },
-      "& .mapboxgl-ctrl-geocoder--button": {
-        background: "#ffffff00",
-        "&:hover": {
-          background: "#ffffff00",
-        },
-      },
-    },
-  },
-  searchIcon: {
-    width: theme.spacing(7),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  inputRoot: {
-    color: "inherit",
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 7),
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: 200,
-    },
-  },
-  tab: {
-    minWidth: "62px",
-    "& span": {
-      color: "#FFFF",
-    },
-  },
-  tabPanelWrapper: {
-    padding: "0px",
-    margin: "0px",
-    background: "rgba(1, 17, 51, 0)",
-    // height: "750px",
-    minWidth: "750px",
-    position: "absolute",
-    top: "45px",
-    right: "0",
-    zIndex: 9,
-  },
-  card: {
-    background: "#011133",
-    borderStyle: "solid",
-    borderWidth: "thin",
-    borderColor: "#011133",
-    maxWidth: 650,
-    minWidth: 620,
-  },
-  cardTitle: {
-    fontFamily: "Poppins",
-    fontStyle: "normal",
-    fontWeight: 600,
-    fontSize: "22px",
-    lineHeight: "20px",
-    color: "#FFFFFF",
-    textTransform: "uppercase",
-    position: "relative",
-    height: "23px",
-    left: "0.46%",
-    right: "39.32%",
-    top: "calc(50% - 23px/2 - 140px)",
-  },
-  subheader: {
-    fontFamily: "Poppins",
-    fontStyle: "normal",
-    fontWeight: 300,
-    fontSize: "18px",
-    lineHeight: "20px",
-    color: "#FFFFFF",
-    position: "relative",
-    height: "17px",
-    left: "0.46%",
-    right: "58.31%",
-    top: "calc(50% - 17px/2 - 120px)",
-  },
-  betaSideNav: {
-    textTransform: "inherit",
-    right: 10,
-    fontSize: 12,
-    color: "rgba(0, 0, 0, 0.52) !important ",
-  },
-
-  betaSideNav5: {
-    textTransform: "inherit",
-    position: "relative",
-    fontWeight: 900,
-    fontSize: 10,
-    color: "rgba(228, 167, 115, 0.25) !important ",
-  },
-  betaSideNav3: {
-    textTransform: "inherit",
-    fontSize: 10,
-    fontWeight: 900,
-    color: "rgba(228, 167, 115, 1) !important ",
-  },
-
-  betaText: {
-    fontSize: 10,
-    top: 0,
-    right: 0,
-    left: 15,
-    paddingLeft: 6,
-  },
-  avatar: {
-    backgroundColor: "black",
-    color: "white",
-    width: "38px",
-    height: "38px",
-    margin: "0px",
-  },
-  cardContent: {
-    maxHeight: "650px",
-    backgroundColor: "#fff",
-    padding: "0px",
-    overflow: "auto",
-    "&::-webkit-scrollbar": {
-      width: "0.75em",
-      height: "0.75em",
-    },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "1.0em",
-    // },
-    // "&::-webkit-scrollbar-track": {
-    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    // },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#929292",
-      borderRadius: 10,
-    },
-    "&:last-child": {
-      paddingBottom: "0",
-    },
-  },
-  cardAction: {
-    flexGrow: 1,
-    display: "flex",
-    justifyContent: "space-evenly",
-    backgroundColor: "#fff",
-  },
-  indicator: {
-    backgroundColor: "rgba(23, 170, 221, 1) !important",
-  },
-  menuList: {
-    paddingTop: "15%",
-    paddingBottom: "5%",
-    position: "relative",
-    //width: drawerWidth - 1,
-    top: "0%",
-  },
-  menuListBottom: {
-    paddingTop: "5%",
-    position: "absolute",
-    bottom: "0",
-  },
-  menuListBottomDivider: {
-    position: "relative",
-    bottom: "90%",
-  },
-
-  menuListItem: {
-    paddingBottom: "5%",
-    width: drawerWidth,
-    paddingTop: "5%",
-    marginTop: "0%",
-    display: "flex",
-    "&:hover": {
-      backgroundColor: "Light Grey",
-    },
-    backgroundColor: theme.primary,
-    "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: "rgba(35,55,77,1)",
-    },
-  },
-
-  menuListItemDisabled: {
-    paddingBottom: "5%",
-    //width: drawerWidth - 1,
-    paddingTop: "5%",
-    marginTop: "0%",
-    "&:hover": {
-      backgroundColor: "Light Grey",
-    },
-    backgroundColor: theme.primary,
-    "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: "rgba(128,136,153,0.4)",
-    },
-  },
-
-  menuListItemSelected: {
-    backgroundColor: "rgba(23, 170, 221, 0.08) !important",
-    "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: "rgba(23,170,221,1.0)",
-      fontWeight: "bold",
-    },
-    borderLeft: "solid 4px  rgba(23,170,221,1.0)",
-    display: "flex",
-  },
-  avatarUser: {
-    fontFamily: "Poppins",
-    fontSize: "12px",
-    width: "28px",
-    height: "28px",
-    color: "#fff",
-    backgroundColor: "rgba(23, 170, 221, 1)",
-  },
-  badge: {
-    backgroundColor: "red",
-  },
-  userMenu: {
-    "& .MuiPaper-rounded": {
-      borderRadius: "0px",
-    },
-  },
-  userMenuItem: {
-    padding: 5,
-    paddingLeft: 35,
-    width: "260px",
-    color: "#1daee1",
-  },
-  userTenantTitle: {
-    padding: 10,
-    paddingBottom: 15,
-    width: "260px",
-    color: "#1daee1",
-  },
-  actionWrapper: {
-    flexGrow: 1,
-    display: "flex",
-    justifyContent: "space-evenly",
-  },
-  applyWrapper: {
-    margin: theme.spacing(1),
-
-    position: "relative",
-  },
-  applySuccess: {
-    backgroundColor: green[500],
-    "&:hover": {
-      backgroundColor: green[700],
-    },
-  },
-
-  overlay: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "rgba(0,0,0,0.2)",
-  },
-
-  applyProgress: {
-    color: green[500],
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    marginTop: -12,
-    marginLeft: -12,
-  },
-  trackHeader: {
-    "& span": {
-      fontSize: 20,
-    },
-  },
-  homeButton: {
-    backgroundColor: theme.palette.secondary.main,
-    position: "absolute",
-    top: "0px",
-    height: "35px",
-    right: "0px",
-    marginRight: "15px",
-    marginTop: "15px",
-    color: theme.palette.secondary.contrastText,
-    alignItems: "center",
-    justifyItems: "center",
-  },
-  trackButton: {
-    backgroundColor: theme.palette.secondary.main,
-    position: "relative",
-    top: "0px",
-    height: "35px",
-    marginRight: "15px",
-    marginTop: "6px",
-    color: theme.palette.secondary.contrastText,
-  },
-
-  supportDrawer: {
-    position: "fixed",
-    left: drawerWidth,
-    bottom: "30px",
-    zIndex: "9999999 !important",
-    background: "rgba(255, 255, 255, 1.0)",
-    "& .MuiListItem-gutters": {
-      paddingRight: "30px",
-    },
-  },
-  tabContent: {
-    display: "flex",
-    alignItems: "center",
-  },
-  sideNavIcon: {
-    minWidth: 0,
-    marginRight: 8,
-  },
-  sideNavText: {
-    flex: 2,
-    marginRight: -8,
-  },
-  sideNavAction: {
-    top: "unset",
-    right: "unset",
-    position: "unset",
-    transform: "unset",
-    flex: 1,
-  },
-  activitySearchField: {
-    color: "#fff",
-
-    "& .MuiOutlinedInput-input": {
-      color: "#ffffff",
-      "&::placeholder": {
-        color: "#788092",
-        textDecoration: "bold",
-      },
-      "&:-ms-input-placeholder": {
-        color: "#788092",
-      },
-      "&::-ms-input-placeholder": {
-        color: "#788092",
-      },
-    },
-  },
-}));
-
-const M1neralLogoDrawer = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 11320 2490"
-    className={props.className}
-  >
-    <g fill="none" fillRule="evenodd" stroke="none" strokeWidth="1">
-      <path
-        fill="#12ABE0"
-        d="M1396 1823c-201 202-528 202-729 0-15-15-30-31-43-48l-366 366c14 16 29 31 44 47 403 402 1056 402 1459 0 356-356 397-908 124-1309l-379 378c80 188 43 413-110 566zm-839-163c-80-188-43-413 110-566 201-201 528-201 729 0 16 15 30 32 43 48l366-366c-14-16-29-31-44-47L1032 0 302 729c-356 356-397 908-124 1309l379-378zm292-384c101-100 264-100 365 0 101 101 101 264 0 365s-264 101-365 0c-100-101-100-264 0-365z"
-      ></path>
-      <g transform="translate(2687 379)">
-        <path
-          fill="#12ABE0"
-          d="M2703 1686L2703 64 2703 0 2505 64 2072 202 2132 432 2422 351 2422 1686z"
-        ></path>
-        <path fill="black" d="M8354 6L8354 1686 8633 1686 8633 6z"></path>
-        <path
-          fill="black"
-          d="M1324 699c156 0 246 103 246 297v690h279V911c0-297-161-465-426-465-184 0-313 85-412 214-65-129-187-214-362-214-186 0-292 101-370 209V471H0v1215h279v-683c0-189 106-304 260-304s246 106 246 295v692h279v-686c0-195 108-301 260-301zM3099 471v1215h278v-686c0-188 113-301 274-301 166 0 260 108 260 297v690h279V913c0-283-159-467-433-467-189 0-301 99-380 214V471h-278zM5053 446c-347 0-594 285-594 633v4c0 376 272 631 624 631 223 0 382-90 497-228l-163-145c-97 95-194 145-329 145-180 0-320-110-350-308h893c2-28 5-53 5-79 0-349-196-653-583-653zm306 548h-624c26-189 145-320 316-320 184 0 290 140 308 320zM5916 471v1215h279v-462c0-323 170-481 414-481h16V448c-214-9-354 115-430 297V471h-279zM6759 1086c0 345 274 628 644 628 142 0 269-41 373-110v110h279V446h-279v107c-102-68-228-107-368-107-373 0-649 287-649 635v5zm649 386c-216 0-371-179-371-391v-5c0-211 143-386 366-386 219 0 373 177 373 391v5c0 209-142 386-368 386z"
-        ></path>
-      </g>
-    </g>
-  </svg>
-);
-
-const M1neralLogo = styled(M1neralLogoDrawer)`
-  width: 130px;
-`;
-
-const M1neralLogoNavNoAuth = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 11320 2490"
-    className={props.className}
-  >
-    <g fill="none" fillRule="evenodd" stroke="none" strokeWidth="1">
-      <path
-        fill="#12ABE0"
-        d="M1396 1823c-201 202-528 202-729 0-15-15-30-31-43-48l-366 366c14 16 29 31 44 47 403 402 1056 402 1459 0 356-356 397-908 124-1309l-379 378c80 188 43 413-110 566zm-839-163c-80-188-43-413 110-566 201-201 528-201 729 0 16 15 30 32 43 48l366-366c-14-16-29-31-44-47L1032 0 302 729c-356 356-397 908-124 1309l379-378zm292-384c101-100 264-100 365 0 101 101 101 264 0 365s-264 101-365 0c-100-101-100-264 0-365z"
-      ></path>
-      <g transform="translate(2687 379)">
-        <path
-          fill="#12ABE0"
-          d="M2703 1686L2703 64 2703 0 2505 64 2072 202 2132 432 2422 351 2422 1686z"
-        ></path>
-        <path fill="white" d="M8354 6L8354 1686 8633 1686 8633 6z"></path>
-        <path
-          fill="white"
-          d="M1324 699c156 0 246 103 246 297v690h279V911c0-297-161-465-426-465-184 0-313 85-412 214-65-129-187-214-362-214-186 0-292 101-370 209V471H0v1215h279v-683c0-189 106-304 260-304s246 106 246 295v692h279v-686c0-195 108-301 260-301zM3099 471v1215h278v-686c0-188 113-301 274-301 166 0 260 108 260 297v690h279V913c0-283-159-467-433-467-189 0-301 99-380 214V471h-278zM5053 446c-347 0-594 285-594 633v4c0 376 272 631 624 631 223 0 382-90 497-228l-163-145c-97 95-194 145-329 145-180 0-320-110-350-308h893c2-28 5-53 5-79 0-349-196-653-583-653zm306 548h-624c26-189 145-320 316-320 184 0 290 140 308 320zM5916 471v1215h279v-462c0-323 170-481 414-481h16V448c-214-9-354 115-430 297V471h-279zM6759 1086c0 345 274 628 644 628 142 0 269-41 373-110v110h279V446h-279v107c-102-68-228-107-368-107-373 0-649 287-649 635v5zm649 386c-216 0-371-179-371-391v-5c0-211 143-386 366-386 219 0 373 177 373 391v5c0 209-142 386-368 386z"
-        ></path>
-      </g>
-    </g>
-  </svg>
-);
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   width: 200px;
   padding-left: 10px;
@@ -708,22 +113,14 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
-const drawerWidth = "250px";
-
 export default function Navigation(props) {
-  const dispatch = useDispatch();
-  const mapGridCardActivated = useSelector(
-    ({ MapGridCard }) => MapGridCard.mapGridCardActivated
-  );
-  const { pipelines } = useSelector(({ Flow }) => Flow);
+  const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
   const theme = useTheme();
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [stateGrid, setStateGrid] = useContext(MapGridContext);
-
-
+  const [, setStateGrid] = useContext(MapGridContext);
 
   const [openSupportCenter, setOpenSupportCenter] = useState(false);
   const [openContactForm, setOpenContactForm] = useState(false);
@@ -733,14 +130,11 @@ export default function Navigation(props) {
   const [value, setValue] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
-  const [loadingApply, setLoadingApply] = useState(false);
-  const [applySuccess, setApplySuccess] = useState(false);
-  const [disableApply, setDisableApply] = useState(true);
   const [matchLocation, setMatchLocation] = useState(false);
   const [matchTrack, setMatchTrack] = useState(false);
   const [matchActivities, setMatchActivities] = useState(false);
   const [matchFind, setMatchFind] = useState(false);
-  const [matchDocument, setMatchDocument] = useState(false);
+  const [matchDocument] = useState(false);
 
   const [profileImage, setProfileImage] = useState(null);
   const classes = useStyles({ mapGridCardActivated });
@@ -758,12 +152,7 @@ export default function Navigation(props) {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (
-      profiledata &&
-      profiledata.data &&
-      profiledata.data.profileByEmail &&
-      profiledata.data.profileByEmail.profile
-    ) {
+    if (profiledata && profiledata.data && profiledata.data.profileByEmail && profiledata.data.profileByEmail.profile) {
       const {
         data: {
           profileByEmail: {
@@ -778,10 +167,6 @@ export default function Navigation(props) {
   let history = useHistory();
   let location = useLocation();
 
-  const applyButtonClass = clsx({
-    [classes.applySuccess]: applySuccess,
-  });
-
   const [valueTabsTrack, setValueTabsTrack] = useState(0);
   const handleTabChange = (event, newValue) => {
     setValueTabsTrack(newValue);
@@ -791,7 +176,7 @@ export default function Navigation(props) {
   };
 
   useEffect(() => {
-    if (location.pathname === "/" || location.pathname.startsWith('/map/')) {
+    if (location.pathname === "/" || location.pathname.startsWith("/map/")) {
       setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 1,
@@ -803,7 +188,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments: 0
+        selectedMenuIndexDocuments: 0,
       }));
     } else if (location.pathname === "/track") {
       setStateNav((state) => ({
@@ -817,8 +202,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments: 0
-
+        selectedMenuIndexDocuments: 0,
       }));
     } else if (location.pathname.startsWith("/flow")) {
       setStateNav((state) => ({
@@ -832,8 +216,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments: 0
-
+        selectedMenuIndexDocuments: 0,
       }));
     } else if (location.pathname === "/title") {
       setStateNav((state) => ({
@@ -848,8 +231,7 @@ export default function Navigation(props) {
         selectedMenuIndexM1Studio: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments: 0
-
+        selectedMenuIndexDocuments: 0,
       }));
     } else if (location.pathname === "/contacts") {
       setStateGrid((state) => ({
@@ -867,8 +249,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments: 0
-
+        selectedMenuIndexDocuments: 0,
       }));
     } else if (location.pathname === "/alerts") {
       setStateNav((state) => ({
@@ -882,8 +263,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments: 0
-
+        selectedMenuIndexDocuments: 0,
       }));
     } else if (location.pathname === "/dashboard") {
       setStateNav((state) => ({
@@ -897,8 +277,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 1,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments: 0
-
+        selectedMenuIndexDocuments: 0,
       }));
     } else if (location.pathname === "/studio") {
       setStateNav((state) => ({
@@ -912,8 +291,7 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 1,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments: 0
-
+        selectedMenuIndexDocuments: 0,
       }));
     } else if (location.pathname === "/activities") {
       setStateNav((state) => ({
@@ -927,11 +305,9 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 1,
-        selectedMenuIndexDocuments: 0
-
+        selectedMenuIndexDocuments: 0,
       }));
-    }
-    else if (location.pathname === "/documents") {
+    } else if (location.pathname === "/documents") {
       setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
@@ -943,12 +319,10 @@ export default function Navigation(props) {
         selectedMenuIndexDashboard: 0,
         selectedMenuIndexStudio: 0,
         selectedMenuIndexActivities: 0,
-        selectedMenuIndexDocuments: 1
-
+        selectedMenuIndexDocuments: 1,
       }));
     }
   }, [location, setStateNav]);
-
 
   useEffect(() => {
     if (location.pathname === "/track") {
@@ -967,7 +341,7 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (location.pathname === "/" || location.pathname.startsWith('/map/')) {
+    if (location.pathname === "/" || location.pathname.startsWith("/map/")) {
       setMatchLocation(true);
       setMatchFind(true);
     } else {
@@ -976,23 +350,6 @@ export default function Navigation(props) {
     }
   }, [location.pathname]);
 
-
-  //  useEffect(() => {
-  //     if (location.pathname === "/documents") {
-  //       // setMatchLocation(true);
-  //       setMatchDocument(true);
-  //     } else {
-  //       // setMatchLocation(false);
-  //       setMatchDocument(false);
-  //     }
-  //   }, [location.pathname]);
-
-  const handleSearchInputChange = (event) => {
-    setStateNav((state) => ({
-      ...state,
-      searchInputValue: event.currentTarget.value,
-    }));
-  };
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
@@ -1002,9 +359,9 @@ export default function Navigation(props) {
       currentAccounts && currentAccounts.length === 1
         ? currentAccounts[0]
         : (() => {
-          // Add choose account code here
-          return;
-        })();
+            // Add choose account code here
+            return;
+          })();
 
     const logoutRequest = {
       account: currentAccount,
@@ -1019,7 +376,6 @@ export default function Navigation(props) {
     }
 
     window.location.replace(window.location.origin);
-
   };
 
   const handleProfileMenuOpen = (event) => {
@@ -1063,29 +419,16 @@ export default function Navigation(props) {
         <FiberManualRecordIcon style={{ color: "#34F125" }} fontSize="small" />
       </MenuItem>
       <Divider />
-      <MenuItem
-        className={classes.userMenuItem}
-        onClick={(e) => openProfile(e)}
-        style={{ marginTop: 10 }}
-      >
-        <Typography
-          style={{ textDecoration: "none", color: "#1daee1" }}
-          variant="inherit"
-        >
+      <MenuItem className={classes.userMenuItem} onClick={(e) => openProfile(e)} style={{ marginTop: 10 }}>
+        <Typography style={{ textDecoration: "none", color: "#1daee1" }} variant="inherit">
           My Account
         </Typography>
       </MenuItem>
       {/* <FeatureFlag feature={FEATURES.USER_MANAGEMENT}>
       </FeatureFlag> */}
       {(stateApp?.user?.roles?.includes("Owner") || stateApp?.user?.roles?.includes("Admin")) && (
-        <MenuItem
-          className={classes.userMenuItem}
-          onClick={(e) => openUserManagement(e)}
-        >
-          <Typography
-            style={{ textDecoration: "none", color: "#1daee1" }}
-            variant="inherit"
-          >
+        <MenuItem className={classes.userMenuItem} onClick={(e) => openUserManagement(e)}>
+          <Typography style={{ textDecoration: "none", color: "#1daee1" }} variant="inherit">
             User Management
           </Typography>
         </MenuItem>
@@ -1096,13 +439,9 @@ export default function Navigation(props) {
     </Menu>
   );
 
-  const handleListItemClick = (event, index, path) => {
+  const handleListItemClick = (path) => {
     handleRouteChange(path);
     handleDrawerClose();
-  };
-
-  const handleListItemClickStudio = (event, index, path) => {
-    window.open("https://m1studio-dev.azurewebsites.net/", "_blank");
   };
 
   const handleRouteChange = (path) => {
@@ -1127,9 +466,6 @@ export default function Navigation(props) {
     setOpenDrawer(false);
   };
 
-  const handleFilterCardOpen = () => {
-    setOpenFilterCard(true);
-  };
   const handleFilterCardClose = () => {
     setOpenFilterCard(false);
     setValue(0);
@@ -1140,23 +476,11 @@ export default function Navigation(props) {
     setValue(0);
   };
 
-  const sendHome = () => {
-    history.push("/");
-  };
-
-  const toggleSupportDrawer = () => {
-    setSupportDrawer(!supportDrawer);
-  };
-
   const handleFilterTabChange = (event, newValue) => {
     if (!openFilterCard) {
       setOpenFilterCard(true);
     }
     setValue(newValue);
-  };
-
-  const handleChangeIndex = (index) => {
-    setValue(index);
   };
 
   const handleOpenContactForm = () => {
@@ -1165,18 +489,7 @@ export default function Navigation(props) {
   };
 
   const requestDemo = () => {
-    window.open(
-      "mailto:sales@m1neral.com?subject=Request for demo of premium features",
-      "_blank"
-    );
-  };
-
-  const handleClickAddDeal = () => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      dealDialog: true,
-      activeDeal: { cardId: null, laneId: null },
-    }));
+    window.open("mailto:sales@m1neral.com?subject=Request for demo of premium features", "_blank");
   };
 
   const handleClickAddActivity = () => {
@@ -1205,21 +518,11 @@ export default function Navigation(props) {
 
                 <div style={{ marginRight: 20 }}>
                   {matchFind ? (
-                    <Button
-                      color="secondary"
-                      size="large"
-                      onClick={handleClickLogo}
-                      className={classes.margin}
-                    >
+                    <Button color="secondary" size="large" onClick={handleClickLogo} className={classes.margin}>
                       <M1neralLogoWhiteLetters />
                     </Button>
                   ) : (
-                    <Button
-                      color="secondary"
-                      size="large"
-                      onClick={(event) => handleListItemClick(event, 0, "/")}
-                      className={classes.margin}
-                    >
+                    <Button color="secondary" size="large" onClick={(event) => handleListItemClick("/")} className={classes.margin}>
                       <M1neralLogoWhiteLetters />
                     </Button>
                   )}
@@ -1238,48 +541,26 @@ export default function Navigation(props) {
                 <DocumentSearch />
               </>
             )}
-            {location.pathname === "/contacts" && (
-              <ContactSearch />
-            )}
-            {location.pathname.includes("/contact/details") && (
-              <ContactDetailsSearch showLinkIcon={true} />
-            )}
+            {location.pathname === "/contacts" && <ContactSearch />}
+            {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
 
             {/*SEARCH UI FOR DEALS */}
             {location.pathname.startsWith("/flow") && <DealSearch />}
 
-            {matchTrack ? (
-              <CardHeader
-                className={classes.trackHeader}
-              />
-            ) : null}
+            {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
-            {matchFind ? (
+            {(matchFind || matchDocument) && (
               <div className={classes.search} id="searchBarDivParent">
                 <SearchBarWithToggleButton />
               </div>
-            ) : null}
-            {matchDocument ? (
-              <div className={classes.search} id="searchBarDivParent">
-                <SearchBarWithToggleButton />
-              </div>
-            ) : null}
+            )}
 
             <div className={classes.grow1} />
 
             {matchActivities ? (
               <div>
-                <div
-                  ref={anchorEl}
-                  className={classes.filterTabs}
-                  style={{ paddingRight: "10px" }}
-                >
-                  <Button
-                    onClick={handleClickAddActivity}
-                    color="secondary"
-                    variant="contained"
-                    startIcon={<Add />}
-                  >
+                <div ref={anchorEl} className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+                  <Button onClick={handleClickAddActivity} color="secondary" variant="contained" startIcon={<Add />}>
                     Add Activity
                   </Button>
                 </div>
@@ -1303,12 +584,7 @@ export default function Navigation(props) {
                       value={0}
                       className={classes.tab}
                       icon={
-                        <Badge
-                          badgeContent={
-                            stateApp.owners ? stateApp.owners.length : 0
-                          }
-                          color="secondary"
-                        >
+                        <Badge badgeContent={stateApp.owners ? stateApp.owners.length : 0} color="secondary">
                           <OwnershipIcon color="#fff" opacity="1.0" />
                         </Badge>
                       }
@@ -1318,14 +594,7 @@ export default function Navigation(props) {
                       value={1}
                       className={classes.tab}
                       icon={
-                        <Badge
-                          badgeContent={
-                            stateApp.trackedwells
-                              ? stateApp.trackedwells.length
-                              : 0
-                          }
-                          color="secondary"
-                        >
+                        <Badge badgeContent={stateApp.trackedwells ? stateApp.trackedwells.length : 0} color="secondary">
                           <WellIcon color="#fff" opacity="1.0" />
                         </Badge>
                       }
@@ -1351,10 +620,7 @@ export default function Navigation(props) {
                     value={0}
                     className={classes.tab}
                     icon={
-                      <Badge
-                        badgeContent={stateNav.geographyFilterCount}
-                        color="secondary"
-                      >
+                      <Badge badgeContent={stateNav.geographyFilterCount} color="secondary">
                         <GeographicIcon color="#fff" opacity="1.0" />
                       </Badge>
                     }
@@ -1365,10 +631,7 @@ export default function Navigation(props) {
                     value={1}
                     className={classes.tab}
                     icon={
-                      <Badge
-                        badgeContent={stateNav.wellFilterCount}
-                        color="secondary"
-                      >
+                      <Badge badgeContent={stateNav.wellFilterCount} color="secondary">
                         <WellIcon color="#fff" opacity="1.0" />
                       </Badge>
                     }
@@ -1379,10 +642,7 @@ export default function Navigation(props) {
                     value={2}
                     classes={{ root: classes.tab }}
                     icon={
-                      <Badge
-                        badgeContent={stateNav.ownershipFilterCount}
-                        color="secondary"
-                      >
+                      <Badge badgeContent={stateNav.ownershipFilterCount} color="secondary">
                         <OwnershipIcon color="#fff" opacity="1.0" />
                       </Badge>
                     }
@@ -1392,10 +652,7 @@ export default function Navigation(props) {
                     value={3}
                     classes={{ root: classes.tab }}
                     icon={
-                      <Badge
-                        badgeContent={stateNav.productionFilterCount}
-                        color="secondary"
-                      >
+                      <Badge badgeContent={stateNav.productionFilterCount} color="secondary">
                         <ProductionIcon color="#fff" opacity="1.0" />
                       </Badge>
                     }
@@ -1405,10 +662,7 @@ export default function Navigation(props) {
                     value={5}
                     classes={{ root: classes.tab }}
                     icon={
-                      <Badge
-                        badgeContent={stateNav.tagFilterCount}
-                        color="secondary"
-                      >
+                      <Badge badgeContent={stateNav.tagFilterCount} color="secondary">
                         <LocalOfferIcon htmlColor="#fff" opacity="1" />
                       </Badge>
                     }
@@ -1420,15 +674,8 @@ export default function Navigation(props) {
               <div style={{ display: "none" }}></div>
             )}
             <Divider style={{ margin: 1 }} orientation="vertical" />
-            <IconButton
-              style={{ left: "8.5px" }}
-              onClick={handleProfileMenuOpen}
-            >
-              {profileImage ? (
-                <Avatar src={profileImage} size="38" round />
-              ) : (
-                <Avatar name={stateApp.user.displayName} size="38" round />
-              )}
+            <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
+              {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
             </IconButton>
           </Toolbar>
         ) : (
@@ -1444,272 +691,14 @@ export default function Navigation(props) {
         )}
       </AppBar>
 
-      <Drawer
-        variant="temporary"
-        anchor="left"
-        className={clsx(classes.drawer, {
-          [classes.drawerOpen]: openDrawer,
-          [classes.drawerClose]: !openDrawer,
-        })}
-        classes={{
-          paper: clsx({
-            [classes.drawerOpen]: openDrawer,
-            [classes.drawerClose]: !openDrawer,
-          }),
-        }}
-        open={openDrawer}
-      >
-        <div className={classes.toolbar}>
-          <div className={classes.drawerOpenLogo}>
-            <M1neralLogo />
-          </div>
-
-          <IconButton
-            className={classes.iconArrow}
-            color="secondary"
-            onClick={handleDrawerClose}
-          >
-            {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
-            ) : (
-              <>
-                <ChevronLeftIcon />
-                <MenuIcon className={classes.menuIcon} />
-              </>
-            )}
-          </IconButton>
-        </div>
-        <List className={classes.menuList}>
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexDashboard === 1}
-            onClick={(event) => handleListItemClick(event, 0, "/dashboard")}
-            key="dashboard"
-          >
-            <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Dashboard"
-              />
-            </div>
-          </ListItem>
-
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexFind === 1}
-            onClick={(event) => handleListItemClick(event, 0, "/")}
-            key="home"
-          >
-            <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <SearchIcon />
-              </ListItemIcon>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Find"
-              />
-            </div>
-          </ListItem>
-
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexContacts === 1}
-            onClick={(event) => {
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                selectedContact: null,
-                contactSearchQuery: null,
-              }));
-              setStateNav((stateApp) => ({
-                ...stateApp,
-                contactFromMap: false,
-              }));
-              handleListItemClick(event, 0, "/contacts");
-            }}
-            key="contacts"
-          >
-            <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <PersonIcon />
-              </ListItemIcon>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Contacts"
-              />
-            </div>
-          </ListItem>
-
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexTransact === 1}
-            onClick={(event) => handleListItemClick(event, 0, "/flow")}
-            key="flow"
-          >
-            <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <FlowIcon />
-              </ListItemIcon>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Flow"
-              />
-              <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button
-                  disabled
-                  className={`${classes.betaSideNav3} uppercase`}
-                  edge="start"
-                  aria-label="beta"
-                >
-                  beta
-                </Button>
-              </ListItemSecondaryAction>
-            </div>
-          </ListItem>
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexDocuments === 1}
-            onClick={(event) => {
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                selectedContact: null,
-              }));
-              handleListItemClick(event, 0, "/documents");
-            }}
-            key="documents"
-          >
-            <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <DescriptionIcon />
-              </ListItemIcon>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Documents"
-              />
-              <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button
-                  disabled
-                  className={`${classes.betaSideNav3} uppercase`}
-                  edge="start"
-                  aria-label="beta"
-                >
-                  beta
-                </Button>
-              </ListItemSecondaryAction>
-            </div>
-          </ListItem>
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexActivities === 1}
-            onClick={(event) => handleListItemClick(event, 0, "/activities")}
-            key="activities"
-          >
-            <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <ActivityIcon />
-              </ListItemIcon>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Activities"
-              />
-              <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button
-                  disabled
-                  className={`${classes.betaSideNav3} uppercase`}
-                  edge="start"
-                  aria-label="beta"
-                >
-                  beta
-                </Button>
-              </ListItemSecondaryAction>
-            </div>
-          </ListItem>
-
-          {/* TEMP REMOVAL */}
-          {/* <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexStudio === 1}
-            onClick={(event) => handleListItemClick(event, 0, "/studio")}
-            key="studio"
-          >
-            <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <LayersIcon />
-              </ListItemIcon>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Studio"
-              />
-              <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button
-                  disabled
-                  className={`${classes.betaSideNav3} uppercase`}
-                  edge="end"
-                  aria-label="beta"
-                >
-                  beta
-                </Button>
-              </ListItemSecondaryAction>
-            </div>
-          </ListItem> */}
-
-        </List>
-
-        {/* <List className={classes.menuListBottom}>
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndex === 1}
-            onClick={() => toggleSupportDrawer()}
-            key="support"
-          >
-            <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <HeadsetMicIcon />
-              </ListItemIcon>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Support"
-              />
-            </div>
-          </ListItem>
-
-        </List> */}
-
-      </Drawer>
+      <SideNavigation
+        openDrawer={openDrawer}
+        stateNav={stateNav}
+        setStateNav={setStateNav}
+        setStateApp={setStateApp}
+        handleListItemClick={handleListItemClick}
+        handleDrawerClose={handleDrawerClose}
+      />
 
       {supportDrawer && (
         <ClickAwayListener onClickAway={() => setSupportDrawer(false)}>
@@ -1733,17 +722,10 @@ export default function Navigation(props) {
       )}
 
       <ClickAwayListener onClickAway={() => setOpenSupportCenter(false)}>
-        <SupportCenterModal
-          open={openSupportCenter}
-          openContactForm={handleOpenContactForm}
-          onClose={() => setOpenSupportCenter(false)}
-        />
+        <SupportCenterModal open={openSupportCenter} openContactForm={handleOpenContactForm} onClose={() => setOpenSupportCenter(false)} />
       </ClickAwayListener>
 
-      <ContactFormModal
-        open={openContactForm}
-        onClose={() => setOpenContactForm(false)}
-      />
+      <ContactFormModal open={openContactForm} onClose={() => setOpenContactForm(false)} />
 
       {openFilterCard ? (
         <div ref={anchorEl} className={classes.tabPanelWrapper}>
@@ -1757,10 +739,7 @@ export default function Navigation(props) {
                   }}
                   action={
                     <div className={classes.actionWrapper}>
-                      <IconButton
-                        color="secondary"
-                        onClick={handleFilterCardClose}
-                      >
+                      <IconButton color="secondary" onClick={handleFilterCardClose}>
                         <CloseIcon />
                       </IconButton>
                     </div>
@@ -1785,10 +764,7 @@ export default function Navigation(props) {
                   }}
                   action={
                     <div className={classes.actionWrapper}>
-                      <IconButton
-                        color="secondary"
-                        onClick={handleFilterCardClose}
-                      >
+                      <IconButton color="secondary" onClick={handleFilterCardClose}>
                         <CloseIcon />
                       </IconButton>
                     </div>
@@ -1812,10 +788,7 @@ export default function Navigation(props) {
                   }}
                   action={
                     <div>
-                      <IconButton
-                        color="secondary"
-                        onClick={handleFilterCardClose}
-                      >
+                      <IconButton color="secondary" onClick={handleFilterCardClose}>
                         <CloseIcon />
                       </IconButton>
                     </div>
@@ -1839,10 +812,7 @@ export default function Navigation(props) {
                   }}
                   action={
                     <div>
-                      <IconButton
-                        color="secondary"
-                        onClick={handleFilterCardClose}
-                      >
+                      <IconButton color="secondary" onClick={handleFilterCardClose}>
                         <CloseIcon />
                       </IconButton>
                     </div>
@@ -1866,10 +836,7 @@ export default function Navigation(props) {
                   }}
                   action={
                     <div>
-                      <IconButton
-                        color="secondary"
-                        onClick={handleFilterCardClose}
-                      >
+                      <IconButton color="secondary" onClick={handleFilterCardClose}>
                         <CloseIcon />
                       </IconButton>
                     </div>
