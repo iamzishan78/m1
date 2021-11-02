@@ -52,7 +52,6 @@ export const useStyles = makeStyles((theme) => ({
   },
 
   iconArrow: {
-    // background: "rgba(23, 170, 221, 1)",
     color: "gray",
     textAlign: "right",
     padding: "4px 0",
@@ -75,7 +74,6 @@ export const useStyles = makeStyles((theme) => ({
     height: "100%",
     top: "0",
     color: "#fff",
-    //boxShadow: "1px 0px 100vw black",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -88,18 +86,11 @@ export const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     overflowX: "hidden",
-    /*width: theme.spacing(8) + 1,*/
     width: "0%",
-    /*[theme.breakpoints.up('sm')]: {
-        width: theme.spacing(8) + 1
-      }*/
   },
   toolbar: {
     display: "flex",
     alignItems: "center",
-    // justifyContent: "flex-end",
-    // padding: theme.spacing(0, 1),
-    // ...theme.mixins.toolbar
   },
   content: {
     flexGrow: 1,
@@ -121,16 +112,12 @@ export const useStyles = makeStyles((theme) => ({
     position: "relative",
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.15),
-    // "&:hover": {
-    //   backgroundColor: fade(theme.palette.common.white, 0.25),
-    // },
     marginRight: theme.spacing(2),
     marginLeft: 5,
     width: ({ mapGridCardActivated }) => (mapGridCardActivated ? "34%" : "34%"),
     transition: "width 0.5s",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
-      // width: "34%",
     },
   },
   searchInput: {
@@ -142,9 +129,7 @@ export const useStyles = makeStyles((theme) => ({
       height: "100%",
       width: "100%",
       maxWidth: "100%",
-      "&:hover": {
-        // backgroundColor: fade(theme.palette.common.white, 0.25),
-      },
+      "&:hover": {},
       "& .mapboxgl-ctrl-geocoder--input": {
         borderRadius: theme.shape.borderRadius,
         width: "100%",
@@ -292,12 +277,6 @@ export const useStyles = makeStyles((theme) => ({
       width: "0.75em",
       height: "0.75em",
     },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "1.0em",
-    // },
-    // "&::-webkit-scrollbar-track": {
-    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    // },
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
       borderRadius: 10,
@@ -348,7 +327,6 @@ export const useStyles = makeStyles((theme) => ({
 
   menuListItemDisabled: {
     paddingBottom: "5%",
-    //width: drawerWidth - 1,
     paddingTop: "5%",
     marginTop: "0%",
     "&:hover": {
