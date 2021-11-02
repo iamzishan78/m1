@@ -87,7 +87,8 @@ const useStyles = makeStyles((theme) => ({
   },
   contentRoot: {
     padding: "15px",
-    maxHeight: "900px",
+    height: "calc(100% - 130px)",
+    position: "absolute",
     overflow: "overlay",
   },
   footer: {
