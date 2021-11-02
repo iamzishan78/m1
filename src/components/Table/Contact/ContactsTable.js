@@ -58,7 +58,7 @@ function ContactsTable(props) {
   // function states
   const selectedFilters = useRef([]);
   const [filters, setFilters] = useState([]);
-  const [columns, Columns] = useState(TableHeader);
+  const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState({
@@ -161,17 +161,7 @@ function ContactsTable(props) {
   useEffect(() => {
     if (selectedGridView?.filters) {
       columns.forEach((column, index) => {
-        if (selectedGridView?.columns) {
-          if (selectedGridView.columns.includes(column.name)) {
-            column.options.display = true;
-            if (column.esKey && !column.noFilter) {
-              column.options.filter = true;
-            }
-          } else {
-            column.options.display = false;
-            column.options.filter = false;
-          }
-        }
+        setColumnDisplayAndFilter(column);
         const value = get(
           selectedGridView?.filters?.find((filter) => {
             return (
@@ -191,6 +181,7 @@ function ContactsTable(props) {
       });
     } else {
       columns.forEach((column, index) => {
+        setColumnDisplayAndFilter(column);
         if (column.options) {
           column.options.filterList = [];
         }
@@ -198,6 +189,31 @@ function ContactsTable(props) {
     }
     setColumnsData(JSON.parse(JSON.stringify(columns)))
   }, [selectedGridView]);
+
+  const setColumnDisplayAndFilter = (column) => {
+    if (selectedGridView?.columns) {
+      if (selectedGridView.columns.includes(column.name)) {
+        column.options.display = true;
+        if (column.esKey && !column.noFilter) {
+          column.options.filter = true;
+        }
+      } else {
+        column.options.display = false;
+        column.options.filter = false;
+      }
+    }else{
+      if(TableHeader.find(col => col.name === column.name).options.display !== false) {
+        column.options.display = true;
+        if (column.esKey && !column.noFilter) {
+          column.options.filter = true;
+        }
+      }else{
+        column.options.display = false;
+        column.options.filter = false;
+      }
+    }
+  }
+
 
   const setColumnsData = (columns) => {
     columns.forEach((column, index) => {
