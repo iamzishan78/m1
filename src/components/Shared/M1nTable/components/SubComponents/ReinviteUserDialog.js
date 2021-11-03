@@ -36,7 +36,7 @@ export default function ReinviteUserDialog(props) {
         />
       </DialogTitle>
       <DialogContent>
-        <h3 className={modalClass.inputLabel}>Resend Invite for {selectedUser.displayName}({selectedUser.emails})</h3>
+        <h3 className={modalClass.inputLabel}>Resend Invite for {selectedUser?.displayName}({selectedUser?.emails})</h3>
       </DialogContent>
       <DialogActions>
         <Button
