@@ -502,7 +502,7 @@ export default function Navigation(props) {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar
+      {/* <AppBar
         position="fixed"
         className={clsx(classes.appBar, {
           [classes.appBarShift]: openDrawer,
@@ -530,7 +530,6 @@ export default function Navigation(props) {
               </div>
             ) : null}
 
-            {/*SEARCH UI FOR ACTIVITIES */}
             {location.pathname === "/activities" && (
               <>
                 <ActivitySearch />
@@ -544,7 +543,6 @@ export default function Navigation(props) {
             {location.pathname === "/contacts" && <ContactSearch />}
             {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
 
-            {/*SEARCH UI FOR DEALS */}
             {location.pathname.startsWith("/flow") && <DealSearch />}
 
             {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
@@ -689,7 +687,7 @@ export default function Navigation(props) {
             )}
           </div>
         )}
-      </AppBar>
+      </AppBar> */}
 
       <SideNavigation
         openDrawer={openDrawer}
@@ -698,6 +696,7 @@ export default function Navigation(props) {
         setStateApp={setStateApp}
         handleListItemClick={handleListItemClick}
         handleDrawerClose={handleDrawerClose}
+        handleDrawerOpen={handleDrawerOpen}
       />
 
       {supportDrawer && (

@@ -238,7 +238,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           flexDirection: "row",
           width: "50px",
           maxWidth: "425px",
-          left: stateMapControls.expandedPanel ? "0px" : type === "marketplace" ? "-567px" : "0px",
+          left: stateMapControls.expandedPanel ? "52px" : type === "marketplace" ? "-567px" : "52px",
           listStyleType: "none",
           zIndex: "1240",
         }}

@@ -84,16 +84,17 @@ const useStyles = makeStyles((theme) => ({
   },
   map: {
     position: "absolute",
-    top: "64px",
+    top: "0px",
     bottom: "0",
     width: "100%",
-    height: "calc(100% - 64px)",
+    height: "calc(100vh - 0px)",
     overflow: "hidden !important",
     "& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib": {
       display: "none",
     },
     "& .mapboxgl-canvas-container > canvas": {
       cursor: ({ drawingCircle }) => (drawingCircle ? "crosshair" : "inherit"),
+      height: "100vh",
     },
     "& .mapboxgl-popup-close-button": { display: "none" },
   },
@@ -411,9 +412,9 @@ function Map() {
           ...stateApp,
           fitBounds: { ...fitBounds },
         }));
-        jsonParcel.layer = { id: parcel.layer }
+        jsonParcel.layer = { id: parcel.layer };
         const feature = {
-          layer : { id: parcel.layer },
+          layer: { id: parcel.layer },
           ...jsonParcel,
           id: parcel._id,
         };
@@ -1977,9 +1978,9 @@ function Map() {
         let baseFilter;
         stateApp?.layers?.find(
           (layer) =>
-          (baseFilter =
-            Array.isArray(layer?.layerPaintProps) &&
-            layer?.layerPaintProps?.find((layerPaintProp) => layerPaintProp?.id === filterLayer)?.filter)
+            (baseFilter =
+              Array.isArray(layer?.layerPaintProps) &&
+              layer?.layerPaintProps?.find((layerPaintProp) => layerPaintProp?.id === filterLayer)?.filter)
         );
         return baseFilter || [];
       };
@@ -4297,8 +4298,9 @@ function Map() {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
-            }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.wellSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
+            stateApp.mapboxglAccessToken
+          }`;
 
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
@@ -4371,8 +4373,9 @@ function Map() {
         }
 
         if (!currentFeature) {
-          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${stateApp.mapboxglAccessToken
-            }`;
+          const endpoint = `https://api.mapbox.com/v4/${wellsTileset}/tilequery/${stateApp.permitSelectedCoordinates.join()}.json?radius=1&limit=5&dedupe&layers=wellPoints&access_token=${
+            stateApp.mapboxglAccessToken
+          }`;
           const headers = new Headers();
           headers.append("Content-Type", "application/json");
           headers.append("api-key", "1AE3C6346B38CEB007191D51CFDDFF65");
@@ -5996,7 +5999,7 @@ function Map() {
             position="relative"
             zIndex={99}
             cardWidthExpanded="50vw"
-            cardHeightExpanded="calc(100vh - 64px)"
+            cardHeightExpanded="calc(100vh - 0px)"
             targetSourceId={stateApp.selectedWell.id}
             targetLabel="well"
           />
@@ -6017,7 +6020,7 @@ function Map() {
             cardLeft={0}
             zIndex={99}
             cardWidthExpanded="50vw"
-            cardHeightExpanded="calc(100vh - 64px)"
+            cardHeightExpanded="calc(100vh - 0px)"
             targetSourceId={stateApp.selectedParcel.id}
             targetLabel="parcel"
             deleteParcel={deleteParcel}
@@ -6044,7 +6047,7 @@ function Map() {
                 zIndex={3000}
                 cardWidth="375px"
                 cardWidthExpanded="50vw"
-                cardHeightExpanded="calc(100vh - 64px)"
+                cardHeightExpanded="calc(100vh - 0px)"
                 targetSourceId={stateApp.selectedPermit.Id}
                 targetLabel="recent_submitted_permits"
               ></ExpandableCardProvider>
@@ -6074,7 +6077,7 @@ function Map() {
                     zIndex={3000}
                     cardWidth="350px"
                     cardWidthExpanded="50vw"
-                    cardHeightExpanded="calc(100vh - 64px)"
+                    cardHeightExpanded="calc(100vh - 0px)"
                     targetSourceId={stateApp.selectedWell.id}
                     targetLabel="well"
                   />
@@ -6115,7 +6118,7 @@ function Map() {
                     zIndex={99}
                     cardWidth="350px"
                     cardWidthExpanded="50vw"
-                    cardHeightExpanded="calc(100vh - 64px)"
+                    cardHeightExpanded="calc(100vh - 0px)"
                     targetSourceId={stateApp.selectedParcel.id}
                     targetLabel="parcel"
                     deleteParcel={deleteParcel}

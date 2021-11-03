@@ -14,8 +14,6 @@ import Drawer from "./components/Drawer";
 import { Container } from "@material-ui/core";
 import DocumentsTable from "components/Table/Documents/DocumentsTable";
 
-
-
 const useStyles = makeStyles((theme) => ({
   root: {
     "& div": {
@@ -32,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
         },
         "&> table": {
           bottom: 0,
-        }
+        },
       },
     },
   },
@@ -45,8 +43,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   fileTitle: {
-    padding: '12px',
-    fontWeight: 'bold'
+    padding: "12px",
+    fontWeight: "bold",
   },
 }));
 
@@ -64,13 +62,12 @@ export default function DocumentComponent() {
       {/* <Container 
         maxWidth='false' 
         style={{overflow: 'auto', 
-        height: 'calc(100vh - 64px)'
+        height: 'calc(100vh - 0px)'
     }}> */}
 
       <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} />
       {/* <M1nTable dense parent="Documents"></M1nTable> */}
       <Drawer data={true}></Drawer>
-
 
       <Dialog
         className={classes.dialogExpCard}
@@ -78,7 +75,7 @@ export default function DocumentComponent() {
         maxWidth="xl"
         open={stateApp.pdfView ? true : false}
         onClose={() => {
-          window.history.pushState('', '', `/documents`);
+          window.history.pushState("", "", `/documents`);
           setStateApp((state) => ({
             ...state,
             pdfView: null,
@@ -102,7 +99,7 @@ export default function DocumentComponent() {
                 className="float-right"
                 color="inherit"
                 onClick={() => {
-                  window.history.pushState('', '', `/documents`);
+                  window.history.pushState("", "", `/documents`);
                   setStateApp((state) => ({
                     ...state,
                     pdfView: null,
@@ -116,11 +113,7 @@ export default function DocumentComponent() {
           </Grid>
         </Toolbar>
 
-        <Document
-          file={stateApp.pdfView?.viewToken}
-          options={{ workerSrc: "/pdf.worker.js" }}
-          onLoadSuccess={onDocumentLoadSuccess}
-        >
+        <Document file={stateApp.pdfView?.viewToken} options={{ workerSrc: "/pdf.worker.js" }} onLoadSuccess={onDocumentLoadSuccess}>
           {Array.from(new Array(numPages), (el, index) => (
             <Page key={`page_${index + 1}`} pageNumber={index + 1} />
           ))}
@@ -129,11 +122,8 @@ export default function DocumentComponent() {
         {/* {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === 'pdf' ? (
           <div className={classes.leftColumn}> <DocViewer DocStyle={{ backgroundColor: 'white !important', width: '70vw' }} divCondition={true}></DocViewer></div>
         ): null} */}
-
       </Dialog>
       {/* </Container> */}
-
-
     </div>
   );
 }

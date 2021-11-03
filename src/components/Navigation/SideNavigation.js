@@ -25,7 +25,7 @@ const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   padding-right: 15px;
 `;
 
-const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handleListItemClick, handleDrawerClose }) => {
+const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handleListItemClick, handleDrawerClose, handleDrawerOpen }) => {
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
   const classes = useStyles({ mapGridCardActivated });
   const theme = useTheme();
@@ -33,7 +33,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
   return (
     <div>
       <Drawer
-        variant="temporary"
+        variant="permanent"
         anchor="left"
         className={clsx(classes.drawer, {
           [classes.drawerOpen]: openDrawer,
@@ -45,11 +45,9 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             [classes.drawerClose]: !openDrawer,
           }),
         }}
-        open={openDrawer}
       >
         <div className={classes.toolbar}>
-          <div className={classes.drawerOpenLogo}>
-            {/* <M1neralLogo /> */}
+          <div className={classes.drawerOpenLogo} onClick={handleDrawerOpen}>
             <M1neralLogoWhiteLetters />
           </div>
 

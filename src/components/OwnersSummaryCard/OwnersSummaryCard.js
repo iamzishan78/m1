@@ -26,11 +26,11 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   mainPanelsDiv: {
-    maxHeight: "calc(100% - 64px)",
+    maxHeight: "calc(100vh - 0px)",
     overflow: "auto",
     "&::-webkit-scrollbar": {
       height: "0.4em",
-      width: "0.4em"
+      width: "0.4em",
     },
     "&::-webkit-scrollbar-track": {
       "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
@@ -39,14 +39,11 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#929292",
       borderRadius: 5,
     },
-    height: "calc(100% - 64px)",
+    height: "calc(100vh - 0px)",
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
-          minHeight: ({ mapGridCardActivated }) =>
-            mapGridCardActivated === "exp"
-              ? "calc(91vh - 415px)"
-              : "calc(60vh - 415px)",
+          minHeight: ({ mapGridCardActivated }) => (mapGridCardActivated === "exp" ? "calc(91vh - 415px)" : "calc(60vh - 415px)"),
         },
       },
     },
@@ -55,24 +52,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function OwnersSummaryCard(props) {
   const dispatch = useDispatch();
-  const { selectedOwner, mapGridCardActivated } = useSelector(
-    ({ MapGridCard }) => MapGridCard
-  );
+  const { selectedOwner, mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles({ mapGridCardActivated });
 
   return (
-    <Grid
-      container
-      className={`cancelDraggableEffect  ${classes.mainPanelsDiv}`}
-      spacing={0}
-    >
+    <Grid container className={`cancelDraggableEffect  ${classes.mainPanelsDiv}`} spacing={0}>
       <Grid item sm={12}>
-        <Breadcrumbs
-          separator={<NavigateNextIcon fontSize="small" />}
-          aria-label="breadcrumb"
-          className={classes.breadcrumbs}
-        >
+        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb" className={classes.breadcrumbs}>
           <Typography
             className="clickable"
             color="secondary"
@@ -96,37 +83,17 @@ export default function OwnersSummaryCard(props) {
             Interest Owners
           </Typography>
           <Typography className="wellInterestsText">
-            {selectedOwner && selectedOwner.name
-              ? selectedOwner.name
-              : selectedOwner.OwnerName}
+            {selectedOwner && selectedOwner.name ? selectedOwner.name : selectedOwner.OwnerName}
           </Typography>
           <Typography className="wellInterestsText">Well Interests</Typography>
         </Breadcrumbs>
       </Grid>
 
-      <Grid
-        item
-        sm={12}
-        style={{ backgroundColor: "#fff", minHeight: "194px" }}
-      >
-        <WellInterestsTopSumary
-          id={
-            selectedOwner && selectedOwner.id
-              ? selectedOwner.id
-              : selectedOwner.Id
-          }
-        />
+      <Grid item sm={12} style={{ backgroundColor: "#fff", minHeight: "194px" }}>
+        <WellInterestsTopSumary id={selectedOwner && selectedOwner.id ? selectedOwner.id : selectedOwner.Id} />
       </Grid>
       <Grid item sm={12} style={{ backgroundColor: "#fff" }}>
-        <M1nTable
-          dense
-          parent="owner_WellInterests"
-          id={
-            selectedOwner && selectedOwner.id
-              ? selectedOwner.id
-              : selectedOwner.Id
-          }
-        />
+        <M1nTable dense parent="owner_WellInterests" id={selectedOwner && selectedOwner.id ? selectedOwner.id : selectedOwner.Id} />
       </Grid>
     </Grid>
   );

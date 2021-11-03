@@ -44,7 +44,6 @@ export const useStyles = makeStyles((theme) => ({
     // backgroundColor: "red",
     backgroundColor: "#0e111a",
 
-
     // opacity: "0.94",
     minWidth: "400px",
     height: "50px",
@@ -135,7 +134,7 @@ export const useStyles = makeStyles((theme) => ({
     // for layer panel
     backgroundColor: "#0e111a",
     overflow: "auto",
-    height: "calc(100vh - 167px)",
+    height: "calc(100vh - 103px)",
     maxheight: "calc(100vh - 167px)",
     paddingTop: 10,
     paddingBottom: 10,
@@ -174,7 +173,7 @@ export const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       width: "auto",
     },
-    "& .MuiInputBase-root": { width: "93% !important" }
+    "& .MuiInputBase-root": { width: "93% !important" },
   },
   iconSearch: {
     height: "100%",
@@ -294,8 +293,7 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
 }))(MenuItem);
 
 export const StyledMenuItem = withStyles((theme) => ({
-
-  // outdoors, satellite, dark, light, etc. list item background 
+  // outdoors, satellite, dark, light, etc. list item background
   root: {
     fontFamily: "Poppins",
     display: "block",
@@ -314,8 +312,7 @@ export const StyledMenuItem = withStyles((theme) => ({
 }))(MenuItem);
 
 export const StyledListItemSecondaryAction = withStyles((theme) => ({
-
-  // this is the layer "manager" button styling 
+  // this is the layer "manager" button styling
 
   root: {
     "& .MuiButton-textPrimary": {
@@ -331,9 +328,8 @@ export const StyledListItemSecondaryAction = withStyles((theme) => ({
 }))(ListItemSecondaryAction);
 
 export const StyledListItem2 = withStyles((theme) => ({
-
   // this is the "Base Map Layers header"
-  
+
   root: {
     fontFamily: "Poppins",
     "&:hover": {

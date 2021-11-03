@@ -9,7 +9,6 @@ export const useStyles = makeStyles((theme) => ({
     display: "flex",
     width: "100%",
     height: "100%",
-    paddingTop: "64px",
   },
   appBar: {
     height: "64px",
@@ -35,22 +34,21 @@ export const useStyles = makeStyles((theme) => ({
     display: "none",
   },
   drawer: {
-    background: "rgba(1, 17, 51, 1.0)",
+    background: "rgba(5, 11, 24, 1.0)",
     width: drawerWidth,
     flexShrink: 0,
     whiteSpace: "nowrap",
+    zIndex: "99999 !important",
   },
-
   filterTabs: {
     paddingRight: "25px",
     position: "relative",
     left: 0,
   },
-
   drawerOpenLogo: {
     paddingTop: "10px",
+    cursor: "pointer",
   },
-
   iconArrow: {
     color: "gray",
     textAlign: "right",
@@ -68,9 +66,8 @@ export const useStyles = makeStyles((theme) => ({
     fontSize: "30px",
   },
   drawerOpen: {
-    background: "#01091a",
-    zIndex: "99999 !important",
-    width: drawerWidth,
+    background: "rgba(5, 11, 24, 1.0)",
+    width: "255px",
     height: "100%",
     top: "0",
     color: "#fff",
@@ -80,13 +77,16 @@ export const useStyles = makeStyles((theme) => ({
     }),
   },
   drawerClose: {
-    background: "rgba(1, 17, 51, 1.0)",
+    background: "rgba(5, 11, 24, 1.0)",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
     overflowX: "hidden",
-    width: "0%",
+    width: theme.spacing(6) + 4,
+    [theme.breakpoints.up("sm")]: {
+      width: theme.spacing(6) + 4,
+    },
   },
   toolbar: {
     display: "flex",
@@ -191,7 +191,6 @@ export const useStyles = makeStyles((theme) => ({
     padding: "0px",
     margin: "0px",
     background: "rgba(1, 17, 51, 0)",
-    // height: "750px",
     minWidth: "750px",
     position: "absolute",
     top: "45px",
@@ -239,7 +238,6 @@ export const useStyles = makeStyles((theme) => ({
     fontSize: 12,
     color: "rgba(0, 0, 0, 0.52) !important ",
   },
-
   betaSideNav5: {
     textTransform: "inherit",
     position: "relative",
@@ -253,7 +251,6 @@ export const useStyles = makeStyles((theme) => ({
     fontWeight: 900,
     color: "rgba(228, 167, 115, 1) !important ",
   },
-
   betaText: {
     fontSize: 10,
     top: 0,
@@ -309,9 +306,9 @@ export const useStyles = makeStyles((theme) => ({
     position: "relative",
     bottom: "90%",
   },
-
   menuListItem: {
     paddingBottom: "5%",
+    paddingLeft: "13px",
     width: drawerWidth,
     paddingTop: "5%",
     marginTop: "0%",
@@ -321,10 +318,12 @@ export const useStyles = makeStyles((theme) => ({
     },
     backgroundColor: theme.primary,
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: "rgba(35,55,77,1)",
+      color: "rgba(7,129,171,1)",
+      "& svg": {
+        fill: "#fff",
+      },
     },
   },
-
   menuListItemDisabled: {
     paddingBottom: "5%",
     paddingTop: "5%",
@@ -337,14 +336,15 @@ export const useStyles = makeStyles((theme) => ({
       color: "rgba(128,136,153,0.4)",
     },
   },
-
   menuListItemSelected: {
     backgroundColor: "rgba(23, 170, 221, 0.08) !important",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: "rgba(23,170,221,1.0)",
       fontWeight: "bold",
+      "& svg": {
+        fill: "rgba(23,170,221,1.0)",
+      },
     },
-    borderLeft: "solid 4px  rgba(23,170,221,1.0)",
     display: "flex",
   },
   avatarUser: {
@@ -391,7 +391,6 @@ export const useStyles = makeStyles((theme) => ({
       backgroundColor: green[700],
     },
   },
-
   overlay: {
     position: "absolute",
     top: 0,
@@ -400,7 +399,6 @@ export const useStyles = makeStyles((theme) => ({
     right: 0,
     backgroundColor: "rgba(0,0,0,0.2)",
   },
-
   applyProgress: {
     color: green[500],
     position: "absolute",
@@ -435,7 +433,6 @@ export const useStyles = makeStyles((theme) => ({
     marginTop: "6px",
     color: theme.palette.secondary.contrastText,
   },
-
   supportDrawer: {
     position: "fixed",
     left: drawerWidth,
@@ -452,8 +449,8 @@ export const useStyles = makeStyles((theme) => ({
   },
   sideNavIcon: {
     minWidth: 0,
-    marginRight: 8,
-    border: "1px solid",
+    marginRight: 12,
+    border: "1px solid #fff",
     borderRadius: "5px",
   },
   sideNavText: {
@@ -469,7 +466,6 @@ export const useStyles = makeStyles((theme) => ({
   },
   activitySearchField: {
     color: "#fff",
-
     "& .MuiOutlinedInput-input": {
       color: "#ffffff",
       "&::placeholder": {
