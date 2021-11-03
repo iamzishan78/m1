@@ -187,8 +187,8 @@ const AppProvider = (props) => {
 
       if (tenantName) {
         let tenant = tenantsCredentials(tenantName);
-        tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint
-        tenant.apolloClientEndpoint = isDev ? apolloClientEndpointDev : tenant.apolloClientEndpoint
+        tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
+        tenant.apolloClientEndpoint = isDev ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
         let myMSALObjInt = MSALObj(tenant);
         setStateApp((state, props) => {
           return {
@@ -268,15 +268,14 @@ const AppProvider = (props) => {
   );
 };
 
-const apolloClientEndpointDev = "http://localhost:7071/api/m1graph"
-const isDev = process.env.NODE_ENV === 'development'
+const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
+const isDev = process.env.NODE_ENV === "development";
 
 const setApolloHeaders = (config, authToken, idToken) => {
-  if (!config.headers) config.headers = {}
-  config.headers["X-ZUMO-AUTH"] = authToken
-  if (isDev)
-    config.headers["X-MS-TOKEN-AAD-ID-TOKEN"] = idToken
-  return config
-}
+  if (!config.headers) config.headers = {};
+  config.headers["X-ZUMO-AUTH"] = authToken;
+  if (isDev) config.headers["X-MS-TOKEN-AAD-ID-TOKEN"] = idToken;
+  return config;
+};
 
 export { AppContext, AppProvider, apolloClientEndpointDev, isDev, setApolloHeaders };

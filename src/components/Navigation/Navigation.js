@@ -395,7 +395,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "0px",
   },
   cardContent: {
-    maxHeight: "400px",
+    maxHeight: "650px",
     backgroundColor: "#fff",
     padding: "0px",
     overflow: "auto",
