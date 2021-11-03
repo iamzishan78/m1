@@ -3,6 +3,9 @@ import { Breadcrumbs, Typography, IconButton } from "@material-ui/core";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Menu, MenuItem } from "@material-ui/core";
+import { AutoCompleteFilter } from "../AutoCompleteFilter";
+import get from "lodash/get";
+
 
 export const handleTagColumn = (TableHeader, cleanAvailableTags) => {
   return cleanAvailableTags.length > 0
@@ -53,6 +56,96 @@ export const handleCustomFilterColumns = (TableHeader, filterObject) => {
         return column;
       })
     : TableHeader;
+};
+
+
+const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column) => {
+  if (selectedGridView?.columns) {
+    if (selectedGridView.columns.includes(column.name)) {
+      column.options.display = true;
+      if (column.esKey && !column.noFilter) {
+        column.options.filter = true;
+      }
+    } else {
+      column.options.display = false;
+      column.options.filter = false;
+    }
+  }else{
+    if(TableHeader.find(col => col.name === column.name).options.display !== false) {
+      column.options.display = true;
+      if (column.esKey && !column.noFilter) {
+        column.options.filter = true;
+      }
+    }else{
+      column.options.display = false;
+      column.options.filter = false;
+    }
+  }
+}
+
+export const setColumnsData = (TableHeader, filters, columns, setColumns, setFilters, query) => {
+  columns.forEach((column, index) => {
+    if (column?.options?.filter) {
+      column.options = {
+        ...column.options,
+        filter: true,
+        filterType: "custom",
+        filterList: filters[index],
+        filterOptions: {
+          display: (filterList, onChange, index, column) => {
+            column.filterKey = TableHeader.find(
+              (el) => el.name === column.name
+            )?.esKey;
+            return (
+              <AutoCompleteFilter
+                filterList={filterList}
+                column={column}
+                index={index}
+                onChange={onChange}
+                query={query}
+              />
+            );
+          },
+        },
+        onFilterChange: (columnChanged, filterList) => {
+          setFilters(filterList);
+        },
+      };
+    }
+  });
+  setColumns(columns);
+};
+
+export const handleSelectedGridChange = (TableHeader, selectedGridView, columns) => {
+  if (selectedGridView?.filters) {
+    columns.forEach((column, index) => {
+      setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
+      const value = get(
+        selectedGridView?.filters?.find((filter) => {
+          return (
+            JSON.stringify(filter.field) === JSON.stringify(column.esKey)
+          );
+        }),
+        "value",
+        ""
+      );
+      let filterList = [];
+      if (value) {
+        filterList = [value];
+      }
+      if (column?.options?.filter) {
+        column.options.filterList = filterList;
+      }
+    });
+  } else {
+    columns.forEach((column, index) => {
+      setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
+      if (column.options) {
+        column.options.filterList = [];
+      }
+    });
+  }
+  return columns
 };
 
 export const HeaderComponent = ({

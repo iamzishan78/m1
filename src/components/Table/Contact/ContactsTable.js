@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Container } from "@material-ui/core";
-import get from "lodash/get";
+
 import moment from "moment";
 
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
 import Contact from "components/Shared/svgIcons/contact";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
-import { AutoCompleteFilter } from "../AutoCompleteFilter";
+
 import Loader from "components/Loaders";
 import GridView from "components/Shared/GridView";
 import { HeaderComponent } from 'components/Table/helpers'
+import { handleSelectedGridChange, setColumnsData } from 'components/Table/helpers'
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
@@ -100,20 +101,6 @@ function ContactsTable(props) {
     });
   }, [getESContacts, props.parent, props.contactSearchQuery, selectedGridView]);
 
-  const getContactsAddress = (contact) => {
-    let address = "https://www.google.com/maps/search/";
-    if (contact.address1)
-      address = `${address}${contact.address1.replace(/ /g, "+")}`;
-    if (contact.city)
-      address = `${address},+${contact.city.replace(/ /g, "+")}`;
-    if (contact.state) address = `${address},+${contact.state}`;
-    if (contact.zip) address = `${address}+${contact.zip}`;
-    return {
-      ...contact,
-      fullContactAddress: address,
-    };
-  };
-
   useEffect(() => {
     if (tableData?.hits) {
       const objectsIdsArray = tableData.hits.map((contact) => contact._id);
@@ -147,7 +134,7 @@ function ContactsTable(props) {
         return hit;
       });
       props.setRows(JSON.parse(JSON.stringify(hits)));
-      setColumnsData(JSON.parse(JSON.stringify(columns)));
+      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_CONTACTS_FILTER);
       props.setLoading(false);
     } else if (tableData?.length === 0) {
       props.setLoading(false);
@@ -155,94 +142,9 @@ function ContactsTable(props) {
   }, [ContactsData, tableData, props.dependencyUpdate]);
 
   useEffect(() => {
-    if (selectedGridView?.filters) {
-      columns.forEach((column, index) => {
-        setColumnDisplayAndFilter(column);
-        const value = get(
-          selectedGridView?.filters?.find((filter) => {
-            return (
-              JSON.stringify(filter.field) === JSON.stringify(column.esKey)
-            );
-          }),
-          "value",
-          ""
-        );
-        let filterList = [];
-        if (value) {
-          filterList = [value];
-        }
-        if (column?.options?.filter) {
-          column.options.filterList = filterList;
-        }
-      });
-    } else {
-      columns.forEach((column, index) => {
-        setColumnDisplayAndFilter(column);
-        if (column.options) {
-          column.options.filterList = [];
-        }
-      });
-    }
-    setColumnsData(JSON.parse(JSON.stringify(columns)))
+    const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns)
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_CONTACTS_FILTER);
   }, [selectedGridView]);
-
-  const setColumnDisplayAndFilter = (column) => {
-    if (selectedGridView?.columns) {
-      if (selectedGridView.columns.includes(column.name)) {
-        column.options.display = true;
-        if (column.esKey && !column.noFilter) {
-          column.options.filter = true;
-        }
-      } else {
-        column.options.display = false;
-        column.options.filter = false;
-      }
-    }else{
-      if(TableHeader.find(col => col.name === column.name).options.display !== false) {
-        column.options.display = true;
-        if (column.esKey && !column.noFilter) {
-          column.options.filter = true;
-        }
-      }else{
-        column.options.display = false;
-        column.options.filter = false;
-      }
-    }
-  }
-
-
-  const setColumnsData = (columns) => {
-    columns.forEach((column, index) => {
-      if (column?.options?.filter) {
-        column.options = {
-          ...column.options,
-          filter: true,
-          filterType: "custom",
-          filterList: filters[index],
-          filterOptions: {
-            display: (filterList, onChange, index, column) => {
-              column.filterKey = TableHeader.find(
-                (el) => el.name === column.name
-              )?.esKey;
-              return (
-                <AutoCompleteFilter
-                  filterList={filterList}
-                  column={column}
-                  index={index}
-                  onChange={onChange}
-                  query={GET_ES_CONTACTS_FILTER}
-                />
-              );
-            },
-          },
-          onFilterChange: (columnChanged, filterList) => {
-            setFilters(filterList);
-          },
-        };
-      }
-    });
-    setColumns(columns);
-  };
 
   const count = tableData?.total || 0;
   const options = {
@@ -254,6 +156,21 @@ function ContactsTable(props) {
     searchText: props.contactSearchQuery,
   };
 
+  const getContactsAddress = (contact) => {
+    let address = "https://www.google.com/maps/search/";
+    if (contact.address1)
+      address = `${address}${contact.address1.replace(/ /g, "+")}`;
+    if (contact.city)
+      address = `${address},+${contact.city.replace(/ /g, "+")}`;
+    if (contact.state) address = `${address},+${contact.state}`;
+    if (contact.zip) address = `${address}+${contact.zip}`;
+    return {
+      ...contact,
+      fullContactAddress: address,
+    };
+  };
+
+  
   const viewColumnsChange = (tableColumns) => {
     for (let i = 0; i < tableColumns.length; i++) {
       if (tableColumns[i].display === "true") {
@@ -265,7 +182,7 @@ function ContactsTable(props) {
         columns[i].options.display = false;
       }
     }
-    setColumnsData(JSON.parse(JSON.stringify(columns)));
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_CONTACTS_FILTER);
   };
   ////////////-----Add your code section here-----///////////////////////
   const onTableChange = (action, tableState, rows, meta) => {
@@ -406,122 +323,5 @@ function ContactsTable(props) {
     </>
   );
 }
-
-// const HeaderComponent = ({
-//   selectedGridView,
-//   setShowViewModal,
-//   showViewModal,
-//   setShowSaveAsNew,
-//   selectedFilters,
-//   updateGridView,
-//   columns,
-// }) => {
-//   const [showIcon, setShowIcon] = useState(false);
-//   const [anchorEl, setAnchorEl] = useState(null);
-
-//   const handleClose = () => {
-//     setAnchorEl(null);
-//   };
-
-//   const handleClick = (event) => {
-//     setAnchorEl(event.currentTarget);
-//   };
-
-//   return (
-//     <div
-//       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
-//     >
-//       <IconButton onClick={() => setShowViewModal(!showViewModal)}>
-//         <Contact />
-//       </IconButton>
-
-//       <Breadcrumbs
-//         separator={<NavigateNextIcon fontSize="small" />}
-//         aria-label="breadcrumb"
-//       >
-//         <Typography
-//           style={{
-//             marginLeft: "10px",
-//             fontSize: "16px",
-//           }}
-//           color="inherit"
-//         >
-//           Contacts
-//         </Typography>
-//         <div>
-//           <div
-//             style={{
-//               display: "flex",
-//               color: "#18AADD",
-//               fontSize: "16px",
-//               cursor: "pointer",
-//             }}
-//             onClick={(event) => handleClick(event)}
-//             onMouseOver={() => setShowIcon(true)}
-//             onMouseLeave={() => setShowIcon(false)}
-//           >
-//             <Typography>
-//               <span>{selectedGridView.name}</span>
-//             </Typography>
-//             <span
-//               style={{
-//                 height: "0px",
-//                 color: "#18AADD",
-//                 fontSize: "16px",
-//                 cursor: "pointer",
-//               }}
-//             >
-//               {showIcon && <ExpandMoreIcon />}
-//             </span>
-//           </div>
-//           <Menu
-//             style={{ zIndex: "1305" }}
-//             id="menu"
-//             anchorEl={anchorEl}
-//             keepMounted
-//             open={Boolean(anchorEl)}
-//             onClose={handleClose}
-//             getContentAnchorEl={null}
-//             anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-//             transformOrigin={{ vertical: "top", horizontal: "center" }}
-//           >
-//             <MenuItem
-//               style={{ width: "250px" }}
-//               onClick={() => {
-//                 handleClose();
-//                 updateGridView({
-//                   variables: {
-//                     gridView: {
-//                       _id: selectedGridView._id,
-//                       filters: selectedFilters,
-//                       columns: columns
-//                         .filter((col) => col.options.display)
-//                         .map((col) => col.name),
-//                     },
-//                   },
-//                 });
-//               }}
-//               disabled={
-//                 selectedGridView.type === "Default" ||
-//                 selectedGridView.name === "All Contacts"
-//               }
-//             >
-//               Update view
-//             </MenuItem>
-//             <MenuItem
-//               onClick={() => {
-//                 handleClose();
-//                 setShowViewModal(true);
-//                 setShowSaveAsNew(true);
-//               }}
-//             >
-//               Save as new view
-//             </MenuItem>
-//           </Menu>
-//         </div>
-//       </Breadcrumbs>
-//     </div>
-//   );
-// };
 
 export default React.memo(TableHOC(ContactsTable), deepEqualObjects);

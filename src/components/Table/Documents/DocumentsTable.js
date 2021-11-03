@@ -16,6 +16,7 @@ import {
 } from "components/Shared/functions";
 import GridView from "components/Shared/GridView";
 import { HeaderComponent } from "components/Table/helpers";
+import { handleSelectedGridChange, setColumnsData } from 'components/Table/helpers'
 
 // Header Schemas
 import TableHeader from "components/Table/constants/documents-header-schema.js";
@@ -38,8 +39,9 @@ function DocumentsTable(props) {
   }
   const selectedFilters = useRef([]);
 
-  // function states
-  const [columns, Columns] = useState([]);
+  // function states\
+  const [filters, setFilters] = useState([]);
+  const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
@@ -75,45 +77,25 @@ function DocumentsTable(props) {
           keep_alive: "1micros",
         },
         search: props.documentSearchQuery ? props.documentSearchQuery : "",
+        filters: selectedGridView?.filters ? selectedGridView?.filters : [],
       },
     });
-  }, [getESDocuments, props.parent, props.documentSearchQuery]);
+  }, [getESDocuments, props.parent, props.documentSearchQuery, selectedGridView]);
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
       props.setRows(tableData?.hits);
-      TableHeader.forEach((column) => {
-        if (column?.options?.filter) {
-          column.options = {
-            ...column.options,
-            filter: true,
-            filterType: "custom",
-            filterOptions: {
-              display: (filterList, onChange, index, column) => {
-                column.filterKey = TableHeader.find(
-                  (el) => el.name === column.name
-                )?.esKey;
-                return (
-                  <AutoCompleteFilter
-                    filterList={filterList}
-                    column={column}
-                    index={index}
-                    onChange={onChange}
-                    query={GET_ES_DOCUMENTS_FILTER}
-                  />
-                );
-              },
-            },
-          };
-        }
-      });
-
-      setColumns(TableHeader);
+      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_DOCUMENTS_FILTER);
       props.setLoading(false);
     } else if (tableData?.length === 0) {
       props.setLoading(false);
     }
   }, [tableData, props.dependencyUpdate]);
+
+  useEffect(() => {
+    const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns)
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_DOCUMENTS_FILTER);
+  }, [selectedGridView]);
 
   const count = tableData?.total || 0;
   const options = {
@@ -124,6 +106,21 @@ function DocumentsTable(props) {
     filter: true,
     searchText: props.documentSearchQuery,
   };
+
+  const viewColumnsChange = (tableColumns) => {
+    for (let i = 0; i < tableColumns.length; i++) {
+      if (tableColumns[i].display === "true") {
+        columns[i].options.display = true;
+        if (columns[i].esKey && !columns[i].noFilter) {
+          columns[i].options.filter = true;
+        }
+      } else {
+        columns[i].options.display = false;
+      }
+    }
+    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_DOCUMENTS_FILTER);
+  };
+
   ////////////-----Add your code section here-----///////////////////////
   const onTableChange = (action, tableState, rows, meta) => {
     const tableActions = props.initializeTableActions(
@@ -131,8 +128,10 @@ function DocumentsTable(props) {
       meta,
       tableData,
       columns,
-      getESDocuments
+      getESDocuments,
+      selectedGridView
     );
+    selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
     switch (action) {
       case "search":
       case "sort":
@@ -143,6 +142,9 @@ function DocumentsTable(props) {
         break;
       case "changePage":
         tableActions.changeESPage();
+        break;
+      case "viewColumnsChange":
+        viewColumnsChange(tableState.columns);
         break;
       default:
     }
@@ -167,7 +169,6 @@ function DocumentsTable(props) {
 
   const handleDefaultView = (view, user) => {
     if (view.name === "My Documents") {
-      debugger
       view.filters[0].value = user._id;
     }
     if (
