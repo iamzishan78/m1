@@ -1698,7 +1698,6 @@ function SubTable(props) {
                 ...column.options,
 
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  debugger
                   let id = props.targetLabel + tableMeta.columnIndex;
 
                   let targetSourceId =

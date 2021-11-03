@@ -75,9 +75,11 @@ function GridView({
   showSaveAsNew,
   setShowSaveAsNew,
   selectedFilters,
+  handleDefaultView,
+  defaultView,
   handleClose,
   columns,
-  setFilters
+  module
 }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -96,6 +98,7 @@ function GridView({
   useEffect(() => {
     getGridViews({
       variables: {
+        module: module,
         userId: stateApp.user.mongoId,
       },
     });
@@ -119,18 +122,18 @@ function GridView({
   useEffect(() => {
     if (gridViews?.getGridViews?.gridViews) {
       const data = JSON.parse(JSON.stringify(gridViews.getGridViews.gridViews))
-      data.unshift({ name: 'All Contacts', type: 'Default' })
+      data.unshift(defaultView)
       setAllGridViews(data);
       setFilterGridView(data);
     }
   }, [gridViews]);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     if (document.getElementById("fieldContentInput"))
-  //       document.getElementById("fieldContentInput").focus();
-  //   }, 100);
-  // }, [showSaveAsNew]);
+  useEffect(() => {
+    setTimeout(() => {
+      if (document.getElementById("fieldContentInput"))
+        document.getElementById("fieldContentInput").focus();
+    }, 100);
+  }, [showSaveAsNew]);
 
   useEffect(() => {
     if(allGridViews){
@@ -175,36 +178,17 @@ function GridView({
               Default
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
-              {/* <div
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  setSelectedGridView({ name: "All Contacts" });
-                  setShowViewModal(false);
-                }}
-              >
-                <div>All Contacts</div>
-              </div> */}
               {filterGridView.map((view) => {
                 return view.type === "Default" ? (
                   <div
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      const data = JSON.parse(JSON.stringify(view));
-                      if (data.name === "My Contacts") {
-                        data.filters[0].value = stateApp.user.name;
-                      }
-                      if (
-                        data.name === "Recently Modified" ||
-                        data.name === "Recently Added"
-                      ) {
-                        data.filters[0].value.range[data.filters[0].field].gte =
-                          moment().subtract(30, "days").toISOString();
-                        data.filters[0].value.range[data.filters[0].field].lte =
-                          moment().toISOString();
+                      let data = JSON.parse(JSON.stringify(view));
+                      if(data.type === "Default"){
+                        data = handleDefaultView(data, stateApp.user)
                       }
                       setSelectedGridView(data);
                       setShowViewModal(false);
-                      // setFilters([])
                     }}
                   >
                     <div>{view.name}</div>
@@ -288,7 +272,8 @@ const InputField = ({
   setShowSaveAsNew,
   setEditGridView,
   user,
-  columns
+  columns,
+  module
 }) => {
   const classes = useStyles();
   return (
@@ -326,7 +311,7 @@ const InputField = ({
               variables: {
                 gridView: {
                   name: viewName,
-                  module: "Contacts",
+                  module: module,
                   type: "Custom",
                   user,
                   filters: selectedFilters,

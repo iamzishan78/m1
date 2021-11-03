@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import moment from "moment";
 
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
@@ -31,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
 
 function DocumentsTable(props) {
   const classes = useStyles();
+  const defaultView = {
+    name: "All Documents",
+    type: 'Default'
+  }
   const selectedFilters = useRef([]);
 
   // function states
@@ -40,9 +45,7 @@ function DocumentsTable(props) {
   };
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [selectedGridView, setSelectedGridView] = useState({
-    name: "All Documents",
-  });
+  const [selectedGridView, setSelectedGridView] = useState(defaultView);
 
   // queries
   const [getESDocuments, { data: DocumentsData, loading }] = useLazyQuery(
@@ -162,6 +165,23 @@ function DocumentsTable(props) {
     }
   };
 
+  const handleDefaultView = (view, user) => {
+    if (view.name === "My Documents") {
+      debugger
+      view.filters[0].value = user._id;
+    }
+    if (
+      view.name === "Recently Modified" ||
+      view.name === "Recently Added"
+    ) {
+      view.filters[0].value.range[view.filters[0].field].gte =
+        moment().subtract(30, "days").toISOString();
+        view.filters[0].value.range[view.filters[0].field].lte =
+        moment().toISOString();
+    }
+    return view;
+  }
+
   const headerProps = {
     columns,
     Icon: DescriptionOutlinedIcon,
@@ -184,6 +204,9 @@ function DocumentsTable(props) {
         {showViewModal && (
           <GridView
             columns={columns}
+            module="Documents"
+            handleDefaultView={handleDefaultView}
+            defaultView={defaultView}
             handleClose={() => setShowViewModal(false)}
             setSelectedGridView={setSelectedGridView}
             selectedGridView={selectedGridView}

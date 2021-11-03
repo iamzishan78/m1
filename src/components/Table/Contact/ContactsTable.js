@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Container } from "@material-ui/core";
 import get from "lodash/get";
+import moment from "moment";
 
 import TableHeader from "components/Table/constants/contacts-header-schema.js";
 import Contact from "components/Shared/svgIcons/contact";
@@ -47,6 +48,10 @@ const useStyles = makeStyles((theme) => ({
 
 function ContactsTable(props) {
   const classes = useStyles();
+  const defaultView = {
+    name: "All Contacts",
+    type: 'Default'
+  }
 
   // function states
   const selectedFilters = useRef([]);
@@ -54,9 +59,7 @@ function ContactsTable(props) {
   const [columns, Columns] = useState(JSON.parse(JSON.stringify(TableHeader)));
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
-  const [selectedGridView, setSelectedGridView] = useState({
-    name: "All Contacts",
-  });
+  const [selectedGridView, setSelectedGridView] = useState(defaultView);
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
@@ -327,6 +330,22 @@ function ContactsTable(props) {
     }
   };
 
+  const handleDefaultView = (view, user) => {
+    if (view.name === "My Contacts") {
+      view.filters[0].value = user.name;
+    }
+    if (
+      view.name === "Recently Modified" ||
+      view.name === "Recently Added"
+    ) {
+      view.filters[0].value.range[view.filters[0].field].gte =
+        moment().subtract(30, "days").toISOString();
+        view.filters[0].value.range[view.filters[0].field].lte =
+        moment().toISOString();
+    }
+    return view;
+  }
+
   const headerProps = {
     columns,
     Icon: Contact,
@@ -348,7 +367,10 @@ function ContactsTable(props) {
       >
         {showViewModal && (
           <GridView
+            module="Contacts"
+            defaultView={defaultView}
             columns={columns}
+            handleDefaultView={handleDefaultView}
             handleClose={() => setShowViewModal(false)}
             setSelectedGridView={setSelectedGridView}
             selectedGridView={selectedGridView}
