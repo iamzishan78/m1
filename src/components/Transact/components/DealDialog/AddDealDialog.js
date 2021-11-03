@@ -793,6 +793,7 @@ function AddDealDialog(props) {
           stateApp.activeDeal.owners.length <= 0
         ) {
           //// updating the owner
+
           if (ownerId) {
             allPromises.push(
               new Promise((resolve, reject) => {
@@ -859,21 +860,23 @@ function AddDealDialog(props) {
                 pipelineType: "Pipeline",
                 isCurrent: true,
                 user: stateApp.user.mongoId,
-              }
+              };
 
               updateStageDealDescriptors({
                 variables: {
-                  stageDealDescriptors: [{
-                    _id: stateApp.activeDeal.descriptorId,
-                    isCurrent: false,
-                  }],
+                  stageDealDescriptors: [
+                    {
+                      _id: stateApp.activeDeal.descriptorId,
+                      isCurrent: false,
+                    },
+                  ],
                 },
                 refetchQueries: ["getPipeline"],
-              })
+              });
 
               updateStageDealDescriptor({
                 variables: {
-                  descriptor: movedCardDescriptor
+                  descriptor: movedCardDescriptor,
                 },
                 refetchQueries: ["getPipeline", "getContactDeals"],
                 awaitRefetchQueries: true,
@@ -1186,7 +1189,7 @@ function AddDealDialog(props) {
 
   const handleClickDialogClose = () => {
     if (!updateDealLoading && !addContactLoading) {
-      if(history.location.pathname.includes('lane')){
+      if (history.location.pathname.includes("lane")) {
         history.push(`${history.location.pathname.split("/lane")[0]}`);
       }
       setStateApp((stateApp) => ({
@@ -1250,8 +1253,7 @@ function AddDealDialog(props) {
           ) : (
             <div className={classes.contentRoot}>
               <Drawer dealSettingsNumber={getSubtaskNumber()} />
-              {
-              stateApp.transactBarView !== "Deal" &&
+              {stateApp.transactBarView !== "Deal" &&
               (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
               ) : (
