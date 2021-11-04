@@ -18,7 +18,7 @@ export default function AlertDialogSlide(props) {
         left: "5px !important",
         width: props.width ? String(props.width) : null,
         maxWidth: "100% !important",
-        // minHeight: "85vh !important",
+        minHeight: "85vh !important",
         margin: "0 !important",
         borderTopRightRadius: "0 !important",
         overflowX: "hidden",
