@@ -28,6 +28,9 @@ import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
+    display: "flex",
+    flexFlow: "column",
+    height: "85vh",
     "& .MuiPaper-elevation1": {
       boxShadow: "none !important",
     },
@@ -180,6 +183,7 @@ function GridView({
     <LeftDialog open width="325px" handleClickDialogClose={handleClose}>
       {!loading ? (
         <div className={classes.container}>
+          <div style={{ flex: '0 1 auto' }}>
           <TextField
             value={search}
             onChange={(e) => {
@@ -239,6 +243,8 @@ function GridView({
               })}
             </AccordionDetails>
           </Accordion>
+          </div>
+          <div style={{ flex: '1 1 auto', overflow: 'auto' }}>
           <Accordion defaultExpanded style={{ margin: 0 }}>
             <AccordionSummary
               expandIcon={<KeyboardArrowUpIcon></KeyboardArrowUpIcon>}
@@ -294,6 +300,7 @@ function GridView({
               )}
             </AccordionDetails>
           </Accordion>
+          </div>
         </div>
       ) : (
         <CircularProgress></CircularProgress>

@@ -5,7 +5,6 @@ import moment from "moment";
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
-import { AutoCompleteFilter } from "../AutoCompleteFilter";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 // QUERIES
 import { useLazyQuery, useMutation } from "@apollo/client";
