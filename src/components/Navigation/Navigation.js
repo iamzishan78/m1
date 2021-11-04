@@ -137,7 +137,7 @@ export default function Navigation(props) {
   const [matchDocument] = useState(false);
 
   const [profileImage, setProfileImage] = useState(null);
-  const classes = useStyles({ mapGridCardActivated });
+  const classes = useStyles({ mapGridCardActivated, user: stateApp.user });
   const [getProfileImage, profiledata] = useLazyQuery(GET_PROFILE_IMAGE);
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const [openUserManagementModal, setOpenUserManagementModal] = useState(false);
