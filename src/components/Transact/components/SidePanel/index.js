@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   drawer: {
     width: 315,
     top: "auto",
-    backgroundColor: "#040e24",
+    backgroundColor: "#0e111a",
   },
   toolbar: {
     display: "block",
