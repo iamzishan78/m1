@@ -32,7 +32,7 @@ import ParcelDetailsMap from "./components/ParcelDetailsMap";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwnersTable";
 import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
-import ParcelDetailsDocumentTable from "components/Table/Documents/ParcelDetailsDocumentTable";
+import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
 import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
@@ -571,8 +571,9 @@ export default function ParcelsDetailCard(props) {
               />
             </div>,
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
-              <ParcelDetailsDocumentTable
+              <RelatedDetailsDocumentTable
                 customLayer={parcelObj}
+                relatedObjectType='Parcel'
                 parent="associatedDocumentsPerParcel"
                 targetLabel="parcelDocument"
                 header={<DocumentHeader />}

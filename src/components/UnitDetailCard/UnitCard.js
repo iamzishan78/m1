@@ -159,14 +159,14 @@ export default function UnitCard(props) {
     }
   }, [dataShapeWellsCount])
   useEffect(() => {
-    if (stateApp.selectedUnit) {
+    if (stateApp.selectedShape) {
       getCustomLayer({
         variables: {
-          id: stateApp.selectedUnit.id,
+          id: stateApp.selectedShape.id,
         },
       });
     }
-  }, [stateApp.selectedUnit]);
+  }, [stateApp.selectedShape]);
 
   useEffect(() => {
     if (parcelObj) {
@@ -323,7 +323,7 @@ export default function UnitCard(props) {
                   className={classes.text2}
                   variant="caption"
                 >
-                  {stateApp.selectedUnit.sdGrossAcres || stateApp.selectedUnit.shapeArea}
+                  {stateApp.selectedShape.sdGrossAcres || stateApp.selectedShape.shapeArea}
                 </Typography>
               </div>
             </Button>
@@ -403,7 +403,7 @@ export default function UnitCard(props) {
       <div style={{ height: "100%" }}>
         <Card className={classes.card}>
           <CardContent className={classes.content}>
-            <UnitDetailCard id={stateApp.selectedUnit.id} selectTabIndex={stateApp.parcelDetailCardTabIndex} />
+            <UnitDetailCard id={stateApp.selectedShape.id} selectTabIndex={stateApp.parcelDetailCardTabIndex} />
           </CardContent>
         </Card>
       </div>

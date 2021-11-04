@@ -464,12 +464,12 @@ function ExpandableCard(props) {
     await props.handleDelete();
   };
 
-  const handleEditParcelShape = () => {
+  const handleEditParcelAndShape = () => {
     setStateApp((state) => ({
       ...state,
       showDrawShapesPopup: true,
-      selectedUserDefinedLayer: state.selectedParcel.feature,
-      currentFeature: state.selectedParcel.feature,
+      selectedUserDefinedLayer: state.selectedParcel?.feature || state.selectedShape?.feature,
+      currentFeature: state.selectedParcel?.feature || state.selectedShape?.feature,
       openDrawShapesControl: true,
       editParcel: true,
       editDraw: true,
@@ -535,7 +535,7 @@ function ExpandableCard(props) {
                     <IconButton
                       // size="small"
                       onClick={() => {
-                        handleEditParcelShape();
+                        handleEditParcelAndShape();
                       }}
                       aria-label={`Edit ${targetLabel}`}
                     >

@@ -15,7 +15,7 @@ import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import SuggestedShapeTaxOwnersTable from "components/Table/TaxOwners/SuggestedShapeTaxOwnersTable";
 import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
-import ParcelDetailsDocumentTable from "components/Table/Documents/ParcelDetailsDocumentTable";
+import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
 import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { AppContext } from "../../AppContext";
@@ -251,7 +251,7 @@ export default function UnitDetailCard(props) {
         feature.layer = { id: 'unit' }
         setStateApp((state) => ({
           ...state,
-          selectedUnit: { ...feature.properties, feature },
+          selectedShape: { ...feature.properties, feature },
         }));
       } else {
         dispatch(showErrorMessage("Failed to update unit"));
@@ -271,7 +271,7 @@ export default function UnitDetailCard(props) {
     if (field === 'uName') {
       setStateApp((state) => ({
         ...state,
-        selectedUnit: { ...state.selectedUnit, shapeLabel: value },
+        selectedShape: { ...state.selectedShape, shapeLabel: value },
       }));
       shape.properties.shapeLabel = value
       customLayer.name = value;
@@ -326,7 +326,7 @@ export default function UnitDetailCard(props) {
   const DocumentHeader = () => (
     <div className={classes.documentHeader}>
       <DescriptionOutlinedIcon />
-      <span>ASSOCIATED DOCUMENTS</span>
+      <span>Documents</span>
     </div>
   );
 
@@ -423,16 +423,17 @@ export default function UnitDetailCard(props) {
                     targetLabel="well"
                     header={<WellHeader />}
                     showTracks
+                    setSelectedTab={setSelectedTab}
                     dense
                   />
                 </div>
               ]}
             />,
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
-              <ParcelDetailsDocumentTable
+              <RelatedDetailsDocumentTable
                 customLayer={uniObj}
-                parent="associatedDocumentsPerParcel"
-                targetLabel="parcelDocument"
+                relatedObjectType='Shape'
+                name='Unit'
                 header={<DocumentHeader />}
                 dense
               />

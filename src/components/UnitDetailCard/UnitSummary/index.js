@@ -272,7 +272,7 @@ export default function UnitSummary(props) {
         <Grid item md={7} sm={12} className={classes.paddingLeft}>
             <Grid container spacing={1} direction="column" >
                 <Grid item>
-                    <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: "space-between"}}>
+                    <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: "space-between" }}>
                         <Grid item>
                             <Grid container spacing={2} className={classes.summaryDetailCard}>
                                 <Grid item>
@@ -284,7 +284,7 @@ export default function UnitSummary(props) {
                                     <PersonIcon className={classes.icon} opacity="1.0" small />
                                 </Grid>
                                 <Grid item>
-                                    <div className={classes.summaryValue}> 3 </div>
+                                    <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.documents || 0} </div>
                                     <InsertDriveFileOutlinedIcon className={classes.icon} opacity="1.0" small />
                                 </Grid>
                                 <Grid item>

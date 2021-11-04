@@ -119,7 +119,7 @@ const ShapeActionsPopup = (props) => {
     feature.layer = { id: customLayer.layer };
     let key;
     if (customLayer.layer === 'parcel') key = 'selectedParcel'
-    if (customLayer.layer === 'unit') key = 'selectedUnit'
+    if (customLayer.layer === 'unit') key = 'selectedShape'
 
     setStateApp((state) => ({
       ...state,
@@ -490,7 +490,7 @@ const ShapeActionsPopup = (props) => {
 
     setStateApp((state) => ({
       ...state,
-      selectedUnit: newShapeFeature.properties,
+      selectedShape: newShapeFeature.properties,
       customLayers: layers,
     }));
     drawBoundary(stateApp.map, newShapeFeature);
@@ -557,7 +557,7 @@ const ShapeActionsPopup = (props) => {
     setTimeout(() => popupCloseAction(), 0);
   };
 
-  const isParcel = stateApp.selectedAoi?.layer?.id === "parcel";
+  const enableEditOnly = stateApp.currentFeature?.layer?.id === "parcel" || stateApp.currentFeature?.layer?.id === "unit";
   const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
   const isCreateParcelMenu = Boolean(anchorEl);
 
@@ -581,22 +581,22 @@ const ShapeActionsPopup = (props) => {
       <Fragment>
         <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span> {calculateLandArea()}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
-          <Tooltip title="Grid" className={isParcel && classes.disableAction}>
-            <IconButton disabled={isParcel} size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
+          <Tooltip title="Grid" className={enableEditOnly && classes.disableAction}>
+            <IconButton disabled={enableEditOnly} size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
               <GridOnIcon className={mapGridCardActivated ? "selected" : ""} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Filter" className={isParcel && classes.disableAction}>
-            <IconButton size="small" disabled={isParcel} onClick={actionFilter} aria-label="Filter">
+          <Tooltip title="Filter" className={enableEditOnly && classes.disableAction}>
+            <IconButton size="small" disabled={enableEditOnly} onClick={actionFilter} aria-label="Filter">
               <FilterAltIcon className={stateApp.shapeActionsFilterSelected ? "selected" : ""} />
             </IconButton>
           </Tooltip>
 
           {/* {stateApp.isAbstractedLayersPolygon && ( */}
-          <Tooltip title="Create Parcel" className={isParcel && classes.disableAction}>
+          <Tooltip title="Create Parcel" className={enableEditOnly && classes.disableAction}>
             <IconButton
               size="small"
-              disabled={isParcel}
+              disabled={enableEditOnly}
               aria-label="Parcel"
               id="parcel-button"
               aria-controls="parcel-button"
@@ -609,8 +609,8 @@ const ShapeActionsPopup = (props) => {
           </Tooltip>
           {/* )} */}
 
-          <Tooltip title="Area of Interest" className={isParcel && classes.disableAction}>
-            <IconButton size="small" disabled={isParcel} onClick={actionAOI} aria-label="Area of Interest">
+          <Tooltip title="Area of Interest" className={enableEditOnly && classes.disableAction}>
+            <IconButton size="small" disabled={enableEditOnly} onClick={actionAOI} aria-label="Area of Interest">
               <GpxFixedIcon />
             </IconButton>
           </Tooltip>
@@ -622,7 +622,7 @@ const ShapeActionsPopup = (props) => {
             </IconButton>
           </Tooltip>
 
-          {stateApp.currentFeature.properties.shapeLabel && !isParcel && (
+          {stateApp.currentFeature.properties.shapeLabel && !enableEditOnly && (
             <Tooltip title="Delete Active Shape" className={!stateApp.currentFeature.properties.shapeLabel ? classes.disableAction : ""}>
               <IconButton
                 size="small"
