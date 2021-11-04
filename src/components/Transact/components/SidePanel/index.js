@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 0,
     width: "425px",
     top: "auto",
-    backgroundColor: "#040e24",
+    backgroundColor: "#0e111a",
     left: "52px",
   },
   toolbar: {
