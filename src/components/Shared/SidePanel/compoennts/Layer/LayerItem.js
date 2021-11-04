@@ -81,7 +81,7 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
             "&:hover": {
                 background: "#506187",
             },
-            backgroundColor: "#040e24",
+            // backgroundColor: "#040e24",
             "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
                 color: theme.palette.common.white,
             },

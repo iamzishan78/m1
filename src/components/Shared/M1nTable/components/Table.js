@@ -1057,16 +1057,10 @@ function SubTable(props) {
         open={true}
         onClose={closeMenu}
       >
-        {user.lastLogin == null || user.lastLogin == undefined ? (
-          <div>
-            <MenuItem className={classes.userMenuItem} onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}>
-              Resend Invite
-            </MenuItem>
-            <Divider />
-          </div>
-        ) : (
-          <div></div>
-        )}
+        <MenuItem className={classes.userMenuItem} onClick={(e) => handleExpandClick(null, null, null, "reinviteUser")}>
+          Resend Invite
+        </MenuItem>
+        <Divider />
         <MenuItem className={classes.userMenuItem} onClick={(e) => handleExpandClick(null, null, null, "deleteUser")}>
           Inactivate User
         </MenuItem>
@@ -2307,7 +2301,7 @@ function SubTable(props) {
     rowsPerPageOptions: props.rows && props.rows.length > 25 ? [10, 25, 50, 100] : props.rows && props.rows.length > 10 ? [10, 25] : [],
     selectableRows: props.targetLabel === "production_detail" ? false : "multiple",
     print: false,
-    download: props.parent === "OwnersPerWell" ? true : false,
+    download: (props.parent === "assocTaxRollInterests" || props.parent === "OwnersPerWell") ? true : false,
     viewColumns: props.targetLabel !== "usermanagement",
 
     onColumnViewChange: (changedColumn, action) => {
