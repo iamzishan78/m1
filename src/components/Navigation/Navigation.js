@@ -689,15 +689,17 @@ export default function Navigation(props) {
         )}
       </AppBar> */}
 
-      <SideNavigation
-        openDrawer={openDrawer}
-        stateNav={stateNav}
-        setStateNav={setStateNav}
-        setStateApp={setStateApp}
-        handleListItemClick={handleListItemClick}
-        handleDrawerClose={handleDrawerClose}
-        handleDrawerOpen={handleDrawerOpen}
-      />
+      {stateApp.user && (
+        <SideNavigation
+          openDrawer={openDrawer}
+          stateNav={stateNav}
+          setStateNav={setStateNav}
+          setStateApp={setStateApp}
+          handleListItemClick={handleListItemClick}
+          handleDrawerClose={handleDrawerClose}
+          handleDrawerOpen={handleDrawerOpen}
+        />
+      )}
 
       {supportDrawer && (
         <ClickAwayListener onClickAway={() => setSupportDrawer(false)}>
