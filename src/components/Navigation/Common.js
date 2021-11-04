@@ -34,7 +34,7 @@ export const useStyles = makeStyles((theme) => ({
     display: "none",
   },
   drawer: {
-    background: "rgba(5, 11, 24, 1.0)",
+    // background: "rgba(5, 11, 24, 1.0)",
     width: drawerWidth,
     flexShrink: 0,
     whiteSpace: "nowrap",
@@ -66,7 +66,8 @@ export const useStyles = makeStyles((theme) => ({
     fontSize: "30px",
   },
   drawerOpen: {
-    background: "rgba(5, 11, 24, 1.0)",
+    // background: "rgba(5, 11, 24, 1.0)",
+    background: "#0e111a",
     width: "255px",
     height: "100%",
     top: "0",
@@ -77,7 +78,8 @@ export const useStyles = makeStyles((theme) => ({
     }),
   },
   drawerClose: {
-    background: "rgba(5, 11, 24, 1.0)",
+    // background: "rgba(5, 11, 24, 1.0)",
+    background: "#0e111a",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
