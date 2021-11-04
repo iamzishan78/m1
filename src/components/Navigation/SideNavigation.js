@@ -3,7 +3,7 @@ import styled from "styled-components";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
 
-import { IconButton, List, ListItem, ListItemIcon, ListItemText, Button } from "@material-ui/core";
+import { IconButton, List, ListItem, ListItemIcon, ListItemText, Button, Tooltip } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
@@ -74,9 +74,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="dashboard"
           >
             <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <DashboardIcon />
-              </ListItemIcon>
+              <Tooltip title="Dashboard" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                  <DashboardIcon />
+                </ListItemIcon>
+              </Tooltip>
               <ListItemText className={`${classes.sideNavText} uppercase`} primary="Dashboard" />
             </div>
           </ListItem>
@@ -92,9 +94,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="home"
           >
             <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <SearchIcon />
-              </ListItemIcon>
+              <Tooltip title="Find" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                  <SearchIcon />
+                </ListItemIcon>
+              </Tooltip>
               <ListItemText className={`${classes.sideNavText} uppercase`} primary="Find" />
             </div>
           </ListItem>
@@ -121,9 +125,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="contacts"
           >
             <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <PersonIcon />
-              </ListItemIcon>
+              <Tooltip title="Contacts" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                  <PersonIcon />
+                </ListItemIcon>
+              </Tooltip>
               <ListItemText className={`${classes.sideNavText} uppercase`} primary="Contacts" />
             </div>
           </ListItem>
@@ -139,9 +145,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="flow"
           >
             <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <FlowIcon />
-              </ListItemIcon>
+              <Tooltip title="Flow" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                  <FlowIcon />
+                </ListItemIcon>
+              </Tooltip>
               <ListItemText className={`${classes.sideNavText} uppercase`} primary="Flow" />
               <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
@@ -167,9 +175,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="documents"
           >
             <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <DescriptionIcon />
-              </ListItemIcon>
+              <Tooltip title="Documents" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                  <DescriptionIcon />
+                </ListItemIcon>
+              </Tooltip>
               <ListItemText className={`${classes.sideNavText} uppercase`} primary="Documents" />
               <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
@@ -189,9 +199,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             key="activities"
           >
             <div className={classes.tabContent}>
-              <ListItemIcon className={classes.sideNavIcon}>
-                <ActivityIcon />
-              </ListItemIcon>
+              <Tooltip title="Activities" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                  <ActivityIcon />
+                </ListItemIcon>
+              </Tooltip>
               <ListItemText className={`${classes.sideNavText} uppercase`} primary="Activities" />
               <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">

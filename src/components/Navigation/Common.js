@@ -484,6 +484,11 @@ export const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  iconTooltip: {
+    // width: "120px",
+    fontSize: "15px",
+    padding: "10px",
+  },
 }));
 
 export const M1neralLogoNavNoAuth = (props) => (
