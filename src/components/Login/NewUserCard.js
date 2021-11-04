@@ -2,13 +2,7 @@ import React, { useState, useEffect, useContext, Component } from "react";
 import { Link } from "react-router-dom";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import EmailSuccess from "./EmailSuccess";
-import {
-  fade,
-  ThemeProvider,
-  withStyles,
-  makeStyles,
-  createMuiTheme,
-} from "@material-ui/core/styles";
+import { fade, ThemeProvider, withStyles, makeStyles, createMuiTheme } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
 import { Card, Button } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
@@ -81,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 10,
     marginBottom: 20,
     color: "#011133",
-    },
+  },
   cardForm: {
     display: "contents",
     pointerEvents: "all",
@@ -132,10 +126,6 @@ const BootstrapInput = withStyles((theme) => ({
   },
 }))(InputBase);
 
-
-
-
-
 export default function NewUserCard(props) {
   const [stateApp] = useContext(AppContext);
   const classes = useStyles();
@@ -173,45 +163,24 @@ export default function NewUserCard(props) {
     });
   }, [userName.length]);
 
-
-
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://m1neral.freshsales.io/web_forms/61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f/form.js';
-    script.crossorigin = 'anonymous';
-    script.id = 'fs_61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f';
+    const script = document.createElement("script");
+    script.src = "https://m1neral.freshsales.io/web_forms/61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f/form.js";
+    script.crossorigin = "anonymous";
+    script.id = "fs_61c2b9f6feb20e6bc13b4c2d9beedea203e1fbbd4fb1993979372f393dee5b6f";
     script.async = true;
 
-  
     document.getElementById("parentID").appendChild(script);
-  
+
     return () => {
-      document.getElementById("parentID").removeChild(script);
-    }
+      document.getElementById("parentID")?.removeChild(script);
+    };
   }, []);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   return !sent ? (
-    <div  className={classes.conatiner}>
-      <Card
-        square={true}
-        elevation={0}
-        color="secondary"
-        className={classes.card}
-      >
-        <div id='parentID' />
+    <div className={classes.conatiner}>
+      <Card square={true} elevation={0} color="secondary" className={classes.card}>
+        <div id="parentID" />
       </Card>
     </div>
   ) : (
