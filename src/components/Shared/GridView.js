@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 !important",
     "& .MuiPaper-elevation1": {
       boxShadow: "none !important",
-    }
+    },
   },
   details: {
     display: "block",
@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
   searchField: {
     margin: "0 !important",
     padding: "10px !important",
+    width: "100% !important",
   },
   summary: {
     backgroundColor: "#F2F2F2",
@@ -66,7 +67,32 @@ const useStyles = makeStyles((theme) => ({
       fontSize: "20px",
     },
   },
+  selectedType: {
+    borderBottom: "4px solid #01B0F0",
+    display: "inline",
+    cursor: "pointer",
+  },
+  unSelectedType: {
+    display: "inline",
+    color: "#827F7F",
+    cursor: "pointer",
+  },
 }));
+
+const viewOptions = [
+  {
+    label: "Views",
+    value: "views",
+  },
+  {
+    label: "Favorites",
+    value: "favorites",
+  },
+  {
+    label: "System",
+    value: "system",
+  },
+];
 
 function GridView({
   selectedGridView,
@@ -79,14 +105,15 @@ function GridView({
   defaultView,
   handleClose,
   columns,
-  module
+  module,
 }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
 
+  const [selectedTab, setSelectedTab] = useState("views");
   const [allGridViews, setAllGridViews] = useState([]);
   const [filterGridView, setFilterGridView] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [editGridView, setEditGridView] = useState(null);
   const [viewName, setViewName] = useState(`${selectedGridView.name}-copy`);
   const [addGridView, { data: newGridView }] = useMutation(ADD_GRID_VIEW);
@@ -121,8 +148,8 @@ function GridView({
 
   useEffect(() => {
     if (gridViews?.getGridViews?.gridViews) {
-      const data = JSON.parse(JSON.stringify(gridViews.getGridViews.gridViews))
-      data.unshift(defaultView)
+      const data = JSON.parse(JSON.stringify(gridViews.getGridViews.gridViews));
+      data.unshift(defaultView);
       setAllGridViews(data);
       setFilterGridView(data);
     }
@@ -136,14 +163,18 @@ function GridView({
   }, [showSaveAsNew]);
 
   useEffect(() => {
-    if(allGridViews){
-      if(search){
-        setFilterGridView(allGridViews.filter(view => view.name.toLowerCase().includes(search.toLowerCase())))
-      }else{
-        setFilterGridView(allGridViews)
+    if (allGridViews) {
+      if (search) {
+        setFilterGridView(
+          allGridViews.filter((view) =>
+            view.name.toLowerCase().includes(search.toLowerCase())
+          )
+        );
+      } else {
+        setFilterGridView(allGridViews);
       }
     }
-  },[search])
+  }, [search]);
 
   return (
     <LeftDialog open width="325px" handleClickDialogClose={handleClose}>
@@ -168,7 +199,16 @@ function GridView({
               ),
             }}
           />
-          <Accordion defaultExpanded style={{ margin: 0 }}>
+          <div style={{ marginTop: 10 }}>
+          {viewOptions.map((option) => {
+            return (
+              <h4  style={{ marginLeft: 13 }} onClick={() => setSelectedTab(option.value)} className={selectedTab === option.value ? classes.selectedType : classes.unSelectedType}>
+                {option.label}
+              </h4>
+            );
+          })}
+          </div>
+          <Accordion defaultExpanded style={{ marginTop: 20 }}>
             <AccordionSummary
               expandIcon={<KeyboardArrowUpIcon></KeyboardArrowUpIcon>}
               aria-controls="panel1a-content"
@@ -184,8 +224,8 @@ function GridView({
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                       let data = JSON.parse(JSON.stringify(view));
-                      if(data.type === "Default"){
-                        data = handleDefaultView(data, stateApp.user)
+                      if (data.type === "Default") {
+                        data = handleDefaultView(data, stateApp.user);
                       }
                       setSelectedGridView(data);
                       setShowViewModal(false);
@@ -222,6 +262,7 @@ function GridView({
                       user={stateApp.user.mongoId}
                       setShowSaveAsNew={setShowSaveAsNew}
                       updateGridView={updateGridView}
+                      module={module}
                       columns={columns}
                     />
                   ) : (
@@ -247,6 +288,7 @@ function GridView({
                   selectedFilters={selectedFilters}
                   setShowSaveAsNew={setShowSaveAsNew}
                   user={stateApp.user.mongoId}
+                  module={module}
                   columns={columns}
                 />
               )}
@@ -273,7 +315,7 @@ const InputField = ({
   setEditGridView,
   user,
   columns,
-  module
+  module,
 }) => {
   const classes = useStyles();
   return (
@@ -315,7 +357,9 @@ const InputField = ({
                   type: "Custom",
                   user,
                   filters: selectedFilters,
-                  columns: columns.filter(col => col.options.display).map(col => col.name)
+                  columns: columns
+                    .filter((col) => col.options.display)
+                    .map((col) => col.name),
                 },
               },
               refetchQueries: ["getGridViews"],
@@ -324,14 +368,14 @@ const InputField = ({
         }
         if (event.key === "Escape") {
           setShowSaveAsNew(false);
-          setEditGridView(null)
-          setViewName('')
+          setEditGridView(null);
+          setViewName("");
         }
       }}
       onBlur={() => {
         setShowSaveAsNew(false);
-        setViewName('')
-        setEditGridView(null)
+        setViewName("");
+        setEditGridView(null);
       }}
     />
   );
@@ -415,7 +459,7 @@ const CustomView = ({
             });
           }}
         >
-          {view.isFavourite ? 'Remove as favorite' : 'Set as favorite'}
+          {view.isFavourite ? "Remove as favorite" : "Set as favorite"}
         </MenuItem>
         <MenuItem
           style={{ width: "250px" }}
