@@ -38,9 +38,11 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 36,
   },
   drawer: {
-    width: 315,
+    zIndex: 0,
+    width: "425px",
     top: "auto",
     backgroundColor: "#040e24",
+    left: "52px",
   },
   toolbar: {
     display: "block",
@@ -110,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
   footer: {
     position: "absolute",
     display: "flex",
-    bottom: "80px",
+    bottom: "20px",
     width: "100%",
   },
   footerAction: {
@@ -345,14 +347,15 @@ const SidePanel = () => {
             </Typography>
           </div>
           <Grid container direction="row" justify="space-between" alignItems="center" className={classes.toolbarActions}>
-            <Grid item>
-              {!isSearchActive &&
-                flowlineActions.map((action, index) => (
+            {!isSearchActive && (
+              <Grid item>
+                {flowlineActions.map((action, index) => (
                   <Tooltip title={action.title} className={classes.action} onClick={() => handleAction(action.title)}>
                     <IconButton>{action.icon}</IconButton>
                   </Tooltip>
                 ))}
-            </Grid>
+              </Grid>
+            )}
             <Grid item>
               <div className={classes.search}>
                 <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput").focus()}>

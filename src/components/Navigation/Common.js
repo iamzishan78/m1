@@ -2,7 +2,7 @@ import React from "react";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
 
-const drawerWidth = "250px";
+const drawerWidth = 477;
 
 export const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,7 +21,7 @@ export const useStyles = makeStyles((theme) => ({
     paddingRight: "0 !important",
   },
   appBarShift: {
-    marginLeft: drawerWidth,
+    marginLeft: `${drawerWidth}px`,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -34,11 +34,10 @@ export const useStyles = makeStyles((theme) => ({
     display: "none",
   },
   drawer: {
-    // background: "rgba(5, 11, 24, 1.0)",
-    width: drawerWidth,
+    width: `${drawerWidth}px`,
     flexShrink: 0,
     whiteSpace: "nowrap",
-    zIndex: "99999 !important",
+    zIndex: "2 !important",
   },
   filterTabs: {
     paddingRight: "25px",
@@ -68,7 +67,7 @@ export const useStyles = makeStyles((theme) => ({
   drawerOpen: {
     // background: "rgba(5, 11, 24, 1.0)",
     background: "#0e111a",
-    width: "255px",
+    width: `${drawerWidth}px`,
     height: "100%",
     top: "0",
     color: "#fff",
@@ -94,10 +93,12 @@ export const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
   },
-  content: {
+  content: (props) => ({
     flexGrow: 1,
-    width: "inherit",
-  },
+    width: props.user ? "calc(100% - 52px)" : "calc(100% - 0px)",
+    position: "absolute",
+    left: props.user ? "52px" : "0px",
+  }),
   grow1: {
     flexGrow: 1,
   },
@@ -294,10 +295,9 @@ export const useStyles = makeStyles((theme) => ({
     backgroundColor: "rgba(23, 170, 221, 1) !important",
   },
   menuList: {
-    paddingTop: "15%",
-    paddingBottom: "5%",
+    paddingTop: "20px",
+    paddingBottom: "10px",
     position: "relative",
-    top: "0%",
   },
   menuListBottom: {
     paddingTop: "5%",
@@ -309,20 +309,22 @@ export const useStyles = makeStyles((theme) => ({
     bottom: "90%",
   },
   menuListItem: {
-    paddingBottom: "5%",
-    paddingLeft: "13px",
-    width: drawerWidth,
-    paddingTop: "5%",
-    marginTop: "0%",
+    paddingBottom: "10px",
+    paddingLeft: "10px",
+    width: `${drawerWidth - 1}px`,
+    paddingTop: "10px",
     display: "flex",
     "&:hover": {
       backgroundColor: "Light Grey",
     },
     backgroundColor: theme.primary,
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: "rgba(7,129,171,1)",
+      color: "#fff",
       "& svg": {
         fill: "#fff",
+        padding: "4px",
+        height: "1.3em",
+        width: "1.3em",
       },
     },
   },
@@ -341,10 +343,10 @@ export const useStyles = makeStyles((theme) => ({
   menuListItemSelected: {
     backgroundColor: "rgba(23, 170, 221, 0.08) !important",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: "rgba(23,170,221,1.0)",
+      color: "rgba(21,93,123,1.0)",
       fontWeight: "bold",
       "& svg": {
-        fill: "rgba(23,170,221,1.0)",
+        fill: "rgba(21,93,123,1.0)",
       },
     },
     display: "flex",
@@ -437,7 +439,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   supportDrawer: {
     position: "fixed",
-    left: drawerWidth,
+    left: `${drawerWidth}px`,
     bottom: "30px",
     zIndex: "9999999 !important",
     background: "rgba(255, 255, 255, 1.0)",
@@ -452,7 +454,7 @@ export const useStyles = makeStyles((theme) => ({
   sideNavIcon: {
     minWidth: 0,
     marginRight: 12,
-    border: "1px solid #fff",
+    border: "1px solid #263451",
     borderRadius: "5px",
   },
   sideNavText: {

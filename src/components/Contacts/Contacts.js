@@ -7,18 +7,18 @@ const useStyles = makeStyles((theme) => ({
     "& div": {
       "&>.MuiPaper-root": {
         display: "flex",
-        ["flex-direction"]: "column",
-        height: "calc(100vh - 65px)",
-        ["align-items"]: "stretch",
-        "&>.MuiPaper-root": { 
+        "flex-direction": "column",
+        height: "calc(100vh - 0px)",
+        "align-items": "stretch",
+        "&>.MuiPaper-root": {
           display: "contents",
         },
-        "&>:nth-child(3)": { 
+        "&>:nth-child(3)": {
           height: "inherit !important",
         },
         "&> table": {
           bottom: 0,
-        }
+        },
       },
     },
   },
