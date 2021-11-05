@@ -21,8 +21,8 @@ import * as msal from "@azure/msal-browser";
 import { GET_LOGGED_IN_USER } from "graphQL/useMutationLoggedInUser";
 import { USER_MAP_SETTINGS } from "graphQL/useQueryUserMapSettings";
 
-// import rock from '../../DFJ.PNG'
-import rock from '../../rock.png'
+import rock from '../../DFJ.PNG'
+// import rock from '../../rock.png'
 
 
 const localStyles = makeStyles((theme) => ({
@@ -37,13 +37,13 @@ const localStyles = makeStyles((theme) => ({
     height: "100vh",
   },
   footer: {
-    backgroundSize: "cover",
-    backgroundPosition: "center",
+    // backgroundSize: "cover",
+    // backgroundPosition: "center",
     backgroundColor: "#343d54",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    paddingBottom: "1%",
+    // // display: "flex",
+    // flexDirection: "column",
+    // alignItems: "center",
+    // paddingBottom: "1%",
   },
   headerWords: {
     color: "#011133",
@@ -615,6 +615,33 @@ const Login = (props) => {
               : undefined}
         />
 
+        
+
+{/* <div
+  style={{
+    color: "#fff",
+  }}
+>
+  © 2021 M1neral, LLC. All Rights Reserved.
+</div>
+
+<div className={localClass.termsAndPrivacy}>
+  <a href="https://m1neral.com/TOS.pdf" target="_blank" rel="noreferrer">
+    Terms of Service
+  </a>
+  {" | "}
+  <a href="https://m1neral.com/Privacy.pdf" target="_blank" rel="noreferrer">
+    Privacy Policy
+  </a>
+</div>
+
+<div
+  style={{
+    marginBottom: "50px",
+  }}
+>
+</div> */}
+
         {/* <div>
           <Paper
             elevation={0}
@@ -704,7 +731,8 @@ const Login = (props) => {
       // style={{ overflowY: "scroll !important"}}
       >{renderBody}
       
-      
+
+
       
       </div>
 
@@ -712,39 +740,7 @@ const Login = (props) => {
         <RenderSignUpControls />
       </div> */}
 
-      {/* <div className={localClass.footer} >
-
-
-        <div>
-          <M1neralLogo2 />
-        </div> 
-
-        <div
-          style={{
-            color: "#fff",
-          }}
-        >
-          © 2021 M1neral, LLC. All Rights Reserved.
-        </div>
-
-        <div className={localClass.termsAndPrivacy}>
-          <a href="https://m1neral.com/TOS.pdf" target="_blank" rel="noreferrer">
-            Terms of Service
-          </a>
-          {" | "}
-          <a href="https://m1neral.com/Privacy.pdf" target="_blank" rel="noreferrer">
-            Privacy Policy
-          </a>
-        </div>
-
-        <div
-          style={{
-            color: "#fff",
-            marginBottom: "50px",
-          }}
-        >
-        </div>
-      </div> */}
+ 
     </div> 
   );
 };

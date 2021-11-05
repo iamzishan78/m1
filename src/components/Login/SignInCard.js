@@ -69,6 +69,16 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: 10,
     },
   },
+  termsAndPrivacy: {
+    color: "#fff",
+    "& a": {
+      color: "#fff",
+      textDecoration: "none",
+      "&:hover": {
+        color: theme.palette.secondary.main,
+      },
+    },
+  },
 }));
 
 const M1neralLogoNavNoAuth = (props) => (
@@ -204,13 +214,15 @@ const SignInCard = (props) => {
 
   return (
 
+
+    <div> 
     <Grid
     container
     spacing={0}
     direction="column"
     alignItems="center"
     justify="center"
-    style={{ minHeight: '100vh' }}
+    style={{ minHeight: 'calc(100vh - 70px)' }}
    >
 
     <Card square={true} className={classes.card}>
@@ -284,6 +296,36 @@ const SignInCard = (props) => {
     </Card>
 
     </Grid>
+
+    <div
+      style={{
+        color: "#fff",
+      }}
+    >
+      © 2021 M1neral, LLC. All Rights Reserved.
+    </div>
+
+    <div className={classes.termsAndPrivacy}>
+      <a href="https://m1neral.com/TOS.pdf" target="_blank" rel="noreferrer">
+        Terms of Service
+      </a>
+      {" | "}
+      <a href="https://m1neral.com/Privacy.pdf" target="_blank" rel="noreferrer">
+        Privacy Policy
+      </a>
+    </div>
+
+    <div
+      style={{
+        marginBottom: "30px",
+      }}
+    >
+    </div>
+
+    </div>
+
+
+    
   );
 };
 
