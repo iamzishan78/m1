@@ -649,7 +649,7 @@ export default function Navigation(props) {
             ) : (
               <div style={{ display: "none" }}></div>
             )} */}
-            <Divider style={{ margin: 1 }} orientation="vertical" />
+            {/* <Divider style={{ margin: 1 }} orientation="vertical" /> */}
             <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
               {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
             </IconButton>

@@ -24,7 +24,7 @@ const Dashboard = () => {
 
   return (
     <div className={classes.root}>
-      <Container maxWidth="false" style={{ overflow: "auto", height: "calc(100vh - 0px)" }}>
+      <Container maxWidth="false" style={{ overflow: "auto", height: "calc(100vh - 65px)", top: "65px", position: "relative" }}>
         <div className={classes.header}>
           <DateBar />
         </div>

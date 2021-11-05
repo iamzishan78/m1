@@ -20,6 +20,9 @@ export const useStyles = makeStyles((theme) => ({
     }),
     paddingRight: "0 !important",
     boxShadow: "none",
+    "& .MuiToolbar-root": {
+      marginLeft: "52px",
+    },
   },
   appBarShift: {
     marginLeft: `${drawerWidth}px`,
@@ -117,8 +120,8 @@ export const useStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
     backgroundColor: "rgb(21 38 74)",
     marginRight: theme.spacing(2),
-    marginLeft: "477px !important",
-    width: ({ mapGridCardActivated }) => (mapGridCardActivated ? "34%" : "34%"),
+    marginLeft: "425px !important",
+    width: "34%",
     height: "40px",
     transition: "width 0.5s",
     [theme.breakpoints.up("sm")]: {

@@ -20,7 +20,9 @@ const useStyles = makeStyles((theme) => ({
       "&>.MuiPaper-root": {
         display: "flex",
         "flex-direction": "column",
-        height: "calc(100vh - 0px)",
+        height: "calc(100vh - 65px)",
+        top: "65px",
+        position: "relative",
         "align-items": "stretch",
         "&>.MuiPaper-root": {
           display: "contents",
@@ -59,12 +61,6 @@ export default function DocumentComponent() {
 
   return (
     <div className={classes.root}>
-      {/* <Container 
-        maxWidth='false' 
-        style={{overflow: 'auto', 
-        height: 'calc(100vh - 0px)'
-    }}> */}
-
       <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} />
       {/* <M1nTable dense parent="Documents"></M1nTable> */}
       <Drawer data={true}></Drawer>

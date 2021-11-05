@@ -1,19 +1,17 @@
-import React, { useRef, useState, useEffect } from "react";
+import React from "react";
 import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Autocomplete, {
-  createFilterOptions,
-} from "@material-ui/lab/Autocomplete";
+import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import PropTypes from "prop-types";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme, makeStyles } from "@material-ui/core/styles";
-import { FixedSizeList, VariableSizeList } from "react-window";
+import { makeStyles } from "@material-ui/core/styles";
+import { VariableSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import { Typography } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
 import debounce from "lodash/debounce";
 
-// import value formatters 
+// import value formatters
 import joinAddress from "../../../../Shared/valueformatters/join-address.js";
 
 const filter = createFilterOptions();
@@ -28,19 +26,8 @@ const OuterElementType = React.forwardRef((props, ref) => {
 });
 
 // Adapter for react-window
-const ListboxComponent = React.forwardRef(function ListboxComponent(
-  props,
-  ref
-) {
-  const {
-    children,
-    isItemLoaded,
-    loadMoreItems,
-    itemCount,
-    isNextPageLoading,
-    nameAutInputValue,
-    ...other
-  } = props;
+const ListboxComponent = React.forwardRef(function ListboxComponent(props, ref) {
+  const { children, isItemLoaded, loadMoreItems, itemCount, isNextPageLoading, nameAutInputValue, ...other } = props;
 
   const itemData = React.Children.toArray(children);
   // const smUp = useMediaQuery(theme.breakpoints.up("sm"), { noSsr: true });
@@ -87,12 +74,7 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
   return (
     <div ref={ref}>
       <OuterElementContext.Provider value={other}>
-        <InfiniteLoader
-          isItemLoaded={isItemLoaded}
-          itemCount={itemCount}
-          loadMoreItems={loadMoreItems}
-          minimumBatchSize={25}
-        >
+        <InfiniteLoader isItemLoaded={isItemLoaded} itemCount={itemCount} loadMoreItems={loadMoreItems} minimumBatchSize={25}>
           {({ onItemsRendered, ref: refList }) => (
             <VariableSizeList
               ref={refList}
@@ -227,12 +209,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
         return option?._id === value?._id;
       }}
       renderOption={(option) => {
-        if (option._id === "newEntity")
-          return (
-            <Typography style={{ color: "midnightblue" }}>
-              Add '{option.name}'
-            </Typography>
-          );
+        if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
 
         return (
           <Grid container spacing={0}>
@@ -268,9 +245,9 @@ export default function AutocompEntityNamesVirtualizeList(props) {
         if (newValue && newValue._id) {
           if (newValue._id !== "newEntity") setNameAutValue(newValue);
           else {
-            if(addNewOnClick){
-              addNewOnClick(newValue.name)
-            }else{
+            if (addNewOnClick) {
+              addNewOnClick(newValue.name);
+            } else {
               setNameAutValue({
                 _id: "newEntity",
                 name: newValue.name,
@@ -290,9 +267,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
             ...params.InputProps,
             endAdornment: (
               <>
-                {isNextPageLoading ? (
-                  <CircularProgress color="inherit" size={20} />
-                ) : null}
+                {isNextPageLoading ? <CircularProgress color="inherit" size={20} /> : null}
                 {params.InputProps.endAdornment}
               </>
             ),

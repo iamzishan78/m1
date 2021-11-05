@@ -1,14 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery } from "@apollo/client";
-import {
-  Button,
-  Grid,
-  InputAdornment,
-  TextField,
-  Tooltip,
-  IconButton,
-} from "@material-ui/core";
-import { fade, makeStyles, useTheme } from "@material-ui/core/styles";
+import { Button, Grid, InputAdornment, TextField, Tooltip, IconButton } from "@material-ui/core";
+import { fade, makeStyles } from "@material-ui/core/styles";
 import debounce from "lodash/debounce";
 
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -30,11 +23,14 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.15),
     marginRight: theme.spacing(2),
-    marginLeft: 5,
+    marginLeft: "425px !important",
     width: "34%",
     transition: "width 0.5s",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
+    },
+    "& svg": {
+      fill: "grey",
     },
   },
 
@@ -62,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     },
 
     "& .MuiOutlinedInput-input": {
-      color: "#ffffff",
+      color: "grey",
       "&::placeholder": {
         color: "##ffffffc9",
         textDecoration: "bold",
@@ -94,14 +90,8 @@ const ActivitySearch = () => {
     }));
   };
 
-  const [
-    getAllActivitiesForSearch,
-    {
-      data: activitiesData,
-      loading: activitiesLoading,
-      error: activitiesError,
-    },
-  ] = useLazyQuery(GETALLACTIVITIESFORSEARCH);
+  const [getAllActivitiesForSearch, { data: activitiesData, loading: activitiesLoading, error: activitiesError }] =
+    useLazyQuery(GETALLACTIVITIESFORSEARCH);
 
   useEffect(() => {
     getAllActivitiesForSearch();
@@ -128,113 +118,103 @@ const ActivitySearch = () => {
     []
   );
 
-
   return (
     <>
-    <Autocomplete
-      className={classes.search}
-      style={{
-        margin: 0,
-      }}
-      defaultValue={nameAutValue}
-      value={nameAutValue}
-      disableListWrap
-      options={activities}
-      getOptionLabel={(option) => option.name}
-      getOptionSelected={(option, value) => {
-        return option === value;
-      }}
-      renderOption={(option) => {
-        return (
-          <Grid container spacing={0}>
-            <Grid container item xs={12} alignItems="center">
-              <Grid item xs>
-                <span style={{ fontWeight: 400 }}>{option.name}</span>
+      <Autocomplete
+        className={classes.search}
+        style={{
+          margin: 0,
+        }}
+        defaultValue={nameAutValue}
+        value={nameAutValue}
+        disableListWrap
+        options={activities}
+        getOptionLabel={(option) => option.name}
+        getOptionSelected={(option, value) => {
+          return option === value;
+        }}
+        renderOption={(option) => {
+          return (
+            <Grid container spacing={0}>
+              <Grid container item xs={12} alignItems="center">
+                <Grid item xs>
+                  <span style={{ fontWeight: 400 }}>{option.name}</span>
 
-                <Typography variant="body2" color="textSecondary">
-                  {option.type}
-                </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {option.type}
+                  </Typography>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
-        );
-      }}
-      onInputChange={onInputChange}
-      onChange={(e, act) => {
-        handleSelectActivity(act?._id);
-        setNameAutValue(act);
-      }}
-      renderInput={(params) => (
-        <TextField
-          margin="dense"
-          {...params}
-          style={{
-            margin: 0,
-          }}
-          className={classes.activitySearchField}
-          placeholder="Search for activities"
-          variant="outlined"
-          InputProps={{
-            ...params.InputProps,
-            startAdornment: (
-              <InputAdornment>
-                <IconButton size="small">
-                  <SearchIcon htmlColor="#fff" />
-                </IconButton>
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <>
-                <ButtonGroup variant="text">
-                  <Tooltip title="Clear">
-                    <IconButton
-                      size="small"
-                      htmlColor="#fff"
-                      className={`${classes.toggleBtn} ${
-                        stateApp.activityDisplayType === "table" &&
-                        classes.activeBtn
-                      }`}
-                      onClick={() => {
-                        setNameAutValue({ name: "", _id: null });
-                      }}
-                    >
-                      <ClearIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="List View">
-                    <IconButton
-                      size="small"
-                      htmlColor="#fff"
-                      className={`${classes.toggleBtn} ${
-                        stateApp.activityDisplayType === "table" &&
-                        classes.activeBtn
-                      }`}
-                      onClick={() => setActivityDisplayType("table")}
-                    >
-                      <List />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Calendar">
-                    <IconButton
-                      size="small"
-                      htmlColor="#fff"
-                      className={`${classes.toggleBtn} ${
-                        stateApp.activityDisplayType === "calendar" &&
-                        classes.activeBtn
-                      }`}
-                      onClick={() => setActivityDisplayType("calendar")}
-                    >
-                      <EventIcon />
-                    </IconButton>
-                  </Tooltip>
-                </ButtonGroup>
-              </>
-            ),
-          }}
-          size="small"
-        />
-      )}
-    />
+          );
+        }}
+        onInputChange={onInputChange}
+        onChange={(e, act) => {
+          handleSelectActivity(act?._id);
+          setNameAutValue(act);
+        }}
+        renderInput={(params) => (
+          <TextField
+            margin="dense"
+            {...params}
+            style={{
+              margin: 0,
+            }}
+            className={classes.activitySearchField}
+            placeholder="Search for activities"
+            variant="outlined"
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <InputAdornment>
+                  <IconButton size="small">
+                    <SearchIcon htmlColor="#fff" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <>
+                  <ButtonGroup variant="text">
+                    <Tooltip title="Clear">
+                      <IconButton
+                        size="small"
+                        htmlColor="#fff"
+                        className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" && classes.activeBtn}`}
+                        onClick={() => {
+                          setNameAutValue({ name: "", _id: null });
+                        }}
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="List View">
+                      <IconButton
+                        size="small"
+                        htmlColor="#fff"
+                        className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" && classes.activeBtn}`}
+                        onClick={() => setActivityDisplayType("table")}
+                      >
+                        <List />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Calendar">
+                      <IconButton
+                        size="small"
+                        htmlColor="#fff"
+                        className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "calendar" && classes.activeBtn}`}
+                        onClick={() => setActivityDisplayType("calendar")}
+                      >
+                        <EventIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </ButtonGroup>
+                </>
+              ),
+            }}
+            size="small"
+          />
+        )}
+      />
     </>
   );
 };
