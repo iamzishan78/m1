@@ -34,12 +34,12 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#17aadd",
     width: "125px",
     lineHeight: "1.4",
-    marginTop: "35px",
+    marginTop: "65px",
     paddingTop: "12px",
     paddingBottom: "12px",
     color: "#fff",
     float: "left",
-    marginLeft: "65px",
+    marginLeft: "135px",
     "&:hover": {
       backgroundColor: "#f0cfb3",
     },
@@ -125,7 +125,7 @@ const BootstrapInput = withStyles((theme) => ({
     backgroundColor: theme.palette.common.white,
     border: "1px solid #ced4da",
     fontSize: 16,
-    width: "250px",
+    width: "280px",
     height: "25px",
     padding: "10px",
     marginTop: "10px",
@@ -254,10 +254,10 @@ const SignInCard = (props) => {
               fontFamily: "Tahoma, Geneva, sans-serif",
               color: "white",
               textAlign: "left",
-              marginLeft: "65px",
+              marginLeft: "75px",
             }}
           >
-            Please sign-in with your workspace name
+            Sign-in with your workspace name
           </div>
           <BootstrapInput
             error={tenantFlags.error}

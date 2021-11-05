@@ -21,8 +21,8 @@ import * as msal from "@azure/msal-browser";
 import { GET_LOGGED_IN_USER } from "graphQL/useMutationLoggedInUser";
 import { USER_MAP_SETTINGS } from "graphQL/useQueryUserMapSettings";
 
-import rock from '../../DFJ.PNG'
-// import rock from '../../rock.png'
+// import rock from '../../DFJ.PNG'
+import rock from '../../rock.png'
 
 
 const localStyles = makeStyles((theme) => ({
