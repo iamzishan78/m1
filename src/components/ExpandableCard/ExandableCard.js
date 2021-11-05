@@ -107,7 +107,7 @@ function ExpandableCard(props) {
   let headerIcons = {}
   let icons = {}
   let headerLabelColor = '#ababab'
-  if (targetLabel === "unit") {
+  if (targetLabel === "unit" || targetLabel === "parcel") {
     backgroundColor = 'white'
     headerIcons = {
       '& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary, & .MuiIconButton-label ': {
@@ -366,6 +366,7 @@ function ExpandableCard(props) {
     if (!title) {
       return "--";
     }
+
     return (
       <div
         style={{
@@ -376,8 +377,7 @@ function ExpandableCard(props) {
           marginRight: "48px",
         }}
       >
-        {(targetLabel === "unit"
-        ) &&
+        {(targetLabel === "unit" || targetLabel === "parcel") &&
           <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
             <Grid item><Avatar color='#1a2341'>
               <FolderIcon fontColor='#1a2341' />
@@ -387,17 +387,16 @@ function ExpandableCard(props) {
               <Box className='name'>
                 {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
               </Box>
-              <Box className='description'>{subTitle}</Box>
-              <Box className='type' >Unit</Box>
+              {subTitle && (<Box className='description'>{subTitle}</Box>)}
+              {targetLabel === "unit" && (<Box className='type' >{`Unit`}</Box>)}
+              {targetLabel === "parcel" && (<Box className='type' >{`Parcel`}</Box>)}
             </Grid>
           </Grid>
         }
 
-        {
-          (targetLabel !== "contact" && targetLabel !== "unit"
-          ) &&
+        {/* {(targetLabel !== "contact" && targetLabel !== "unit") &&
           <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
-        }
+        } */}
 
         {
           (targetLabel === "contact"

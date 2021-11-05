@@ -39,7 +39,12 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   subHeaderItem: {
-    backgroundColor: "#141d32 !important",
+    // this is the top header on the layer manager which contains the word "layesrs" and teh button "manager"
+    // backgroundColor: "#141d32 !important",
+    // backgroundColor: "red",
+    backgroundColor: "#0e111a",
+
+
     // opacity: "0.94",
     minWidth: "400px",
     height: "50px",
@@ -52,7 +57,8 @@ export const useStyles = makeStyles((theme) => ({
     overflowY: "auto",
     height: "calc(100vh - 466px - 50px - 64px)",
     // maxHeight: 'calc(100vh - 40px - 64px)',
-    backgroundColor: "#040e24",
+    // backgroundColor: "#040e24",
+    backgroundColor: "#0e111a",
     "&::-webkit-scrollbar": {
       width: "0.75em",
     },
@@ -73,7 +79,7 @@ export const useStyles = makeStyles((theme) => ({
     overflowY: "auto",
     height: "calc(100vh - 50px - 64px)",
     maxHeight: "calc(100vh - 40px - 64px)",
-    backgroundColor: "#040e24",
+    backgroundColor: "#0e111a",
     "&::-webkit-scrollbar": {
       width: "0.75em",
     },
@@ -103,6 +109,8 @@ export const useStyles = makeStyles((theme) => ({
     display: "grid",
     gridTemplateColumns: "1fr 1fr 1fr",
     backgroundColor: "#263451",
+    // backgroundColor: "red",
+
     "& :nth-child(1)": {
       float: "left",
       display: "grid",
@@ -125,7 +133,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   fileTree: {
     // for layer panel
-    backgroundColor: "#040e24",
+    backgroundColor: "#0e111a",
     overflow: "auto",
     height: "calc(100vh - 167px)",
     maxheight: "calc(100vh - 167px)",
@@ -166,6 +174,7 @@ export const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       width: "auto",
     },
+    "& .MuiInputBase-root": { width: "93% !important" }
   },
   iconSearch: {
     height: "100%",
@@ -173,6 +182,14 @@ export const useStyles = makeStyles((theme) => ({
     position: "absolute",
     alignItems: "center",
     justifyContent: "center",
+    color: "rgba(121, 121, 121, 0.85)",
+    zIndex: 1,
+    "&:hover": {
+      color: "#fff",
+      cursor: "pointer",
+    },
+  },
+  iconClear: {
     color: "rgba(121, 121, 121, 0.85)",
     zIndex: 1,
     "&:hover": {
@@ -188,11 +205,8 @@ export const useStyles = makeStyles((theme) => ({
     transition: theme.transitions.create("width"),
     width: "100%",
     [theme.breakpoints.up("sm")]: {
-      width: "0ch",
-      "&:focus": {
-        width: "25ch",
-        height: "2ch",
-      },
+      width: "25ch",
+      height: "2ch",
     },
   },
 }));
@@ -228,10 +242,13 @@ export const StyledMenuHeaderItem = withStyles((theme) => ({
     fontFamily: "Poppins",
     display: "flex",
     justifyContent: "space-between",
+
     "&:hover": {
       background: "#4B618F",
     },
-    backgroundColor: "#263451",
+    // backgroundColor: "#263451",
+    // backgroundColor: "#0e111a",
+
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
     },
@@ -250,7 +267,9 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
   root: {
     display: "flex",
     justifyContent: "flex-start",
-    backgroundColor: "#141d32 !important",
+    backgroundColor: "#0e111a !important",
+    // backgroundColor: "#0e111a",
+
     minHeight: "53px !important",
     "& .MuiTabs-root": {
       "& .MuiTabs-scroller": {
@@ -275,6 +294,8 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
 }))(MenuItem);
 
 export const StyledMenuItem = withStyles((theme) => ({
+
+  // outdoors, satellite, dark, light, etc. list item background 
   root: {
     fontFamily: "Poppins",
     display: "block",
@@ -283,7 +304,9 @@ export const StyledMenuItem = withStyles((theme) => ({
       background: "#4B618F",
     },
 
-    backgroundColor: "#040e24",
+    backgroundColor: "#0e111a",
+    // backgroundColor: "red",
+
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
     },
@@ -291,6 +314,9 @@ export const StyledMenuItem = withStyles((theme) => ({
 }))(MenuItem);
 
 export const StyledListItemSecondaryAction = withStyles((theme) => ({
+
+  // this is the layer "manager" button styling 
+
   root: {
     "& .MuiButton-textPrimary": {
       color: theme.palette.common.white,
@@ -305,12 +331,17 @@ export const StyledListItemSecondaryAction = withStyles((theme) => ({
 }))(ListItemSecondaryAction);
 
 export const StyledListItem2 = withStyles((theme) => ({
+
+  // this is the "Base Map Layers header"
+  
   root: {
     fontFamily: "Poppins",
     "&:hover": {
       background: "#a3b2cf",
     },
-    backgroundColor: "#4B618F",
+    // backgroundColor: "#4B618F",
+    backgroundColor: "#0e111a",
+
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
     },

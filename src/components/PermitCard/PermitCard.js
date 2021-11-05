@@ -233,26 +233,26 @@ export default function PermitCard() {
               </Typography>
             </div>
 
-    <div className={classes.iconContainer}>
-      <OilGasIcon htmlColor="black" fontSize="large"/>
+            <div className={classes.iconContainer}>
+              <OilGasIcon htmlColor="black" fontSize="large" />
 
-      <Typography
-        align="center"
-        className={classes.text1}
-        variant="subtitle2"
-      >
-        Well Type
-      </Typography>
-      <Typography
-        align="center"
-        className={classes.text2}
-        variant="caption"
-      >
-        {stateApp.selectedPermit.WellType
-          ? stateApp.selectedPermit.WellType.toUpperCase()
-          : "UNKNOWN"}
-      </Typography>
-      </div>
+              <Typography
+                align="center"
+                className={classes.text1}
+                variant="subtitle2"
+              >
+                Well Type
+              </Typography>
+              <Typography
+                align="center"
+                className={classes.text2}
+                variant="caption"
+              >
+                {stateApp.selectedPermit.WellType
+                  ? stateApp.selectedPermit.WellType.toUpperCase()
+                  : "UNKNOWN"}
+              </Typography>
+            </div>
 
 
           </CardActions>
@@ -289,11 +289,11 @@ export default function PermitCard() {
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
                     {stateApp.selectedPermit.WellNumber
-                      ? stateApp.selectedPermit.WellNumber.padStart(3,'0')
+                      ? stateApp.selectedPermit.WellNumber.padStart(3, '0')
                       : '--'}
                   </TableCell>
                 </TableRow>
-                
+
                 <TableRow className={classes.rowGray}>
                   <TableCell className={classes.cell1} align="left">
                     API #
@@ -310,7 +310,7 @@ export default function PermitCard() {
                     County/Parish
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {stateApp.selectedPermit.County 
+                    {stateApp.selectedPermit.County
                       ? stateApp.selectedPermit.County + " (" + stateApp.selectedPermit.State + ")"
                       : '--'}
                   </TableCell>
@@ -374,54 +374,49 @@ export default function PermitCard() {
               </TableBody>
             </Table >
             <div>
-            {stateApp.selectedPermit?.State === 'TX'
-              ?
+              {stateApp.selectedPermit?.State === 'TX'
+                ?
 
-              <Link href=
+                <Link href=
 
-                {"http://webapps2.rrc.texas.gov/EWA/drillingPermitDetailAction.do?methodToCall=searchByUniversalDocNo&universalDocNo=" + stateApp.selectedPermit.UniversalDocNumber + "&rrcActionMan=H4sIAAAAAAAAAL1Qu27DMAz8mnQUJPkBLxyMop37CJrByKDYhCNAtgxK7gPQx5d2USB1OmfS8Y4ij5eUlKCTkgrUHVFbt9H68aWlrpFHWPkPPJlpClqwLCJ-miB6_77L6kqyrmGnHx8ONcNsgR1Z5-zYPyENNobnGenrZ6joPDflMGA8-27v741zTBRAGGca9_4VDbVnpiqQV16asKo19UFMhszwZtyMq0X2WJVZLqsFF3DC3o7hYOMyimf9qZXe1Jf9m6XqVgGE38NLmEyPdHHgv2moY7PtW6yCShqUTBmDHGQq-C2ZuP59gyy_AXdh05tZAgAA"}
+                  {"http://webapps2.rrc.texas.gov/EWA/drillingPermitDetailAction.do?methodToCall=searchByUniversalDocNo&universalDocNo=" + stateApp.selectedPermit.UniversalDocNumber + "&rrcActionMan=H4sIAAAAAAAAAL1Qu27DMAz8mnQUJPkBLxyMop37CJrByKDYhCNAtgxK7gPQx5d2USB1OmfS8Y4ij5eUlKCTkgrUHVFbt9H68aWlrpFHWPkPPJlpClqwLCJ-miB6_77L6kqyrmGnHx8ONcNsgR1Z5-zYPyENNobnGenrZ6joPDflMGA8-27v741zTBRAGGca9_4VDbVnpiqQV16asKo19UFMhszwZtyMq0X2WJVZLqsFF3DC3o7hYOMyimf9qZXe1Jf9m6XqVgGE38NLmEyPdHHgv2moY7PtW6yCShqUTBmDHGQq-C2ZuP59gyy_AXdh05tZAgAA"}
+                  variant="body2"
+                  target="_blank"
 
-
-                onClick={() => {
-                  console.info("I'm a button.");
-                }}
-                variant="body2"
-                target="_blank"
-
-              >
-                <Typography
-                  align="center"
-                  variant="subtitle2"
-                  className={classes.link_permit}
                 >
-                  RRC Permit Search Tool
+                  <Typography
+                    align="center"
+                    variant="subtitle2"
+                    className={classes.link_permit}
+                  >
+                    RRC Permit Search Tool
 
-                </Typography>
-              </Link>
-              : ''}
+                  </Typography>
+                </Link>
+                : ''}
 
-          {stateApp.selectedPermit?.State === 'LA'
-              ?
+              {stateApp.selectedPermit?.State === 'LA'
+                ?
 
-              <Link 
-              href={"https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn="+stateApp.selectedPermit?.PermitId}
-                onClick={() => {
-                }}
-                variant="body2"
-                target="_blank"
+                <Link
+                  href={"https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn=" + stateApp.selectedPermit?.PermitId}
+                  onClick={() => {
+                  }}
+                  variant="body2"
+                  target="_blank"
 
-              >
-                <Typography
-                  align="center"
-                  variant="subtitle2"
-                  className={classes.link_permit}
                 >
-                  SONRIS Search Tool
+                  <Typography
+                    align="center"
+                    variant="subtitle2"
+                    className={classes.link_permit}
+                  >
+                    SONRIS Search Tool
 
-                </Typography>
-              </Link>
-              : ''}
-              
+                  </Typography>
+                </Link>
+                : ''}
+
 
             </div>
           </CardContent>

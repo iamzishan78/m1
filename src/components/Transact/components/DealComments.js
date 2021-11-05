@@ -348,20 +348,20 @@ export default function DealComment(props) {
                     >
                       <Grid item xs={1}>
                         <IconButton style={{ marginTop: "3px", marginLeft: "12px" }}>
-                          {profilesInfo[eachComment.user.email]?.profileImage || eachComment.isNew ? (
+                          {profilesInfo[eachComment.user?.email]?.profileImage || eachComment.isNew ? (
                             <Avatar
-                              src={eachComment.isNew ? profileImage : profilesInfo[eachComment.user.email].profileImage}
+                              src={eachComment.isNew ? profileImage : profilesInfo[eachComment.user?.email].profileImage}
                               size="38"
                               round
                             />
                           ) : (
-                            <Avatar name={eachComment.user.name} size="38" round />
+                            <Avatar name={eachComment.user?.name} size="38" round />
                           )}
                         </IconButton>
                       </Grid>
                       <Grid item xs={11} className={classes.paddingCreateTask} >
                         <div>
-                          <span className={classes.bold}>{eachComment.user.name}</span>
+                          <span className={classes.bold}>{eachComment.user?.name}</span>
                           {eachComment.isPinned && <span> created this task.</span>}
                           <ReactTimeAgo
                             className={classes.commentTime}
@@ -381,7 +381,7 @@ export default function DealComment(props) {
                           {!eachComment.isPinned && (
                             <>
                               {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
-                              {eachComment.user.email === stateApp.user.email &&
+                              {eachComment.user?.email === stateApp.user.email &&
                                 showCommentActionId === eachComment._id &&
                                 editCommentId !== eachComment._id && (
                                   <div className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}>

@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useState, useEffect, useRef } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 import { get } from "lodash";
@@ -10,6 +10,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { UPDATESTAGEDEALDESCRIPTORS } from "graphQL/useMutationUpdateStageDealDescriptors";
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDealDescriptor";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Backdrop from "@material-ui/core/Backdrop";
 
 import AddDealDialog from "components/Transact/components/DealDialog/AddDealDialog";
 import "./index.css";
@@ -96,6 +97,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold !important",
   },
   boardAndTable: {
+    position: "relative",
     marginTop: "4px",
     maxHeight: "calc(100vh - 140px) !important",
     overflowY: "auto",
@@ -132,6 +134,10 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiToolbar-root": { textAlign: "initial" },
   },
+  backdrop: {
+    position: "absolute",
+    "z-index": 1,
+  },
   dealOwnerAvatar: {
     width: theme.spacing(3),
     height: theme.spacing(3),
@@ -163,12 +169,15 @@ export default function Transact() {
   const cardColors = useRef({});
 
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
-  const [getPipeline, { data: pipelineData }] = useLazyQuery(GETPIPELINE, {
+  const [getPipeline, { data: pipelineData, loading: pipelineLoading }] = useLazyQuery(GETPIPELINE, {
     fetchPolicy: "cache-and-network",
   });
-  const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
-  const [updateStageDealDescriptor] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
-  const [updateDeal] = useMutation(UPDATEDEAL);
+
+  const [updateStageDealDescriptors, { loading: descriptorsLoading }] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
+  const [updateStageDealDescriptor, { loading: descriptorLoading }] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
+  const [updateDeal, { loading: dealLoading }] = useMutation(UPDATEDEAL);
+
+  const isPipeLoading = dealLoading === true || descriptorLoading === true || descriptorsLoading === true || pipelineLoading;
 
   const [getProfilesImages, profiledata] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
@@ -316,7 +325,6 @@ export default function Transact() {
             }),
           })),
         };
-
         dispatch(
           setFlowState({
             pipeToShow: pipe,
@@ -368,7 +376,10 @@ export default function Transact() {
 
   useEffect(() => {
     if (profiledata?.data?.profileByEmail?.profiles) {
-      setStateTransact(profiledata.data.profileByEmail.profiles);
+      setStateTransact((stateTransact) => ({
+        ...stateTransact,
+        profilesInfo: profiledata.data.profileByEmail.profiles,
+      }));
     }
   }, [profiledata]);
 
@@ -467,13 +478,12 @@ export default function Transact() {
         };
       }),
     ];
-
     updateStageDealDescriptors({
       variables: {
         stageDealDescriptors: [movedCardDescriptor, ...unfilteredSourceLaneDescriptors, ...unfilteredTargetLaneDescriptors],
       },
       refetchQueries: ["getPipeline"],
-      // awaitRefetchQueries: true,
+      awaitRefetchQueries: true,
     });
 
     if (sourceLaneId !== targetLaneId) {
@@ -490,13 +500,12 @@ export default function Transact() {
           ...updatedDeal,
           status: unfilteredTargetLane.metadata.dealsStatus.toLowerCase(),
         };
-
       updateDeal({
         variables: {
           deal: { ...updatedDeal },
         },
         refetchQueries: ["getPipeline", "getContactDeals"],
-        // awaitRefetchQueries: true,
+        awaitRefetchQueries: true,
       });
 
       // Updating the next stage deal descriptor to isCurrent = true
@@ -506,7 +515,12 @@ export default function Transact() {
             descriptorObject: cardId,
             relatedObject: targetLaneId,
             position: unfilteredTargetPosition,
+            relatedObjectType: "Stage",
+            descriptorType: "Deal",
+            pipelineType: "Pipeline",
+            pipeline: selectedPipe._id,
             isCurrent: true,
+            user: cardDetails.metadata.user?._id,
           },
         },
         refetchQueries: ["dealSettings"],
@@ -669,6 +683,12 @@ export default function Transact() {
         <TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} setStateApp={setStateApp} />
         {pipeToShow ? (
           <div className={classes.boardAndTable}>
+            {isPipeLoading === true && (
+              <Backdrop className={classes.backdrop} open={true} invisible={true}>
+                {" "}
+                <CircularProgress size={80} disableShrink color="secondary" />{" "}
+              </Backdrop>
+            )}
             {stateApp.dealDisplayType === "board" && (
               <Board
                 className={classes.list}

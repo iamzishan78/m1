@@ -1,10 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
+import { TransitionGroup } from "react-transition-group";
 import RootRef from "@material-ui/core/RootRef";
 import { useMutation } from "@apollo/client";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import { Tooltip, Tab, Tabs, InputBase } from "@material-ui/core";
+import { Tooltip, Tab, Tabs, InputBase, IconButton } from "@material-ui/core";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Button from "@material-ui/core/Button";
@@ -23,6 +24,8 @@ import Grid from "@material-ui/core/Grid";
 import HeatmapIcon from "@material-ui/icons/Gradient";
 import BasemapIcon from "@material-ui/icons/Language";
 import SearchIcon from "@material-ui/icons/Search";
+import ClearIcon from "@material-ui/icons/Clear";
+import SecondaryPanel from "components/Shared/SecondaryPanel";
 
 import { deepEqualObjects } from "../../functions";
 import Layer from "./Layer";
@@ -39,7 +42,7 @@ import SortableLayer from "./SortableLayer";
 import { CircularProgress } from "@material-ui/core";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 
-function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
+function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems }) {
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS);
@@ -49,6 +52,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
   const [filteredItems, setFilteredItems] = useState([]);
   const [layerMap, setLayerMap] = useState([]);
   const [mapStyles, setMapStyles] = useState([]);
+  const [search, setSearch] = useState("");
   const [searchState, setSearchState] = useState(false);
   const [tab, setTab] = useState(0);
 
@@ -72,8 +76,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
   }, [stateMapControls.selectedControl]);
 
   useEffect(() => {
-    setFilteredItems(items);
-  }, [items]);
+    filterLayers(search);
+  }, [panelItems]);
 
   useEffect(() => {
     if ((type === "layer" || type === "heatMaps" || type === "marketplace") && filteredItems) {
@@ -87,6 +91,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       expandedPanel: !stateMapControls.expandedPanel,
+      addLayer: false,
     }));
   };
 
@@ -109,20 +114,20 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
   };
 
   const filterLayers = (search) => {
-    if (!search) setFilteredItems(items);
+    if (!search) setFilteredItems(panelItems);
     else {
       switch (type) {
         case "layer":
-          setFilteredItems(items.filter(i => i.layerName.toLowerCase().includes(search.toLowerCase())));
+          setFilteredItems(panelItems.filter((i) => (i.layerName ?? i.name).toLowerCase().includes(search.toLowerCase())));
           break;
         case "base":
         case "heatMaps":
-          setFilteredItems(items.filter(i => i.name.toLowerCase().includes(search.toLowerCase())));
+          setFilteredItems(panelItems.filter((i) => i.name.toLowerCase().includes(search.toLowerCase())));
           break;
         default:
       }
     }
-  }
+  };
 
   const layerIcons = React.useMemo(() => {
     return [
@@ -206,6 +211,24 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
     id: `full-width-tab-${index}`,
     "aria-controls": `full-width-tabpanel-${index}`,
   });
+
+  const clearSearch = () => {
+    setTimeout(() => {
+      setSearch("");
+      setSearchState(false);
+      filterLayers();
+    }, 200);
+  };
+  const setSearchValue = (value) => {
+    setSearch(value);
+    filterLayers(value);
+  };
+  const secondaryPanelState = React.useMemo(() => {
+    if (stateMapControls.addLayer || stateMapControls.selectedLayer) {
+      return true;
+    } else return false;
+  }, [stateMapControls.addLayer, stateMapControls.selectedLayer]);
+
   return (
     <div>
       <div
@@ -221,7 +244,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
         }}
       >
         <StyledMenu
-          id="checklist-menu"
+          id="layer-side-panel"
           style={!stateMapControls.expandedPanel ? { display: "none" } : { minWidth: "425px" }}
           keepMounted
           open={Boolean(stateMapControls.selectedControl)}
@@ -270,6 +293,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
                     id="searchInput"
                     fullWidth
                     placeholder="Search by Layer Name"
+                    value={search}
                     classes={{
                       root: classes.inputRoot,
                       input: classes.inputInput,
@@ -277,14 +301,15 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
                     autoComplete="off"
                     inputProps={{ "aria-label": "search" }}
                     onFocus={() => setSearchState(true)}
-                    onBlur={() =>
-                      setTimeout(() => {
-                        setSearchState(false);
-                        filterLayers();
-                      }, 200)
-                    }
-                    onChange={(evt) => filterLayers(evt.target.value)}
+                    onChange={(evt) => setSearchValue(evt.target.value)}
                   />
+                  {searchState && (
+                    <Tooltip title="Clear" className={classes.iconClear}>
+                      <IconButton size="small" htmlColor="white" onClick={clearSearch}>
+                        <ClearIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                 </div>
               </Grid>
             </Grid>
@@ -295,9 +320,16 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
 
           {type === "layer" ? (
             layerMap && layerMap[0]?.type ? (
-              <SortableLayer layerMap={layerMap} />
+              <SortableLayer layerMap={layerMap} panelItems={panelItems} />
             ) : (
-              <Box height="calc(100vh - 50px - 64px)" bgcolor="#040e24" display="flex" justifyContent="center">
+              <Box
+                height="calc(100vh - 50px - 64px)"
+                // bgcolor="#040e24"
+                // bgcolor="red"
+
+                display="flex"
+                justifyContent="center"
+              >
                 <CircularProgress style={{ top: "50%", position: "absolute" }} size={40} color="secondary" />
               </Box>
             )
@@ -309,10 +341,19 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, items }) {
             displayList
           )}
         </StyledMenu>
+        <StyledMenu
+          id="layer-secondary-panel"
+          keepMounted
+          open={secondaryPanelState}
+          style={{ display: secondaryPanelState ? "flex" : "none", minWidth: "525px" }}
+        >
+          <TransitionGroup transitionName="carousel" transitionEnterTimeout={800} transitionLeaveTimeout={500}>
+            <SecondaryPanel />
+          </TransitionGroup>
+        </StyledMenu>
         <div className={classes.pulloutBox} onClick={togglePullout}>
           {stateMapControls.expandedPanel ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
         </div>
-        {/* // </ClickAwayListener> */}
       </div>
     </div>
   );
