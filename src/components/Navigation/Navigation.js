@@ -502,34 +502,14 @@ export default function Navigation(props) {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      {/* <AppBar
+      <AppBar
         position="fixed"
         className={clsx(classes.appBar, {
           [classes.appBarShift]: openDrawer,
         })}
       >
-        {stateApp.user ? (
+        {stateApp.user && (
           <Toolbar>
-            {!openDrawer ? (
-              <div className={classes.toolbar}>
-                <IconButton color="secondary" onClick={handleDrawerOpen}>
-                  {theme.direction === "rtl" ? <MenuIcon /> : <MenuIcon />}
-                </IconButton>
-
-                <div style={{ marginRight: 20 }}>
-                  {matchFind ? (
-                    <Button color="secondary" size="large" onClick={handleClickLogo} className={classes.margin}>
-                      <M1neralLogoWhiteLetters />
-                    </Button>
-                  ) : (
-                    <Button color="secondary" size="large" onClick={(event) => handleListItemClick("/")} className={classes.margin}>
-                      <M1neralLogoWhiteLetters />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ) : null}
-
             {location.pathname === "/activities" && (
               <>
                 <ActivitySearch />
@@ -567,7 +547,7 @@ export default function Navigation(props) {
               <div style={{ display: "none" }}></div>
             )}
 
-            {matchTrack ? (
+            {/* {matchTrack && (
               <div>
                 <div ref={anchorEl} className={classes.filterTabs}>
                   <Tabs
@@ -601,10 +581,8 @@ export default function Navigation(props) {
                   </Tabs>
                 </div>
               </div>
-            ) : (
-              <div style={{ display: "none" }}></div>
-            )}
-            {matchLocation ? (
+            )} */}
+            {/* {matchLocation ? (
               <div ref={anchorEl} className={classes.filterTabs}>
                 <Tabs
                   value={value}
@@ -670,24 +648,14 @@ export default function Navigation(props) {
               </div>
             ) : (
               <div style={{ display: "none" }}></div>
-            )}
+            )} */}
             <Divider style={{ margin: 1 }} orientation="vertical" />
             <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
               {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
             </IconButton>
           </Toolbar>
-        ) : (
-          <div>
-            {location.pathname !== "/" ? (
-              <Link to="/">
-                <M1neralLogoLogin />
-              </Link>
-            ) : (
-              <M1neralLogoLogin />
-            )}
-          </div>
         )}
-      </AppBar> */}
+      </AppBar>
 
       {stateApp.user && (
         <SideNavigation

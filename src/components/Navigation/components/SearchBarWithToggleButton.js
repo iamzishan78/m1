@@ -8,7 +8,7 @@ import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived } from "../../../actions";
-import PostAddOutlinedIcon from '@material-ui/icons/PostAddOutlined';
+import PostAddOutlinedIcon from "@material-ui/icons/PostAddOutlined";
 import { useLocation } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 
@@ -16,7 +16,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     "& .MuiButtonGroup-root": { width: "100%" },
     "& .MuiAutocomplete-root": {
-      // width: "Calc(100% - 40px)",
       flexGrow: "1",
       borderRight: "1px solid rgba(0, 0, 0, 0.23)",
       borderColor: "rgba(1, 17, 51, 0.5)",
@@ -47,19 +46,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 function GridIcon() {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const { mapGridCardActivated } = useSelector(
-    ({ MapGridCard }) => MapGridCard
-  );
+  const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
   return (
     <Tooltip title="Search Grid">
-
       <Button
         className={mapGridCardActivated ? classes.selected : classes.gridOnIcon}
-
         onClick={() => {
           dispatch(toggleMapGridCardAtived());
         }}
@@ -75,41 +69,29 @@ export default function SearchBarWithToggleButton() {
   const [stateApp, setStateApp] = React.useContext(AppContext);
   let location = useLocation();
   return (
-    <div className={classes.root} >
-      <ButtonGroup
-        variant="text"
-        color="primary"
-        aria-label="text primary button group"
-      >
+    <div className={classes.root}>
+      <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
         <Search />
 
         {location.pathname === "/documents" ? (
-
           <Tooltip title="Add Document">
-
             <Button
               className={classes.gridOnIcon}
               onClick={() => {
-                console.log(stateApp, 'Add Document')
-                setStateApp({ ...stateApp, DocumentDrawer: true })
+                console.log(stateApp, "Add Document");
+                setStateApp({ ...stateApp, DocumentDrawer: true });
               }}
             >
               <PostAddOutlinedIcon />
             </Button>
           </Tooltip>
-
         ) : (
           <GridIcon />
         )}
       </ButtonGroup>
-      {
-        stateApp.searchLoader && <CircularProgress
-          key="loader"
-          style={{ position: "absolute", right: "-38px", top: "8px" }}
-          size={28}
-          color="secondary"
-        />
-      }
+      {stateApp.searchLoader && (
+        <CircularProgress key="loader" style={{ position: "absolute", right: "-38px", top: "8px" }} size={28} color="secondary" />
+      )}
     </div>
   );
 }

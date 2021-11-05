@@ -12,13 +12,14 @@ export const useStyles = makeStyles((theme) => ({
   },
   appBar: {
     height: "64px",
-    background: "rgba(1, 17, 51, 1.0)",
-    zIndex: theme.zIndex.drawer + 1,
+    background: "transparent",
+    zIndex: 1,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
     paddingRight: "0 !important",
+    boxShadow: "none",
   },
   appBarShift: {
     marginLeft: `${drawerWidth}px`,
@@ -114,10 +115,11 @@ export const useStyles = makeStyles((theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
+    backgroundColor: "rgb(21 38 74)",
     marginRight: theme.spacing(2),
-    marginLeft: 5,
+    marginLeft: "477px !important",
     width: ({ mapGridCardActivated }) => (mapGridCardActivated ? "34%" : "34%"),
+    height: "40px",
     transition: "width 0.5s",
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,

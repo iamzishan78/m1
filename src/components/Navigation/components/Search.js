@@ -102,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#5f5f5f",
   },
   root: {
-    height: "42px",
+    height: "40px",
     width: "100%",
     "& .MuiAutocomplete-inputRoot": { maxHeight: "42px" },
   },
