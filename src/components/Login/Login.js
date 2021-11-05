@@ -21,12 +21,17 @@ import * as msal from "@azure/msal-browser";
 import { GET_LOGGED_IN_USER } from "graphQL/useMutationLoggedInUser";
 import { USER_MAP_SETTINGS } from "graphQL/useQueryUserMapSettings";
 
+// import rock from '../../DFJ.PNG'
+import rock from '../../rock.png'
+
+
 const localStyles = makeStyles((theme) => ({
   myRoot: {
     display: "inline",
     flexDirection: "column",
-    justifyContent: "center"
+    justifyContent: "center",
     //overflowY: 'auto',
+    // backgroundColor: 'red'
   },
   height_100: {
     height: "100vh",
@@ -34,7 +39,7 @@ const localStyles = makeStyles((theme) => ({
   footer: {
     backgroundSize: "cover",
     backgroundPosition: "center",
-    backgroundColor: "#011133",
+    backgroundColor: "#343d54",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -61,8 +66,9 @@ const localStyles = makeStyles((theme) => ({
   rootNewUser: {
     textAlign: "center",
     display: "flex",
-    height: "100%",
-    flexDirection: "column"
+    height: "100vh",
+    flexDirection: "column",
+    backgroundColor: '#343d54'
     // "&::-webkit-scrollbar": {
     //   width: "0 !important",
     // },
@@ -593,11 +599,11 @@ const Login = (props) => {
 
   const renderBody = (
     <>
-      <div>
+      {/* <div>
         <Typography variant="h4" className={localClass.headerWords}>
           Welcome back!
         </Typography>
-      </div>
+      </div> */}
 
       <div className={localClass.cardContainer}>
         <SignInCard
@@ -609,7 +615,7 @@ const Login = (props) => {
               : undefined}
         />
 
-        <div>
+        {/* <div>
           <Paper
             elevation={0}
             square={true}
@@ -665,14 +671,14 @@ const Login = (props) => {
                 </Button>
               </a>
             </div>
-          </Paper>
-        </div>
+          </Paper> 
+        </div>*/}
       </div>
     </>
   );
 
   return loading ? (
-    <div style={{ marginTop: "20%", marginLeft: "47%" }}>
+    <div style={{ marginTop: "20%", marginLeft: "47%",  }}>
       <CircularProgress size={80} disableShrink color="secondary" />
     </div>
   ) : (
@@ -683,19 +689,35 @@ const Login = (props) => {
           : localClass.myRoot
       }
 
-    >
-      <div className={localClass.rootNewUser}
-      // style={{ overflowY: "scroll !important"}}
-      >{renderBody}</div>
+      style={{backgroundImage:`url(${rock})`}}
 
-      <div className={localClass.rootNewUser}>
-        <RenderSignUpControls />
+    >
+      <div className={localClass.rootNewUser} 
+      
+      style={{
+        backgroundImage:`url(${rock})`,
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+      
+      }}
+      // style={{ overflowY: "scroll !important"}}
+      >{renderBody}
+      
+      
+      
       </div>
 
-      <div className={localClass.footer}>
+      {/* <div className={localClass.rootNewUser}>
+        <RenderSignUpControls />
+      </div> */}
+
+      {/* <div className={localClass.footer} >
+
+
         <div>
           <M1neralLogo2 />
-        </div>
+        </div> 
 
         <div
           style={{
@@ -721,10 +743,9 @@ const Login = (props) => {
             marginBottom: "50px",
           }}
         >
-          {/* Privacy Policy */}
         </div>
-      </div>
-    </div>
+      </div> */}
+    </div> 
   );
 };
 
