@@ -69,7 +69,6 @@ export const useStyles = makeStyles((theme) => ({
     fontSize: "30px",
   },
   drawerOpen: {
-    // background: "rgba(5, 11, 24, 1.0)",
     background: "#0e111a",
     width: `${drawerWidth}px`,
     height: "100%",
@@ -81,7 +80,6 @@ export const useStyles = makeStyles((theme) => ({
     }),
   },
   drawerClose: {
-    // background: "rgba(5, 11, 24, 1.0)",
     background: "#0e111a",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
@@ -92,6 +90,7 @@ export const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       width: theme.spacing(6) + 4,
     },
+    borderRight: "1px solid rgb(38 52 81)",
   },
   toolbar: {
     display: "flex",
