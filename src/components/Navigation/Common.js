@@ -347,10 +347,11 @@ export const useStyles = makeStyles((theme) => ({
   menuListItemSelected: {
     backgroundColor: "rgba(23, 170, 221, 0.08) !important",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-      color: "rgba(21,93,123,1.0)",
+      // color: "rgba(21,93,123,1.0)",
+      color: '#12abe0',
       fontWeight: "bold",
       "& svg": {
-        fill: "rgba(21,93,123,1.0)",
+        fill: "#12abe0",
       },
     },
     display: "flex",
