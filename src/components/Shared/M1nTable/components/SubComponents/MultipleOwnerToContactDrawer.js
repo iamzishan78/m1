@@ -269,7 +269,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             </Box>
           }
           <Box p={3} pt={3}>
-            <Tags setTagId={setTagId} targetLabel="contacts" targetSourceId="new" />
+            <Tags setTagId={setTagId} targetLabel="contact" targetSourceId="new" />
           </Box>
 
           {((tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)) &&
