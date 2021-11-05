@@ -1175,7 +1175,7 @@ function Search() {
                           if (mapGridCardActivated) dispatch(toggleMapGridCardAtived());
                         }}
                       >
-                        <SearchIcon htmlColor="#fff" />
+                        <SearchIcon htmlColor="#8486af" />
                       </Button>
                     </InputAdornment>
                   ),

@@ -21,28 +21,31 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived, setMapGridCardState } from "../../actions";
 import SidePanel from "../Shared/SidePanel/SidePanel";
 import { clearMapAndCloseShapeActionsPopup } from "./commonHelper";
+import { fade } from "@material-ui/core/styles";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
     // backgroundColor:'rgba(1, 17, 51, 0.97)',
     borderRadius: "50%",
     border: 0,
-    backgroundColor: "rgba(1, 17, 51, 0.97)",
-    color: "lightGray",
+    // backgroundColor: "rgba(1, 17, 51, 0.97)",
+    // backgroundColor: "#0e111a",
+    // color: "lightGray",
     "&:hover": {
       color: "#fff",
-      background: "rgba(1, 17, 51, 1.0)",
+      // background: "rgba(1, 17, 51, 1.0)",
     },
   },
   selected: {
-    color: "lightGray !important",
-    background: "rgba(1, 17, 51, 0.0) !important",
+    // color: "lightGray !important",
+    // background: "rgba(1, 17, 51, 0.0) !important",
   },
   speedDial: {
     position: "absolute",
     top: "100px",
     right: theme.spacing(2),
-    backgroundColor: "rgba(1, 17, 51, 0.0)",
+    // backgroundColor: "rgba(1, 17, 51, 0.0)",
     padding: "0px",
     zIndex: 5,
   },
@@ -50,6 +53,8 @@ const useStyles = makeStyles((theme) => ({
     padding: "0px",
     margin: "0px",
     backgroundColor: "rgba(1, 17, 51, 0.97)",
+    // backgroundColor: "#0e111a",
+
     color: "lightGray",
     "&:hover": {
       color: "#fff",
@@ -57,31 +62,39 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   speedIcon: {
-    backgroundColor: "rgba(1, 17, 51, 0.97)",
+    // backgroundColor: "rgba(1, 17, 51, 0.97)",
+    backgroundColor: "#0e111a",
+
     color: "lightGray",
     "&:hover": {
       color: "#fff",
-      background: "rgba(1, 17, 51, 1.0)",
+      // background: "rgba(1, 17, 51, 1.0)",
     },
   },
   fab: {
-    backgroundColor: "rgba(1, 17, 51, 0.97)",
+    // backgroundColor: "rgba(1, 17, 51, 0.97)",
+    backgroundColor: "#0e111a",
     color: "lightGray",
     "&:hover": {
       color: "#fff",
-      background: "rgba(1, 17, 51, 1.0)",
+      // background: "rgba(1, 17, 51, 1.0)",
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+
     },
   },
   fabActivated: {
-    backgroundColor: "rgba(1, 17, 51, 0.97)",
+    // backgroundColor: "rgba(1, 17, 51, 0.97)",
+    backgroundColor: "#0e111a",
     color: "rgba(23, 170, 221, 1)",
     "&:hover": {
       color: "#fff",
-      background: "rgba(1, 17, 51, 1.0)",
+      // background: "rgba(1, 17, 51, 1.0)",
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+
     },
   },
   toggleButton: {
-    backgroundColor: "rgba(1, 17, 51, 0)",
+    // backgroundColor: "rgba(1, 17, 51, 0)",
     border: "0px",
   },
 }));

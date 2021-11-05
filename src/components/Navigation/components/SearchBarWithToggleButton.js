@@ -14,16 +14,21 @@ import { CircularProgress } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "& .MuiButtonGroup-root": { width: "100%" },
+    "& .MuiButtonGroup-root": { width: "100%",
+    borderRadius: "25px",
+  },
     "& .MuiAutocomplete-root": {
       flexGrow: "1",
       borderRight: "1px solid rgba(0, 0, 0, 0.23)",
       borderColor: "rgba(1, 17, 51, 0.5)",
+      backgroundColor: "#1c2233",
+      borderRadius: "25px",
+
       "&:hover": {
         backgroundColor: fade(theme.palette.common.white, 0.25),
-        borderRadius: "4px",
-        borderTopRightRadius: "0",
-        borderBottomRightRadius: "0",
+        borderRadius: "25px",
+        // borderTopRightRadius: "0",
+        // borderBottomRightRadius: "0",
       },
     },
     "& fieldset": {
@@ -33,15 +38,18 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   gridOnIcon: {
-    color: "#fff",
+    color: "#8486af",
+    backgroundColor: "#1c2233",
     "&:hover ": {
       backgroundColor: fade(theme.palette.common.white, 0.25),
+      borderRadius: "25px",
     },
   },
   selected: {
     color: "rgba(23, 170, 221, 1) !important",
     "&:hover ": {
       backgroundColor: fade(theme.palette.common.white, 0.25),
+      borderRadius: "25px",
     },
   },
 }));
