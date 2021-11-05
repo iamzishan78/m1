@@ -524,6 +524,11 @@ export default function Navigation(props) {
             {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
 
             {location.pathname.startsWith("/flow") && <DealSearch />}
+            {location.pathname === "/dashboard" && (
+              <Typography variant="h4" style={{ color: "black", fontWeight: "bold" }}>
+                Dashboard
+              </Typography>
+            )}
 
             {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 
