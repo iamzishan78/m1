@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 
   toggleBtn: {
     borderRadius: 5,
-    color: "#FFFFFF",
+    color: "#grey",
     transition: "200ms all",
     "&:hover": {
       backgroundColor: "#1CB6DA44",
@@ -36,21 +36,21 @@ const useStyles = makeStyles((theme) => ({
   },
 
   activeBtn: {
-    color: "#1CB6DA",
+    color: "#1CB6DA !important",
     // "&:hover": {
     //   backgroundColor: "#1CB6DAdd",
     // },
   },
 
   activitySearchField: {
-    color: "#fff",
+    color: "grey",
 
     "& .MuiInputBase-root": {
       paddingRight: "6px !important",
     },
 
     "& .MuiOutlinedInput-input": {
-      color: "#ffffff",
+      color: "#grey",
       "&::placeholder": {
         color: "##ffffffc9",
         textDecoration: "bold",
@@ -134,7 +134,7 @@ const DealSearch = () => {
                 startAdornment: (
                   <InputAdornment>
                     <IconButton size="small">
-                      <SearchIcon htmlColor="#fff" />
+                      <SearchIcon htmlColor="grey" />
                     </IconButton>
                   </InputAdornment>
                 ),

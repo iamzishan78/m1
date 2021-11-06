@@ -23,14 +23,11 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
     },
-    "& svg": {
-      fill: "grey",
-    },
   },
 
   toggleBtn: {
     borderRadius: 5,
-    color: "#FFFFFF",
+    color: "grey",
     transition: "200ms all",
     "&:hover": {
       backgroundColor: "#1CB6DA44",
@@ -109,7 +106,7 @@ const DocumentSearch = () => {
             <InputAdornment>
               <IconButton size="small">
                 <SearchIcon
-                  htmlColor="#fff"
+                  htmlColor="grey"
                   aria-controls="customized-menu"
                   aria-haspopup="true"
                   //onClick={(e) => setAnchorEl(e.currentTarget)}

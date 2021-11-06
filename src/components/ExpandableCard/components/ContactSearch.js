@@ -29,7 +29,7 @@ const ContactSearch = (props) => {
     nextFetchPolicy: "cache-first",
   });
 
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [, setStateApp] = useContext(AppContext);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);

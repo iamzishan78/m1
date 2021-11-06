@@ -29,14 +29,11 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
     },
-    "& svg": {
-      fill: "grey",
-    },
   },
 
   toggleBtn: {
     borderRadius: 5,
-    color: "#FFFFFF",
+    color: "grey",
     transition: "200ms all",
     "&:hover": {
       backgroundColor: "#1CB6DA44",
@@ -45,9 +42,6 @@ const useStyles = makeStyles((theme) => ({
 
   activeBtn: {
     color: "#1CB6DA",
-    // "&:hover": {
-    //   backgroundColor: "#1CB6DAdd",
-    // },
   },
 
   activitySearchField: {
@@ -78,7 +72,6 @@ const ActivitySearch = () => {
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const [activities, setActivities] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [nameAutInputValue, setNameAutInputValue] = useState("");
 
@@ -168,7 +161,7 @@ const ActivitySearch = () => {
               startAdornment: (
                 <InputAdornment>
                   <IconButton size="small">
-                    <SearchIcon htmlColor="#fff" />
+                    <SearchIcon htmlColor="grey" />
                   </IconButton>
                 </InputAdornment>
               ),

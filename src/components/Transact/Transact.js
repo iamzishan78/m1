@@ -99,11 +99,10 @@ const useStyles = makeStyles((theme) => ({
   boardAndTable: {
     position: "relative",
     marginTop: "4px",
-    maxHeight: "calc(100vh - 76px) !important",
     overflowY: "auto",
     maxWidth: "100vw",
     "& .react-trello-board": {
-      height: "calc( 100vh - 76px)",
+      height: "calc(100vh - 140px)",
       "& >div": {
         overflowX: "scroll",
         overflowY: "hidden",
@@ -148,6 +147,7 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     flexGrow: 1,
+    top: "64px",
     left: "425px!important",
     position: "absolute",
     width: "calc(100% - 425px)",

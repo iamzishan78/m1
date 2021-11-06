@@ -18,9 +18,6 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
     },
-    "& svg": {
-      fill: "grey",
-    },
   },
 
   toggleBtn: {
@@ -92,7 +89,7 @@ const ContactSearch = () => {
           startAdornment: (
             <InputAdornment>
               <IconButton size="small">
-                <SearchIcon htmlColor="#fff" />
+                <SearchIcon htmlColor="grey" />
               </IconButton>
             </InputAdornment>
           ),
