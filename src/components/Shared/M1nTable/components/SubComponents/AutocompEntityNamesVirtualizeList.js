@@ -131,6 +131,10 @@ export default function AutocompEntityNamesVirtualizeList(props) {
         }
       : {
           backgroundColor: "#ffffff",
+          color: "grey",
+          "& .MuiSvgIcon-root": {
+            fill: "grey",
+          },
         },
     listbox: {
       boxSizing: "border-box",

@@ -18,11 +18,14 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       marginLeft: 5,
     },
+    "& svg": {
+      fill: "grey",
+    },
   },
 
   toggleBtn: {
     borderRadius: 5,
-    color: "#FFFFFF",
+    color: "grey",
     transition: "200ms all",
     "&:hover": {
       backgroundColor: "#1CB6DA44",
@@ -34,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   contactSearchField: {
-    color: "#fff",
+    color: "grey",
 
     "& .MuiInputBase-root": {
       paddingRight: "6px !important",
@@ -42,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     },
 
     "& .MuiOutlinedInput-input": {
-      color: "#ffffff",
+      color: "#grey",
       paddingLeft: "7px !important",
       "&::placeholder": {
         color: "##ffffffc9",

@@ -78,7 +78,6 @@ const ContactSearch = (props) => {
     <div style={{ display: "flex", width: "100%" }}>
       <div className={classes.search}>
         <AutocompEntityNamesVirtualizeList
-          darkCard={true}
           mongoEntitiesArray={mongoEntitiesArray}
           setMongoEntitiesArray={setMongoEntitiesArray}
           nameAutValue={nameAutValue}
