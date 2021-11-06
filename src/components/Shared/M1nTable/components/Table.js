@@ -2049,7 +2049,7 @@ function SubTable(props) {
                       style={{ display: "flex", alignItems: "center", justifyContent: "left" }}
                       className={`${props.parent === "assocTaxRollInterests" &&
                         props.addAble.type === "wellInterest" &&
-                        (!tableMeta.rowData[14] || tableMeta.rowData[19])
+                        (!tableMeta.rowData[15] || tableMeta.rowData[20])
                         ? [classes.blue]
                         : []
                         }`}
