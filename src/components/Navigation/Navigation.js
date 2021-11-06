@@ -525,7 +525,7 @@ export default function Navigation(props) {
 
             {location.pathname.startsWith("/flow") && <DealSearch />}
             {location.pathname === "/dashboard" && (
-              <Typography variant="h4" style={{ color: "black", fontWeight: "bold" }}>
+              <Typography variant="h4" style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}>
                 Dashboard
               </Typography>
             )}

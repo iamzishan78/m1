@@ -1,13 +1,13 @@
-import { Container, Grid } from "@material-ui/core";
+import React from "react";
+import { Container } from "@material-ui/core";
 import CardGrid from "./components/CardsGrid";
 import DateBar from "./components/WeatherCard";
-import React, { useContext, useState, useLayoutEffect, useRef, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#efefef",
-    // overflowY: 'scroll',
+    height: "100vh",
     "& .MuiList-padding": {
       padding: "10px !important",
     },
