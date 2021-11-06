@@ -324,6 +324,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
             ) : (
               <Box
                 height="calc(100vh - 50px - 64px)"
+                bgcolor= "#0e111a"
                 // bgcolor="#040e24"
                 // bgcolor="red"
 

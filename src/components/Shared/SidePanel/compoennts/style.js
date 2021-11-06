@@ -243,7 +243,7 @@ export const StyledMenuHeaderItem = withStyles((theme) => ({
     justifyContent: "space-between",
 
     "&:hover": {
-      background: "#4B618F",
+      background: "#0e111a",
     },
     // backgroundColor: "#263451",
     // backgroundColor: "#0e111a",
