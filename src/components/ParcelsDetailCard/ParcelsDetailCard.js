@@ -29,6 +29,7 @@ import SectionCard from "./components/SectionCard";
 import AbstractCard from "./components/AbstractCard";
 import AltSurveyCard from "./components/AltSurveyCard";
 import ParcelDetailsMap from "./components/ParcelDetailsMap";
+import Tags from "components/Shared/Tagger";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwnersTable";
 import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
@@ -214,7 +215,12 @@ const useStyles = makeStyles((theme) => ({
         }
       }
     }
-  }
+  },
+  tags: {
+    '& .MuiOutlinedInput-notchedOutline': {
+      border: 'none'
+    }
+  },
 }));
 
 export default function ParcelsDetailCard(props) {
@@ -388,6 +394,11 @@ export default function ParcelsDetailCard(props) {
 
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
+      <Grid item xs={12} style={{ padding: "10px 15px 0px 15px" }} className={classes.border}>
+        <div className={classes.tags}>
+          <Tags width="100%" targetSourceId={props.id} targetLabel="unit" publicLeftBottom />
+        </div>
+      </Grid>
       <Grid item sm={12} container>
         {originalProperties && (
           <Grid item sm={12} className={classes.gridItemGrey}>

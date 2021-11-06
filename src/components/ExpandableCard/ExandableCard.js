@@ -363,6 +363,7 @@ function ExpandableCard(props) {
   };
 
   const getTitle = () => {
+
     if (!title) {
       return "--";
     }
@@ -377,7 +378,7 @@ function ExpandableCard(props) {
           marginRight: "48px",
         }}
       >
-        {(targetLabel === "unit" || targetLabel === "parcel") &&
+        {(targetLabel === "unit") &&
           <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
             <Grid item><Avatar color='#1a2341'>
               <FolderIcon fontColor='#1a2341' />
@@ -388,11 +389,38 @@ function ExpandableCard(props) {
                 {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
               </Box>
               {subTitle && (<Box className='description'>{subTitle}</Box>)}
-              {targetLabel === "unit" && (<Box className='type' >{`Unit`}</Box>)}
-              {targetLabel === "parcel" && (<Box className='type' >{`Parcel`}</Box>)}
+              <Box className='type' >Unit</Box>
             </Grid>
           </Grid>
         }
+
+        {(targetLabel === "parcel") && (props.expanded === true) &&
+          <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+            <Grid item><Avatar color='#1a2341'>
+              <FolderIcon fontColor='#1a2341' />
+            </Avatar>
+            </Grid>
+            <Grid item>
+              <Box className='name'>
+                {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
+              </Box>
+              {subTitle && (<Box className='description'>{subTitle}</Box>)}
+              <Box className='type' >Parcel</Box>
+            </Grid>
+          </Grid>
+        }
+
+        {(targetLabel === "parcel") && (props.expanded === false) && (
+          <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+            <Box className='name'
+              style={{
+                fontSize: 14,
+                marginTop: -6
+              }}>
+              {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
+            </Box>
+          </Grid>
+        )}
 
         {/* {(targetLabel !== "contact" && targetLabel !== "unit") &&
           <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>
@@ -414,8 +442,6 @@ function ExpandableCard(props) {
       </div >
     );
   };
-
-  console.log("Title Rendered: ", props.title)
 
   const openConfirmationDialog = () => {
     setOpenDialog(true);
