@@ -285,7 +285,6 @@ function ContactsTable(props) {
         {showViewModal && (
           <GridView
             module="Contacts"
-            defaultView={defaultView}
             columns={columns}
             handleDefaultView={handleDefaultView}
             handleClose={() => setShowViewModal(false)}

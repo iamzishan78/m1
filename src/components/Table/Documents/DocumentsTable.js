@@ -206,7 +206,6 @@ function DocumentsTable(props) {
             columns={columns}
             module="Documents"
             handleDefaultView={handleDefaultView}
-            defaultView={defaultView}
             handleClose={() => setShowViewModal(false)}
             setSelectedGridView={setSelectedGridView}
             selectedGridView={selectedGridView}
