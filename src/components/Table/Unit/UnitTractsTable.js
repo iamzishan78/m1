@@ -16,7 +16,7 @@ import TableHeader from 'components/Table/constants/unit-tracts-header-schema.js
 
 // Utilities
 import { usetableStyles } from "../Styles";
-import AddUnitInterestDialog from "components/Shared/M1nTable/components/SubComponents/AddUnitWellInterestDialog";
+import AddUnitTractDialog from "components/Shared/M1nTable/components/SubComponents/AddUnitTractDialog";
 import { GET_ES_SHAPE_WELLS } from "graphQL/useQueryESShapeWells";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
 import { GET_ES_SHAPE_WELLS_FILTER } from "graphQL/useQueryESShapeWellsFilter";
@@ -182,7 +182,7 @@ function UnitTractsTable(props) {
       id={props.id ? props.id : props.parent}
     >
 
-      <AddUnitInterestDialog
+      <AddUnitTractDialog
         open={addToTable}
         width="450px"
         shapeId={props.customLayer._id}
@@ -216,4 +216,4 @@ function UnitTractsTable(props) {
   );
 }
 
-export default React.memo(TableHOC(UnitTractsTable), deepEqualObjects);
+export default React.memo(TableHOC(UnitTractsTable));

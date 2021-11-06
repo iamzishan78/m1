@@ -21,6 +21,7 @@ import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { AppContext } from "../../AppContext";
 import set from 'lodash/set'
 import { copy } from "components/Shared/functions";
+import UnitTractsTable from "components/Table/Unit/UnitTractsTable";
 
 const useStyles = makeStyles((theme) => ({
   summaryCard: {
@@ -318,28 +319,28 @@ export default function UnitDetailCard(props) {
               value={selectedTractTab}
               panels={[
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <UnitWellInterestTable
+                  <UnitTractsTable
                     customLayer={uniObj}
                     shapeType='Unit'
                     parent="associatedWellsPerUnits"
                     targetLabel="well"
-                    header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                    // header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
                     showTracks
                     dense
                   />
                 </div>,
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <AssociatedWellsUnitTable
-                    customLayer={uniObj}
-                    shapeType='Unit'
-                    parent="associatedWellsPerUnits"
-                    targetLabel="well"
-                    header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                    showTracks
-                    setSelectedTab={selectedTractTab}
-                    dense
-                  />
-                </div>
+                // <div className={showSummary ? classes.subContent : classes.subContent2}>
+                //   <AssociatedWellsUnitTable
+                //     customLayer={uniObj}
+                //     shapeType='Unit'
+                //     parent="associatedWellsPerUnits"
+                //     targetLabel="well"
+                //     // header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                //     showTracks
+                //     setSelectedTab={selectedTractTab}
+                //     dense
+                //   />
+                // </div>
               ]}
             />,
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
