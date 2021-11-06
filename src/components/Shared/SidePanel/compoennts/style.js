@@ -42,7 +42,7 @@ export const useStyles = makeStyles((theme) => ({
     // this is the top header on the layer manager which contains the word "layesrs" and teh button "manager"
     // backgroundColor: "#141d32 !important",
     // backgroundColor: "red",
-    backgroundColor: "#0e111a",
+    backgroundColor: "#0e111a !important",
 
     // opacity: "0.94",
     minWidth: "400px",
