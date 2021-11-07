@@ -33,10 +33,10 @@ const UnitTractHeadCells = [
   {
     name: "altSurvey", label: "Alt Survey", esKey: '', options: { sort: true, filter: true }
   },
-  { name: "qtr", esKey: '', label: "QTR1", options: { filter: true, customBodyRender: (value) => value[0] ? value[0] : 'N/A' } },
-  { name: "qtr", esKey: '', label: "QTR2", options: { filter: true, customBodyRender: (value) => value[1] ? value[1] : 'N/A' } },
-  { name: "qtr", esKey: '', label: "QTR3", options: { filter: true, customBodyRender: (value) => value[2] ? value[2] : 'N/A' } },
-  { name: "qtr", esKey: '', label: "QTR4", options: { filter: true, customBodyRender: (value) => value[3] ? value[3] : 'N/A' } },
+  { name: "qtr", esKey: '', label: "QTR1", options: { filter: true, customBodyRender: (value) => value && value[0] ? value[0] : 'N/A' } },
+  { name: "qtr", esKey: '', label: "QTR2", options: { filter: true, customBodyRender: (value) => value && value[1] ? value[1] : 'N/A' } },
+  { name: "qtr", esKey: '', label: "QTR3", options: { filter: true, customBodyRender: (value) => value && value[2] ? value[2] : 'N/A' } },
+  { name: "qtr", esKey: '', label: "QTR4", options: { filter: true, customBodyRender: (value) => value && value[3] ? value[3] : 'N/A' } },
   {
     name: "shapeArea", label: "Calc. Acres", esKey: '', options: { sort: true, filter: true }
   },

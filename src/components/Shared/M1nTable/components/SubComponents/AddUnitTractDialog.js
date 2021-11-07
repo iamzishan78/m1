@@ -3,7 +3,6 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import FormControl from "@material-ui/core/FormControl";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -18,8 +17,8 @@ import { useForm, Controller } from "react-hook-form";
 
 // contexts 
 import { AppContext } from "AppContext";
-import WellSearchApiField from "components/Shared/Forms/Fields/WellSearchApiField";
-import AutoCompleteFieldComponent from "components/Shared/Forms/Fields/AutoCompleteField";
+import { getParcelOriginalProperties } from "components/ParcelsDetailCard/utils/GetParcelOriginalProps";
+import AutoCompleteShapeLayer from "components/Shared/Forms/Fields/AutoCompleteShapeLayer";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -51,7 +50,7 @@ function AddUnitTractDialog(props) {
   const { control, reset, register, getValues } = useForm();
 
   const [loading, setLoading] = useState(false);
-  const [selectedWell, setSelectedWell] = useState(null);
+  const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
   const [wellInterestSelectOptions, setWellInterestSelectOptions] = useState({});
   const [valid, setValid] = useState({});
 
@@ -100,7 +99,7 @@ function AddUnitTractDialog(props) {
   useEffect(() => {
     if (props.wellInterest) {
       props.wellInterest.api = props.wellInterest.apiNumber
-      setSelectedWell({
+      setSelectedShapeLayer({
         Id: props.wellInterest.wellId,
         WellName: props.wellInterest.wellName,
         ApiNumber: props.wellInterest.api,
@@ -115,10 +114,13 @@ function AddUnitTractDialog(props) {
 
   useEffect(() => {
     // if launched from grid row set initializing based on selectedWell state
-  }, [selectedWell]);
+    const originalProperties = getParcelOriginalProperties(selectedShapeLayer?.shapeJson?.properties)
+    const shapeArea = selectedShapeLayer?.shapeJson?.properties?.shapeArea;
+    reset({ ...getValues(), shapeArea, ...originalProperties })
+  }, [selectedShapeLayer]);
 
   const handleClose = () => {
-    setSelectedWell(null);
+    setSelectedShapeLayer(null);
     setStateApp((stateApp) => ({
       ...stateApp,
       wellInterestDialog: false,
@@ -132,7 +134,7 @@ function AddUnitTractDialog(props) {
   const handleValidate = () => {
     const tempValid = {
       ...valid,
-      'selectedWell.Id': !selectedWell?.Id
+      'selectedWell.Id': !selectedShapeLayer?.Id
     }
     setValid(tempValid);
 
@@ -147,7 +149,7 @@ function AddUnitTractDialog(props) {
           wellInterest: {
             id: props.wellInterest._id,
             shapeType: props.shapeType,
-            globalWellId: selectedWell.Id,
+            globalWellId: selectedShapeLayer.Id,
             ...getValues(),
           },
         },
@@ -161,7 +163,7 @@ function AddUnitTractDialog(props) {
       addShapeWellInterest({
         variables: {
           wellInterest: {
-            globalWellId: selectedWell.Id,
+            globalWellId: selectedShapeLayer.Id,
             userId: stateApp.user.mongoId,
             shapeType: props.shapeType,
             shapeId: props.shapeId,
@@ -286,132 +288,66 @@ function AddUnitTractDialog(props) {
             </Box>
 
 
-            <WellSearchApiField setTenantWell={setTenantWell} setSelectedWell={setSelectedWell} />
+            <AutoCompleteShapeLayer shapeType='parcel' setSelectedShapeLayer={setSelectedShapeLayer} />
 
-            <Controller as={TextField} control={control}
-              variant="outlined"
-              margin="dense"
-              name='state'
-              inputRef={register()}
-              label={"State"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue=""
-            />
 
-            <Controller as={TextField} control={control}
-              variant="outlined"
-              margin="dense"
-              name='county'
-              inputRef={register()}
-              label="County"
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue=""
-            />
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='state' inputRef={register()} label={"State"}
+              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
 
-            <Controller
-              control={control}
-              name="operator"
-              label="Operator"
-              defaultValue={''}
-              options={getOptions('Operator') || []}
-              as={<AutoCompleteFieldComponent />}
-            />
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='county' inputRef={register()} label={"County"}
+              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='leaseId' label={"Lease Number"} fullWidth defaultValue="" />
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='lease' label={"Lease Name"} fullWidth defaultValue="" />
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='survey' inputRef={register()} label={"Survey"}
+              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
 
-            {/* <Controller
-              control={control}
-              name="leaseAcres"
-              render={(props) => (
-                <TextField
-                  variant="outlined"
-                  margin="dense"
-                  value={props.value}
-                  inputRef={props.ref}
-                  onChange={(event) => {
-                    props.onChange(parseFloat(event.target.value))
-                  }}
-                  label={"Lease Acres"}
-                  fullWidth
-                  defaultValue=""
-                  InputProps={{
-                    inputComponent: NumberFormatCustom,
-                  }}
-                />
-              )}
-            /> */}
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='block' inputRef={register()} label={"Block"}
+              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
 
-          </div>
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='section' inputRef={register()} label={"Section"}
+              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
 
-          <div>
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='abstract' inputRef={register()} label={"Abstract"}
+              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
 
-            <FormControl
-              variant="outlined"
-              fullWidth
-              size="small"
-            >
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='altSurvey' inputRef={register()} label={"Alternate Survey"}
+              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
 
-              <Controller
-                control={control}
-                name="wellType"
-                label="Well Type"
-                defaultValue={''}
-                options={getOptions('WellType') || []}
-                as={<AutoCompleteFieldComponent />}
-              />
+            <Grid container spacing={1}>
+              <Grid item xs={3}>
+                <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[0]' inputRef={register()} label={"QTR1"}
+                  InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              </Grid>
+              <Grid item xs={3}>
+                <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[1]' inputRef={register()} label={"QTR2"}
+                  InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              </Grid>
+              <Grid item xs={3}>
+                <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[2]' inputRef={register()} label={"QTR3"}
+                  InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              </Grid>
+              <Grid item xs={3}>
+                <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[3]' inputRef={register()} label={"QTR4"}
+                  InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              </Grid>
+            </Grid>
 
-              <Controller
-                control={control}
-                name="wellBoreProfile"
-                label="Wellbore Profile"
-                defaultValue={''}
-                options={getOptions('WellBoreProfile') || []}
-                as={<AutoCompleteFieldComponent />}
-              />
 
-              <Controller
-                control={control}
-                name="wellStatus"
-                label="Well Status"
-                defaultValue={''}
-                options={getOptions('WellStatus') || []}
-                as={<AutoCompleteFieldComponent />}
-              />
-            </FormControl>
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='shapeArea' inputRef={register()} label={"Calc. Acres"}
+              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='altSurvey' inputRef={register()} label={"Unit. Acres"}
+              InputLabelProps={{ shrink: true }} fullWidth defaultValue="" />
+
           </div>
 
           <div className={classes.dialogFooter}>
-            <Button
-              variant="contained"
-              color="default"
-              size="medium"
-              disableElevation
-              onClick={handleClose}
-              disabled={loading}
-              className={classes.footerButton}
-              style={{
-                margin: "0px 15px 0px 0px",
-              }}
-            >
+            <Button variant="contained" color="default" size="medium" disableElevation onClick={handleClose} disabled={loading} className={classes.footerButton}
+              style={{ margin: "0px 15px 0px 0px" }}>
               Cancel
             </Button>
 
-            <Button
-              variant="contained"
-              color="secondary"
-              size="medium"
-              disableElevation
-              onClick={() => {
-                handleValidate() && handleSave()
-              }}
-              className={classes.footerButton}
-              disabled={loading || !valid}
-            >
+            <Button variant="contained" color="secondary" size="medium" disableElevation onClick={() => { handleValidate() && handleSave() }}
+              className={classes.footerButton} disabled={loading || !valid}>
               {loading ? (
                 <CircularProgress size={14} />
               ) : (
