@@ -15,15 +15,15 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const OwnershipHeader = ({ selectedTab, setSelectedTab }) => (
+export const OwnershipHeader = React.memo(({ selectedTab, setSelectedTab }) => (
   <TabButtons
     labels={["Unit Ownership", "Potential Ownership"]}
     value={selectedTab}
     setValue={(n) => { setSelectedTab(n) }}
   />
-);
+));
 
-export const DocumentHeader = () => {
+export const DocumentHeader = React.memo(() => {
   const classes = useStyles();
   return (
 
@@ -32,9 +32,9 @@ export const DocumentHeader = () => {
       <span>Documents</span>
     </div>
   )
-};
+});
 
-export const RunsheetHeader = () => {
+export const RunsheetHeader = React.memo(() => {
   const classes = useStyles();
   return (
     <div className={classes.documentHeader}>
@@ -42,21 +42,21 @@ export const RunsheetHeader = () => {
       <span>LIMITED TITLE RUNSHEET</span>
     </div>
   )
-};
+});
 
 
-export const WellHeader = ({ selectedWellTab, setWellSelectedTab }) => (
+export const WellHeader = React.memo(({ selectedWellTab, setWellSelectedTab }) => (
   <TabButtons
     labels={["Unit Wells", "Potential Wells"]}
     value={selectedWellTab}
     setValue={(n) => { setWellSelectedTab(n) }}
   />
-);
+));
 
-export const TractHeader = ({ selectedTractTab, setTractSelectedTab }) => (
+export const TractHeader = React.memo(({ selectedTractTab, setTractSelectedTab }) => (
   <TabButtons
     labels={["Unit Tracts", "Potential Tracts"]}
     value={selectedTractTab}
     setValue={(n) => { setTractSelectedTab(n) }}
   />
-);
+));

@@ -322,25 +322,18 @@ export default function UnitDetailCard(props) {
                   <UnitTractsTable
                     customLayer={uniObj}
                     shapeType='Unit'
-                    parent="associatedWellsPerUnits"
-                    targetLabel="well"
-                    // header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                    showTracks
+                    header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
                     dense
                   />
                 </div>,
-                // <div className={showSummary ? classes.subContent : classes.subContent2}>
-                //   <AssociatedWellsUnitTable
-                //     customLayer={uniObj}
-                //     shapeType='Unit'
-                //     parent="associatedWellsPerUnits"
-                //     targetLabel="well"
-                //     // header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                //     showTracks
-                //     setSelectedTab={selectedTractTab}
-                //     dense
-                //   />
-                // </div>
+                <div className={showSummary ? classes.subContent : classes.subContent2}>
+                  {/* <UnitTractsTable
+                    customLayer={uniObj}
+                    shapeType='Unit'
+                    header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                    dense
+                  /> */}
+                </div>
               ]}
             />,
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
