@@ -6,11 +6,6 @@ import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import { AppContext } from "AppContext";
 // STYLES - Material UI Required Components
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-// STYLES - Font Awesome Icons Required for Menu Items
-//import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-//import { faGripLines, faDrawPolygon } from "@fortawesome/free-solid-svg-icons";
-//import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
-//import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 // COMPONENTS
 import ShapeActionsPopup from "../popup/ShapeActionsPopup";
 import DrawShapePopup from "../popup/DrawShapesPopup";
@@ -29,18 +24,6 @@ import CloseIcon from "@material-ui/icons/Close";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "actions";
 import { clearMapAndCloseShapeActionsPopup, setFeatureProperty, drawShapeLayerToggle } from "components/MapControls/commonHelper";
-
-// const localStyles = makeStyles((theme) => ({
-//   label: {
-//     width: "150px",
-//     height: "15px",
-//     display: "flex",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     color: "white",
-//     fontSize: "1rem",
-//   },
-// }));
 
 const useStyles = makeStyles((theme) => ({
   mapOverlay: {

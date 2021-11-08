@@ -273,7 +273,7 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
     "& .MuiTabs-root": {
       "& .MuiTabs-scroller": {
         "& .MuiTabs-flexContainer": {
-          width: "115px",
+          width: "150px",
           "& .MuiButtonBase-root": {
             minWidth: "0px !important",
           },
