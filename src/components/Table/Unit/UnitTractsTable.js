@@ -9,7 +9,7 @@ import TableHOC from "components/Table/TableHOC";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
 
-import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
+import { setStateIfDeepEqual } from "components/Shared/functions";
 
 // Header Schemas 
 import TableHeader from 'components/Table/constants/unit-tracts-header-schema.js'
@@ -17,9 +17,9 @@ import TableHeader from 'components/Table/constants/unit-tracts-header-schema.js
 // Utilities
 import { usetableStyles } from "../Styles";
 import AddUnitTractDialog from "components/Shared/M1nTable/components/SubComponents/AddUnitTractDialog";
-import { GET_ES_SHAPE_WELLS } from "graphQL/useQueryESShapeWells";
+import { GET_ES_SHAPE_TRACTS } from "graphQL/useQueryESShapeTracts";
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
-import { GET_ES_SHAPE_WELLS_FILTER } from "graphQL/useQueryESShapeWellsFilter";
+import { GET_ES_SHAPE_TRACTS_FILTER } from "graphQL/useQueryESShapeTractsFilter";
 
 
 function UnitTractsTable(props) {
@@ -34,17 +34,18 @@ function UnitTractsTable(props) {
 
   // queries 
 
-  const [getESShapeWells, { data: ShapeWellsData }] = useLazyQuery(GET_ES_SHAPE_WELLS, {
+  const [getESShapeTracts, { data: ShapeTractData }] = useLazyQuery(GET_ES_SHAPE_TRACTS, {
     fetchPolicy: "no-cache", onCompleted: () => {
       props.setLoading(false);
     }
   });
 
-  const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, {
-    refetchQueries: ["getESShapeWells",
-      "getESShapeWellsFilter"], awaitRefetchQueries: true
+  const [updateTract] = useMutation(UPDATEWELLINTEREST, {
+    refetchQueries: ["getESShapeTracts",
+      "getESShapeTractsFilter"], awaitRefetchQueries: true
   });
-  const tableData = ShapeWellsData?.getESShapeWells
+
+  const tableData = ShapeTractData?.getESShapeTracts
 
   const addAble = {
     type: "wellInterest", customLayer: props.customLayer,
@@ -55,7 +56,7 @@ function UnitTractsTable(props) {
 
   ////////////Contact Wells begin///////////////////////////////////////////////
   useEffect(() => {
-    getESShapeWells({
+    getESShapeTracts({
       variables: {
         pagination: {
           first: startPaginationAt,
@@ -91,7 +92,7 @@ function UnitTractsTable(props) {
               display: (filterList, onChange, index, column) => {
                 column.filterKey = TableHeader.find(el => el.name === column.name)?.esKey;
                 return (
-                  <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange} query={GET_ES_SHAPE_WELLS_FILTER} />
+                  <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange} query={GET_ES_SHAPE_TRACTS_FILTER} />
                 );
               }
             }
@@ -112,7 +113,7 @@ function UnitTractsTable(props) {
   ////////////Contact Wells end///////////////////////////////////////////////
 
   const onTableChange = (action, tableState, rows, meta) => {
-    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESShapeWells)
+    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESShapeTracts)
     switch (action) {
       case "search":
       case "sort":
@@ -155,10 +156,9 @@ function UnitTractsTable(props) {
     }
   }
 
-
   const deleteFunc = (ids) => {
     for (let i = 0; i < ids.length; i++) {
-      updateWellInterest({
+      updateTract({
         variables: {
           wellInterest: {
             id: ids[i],
@@ -166,8 +166,8 @@ function UnitTractsTable(props) {
           },
         },
         refetchQueries: [
-          "getESShapeWells",
-          "getESShapeWellsFilter"
+          "getESShapeTracts",
+          "getESShapeTractsFilter"
         ],
         awaitRefetchQueries: true,
       });
@@ -187,7 +187,8 @@ function UnitTractsTable(props) {
         width="450px"
         shapeId={props.customLayer._id}
         shapeType={props.shapeType}
-        wellInterest={selectedRow}
+        uAcres={props.customLayer?.shapeJson?.properties?.uAcres}
+        seletedTract={selectedRow}
         onClose={() =>
           setAddToTable(false)
         }
