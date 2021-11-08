@@ -11,7 +11,7 @@ import Tags from "../../Tagger";
 import Comments from "../../Comments";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
-import MUIDataTable, { TableFilterList } from "mui-datatables";
+import MUIDataTable, { TableFilterList, TableViewCol } from "mui-datatables";
 import { DndProvider } from "react-dnd";
 import { Box, ButtonGroup, IconButton, Menu, MenuItem, Select } from "@material-ui/core";
 import TrackToggleButton from "../../TrackToggleButton";
@@ -72,7 +72,6 @@ import AssignOwnerToContactDrawer from "./SubComponents/AssignOwnerToContactDraw
 import ContactDataMissingDialog from "components/ContactDetailCard/components/ContactDataMissingDialog";
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
-
 import ButtonDropDown from "./ButtonGroup";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
@@ -116,7 +115,7 @@ import PostAddIcon from "@material-ui/icons/PostAdd";
 import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
-import { isPropertySignature } from "typescript";
+import { isDebuggerStatement, isPropertySignature } from "typescript";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -3319,6 +3318,15 @@ function SubTable(props) {
     }
   };
 
+  const CustomTableViewCol = (columnsProps) => {
+    if(props.header === "Documents") {
+      const ViewColumn = props.viewColumn
+      return <ViewColumn {...props.viewColumnProps} {...columnsProps} />
+    }else{
+      return <TableViewCol {...columnsProps} />
+    }
+  }
+
   return (
     <div
       style={{
@@ -3343,6 +3351,7 @@ function SubTable(props) {
 
           columns={columns ? columns : []}
           components={{
+            TableViewCol: CustomTableViewCol,
             TableFilterList: props.header === 'Tax Roll Ownership' && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,

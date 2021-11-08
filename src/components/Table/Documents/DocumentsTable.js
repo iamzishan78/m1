@@ -5,6 +5,9 @@ import moment from "moment";
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
+import AddIcon from "@material-ui/icons/Add";
+import Checkbox from "@material-ui/core/Checkbox";
+import Dialog from "@material-ui/core/Dialog";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 // QUERIES
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -15,7 +18,10 @@ import {
 } from "components/Shared/functions";
 import GridView from "components/Shared/GridView";
 import { HeaderComponent } from "components/Table/helpers";
-import { handleSelectedGridChange, setColumnsData } from 'components/Table/helpers'
+import {
+  handleSelectedGridChange,
+  setColumnsData,
+} from "components/Table/helpers";
 
 // Header Schemas
 import TableHeader from "components/Table/constants/documents-header-schema.js";
@@ -34,8 +40,8 @@ function DocumentsTable(props) {
   const classes = useStyles();
   const defaultView = {
     name: "All Documents",
-    type: 'Default'
-  }
+    type: "Default",
+  };
   const selectedFilters = useRef([]);
 
   // function states\
@@ -46,6 +52,7 @@ function DocumentsTable(props) {
   };
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showFieldModal, setShowFieldModal] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState(defaultView);
 
   // queries
@@ -79,12 +86,24 @@ function DocumentsTable(props) {
         filters: selectedGridView?.filters ? selectedGridView?.filters : [],
       },
     });
-  }, [getESDocuments, props.parent, props.documentSearchQuery, selectedGridView]);
+  }, [
+    getESDocuments,
+    props.parent,
+    props.documentSearchQuery,
+    selectedGridView,
+  ]);
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
       props.setRows(tableData?.hits);
-      setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_DOCUMENTS_FILTER);
+      setColumnsData(
+        TableHeader,
+        filters,
+        JSON.parse(JSON.stringify(columns)),
+        setColumns,
+        setFilters,
+        GET_ES_DOCUMENTS_FILTER
+      );
       props.setLoading(false);
     } else if (tableData?.length === 0) {
       props.setLoading(false);
@@ -92,8 +111,19 @@ function DocumentsTable(props) {
   }, [tableData, props.dependencyUpdate]);
 
   useEffect(() => {
-    const updatedColumns = handleSelectedGridChange(TableHeader, selectedGridView, columns)
-    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(updatedColumns)), setColumns, setFilters, GET_ES_DOCUMENTS_FILTER);
+    const updatedColumns = handleSelectedGridChange(
+      TableHeader,
+      selectedGridView,
+      columns
+    );
+    setColumnsData(
+      TableHeader,
+      filters,
+      JSON.parse(JSON.stringify(updatedColumns)),
+      setColumns,
+      setFilters,
+      GET_ES_DOCUMENTS_FILTER
+    );
   }, [selectedGridView]);
 
   const count = tableData?.total || 0;
@@ -117,7 +147,14 @@ function DocumentsTable(props) {
         columns[i].options.display = false;
       }
     }
-    setColumnsData(TableHeader, filters, JSON.parse(JSON.stringify(columns)), setColumns, setFilters, GET_ES_DOCUMENTS_FILTER);
+    setColumnsData(
+      TableHeader,
+      filters,
+      JSON.parse(JSON.stringify(columns)),
+      setColumns,
+      setFilters,
+      GET_ES_DOCUMENTS_FILTER
+    );
   };
 
   ////////////-----Add your code section here-----///////////////////////
@@ -170,28 +207,30 @@ function DocumentsTable(props) {
     if (view.name === "My Documents") {
       view.filters[0].value = user._id;
     }
-    if (
-      view.name === "Recently Modified" ||
-      view.name === "Recently Added"
-    ) {
-      view.filters[0].value.range[view.filters[0].field].gte =
-        moment().subtract(30, "days").toISOString();
-        view.filters[0].value.range[view.filters[0].field].lte =
+    if (view.name === "Recently Modified" || view.name === "Recently Added") {
+      view.filters[0].value.range[view.filters[0].field].gte = moment()
+        .subtract(30, "days")
+        .toISOString();
+      view.filters[0].value.range[view.filters[0].field].lte =
         moment().toISOString();
     }
     return view;
-  }
+  };
 
   const headerProps = {
     columns,
-    Icon: DescriptionOutlinedIcon,
-    label: "Documents",
     showViewModal,
-    setShowSaveAsNew,
-    setShowViewModal,
     selectedGridView,
     updateGridView,
+    setShowSaveAsNew,
+    setShowViewModal,
+    label: "Documents",
+    Icon: DescriptionOutlinedIcon,
     selectedFilters: selectedFilters.current,
+  };
+
+  const viewColumnProps = {
+    setShowFieldModal,
   };
 
   return (
@@ -215,11 +254,23 @@ function DocumentsTable(props) {
             selectedFilters={selectedFilters.current}
           />
         )}
+        {showFieldModal && (
+          <Dialog
+            fullWidth
+            maxWidth="xl"
+            open={true}
+            onClose={() => setShowFieldModal(false)}
+          >
+            Opened
+          </Dialog>
+        )}
         <Table
           style={{ backgroundColor: "#fff" }}
           header={header}
           headerComponent={HeaderComponent}
+          viewColumn={CustomerViewCol}
           headerProps={headerProps}
+          viewColumnProps={viewColumnProps}
           columns={columns}
           rows={props.searchedRows}
           total={total}
@@ -230,7 +281,6 @@ function DocumentsTable(props) {
           dense={dense}
           orderByTracks={orderByTracks}
           startPaginationAt={startPaginationAt}
-          // onClickAdd={onClickAdd}
           contactId={props.contactId}
           options={options}
           parent={props.parent}
@@ -243,4 +293,82 @@ function DocumentsTable(props) {
   );
 }
 
+const useColumnViewStyles = makeStyles((theme) => ({
+  container: {
+    padding: "15px 20px",
+    width: "300px",
+  },
+  columnLabel: {
+    color: "#929292",
+    marginTop: 5,
+  },
+  addField: {
+    color: "#929292",
+    marginTop: 15,
+    float: "right",
+    display: "flex",
+    cursor: "pointer",
+  },
+  addIcon: {
+    fontSize: "18px",
+    marginTop: -1,
+  },
+  f13: {
+    fontSize: "13px",
+  },
+  columnContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+}));
+
+const CustomerViewCol = (props) => {
+  const classes = useColumnViewStyles();
+  const { updateColumns, columns, setShowFieldModal } = props;
+  return (
+    <>
+      <div className={classes.container}>
+        <div className={classes.columnLabel}>Columns</div>
+        <div>
+          <div
+            className={classes.addField}
+            onClick={() => {
+              var element = document.querySelector('[aria-label="Close"]');
+              element.click();
+              setShowFieldModal(true);
+            }}
+          >
+            <AddIcon className={classes.addIcon} />{" "}
+            <span className={classes.f13}>Add field</span>
+          </div>
+        </div>
+        <div style={{ marginTop: 40 }}>
+          {columns
+            .filter((col) => col.viewColumns)
+            .map((col) => {
+              return (
+                <div key={col.name} className={classes.columnContainer}>
+                  <span>{col.label}</span>
+                  <Checkbox
+                    style={{ padding: 3 }}
+                    checked={col.display === "true"}
+                    onChange={(e) => {
+                      const index = columns.findIndex(
+                        (co) => co.name === col.name
+                      );
+                      col.display === "false"
+                        ? (columns[index].display = "true")
+                        : (columns[index].display = "false");
+                      updateColumns(columns);
+                    }}
+                    color="primary"
+                  />
+                </div>
+              );
+            })}
+        </div>
+      </div>
+    </>
+  );
+};
 export default React.memo(TableHOC(DocumentsTable), deepEqualObjects);
