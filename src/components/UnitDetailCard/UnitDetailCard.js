@@ -11,7 +11,9 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import SuggestedShapeTaxOwnersTable from "components/Table/TaxOwners/SuggestedShapeTaxOwnersTable";
 import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
 import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
-import { OwnershipHeader, RunsheetHeader, WellHeader, TractHeader, DocumentHeader } from "./UnitTableHeaders";
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import TabButtons from "components/Shared/TabPanels/TabButtons"
+import GavelIcon from '@material-ui/icons/Gavel';
 import UnitSummary from "./UnitSummary";
 import UnitOwnersTable from "components/Table/Unit/UnitOwnersTable";
 import UnitWellInterestTable from "components/Table/Unit/UnitWellInterestTable";
@@ -236,6 +238,52 @@ export default function UnitDetailCard(props) {
     });
   };
 
+  const OwnershipHeader = ({ selectedTab, setSelectedTab }) => (
+    <TabButtons
+      labels={["Unit Ownership", "Potential Ownership"]}
+      value={selectedTab}
+      setValue={(n) => { setSelectedTab(n) }}
+    />
+  );
+
+  const DocumentHeader = () => {
+    const classes = useStyles();
+    return (
+
+      <div className={classes.documentHeader}>
+        <DescriptionOutlinedIcon />
+        <span>Documents</span>
+      </div>
+    )
+  };
+
+  const RunsheetHeader = () => {
+    const classes = useStyles();
+    return (
+      <div className={classes.documentHeader}>
+        <GavelIcon />
+        <span>LIMITED TITLE RUNSHEET</span>
+      </div>
+    )
+  };
+
+
+  const WellHeader = ({ selectedWellTab, setWellSelectedTab }) => (
+    <TabButtons
+      labels={["Unit Wells", "Potential Wells"]}
+      value={selectedWellTab}
+      setValue={(n) => { setWellSelectedTab(n) }}
+    />
+  );
+
+  const TractHeader = ({ selectedTractTab, setTractSelectedTab }) => (
+    <TabButtons
+      labels={["Unit Tracts", "Potential Tracts"]}
+      value={selectedTractTab}
+      setValue={(n) => { setTractSelectedTab(n) }}
+    />
+  );
+
   return uniObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
       <Grid item xs={12} style={{ padding: "10px 15px 0px 15px" }} className={classes.border}>
@@ -296,7 +344,7 @@ export default function UnitDetailCard(props) {
                     shapeType='Unit'
                     parent="associatedWellsPerUnits"
                     targetLabel="well"
-                    header={<WellHeader selectedTractTab={selectedWellTab} setTractSelectedTab={setWellSelectedTab} />}
+                    header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
                     showTracks
                     dense
                   />
@@ -307,7 +355,7 @@ export default function UnitDetailCard(props) {
                     shapeType='Unit'
                     parent="associatedWellsPerUnits"
                     targetLabel="well"
-                    header={<WellHeader selectedTractTab={selectedWellTab} setTractSelectedTab={setWellSelectedTab} />}
+                    header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
                     showTracks
                     setSelectedTab={setSelectedTab}
                     dense

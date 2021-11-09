@@ -17,6 +17,7 @@ import { getParcelOriginalProperties } from "components/ParcelsDetailCard/utils/
 import AutoCompleteShapeLayer from "components/Shared/Forms/Fields/AutoCompleteShapeLayer";
 import { ADD_TRACT_TOA_SHAPE } from "graphQL/useMutationAddTractToAShape";
 import { UPDATE_SHAPE_TRACT } from "graphQL/useMutationUpdateShapeTract";
+import pick from 'lodash/pick';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -74,9 +75,11 @@ function AddUnitTractDialog(props) {
 
   useEffect(() => {
     if (props.seletedTract) {
+      props.seletedTract.parcelId = props.seletedTract?.parcel?._id
+      props.seletedTract.name = props.seletedTract?.parcel?.name
       setSelectedShapeLayer(props.seletedTract);
 
-      reset(props.seletedTract)
+      reset(pick(props.seletedTract, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'altSurvey', 'qtr', 'shapeArea', 'uAcres']))
     }
   }, [props.seletedTract]);
 
@@ -85,6 +88,7 @@ function AddUnitTractDialog(props) {
     if (selectedShapeLayer?.shapeJson) {
       const originalProperties = getParcelOriginalProperties(selectedShapeLayer?.shapeJson?.properties)
       const shapeArea = selectedShapeLayer?.shapeJson?.properties?.shapeArea;
+      selectedShapeLayer.parcelId = selectedShapeLayer._id
       reset({ ...getValues(), shapeArea, ...originalProperties, name: selectedShapeLayer.name })
     }
   }, [selectedShapeLayer]);
@@ -101,7 +105,7 @@ function AddUnitTractDialog(props) {
       updateShapeTract({
         variables: {
           shapeTract: {
-            parcelId: selectedShapeLayer._id,
+            _id: selectedShapeLayer._id,
             name: selectedShapeLayer.name,
             shapeId: props.shapeId,
             ...getValues(),
@@ -113,7 +117,7 @@ function AddUnitTractDialog(props) {
       addShapeTract({
         variables: {
           shapeTract: {
-            parcelId: selectedShapeLayer._id,
+            parcelId: selectedShapeLayer.parcelId,
             name: selectedShapeLayer.name,
             shapeId: props.shapeId,
             ...getValues(),
@@ -233,48 +237,48 @@ function AddUnitTractDialog(props) {
 
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='state' inputRef={register()} label={"State"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='county' inputRef={register()} label={"County"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='survey' inputRef={register()} label={"Survey"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='block' inputRef={register()} label={"Block"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='section' inputRef={register()} label={"Section"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='abstract' inputRef={register()} label={"Abstract"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='altSurvey' inputRef={register()} label={"Alternate Survey"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
             <Grid container spacing={1}>
               <Grid item xs={3}>
                 <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[0]' inputRef={register()} label={"QTR1"}
-                  InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+                  InputLabelProps={{ shrink: true }} fullWidth disabled />
               </Grid>
               <Grid item xs={3}>
                 <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[1]' inputRef={register()} label={"QTR2"}
-                  InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+                  InputLabelProps={{ shrink: true }} fullWidth disabled />
               </Grid>
               <Grid item xs={3}>
                 <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[2]' inputRef={register()} label={"QTR3"}
-                  InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+                  InputLabelProps={{ shrink: true }} fullWidth disabled />
               </Grid>
               <Grid item xs={3}>
                 <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[3]' inputRef={register()} label={"QTR4"}
-                  InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+                  InputLabelProps={{ shrink: true }} fullWidth disabled />
               </Grid>
             </Grid>
 
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='shapeArea' inputRef={register()} label={"Calc. Acres"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue="" />
+              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='uAcres' inputRef={register()} label={"Unit. Acres"}
               InputLabelProps={{ shrink: true }} fullWidth defaultValue={props.uAcres} />

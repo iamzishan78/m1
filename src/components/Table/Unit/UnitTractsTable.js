@@ -9,7 +9,7 @@ import TableHOC from "components/Table/TableHOC";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
 
-import { setStateIfDeepEqual } from "components/Shared/functions";
+import { setStateIfDeepEqual, deepEqualObjects } from "components/Shared/functions";
 
 // Header Schemas 
 import TableHeader from 'components/Table/constants/unit-tracts-header-schema.js'
@@ -28,7 +28,7 @@ function UnitTractsTable(props) {
 
   // function states 
   const [columns, Columns] = useState([]);
-  const [selectedRow, selectRow] = useState([]);
+  const [selectedRow, selectRow] = useState();
 
   const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
@@ -182,7 +182,7 @@ function UnitTractsTable(props) {
       id={props.id ? props.id : props.parent}
     >
 
-      <AddUnitTractDialog
+      {addToTable && <AddUnitTractDialog
         open={addToTable}
         width="450px"
         shapeId={props.customLayer._id}
@@ -192,7 +192,8 @@ function UnitTractsTable(props) {
         onClose={() =>
           setAddToTable(false)
         }
-      />
+      />}
+
 
       <Table
         style={{ backgroundColor: "#fff" }}
@@ -217,4 +218,4 @@ function UnitTractsTable(props) {
   );
 }
 
-export default React.memo(TableHOC(UnitTractsTable));
+export default React.memo(TableHOC(UnitTractsTable), deepEqualObjects);
