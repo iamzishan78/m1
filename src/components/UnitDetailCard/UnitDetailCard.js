@@ -18,12 +18,14 @@ import UnitSummary from "./UnitSummary";
 import UnitOwnersTable from "components/Table/Unit/UnitOwnersTable";
 import UnitWellInterestTable from "components/Table/Unit/UnitWellInterestTable";
 import AssociatedWellsUnitTable from "components/Table/Wells/AssociatedWellsUnitTable";
+import UnitTractsTable from "components/Table/Unit/UnitTractsTable";
+import AssociatedTractsUnitTable from "components/Table/Wells/AssociatedTractsUnitTable";
 import Tags from "components/Shared/Tagger";
 import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { AppContext } from "../../AppContext";
 import set from 'lodash/set'
 import { copy } from "components/Shared/functions";
-import UnitTractsTable from "components/Table/Unit/UnitTractsTable";
+
 
 const useStyles = makeStyles((theme) => ({
   summaryCard: {
@@ -375,12 +377,12 @@ export default function UnitDetailCard(props) {
                   />
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  {/* <UnitTractsTable
+                  <AssociatedTractsUnitTable
                     customLayer={uniObj}
                     shapeType='Unit'
                     header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
                     dense
-                  /> */}
+                  />
                 </div>
               ]}
             />,

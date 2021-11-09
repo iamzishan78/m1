@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
-import { Grid } from "@material-ui/core";
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
+import { Grid, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useLazyQuery } from "@apollo/client";
 import { SHAPE_LAYER_SEARCH } from "graphQL/useQueryShapeTypeSearch";
@@ -58,9 +60,10 @@ const AutoCompleteShapeLayer = ({ shapeType, setSelectedShapeLayer }) => {
     }
 
     const onChange = (value) => {
-        getCustomLayer({
-            variables: { id: value._id }
-        });
+        if (value?._id)
+            getCustomLayer({
+                variables: { id: value._id }
+            });
     }
     const classes = useStyles();
 
@@ -95,9 +98,9 @@ const AutoCompleteShapeLayer = ({ shapeType, setSelectedShapeLayer }) => {
                             <Grid item xs>
                                 <span style={{ fontWeight: 400 }}>{option.name}</span>
 
-                                {/* <Typography variant="body2" color="textSecondary">
-                                    {option}
-                                </Typography> */}
+                                <Typography variant="body2" color="textSecondary">
+                                    {option.county ? `${option.county},` : ''} {option.state}
+                                </Typography>
                             </Grid>
                         </Grid>
                     </Grid>
@@ -111,9 +114,16 @@ const AutoCompleteShapeLayer = ({ shapeType, setSelectedShapeLayer }) => {
             renderInput={(params) => (
                 <TextField
                     margin="dense"
+                    variant="outlined"
                     {...params}
                     InputProps={{
                         ...params.InputProps,
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon />
+                            </InputAdornment>
+                        )
+
                     }}
                     fullWidth
                     autoFocus
