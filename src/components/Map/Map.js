@@ -4632,18 +4632,6 @@ function Map() {
     map.getCanvas().style.cursor = "";
   };
 
-  // const mapMouseMove = (e) => {
-  //   // e.lngLat is the longitude, latitude geographical position of the event
-  //   let coordinates = e.lngLat.wrap();
-  //   setLng(coordinates.lng);
-  //   setLat(coordinates.lat);
-  // };
-
-  // const mapZoom = (e) => {
-  //   let zooms = map.getZoom();
-  //   setZoom(zooms);
-  // };
-
   const onAbstactLayerClick = function (feature, action) {
     console.log("featur--", feature);
     console.log("action", action);

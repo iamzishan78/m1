@@ -27,6 +27,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import FilterAltIcon from "components/Shared/svgIcons/FilterAltIcon";
 import SecondaryPanel from "components/Shared/SecondaryPanel";
+import LayerFilters from "components/Shared/SidePanel/compoennts/Filters";
 
 import { deepEqualObjects } from "../../functions";
 import Layer from "./Layer";
@@ -191,6 +192,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     );
   };
 
+  const filterList = (
+    // <StyledMenuItem>
+    <LayerFilters />
+    // </StyledMenuItem>
+  );
+
   const displayList = (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppableM1">
@@ -323,29 +330,21 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           {/* base Stuff */}
           {type === "base" && getBasemapImageBox()}
 
-          {type === "layer" ? (
-            layerMap && layerMap[0]?.type ? (
+          {type === "layer" &&
+            (layerMap && layerMap[0]?.type ? (
               <SortableLayer layerMap={layerMap} panelItems={panelItems} />
             ) : (
-              <Box
-                height="calc(100vh - 50px - 64px)"
-                bgcolor="#0e111a"
-                // bgcolor="#040e24"
-                // bgcolor="red"
-
-                display="flex"
-                justifyContent="center"
-              >
+              <Box height="calc(100vh - 50px - 64px)" bgcolor="#0e111a" display="flex" justifyContent="center">
                 <CircularProgress style={{ top: "50%", position: "absolute" }} size={40} color="secondary" />
               </Box>
-            )
-          ) : type === "base" ? (
+            ))}
+          {type === "base" && (
             <Collapse in={true} timeout="auto" unmountOnExit>
               {displayList}
             </Collapse>
-          ) : (
-            displayList
           )}
+          {type === "heatMaps" && displayList}
+          {type === "filter" && filterList}
         </StyledMenu>
         <StyledMenu
           id="layer-secondary-panel"

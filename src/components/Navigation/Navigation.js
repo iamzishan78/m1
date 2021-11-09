@@ -587,7 +587,7 @@ export default function Navigation(props) {
                 </div>
               </div>
             )} */}
-            {/* {matchLocation ? (
+            {matchLocation ? (
               <div ref={anchorEl} className={classes.filterTabs}>
                 <Tabs
                   value={value}
@@ -653,7 +653,7 @@ export default function Navigation(props) {
               </div>
             ) : (
               <div style={{ display: "none" }}></div>
-            )} */}
+            )}
             {/* <Divider style={{ margin: 1 }} orientation="vertical" /> */}
             <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
               {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
@@ -721,7 +721,6 @@ export default function Navigation(props) {
                   title="Filter"
                   subheader="Geographical"
                 />
-
                 <CardContent className={classes.cardContent}>
                   <FilterFromGeo />
                 </CardContent>

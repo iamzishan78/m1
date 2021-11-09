@@ -43,8 +43,6 @@ export const useStyles = makeStyles((theme) => ({
     // backgroundColor: "#141d32 !important",
     // backgroundColor: "red",
     backgroundColor: "#0e111a !important",
-
-    // opacity: "0.94",
     minWidth: "400px",
     height: "50px",
   },
@@ -283,7 +281,7 @@ export const StyledMenuHActionHeader = withStyles((theme) => ({
         },
       },
       "& .MuiTabs-indicator": {
-        marginLeft: "7px",
+        marginLeft: "6px",
         height: "5px",
         width: "25px !important",
         backgroundColor: "#1CB6DA",
