@@ -301,13 +301,13 @@ export default function DocumentDrawer(props) {
           fileId: fileId || newDocument.fileId,
         },
       },
-      refetchQueries: [ "getParcelFiles" ],
+      refetchQueries: ["getTenantWell", "getParcelFiles"],
       awaitRefetchQueries: true,
     }).then(() => {
       // props.getAllFiles({
       //   variables: {
-      //     relatedObjectId: props.parcelId,
-      //     relatedObjectType: "Parcel",
+      //     relatedObjectId: props.tenantWellId,
+      //     relatedObjectType: "Well",
       //   },
       // });
       props.setShowDocumentSlider(false);
@@ -856,8 +856,8 @@ export default function DocumentDrawer(props) {
             style={{
               paddingLeft: "50px",
             }}
-            relatedObjectId={props.parcelId}
-            relatedObjectType="Parcel"
+            relatedObjectId={props.globalWellId}
+            relatedObjectType="Well"
             userId={stateApp.user.mongoId}
             setFileData={setFileData}
           />
@@ -895,14 +895,14 @@ export default function DocumentDrawer(props) {
                   fileName: newDocument.fileName,
                   descriptorObjectId: newDocument.fileId,
                   userId: stateApp.user.mongoId,
-                  relatedObjectId: props.parcelId,
-                  relatedObjectType: "Parcel",
+                  relatedObjectId: props.globalWellId,
+                  relatedObjectType: "Well",
                 },
               }).then(() => {
                 props.getAllFiles({
                   variables: {
-                    relatedObjectId: props.parcelId,
-                    relatedObjectType: "Parcel",
+                    relatedObjectId: props.tenantWellId,
+                    relatedObjectType: "Well",
                   },
                 });
                 props.setShowDocumentSlider(false);
