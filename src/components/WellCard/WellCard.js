@@ -24,6 +24,7 @@ import Button from '@material-ui/core/Button';
 import WellIcon from "./components/svgIcons/WellIcon";
 import ProductionIcon from "./components/svgIcons/ProductionIcon";
 import OwnershipIcon from "./components/svgIcons/OwnershipIcon";
+import DescriptionIcon from "../WellCard/components/svgIcons/DescriptionIcon";
 import Link from "@material-ui/core/Link";
 import moment from "moment";
 
@@ -32,6 +33,8 @@ import WellCardDetails from "./WellCardDetails";
 // queries 
 import { useLazyQuery } from "@apollo/client";
 import { WELLSUMMARYDETAILQUERY } from "../../graphQL/useQueryWellSummaryDetail";
+import { TENANTWELL } from "../../graphQL/useQueryTenantWell";
+import { GET_PARCELS_FILES_COUNT } from "graphQL/useQueryGetParcelFiles";
 
 // value formatters 
 import formatBOE from "../Shared/valueformatters/format_boe.js"
@@ -175,7 +178,13 @@ function WellCard() {
     { loading: loadingWellSummary, data: dataWellSummary },
   ] = useLazyQuery(WELLSUMMARYDETAILQUERY);
 
+  const [
+    getTenantWell,
+    { loading: loadingTenantWell, data: dataTenantWell },
+  ] = useLazyQuery(TENANTWELL);
 
+  const [getWellFilesCount, { data: dataWellFiles }] = useLazyQuery(GET_PARCELS_FILES_COUNT, { fetchPolicy: "cache-and-network"});
+  const documentCount = dataWellFiles?.getParcelFilesCount || 0;
 
   useEffect(() => {
     if (!source) {
@@ -194,6 +203,9 @@ function WellCard() {
     getWellSummaryDetail({
       variables: { id: stateApp.selectedWell.id },
     });
+    getTenantWell({
+      variables: { globalWellId: stateApp.selectedWell.id },
+    })
   }, [stateApp.selectedWell]);
 
   useEffect(() => {
@@ -209,6 +221,28 @@ function WellCard() {
     }
   }, [dataWellSummary]);
 
+  useEffect(() => {
+    if (dataTenantWell?.tenantWell?.tenantWellId &&
+        stateApp?.selectedWell?.tenantWellId !== dataTenantWell?.tenantWell?.tenantWellId) {
+      setStateApp((state) => ({
+        ...state,
+        selectedWell: {
+          ...state.selectedWell,
+          tenantWellId: dataTenantWell?.tenantWell?.tenantWellId
+        }
+      }));
+    }
+  }, [dataTenantWell]);
+
+  useEffect(() => {
+    if (stateApp?.selectedWell?.tenantWellId)
+    getWellFilesCount({
+        variables: {
+          relatedObjectId: stateApp?.selectedWell?.tenantWellId,
+          relatedObjectType: "Well",
+        },
+      });
+  }, [stateApp?.selectedWell?.tenantWellId]);
 
   const handleOpenDetails = (isOwner) => {
     setStateApp((state) => ({
@@ -348,6 +382,35 @@ function WellCard() {
                   </Typography>
                 </div>
               </Button>
+              
+              {/* <Button
+              className={classes.button}
+              onClick={() => { handleOpenDetails(3) }}
+            >
+              <div className={classes.iconContainer}>
+                <DescriptionIcon
+                  htmlColor="black"
+                  viewBox="5 0 17 26"
+                  fontSize="large"
+                />
+                <Typography
+                  align="center"
+                  className={classes.text1}
+                  variant="subtitle2"
+                >
+                  Documents
+                </Typography>
+                <Typography
+                  align="center"
+                  className={classes.text2}
+                  variant="caption"
+                >
+                  {documentCount}
+
+                </Typography>
+              </div>
+            </Button>
+   */}
 
             </CardActions>
             <CardContent className={classes.content}>

@@ -19,7 +19,7 @@ import { GET_PARCELS_FILES } from "graphQL/useQueryGetParcelFiles";
 import { DELETEDESCRIPTORFILE } from "graphQL/useMutationDeleteDescriptorFile";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
-import ParcelFile from "components/Document/components/ParcelFile";
+import WellFile from "components/Document/components/WellFile";
 
 // Header Schemas 
 import TableHeader from 'components/Table/constants/parcel-documents-header-schema.js'
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ParcelDetailsDocumentTable(props) {
+function WellDetailsDocumentTable(props) {
   const classes = useStyles();
 
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -53,7 +53,7 @@ function ParcelDetailsDocumentTable(props) {
   const [updateParcelDocument] = useMutation(DELETEDESCRIPTORFILE, { refetchQueries: [ "getAllFiles" ], awaitRefetchQueries: true });
   const tableData = dataParcelFiles?.getParcelFiles
 
-  const addAble = { type: "parcelDocument" }
+  const addAble = { type: "wellDocument" }
   const total = false
   const orderByTracks = false
 
@@ -64,11 +64,11 @@ function ParcelDetailsDocumentTable(props) {
   useEffect(() => {
 		getAllFiles({
 			variables: {
-				relatedObjectId: props.customLayer._id,
-				relatedObjectType: "Parcel",
+				relatedObjectId: props.selectedWell.tenantWellId,
+				relatedObjectType: "Well",
 			},
 		});
-	}, [getAllFiles, props.customLayer._id]);
+	}, [getAllFiles, props.selectedWell.tenantWellId]);
 
 
   useEffect(() => {
@@ -114,8 +114,8 @@ function ParcelDetailsDocumentTable(props) {
       })/*.then(() =>{
         getAllFiles({
           variables: {
-            relatedObjectId: props.customLayer._id,
-            relatedObjectType: "Parcel",
+            relatedObjectId: props.selectedWell.tenantWellId,
+            relatedObjectType: "Well",
           },
         });
       });*/
@@ -186,7 +186,12 @@ function ParcelDetailsDocumentTable(props) {
       id={props.id ? props.id : props.parent}
     >
       {showDocumentSlider && (
-        <ParcelFile getAllFiles={(variables) => getAllFiles(variables)} parcelId={props.customLayer._id} setShowDocumentSlider={setShowDocumentSlider} />
+        <WellFile 
+          getAllFiles={(variables) => getAllFiles(variables)}
+          globalWellId={props.selectedWell.id}
+          tenantWellId={props.selectedWell.tenantWellId}
+          setShowDocumentSlider={setShowDocumentSlider}
+        />
       )}
       <Table
         style={{ backgroundColor: "#fff" }}
@@ -266,6 +271,6 @@ function ParcelDetailsDocumentTable(props) {
   );
 }
 
-export default React.memo(TableHOC(ParcelDetailsDocumentTable), deepEqualObjects);
+export default React.memo(TableHOC(WellDetailsDocumentTable), deepEqualObjects);
 
 

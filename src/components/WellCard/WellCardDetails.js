@@ -36,6 +36,7 @@ import CompletionsContainer from "./components/Completions";
 import SimulationContainer from "./components/Stimulation";
 import FormationContainer from "./components/Formation";
 import PermitsContainer from "./components/WellPermits";
+import WellDetailsDocumentTable from "components/Table/Documents/WellDetailsDocumentTable";
 
 import { useLazyQuery } from "@apollo/client";
 import { PRODUCTIONDETAILQUERY } from "../../graphQL/useQueryProductionDetail";
@@ -43,6 +44,9 @@ import moment from 'moment';
 import { Box, IconButton } from "@material-ui/core";
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+
+import CircularProgress from "@material-ui/core/CircularProgress";
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 const useStyles = makeStyles((theme) => ({
   grid: {
     // height: "100%",
@@ -178,6 +182,22 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  documentHeader: {
+    display: "flex",
+    "& span": {
+      marginTop: "2px",
+      marginLeft: "5px"
+    }
+  },
+  wellDocument: {
+    "& .MuiTableRow-root": {
+      "&>:nth-child(2) ": {
+        "& .fileName":{
+          width: "375px !important"
+        }
+      }
+    }
+  }
 }));
 
 const tableGridStyle = makeStyles({
@@ -340,6 +360,12 @@ export default function WellCardDetails(props) {
     track: {},
   })(Switch);
 
+  const DocumentHeader = () => (
+    <div className={classes.documentHeader}>
+      <DescriptionOutlinedIcon />
+      <span>ASSOCIATED DOCUMENTS</span>
+    </div>
+  );
 
   return stateApp.selectedWell ? (
     <React.Fragment >
@@ -390,6 +416,7 @@ export default function WellCardDetails(props) {
               "Stimulation",
               "Formation",
               "Permits",
+              "Documents"
             ]}
             tabPanels={[
               <Paper elevation={3} style={{ padding: "10px" }}>
@@ -472,6 +499,15 @@ export default function WellCardDetails(props) {
               <SimulationContainer showSummary={showSummary} />,
               <FormationContainer showSummary={showSummary} />,
               <PermitsContainer showSummary={showSummary} />,
+              <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.wellDocument}`}>
+              <WellDetailsDocumentTable
+                selectedWell={stateApp.selectedWell}
+                parent="associatedDocumentsPerWell"
+                targetLabel="wellDocument"
+                header={<DocumentHeader />}
+                dense
+              />
+            </div>
               
             ]}
             openTabIdex={stateApp.wellDetailCardTabIndex}
