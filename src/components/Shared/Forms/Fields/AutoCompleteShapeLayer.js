@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
-import { Typography, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import loadashFilter from "lodash/filter";
 import { useLazyQuery } from "@apollo/client";
 import { SHAPE_LAYER_SEARCH } from "graphQL/useQueryShapeTypeSearch";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
