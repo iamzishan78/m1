@@ -6,6 +6,7 @@ import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 
 //Components
 import FilterFromGeo from "components/Navigation/components/FilterFromGeo";
+import FilterFormWell from "components/Navigation/components/FilterFormWell";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,11 +16,13 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     color: "white",
     padding: "10px",
+    overflow: "overlay",
   },
   accordionRoot: {
     borderRadius: "5px",
     backgroundColor: "#1a253c",
     color: "#fff",
+    margin: "10px 0px",
     "& .MuiButtonBase-root.MuiAccordionSummary-root": {
       maxHeight: "50px",
       minHeight: "50px",
@@ -43,16 +46,32 @@ const LayerFilters = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h6">Filters</Typography>
+      {/**
+       * Geo Filter
+       */}
       <Accordion className={classes.accordionRoot}>
         <AccordionSummary aria-controls="panel1a-content" id="panel1a-header" expandIcon={<ExpandMoreIcon />} defaultExpanded={false}>
           <Grid container direction="row" justify="flex-start" alignItems="center">
             <Grid item>
-              <Typography>Geographical</Typography>
+              <Typography>Geography</Typography>
             </Grid>
           </Grid>
         </AccordionSummary>
         <AccordionDetails className={classes.accordionDetails}>
           <FilterFromGeo />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion className={classes.accordionRoot}>
+        <AccordionSummary aria-controls="panel1a-content" id="panel1a-header" expandIcon={<ExpandMoreIcon />}>
+          <Grid container direction="row" justify="flex-start" alignItems="center">
+            <Grid item>
+              <Typography>Wells</Typography>
+            </Grid>
+          </Grid>
+        </AccordionSummary>
+        <AccordionDetails className={classes.accordionDetails}>
+          <FilterFormWell />
         </AccordionDetails>
       </Accordion>
     </div>

@@ -13,7 +13,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 const useStyles = makeStyles({
   divBordersMinMax: {
     display: "flow-root",
-    padding: "3.5px 5px 5.5px 15px",
+    padding: "3.5px 5px 5.5px 10px",
     border: "1px solid #C4C4C4",
     borderRadius: "4px",
     "&:hover": {
@@ -30,8 +30,8 @@ const useStyles = makeStyles({
     },
   },
   input: {
-    marginLeft: "30px",
-    width: "160px",
+    marginLeft: "7px",
+    width: "147px",
     "& input": { color: "#17AADD" },
   },
   inputLabel: {
@@ -59,9 +59,7 @@ export default function FilterTVD() {
   const [valueMinDisplay, setValueMinDisplay] = useState("");
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
 
-  const [tvdWell, setTVDWell] = useState(
-    stateNav.tvdWell ? stateNav.tvdWell : []
-  );
+  const [tvdWell, setTVDWell] = useState(stateNav.tvdWell ? stateNav.tvdWell : []);
 
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("");
@@ -78,11 +76,7 @@ export default function FilterTVD() {
     } else if (min && !max) {
       filter = ["all", [">=", ["get", "trueVerticalDepth"], min]];
     } else if (min && max) {
-      filter = [
-        "all",
-        [">=", ["get", "trueVerticalDepth"], min],
-        ["<=", ["get", "trueVerticalDepth"], max],
-      ];
+      filter = ["all", [">=", ["get", "trueVerticalDepth"], min], ["<=", ["get", "trueVerticalDepth"], max]];
     } else {
       filter = null;
     }
@@ -92,7 +86,6 @@ export default function FilterTVD() {
       filterTVD: filter,
     }));
   }, [setStateNav, valueMaxDisplay, valueMinDisplay]);
-
 
   useEffect(() => {
     const recall = () => {
@@ -194,7 +187,6 @@ export default function FilterTVD() {
 
   return (
     <React.Fragment>
-
       <Grid item sm={12}>
         <div className={classes.divBordersMinMax}>
           <FormLabel className={classes.inputLabel}>TVD [ft.]</FormLabel>
