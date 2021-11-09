@@ -382,7 +382,8 @@ function WellCard() {
                   </Typography>
                 </div>
               </Button>
-              <Button
+              
+              {/* <Button
               className={classes.button}
               onClick={() => { handleOpenDetails(3) }}
             >
@@ -409,6 +410,7 @@ function WellCard() {
                 </Typography>
               </div>
             </Button>
+   */}
 
             </CardActions>
             <CardContent className={classes.content}>
