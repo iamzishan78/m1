@@ -37,7 +37,7 @@ import Divider from "@material-ui/core/Divider";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import SupportCenterModal from "./components/SupportCenter";
-import { M1neralLogoNavNoAuth, useStyles } from "./Common";
+import { useStyles } from "./Common";
 
 //icons
 import CloseIcon from "@material-ui/icons/Close";

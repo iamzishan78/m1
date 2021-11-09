@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 export default function FilterDatePickerPermit(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const { control, watch, setValue, getValues } = useForm();
+  const { control, watch, setValue } = useForm();
 
   useEffect(() => {
     let filter = null;

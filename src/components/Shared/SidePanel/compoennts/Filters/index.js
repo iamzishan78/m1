@@ -9,6 +9,7 @@ import FilterFromGeo from "components/Navigation/components/FilterFromGeo";
 import FilterFormWell from "components/Navigation/components/FilterFormWell";
 import FilterFormProduction from "components/Navigation/components/FilterFormProduction";
 import FilterFormOwner from "components/Navigation/components/FilterFormOwner";
+import FilterFormTags from "components/Navigation/components/FilterFormTags";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -96,6 +97,9 @@ const LayerFilters = () => {
         </AccordionDetails>
       </Accordion>
 
+      {/**
+       * Owner Filter
+       */}
       <Accordion className={classes.accordionRoot}>
         <AccordionSummary aria-controls="panel1a-content" id="panel1a-header" expandIcon={<ExpandMoreIcon />}>
           <Grid container direction="row" justify="flex-start" alignItems="center">
@@ -106,6 +110,22 @@ const LayerFilters = () => {
         </AccordionSummary>
         <AccordionDetails className={classes.accordionDetails}>
           <FilterFormOwner />
+        </AccordionDetails>
+      </Accordion>
+
+      {/**
+       * Tags Filter
+       */}
+      <Accordion className={classes.accordionRoot}>
+        <AccordionSummary aria-controls="panel1a-content" id="panel1a-header" expandIcon={<ExpandMoreIcon />}>
+          <Grid container direction="row" justify="flex-start" alignItems="center">
+            <Grid item>
+              <Typography>Tags</Typography>
+            </Grid>
+          </Grid>
+        </AccordionSummary>
+        <AccordionDetails className={classes.accordionDetails}>
+          <FilterFormTags />
         </AccordionDetails>
       </Accordion>
     </div>

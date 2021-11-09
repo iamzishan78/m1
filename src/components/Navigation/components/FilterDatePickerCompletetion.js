@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
@@ -32,8 +32,7 @@ const format = "MM/DD/YYYY";
 export default function FilterDatePickerCompletetion(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [displayValue, setDisplayValue] = useState(null);
-  const { control, watch, setValue, getValues } = useForm();
+  const { control, watch, setValue } = useForm();
 
   useEffect(() => {
     let filter = null;
