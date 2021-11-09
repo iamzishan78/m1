@@ -444,7 +444,10 @@ const PipelineCustomDialog = (props) => {
                       paddingLeft: "10px",
                       align: "center",
                     }}
-                    onClick={handleClose}
+                    onClick={() => {
+                      handleClose();
+                      handleSaveOrUpdate();
+                    }}
                   >
                     <KeyboardTabBlackIcon />
                   </IconButton>

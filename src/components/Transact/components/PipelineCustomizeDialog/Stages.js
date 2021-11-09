@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import Dialog from "@material-ui/core/Dialog";
 
 //icons
 import IconButton from "@material-ui/core/IconButton";
@@ -23,6 +24,7 @@ import { Tooltip } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/client";
 import { AppContext } from "AppContext";
 import { DEALSCOUNTINANSTAGE } from "graphQL/useQueryNonDeletedDealsCountInAnStageByPipeline";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const useStyles = makeStyles((theme) => ({
   lanesRoot: {
@@ -132,6 +134,7 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
   const [, setStateApp] = useContext(AppContext);
   const classes = useStyles();
   const [deleteFunc, setDeleteFunc] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const [getDealsCountByStage, { data: dataDealsCountByStage }] = useLazyQuery(DEALSCOUNTINANSTAGE, {
     fetchPolicy: "network-only",
@@ -146,10 +149,10 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
       if (dataDealsCountByStage.nonDeletedDealsCountInAnStageByPipeline.dealsCount > 0)
         dispatch(showWarningMessage("There are deals associated to the stage, please remove them first."));
       else {
-        deleteFunc();
+        setDeleteDialogOpen(true);
       }
     }
-  }, [dataDealsCountByStage, deleteFunc, dispatch, setStateApp, showWarningMessage]);
+  }, [dataDealsCountByStage, deleteFunc]);
 
   useEffect(() => {
     if (openPipeDialog && selectedPipe && openPipeDialog !== "newPipe") {
@@ -220,6 +223,10 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
     updStages[index] = { ...stages[index], [fieldName]: value };
     setStages(updStages);
     // }
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
   };
 
   return (
@@ -367,6 +374,25 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
           </p>
         </Grid>
       </Grid>
+      {deleteDialogOpen && (
+        <Dialog
+          className={classes.dialog}
+          open={deleteDialogOpen ? true : false}
+          onClose={handleCloseDeleteDialog}
+          fullWidth={false}
+          maxWidth="sm"
+        >
+          <DeleteConfirmationDialogContent
+            header={deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`}
+            onClose={handleCloseDeleteDialog}
+            deleteFunc={deleteFunc ? deleteFunc : () => {}}
+            m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => {}}
+          >
+            {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the Flowline?" : "Are you sure you want to delete the stage?"}
+          </DeleteConfirmationDialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
