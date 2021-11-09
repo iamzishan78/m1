@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
     padding: "10px",
     overflow: "overlay",
+    "& .MuiTypography-root": {
+      padding: "15px 5px",
+    },
   },
   accordionRoot: {
     borderRadius: "5px",
