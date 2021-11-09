@@ -7,6 +7,7 @@ import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 //Components
 import FilterFromGeo from "components/Navigation/components/FilterFromGeo";
 import FilterFormWell from "components/Navigation/components/FilterFormWell";
+import FilterFormProduction from "components/Navigation/components/FilterFormProduction";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,6 +63,9 @@ const LayerFilters = () => {
         </AccordionDetails>
       </Accordion>
 
+      {/**
+       * Well Filter
+       */}
       <Accordion className={classes.accordionRoot}>
         <AccordionSummary aria-controls="panel1a-content" id="panel1a-header" expandIcon={<ExpandMoreIcon />}>
           <Grid container direction="row" justify="flex-start" alignItems="center">
@@ -72,6 +76,22 @@ const LayerFilters = () => {
         </AccordionSummary>
         <AccordionDetails className={classes.accordionDetails}>
           <FilterFormWell />
+        </AccordionDetails>
+      </Accordion>
+
+      {/**
+       * Production Filter
+       */}
+      <Accordion className={classes.accordionRoot}>
+        <AccordionSummary aria-controls="panel1a-content" id="panel1a-header" expandIcon={<ExpandMoreIcon />}>
+          <Grid container direction="row" justify="flex-start" alignItems="center">
+            <Grid item>
+              <Typography>Production</Typography>
+            </Grid>
+          </Grid>
+        </AccordionSummary>
+        <AccordionDetails className={classes.accordionDetails}>
+          <FilterFormProduction />
         </AccordionDetails>
       </Accordion>
     </div>
