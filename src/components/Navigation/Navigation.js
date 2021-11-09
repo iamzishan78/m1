@@ -33,8 +33,6 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
-import MenuIcon from "@material-ui/icons/Menu";
-import { Link } from "react-router-dom";
 
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -77,18 +75,6 @@ import DocumentSearch from "./components/DocumentSearch";
 import ContactSearch from "./components/ContactSearch";
 import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
 import SideNavigation from "./SideNavigation";
-
-const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
-  width: 200px;
-  padding-left: 10px;
-  padding-right: 15px;
-`;
-
-const M1neralLogoLogin = styled(M1neralLogoNavNoAuth)`
-  width: 190px;
-  padding-top: 15px;
-  padding-left: 35px;
-`;
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;

@@ -8,6 +8,7 @@ import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import FilterFromGeo from "components/Navigation/components/FilterFromGeo";
 import FilterFormWell from "components/Navigation/components/FilterFormWell";
 import FilterFormProduction from "components/Navigation/components/FilterFormProduction";
+import FilterFormOwner from "components/Navigation/components/FilterFormOwner";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -92,6 +93,19 @@ const LayerFilters = () => {
         </AccordionSummary>
         <AccordionDetails className={classes.accordionDetails}>
           <FilterFormProduction />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion className={classes.accordionRoot}>
+        <AccordionSummary aria-controls="panel1a-content" id="panel1a-header" expandIcon={<ExpandMoreIcon />}>
+          <Grid container direction="row" justify="flex-start" alignItems="center">
+            <Grid item>
+              <Typography>Ownership</Typography>
+            </Grid>
+          </Grid>
+        </AccordionSummary>
+        <AccordionDetails className={classes.accordionDetails}>
+          <FilterFormOwner />
         </AccordionDetails>
       </Accordion>
     </div>

@@ -19,8 +19,8 @@ const useStyles = makeStyles({
     },
   },
   input: {
-    marginLeft: "10px",
-    width: "135px",
+    marginLeft: "7px",
+    width: "143px",
     "& input": { color: "#17AADD" },
   },
   inputLabel: {
@@ -31,8 +31,9 @@ const useStyles = makeStyles({
   ownersToggle: {
     paddingLeft: "20px",
   },
-  floatRight: {
+  inputFieldsContainer: {
     float: "right",
+    marginTop: 10,
   },
 });
 
@@ -43,10 +44,7 @@ export default function FilterOwnerConfidence() {
   const [valueMaxDisplay, setValueMaxDisplay] = useState("");
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("");
-  const [type, setType] = useState("");
-  const [ownerConfidenceWell, setOwnerConfidenceWell] = useState(
-    stateNav.ownerConfidenceWell ? stateNav.ownerConfidenceWell : []
-  );
+  const [ownerConfidenceWell, setOwnerConfidenceWell] = useState(stateNav.ownerConfidenceWell ? stateNav.ownerConfidenceWell : []);
 
   const setFilter = useCallback(() => {
     let filter;
@@ -62,11 +60,7 @@ export default function FilterOwnerConfidence() {
       filter = ["all", [">=", ["get", "ownerMatchConfidence"], min / 100]];
     } else if (min && max) {
       if (min < max) {
-        filter = [
-          "all",
-          [">=", ["get", "ownerMatchConfidence"], min / 100],
-          ["<=", ["get", "ownerMatchConfidence"], max / 100],
-        ];
+        filter = ["all", [">=", ["get", "ownerMatchConfidence"], min / 100], ["<=", ["get", "ownerMatchConfidence"], max / 100]];
       }
     } else {
       filter = null;
@@ -166,10 +160,8 @@ export default function FilterOwnerConfidence() {
   return (
     <React.Fragment>
       <div className={classes.divBordersMinMax}>
-        <FormLabel className={classes.inputLabel}>
-          Owner Confidence (0-100)
-        </FormLabel>
-        <div className={classes.floatRight}>
+        <FormLabel className={classes.inputLabel}>Owner Confidence (0-100)</FormLabel>
+        <div className={classes.inputFieldsContainer}>
           <NumberFormat
             id="OwnerConfidenceMin"
             value={valueMinDisplay}
@@ -228,9 +220,8 @@ export default function FilterOwnerConfidence() {
       </div>
       <div style={{ textAlign: "center" }}>
         <Typography variant="caption">
-          *M1neral’s proprietary owner confidence score enriches public and
-          consumer datasets with intelligence to attach a confidence metric on
-          owner records in relation to a well asset.
+          *M1neral’s proprietary owner confidence score enriches public and consumer datasets with intelligence to attach a confidence
+          metric on owner records in relation to a well asset.
         </Typography>
       </div>
     </React.Fragment>

@@ -13,9 +13,12 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
   },
   datePicker: {
-    margin: "15px",
+    margin: "5px",
     "&& span": {
       pointerEvents: "none",
+    },
+    "& .MuiIconButton-root": {
+      padding: "10px",
     },
   },
   blue: {
