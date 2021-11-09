@@ -34,7 +34,7 @@ import { UPDATEPIPELINES, UPDATE_PIPELINE } from "graphQL/useMutationUpdatePipel
 import { ADD_PIPELINE } from "graphQL/useMutationAddPipeline";
 import { ADDSTAGES } from "graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "graphQL/useMutationUpdateStages";
-import { CREATE_PIPELINE_DESCRIPTORS, UPDATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
+// import { CREATE_PIPELINE_DESCRIPTORS, UPDATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
 
 const DIALOG_WIDTHS = {
   BASIC: "450px",
@@ -131,8 +131,8 @@ const PipelineCustomDialog = (props) => {
   const [addPipeline] = useMutation(ADD_PIPELINE);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
-  const [updatePipelineDescriptors] = useMutation(UPDATE_PIPELINE_DESCRIPTORS);
-  const [createPipelineDescriptors] = useMutation(CREATE_PIPELINE_DESCRIPTORS);
+  // const [updatePipelineDescriptors] = useMutation(UPDATE_PIPELINE_DESCRIPTORS);
+  // const [createPipelineDescriptors] = useMutation(CREATE_PIPELINE_DESCRIPTORS);
 
   const classes = useStyles({ width });
 
