@@ -187,7 +187,6 @@ function UnitTractsTable(props) {
         width="450px"
         shapeId={props.customLayer._id}
         shapeType={props.shapeType}
-        uAcres={props.customLayer?.shapeJson?.properties?.uAcres}
         seletedTract={selectedRow}
         onClose={() =>
           setAddToTable(false)
