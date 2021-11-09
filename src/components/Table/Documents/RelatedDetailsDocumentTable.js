@@ -53,6 +53,7 @@ function RelatedDetailsDocumentTable(props) {
   const tableData = dataParcelFiles?.getParcelFiles
 
   const total = false
+  const addAble = { type: "document" }
   const orderByTracks = false
 
   useEffect(() => {
@@ -241,6 +242,7 @@ function RelatedDetailsDocumentTable(props) {
         dense={props.dense ? props.dense : undefined}
         startPaginationAt={null}
         options={options}
+        addAble={addAble}
         parent={props.parent}
         setColumnsBase={[]}
         onTableChange={onTableChange}
