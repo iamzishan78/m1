@@ -417,7 +417,14 @@ const PipelineCustomDialog = (props) => {
   return (
     <>
       {openPipeDialog === "newPipe" || openPipeDialog ? (
-        <RightDialog open={openPipeDialog === "newPipe" || openPipeDialog} handleClickDialogClose={handleSaveOrUpdate} width={width}>
+        <RightDialog
+          open={openPipeDialog === "newPipe" || openPipeDialog}
+          width={width}
+          handleClickDialogClose={() => {
+            handleSaveOrUpdate();
+            handleClose();
+          }}
+        >
           <div className={classes.root}>
             <div className={classes.stickyHeader}>
               <Grid container justify="space-between" direction="row" display="flex">
