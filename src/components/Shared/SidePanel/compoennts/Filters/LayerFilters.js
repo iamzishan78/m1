@@ -7,7 +7,7 @@ import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 //Components
 import * as LayerFiltersComponents from "components/Shared/SidePanel/compoennts/Filters";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     backgroundColor: "#0e111a",
     height: "calc(100vh - 103px)",
@@ -56,9 +56,14 @@ const LayerFilters = () => {
   return (
     <div className={classes.root}>
       <Typography variant="h6">Filters</Typography>
-      {Object.keys(FILTERS_TYPES).map((filterType) => (
+      {Object.keys(FILTERS_TYPES).map((filterType, index) => (
         <Accordion className={classes.accordionRoot}>
-          <AccordionSummary aria-controls="panel1a-content" id="panel1a-header" expandIcon={<ExpandMoreIcon />} defaultExpanded={false}>
+          <AccordionSummary
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+            expandIcon={<ExpandMoreIcon />}
+            defaultExpanded={index === 0}
+          >
             <Grid container direction="row" justify="flex-start" alignItems="center">
               <Grid item>
                 <Typography>{filterType}</Typography>

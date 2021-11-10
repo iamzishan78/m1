@@ -31,6 +31,7 @@ import LayerFilters from "components/Shared/SidePanel/compoennts/Filters/LayerFi
 
 import { deepEqualObjects } from "../../functions";
 import Layer from "./Layer";
+
 import {
   useStyles,
   StyledMenu,
