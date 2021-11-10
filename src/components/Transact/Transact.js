@@ -520,6 +520,7 @@ export default function Transact() {
             pipelineType: "Pipeline",
             pipeline: selectedPipe._id,
             isCurrent: true,
+            isDeleted: false,
             user: cardDetails.metadata.user?._id,
           },
         },
