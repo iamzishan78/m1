@@ -128,13 +128,22 @@ String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-export default function LanesInfoPanel({ showWarningMessage, stages, setStages, stagesError, setStageError, setStage }) {
+export default function LanesInfoPanel({
+  showWarningMessage,
+  stages,
+  setStages,
+  stagesError,
+  setStageError,
+  setStage,
+  handleSaveOrUpdate,
+}) {
   const dispatch = useDispatch();
   const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
   const [, setStateApp] = useContext(AppContext);
   const classes = useStyles();
   const [deleteFunc, setDeleteFunc] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [stageToSetIndex, setStageIndex] = useState(null);
 
   const [getDealsCountByStage, { data: dataDealsCountByStage }] = useLazyQuery(DEALSCOUNTINANSTAGE, {
     fetchPolicy: "network-only",
@@ -157,6 +166,10 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
   useEffect(() => {
     if (openPipeDialog && selectedPipe && openPipeDialog !== "newPipe") {
       if (selectedPipe.stages) setStages(selectedPipe.stages);
+      if (stageToSetIndex !== null) {
+        setStage(selectedPipe.stages[stageToSetIndex]);
+        setStageIndex(null);
+      }
     }
   }, [openPipeDialog, selectedPipe, setStages]);
 
@@ -202,7 +215,6 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
 
   const handleAddStage = () => {
     if (stagesError) setStageError(false);
-    // if (addingNewPipe) {
     setStages([
       ...stages,
       {
@@ -214,19 +226,18 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
         position: stages.length > 0 ? stages[stages.length - 1].position + 1 : 0,
       },
     ]);
-    // }
   };
 
   const handleCellTextChange = (value, fieldName, index) => {
-    // if (addingNewPipe) {
     const updStages = [...stages];
     updStages[index] = { ...stages[index], [fieldName]: value };
     setStages(updStages);
-    // }
   };
 
-  const handleCloseDeleteDialog = () => {
-    setDeleteDialogOpen(false);
+  const handleCloseDeleteDialog = () => setDeleteDialogOpen(false);
+  const handleStagesSave = (stageIndex) => {
+    handleSaveOrUpdate();
+    setStageIndex(stageIndex);
   };
 
   return (
@@ -325,13 +336,11 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
                                         <TextField {...params} variant="outlined" size="small" fullWidth margin="none" />
                                       )}
                                     />
-
-                                    {/* {stage.dealsStatus} */}
                                   </TableCell>
 
                                   <TableCell padding="checkbox">
                                     <Tooltip title="Stage Details" placement="top">
-                                      <DetailsIcon onClick={() => setStage(stage)} className={classes.settingIcon} />
+                                      <DetailsIcon onClick={() => handleStagesSave(index)} className={classes.settingIcon} />
                                     </Tooltip>
                                   </TableCell>
 
