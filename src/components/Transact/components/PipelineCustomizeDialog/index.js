@@ -152,7 +152,7 @@ const PipelineCustomDialog = (props) => {
         uniuniversalCircularLoaderAct: false,
       }));
       if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
-        dispatch(showWarningMessage("There are deals associated to the pipeline, please remove them first."));
+        dispatch(showWarningMessage("There are deals associated to this flowline, please remove them first."));
       else {
         setDeleteDialogOpen("pipe");
         handleClose();
@@ -407,7 +407,7 @@ const PipelineCustomDialog = (props) => {
 
       Promise.all(allPromises)
         .then((values) => {
-          if (success === true) dispatch(showSuccessMessage("The Pipeline was successfully updated."));
+          if (success === true) dispatch(showSuccessMessage("Flowline was successfully updated."));
           else dispatch(showErrorMessage("An error occurred during the update."));
         })
         .catch((reason) => {});
@@ -563,7 +563,7 @@ const PipelineCustomDialog = (props) => {
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => {}}
           >
-            {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the Flowline?" : "Are you sure you want to delete the stage?"}
+            {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the flowline?" : "Are you sure you want to delete the stage?"}
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}

@@ -156,7 +156,7 @@ export default function LanesInfoPanel({
         uniuniversalCircularLoaderAct: false,
       }));
       if (dataDealsCountByStage.nonDeletedDealsCountInAnStageByPipeline.dealsCount > 0)
-        dispatch(showWarningMessage("There are deals associated to the stage, please remove them first."));
+        dispatch(showWarningMessage("There are deals associated to this stage, please remove them first."));
       else {
         setDeleteDialogOpen(true);
       }
