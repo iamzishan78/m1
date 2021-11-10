@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid } from "@material-ui/core";
-import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
+import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from "@material-ui/core";
+import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from "@material-ui/icons";
 
+// Contexts
+import { NavigationContext } from "components/Navigation/NavigationContext";
 //Components
 import * as LayerFiltersComponents from "components/Shared/SidePanel/compoennts/Filters";
 
@@ -40,37 +42,101 @@ const useStyles = makeStyles(() => ({
     backgroundColor: "white",
     padding: 0,
   },
+  accordionHeading: {
+    display: "flex",
+    alignItems: "center",
+    "& .MuiChip-root": {
+      height: "22px !important",
+      borderRadius: "3px !important",
+      backgroundColor: "#18aadd",
+    },
+  },
+  clearIcon: {
+    "& .MuiButtonBase-root": {
+      color: "grey",
+    },
+  },
 }));
-
-const FILTERS_TYPES = {
-  Geography: "GeographyFilter",
-  Wells: "WellFilter",
-  Production: "ProductionFilter",
-  Ownership: "OwnershipFilter",
-  Tags: "TagsFilter",
-};
 
 const LayerFilters = () => {
   const classes = useStyles();
+  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [filterTypes, setFilters] = useState({
+    Geography: { component: "GeographyFilter", appliedFiltersCount: 0 },
+    Wells: { component: "WellFilter", appliedFiltersCount: 0 },
+    Production: { component: "ProductionFilter", appliedFiltersCount: 0 },
+    Ownership: { component: "OwnershipFilter", appliedFiltersCount: 0 },
+    Tags: { component: "TagsFilter", appliedFiltersCount: 0 },
+  });
+
+  useEffect(() => {
+    checkGeoFiltersChange();
+  }, [stateNav]);
+
+  const checkGeoFiltersChange = () => {
+    let count = 0;
+    if (stateNav.filterAOI) count++;
+    if (stateNav.filterParcel) count++;
+    if (stateNav.filterBasin) count++;
+    if (stateNav.filterGeographyState) count++;
+    if (stateNav.filterGeographyCounty) count++;
+    setFilters({
+      ...filterTypes,
+      Geography: { ...filterTypes.Geography, appliedFiltersCount: count },
+    });
+  };
+
+  const clearFilters = (filterType) => {
+    switch (filterType) {
+      case "Geography":
+        setStateNav({
+          ...stateNav,
+          filterAOI: null,
+          filterParcel: null,
+          filterBasin: null,
+          filterGeographyState: null,
+          filterGeographyCounty: null,
+        });
+        break;
+      default:
+    }
+  };
 
   return (
     <div className={classes.root}>
       <Typography variant="h6">Filters</Typography>
-      {Object.keys(FILTERS_TYPES).map((filterType, index) => (
+      {Object.keys(filterTypes).map((filterType, index) => (
         <Accordion className={classes.accordionRoot}>
           <AccordionSummary
             aria-controls="panel1a-content"
             id="panel1a-header"
             expandIcon={<ExpandMoreIcon />}
             defaultExpanded={index === 0}
+            style={{ borderLeft: filterTypes[filterType].appliedFiltersCount > 0 ? "5px solid #18aadd" : "transparent" }}
           >
-            <Grid container direction="row" justify="flex-start" alignItems="center">
-              <Grid item>
+            <Grid container direction="row" justify="space-between" alignItems="center">
+              <Grid item className={classes.accordionHeading}>
                 <Typography>{filterType}</Typography>
+                {filterTypes[filterType].appliedFiltersCount > 0 && (
+                  <Chip color="info" label={filterTypes[filterType].appliedFiltersCount} />
+                )}
+              </Grid>
+              <Grid item className={classes.clearIcon}>
+                <IconButton
+                  size="small"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    clearFilters(filterType);
+                  }}
+                >
+                  <ClearButton />
+                </IconButton>
               </Grid>
             </Grid>
           </AccordionSummary>
-          <AccordionDetails className={classes.accordionDetails}>{LayerFiltersComponents[FILTERS_TYPES[filterType]]()}</AccordionDetails>
+          <AccordionDetails className={classes.accordionDetails}>
+            {LayerFiltersComponents[filterTypes[filterType].component]()}
+          </AccordionDetails>
         </Accordion>
       ))}
     </div>

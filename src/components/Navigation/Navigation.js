@@ -11,22 +11,16 @@ import { useTheme } from "@material-ui/core/styles";
 
 //3rd party packages
 import PropTypes from "prop-types";
-import styled from "styled-components";
 
 //@material-ui components
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
-import Tab from "@material-ui/core/Tab";
-import Badge from "@material-ui/core/Badge";
-import Tabs from "@material-ui/core/Tabs";
 import Button from "@material-ui/core/Button";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -40,22 +34,10 @@ import SupportCenterModal from "./components/SupportCenter";
 import { useStyles } from "./Common";
 
 //icons
-import CloseIcon from "@material-ui/icons/Close";
-
 import HeadsetIcon from "@material-ui/icons/Headset";
 import DesktopWindowsIcon from "@material-ui/icons/DesktopWindows";
-import GeographicIcon from "../Shared/svgIcons/geographic";
-import WellIcon from "../Shared/svgIcons/well";
-import ProductionIcon from "../Shared/svgIcons/production";
-import OwnershipIcon from "../Shared/svgIcons/ownership";
-import LocalOfferIcon from "@material-ui/icons/LocalOffer";
 import ProfileProvider from "../Profile/ProfileProvider";
 import UserManagementProvider from "../UserManagement/UserManagementProvider";
-import FilterFormWell from "./components/FilterFormWell";
-import FilterFromGeo from "./components/FilterFromGeo";
-import FilterFormOwner from "./components/FilterFormOwner";
-import FilterFormProduction from "./components/FilterFormProduction";
-import FilterFormTags from "./components/FilterFormTags";
 
 import DealSearch from "./components/DealSearch";
 import SearchBarWithToggleButton from "./components/SearchBarWithToggleButton";
@@ -573,74 +555,6 @@ export default function Navigation(props) {
                 </div>
               </div>
             )} */}
-            {/* {matchLocation ? (
-              <div ref={anchorEl} className={classes.filterTabs}>
-                <Tabs
-                  value={value}
-                  onChange={handleFilterTabChange}
-                  variant="standard"
-                  textColor="primary"
-                  aria-label="tabs"
-                  classes={{ indicator: classes.indicator }}
-                >
-                  <Tab
-                    value={0}
-                    className={classes.tab}
-                    icon={
-                      <Badge badgeContent={stateNav.geographyFilterCount} color="secondary">
-                        <GeographicIcon color="#fff" opacity="1.0" />
-                      </Badge>
-                    }
-                    aria-label="geography"
-                  />
-
-                  <Tab
-                    value={1}
-                    className={classes.tab}
-                    icon={
-                      <Badge badgeContent={stateNav.wellFilterCount} color="secondary">
-                        <WellIcon color="#fff" opacity="1.0" />
-                      </Badge>
-                    }
-                    aria-label="well"
-                  />
-
-                  <Tab
-                    value={2}
-                    classes={{ root: classes.tab }}
-                    icon={
-                      <Badge badgeContent={stateNav.ownershipFilterCount} color="secondary">
-                        <OwnershipIcon color="#fff" opacity="1.0" />
-                      </Badge>
-                    }
-                    aria-label="ownership"
-                  />
-                  <Tab
-                    value={3}
-                    classes={{ root: classes.tab }}
-                    icon={
-                      <Badge badgeContent={stateNav.productionFilterCount} color="secondary">
-                        <ProductionIcon color="#fff" opacity="1.0" />
-                      </Badge>
-                    }
-                    aria-label="production"
-                  />
-                  <Tab
-                    value={5}
-                    classes={{ root: classes.tab }}
-                    icon={
-                      <Badge badgeContent={stateNav.tagFilterCount} color="secondary">
-                        <LocalOfferIcon htmlColor="#fff" opacity="1" />
-                      </Badge>
-                    }
-                    aria-label="tags and Tracks"
-                  />
-                </Tabs>
-              </div>
-            ) : (
-              <div style={{ display: "none" }}></div>
-            )} */}
-            {/* <Divider style={{ margin: 1 }} orientation="vertical" /> */}
             <IconButton style={{ left: "8.5px" }} onClick={handleProfileMenuOpen}>
               {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.displayName} size="38" round />}
             </IconButton>
@@ -687,130 +601,6 @@ export default function Navigation(props) {
 
       <ContactFormModal open={openContactForm} onClose={() => setOpenContactForm(false)} />
 
-      {openFilterCard ? (
-        <div ref={anchorEl} className={classes.tabPanelWrapper}>
-          <TabPanel value={value} index={0} dir={theme.direction}>
-            <ClickAwayListener onClickAway={(e) => handleClickAway(e)}>
-              <Card className={classes.card}>
-                <CardHeader
-                  classes={{
-                    title: classes.cardTitle,
-                    subheader: classes.subheader,
-                  }}
-                  action={
-                    <div className={classes.actionWrapper}>
-                      <IconButton color="secondary" onClick={handleFilterCardClose}>
-                        <CloseIcon />
-                      </IconButton>
-                    </div>
-                  }
-                  title="Filter"
-                  subheader="Geographical"
-                />
-                <CardContent className={classes.cardContent}>
-                  <FilterFromGeo />
-                </CardContent>
-              </Card>
-            </ClickAwayListener>
-          </TabPanel>
-          <TabPanel value={value} index={1} dir={theme.direction}>
-            <ClickAwayListener onClickAway={handleClickAway}>
-              <Card className={classes.card}>
-                <CardHeader
-                  classes={{
-                    title: classes.cardTitle,
-                    subheader: classes.subheader,
-                  }}
-                  action={
-                    <div className={classes.actionWrapper}>
-                      <IconButton color="secondary" onClick={handleFilterCardClose}>
-                        <CloseIcon />
-                      </IconButton>
-                    </div>
-                  }
-                  title="Filter"
-                  subheader="Well"
-                />
-                <CardContent className={classes.cardContent}>
-                  <FilterFormWell />
-                </CardContent>
-              </Card>
-            </ClickAwayListener>
-          </TabPanel>
-          <TabPanel value={value} index={2} dir={theme.direction}>
-            <ClickAwayListener onClickAway={handleClickAway}>
-              <Card className={classes.card}>
-                <CardHeader
-                  classes={{
-                    title: classes.cardTitle,
-                    subheader: classes.subheader,
-                  }}
-                  action={
-                    <div>
-                      <IconButton color="secondary" onClick={handleFilterCardClose}>
-                        <CloseIcon />
-                      </IconButton>
-                    </div>
-                  }
-                  title="Filter"
-                  subheader="Ownership"
-                />
-                <CardContent className={classes.cardContent}>
-                  <FilterFormOwner />
-                </CardContent>
-              </Card>
-            </ClickAwayListener>
-          </TabPanel>
-          <TabPanel value={value} index={3} dir={theme.direction}>
-            <ClickAwayListener onClickAway={handleClickAway}>
-              <Card className={classes.card}>
-                <CardHeader
-                  classes={{
-                    title: classes.cardTitle,
-                    subheader: classes.subheader,
-                  }}
-                  action={
-                    <div>
-                      <IconButton color="secondary" onClick={handleFilterCardClose}>
-                        <CloseIcon />
-                      </IconButton>
-                    </div>
-                  }
-                  title="Filter"
-                  subheader="Production"
-                />
-                <CardContent className={classes.cardContent}>
-                  <FilterFormProduction />
-                </CardContent>
-              </Card>
-            </ClickAwayListener>
-          </TabPanel>
-          <TabPanel value={value} index={5} dir={theme.direction}>
-            <ClickAwayListener onClickAway={handleClickAway}>
-              <Card className={classes.card}>
-                <CardHeader
-                  classes={{
-                    title: classes.cardTitle,
-                    subheader: classes.subheader,
-                  }}
-                  action={
-                    <div>
-                      <IconButton color="secondary" onClick={handleFilterCardClose}>
-                        <CloseIcon />
-                      </IconButton>
-                    </div>
-                  }
-                  title="Filter"
-                  subheader="Tags and Tracks"
-                />
-                <CardContent className={classes.cardContent}>
-                  <FilterFormTags />
-                </CardContent>
-              </Card>
-            </ClickAwayListener>
-          </TabPanel>
-        </div>
-      ) : null}
       <main className={classes.content}>
         <div className={classes.toolbar} />
         {props.children}

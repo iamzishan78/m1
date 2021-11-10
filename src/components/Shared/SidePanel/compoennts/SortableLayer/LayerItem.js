@@ -4,15 +4,15 @@ import { Box, Grid, ListItemIcon } from "@material-ui/core";
 
 import { Flipped } from "react-flip-toolkit";
 import { useSelector } from "react-redux";
-import { getLayerColor, ifLayerHaveData } from "../common";
+import { getLayerColor } from "../common";
 import { useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import { DragIndicator } from "@material-ui/icons";
 import LayerControls from "./LayerControls";
 import { FormControlLabel } from "@material-ui/core";
 import { Switch } from "@material-ui/core";
-import Typography from '@material-ui/core/Typography';
+import Typography from "@material-ui/core/Typography";
 
-// icons 
+// icons
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
@@ -26,11 +26,11 @@ const useStyles = makeStyles((theme) => ({
     color: props.muted ? theme.palette.primary.dark : "inherit",
     zIndex: props.muted ? 1 : 0,
     fontWeight: props.data.type === "group" ? 600 : 500,
-    height: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : "auto",
+    height: (props.data.collapsed && props.data.type === "layer") || !props.data.showable ? 0 : "auto",
     fontSize: props.data.type === "group" ? 20 : 18,
     position: "relative",
     fontWeight: props.data.type === "group" ? 600 : 500,
-    height: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : "50px",
+    height: (props.data.collapsed && props.data.type === "layer") || !props.data.showable ? 0 : "50px",
     overflow: "hidden",
     disabledLayerTitle: {
       "& span": { color: "rgb(127, 149, 199) !important" },
@@ -40,30 +40,26 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
-      minWidth: '40px' // for some reason controls the icon spacing
+      minWidth: "40px", // for some reason controls the icon spacing
     },
     "& .MuiTypography-root": {
       color: theme.palette.common.white,
     },
-    paddingLeft: '10px',
+    paddingLeft: "10px",
 
     // display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     // overflowX: "hidden",
     // cursor: "move",
     // padding: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : theme.spacing(0.5, 0),
     // margin: props.data.collapsed && props.data.type === "layer" ? 0 : theme.spacing(0.5),
     // border: props.muted ? '1px dashed #1976d2' : '1px solid transparent',
-
   }),
   subContainer: (props) => ({
     marginLeft: theme.spacing(props.depth * 2),
   }),
-
 }));
-
-
 
 const LayerItem = React.memo((props) => {
   const [hoverItemIndex, setHoverItem] = useState(-1);
@@ -104,40 +100,34 @@ const LayerItem = React.memo((props) => {
 
   return (
     <Flipped flipId={id}>
-      <div ref={(ref) => drop(preview(ref))} onMouseEnter={() => setHoverItem(id)} onMouseLeave={() => setHoverItem(null)}
-      >
-        <Grid container
-          className={classes.root}
-          direction="row"
-        >
-
-          <Grid item
+      <div ref={(ref) => drop(preview(ref))} onMouseEnter={() => setHoverItem(id)} onMouseLeave={() => setHoverItem(null)}>
+        <Grid container className={classes.root} direction="row">
+          <Grid
+            item
             xs={8}
             style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              alignItems: "center",
             }}
           >
-
-
-            <Grid container
+            <Grid
+              container
               direction="row"
-              wrap='nowrap'
+              wrap="nowrap"
               className={classes.subContainer}
               style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-start",
                 // marginLeft: '20px',
-                alignItems: 'center',
+                alignItems: "center",
               }}
             >
-
               <Box borderColor={getLayerColor(data, "layer", colors)} borderLeft={4}>
-                <ListItemIcon ref={drag} >
-                  <DragIndicator style={{ cursor: "move", justifyContent: 'center' }} />
+                <ListItemIcon ref={drag}>
+                  <DragIndicator style={{ cursor: "move", justifyContent: "center" }} />
                 </ListItemIcon>
               </Box>
 
@@ -147,57 +137,47 @@ const LayerItem = React.memo((props) => {
                 </ListItemIcon>
               )}
               {type === "group" && collapsed && (
-                <ListItemIcon onClick={handleClick} >
+                <ListItemIcon onClick={handleClick}>
                   <ExpandMoreIcon />
                 </ListItemIcon>
               )}
 
-              <Typography id={id} color="secondary"
-                noWrap>{name}</Typography>
-
+              <Typography id={id} color="secondary" noWrap>
+                {name}
+              </Typography>
             </Grid>
           </Grid>
 
-          <Grid item
+          <Grid
+            item
             xs={4}
             styles={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              flexGrow: 1
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              flexGrow: 1,
             }}
           >
-
-            {type === "layer" && <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} isHover={hoverItemIndex === id} />}
-
-            {type === "group" && (
-
-              <Grid container
-                spacing={1}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end',
-                  alignItems: 'center',
-                }}
-              >
-
-                <Grid item>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={data.visiable}
-                        onChange={() => onToggleGroup(id)}
-                        size='small'
-                      />
-                    }
-                  />
-                </Grid>
-
-              </Grid>
-
+            {type === "layer" && (
+              <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} isHover={hoverItemIndex === id} />
             )}
 
+            {type === "group" && (
+              <Grid
+                container
+                spacing={1}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                }}
+              >
+                <Grid item>
+                  <FormControlLabel control={<Switch checked={data.visiable} onChange={() => onToggleGroup(id)} size="small" />} />
+                </Grid>
+              </Grid>
+            )}
           </Grid>
         </Grid>
         {/* </Box> */}
