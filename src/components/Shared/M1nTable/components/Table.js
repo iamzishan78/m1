@@ -742,11 +742,11 @@ function SubTable(props) {
   //   setHandleSearchClose(() => handleSearchClose);
   // };
 
-  useEffect(() => {
-    if (props.header === "Contacts") {
-      handleSearch(stateApp.contactSearchQuery);
-    }
-  }, [stateApp.contactSearchQuery]);
+  // useEffect(() => {
+  //   if (props.header === "Contacts") {
+  //     handleSearch(stateApp.contactSearchQuery);
+  //   }
+  // }, [stateApp.contactSearchQuery]);
 
   // useEffect(() => {
   //   if (props.parent === "search") {
@@ -1698,6 +1698,7 @@ function SubTable(props) {
                 ...column.options,
 
                 customBodyRender: (value, tableMeta, updateValue) => {
+                  debugger
                   let id = props.targetLabel + tableMeta.columnIndex;
 
                   let targetSourceId =
@@ -1773,7 +1774,7 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           console.log("modell download");
-                          handleViewFile(props.addAble.type === "parcelRunsheet" || props.addAble.type === "parcelDocument" ? row_line.fileId : row_line?._id);
+                          handleViewFile(props.addAble.type === "parcelRunsheet" || props.addAble.type === "parcelDocument" || props.addAble.type === "wellDocument" ? row_line.fileId : row_line?._id);
                         }}
                       >
                         <GetAppIcon />
@@ -2303,7 +2304,7 @@ function SubTable(props) {
     viewColumns: props.targetLabel !== "usermanagement",
 
     onColumnViewChange: (changedColumn, action) => {
-      if (props.parent === "Contacts" && columns && (action === "add" || action === "remove") && changedColumn)
+      if (props.parent === "Contactss" && columns && (action === "add" || action === "remove") && changedColumn)
         props.setColumnsBase([
           ...columns.map((column) => {
             if (column.name === changedColumn)
@@ -2405,6 +2406,37 @@ function SubTable(props) {
                       style={{ margin: "0 5px" }}
                       onClick={(e) => {
                         handleExpandClick(null, null, null, "deleteParcelDocument");
+                      }}
+                      aria-label="delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </div>
+            );
+          }
+          if (props.addAble.type === "wellDocument") {
+            return (
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    height: "35px",
+                    display: "flex",
+                  }}
+                >
+                  <Tooltip title={"Delete"}>
+                    <IconButton
+                      size="medium"
+                      style={{ margin: "0 5px" }}
+                      onClick={(e) => {
+                        handleExpandClick(null, null, null, "deleteWellDocument");
                       }}
                       aria-label="delete"
                     >
@@ -2691,7 +2723,8 @@ function SubTable(props) {
       if (props.addAble.type === "suggestedOwnerToParcel") {
         buttonLabel = "+ ADD TO PARCEL";
       }
-      if (props.addAble.type === "parcelDocument") {
+      if (props.addAble.type === "parcelDocument" ||
+          props.addAble.type === "wellDocument") {
         buttonLabel = "ADD DOCUMENT";
       }
       if (props.addAble.type === "parcelRunsheet") {
@@ -2763,7 +2796,8 @@ function SubTable(props) {
                 {buttonLabel}
               </Button>
             )}
-            {props.addAble.type === "parcelDocument" && (
+            {(props.addAble.type === "parcelDocument" || 
+              props.addAble.type === "wellDocument") && (
               <Button
                 color="secondary"
                 className={classes.multiSelectionTopBarButtons}
@@ -2910,7 +2944,8 @@ function SubTable(props) {
           selectedDocument: rows[dataIndex],
         }));
       }
-      if (props.targetLabel === "parcelDocument") {
+      if (props.targetLabel === "parcelDocument" ||
+          props.targetLabel === "wellDocument") {
         setStateApp((stateApp) => ({
           ...stateApp,
           selectedDocument: rows[dataIndex],
@@ -2999,7 +3034,7 @@ function SubTable(props) {
         setM1nSelectedRowsIds([]);
       }
 
-      if (props.header === "Contacts") {
+      if (props.header === "Contactss") {
         let filters = [];
         const leadSourceIndex = tableState.columns.findIndex((i) => i.name === "leadSource");
         const lastUpdateByIndex = tableState.columns.findIndex((i) => i.name === "lastUpdateBy.name");
@@ -3226,14 +3261,14 @@ function SubTable(props) {
     options.serverSide = true;
   }
 
-  if (props.header === "Contacts") {
-    options.rowsPerPageOptions =
-      props.contactsPageProps.contactsCount > 25 ? [10, 25, 50] : props.contactsPageProps.contactsCount > 10 ? [10, 25] : [10];
-    options.count = props.contactsPageProps.contactsCount;
-    options.serverSide = true;
-    //options.print = true;
-    //options.export = true;
-  }
+  // if (props.header === "Contacts") {
+  //   options.rowsPerPageOptions =
+  //     props.contactsPageProps.contactsCount > 25 ? [10, 25, 50] : props.contactsPageProps.contactsCount > 10 ? [10, 25] : [10];
+  //   options.count = props.contactsPageProps.contactsCount;
+  //   options.serverSide = true;
+  //   //options.print = true;
+  //   //options.export = true;
+  // }
 
   const displayCumulative = (data, total, cumulative, rowsPerPage = 25) => {
     let rows = data;
@@ -3292,25 +3327,11 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    if (props.header === "Contacts") {
-      return (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "left" }}>
-          <Contact />
-          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-            <Typography
-              style={{
-                marginLeft: "10px",
-                fontSize: "16px",
-              }}
-              color="inherit"
-            >
-              {props.header}
-            </Typography>
-            <Typography style={{ color: "#18AADD", fontSize: "16px" }}>All {props.header}</Typography>
-          </Breadcrumbs>
-        </div>
-      );
-    } else if (props.header === "Documents") {
+    if(props.header === 'Contacts') {
+      const HeaderComponent = props.headerComponent
+      return <HeaderComponent {...props.headerProps} />
+    }
+    if (props.header === "Documents") {
       return (
         <div style={{ display: "flex", justifyContent: "left" }}>
           <DescriptionOutlinedIcon />
@@ -3391,8 +3412,9 @@ function SubTable(props) {
 
             search:
               (
-                props.header === 'Contacts'
-                || props.header === 'Deals'
+                // props.header === 'Contacts'
+                // || 
+                props.header === 'Deals'
                 || props.header === 'Activities'
                 || props.header === 'Monthly Production'
                 // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
@@ -3412,8 +3434,8 @@ function SubTable(props) {
             ...(props.header === "Contacts" && {
               customSearchRender: (searchText, handleSearch, hideSearch, options) => {
                 registerSearchHandler(handleSearch);
-
-                return getHeaders();
+                const Component = props.headerComponent
+                return  getHeaders();
               },
             }),
             ...props.options,
@@ -3530,6 +3552,7 @@ function SubTable(props) {
                   openDialog === "deleteUser" ||
                   openDialog === "deleteWellInterest" ||
                   openDialog === "deleteParcelDocument" ||
+                  openDialog === "deleteWellDocument" ||
                   openDialog === "deleteParcelRunsheet" ||
                   openDialog === "addParcelInterestsToEntity"
                   ? true
@@ -3549,6 +3572,7 @@ function SubTable(props) {
                     openDialog === "deleteUser" ||
                     openDialog === "deleteWellInterest" ||
                     openDialog === "deleteParcelDocument" ||
+                    openDialog === "deleteWellDocument" ||
                     openDialog === "addParcelInterestsToEntity"
                     ? true
                     : false
@@ -3692,6 +3716,22 @@ function SubTable(props) {
                     ? "s"
                     : ""
                     } from  this parcel?`}
+                </DeleteConfirmationDialogContent>
+              )}
+              {openDialog === "deleteWellDocument" && (
+                <DeleteConfirmationDialogContent
+                  header="Delete Well Document(s)"
+                  onClose={handleCloseDialog}
+                  deleteFunc={props.deleteFunc}
+                  m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
+                  setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
+                >
+                  {`Do you want to permanently delete the document${m1nSelectedRowsIds &&
+                    m1nSelectedRowsIds.length > 1 &&
+                    removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                    ? "s"
+                    : ""
+                    } from  this well?`}
                 </DeleteConfirmationDialogContent>
               )}
               {openDialog === "deleteParcelRunsheet" && (

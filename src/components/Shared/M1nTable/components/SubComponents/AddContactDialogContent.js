@@ -226,6 +226,7 @@ export default function AddContactDialogContent(props) {
           refetchQueries: [
             "getPaginatedContacts",
             "getContact",
+            "getESContacts"
           ],
           awaitRefetchQueries: true,
         });
@@ -252,7 +253,7 @@ export default function AddContactDialogContent(props) {
             lastUpdateBy: stateApp.user.mongoId,
           },
         },
-        refetchQueries: ["getPaginatedContacts", "getContact"],
+        refetchQueries: ["getPaginatedContacts", "getContact", "getESContacts"],
         awaitRefetchQueries: true,
       });
     }
