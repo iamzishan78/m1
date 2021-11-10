@@ -9,14 +9,13 @@ import TableHOC from "components/Table/TableHOC";
 // QUERIES 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { SHAPE_TRACTS } from "graphQL/useQueryPaginatedShapeTracts";
-
-import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
+import { ADD_TRACTS_TOA_SHAPE } from "graphQL/useMutationAddTractsToAShape";
+import { copy, deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 
 // Header Schemas 
 import TableHeader from 'components/Table/constants/unit-tracts-header-schema.js'
 
 // Utilities
-import { handleTagColumn } from "../helpers/index.js";
 import { ADD_MULTI_WELLINTEREST_TO_SHAPE } from "graphQL/useMutationAddMultiWellInterestToShape.js";
 import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "actions/Notifications.js";
@@ -31,8 +30,19 @@ function AssociatedTractsUnitTable(props) {
     const [count, setCount] = useState(0)
     const [selectedRows, setSelectedRows] = useState([]);
     // function states 
-    const [columns, Columns] = useState([]);
+    const [columns, Columns] = useState(copy(TableHeader));
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
+    const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {
+        onCompleted: () => {
+            props.setLoading(false);
+            props.setSelectedTab(0)
+        },
+        refetchQueries: [
+            "getESShapeTracts",
+            "getESShapeTractsFilter"
+        ],
+        awaitRefetchQueries: true,
+    });
     const [addMultiWellInterestToShape] = useMutation(ADD_MULTI_WELLINTEREST_TO_SHAPE);
 
     // queries 
@@ -47,10 +57,6 @@ function AssociatedTractsUnitTable(props) {
     });
     const tableData = dataShapeTracts?.paginatedPotentialShapeTracts
 
-    const addAble = false
-    const total = false
-    const orderByTracks = false
-
     ////////////Contact Wells begin///////////////////////////////////////////////
     useEffect(() => {
         getPaginatedPotentialShapeTracts({
@@ -63,11 +69,17 @@ function AssociatedTractsUnitTable(props) {
 
     useEffect(() => {
         if (tableData?.length > 0) {
+            const isStateTx = !!tableData.find((hit) => hit.state === 'TX')
+            if (isStateTx) {
+                columns.forEach((header) => {
+                    if (header.name === 'meridian') { header.name = 'survey'; header.label = 'Survey'; header.esKey = 'survey.keyword' }
+                    else if (header.name === 'township') { header.name = 'block'; header.label = 'Block'; header.esKey = 'block.keyword' }
+                    else if (header.name === 'section') { header.name = 'abstract'; header.label = 'Abstract'; header.esKey = 'abstract.keyword' }
+                    else if (header.name === 'range') { header.name = 'section'; header.label = 'Section'; header.esKey = 'section.keyword' }
+                })
+            }
+
             props.setRows(tableData);
-
-            const cleanAvailableTags = []; // get from backend
-
-            const columns = handleTagColumn(TableHeader, cleanAvailableTags);
             setColumns(columns);
             props.setLoading(false);
 
@@ -75,7 +87,7 @@ function AssociatedTractsUnitTable(props) {
         else if (tableData?.length === 0) {
             props.setLoading(false);
         }
-    }, [tableData, props.dependencyUpdate]);
+    }, [tableData]);
 
     ////////////Contact Wells end///////////////////////////////////////////////
 
@@ -103,8 +115,8 @@ function AssociatedTractsUnitTable(props) {
         rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
         count: count || 0,
         serverSide: false,
-        search: false,
-        filter: false,
+        searchable: true,
+        filter: true,
         // column: false, 
         customToolbar: () => {
             return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
@@ -118,7 +130,7 @@ function AssociatedTractsUnitTable(props) {
                 <div style={{ marginTop: "6px", height: "35px", display: "flex", marginRight: "20px" }}>
                     <Button color="secondary" className={classes.multiSelectionTopBarButtons} disabled={data.length < 1}
                         onClick={() => {
-                            addWellInterestToShape();
+                            addTractsToShape();
                         }} >
                         + ADD Tracts TO {props.shapeType?.toUpperCase()}
                     </Button>
@@ -127,27 +139,24 @@ function AssociatedTractsUnitTable(props) {
         }
     }
 
-    const addWellInterestToShape = () => {
+    const addTractsToShape = () => {
         const { rows } = props;
-        const selectedWells = selectedRows.map((sR => rows[sR.dataIndex]))
-        // const selectedWells = tableData.filter((t, index) => rows.data.find((row) => row.dataIndex === index))
+        let selectedTracts = copy(selectedRows.map((sR => rows[sR.dataIndex])))
+        selectedTracts.map((selectedTract) => {
+            selectedTract.shapeId = props.customLayer._id
+            return selectedTract
+        })
         props.setLoading(true);
-        addMultiWellInterestToShape({
-            variables: { wells: selectedWells, shapeId: props.customLayer._id, shapeType: props.shapeType, userId: stateApp.user.mongoId, },
-            refetchQueries: [
-                "getESShapeWells",
-                "getESShapeWellsFilter"
-            ],
-            awaitRefetchQueries: true
+        addShapeTract({
+            variables: { shapeTracts: selectedTracts, shapeType: props.shapeType },
         }).then(
-            ({ data: { addMultiWellInterestToShape } }) => {
+            ({ data: { addTractsToAShape } }) => {
 
-                if (addMultiWellInterestToShape?.success) {
-                    // rowsSelected.current = []
+                if (addTractsToAShape?.success) {
                     Columns([...columns])
-                    dispatch(showSuccessMessage(addMultiWellInterestToShape.message));
+                    dispatch(showSuccessMessage(addTractsToAShape.message));
                 } else {
-                    dispatch(showErrorMessage(addMultiWellInterestToShape.message));
+                    dispatch(showErrorMessage(addTractsToAShape.message));
                 }
                 props.setLoading(false);
                 props.setSelectedTab(0)
@@ -155,10 +164,11 @@ function AssociatedTractsUnitTable(props) {
             err => {
                 console.log(err)
                 props.setLoading(false);
-                dispatch(showErrorMessage("Failed to attach to contact"));
+                dispatch(showErrorMessage("Failed to attach to unit"));
             }
         );
     }
+
     return (
 
         <div className={classes.root}>
@@ -167,19 +177,17 @@ function AssociatedTractsUnitTable(props) {
                 className={classes.container}
                 id={props.id ? props.id : props.parent}
             >
+
                 <Table
                     style={{ backgroundColor: "#fff" }}
                     header={props.header}
                     columns={columns}
                     rows={props.rows}
-                    total={total}
                     loading={props.loading}
-                    addAble={addAble}
                     targetLabel={props.targetLabel}
                     deleteFunc={null}
                     uploadIcon={null}
                     dense={props.dense ? props.dense : undefined}
-                    orderByTracks={orderByTracks}
                     startPaginationAt={null}
                     onTableChange={onTableChange}
                     options={options}

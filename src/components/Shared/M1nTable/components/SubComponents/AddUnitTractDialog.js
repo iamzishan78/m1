@@ -15,8 +15,8 @@ import { useForm, Controller } from "react-hook-form";
 // contexts 
 import { getParcelOriginalProperties } from "components/ParcelsDetailCard/utils/GetParcelOriginalProps";
 import AutoCompleteShapeLayer from "components/Shared/Forms/Fields/AutoCompleteShapeLayer";
-import { ADD_TRACT_TOA_SHAPE } from "graphQL/useMutationAddTractToAShape";
-import { UPDATE_SHAPE_TRACT } from "graphQL/useMutationUpdateShapeTract";
+import { ADD_TRACTS_TOA_SHAPE } from "graphQL/useMutationAddTractsToAShape";
+import { UPDATE_SHAPE_TRACTS } from "graphQL/useMutationUpdateShapeTracts";
 import pick from 'lodash/pick';
 
 
@@ -44,12 +44,14 @@ const useStyles = makeStyles((theme) => ({
 
 function AddUnitTractDialog(props) {
   const classes = useStyles();
-  const { control, reset, register, getValues } = useForm();
+  const { control, reset, register, getValues, watch } = useForm();
 
   const [loading, setLoading] = useState(false);
   const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
 
-  const [addShapeTract] = useMutation(ADD_TRACT_TOA_SHAPE, {
+  const state = watch('state', '')
+
+  const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
@@ -60,7 +62,7 @@ function AddUnitTractDialog(props) {
     ],
     awaitRefetchQueries: true,
   });
-  const [updateShapeTract] = useMutation(UPDATE_SHAPE_TRACT, {
+  const [updateShapeTract] = useMutation(UPDATE_SHAPE_TRACTS, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
@@ -79,7 +81,7 @@ function AddUnitTractDialog(props) {
       props.seletedTract.name = props.seletedTract?.parcel?.name
       setSelectedShapeLayer(props.seletedTract);
 
-      reset(pick(props.seletedTract, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'altSurvey', 'qtr', 'shapeArea', 'uAcres']))
+      reset(pick(props.seletedTract, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'shapeArea', 'uAcres', 'legalDescription']))
     }
   }, [props.seletedTract]);
 
@@ -88,8 +90,9 @@ function AddUnitTractDialog(props) {
     if (selectedShapeLayer?.shapeJson) {
       const originalProperties = getParcelOriginalProperties(selectedShapeLayer?.shapeJson?.properties)
       const shapeArea = selectedShapeLayer?.shapeJson?.properties?.shapeArea;
+      const legalDescription = selectedShapeLayer?.shapeJson?.properties?.legalDescription;
       selectedShapeLayer.parcelId = selectedShapeLayer._id
-      reset({ ...getValues(), shapeArea, ...originalProperties, name: selectedShapeLayer.name })
+      reset({ ...getValues(), shapeArea, legalDescription, ...originalProperties, name: selectedShapeLayer.name })
     }
   }, [selectedShapeLayer]);
 
@@ -104,24 +107,24 @@ function AddUnitTractDialog(props) {
     if (props.seletedTract) {
       updateShapeTract({
         variables: {
-          shapeTract: {
+          shapeTracts: [{
             _id: selectedShapeLayer._id,
             name: selectedShapeLayer.name,
             shapeId: props.shapeId,
             ...getValues(),
-          },
+          }],
           shapeType: props.shapeType,
         }
       });
     } else {
       addShapeTract({
         variables: {
-          shapeTract: {
+          shapeTracts: [{
             parcelId: selectedShapeLayer.parcelId,
             name: selectedShapeLayer.name,
             shapeId: props.shapeId,
             ...getValues(),
-          },
+          }],
           shapeType: props.shapeType,
         }
       });
@@ -239,42 +242,46 @@ function AddUnitTractDialog(props) {
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='state' inputRef={register()} label={"State"}
               InputLabelProps={{ shrink: true }} fullWidth disabled />
 
+
+
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='county' inputRef={register()} label={"County"}
               InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='survey' inputRef={register()} label={"Survey"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='block' inputRef={register()} label={"Block"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='section' inputRef={register()} label={"Section"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled />
+            {state !== 'TX' && <>
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='meridian' inputRef={register()} label={"Meridian"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='abstract' inputRef={register()} label={"Abstract"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled />
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='township' inputRef={register()} label={"Township"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='range' inputRef={register()} label={"Range"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='altSurvey' inputRef={register()} label={"Section"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+            </>}
+
+            {state === 'TX' && <>
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='survey' inputRef={register()} label={"Survey"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='block' inputRef={register()} label={"Block"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='range' inputRef={register()} label={"Section"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+
+              <Controller as={TextField} control={control} variant="outlined" margin="dense" name='section' inputRef={register()} label={"Abstract"}
+                InputLabelProps={{ shrink: true }} fullWidth disabled />
+            </>}
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='altSurvey' inputRef={register()} label={"Alternate Survey"}
               InputLabelProps={{ shrink: true }} fullWidth disabled />
 
-            <Grid container spacing={1}>
-              <Grid item xs={3}>
-                <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[0]' inputRef={register()} label={"QTR1"}
-                  InputLabelProps={{ shrink: true }} fullWidth disabled />
-              </Grid>
-              <Grid item xs={3}>
-                <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[1]' inputRef={register()} label={"QTR2"}
-                  InputLabelProps={{ shrink: true }} fullWidth disabled />
-              </Grid>
-              <Grid item xs={3}>
-                <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[2]' inputRef={register()} label={"QTR3"}
-                  InputLabelProps={{ shrink: true }} fullWidth disabled />
-              </Grid>
-              <Grid item xs={3}>
-                <Controller as={TextField} control={control} variant="outlined" margin="dense" name='qtr[3]' inputRef={register()} label={"QTR4"}
-                  InputLabelProps={{ shrink: true }} fullWidth disabled />
-              </Grid>
-            </Grid>
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='legalDescription' inputRef={register()} label={"Full Legal Description"}
+              InputLabelProps={{ shrink: true }} multiline rows={4} fullWidth disabled />
 
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='shapeArea' inputRef={register()} label={"Calc. Acres"}
