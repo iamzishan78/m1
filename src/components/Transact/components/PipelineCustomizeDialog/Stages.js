@@ -161,7 +161,7 @@ export default function LanesInfoPanel({
         setDeleteDialogOpen(true);
       }
     }
-  }, [dataDealsCountByStage, deleteFunc]);
+  }, [dataDealsCountByStage]);
 
   useEffect(() => {
     if (openPipeDialog && selectedPipe && openPipeDialog !== "newPipe") {
