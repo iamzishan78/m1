@@ -310,6 +310,9 @@ const PipelineCustomDialog = (props) => {
 
       if (pipeToUpdate) {
         if (pipeToUpdate.IsDefault) pipeToUpdate = { ...pipeToUpdate, position: 0 };
+        else {
+          pipeToUpdate = { ...pipeToUpdate, position: pipeToUpdate.projectPipelinePosition };
+        }
 
         allPromises.push(
           new Promise((resolve, reject) => {
