@@ -27,7 +27,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import FilterAltIcon from "components/Shared/svgIcons/FilterAltIcon";
 import SecondaryPanel from "components/Shared/SecondaryPanel";
-import LayerFilters from "components/Shared/SidePanel/compoennts/Filters";
+import LayerFilters from "components/Shared/SidePanel/compoennts/Filters/LayerFilters";
 
 import { deepEqualObjects } from "../../functions";
 import Layer from "./Layer";
