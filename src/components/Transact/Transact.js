@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useState, useEffect, useRef } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 import { get } from "lodash";
@@ -136,7 +136,7 @@ const useStyles = makeStyles((theme) => ({
   },
   backdrop: {
     position: "absolute",
-    "z-index": 1
+    "z-index": 1,
   },
   dealOwnerAvatar: {
     width: theme.spacing(3),
@@ -169,15 +169,15 @@ export default function Transact() {
   const cardColors = useRef({});
 
   const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
-  const [getPipeline, { data: pipelineData }] = useLazyQuery(GETPIPELINE, {
+  const [getPipeline, { data: pipelineData, loading: pipelineLoading }] = useLazyQuery(GETPIPELINE, {
     fetchPolicy: "cache-and-network",
   });
 
-  const [updateStageDealDescriptors, { loading: descriptorsLoading } ] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
-  const [updateStageDealDescriptor, { loading: descriptorLoading } ] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
-  const [updateDeal, { loading: dealLoading } ] = useMutation(UPDATEDEAL);
+  const [updateStageDealDescriptors, { loading: descriptorsLoading }] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
+  const [updateStageDealDescriptor, { loading: descriptorLoading }] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
+  const [updateDeal, { loading: dealLoading }] = useMutation(UPDATEDEAL);
 
-  const isPipeLoading = dealLoading === true || descriptorLoading  === true || descriptorsLoading  === true
+  const isPipeLoading = dealLoading === true || descriptorLoading === true || descriptorsLoading === true || pipelineLoading;
 
   const [getProfilesImages, profiledata] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
@@ -325,7 +325,6 @@ export default function Transact() {
             }),
           })),
         };
-
         dispatch(
           setFlowState({
             pipeToShow: pipe,
@@ -377,7 +376,10 @@ export default function Transact() {
 
   useEffect(() => {
     if (profiledata?.data?.profileByEmail?.profiles) {
-      setStateTransact(profiledata.data.profileByEmail.profiles);
+      setStateTransact((stateTransact) => ({
+        ...stateTransact,
+        profilesInfo: profiledata.data.profileByEmail.profiles,
+      }));
     }
   }, [profiledata]);
 
@@ -476,7 +478,6 @@ export default function Transact() {
         };
       }),
     ];
-
     updateStageDealDescriptors({
       variables: {
         stageDealDescriptors: [movedCardDescriptor, ...unfilteredSourceLaneDescriptors, ...unfilteredTargetLaneDescriptors],
@@ -499,7 +500,6 @@ export default function Transact() {
           ...updatedDeal,
           status: unfilteredTargetLane.metadata.dealsStatus.toLowerCase(),
         };
-
       updateDeal({
         variables: {
           deal: { ...updatedDeal },
@@ -683,9 +683,13 @@ export default function Transact() {
         <TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} setStateApp={setStateApp} />
         {pipeToShow ? (
           <div className={classes.boardAndTable}>
-            {isPipeLoading === true && ( <Backdrop className={classes.backdrop} open={true} invisible={true}> <CircularProgress size={80} disableShrink color="secondary" /> </Backdrop> )}
-            {stateApp.dealDisplayType === "board"
-            && (
+            {isPipeLoading === true && (
+              <Backdrop className={classes.backdrop} open={true} invisible={true}>
+                {" "}
+                <CircularProgress size={80} disableShrink color="secondary" />{" "}
+              </Backdrop>
+            )}
+            {stateApp.dealDisplayType === "board" && (
               <Board
                 className={classes.list}
                 style={{ backgroundColor: "#fff" }}

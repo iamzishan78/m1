@@ -237,6 +237,7 @@ const PipelineCustomDialog = (props) => {
 
     if (openPipeDialog === "newPipe") {
       // New flowline
+
       addPipeline({
         variables: {
           pipeline: {
@@ -310,6 +311,7 @@ const PipelineCustomDialog = (props) => {
 
       if (pipeToUpdate) {
         if (pipeToUpdate.IsDefault) pipeToUpdate = { ...pipeToUpdate, position: 0 };
+
         allPromises.push(
           new Promise((resolve, reject) => {
             updatePipeline({

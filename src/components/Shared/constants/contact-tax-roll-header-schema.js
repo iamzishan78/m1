@@ -13,22 +13,21 @@ const ContactWellHeadCells = [
     },
   },
   {
-    name: "wellName", label: "Well", options: {
-      sort: true,
-      filter: true,
-    }
-  },
-  {
     name: "api", label: "API", options: {
       sort: true,
       filter: true,
     }
   },
   {
-    name: "propertyName", label: "Property Name", options: {
+    name: "wellName", label: "Well", options: {
       sort: true,
       filter: true,
-      setCellProps: () => ({ style: { minWidth: "200px" } })
+    }
+  },
+  {
+    name: "county", label: "County", options: {
+      sort: true,
+      filter: true,
     }
   },
   {
@@ -63,6 +62,13 @@ const ContactWellHeadCells = [
     name: "leaseAcres", label: "Lease Acres", options: {
       sort: true,
       filter: true,
+    }
+  },
+  {
+    name: "propertyName", label: "Property Name", options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "200px" } })
     }
   },
   {
