@@ -133,38 +133,38 @@ const LayerFilters = () => {
   };
 
   const checkGeoFiltersChange = () => {
-    setFilters({
-      ...filterTypes,
+    setFilters((prevState) => ({
+      ...prevState,
       Geography: { ...filterTypes.Geography, appliedFiltersCount: getFiltersCount(geoFiltersParams) },
-    });
+    }));
   };
 
   const checkWellFiltersChange = () => {
-    setFilters({
-      ...filterTypes,
+    setFilters((prevState) => ({
+      ...prevState,
       Wells: { ...filterTypes.Wells, appliedFiltersCount: getFiltersCount(wellFiltersParams) },
-    });
+    }));
   };
 
   const checkProdFiltersChange = () => {
-    setFilters({
-      ...filterTypes,
+    setFilters((prevState) => ({
+      ...prevState,
       Production: { ...filterTypes.Production, appliedFiltersCount: getFiltersCount(prodFiltersParams) },
-    });
+    }));
   };
 
   const checkOwnershipFiltersChange = () => {
-    setFilters({
-      ...filterTypes,
+    setFilters((prevState) => ({
+      ...prevState,
       Ownership: { ...filterTypes.Ownership, appliedFiltersCount: getFiltersCount(ownershipFiltersParams) },
-    });
+    }));
   };
 
   const checkTagFiltersChange = () => {
-    setFilters({
-      ...filterTypes,
-      Tags: { ...filterTypes.Tags, appliedFiltersCount: getFiltersCount(tagFiltersParams) },
-    });
+    setFilters((prevState) => ({
+      ...prevState,
+      Tags: { ...prevState.Tags, appliedFiltersCount: getFiltersCount(tagFiltersParams) },
+    }));
   };
 
   const clearFilters = (filterType) => {

@@ -12,7 +12,7 @@ const FilterAOI = () => {
   const [aoiNameList, setAOINameList] = useState([]);
 
   useEffect(() => {
-    if (!stateNav.filterAOI && aoiName.length) {
+    if (!stateNav.filterAOI.length && aoiName.length) {
       setAOIName([]);
     }
   }, [stateNav.filterAOI]);
