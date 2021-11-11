@@ -34,7 +34,6 @@ import { UPDATEPIPELINES, UPDATE_PIPELINE } from "graphQL/useMutationUpdatePipel
 import { ADD_PIPELINE } from "graphQL/useMutationAddPipeline";
 import { ADDSTAGES } from "graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "graphQL/useMutationUpdateStages";
-import { CREATE_PIPELINE_DESCRIPTORS, UPDATE_PIPELINE_DESCRIPTORS } from "graphQL/useMutationPipelineDescriptors";
 
 const DIALOG_WIDTHS = {
   BASIC: "450px",
@@ -131,8 +130,8 @@ const PipelineCustomDialog = (props) => {
   const [addPipeline] = useMutation(ADD_PIPELINE);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
-  const [updatePipelineDescriptors] = useMutation(UPDATE_PIPELINE_DESCRIPTORS);
-  const [createPipelineDescriptors] = useMutation(CREATE_PIPELINE_DESCRIPTORS);
+  // const [updatePipelineDescriptors] = useMutation(UPDATE_PIPELINE_DESCRIPTORS);
+  // const [createPipelineDescriptors] = useMutation(CREATE_PIPELINE_DESCRIPTORS);
 
   const classes = useStyles({ width });
 
@@ -153,7 +152,7 @@ const PipelineCustomDialog = (props) => {
         uniuniversalCircularLoaderAct: false,
       }));
       if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
-        dispatch(showWarningMessage("There are deals associated to the pipeline, please remove them first."));
+        dispatch(showWarningMessage("There are deals associated to this flowline, please remove them first."));
       else {
         setDeleteDialogOpen("pipe");
         handleClose();
@@ -311,6 +310,9 @@ const PipelineCustomDialog = (props) => {
 
       if (pipeToUpdate) {
         if (pipeToUpdate.IsDefault) pipeToUpdate = { ...pipeToUpdate, position: 0 };
+        else {
+          pipeToUpdate = { ...pipeToUpdate, position: pipeToUpdate.projectPipelinePosition };
+        }
 
         allPromises.push(
           new Promise((resolve, reject) => {
@@ -335,7 +337,7 @@ const PipelineCustomDialog = (props) => {
 
       if (stagesToAdd && stagesToAdd.length > 0)
         allPromises.push(
-          new Promise((resolve, reject) => {
+          new Promise((resolve) => {
             addStages({
               variables: {
                 stages: stagesToAdd,
@@ -355,30 +357,32 @@ const PipelineCustomDialog = (props) => {
             });
           })
         );
-      // attaching project
-      if (selectedPipe.projectId && !formStates.projectId)
-        updatePipelineDescriptors({
-          variables: {
-            descriptors: [
-              {
-                relatedObject: selectedPipe.projectId,
-                descriptorObject: selectedPipe._id,
-                isDeleted: true,
-              },
-            ],
-          },
-        });
-      // removing project
-      else if (!selectedPipe.projectId && formStates.projectId)
-        createPipelineDescriptors({
-          variables: {
-            descriptor: {
-              projectId: formStates.projectId,
-              pipelines: [selectedPipe._id],
-              userId: stateApp.user.mongoId,
-            },
-          },
-        });
+
+      // COMMENTING THIS FOR TEMPORARY REASONS
+      // // attaching project
+      // if (selectedPipe.projectId && !formStates.projectId)
+      //   updatePipelineDescriptors({
+      //     variables: {
+      //       descriptors: [
+      //         {
+      //           relatedObject: selectedPipe.projectId,
+      //           descriptorObject: selectedPipe._id,
+      //           isDeleted: true,
+      //         },
+      //       ],
+      //     },
+      //   });
+      // // removing project
+      // else if (!selectedPipe.projectId && formStates.projectId)
+      //   createPipelineDescriptors({
+      //     variables: {
+      //       descriptor: {
+      //         projectId: formStates.projectId,
+      //         pipelines: [selectedPipe._id],
+      //         userId: stateApp.user.mongoId,
+      //       },
+      //     },
+      //   });
 
       if (stagesToUpdate && stagesToUpdate.length > 0)
         allPromises.push(
@@ -403,18 +407,24 @@ const PipelineCustomDialog = (props) => {
 
       Promise.all(allPromises)
         .then((values) => {
-          if (success === true) dispatch(showSuccessMessage("The Pipeline was successfully updated."));
+          if (success === true) dispatch(showSuccessMessage("Flowline was successfully updated."));
           else dispatch(showErrorMessage("An error occurred during the update."));
         })
         .catch((reason) => {});
     }
-    handleClose();
   };
 
   return (
     <>
       {openPipeDialog === "newPipe" || openPipeDialog ? (
-        <RightDialog open={openPipeDialog === "newPipe" || openPipeDialog} handleClickDialogClose={handleSaveOrUpdate} width={width}>
+        <RightDialog
+          open={openPipeDialog === "newPipe" || openPipeDialog}
+          width={width}
+          handleClickDialogClose={() => {
+            handleSaveOrUpdate();
+            handleClose();
+          }}
+        >
           <div className={classes.root}>
             <div className={classes.stickyHeader}>
               <Grid container justify="space-between" direction="row" display="flex">
@@ -444,7 +454,10 @@ const PipelineCustomDialog = (props) => {
                       paddingLeft: "10px",
                       align: "center",
                     }}
-                    onClick={handleClose}
+                    onClick={() => {
+                      handleClose();
+                      handleSaveOrUpdate();
+                    }}
                   >
                     <KeyboardTabBlackIcon />
                   </IconButton>
@@ -502,6 +515,7 @@ const PipelineCustomDialog = (props) => {
                       stagesError={stagesError}
                       setStageError={setStageError}
                       setStage={setStage}
+                      handleSaveOrUpdate={handleSaveOrUpdate}
                     />
                   </div>
                 </div>
@@ -549,7 +563,7 @@ const PipelineCustomDialog = (props) => {
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => {}}
           >
-            {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the Flowline?" : "Are you sure you want to delete the stage?"}
+            {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the flowline?" : "Are you sure you want to delete the stage?"}
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
