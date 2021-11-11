@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment";
-import arrayMove from 'array-move';
+import arrayMove from "array-move";
 
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
@@ -624,72 +624,149 @@ const MetaField = ({ setShowFieldModal }) => {
   );
 };
 
+const useSortableStyles = makeStyles((theme) => ({
+  itemContainer: {
+    width: "100%",
+    display: "flex",
+    padding: "10px 0px",
+    justifyContent: "space-between",
+    borderBottom: "1px solid #EEF1F4",
+    "& .MuiInputBase-input": {
+      padding: "0 !important",
+      fontSize: "15px",
+    },
+  },
+}));
+
 const SortableComponent = () => {
-  const [items, setItem] = useState(["Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6"]);
+  const [items, setItems] = useState([
+    { value: "Item 1", color: "#27B8B1" },
+    { value: "Item 2", color: "#F4B7F4" },
+  ]);
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
-    setItem(arrayMove(items, oldIndex, newIndex));
+    setItems(arrayMove(items, oldIndex, newIndex));
   };
 
   return (
-    <SortableList items={items} onSortEnd={onSortEnd} useDragHandle />
+    <>
+      <SortableList
+        setItems={setItems}
+        items={items}
+        onSortEnd={onSortEnd}
+        useDragHandle
+      />
+      <div
+        style={{
+          color: "#929292",
+          marginTop: 15,
+          marginLeft: 25,
+          display: "flex",
+          cursor: "pointer",
+        }}
+        onClick={() => {
+          const newItems = JSON.parse(JSON.stringify(items));
+          newItems.push("");
+          setItems(newItems);
+        }}
+      >
+        <AddIcon
+          style={{
+            fontSize: "18px",
+            marginTop: 1,
+          }}
+        />{" "}
+        <span style={{ fontSize: 13 }}>Add an Option</span>
+      </div>
+    </>
   );
 };
 
-const SortableList = SortableContainer(({ items }) => {
+const SortableList = SortableContainer(({ items, setItems }) => {
+  const removeIndex = (index) => {
+    const newItems = JSON.parse(JSON.stringify(items));
+    newItems.splice(index, 1);
+    setItems(newItems);
+  };
+
+  const updateIndex = (index, data) => {
+    const newItems = JSON.parse(JSON.stringify(items));
+    newItems[index] = data;
+    setItems(newItems);
+  };
+
   return (
     <List style={{ margin: 0, padding: 0 }} component="div">
-      {items.map((value, index) => (
-        <SortableItem key={`item-${value}`} index={index} value={value} />
+      {items.map((item, index) => (
+        <SortableItem
+          key={`item-${item.value}`}
+          index={index}
+          item={item}
+          removeIndex={removeIndex}
+          updateIndex={updateIndex}
+          itemIndex={index}
+        />
       ))}
     </List>
   );
 });
 
-const DragHandle = sortableHandle(({display}) => (
-  <DragIndicatorIcon style={{ fontSize: 18, visibility: display? 'visible': 'hidden' }} />
+const DragHandle = sortableHandle(({ display }) => (
+  <DragIndicatorIcon
+    style={{ fontSize: 18, visibility: display ? "visible" : "hidden" }}
+  />
 ));
 
-const SortableItem = SortableElement(({ value }) => {
-  const [showDrag, setShowDrag] = useState(false);
-  return (
-    <ListItem
-      ContainerComponent="div"
-      style={{ zIndex: 1300, padding: 0 }}
-      onMouseOver={() => setShowDrag(true)}
-      onMouseLeave={() => setShowDrag(false)}
-    >
-      <DragHandle display={showDrag} />
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          padding: "10px 0px",
-          justifyContent: "space-between",
-          borderBottom: "1px solid #EEF1F4",
-        }}
+const SortableItem = SortableElement(
+  ({ item, removeIndex, itemIndex, updateIndex }) => {
+    const classes = useSortableStyles();
+    const [showDrag, setShowDrag] = useState(false);
+    return (
+      <ListItem
+        ContainerComponent="div"
+        style={{ zIndex: 1300, padding: 0 }}
+        onMouseOver={() => setShowDrag(true)}
+        onMouseLeave={() => setShowDrag(false)}
       >
-        <div>
-        <div
-          style={{
-            marginTop: 4,
-            marginLeft: 10,
-            marginRight: 10,
-            width: 15,
-            height: 15,
-            backgroundColor: "black",
-            display: "inline-block",
-            borderRadius: 10,
-          }}
-        ></div>
-        <span>{value}</span>
+        <DragHandle display={showDrag} />
+        <div className={classes.itemContainer}>
+          <div style={{ width: "100%" }}>
+            <div
+              style={{
+                marginTop: 4,
+                marginLeft: 10,
+                marginRight: 10,
+                width: 15,
+                height: 15,
+                backgroundColor: item.color,
+                display: "inline-block",
+                borderRadius: 10,
+              }}
+            ></div>
+            <TextField
+              type="text"
+              variant="standard"
+              placeholder="Enter activity name"
+              style={{ width: "95%", marginTop: 3 }}
+              value={item.value}
+              onChange={(e) => {
+                updateIndex(itemIndex, { ...item, value: e.target.value });
+              }}
+              InputProps={{
+                disableUnderline: true,
+              }}
+            />
+          </div>
+          <IconButton
+            style={{ padding: "4px" }}
+            onClick={() => removeIndex(itemIndex)}
+          >
+            <CloseIcon style={{ fontSize: 16, alignSelf: "center" }} />
+          </IconButton>
         </div>
-        <IconButton style={{ padding: "4px"}}>
-          <CloseIcon style={{ fontSize: 16, alignSelf: "center" }} />
-        </IconButton>
-      </div>
-    </ListItem>
-  );
-});
+      </ListItem>
+    );
+  }
+);
 
 export default React.memo(TableHOC(DocumentsTable), deepEqualObjects);
