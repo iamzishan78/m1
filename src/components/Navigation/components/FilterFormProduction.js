@@ -229,10 +229,11 @@ export default function FilterFormProduction() {
     <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
       <Grid item sm={12}>
         <Autocomplete
-          ChipProps={{ color: "secondary" }}
           multiple
+          ChipProps={{ color: "secondary" }}
           options={listOptions.map((option) => option.name)}
           disableListWrap
+          value={stateNav.prodOptions}
           defaultValue={stateNav.prodOptions}
           onChange={(event, value) => handleSelectedValueToDisplay(value)}
           renderInput={(params) => <TextField {...params} variant="outlined" label="Production Filters" fullWidth={true} />}

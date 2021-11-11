@@ -58,6 +58,20 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const geoFiltersParams = [
+  "filterAOI",
+  "filterParcel",
+  "filterBasin",
+  "stateName",
+  "countyName",
+  "gridId1",
+  "gridId2",
+  "gridId3",
+  "gridId4",
+  "gridId5",
+];
+const prodFiltersParams = ["prodOptions"];
+
 const LayerFilters = () => {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -71,47 +85,52 @@ const LayerFilters = () => {
 
   useEffect(() => {
     checkGeoFiltersChange();
+    checkProdFiltersChange();
   }, [stateNav]);
 
-  const checkGeoFiltersChange = () => {
+  const getFiltersCount = (params) => {
     let count = 0;
-    const geoFiltersParams = [
-      "filterAOI",
-      "filterParcel",
-      "filterBasin",
-      "stateName",
-      "countyName",
-      "gridId1",
-      "gridId2",
-      "gridId3",
-      "gridId4",
-      "gridId5",
-    ];
-    geoFiltersParams.forEach((filter) => {
-      if (stateNav[filter]) count++;
+    params.forEach((filter) => {
+      if ((!Array.isArray(stateNav[filter]) && stateNav[filter]) || (Array.isArray(stateNav[filter]) && stateNav[filter].length)) count++;
     });
+    return count;
+  };
+
+  const resetFilters = (params) => {
+    const geoFiltersToReset = {};
+    params.forEach((param) => {
+      if (!Array.isArray(stateNav[param]) && stateNav[param]) geoFiltersToReset[param] = null;
+      else {
+        geoFiltersToReset[param] = [];
+      }
+    });
+    setStateNav({
+      ...stateNav,
+      ...geoFiltersToReset,
+    });
+  };
+
+  const checkGeoFiltersChange = () => {
     setFilters({
       ...filterTypes,
-      Geography: { ...filterTypes.Geography, appliedFiltersCount: count },
+      Geography: { ...filterTypes.Geography, appliedFiltersCount: getFiltersCount(geoFiltersParams) },
+    });
+  };
+
+  const checkProdFiltersChange = () => {
+    setFilters({
+      ...filterTypes,
+      Production: { ...filterTypes.Production, appliedFiltersCount: getFiltersCount(prodFiltersParams) },
     });
   };
 
   const clearFilters = (filterType) => {
     switch (filterType) {
       case "Geography":
-        setStateNav({
-          ...stateNav,
-          filterAOI: null,
-          filterParcel: null,
-          filterBasin: null,
-          stateName: null,
-          countyName: null,
-          gridId1: null,
-          gridId2: null,
-          gridId3: null,
-          gridId4: null,
-          gridId5: null,
-        });
+        resetFilters(geoFiltersParams);
+        break;
+      case "Production":
+        resetFilters(prodFiltersParams);
         break;
       default:
     }
