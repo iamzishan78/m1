@@ -1,3 +1,6 @@
+import gjv from "geojson-validation";
+import * as turf from "@turf/turf";
+
 export const clearMapAndCloseShapeActionsPopup = (stateApp, setStateApp) => {
     const { draw, map, currentFeature } = stateApp;
     drawShapeLayerToggle(stateApp, "visible")
@@ -49,6 +52,34 @@ export const drawShapeLayerToggle = (stateApp, value) => {
     stateApp.map.setLayoutProperty('gl-draw-polygon-and-line-vertex-inactive.hot', "visibility", value);
     stateApp.map.setLayoutProperty('gl-draw-polygon-and-line-vertex-stroke-inactive.hot', "visibility", value);
 }
+
+export const findBoundsMap = (shapes, map) => {
+    let bound = null;
+    if (shapes && shapes.length > 0) {
+        shapes.forEach((shape) => {
+            if (gjv.valid(shape)) {
+                const bbox = turf.bbox(shape);
+
+                if (bound) {
+                    bound.minLong = bound.minLong > bbox[0] ? bbox[0] : bound.minLong;
+                    bound.minLat = bound.minLat > bbox[1] ? bbox[1] : bound.minLat;
+                    bound.maxLong = bound.maxLong < bbox[2] ? bbox[2] : bound.maxLong;
+                    bound.maxLat = bound.maxLat < bbox[3] ? bbox[3] : bound.maxLat;
+                } else {
+                    bound = {
+                        minLong: bbox[0],
+                        minLat: bbox[1],
+                        maxLong: bbox[2],
+                        maxLat: bbox[3],
+                    };
+                }
+            }
+        });
+    }
+    map.fitBounds([[bound.minLong, bound.minLat], [bound.maxLong, bound.maxLat],],
+        { padding: { top: 200, bottom: 200, left: 1200, right: 0 } });
+    return { ...bound };
+};
 
 export const drawShapeStyles = [
     {
