@@ -88,6 +88,7 @@ const wellFiltersParams = [
   "filterFirstProdDateRange",
 ];
 const ownershipFiltersParams = ["interestName", "ownerTypeName", "filterOwnerCount", "filterHasOwnerCount", "filterOwnerConfidence"];
+const tagFiltersParams = ["selectedTags", "filterTrackedWells"];
 
 const LayerFilters = () => {
   const classes = useStyles();
@@ -105,6 +106,7 @@ const LayerFilters = () => {
     checkProdFiltersChange();
     checkWellFiltersChange();
     checkOwnershipFiltersChange();
+    checkTagFiltersChange();
   }, [stateNav]);
 
   const getFiltersCount = (params) => {
@@ -158,6 +160,13 @@ const LayerFilters = () => {
     });
   };
 
+  const checkTagFiltersChange = () => {
+    setFilters({
+      ...filterTypes,
+      Tags: { ...filterTypes.Tags, appliedFiltersCount: getFiltersCount(tagFiltersParams) },
+    });
+  };
+
   const clearFilters = (filterType) => {
     switch (filterType) {
       case "Geography":
@@ -171,6 +180,9 @@ const LayerFilters = () => {
         break;
       case "Ownership":
         resetFilters(ownershipFiltersParams, { ownerCountWell: null, ownerConfidenceWell: null });
+        break;
+      case "Tags":
+        resetFilters(tagFiltersParams);
         break;
       default:
     }
