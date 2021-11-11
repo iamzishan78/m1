@@ -359,7 +359,7 @@ export default function UnitDetailCard(props) {
                     targetLabel="well"
                     header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
                     showTracks
-                    setSelectedTab={setSelectedTab}
+                    setSelectedTab={setWellSelectedTab}
                     dense
                   />
                 </div>
@@ -381,6 +381,7 @@ export default function UnitDetailCard(props) {
                     customLayer={uniObj}
                     shapeType='Unit'
                     header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                    setSelectedTab={setTractSelectedTab}
                     dense
                   />
                 </div>

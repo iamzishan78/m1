@@ -7,8 +7,6 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-
-
 export function AutoCompleteFilter({ filterList, onChange, index, column, query }) {
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
@@ -25,13 +23,7 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query 
     }, [filterList[index][0]]);
 
     useEffect(() => {
-        getFilters({
-            variables: {
-                filterKey,
-                search: "",
-                size: 50
-            },
-        });
+        getFiltersAction("");
     }, []);
 
     useEffect(() => {
@@ -45,16 +37,20 @@ export function AutoCompleteFilter({ filterList, onChange, index, column, query 
 
 
     const handleChange = (search) => {
-        setSearch(search)
+        setSearch(search);
+        getFiltersAction(search);
+    }
+
+    const getFiltersAction = (search) => {
         getFilters({
             variables: {
-                filterKey,
+                filterKeys: typeof filterKey !== 'string' ? filterKey : undefined,
+                filterKey: typeof filterKey === 'string' ? filterKey : undefined,
                 search,
                 size: 50,
             },
         });
-    }
-
+    };
     return (
         <Autocomplete
             id={`filter-autocomplete-${label}`}

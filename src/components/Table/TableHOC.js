@@ -133,12 +133,10 @@ export const TableHOC = (Component) => {
             }
         }
 
-        const setGenricData = (data, id, actions) => {
-            data.isTracked = false;
-            data.commentsCounter = 0;
-            data.tags = [[], 0];
+        const setGenricData = (data, id, actions) => {            
 
             if (actions.includes('tracks')) {
+                data.isTracked = false;
                 for (let i = 0; i < dataTracks?.tracksByObjectType.length; i++) {
                     if (id === dataTracks?.tracksByObjectType[i].trackOn) {
                         data.isTracked = true;
@@ -147,6 +145,7 @@ export const TableHOC = (Component) => {
                 }
             }
             if (actions.includes('comments')) {
+                data.commentsCounter = 0;
                 const comments = dataCommentsCounter?.commentsCounter || []
                 for (let i = 0; i < comments.length; i++) {
                     if (id === comments[i]._id) {
@@ -156,6 +155,7 @@ export const TableHOC = (Component) => {
                 }
             }
             if (actions.includes('tags')) {
+                data.tags = [[], 0];
                 const tags = dataTagSamples?.tagSamples || []
                 for (let i = 0; i < tags.length; i++) {
                     if (id === tags[i]._id) {
@@ -178,7 +178,7 @@ export const TableHOC = (Component) => {
             return data
         };
 
-        const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery) => {
+        const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView={}) => {
             let pageESVariables = {
                 variables: {
                     search: tableState.searchText,
@@ -207,6 +207,11 @@ export const TableHOC = (Component) => {
                     pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
                 }
             })
+            if(selectedGridView?.filters && selectedGridView.type === 'Default') {
+                selectedGridView.filters.forEach(filter => {
+                    pageESVariables.variables.filters.push(filter)
+                })
+            }
             return {
                 pageESVariables,
                 genericESAction: () => {

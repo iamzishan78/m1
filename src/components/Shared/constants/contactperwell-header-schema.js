@@ -12,15 +12,20 @@ const ContactWellHeadCells = [
       viewColumns: false,
     },
   },
+  { name: "api", label: "API", options: {
+    dbName: "well.apiNumber",
+    sort: true,
+    filter: true,
+  } },
   { name: "wellName", label: "Well", options: {
     dbName: "well.wellName",
     sort: true,
     filter: false,
   } },
-  { name: "api", label: "API", options: {
-    dbName: "well.apiNumber",
+  { name: "county", label: "County", options: {
+    dbName: "well.county",
     sort: true,
-    filter: false,
+    filter: true,
   } },
   { name: "leaseId", label: "Lease Id", options: {
     dbName: "well.leaseId",
@@ -45,7 +50,7 @@ const ContactWellHeadCells = [
   { name: "leaseDescription", label: "Lease", options: {
     dbName: "well.leaseDescription",
     sort: true,
-    filter: false,
+    filter: true,
   } },
   { name: "leaseAcres", label: "Lease Acres", options: {
     dbName: "well.leaseAcres",
