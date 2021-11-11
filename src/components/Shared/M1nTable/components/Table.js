@@ -1698,7 +1698,6 @@ function SubTable(props) {
                 ...column.options,
 
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  debugger
                   let id = props.targetLabel + tableMeta.columnIndex;
 
                   let targetSourceId =
@@ -2724,7 +2723,7 @@ function SubTable(props) {
         buttonLabel = "+ ADD TO PARCEL";
       }
       if (props.addAble.type === "parcelDocument" ||
-          props.addAble.type === "wellDocument") {
+        props.addAble.type === "wellDocument") {
         buttonLabel = "ADD DOCUMENT";
       }
       if (props.addAble.type === "parcelRunsheet") {
@@ -2796,23 +2795,23 @@ function SubTable(props) {
                 {buttonLabel}
               </Button>
             )}
-            {(props.addAble.type === "parcelDocument" || 
+            {(props.addAble.type === "parcelDocument" ||
               props.addAble.type === "wellDocument") && (
-              <Button
-                color="secondary"
-                className={classes.multiSelectionTopBarButtons}
-                onClick={() => {
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    selectedDocument: {},
-                  }));
-                  props.onClickAdd();
-                }}
-              >
-                <PostAddIcon />
-                {buttonLabel}
-              </Button>
-            )}
+                <Button
+                  color="secondary"
+                  className={classes.multiSelectionTopBarButtons}
+                  onClick={() => {
+                    setStateApp((stateApp) => ({
+                      ...stateApp,
+                      selectedDocument: {},
+                    }));
+                    props.onClickAdd();
+                  }}
+                >
+                  <PostAddIcon />
+                  {buttonLabel}
+                </Button>
+              )}
             {(props.addAble.type === "wellInterest" ||
               props.addAble.type === "deals" ||
               props.addAble.type === "suggestedOwnerToParcel" ||
@@ -2945,7 +2944,7 @@ function SubTable(props) {
         }));
       }
       if (props.targetLabel === "parcelDocument" ||
-          props.targetLabel === "wellDocument") {
+        props.targetLabel === "wellDocument") {
         setStateApp((stateApp) => ({
           ...stateApp,
           selectedDocument: rows[dataIndex],
@@ -3327,7 +3326,7 @@ function SubTable(props) {
   };
 
   const getHeaders = () => {
-    if(props.header === 'Contacts') {
+    if (props.header === 'Contacts') {
       const HeaderComponent = props.headerComponent
       return <HeaderComponent {...props.headerProps} />
     }
@@ -3435,7 +3434,7 @@ function SubTable(props) {
               customSearchRender: (searchText, handleSearch, hideSearch, options) => {
                 registerSearchHandler(handleSearch);
                 const Component = props.headerComponent
-                return  getHeaders();
+                return getHeaders();
               },
             }),
             ...props.options,

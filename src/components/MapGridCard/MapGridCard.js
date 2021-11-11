@@ -95,6 +95,10 @@ const useStyles = makeStyles((theme) => {
       },
     },
     appBar: {
+      backgroundColor: "#F2F2F2",
+      borderBottom: "1px solid rgba(224, 224, 224, 1)",
+      boxShadow: "none",
+      color: "#757575",
       cursor: "context-menu",
       "& .MuiIconButton-root:hover": {
         backgroundColor: "rgba(255, 255, 255, 0.08)",
@@ -382,16 +386,15 @@ function MapGridCard(props) {
       >
         <AppBar
           position="static"
-          className={`${mapGridCardActivated === "exp" ? "cancelDraggableEffect" : ""
-            } ${classes.appBar}`}
+          className={`${mapGridCardActivated === "exp" ? "cancelDraggableEffect" : ""} ${classes.appBar}`}
           onClick={() => {
             if (mapGridCardActivated === "min") {
               dispatch(setMapGridCardState({ mapGridCardActivated: true }));
             }
-          }}
-        >
+          }}>
           <Toolbar style={{ paddingRight: "0" }}>
-            <Tabs
+            {/*
+             <Tabs
               className={classes.tapsRoot}
               value={mapGridCardActiveTap}
               onChange={handleMainTapChange}
@@ -418,7 +421,8 @@ function MapGridCard(props) {
                 {...a11yProps(1)}
               >
               </Tab>
-            </Tabs>
+            </Tabs> 
+            */}
 
             <div style={{ flexGrow: 1 }}></div>
 
@@ -456,7 +460,7 @@ function MapGridCard(props) {
               className={classes.tapsPanelsPadding}
               style={{ position: "absolute", width: "100vw" }}
             >
-              <MapGridCardSearch
+              {/* <MapGridCardSearch
                 ativateSearchPanel={() => {
                   if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
                   if (mapGridCardActivated === "min") {
@@ -466,7 +470,7 @@ function MapGridCard(props) {
                   }
                 }}
                 searchOption={getTargetFromSearchTaps()}
-              />
+              /> */}
               <div style={{ position: "relative" }}>
                 <TabPanels
                   value={searchTapValue}
