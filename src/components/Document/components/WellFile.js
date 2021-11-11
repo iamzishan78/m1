@@ -156,7 +156,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function RelatedFile(props) {
+export default function DocumentDrawer(props) {
   const documentInitial = {
     documentName: "",
     recordingInfo: "",
@@ -201,7 +201,7 @@ export default function RelatedFile(props) {
     fetchPolicy: "no-cache",
   });
   const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(CREATEDESCRIPTORFILE, {
-    refetchQueries: ["getRecentContactFiles", "shapeSummaryDetails"],
+    refetchQueries: ["getRecentContactFiles"],
     awaitRefetchQueries: true,
   });
 
@@ -301,53 +301,23 @@ export default function RelatedFile(props) {
           fileId: fileId || newDocument.fileId,
         },
       },
-      refetchQueries: ["getParcelFiles"],
+      refetchQueries: ["getTenantWell", "getParcelFiles"],
       awaitRefetchQueries: true,
     }).then(() => {
-      if (props.relatedObjectId && props.relatedObjectType) {
-        addExistingDocument()
-      } else {
-        // props.getAllFiles({
-        //   variables: {
-        //     relatedObjectId: props.relatedObjectId,
-        //     relatedObjectType: props.relatedObjectType,
-        //   },
-        // });
-        props.setShowDocumentSlider(false);
-        setNameAutValueParty1({ name: "", _id: null });
-        setNameAutValueParty2({ name: "", _id: null });
-        setNewDocument(documentInitial);
-        setLoader(false);
-      }
-
-    });
-    // }
-  };
-
-  const addExistingDocument = () => {
-    const fileId = fileData?.addFileDescriptor?.file?.id;
-    addFile({
-      variables: {
-        fileName: newDocument.fileName || newDocument.documentName,
-        descriptorObjectId: fileId || newDocument.fileId,
-        userId: stateApp.user.mongoId,
-        relatedObjectId: props.relatedObjectId,
-        relatedObjectType: props.relatedObjectType,
-      },
-    }).then(() => {
-      props.getAllFiles({
-        variables: {
-          relatedObjectId: props.relatedObjectId,
-          relatedObjectType: props.relatedObjectType,
-        },
-      });
+      // props.getAllFiles({
+      //   variables: {
+      //     relatedObjectId: props.tenantWellId,
+      //     relatedObjectType: "Well",
+      //   },
+      // });
       props.setShowDocumentSlider(false);
       setNameAutValueParty1({ name: "", _id: null });
       setNameAutValueParty2({ name: "", _id: null });
       setNewDocument(documentInitial);
       setLoader(false);
     });
-  }
+    // }
+  };
 
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
@@ -376,7 +346,7 @@ export default function RelatedFile(props) {
             isDeleted: true,
           },
         },
-        refetchQueries: ["getDocuments", "shapeSummaryDetails"],
+        refetchQueries: ["getDocuments"],
         awaitRefetchQueries: true,
       }).then(() => {
         setStateApp({
@@ -525,13 +495,13 @@ export default function RelatedFile(props) {
                   options={
                     documents?.getFiles
                       ? documents?.getFiles?.map((doc) => {
-                        return {
-                          _id: doc.fileId,
-                          name: doc.documentName,
-                          number: doc.documentNumber,
-                          fileName: doc.fileName,
-                        };
-                      })
+                          return {
+                            _id: doc.fileId,
+                            name: doc.documentName,
+                            number: doc.documentNumber,
+                            fileName: doc.fileName,
+                          };
+                        })
                       : []
                   }
                   getOptionLabel={(option) => {
@@ -834,11 +804,11 @@ export default function RelatedFile(props) {
                           <IconButton
                             disabled={false}
                             size="small"
-                          // onClick={() =>
-                          //   handleViewFile(
-                          //     files?.getFileDescriptors[key].fileId
-                          //   )
-                          // }
+                            // onClick={() =>
+                            //   handleViewFile(
+                            //     files?.getFileDescriptors[key].fileId
+                            //   )
+                            // }
                           >
                             <GetAppIcon />
                           </IconButton>
@@ -886,8 +856,8 @@ export default function RelatedFile(props) {
             style={{
               paddingLeft: "50px",
             }}
-            relatedObjectId={props.parcelId}
-            relatedObjectType="Parcel"
+            relatedObjectId={props.globalWellId}
+            relatedObjectType="Well"
             userId={stateApp.user.mongoId}
             setFileData={setFileData}
           />
@@ -920,7 +890,27 @@ export default function RelatedFile(props) {
           disabled={(!fileData && !newDocument.fileId) || (selectedType === "existing" && !newDocument.fileId)}
           onClick={() => {
             if (selectedType === "existing") {
-              addExistingDocument()
+              addFile({
+                variables: {
+                  fileName: newDocument.fileName,
+                  descriptorObjectId: newDocument.fileId,
+                  userId: stateApp.user.mongoId,
+                  relatedObjectId: props.globalWellId,
+                  relatedObjectType: "Well",
+                },
+              }).then(() => {
+                props.getAllFiles({
+                  variables: {
+                    relatedObjectId: props.tenantWellId,
+                    relatedObjectType: "Well",
+                  },
+                });
+                props.setShowDocumentSlider(false);
+                setNameAutValueParty1({ name: "", _id: null });
+                setNameAutValueParty2({ name: "", _id: null });
+                setNewDocument(documentInitial);
+                setLoader(false);
+              });
             } else {
               if (fileData || newDocument.fileId) {
                 setLoader(true);
@@ -945,7 +935,7 @@ export default function RelatedFile(props) {
             onClose={handleDeleteCancel}
             deleteFunc={handleDeleteAccept}
             m1nSelectedRowsIds={[document._id]}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
             Do you want to delete the selected documents?
           </DeleteConfirmationDialogContent>
@@ -990,8 +980,8 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
       options={
         documentTypes
           ? documentTypes?.getFilesType?.map((type) => {
-            return { _id: type, name: type };
-          })
+              return { _id: type, name: type };
+            })
           : []
       }
       getOptionLabel={(option) => {
