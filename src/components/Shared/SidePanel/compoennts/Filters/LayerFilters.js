@@ -75,11 +75,21 @@ const LayerFilters = () => {
 
   const checkGeoFiltersChange = () => {
     let count = 0;
-    if (stateNav.filterAOI) count++;
-    if (stateNav.filterParcel) count++;
-    if (stateNav.filterBasin) count++;
-    if (stateNav.stateName) count++;
-    if (stateNav.countyName) count++;
+    const geoFiltersParams = [
+      "filterAOI",
+      "filterParcel",
+      "filterBasin",
+      "stateName",
+      "countyName",
+      "gridId1",
+      "gridId2",
+      "gridId3",
+      "gridId4",
+      "gridId5",
+    ];
+    geoFiltersParams.forEach((filter) => {
+      if (stateNav[filter]) count++;
+    });
     setFilters({
       ...filterTypes,
       Geography: { ...filterTypes.Geography, appliedFiltersCount: count },
