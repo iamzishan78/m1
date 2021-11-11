@@ -31,8 +31,6 @@ const ownerTypesList = [
 export default function FilterFormOwner() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [interestName, setInterestName] = useState(stateNav.interestName ? stateNav.interestName : []);
-  const [ownerTypeName, setOwnerTypeName] = useState(stateNav.ownerTypeName ? stateNav.ownerTypeName : []);
 
   // there is an opportunity to break these out into seperate components
   // instead of including it on a form.
@@ -124,7 +122,6 @@ export default function FilterFormOwner() {
   };
 
   const handleChangeInterest = (event) => {
-    setInterestName(event);
     setFilterInterest(event);
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -133,7 +130,6 @@ export default function FilterFormOwner() {
   };
 
   const handleChangeOwnerType = (event) => {
-    setOwnerTypeName(event);
     setFilterOwnerType(event);
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -147,7 +143,8 @@ export default function FilterFormOwner() {
         <Autocomplete
           ChipProps={{ color: "secondary" }}
           className={classes.formControl}
-          defaultValue={interestName}
+          defaultValue={stateNav.interestName}
+          value={stateNav.interestName}
           onChange={(event, newValue) => {
             handleChangeInterest(newValue);
           }}
@@ -165,7 +162,8 @@ export default function FilterFormOwner() {
         <Autocomplete
           ChipProps={{ color: "secondary" }}
           className={classes.formControl}
-          defaultValue={ownerTypeName}
+          defaultValue={stateNav.ownerTypeName}
+          value={stateNav.ownerTypeName}
           onChange={(event, newValue) => {
             handleChangeOwnerType(newValue);
           }}

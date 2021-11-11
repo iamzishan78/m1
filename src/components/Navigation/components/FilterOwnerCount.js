@@ -1,4 +1,5 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
+import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import NumberFormat from "react-number-format";
@@ -98,13 +99,13 @@ export default function FilterOwnerCount() {
         }
       }
       if (!valueMaxDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === "<=") {
+        if (checkStateNav && get(checkStateNav[1], `${0}`) === "<=") {
           const recallMax = checkStateNav[1][2];
           setValueMaxDisplay(recallMax);
         }
       }
       if (!valueMinDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === ">=") {
+        if (checkStateNav && get(checkStateNav[1], `${0}`) === ">=") {
           const recallMin = checkStateNav[1][2];
           setValueMinDisplay(recallMin);
         }
@@ -119,6 +120,8 @@ export default function FilterOwnerCount() {
   useEffect(() => {
     if (stateNav.ownerCountWell) {
       setFilter();
+    } else {
+      clearFilters();
     }
   }, [setFilter, stateNav.ownerCountWell]);
 
@@ -184,6 +187,13 @@ export default function FilterOwnerCount() {
       }));
   };
 
+  const clearFilters = () => {
+    handleChangeMax({ target: { id: "OwnerCountMax", value: "" } });
+    handleChangeMin({ target: { id: "OwnerCountMin", value: "" } });
+    setError(false);
+    setErrorText("");
+  };
+
   return (
     <React.Fragment>
       <Grid item sm={12}>
@@ -230,14 +240,7 @@ export default function FilterOwnerCount() {
                 },
               }}
             />
-            <IconButton
-              onClick={() => {
-                handleChangeMax({ target: { id: "OwnerCountMax", value: "" } });
-                handleChangeMin({ target: { id: "OwnerCountMin", value: "" } });
-                setError(false);
-                setErrorText("");
-              }}
-            >
+            <IconButton onClick={clearFilters}>
               <CancelIcon height={"30px"} />
             </IconButton>
           </div>
@@ -251,7 +254,7 @@ export default function FilterOwnerCount() {
           <FormLabel style={{ verticalAlign: "middle", paddingRight: "25px" }}>Only show wells with interest owners</FormLabel>
           <Switch
             className={classes.ownersToggle}
-            checked={stateNav.filterHasOwnerCount ? true : false}
+            checked={!!stateNav.filterHasOwnerCount?.length}
             onChange={toggleOwners}
             color="secondary"
             name="checked"

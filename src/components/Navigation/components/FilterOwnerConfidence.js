@@ -1,4 +1,5 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
+import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -84,13 +85,13 @@ export default function FilterOwnerConfidence() {
         }
       }
       if (!valueMaxDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === "<=") {
+        if (checkStateNav && get(checkStateNav[1], `${0}`) === "<=") {
           const recallMax = checkStateNav[1][2];
           setValueMaxDisplay(recallMax * 100);
         }
       }
       if (!valueMinDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === ">=") {
+        if (checkStateNav && get(checkStateNav[1], `${0}`) === ">=") {
           const recallMin = checkStateNav[1][2];
           setValueMinDisplay(recallMin * 100);
         }
@@ -105,6 +106,8 @@ export default function FilterOwnerConfidence() {
   useEffect(() => {
     if (stateNav.ownerConfidenceWell) {
       setFilter();
+    } else {
+      clearFilters();
     }
   }, [setFilter, stateNav.ownerConfidenceWell]);
 
@@ -157,6 +160,17 @@ export default function FilterOwnerConfidence() {
     }
   };
 
+  const clearFilters = () => {
+    handleChangeMax({
+      target: { id: "OwnerConfidenceMax", value: "" },
+    });
+    handleChangeMin({
+      target: { id: "OwnerConfidenceMin", value: "" },
+    });
+    setError(false);
+    setErrorText("");
+  };
+
   return (
     <React.Fragment>
       <div className={classes.divBordersMinMax}>
@@ -202,18 +216,7 @@ export default function FilterOwnerConfidence() {
               },
             }}
           />
-          <IconButton
-            onClick={() => {
-              handleChangeMax({
-                target: { id: "OwnerConfidenceMax", value: "" },
-              });
-              handleChangeMin({
-                target: { id: "OwnerConfidenceMin", value: "" },
-              });
-              setError(false);
-              setErrorText("");
-            }}
-          >
+          <IconButton onClick={clearFilters}>
             <CancelIcon height={"30px"} />
           </IconButton>
         </div>
