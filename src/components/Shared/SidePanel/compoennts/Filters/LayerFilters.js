@@ -78,8 +78,8 @@ const LayerFilters = () => {
     if (stateNav.filterAOI) count++;
     if (stateNav.filterParcel) count++;
     if (stateNav.filterBasin) count++;
-    if (stateNav.filterGeographyState) count++;
-    if (stateNav.filterGeographyCounty) count++;
+    if (stateNav.stateName) count++;
+    if (stateNav.countyName) count++;
     setFilters({
       ...filterTypes,
       Geography: { ...filterTypes.Geography, appliedFiltersCount: count },
@@ -94,8 +94,13 @@ const LayerFilters = () => {
           filterAOI: null,
           filterParcel: null,
           filterBasin: null,
-          filterGeographyState: null,
-          filterGeographyCounty: null,
+          stateName: null,
+          countyName: null,
+          gridId1: null,
+          gridId2: null,
+          gridId3: null,
+          gridId4: null,
+          gridId5: null,
         });
         break;
       default:
