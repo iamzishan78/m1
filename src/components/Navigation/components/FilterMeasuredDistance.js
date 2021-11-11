@@ -97,13 +97,13 @@ export default function FilterMeasuredDistance() {
         }
       }
       if (!valueMaxDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === "<=") {
+        if (checkStateNav && checkStateNav[1]?.[0] === "<=") {
           const recallMax = checkStateNav[1][2];
           setValueMaxDisplay(recallMax);
         }
       }
       if (!valueMinDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === ">=") {
+        if (checkStateNav && checkStateNav[1]?.[0] === ">=") {
           const recallMin = checkStateNav[1][2];
           setValueMinDisplay(recallMin);
         }
@@ -118,8 +118,15 @@ export default function FilterMeasuredDistance() {
   useEffect(() => {
     if (stateNav.measuredDistanceWell) {
       setFilter();
-    }
+    } else clearFilters();
   }, [setFilter, stateNav.measuredDistanceWell]);
+
+  const clearFilters = () => {
+    setValueMinDisplay("");
+    setValueMaxDisplay("");
+    setError(false);
+    setErrorText("");
+  };
 
   const handleChangeMin = (event) => {
     setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
@@ -216,14 +223,7 @@ export default function FilterMeasuredDistance() {
                 },
               }}
             />
-            <IconButton
-              onClick={() => {
-                handleChangeMax({ target: { id: "MDMax", value: "" } });
-                handleChangeMin({ target: { id: "MDMin", value: "" } });
-                setError(false);
-                setErrorText("");
-              }}
-            >
+            <IconButton onClick={clearFilters}>
               <CancelIcon height={"30px"} />
             </IconButton>
           </div>

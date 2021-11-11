@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 export default function FilterDatePickerFirstProd(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const { control, watch, setValue } = useForm();
+  const { control, watch, setValue, reset } = useForm();
 
   useEffect(() => {
     let filter = null;
@@ -64,6 +64,17 @@ export default function FilterDatePickerFirstProd(props) {
         filterFirstProdDateRange: filter,
       }));
   }, [stateNav.firstProdDateFrom, stateNav.firstProdDateTo, setStateNav]);
+
+  useEffect(() => {
+    if (!stateNav.filterPermitDateRange?.length && (stateNav.permitDateFrom || stateNav.permitDateTo)) {
+      const resetParams = { prodDateFrom: null, prodDateTo: null };
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        ...resetParams,
+      }));
+      reset(resetParams);
+    }
+  }, [stateNav.filterFirstProdDateRange]);
 
   const handleStartDate = (date) => {
     setStateNav((stateNav) => ({

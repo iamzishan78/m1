@@ -32,7 +32,7 @@ const format = "MM/DD/YYYY";
 export default function FilterDatePickerCompletetion(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const { control, watch, setValue } = useForm();
+  const { control, watch, setValue, reset } = useForm();
 
   useEffect(() => {
     let filter = null;
@@ -65,6 +65,17 @@ export default function FilterDatePickerCompletetion(props) {
         filterCompletetionDateRange: filter,
       }));
   }, [stateNav.completetionDateFrom, stateNav.completetionDateTo, setStateNav]);
+
+  useEffect(() => {
+    if (!stateNav.filterPermitDateRange?.length && (stateNav.permitDateFrom || stateNav.permitDateTo)) {
+      const resetParams = { completetionDateFrom: null, completetionDateTo: null };
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        ...resetParams,
+      }));
+      reset(resetParams);
+    }
+  }, [stateNav.filterCompletetionDateRange]);
 
   const handleStartDate = (date) => {
     setStateNav((stateNav) => ({

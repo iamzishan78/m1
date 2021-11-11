@@ -3,23 +3,11 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
 
-const wellTypesList = [
-  "COALBED METHANE",
-  "DISPOSAL",
-  "DRY HOLE",
-  "GAS",
-  "INJECTION",
-  "OIL",
-  "STORAGE",
-  "UNKNOWN",
-  "WATER",
-];
+const wellTypesList = ["COALBED METHANE", "DISPOSAL", "DRY HOLE", "GAS", "INJECTION", "OIL", "STORAGE", "UNKNOWN", "WATER"];
 
 export default function FilterWellTypeJ() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [typeName, setTypeName] = React.useState(
-    stateNav.typeName ? stateNav.typeName : null
-  );
+  const [typeName, setTypeName] = React.useState(stateNav.typeName ? stateNav.typeName : null);
 
   const handleTypeChange = (value) => {
     let filter;
@@ -38,20 +26,13 @@ export default function FilterWellTypeJ() {
     <Autocomplete
       ChipProps={{ color: "secondary" }}
       defaultValue={stateNav.typeName}
+      value={stateNav.typeName}
       onChange={(event, newValue) => {
         handleTypeChange(newValue);
       }}
       multiple
       options={wellTypesList}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          label="Well Type"
-          placeholder=""
-          fullWidth={true}
-        />
-      )}
+      renderInput={(params) => <TextField {...params} variant="outlined" label="Well Type" placeholder="" fullWidth={true} />}
       disableListWrap
       id="virtualize-well-types"
       // style={{ maxWidth: 300, minWidth: 120 }}

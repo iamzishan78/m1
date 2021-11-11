@@ -97,13 +97,13 @@ export default function FilterLateralLength() {
         }
       }
       if (!valueMaxDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === "<=") {
+        if (checkStateNav && checkStateNav[1]?.[0] === "<=") {
           const recallMax = checkStateNav[1][2];
           setValueMaxDisplay(recallMax);
         }
       }
       if (!valueMinDisplay) {
-        if (checkStateNav && checkStateNav[1][0] === ">=") {
+        if (checkStateNav && checkStateNav[1]?.[0] === ">=") {
           const recallMin = checkStateNav[1][2];
           setValueMinDisplay(recallMin);
         }
@@ -118,8 +118,17 @@ export default function FilterLateralLength() {
   useEffect(() => {
     if (stateNav.lateralLengthWell) {
       setFilter();
+    } else {
+      clearFilters();
     }
   }, [setFilter, stateNav.lateralLengthWell]);
+
+  const clearFilters = () => {
+    setValueMinDisplay("");
+    setValueMaxDisplay("");
+    setError(false);
+    setErrorText("");
+  };
 
   const handleChangeMin = (event) => {
     setValueMinDisplay(parseInt(event.target.value.replace(/,/g, "")));
@@ -216,14 +225,7 @@ export default function FilterLateralLength() {
                 },
               }}
             />
-            <IconButton
-              onClick={() => {
-                handleChangeMax({ target: { id: "LLMax", value: "" } });
-                handleChangeMin({ target: { id: "LLMin", value: "" } });
-                setError(false);
-                setErrorText("");
-              }}
-            >
+            <IconButton onClick={clearFilters}>
               <CancelIcon height={"30px"} />
             </IconButton>
           </div>

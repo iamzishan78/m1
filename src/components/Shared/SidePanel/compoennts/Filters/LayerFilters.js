@@ -71,6 +71,22 @@ const geoFiltersParams = [
   "gridId5",
 ];
 const prodFiltersParams = ["prodOptions"];
+const wellFiltersParams = [
+  "operatorName",
+  "typeName",
+  "profileName",
+  "statusName",
+  "primaryFormationName",
+  "playName",
+  "fieldName",
+  "filterTVD",
+  "measuredDistanceWell",
+  "lateralLengthWell",
+  "filterPermitDateRange",
+  "filterSpudDateRange",
+  "filterCompletetionDateRange",
+  "filterFirstProdDateRange",
+];
 
 const LayerFilters = () => {
   const classes = useStyles();
@@ -86,6 +102,7 @@ const LayerFilters = () => {
   useEffect(() => {
     checkGeoFiltersChange();
     checkProdFiltersChange();
+    checkWellFiltersChange();
   }, [stateNav]);
 
   const getFiltersCount = (params) => {
@@ -96,7 +113,7 @@ const LayerFilters = () => {
     return count;
   };
 
-  const resetFilters = (params) => {
+  const resetFilters = (params, additionalParamsToReset = {}) => {
     const geoFiltersToReset = {};
     params.forEach((param) => {
       if (!Array.isArray(stateNav[param]) && stateNav[param]) geoFiltersToReset[param] = null;
@@ -107,6 +124,7 @@ const LayerFilters = () => {
     setStateNav({
       ...stateNav,
       ...geoFiltersToReset,
+      ...additionalParamsToReset,
     });
   };
 
@@ -114,6 +132,13 @@ const LayerFilters = () => {
     setFilters({
       ...filterTypes,
       Geography: { ...filterTypes.Geography, appliedFiltersCount: getFiltersCount(geoFiltersParams) },
+    });
+  };
+
+  const checkWellFiltersChange = () => {
+    setFilters({
+      ...filterTypes,
+      Wells: { ...filterTypes.Wells, appliedFiltersCount: getFiltersCount(wellFiltersParams) },
     });
   };
 
@@ -128,6 +153,9 @@ const LayerFilters = () => {
     switch (filterType) {
       case "Geography":
         resetFilters(geoFiltersParams);
+        break;
+      case "Wells":
+        resetFilters(wellFiltersParams, { tvdWell: null, filterLateralLength: null, filterMeasuredDistance: null });
         break;
       case "Production":
         resetFilters(prodFiltersParams);
