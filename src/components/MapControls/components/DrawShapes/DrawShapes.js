@@ -152,6 +152,22 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     transform: "translate(-50%, -50%)",
   },
+  parcelPopover: {
+    "& .MuiPopover-paper": {
+      left: "49% !important",
+      top: "auto !important",
+      bottom: "98px !important",
+    },
+    "& .Mui-disabled": {
+      paddingBottom: "10px",
+      borderBottom: "1px solid lightgrey",
+    },
+    "& .MuiMenuItem-root": {
+      "&:hover": {
+        color: "rgba(23, 170, 221, 1)",
+      },
+    },
+  },
 }));
 
 export default function DrawShapes() {
@@ -180,14 +196,20 @@ export default function DrawShapes() {
   }, [customLayerInsertedData]);
 
   useEffect(() => {
-    const { selectedUserDefinedLayer, showShapeActionsPopup, selectedParcel } = stateApp;
+    const { selectedUserDefinedLayer, showShapeActionsPopup, selectedParcel, selectedShape } = stateApp;
     if (selectedUserDefinedLayer) {
       setStateApp((state) => ({
         ...state,
         currentFeature: selectedUserDefinedLayer,
-        selectedAoi: selectedUserDefinedLayer,
+        // selectedParcel: selectedUserDefinedLayer.source === 'parcels_source' ? selectedUserDefinedLayer : null,
+        selectedAoi: selectedUserDefinedLayer.source === "interests_source" ? selectedUserDefinedLayer : null,
       }));
-      if (selectedUserDefinedLayer.source === "interests_source" && showShapeActionsPopup === true && selectedParcel === null) {
+      if (
+        selectedUserDefinedLayer.source === "interests_source" &&
+        showShapeActionsPopup === true &&
+        selectedParcel === null &&
+        selectedShape === null
+      ) {
         toggleSpatialDataCard(true);
       }
     }
