@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment";
+import arrayMove from 'array-move';
 
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
@@ -16,10 +17,14 @@ import Select from "react-select";
 import Grid from "@material-ui/core/Grid";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
+import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import { Controller, useForm } from "react-hook-form";
-import { SortableContainer, SortableElement, sortableHandle } from 'react-sortable-hoc';
+import {
+  SortableContainer,
+  SortableElement,
+  sortableHandle,
+} from "react-sortable-hoc";
 // QUERIES
 import { useLazyQuery, useMutation } from "@apollo/client";
 
@@ -533,12 +538,7 @@ const MetaField = ({ setShowFieldModal }) => {
                   )}
                 />
               </Grid>
-              <Grid
-                container
-                item
-                xs={7}
-                style={{ paddingRight: 20 }}
-              >
+              <Grid container item xs={7} style={{ paddingRight: 20 }}>
                 {!showAddDescription ? (
                   <div
                     className={classes.addField}
@@ -555,7 +555,7 @@ const MetaField = ({ setShowFieldModal }) => {
                     name="description"
                     render={(props) => (
                       <TextField
-                        style={{ paddingTop: 20}}
+                        style={{ paddingTop: 20 }}
                         size="small"
                         type="text"
                         variant="outlined"
@@ -576,12 +576,7 @@ const MetaField = ({ setShowFieldModal }) => {
                   />
                 )}
               </Grid>
-              <Grid
-                container
-                item
-                xs={5}
-                style={{ paddingTop: 20}}
-              >
+              <Grid container item xs={5} style={{ paddingTop: 20 }}>
                 <Controller
                   control={control}
                   name="category"
@@ -629,22 +624,21 @@ const MetaField = ({ setShowFieldModal }) => {
   );
 };
 
+const SortableComponent = () => {
+  const [items, setItem] = useState(["Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6"]);
 
-const SortableComponent= () => {
-  const state = {
-    items: ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6'],
+  const onSortEnd = ({ oldIndex, newIndex }) => {
+    setItem(arrayMove(items, oldIndex, newIndex));
   };
 
-  const onSortEnd = ({oldIndex, newIndex}) => {
-    console.log('old-new', oldIndex, newIndex)
-  };
-
-  return <SortableList items={state.items} onSortEnd={onSortEnd} useDragHandle />;
-}
-
-const SortableList = SortableContainer(({items}) => {
   return (
-    <List style={{  margin: 0, padding: 0 }}  component="div">
+    <SortableList items={items} onSortEnd={onSortEnd} useDragHandle />
+  );
+};
+
+const SortableList = SortableContainer(({ items }) => {
+  return (
+    <List style={{ margin: 0, padding: 0 }} component="div">
       {items.map((value, index) => (
         <SortableItem key={`item-${value}`} index={index} value={value} />
       ))}
@@ -652,16 +646,50 @@ const SortableList = SortableContainer(({items}) => {
   );
 });
 
-const DragHandle = sortableHandle(() => <DragIndicatorIcon style={{ fontSize: 18 }} />);
-
-const SortableItem = SortableElement(({value}) => (
-  <ListItem ContainerComponent="div" style={{ borderBottom: "1px solid #EEF1F4", padding: "5px 0px",  zIndex: 1300 }}>
-    <DragHandle/> 
-    <div style={{ display: "flex"}}>
-      <div style={{ marginTop: 4, marginLeft: 10, marginRight: 10, width: 15, height: 15, backgroundColor: 'black', display: 'inline-block', borderRadius: 10 }}></div>
-      <span>{value}</span>
-    </div>
-  </ListItem>
+const DragHandle = sortableHandle(({display}) => (
+  <DragIndicatorIcon style={{ fontSize: 18, visibility: display? 'visible': 'hidden' }} />
 ));
+
+const SortableItem = SortableElement(({ value }) => {
+  const [showDrag, setShowDrag] = useState(false);
+  return (
+    <ListItem
+      ContainerComponent="div"
+      style={{ zIndex: 1300, padding: 0 }}
+      onMouseOver={() => setShowDrag(true)}
+      onMouseLeave={() => setShowDrag(false)}
+    >
+      <DragHandle display={showDrag} />
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          padding: "10px 0px",
+          justifyContent: "space-between",
+          borderBottom: "1px solid #EEF1F4",
+        }}
+      >
+        <div>
+        <div
+          style={{
+            marginTop: 4,
+            marginLeft: 10,
+            marginRight: 10,
+            width: 15,
+            height: 15,
+            backgroundColor: "black",
+            display: "inline-block",
+            borderRadius: 10,
+          }}
+        ></div>
+        <span>{value}</span>
+        </div>
+        <IconButton style={{ padding: "4px"}}>
+          <CloseIcon style={{ fontSize: 16, alignSelf: "center" }} />
+        </IconButton>
+      </div>
+    </ListItem>
+  );
+});
 
 export default React.memo(TableHOC(DocumentsTable), deepEqualObjects);
