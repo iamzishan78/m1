@@ -16,7 +16,7 @@ export default function BasinFilterJ() {
   const [getBasinShapes, { data: basinShapes }] = useLazyQuery(GETBASINSHAPES);
 
   useEffect(() => {
-    if (!stateNav.filterBasin.length && basinName.length) {
+    if (!stateNav.filterBasin?.length && basinName.length) {
       setBasinName([]);
     }
   }, [stateNav.filterBasin]);

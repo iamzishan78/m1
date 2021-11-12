@@ -46,15 +46,8 @@ const useStyles = makeStyles((theme) => ({
       color: theme.palette.common.white,
     },
     paddingLeft: "10px",
-
-    // display: 'flex',
     justifyContent: "center",
     alignItems: "center",
-    // overflowX: "hidden",
-    // cursor: "move",
-    // padding: props.data.collapsed && props.data.type === "layer" || !props.data.showable ? 0 : theme.spacing(0.5, 0),
-    // margin: props.data.collapsed && props.data.type === "layer" ? 0 : theme.spacing(0.5),
-    // border: props.muted ? '1px dashed #1976d2' : '1px solid transparent',
   }),
   subContainer: (props) => ({
     marginLeft: theme.spacing(props.depth * 2),
@@ -126,9 +119,13 @@ const LayerItem = React.memo((props) => {
               }}
             >
               <Box borderColor={getLayerColor(data, "layer", colors)} borderLeft={4}>
-                <ListItemIcon ref={drag}>
-                  <DragIndicator style={{ cursor: "move", justifyContent: "center" }} />
-                </ListItemIcon>
+                {hoverItemIndex === id ? (
+                  <ListItemIcon ref={drag}>
+                    <DragIndicator style={{ cursor: "move", justifyContent: "center" }} />
+                  </ListItemIcon>
+                ) : (
+                  <ListItemIcon />
+                )}
               </Box>
 
               {type === "group" && !collapsed && (

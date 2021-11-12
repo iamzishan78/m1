@@ -12,7 +12,7 @@ export default function ParcelFilter() {
   const [parcelNameList, setParcelNameList] = useState([]);
 
   useEffect(() => {
-    if (!stateNav.filterParcel.length && parcelName.length) {
+    if (!stateNav.filterParcel?.length && parcelName.length) {
       setParcelName([]);
     }
   }, [stateNav.filterParcel]);
