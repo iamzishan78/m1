@@ -181,7 +181,6 @@ const LayerFilters = () => {
           filterPrimaryFormation: null,
           filterPlay: null,
           filterField: null,
-
           tvdWell: null,
           filterLateralLength: null,
           filterMeasuredDistance: null,
@@ -191,7 +190,12 @@ const LayerFilters = () => {
         resetFilters(prodFiltersParams);
         break;
       case "Ownership":
-        resetFilters(ownershipFiltersParams, { ownerCountWell: null, ownerConfidenceWell: null });
+        resetFilters(ownershipFiltersParams, {
+          filterAllInterestTypes: null,
+          filterAllOwnershipTypes: null,
+          ownerCountWell: null,
+          ownerConfidenceWell: null,
+        });
         break;
       case "Tags":
         resetFilters(tagFiltersParams);
