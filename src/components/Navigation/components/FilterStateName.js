@@ -30,15 +30,12 @@ export default function FilterStateName() {
 
   useEffect(() => {
     if (!stateNav.stateName && stateNav.displayStateName) {
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        displayStateName: null,
-      }));
+      handleStateNameChange();
     }
   }, [stateNav.stateName]);
 
   const handleStateNameChange = (event, newValue) => {
-    if (newValue == null) {
+    if (newValue === null) {
       setStateNav((stateNav) => ({
         ...stateNav,
         stateName: null,
