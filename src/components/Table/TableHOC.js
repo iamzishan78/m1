@@ -15,6 +15,7 @@ export const TableHOC = (Component) => {
     return function HOC(props) {
 
         const [rows, Rows] = useState([]);
+        const [addToTable, setAddToTable] = useState(false)
         const setRows = (newState) => { setStateIfDeepEqual(Rows, newState) };
         const [searchedRows, setSearchedRows] = useState([])
 
@@ -64,13 +65,13 @@ export const TableHOC = (Component) => {
         // }, [stateApp.user, props.targetLabel, props.showTracks]);
 
 
-        useEffect (() => {
-            if(constDataTracks?.tracksByObjectType){
+        useEffect(() => {
+            if (constDataTracks?.tracksByObjectType) {
                 const tracksIdArray = constDataTracks.tracksByObjectType.map((track) => track.trackOn);
                 setDataTracksIds(tracksIdArray);
                 setDataTracks(constDataTracks);
             }
-        },[constDataTracks])
+        }, [constDataTracks])
 
         useEffect(() => {
             setSearchedRows(rows)
@@ -99,6 +100,7 @@ export const TableHOC = (Component) => {
 
         useEffect(() => {
             SetDependencyUpdate(!dependencyUpdate)
+            console.log(dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks)
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
         const initializeGenericData = (ids, actions) => {
@@ -251,6 +253,12 @@ export const TableHOC = (Component) => {
                         }
                     }
                     setSearchedRows(searchRows.filter(row => row.isFiltered !== false))
+                },
+                extendSearchQuery: (extraSearch) => {
+                    if (pageESVariables.variables.search)
+                        pageESVariables.variables.search = `${pageESVariables.variables.search} AND ${extraSearch}`
+                    else
+                        pageESVariables.variables.search = `${extraSearch}`
                 }
             }
         }

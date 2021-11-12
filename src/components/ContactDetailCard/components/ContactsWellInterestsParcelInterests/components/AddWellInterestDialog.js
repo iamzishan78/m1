@@ -292,6 +292,7 @@ function AddWellInterestDialog(props) {
     }));
     setInitializing(false);
     setValid({});
+    props.onClose();
   }
 
   const formatRoyaltyAcres = (royaltyAcres) => {

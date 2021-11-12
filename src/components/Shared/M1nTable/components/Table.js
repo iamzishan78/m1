@@ -117,6 +117,7 @@ import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
 import { isPropertySignature } from "typescript";
+import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -1705,7 +1706,7 @@ function SubTable(props) {
                       ? tableMeta.rowData[2]
                       : props.parent === "owner_WellInterests"
                         ? tableMeta.rowData[1]
-                        : props.parent === "ownersPerParcel"
+                        : props.parent === "ownersPerParcel" || props.parent === "ownersPerUnit"
                           ? tableMeta.rowData[1]
                           : tableMeta.rowData[0];
 
@@ -1963,7 +1964,7 @@ function SubTable(props) {
             {
               column.options = {
                 ...column.options,
-                customBodyRender: (value, tableMeta, updateValue) => {
+                customBodyRender: column?.options?.customBodyRender ? column.options.customBodyRender : (value, tableMeta, updateValue) => {
                   const valueFormatter = (v) => {
                     if (
                       (column.name === "status" && props.targetLabel === "deal") ||
@@ -2073,6 +2074,7 @@ function SubTable(props) {
                           entityId={
                             props.targetLabel === "Parcel Interest" ||
                               props.targetLabel === "Parcel Ownershipship" ||
+                              props.targetLabel === "Unit Ownershipship" ||
                               props.targetLabel === "contact"
                               ? tableMeta.rowData[1]
                               : null
@@ -2707,7 +2709,7 @@ function SubTable(props) {
       if (props.addAble && props.parent === "UserManagement") {
         buttonLabel = "+ ADD USER";
       }
-      if (props.addAble.type === "ownerToParcel") {
+      if (props.addAble.type === "ownerToParcel" || props.addAble.type === "ownerToUnit") {
         buttonLabel = "+ ADD INTEREST OWNER";
         menuOptions = {
           text: "Import Interest Owners", isShow: true, action: () => {
@@ -2740,6 +2742,10 @@ function SubTable(props) {
         if (props.addAble.type && props.addAble.type === "ownerToParcel") {
           handleExpandClick(null, null, null, "addOwnerToParcel");
         }
+        if (props.addAble.type && props.addAble.type === "ownerToUnit") {
+          handleExpandClick(null, null, null, "addOwnerToUnit");
+        }
+
 
         if (props.addAble.type && props.addAble.type === "deals")
           setStateApp((stateApp) => ({
@@ -2780,7 +2786,7 @@ function SubTable(props) {
 
       return (
         <>
-          <div style={{ display: "inline", cssFloat: "left", marginRight: "15px", marginTop: "5px" }}>
+          <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
             {props.addAble.type === "parcelInterest" && (
               <Button color="secondary" className={classes.multiSelectionTopBarButtons} disabled={true} onClick={() => { }}>
                 {buttonLabel}
@@ -2826,7 +2832,8 @@ function SubTable(props) {
                 </Button>
               )}
             {(props.addAble.type === "contact" ||
-              props.addAble.type === "ownerToParcel") &&
+              props.addAble.type === "ownerToParcel" ||
+              props.addAble.type === "ownerToUnit") &&
               <ButtonDropDown options={options} />}
 
             {props.header === "Documents" && (
@@ -2920,6 +2927,13 @@ function SubTable(props) {
       if ((props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") || props.targetLabel === "Parcel Ownership") {
         if (rows[dataIndex]?._id) {
           setOpenDialog("addOwnerToParcel");
+          setSelectedRow(rows[dataIndex]);
+        }
+      }
+
+      if (props.targetLabel === "Unit Ownership") {
+        if (rows[dataIndex]?._id) {
+          setOpenDialog("addOwnerToUnit");
           setSelectedRow(rows[dataIndex]);
         }
       }
@@ -3244,7 +3258,7 @@ function SubTable(props) {
       }
 
       if (props.onTableChange) {
-        props.onTableChange(action, tableState, props.rows, { pageInd, setPageInd, setRowsPerPage });
+        props.onTableChange(action, tableState, props.rows, { pageInd, setPageInd, setRowsPerPage, m1nSelectedRowsIds, m1nSelectedRowsIndexes, setSelectedRow });
       }
     },
   };
@@ -3486,6 +3500,20 @@ function SubTable(props) {
             setSelectedRow={setSelectedRow}
           />
         )}
+        {openDialog && openDialog === "addOwnerToUnit" && (
+          <AddUnitOwnerDialogContent
+            onClose={() => {
+              setSelectedRow(null);
+              handleCloseDialog();
+            }}
+            handleExpandClick={handleExpandClick}
+            setM1nSelectedRowsIds={setM1nSelectedRowsIds}
+            customLayerId={props.addAble.customLayerId}
+            customLayer={props.addAble.customLayer}
+            selectedRow={selectedRow}
+            setSelectedRow={setSelectedRow}
+          />
+        )}
         {/* 
         // the dialog box listed below controls 
         // popups that overlay the screen due to actions from the grid 
@@ -3536,7 +3564,8 @@ function SubTable(props) {
           openDialog !== "sendMailers" &&
           openDialog !== "buyContactsInfo" &&
           openDialog !== "buyContactsInfoData" &&
-          openDialog !== "addOwnerToParcel" && (
+          openDialog !== "addOwnerToParcel" &&
+          openDialog !== "addOwnerToUnit" && (
             <Dialog
               // style={{zIndex: 99998}}
               open={openDialog ? true : false}
@@ -3588,6 +3617,7 @@ function SubTable(props) {
                     ? "lg"
                     : openDialog === "addContact" ||
                       openDialog === "addOwnerToParcel" ||
+                      openDialog === "addOwnerToUnit" ||
                       openDialog === "deleteOwnersFromContact" ||
                       openDialog === "deleteContact" ||
                       openDialog === "deleteDocument" ||

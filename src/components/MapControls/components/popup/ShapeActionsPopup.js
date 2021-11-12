@@ -4,6 +4,7 @@ import get from "lodash/get";
 import * as turf from "@turf/turf";
 import hat from "hat";
 import polylabel from "polylabel";
+import { Menu, MenuItem } from "@material-ui/core";
 import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
@@ -28,7 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMapGridCardState } from "actions";
 
 import { gql } from "@apollo/client";
-import { setFeatureProperty, drawShapeLayerToggle } from "components/MapControls/commonHelper";
+import { setFeatureProperty, drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
@@ -40,6 +41,7 @@ const ShapeActionsPopup = (props) => {
   const [error, setError] = useState(false);
   const [user, setUser] = useState({ _id: "" });
   const [selectedAction, setSelectedAction] = useState("");
+  const [anchorEl, setAnchorEl] = useState(null);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [getAbstractGeoContains] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
   const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER, {
@@ -82,7 +84,7 @@ const ShapeActionsPopup = (props) => {
           },
         },
       });
-      updateSelectedParcel(customLayer);
+      updateSelectedLayerFeature(customLayer);
     },
   });
 
@@ -106,7 +108,7 @@ const ShapeActionsPopup = (props) => {
     },
   });
 
-  const updateSelectedParcel = (customLayer) => {
+  const updateSelectedLayerFeature = (customLayer) => {
     setStateApp((state) => ({
       ...state,
       popupOpen: false,
@@ -114,10 +116,14 @@ const ShapeActionsPopup = (props) => {
     const feature = JSON.parse(customLayer.shape);
     feature.id = customLayer._id;
     feature.properties.id = customLayer._id;
-    feature.layer = { id: 'parcel' }
+    feature.layer = { id: customLayer.layer };
+    let key;
+    if (customLayer.layer === 'parcel') key = 'selectedParcel'
+    if (customLayer.layer === 'unit') key = 'selectedShape'
+
     setStateApp((state) => ({
       ...state,
-      selectedParcel: { ...feature.properties, feature },
+      [key]: { ...feature.properties, feature },
     }));
     setStateApp((state) => ({
       ...state,
@@ -144,7 +150,7 @@ const ShapeActionsPopup = (props) => {
 
   useEffect(() => {
     if (get(customLayerInsertedData, "upsertCustomLayer.customLayer")) {
-      updateSelectedParcel(customLayerInsertedData.upsertCustomLayer.customLayer);
+      updateSelectedLayerFeature(customLayerInsertedData.upsertCustomLayer.customLayer);
     }
     if (get(customLayerInsertedData, "upsertCustomLayer.customLayer") && !customLayerInsertedData.upsertCustomLayer.success) {
       setError(true);
@@ -282,8 +288,7 @@ const ShapeActionsPopup = (props) => {
   const actionEdit = () => {
     const { selectedFeature } = props;
 
-    console.log('FILTER EDIT TRIGGER STATEAPP', stateApp)
-
+    console.log("FILTER EDIT TRIGGER STATEAPP", stateApp);
 
     // If shape doesn't exist! AOI case
     if (!stateApp.draw.get(stateApp.currentFeature.id)) {
@@ -292,9 +297,8 @@ const ShapeActionsPopup = (props) => {
 
     // If filter is applied, then remove it
 
-    console.log('FILTER STATEAPP', stateApp)
+    console.log("FILTER STATEAPP", stateApp);
     clearFilter();
-
 
     // if (stateApp.shapeActionsFilterSelected) {
     //   clearFilter();
@@ -311,8 +315,8 @@ const ShapeActionsPopup = (props) => {
       ...stateNav,
       drawingMode: DRAWING_MODES.DRAW_CIRCLE,
     }));
-    setFeatureProperty(stateApp.draw, selectedFeature.id, 'shapeEdit', !stateApp.shapeEdit)
-    drawShapeLayerToggle(stateApp, !stateApp.shapeEdit ? "visible" : "none")
+    setFeatureProperty(stateApp.draw, selectedFeature.id, "shapeEdit", !stateApp.shapeEdit);
+    drawShapeLayerToggle(stateApp, !stateApp.shapeEdit ? "visible" : "none");
     setStateApp((state) => ({ ...state, currentFeature: selectedFeature, shapeEdit: !state.shapeEdit }));
     if (stateApp.selectedAoi) setSelectedAction("edit-aoi");
     else setSelectedAction("edit-shape");
@@ -330,34 +334,32 @@ const ShapeActionsPopup = (props) => {
 
   const calculateShapeCenter = (shapeCoordinates) => polylabel(shapeCoordinates);
 
-  const saveAndOpenParcelDetail = () => {
-    if (!user._id) {
-      return;
-    }
-    let abstractShape = stateApp.currentFeature;
-
+  const getAbstractGeoSource = (abstractShape) => {
     if (!abstractShape.properties.State) {
-      const featuresList = stateApp.map.getSource("abstract_geo_source")._data
-        .features;
+      const featuresList = stateApp.map.getSource("abstract_geo_source")._data.features;
       const foundFeatures = featuresList.filter((feature) => {
         var intersection = turf.intersect(abstractShape, feature);
-        return !!intersection
-      })
-      const result = foundFeatures.reduce(function (result, currentFeature) {
-        var intersection = turf.intersect(abstractShape, currentFeature);
-        const area = turf.area(intersection);
-        return area > result.area ? { area, feature: currentFeature } : result
-      }, { area: 0, feature: null })
-      if (result?.feature?.properties)
-        abstractShape.properties = result.feature.properties
+        return !!intersection;
+      });
+      const result = foundFeatures.reduce(
+        function (result, currentFeature) {
+          var intersection = turf.intersect(abstractShape, currentFeature);
+          const area = turf.area(intersection);
+          return area > result.area ? { area, feature: currentFeature } : result;
+        },
+        { area: 0, feature: null }
+      );
+      if (result?.feature?.properties) abstractShape.properties = result.feature.properties;
     }
+    return abstractShape
+  }
 
+  const getParcelUnitName = (abstractShape) => {
     const properties = abstractShape?.properties;
     let township = properties?.Township;
     let range = properties?.Range;
     let section = properties?.ShortName;
-
-    let parcelName, originalProperties;
+    let parcelName
     if (abstractShape.properties.State === "TX") {
       parcelName = abstractShape.properties.Survey + " " + abstractShape.properties.AbstractName;
     } else if (township && range && section) {
@@ -365,6 +367,19 @@ const ShapeActionsPopup = (props) => {
     } else {
       parcelName = "PLSS Default Name";
     }
+    return parcelName
+  }
+
+  const saveAndOpenParcelDetail = () => {
+    if (!user._id) {
+      return;
+    }
+    let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
+
+
+
+    let originalProperties;
+    let parcelName = getParcelUnitName(abstractShape)
     originalProperties = [abstractShape.properties];
 
     const featureId = hat();
@@ -386,6 +401,7 @@ const ShapeActionsPopup = (props) => {
       },
     };
     const customLayerData = {
+      shapeJson: newShapeFeature,
       shape: JSON.stringify(newShapeFeature),
       layer: "parcel",
       name: parcelName,
@@ -420,6 +436,67 @@ const ShapeActionsPopup = (props) => {
     popupCloseAction();
   };
 
+  const saveAndOpenUnitDetail = () => {
+    if (!user._id) {
+      return;
+    }
+    let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
+    let unitInfo = ''
+    if (abstractShape?.properties?.County && abstractShape?.properties?.State) {
+      unitInfo = `${abstractShape?.properties?.County}, ${abstractShape?.properties?.State} - BLK ${abstractShape?.properties?.Block}, SEC ${abstractShape?.properties?.Section}`
+    }
+    let unitName = getParcelUnitName(abstractShape)
+
+    const featureId = hat();
+    const newShapeFeature = {
+      id: featureId,
+      type: "Feature",
+      geometry: abstractShape.geometry,
+      properties: {
+        originalProperties: abstractShape.properties,
+        unitInfo,
+        type: "unit",
+        shapeLabel: unitName,
+        uNumber: "",
+        uName: unitName,
+        uType: "",
+        uOperator: "",
+        uStatus: "",
+        uFieldName: "",
+        sdNotes: "",
+        sdGrossAcres: "",
+        shapeArea: calculateLandArea(abstractShape),
+        shapeCenter: calculateShapeCenter(abstractShape.geometry.coordinates),
+        shapeLabelLayer: "",
+        id: featureId,
+      },
+    };
+    const customLayerData = {
+      shapeJson: newShapeFeature,
+      shape: JSON.stringify(newShapeFeature),
+      layer: "unit",
+      name: unitName,
+      user: user._id,
+    };
+
+    upsertCustomLayer({
+      variables: { customLayer: customLayerData },
+    });
+
+    let layers = [...stateApp.customLayers];
+    layers.push(customLayerData);
+
+    findBoundsMap([newShapeFeature], stateApp.map)
+
+    setStateApp((state) => ({
+      ...state,
+      selectedShape: newShapeFeature.properties,
+      customLayers: layers,
+    }));
+    drawBoundary(stateApp.map, newShapeFeature);
+    popupCloseAction();
+  };
+
   const deleteAOI = () => {
     // Turning off the confirmation modal
     setDeleteModal(false);
@@ -444,23 +521,25 @@ const ShapeActionsPopup = (props) => {
 
   const handleDeleteAoiModal = () => {
     setDeleteModal(!isDeleteModal);
-    drawBoundary(stateApp.map)
+    drawBoundary(stateApp.map);
   };
 
   const confirmEditing = () => {
     let { currentFeature, selectedAoi } = stateApp;
+    const shapeJson = {
+      ...currentFeature,
+      shapeArea: calculateLandArea(currentFeature),
+      shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates),
+    }
     const customLayerData = {
-      shape: JSON.stringify({
-        ...currentFeature,
-        shapeArea: calculateLandArea(currentFeature),
-        shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates),
-      }),
+      shapeJson,
+      shape: JSON.stringify(shapeJson),
       layer: selectedAoi.layer.id,
       user: stateApp.user.mongoId,
     };
 
-    if (selectedAoi.layer.id === 'interest') {
-      customLayerData.name = currentFeature.properties.shapeLabel
+    if (selectedAoi.layer.id === "interest") {
+      customLayerData.name = currentFeature.properties.shapeLabel;
     }
     addCustomShapeProperties(currentFeature, stateApp.draw);
 
@@ -475,55 +554,75 @@ const ShapeActionsPopup = (props) => {
     // setSelectedAction("");
     // stateApp.draw.changeMode("static");
     // setStateApp((state) => ({ ...state, shapeEdit: false, editDraw: false }));
-    setTimeout(() => popupCloseAction(), 0)
-
+    setTimeout(() => popupCloseAction(), 0);
   };
 
-  const isParcel = stateApp.selectedAoi?.layer?.id === 'parcel'
-  const isAoi = stateApp.selectedAoi?.layer?.id === 'interest'
+  const enableEditOnly = stateApp.currentFeature?.layer?.id === "parcel" || stateApp.currentFeature?.layer?.id === "unit";
+  const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
+  const isCreateParcelMenu = Boolean(anchorEl);
 
   return (
     <Fragment>
+      <Menu
+        id="parcel-button"
+        anchorEl={anchorEl}
+        open={isCreateParcelMenu}
+        onClose={() => setAnchorEl(null)}
+        MenuListProps={{
+          "aria-labelledby": "parcel-button",
+        }}
+        className={classes.parcelPopover}
+      >
+        <MenuItem disabled>Shape Layer Type</MenuItem>
+        <MenuItem onClick={saveAndOpenParcelDetail}>Ownership</MenuItem>
+        <MenuItem onClick={saveAndOpenUnitDetail}>Unit Boundary</MenuItem>
+        <MenuItem>Agreement</MenuItem>
+      </Menu>
       <Fragment>
-        <span class={classes.label}>{isLine() ? "Calc. Dist" :
-          (isAoi ? "AOI Area" : "Calc. Area")
-        }</span> {calculateLandArea()}
+        <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span> {calculateLandArea()}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
-          <Tooltip title="Grid" className={isParcel && classes.disableAction} >
-            <IconButton disabled={isParcel} size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
+          <Tooltip title="Grid" className={enableEditOnly && classes.disableAction}>
+            <IconButton disabled={enableEditOnly} size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
               <GridOnIcon className={mapGridCardActivated ? "selected" : ""} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Filter" className={isParcel && classes.disableAction}>
-            <IconButton size="small" disabled={isParcel} onClick={actionFilter} aria-label="Filter">
+          <Tooltip title="Filter" className={enableEditOnly && classes.disableAction}>
+            <IconButton size="small" disabled={enableEditOnly} onClick={actionFilter} aria-label="Filter">
               <FilterAltIcon className={stateApp.shapeActionsFilterSelected ? "selected" : ""} />
             </IconButton>
           </Tooltip>
 
           {/* {stateApp.isAbstractedLayersPolygon && ( */}
-          <Tooltip title="Create Parcel" className={isParcel && classes.disableAction}>
-            <IconButton size="small" disabled={isParcel} aria-label="Parcel" onClick={saveAndOpenParcelDetail}>
+          <Tooltip title="Create Parcel" className={enableEditOnly && classes.disableAction}>
+            <IconButton
+              size="small"
+              disabled={enableEditOnly}
+              aria-label="Parcel"
+              id="parcel-button"
+              aria-controls="parcel-button"
+              aria-haspopup="true"
+              aria-expanded={isCreateParcelMenu ? "true" : undefined}
+              onClick={(event) => setAnchorEl(event.currentTarget)}
+            >
               <LayerIcon color="secondary" />
             </IconButton>
           </Tooltip>
           {/* )} */}
 
-          <Tooltip title="Area of Interest" className={isParcel && classes.disableAction}>
-            <IconButton size="small" disabled={isParcel} onClick={actionAOI} aria-label="Area of Interest">
+          <Tooltip title="Area of Interest" className={enableEditOnly && classes.disableAction}>
+            <IconButton size="small" disabled={enableEditOnly} onClick={actionAOI} aria-label="Area of Interest">
               <GpxFixedIcon />
             </IconButton>
           </Tooltip>
 
           <span className={classes.divider}></span>
           <Tooltip title="Edit Active Shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
-            <IconButton size="small" aria-label="Edit Active Shape" onClick={
-              // !selectedAction && 
-              actionEdit}>
+            <IconButton size="small" aria-label="Edit Active Shape" onClick={actionEdit}>
               <EditIcon className={stateApp.shapeEdit ? "selected" : ""} />
             </IconButton>
           </Tooltip>
 
-          {stateApp.currentFeature.properties.shapeLabel && !isParcel && (
+          {stateApp.currentFeature.properties.shapeLabel && !enableEditOnly && (
             <Tooltip title="Delete Active Shape" className={!stateApp.currentFeature.properties.shapeLabel ? classes.disableAction : ""}>
               <IconButton
                 size="small"

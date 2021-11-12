@@ -5,7 +5,7 @@ import Map from './Map'
 export default function MapProvider(props) {
   return (
     // <ErrorBoundaryComponent>
-    <Map>{props.children}</Map>
+    <Map {...props.match.params}>{props.children}</Map>
     // </ErrorBoundaryComponent>
   )
 }
