@@ -254,6 +254,7 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#D4E8F1",
     },
     "& .MuiToolbar-regular > div:nth-child(2)": {
+      marginRight: (props) => props.toolbarActionMarginRight ? props.toolbarActionMarginRight : 'inherit',
       flex: "0 1 auto",
     },
     "& .MuiTableCell-body": {
@@ -487,7 +488,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SubTable(props) {
-  const classes = useStyles(props);
+  const classes = useStyles({ ...props, toolbarActionMarginRight: props?.options?.toolbarActionMarginRight });
   const wellTableClass = WellTableStyles(props);
   const parcelTableClass = ParcelOwnershipStyles(props);
   const productionClass = ProductionTableStyle(props);

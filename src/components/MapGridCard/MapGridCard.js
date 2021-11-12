@@ -36,6 +36,16 @@ import ShapeGridWellsTable from "components/Table/Wells/ShapeGridWellsTable";
 import ShapeGridTaxOwnersTable from "components/Table/TaxOwners/ShapeGridTaxOwnersTable";
 import ViewportGridWellsTable from "components/Table/Wells/ViewportGridWellsTable";
 
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import PersonIcon from '@material-ui/icons/Person';
+import LocationOnIcon from "@material-ui/icons/LocationOn";
+import WellIcon from "components/Shared/svgIcons/well";
+import OwnershipIcon from "components/Shared/svgIcons/ownership";
+import LeaseIcon from "components/Shared/svgIcons/lease";
+import OperatorIcon from "components/Shared/svgIcons/operator";
+import SearchPanel from "./components/SearchPanel";
+
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
@@ -354,29 +364,74 @@ function MapGridCard(props) {
     []
   );
 
-  const SearchTabPanels = () => (
-    <TabButtons
-      labels={[
-        "Wells",
-        "Tax Owners",
-        "Operators",
-        "Leases",
-        // "Parcels",
-        // "Recent Permits",
-        "Contacts",
-        "Locations",
-      ]}
-      value={searchTapValue}
-      setValue={(n) => {
-        setSearchTapValue(n);
-        if (searchTapValue !== n) {
-          dispatch(
-            setMapGridCardState({ searchResultData: [], searchloading: true })
-          );
-        }
-      }}
-    />
-  );
+  const handleSearchPanelChange = (e) => {
+    console.log(e.target.value)
+    setSearchTapValue(e.target.value);
+    if (searchTapValue !== e.target.value) {
+      dispatch(
+        setMapGridCardState({ searchResultData: [], searchloading: true })
+      );
+    }
+  }
+
+  const ativateSearchPanel = () => {
+    if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
+    if (mapGridCardActivated === "min") {
+      dispatch(
+        setMapGridCardState({ mapGridCardActivated: true })
+      );
+    }
+  }
+
+  // const SearchTabPanels = () => (
+  // <TabButtons
+  //   labels={[
+  //     "Wells",
+  //     "Tax Owners",
+  //     "Operators",
+  //     "Leases",
+  //     // "Parcels",
+  //     // "Recent Permits",
+  //     "Contacts",
+  //     "Locations",
+  //   ]}
+  //   value={searchTapValue}
+  //   setValue={(n) => {
+  //     setSearchTapValue(n);
+  //     if (searchTapValue !== n) {
+  //       dispatch(
+  //         setMapGridCardState({ searchResultData: [], searchloading: true })
+  //       );
+  //     }
+  //   }}
+  // />
+  // );
+
+  const options = {
+    toolbarActionMarginRight: '87px !important',
+    customToolbar: () => {
+
+      return <div style={{ display: "flex", "float": "left", position: "relative", left: "207px", marginRight: "15px" }}>
+        <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
+
+        <IconButton
+          className="cancelDraggableEffect"
+          onClick={(e) => {
+            e.stopPropagation();
+            dispatch(
+              setMapGridCardState({
+                mapGridCardActivated: false,
+                selectedOwner: null,
+                selectedOwnerWellIntsSummary: null,
+              })
+            );
+          }}
+        >
+          <CloseIcon color="secondary" />
+        </IconButton>
+      </div>
+    }
+  }
 
   const CardReturn = () => {
     return (
@@ -384,7 +439,7 @@ function MapGridCard(props) {
         className={`${mapGridCardActivated === "exp" ? "noDrag" : ""} ${classes.dockMenu
           }`}
       >
-        <AppBar
+        {/* <AppBar
           position="static"
           className={`${mapGridCardActivated === "exp" ? "cancelDraggableEffect" : ""} ${classes.appBar}`}
           onClick={() => {
@@ -393,8 +448,8 @@ function MapGridCard(props) {
             }
           }}>
           <Toolbar style={{ paddingRight: "0" }}>
-            {/*
-             <Tabs
+
+            <Tabs
               className={classes.tapsRoot}
               value={mapGridCardActiveTap}
               onChange={handleMainTapChange}
@@ -421,8 +476,8 @@ function MapGridCard(props) {
                 {...a11yProps(1)}
               >
               </Tab>
-            </Tabs> 
-            */}
+            </Tabs>
+
 
             <div style={{ flexGrow: 1 }}></div>
 
@@ -444,7 +499,7 @@ function MapGridCard(props) {
               <CloseIcon color="secondary" />
             </IconButton>
           </Toolbar>
-        </AppBar>
+        </AppBar> */}
 
         {selectedOwner ? (
           <OwnersSummaryCard />
@@ -471,17 +526,18 @@ function MapGridCard(props) {
                 }}
                 searchOption={getTargetFromSearchTaps()}
               /> */}
-              <div style={{ position: "relative" }}>
+              <div style={{ position: "relative" }} classes={classes.gridTables}>
                 <TabPanels
                   value={searchTapValue}
                   panels={getTaps.map((tab, index) => (
                     <Fragment key={index}>
                       <M1nTable
                         dense
+                        options={options}
                         parent="search"
                         privateColumns={tab.privateColumns}
                         targetLabel={tab.label}
-                        header={<SearchTabPanels />}
+                        header={<SearchPanel handleChange={handleSearchPanelChange} value={searchTapValue} ativateSearchPanel={ativateSearchPanel} />}
                         showTags={tab.showTags}
                         showComments={tab.showComments}
                         showTracks={tab.showTracks}
