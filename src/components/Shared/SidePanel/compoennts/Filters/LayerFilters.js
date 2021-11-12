@@ -125,11 +125,11 @@ const LayerFilters = () => {
         geoFiltersToReset[param] = [];
       }
     });
-    setStateNav({
+    setStateNav((stateNav) => ({
       ...stateNav,
       ...geoFiltersToReset,
       ...additionalParamsToReset,
-    });
+    }));
   };
 
   const checkGeoFiltersChange = () => {
@@ -173,7 +173,19 @@ const LayerFilters = () => {
         resetFilters(geoFiltersParams);
         break;
       case "Wells":
-        resetFilters(wellFiltersParams, { tvdWell: null, filterLateralLength: null, filterMeasuredDistance: null });
+        resetFilters(wellFiltersParams, {
+          filterOperator: null,
+          filterWellType: null,
+          filterWellProfile: null,
+          filterWellStatus: null,
+          filterPrimaryFormation: null,
+          filterPlay: null,
+          filterField: null,
+
+          tvdWell: null,
+          filterLateralLength: null,
+          filterMeasuredDistance: null,
+        });
         break;
       case "Production":
         resetFilters(prodFiltersParams);
