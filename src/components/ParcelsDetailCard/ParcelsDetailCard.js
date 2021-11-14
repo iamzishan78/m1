@@ -40,6 +40,7 @@ import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 import { AppContext } from "../../AppContext";
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import ParcelSummary from "./ParcelSummary";
 
 const ENTER_KEY = 13;
 
@@ -358,6 +359,30 @@ export default function ParcelsDetailCard(props) {
     }
   };
 
+
+
+  const updateCustomProperties = (type, value, id) => {
+    const shape = parcelObj.shape;
+    const customRow = parcelProperties.custom_data_arr.find((p) => p.id === id)
+    if (type === 'key') {
+      customRow.key = value
+    } else {
+      customRow.value = value
+    }
+    parcelProperties.custom_data = {}
+    parcelProperties.custom_data_arr.forEach((data) => { parcelProperties.custom_data[data.key] = data.value })
+    const customLayer = {}
+    shape.properties = parcelProperties
+    customLayer.shape = JSON.stringify(shape)
+    customLayer.shapeJson = shape
+    updateCustomLayer({
+      variables: {
+        customLayerId: parcelObj._id,
+        customLayer,
+      },
+    });
+  };
+
   const Header = () => (
     <TabButtons
       labels={[
@@ -391,6 +416,7 @@ export default function ParcelsDetailCard(props) {
       <span>ASSOCIATED WELLS</span>
     </div>
   );
+
 
   return parcelObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
@@ -541,9 +567,11 @@ export default function ParcelsDetailCard(props) {
       </Grid>
       <Grid item sm={12}>
         <Taps
-          tabLabels={["Interest Owners", "Runsheet", "Wells", "Documents"]}
+          tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Documents"]}
           openTabIdex={selectedTab}
           tabPanels={[
+            <ParcelSummary properties={parcelProperties} setProperties={setProperties} updateProperties={updateParcel}
+              updateCustomProperties={updateCustomProperties} id={props.id} />,
             <TabPanels
               value={selectedTab}
               panels={[
