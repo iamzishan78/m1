@@ -1,30 +1,13 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
-import clsx from "clsx";
-import { TransitionGroup } from "react-transition-group";
-import RootRef from "@material-ui/core/RootRef";
-import { useMutation } from "@apollo/client";
-import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
-import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import { Tooltip, Tab, Tabs, InputBase, IconButton } from "@material-ui/core";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
+import { IconButton } from "@material-ui/core";
 import ListItemText from "@material-ui/core/ListItemText";
-import Button from "@material-ui/core/Button";
 import { Divider, Grid, Typography, Drawer } from "@material-ui/core";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import MenuIcon from "@material-ui/icons/Menu";
 import { RevenueContext } from "components/Revenue/RevenueContext";
 
-import {
-  useStyles,
-  StyledMenu,
-  StyledMenuItem,
-  StyledListItem2,
-  StyledListItemSecondaryAction,
-  StyledMenuHeaderItem,
-  StyledMenuHActionHeader,
-} from "./styles";
+import { useStyles, StyledMenu, StyledMenuItem } from "./styles";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
 
 function Panel({ children }) {
@@ -53,8 +36,8 @@ function Panel({ children }) {
           paper: classes.drawerPaper,
         }}
       >
-        <Grid container direction="row" justify="space-between" display="flex">
-          <Grid item>
+        <Grid container direction="row" justify="space-between" display="flex" className={classes.header}>
+          <Grid item style={{ alignItems: "center" }}>
             <Typography variant="h6" style={{ fontWeight: "bold" }}>
               Revenue
             </Typography>
@@ -69,7 +52,9 @@ function Panel({ children }) {
           </Grid>
         </Grid>
         <Divider />
-        <div className={classes.quickActionText}>Quick Actions</div>
+        <Typography variant="body2" className={classes.quickActionText}>
+          Quick Actions
+        </Typography>
         <StyledMenu>
           {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((key, index) => (
             <StyledMenuItem onClick={() => handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)} key={index}>
