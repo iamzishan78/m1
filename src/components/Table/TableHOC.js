@@ -15,6 +15,7 @@ export const TableHOC = (Component) => {
     return function HOC(props) {
 
         const [rows, Rows] = useState([]);
+        const [addToTable, setAddToTable] = useState(false)
         const setRows = (newState) => { setStateIfDeepEqual(Rows, newState) };
         const [searchedRows, setSearchedRows] = useState([])
 
@@ -64,13 +65,13 @@ export const TableHOC = (Component) => {
         // }, [stateApp.user, props.targetLabel, props.showTracks]);
 
 
-        useEffect (() => {
-            if(constDataTracks?.tracksByObjectType){
+        useEffect(() => {
+            if (constDataTracks?.tracksByObjectType) {
                 const tracksIdArray = constDataTracks.tracksByObjectType.map((track) => track.trackOn);
                 setDataTracksIds(tracksIdArray);
                 setDataTracks(constDataTracks);
             }
-        },[constDataTracks])
+        }, [constDataTracks])
 
         useEffect(() => {
             setSearchedRows(rows)
@@ -99,6 +100,7 @@ export const TableHOC = (Component) => {
 
         useEffect(() => {
             SetDependencyUpdate(!dependencyUpdate)
+            console.log(dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks)
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
         const initializeGenericData = (ids, actions) => {
@@ -131,12 +133,10 @@ export const TableHOC = (Component) => {
             }
         }
 
-        const setGenricData = (data, id, actions) => {
-            data.isTracked = false;
-            data.commentsCounter = 0;
-            data.tags = [[], 0];
+        const setGenricData = (data, id, actions) => {            
 
             if (actions.includes('tracks')) {
+                data.isTracked = false;
                 for (let i = 0; i < dataTracks?.tracksByObjectType.length; i++) {
                     if (id === dataTracks?.tracksByObjectType[i].trackOn) {
                         data.isTracked = true;
@@ -145,6 +145,7 @@ export const TableHOC = (Component) => {
                 }
             }
             if (actions.includes('comments')) {
+                data.commentsCounter = 0;
                 const comments = dataCommentsCounter?.commentsCounter || []
                 for (let i = 0; i < comments.length; i++) {
                     if (id === comments[i]._id) {
@@ -154,6 +155,7 @@ export const TableHOC = (Component) => {
                 }
             }
             if (actions.includes('tags')) {
+                data.tags = [[], 0];
                 const tags = dataTagSamples?.tagSamples || []
                 for (let i = 0; i < tags.length; i++) {
                     if (id === tags[i]._id) {
@@ -176,7 +178,7 @@ export const TableHOC = (Component) => {
             return data
         };
 
-        const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery) => {
+        const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView={}) => {
             let pageESVariables = {
                 variables: {
                     search: tableState.searchText,
@@ -205,6 +207,11 @@ export const TableHOC = (Component) => {
                     pageESVariables.variables.filters.push({ field: columns[index].esKey, value: val[0] })
                 }
             })
+            if(selectedGridView?.filters && selectedGridView.type === 'Default') {
+                selectedGridView.filters.forEach(filter => {
+                    pageESVariables.variables.filters.push(filter)
+                })
+            }
             return {
                 pageESVariables,
                 genericESAction: () => {
@@ -246,6 +253,12 @@ export const TableHOC = (Component) => {
                         }
                     }
                     setSearchedRows(searchRows.filter(row => row.isFiltered !== false))
+                },
+                extendSearchQuery: (extraSearch) => {
+                    if (pageESVariables.variables.search)
+                        pageESVariables.variables.search = `${pageESVariables.variables.search} AND ${extraSearch}`
+                    else
+                        pageESVariables.variables.search = `${extraSearch}`
                 }
             }
         }

@@ -16,6 +16,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import FlowIcon from "@material-ui/icons/Repeat";
 import ActivityIcon from "@material-ui/icons/Event";
 import SearchIcon from "@material-ui/icons/Search";
+import BarChartIcon from "@material-ui/icons/BarChart";
 
 import { M1neralLogoNavNoAuth, useStyles } from "./Common";
 
@@ -158,6 +159,38 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               </ListItemSecondaryAction>
             </div>
           </ListItem>
+
+          <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexContacts === 1}
+            onClick={(event) => {
+              // setStateApp((stateApp) => ({
+              //   ...stateApp,
+              //   selectedContact: null,
+              //   contactSearchQuery: null,
+              // }));
+              // setStateNav((stateApp) => ({
+              //   ...stateApp,
+              //   contactFromMap: false,
+              // }));
+              // handleListItemClick("/contacts");
+            }}
+            key="Revenue"
+          >
+            <div className={classes.tabContent}>
+              <Tooltip title="Revenue" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                  <BarChartIcon />
+                </ListItemIcon>
+              </Tooltip>
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Revenue" />
+            </div>
+          </ListItem>
+
           <ListItem
             classes={{
               root: classes.menuListItem,

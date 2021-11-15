@@ -25,7 +25,7 @@ import HeatmapIcon from "@material-ui/icons/Gradient";
 import BasemapIcon from "@material-ui/icons/Language";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
-import FilterAltIcon from "components/Shared/svgIcons/FilterAltIcon";
+// import FilterAltIcon from "components/Shared/svgIcons/FilterAltIcon";
 import SecondaryPanel from "components/Shared/SecondaryPanel";
 
 import { deepEqualObjects } from "../../functions";
@@ -144,10 +144,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
         action: "base",
         icon: <BasemapIcon fontSize="medium" />,
       },
-      {
-        action: "filter",
-        icon: <FilterAltIcon fontSize="medium" />,
-      },
+      // {
+      //   action: "filter",
+      //   icon: <FilterAltIcon fontSize="medium" />,
+      // },
     ];
   }, []);
 

@@ -1216,7 +1216,7 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
@@ -1254,7 +1254,7 @@ function AddDealDialog(props) {
             <div className={classes.contentRoot}>
               <Drawer dealSettingsNumber={getSubtaskNumber()} />
               {stateApp.transactBarView !== "Deal" &&
-              (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
+                (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
               ) : (
                 <div className={classes.inputFieldRoot}>

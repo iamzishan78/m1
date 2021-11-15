@@ -207,6 +207,7 @@ export default (props) => {
       }
     }
     const customLayerData = {
+      shapeJson: newShapeFeature,
       shape: JSON.stringify(newShapeFeature),
       layer: 'parcel',
       name: parcelName,

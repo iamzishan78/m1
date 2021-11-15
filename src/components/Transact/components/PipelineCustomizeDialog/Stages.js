@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import Dialog from "@material-ui/core/Dialog";
 
 //icons
 import IconButton from "@material-ui/core/IconButton";
@@ -23,6 +24,7 @@ import { Tooltip } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/client";
 import { AppContext } from "AppContext";
 import { DEALSCOUNTINANSTAGE } from "graphQL/useQueryNonDeletedDealsCountInAnStageByPipeline";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const useStyles = makeStyles((theme) => ({
   lanesRoot: {
@@ -126,12 +128,22 @@ String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-export default function LanesInfoPanel({ showWarningMessage, stages, setStages, stagesError, setStageError, setStage }) {
+export default function LanesInfoPanel({
+  showWarningMessage,
+  stages,
+  setStages,
+  stagesError,
+  setStageError,
+  setStage,
+  handleSaveOrUpdate,
+}) {
   const dispatch = useDispatch();
   const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
   const [, setStateApp] = useContext(AppContext);
   const classes = useStyles();
   const [deleteFunc, setDeleteFunc] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [stageToSetIndex, setStageIndex] = useState(null);
 
   const [getDealsCountByStage, { data: dataDealsCountByStage }] = useLazyQuery(DEALSCOUNTINANSTAGE, {
     fetchPolicy: "network-only",
@@ -144,16 +156,20 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
         uniuniversalCircularLoaderAct: false,
       }));
       if (dataDealsCountByStage.nonDeletedDealsCountInAnStageByPipeline.dealsCount > 0)
-        dispatch(showWarningMessage("There are deals associated to the stage, please remove them first."));
+        dispatch(showWarningMessage("There are deals associated to this stage, please remove them first."));
       else {
-        deleteFunc();
+        setDeleteDialogOpen(true);
       }
     }
-  }, [dataDealsCountByStage, deleteFunc, dispatch, setStateApp, showWarningMessage]);
+  }, [dataDealsCountByStage]);
 
   useEffect(() => {
     if (openPipeDialog && selectedPipe && openPipeDialog !== "newPipe") {
       if (selectedPipe.stages) setStages(selectedPipe.stages);
+      if (stageToSetIndex !== null) {
+        setStage(selectedPipe.stages[stageToSetIndex]);
+        setStageIndex(null);
+      }
     }
   }, [openPipeDialog, selectedPipe, setStages]);
 
@@ -199,7 +215,6 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
 
   const handleAddStage = () => {
     if (stagesError) setStageError(false);
-    // if (addingNewPipe) {
     setStages([
       ...stages,
       {
@@ -211,15 +226,18 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
         position: stages.length > 0 ? stages[stages.length - 1].position + 1 : 0,
       },
     ]);
-    // }
   };
 
   const handleCellTextChange = (value, fieldName, index) => {
-    // if (addingNewPipe) {
     const updStages = [...stages];
     updStages[index] = { ...stages[index], [fieldName]: value };
     setStages(updStages);
-    // }
+  };
+
+  const handleCloseDeleteDialog = () => setDeleteDialogOpen(false);
+  const handleStagesSave = (stageIndex) => {
+    handleSaveOrUpdate();
+    setStageIndex(stageIndex);
   };
 
   return (
@@ -318,13 +336,11 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
                                         <TextField {...params} variant="outlined" size="small" fullWidth margin="none" />
                                       )}
                                     />
-
-                                    {/* {stage.dealsStatus} */}
                                   </TableCell>
 
                                   <TableCell padding="checkbox">
                                     <Tooltip title="Stage Details" placement="top">
-                                      <DetailsIcon onClick={() => setStage(stage)} className={classes.settingIcon} />
+                                      <DetailsIcon onClick={() => handleStagesSave(index)} className={classes.settingIcon} />
                                     </Tooltip>
                                   </TableCell>
 
@@ -367,6 +383,25 @@ export default function LanesInfoPanel({ showWarningMessage, stages, setStages, 
           </p>
         </Grid>
       </Grid>
+      {deleteDialogOpen && (
+        <Dialog
+          className={classes.dialog}
+          open={deleteDialogOpen ? true : false}
+          onClose={handleCloseDeleteDialog}
+          fullWidth={false}
+          maxWidth="sm"
+        >
+          <DeleteConfirmationDialogContent
+            header={deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`}
+            onClose={handleCloseDeleteDialog}
+            deleteFunc={deleteFunc ? deleteFunc : () => {}}
+            m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => {}}
+          >
+            {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the Flowline?" : "Are you sure you want to delete the stage?"}
+          </DeleteConfirmationDialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
