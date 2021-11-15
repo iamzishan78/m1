@@ -440,12 +440,8 @@ export default function Navigation(props) {
   );
 
   const handleListItemClick = (path) => {
-    handleRouteChange(path);
-    handleDrawerClose();
-  };
-
-  const handleRouteChange = (path) => {
     history.push(path);
+    handleDrawerClose();
   };
 
   const handleDrawerOpen = () => {
@@ -456,10 +452,6 @@ export default function Navigation(props) {
     setOpenDrawer(false);
     setSupportDrawer(false);
     setOpenSupportCenter(true);
-  };
-
-  const handleClickLogo = () => {
-    setStateApp((stateApp) => ({ ...stateApp, toggleZoomOut: true }));
   };
 
   const handleDrawerClose = () => {
