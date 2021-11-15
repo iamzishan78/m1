@@ -327,7 +327,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
               </Grid>
             </Grid>
           </StyledMenuHActionHeader>
-
           {/* base Stuff */}
           {type === "base" && getBasemapImageBox()}
 
