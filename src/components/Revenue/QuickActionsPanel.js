@@ -1,25 +1,25 @@
-import React, { useContext } from "react";
+import React, { useState } from "react";
+import clsx from "clsx";
 import { useHistory } from "react-router-dom";
 import { IconButton } from "@material-ui/core";
 import ListItemText from "@material-ui/core/ListItemText";
 import { Divider, Grid, Typography, Drawer } from "@material-ui/core";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import MenuIcon from "@material-ui/icons/Menu";
-import { RevenueContext } from "components/Revenue/RevenueContext";
 
 import { useStyles, StyledMenu, StyledMenuItem } from "./styles";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
 
 function Panel({ children }) {
   const classes = useStyles();
-  const { stateRevenue, setStateRevenue } = useContext(RevenueContext);
   const history = useHistory();
 
+  const [expandedPanel, setPanelState] = useState(true);
+
   const closeAction = () => {
-    setStateRevenue((prevState) => ({
-      ...prevState,
-      expandedPanel: false,
-    }));
+    setPanelState(false);
   };
 
   const handleMenuItemClick = (path) => {
@@ -31,7 +31,7 @@ function Panel({ children }) {
         className={classes.drawer}
         variant="persistent"
         anchor="left"
-        open={true}
+        open={expandedPanel}
         classes={{
           paper: classes.drawerPaper,
         }}
@@ -63,7 +63,17 @@ function Panel({ children }) {
           ))}
         </StyledMenu>
       </Drawer>
-      <div className={classes.revenueRoot}>{children}</div>
+      <div
+        className={clsx({
+          [classes.revenueRootExpanded]: expandedPanel,
+          [classes.revenueRootCollapsed]: !expandedPanel,
+        })}
+      >
+        {children}
+      </div>
+      <div className={classes.pulloutBox} onClick={() => setPanelState(!expandedPanel)}>
+        {expandedPanel ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
+      </div>
     </>
   );
 }

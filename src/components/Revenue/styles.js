@@ -28,7 +28,7 @@ export const useStyles = makeStyles((theme) => ({
     textAlign: "right",
     padding: "4px 0",
     transition: "all 0.3s ease-in-out",
-    margin: "5px 15px 0px auto",
+    margin: "5px 5px 0px auto",
     "&:hover": {
       background: "unset",
       color: "rgba(23, 170, 221, 1)",
@@ -55,12 +55,29 @@ export const useStyles = makeStyles((theme) => ({
     margin: "30px 10px 10px 10px",
     color: "#29abe0",
   },
-  revenueRoot: {
+  revenueRootExpanded: {
     marginLeft: "320px",
   },
+  revenueRootCollapsed: {
+    marginLeft: "32px",
+  },
   header: {
-    marginLeft: "10px",
+    paddingLeft: "10px",
     alignItems: "center",
+  },
+  pulloutBox: {
+    height: "80px",
+    color: "white",
+    width: "20px",
+    marginTop: "103px",
+    background: "#141d32",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    "& svg": {
+      transform: "scaleX(0.5)",
+    },
   },
 }));
 
