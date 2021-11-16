@@ -13,9 +13,12 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
   },
   datePicker: {
-    margin: "15px",
+    margin: "5px",
     "&& span": {
       pointerEvents: "none",
+    },
+    "& .MuiIconButton-root": {
+      padding: "10px",
     },
   },
   blue: {
@@ -26,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 export default function FilterDatePickerPermit(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const { control, watch, setValue, getValues } = useForm();
+  const { control, watch, setValue, reset } = useForm();
 
   useEffect(() => {
     let filter = null;
@@ -59,6 +62,17 @@ export default function FilterDatePickerPermit(props) {
         filterPermitDateRange: filter,
       }));
   }, [stateNav.permitDateFrom, stateNav.permitDateTo, setStateNav]);
+
+  useEffect(() => {
+    if (!stateNav.filterPermitDateRange?.length && (stateNav.permitDateFrom || stateNav.permitDateTo)) {
+      const resetParams = { permitDateFrom: null, permitDateTo: null };
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        ...resetParams,
+      }));
+      reset(resetParams);
+    }
+  }, [stateNav.filterPermitDateRange]);
 
   const handleStartDate = (date) => {
     setStateNav((stateNav) => ({

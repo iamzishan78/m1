@@ -1,6 +1,6 @@
 import React, { useState, createContext } from "react";
 
-const MapControlsContext = createContext([{}, () => { }]);
+const MapControlsContext = createContext([{}, () => {}]);
 
 const layers = [
   { name: "Basins", value: "basinLayer" },
@@ -28,13 +28,7 @@ const MapControlsContextProvider = (props) => {
     expandedPanel: true,
     openDrawShapesControl: false,
   });
-  return (
-    <MapControlsContext.Provider
-      value={[stateMapControls, setStateMapControls]}
-    >
-      {props.children}
-    </MapControlsContext.Provider>
-  );
+  return <MapControlsContext.Provider value={[stateMapControls, setStateMapControls]}>{props.children}</MapControlsContext.Provider>;
 };
 
 export { MapControlsContext, MapControlsContextProvider };

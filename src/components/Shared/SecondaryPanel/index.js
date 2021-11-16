@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: "1240",
     left: props.leftPixels,
     width: "525px",
-    height: "calc(100vh - 65px)",
+    height: "calc(100vh - 0px)",
   }),
 }));
 

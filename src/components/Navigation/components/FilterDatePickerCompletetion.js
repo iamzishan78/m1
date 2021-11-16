@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
@@ -14,9 +14,12 @@ const useStyles = makeStyles(() => ({
     flexDirection: "row",
   },
   datePicker: {
-    margin: "15px",
+    margin: "5px",
     "&& span": {
       pointerEvents: "none",
+    },
+    "& .MuiIconButton-root": {
+      padding: "10px",
     },
   },
   blue: {
@@ -29,8 +32,7 @@ const format = "MM/DD/YYYY";
 export default function FilterDatePickerCompletetion(props) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [displayValue, setDisplayValue] = useState(null);
-  const { control, watch, setValue, getValues } = useForm();
+  const { control, watch, setValue, reset } = useForm();
 
   useEffect(() => {
     let filter = null;
@@ -63,6 +65,17 @@ export default function FilterDatePickerCompletetion(props) {
         filterCompletetionDateRange: filter,
       }));
   }, [stateNav.completetionDateFrom, stateNav.completetionDateTo, setStateNav]);
+
+  useEffect(() => {
+    if (!stateNav.filterPermitDateRange?.length && (stateNav.permitDateFrom || stateNav.permitDateTo)) {
+      const resetParams = { completetionDateFrom: null, completetionDateTo: null };
+      setStateNav((stateNav) => ({
+        ...stateNav,
+        ...resetParams,
+      }));
+      reset(resetParams);
+    }
+  }, [stateNav.filterCompletetionDateRange]);
 
   const handleStartDate = (date) => {
     setStateNav((stateNav) => ({

@@ -8,10 +8,14 @@ const FilterAOI = () => {
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [aoiData, setAOIData] = useState([]);
-  const [aoiName, setAOIName] = useState(
-    stateNav.aoiName ? stateNav.aoiName : []
-  );
+  const [aoiName, setAOIName] = useState(stateNav.aoiName ? stateNav.aoiName : []);
   const [aoiNameList, setAOINameList] = useState([]);
+
+  useEffect(() => {
+    if (!stateNav.filterAOI?.length && aoiName.length) {
+      setAOIName([]);
+    }
+  }, [stateNav.filterAOI]);
 
   useEffect(() => {
     const groupBy = (arr, property) => {
@@ -40,9 +44,7 @@ const FilterAOI = () => {
     let filter;
 
     const currentLayers = [...stateApp.layers];
-    const index = currentLayers.findIndex(
-      (l) => l.identifier === "Area of Interest"
-    );
+    const index = currentLayers.findIndex((l) => l.identifier === "Area of Interest");
 
     if (value && value.length) {
       const layers = aoiData.filter((aoi) => value.indexOf(aoi.name) > -1);
@@ -53,7 +55,7 @@ const FilterAOI = () => {
       setAOIName(value);
 
       // set prev visibility
-      setStateApp((stateApp) => ({ ...stateApp, prevAOIVisible: currentLayers[index].layerSettings.visiable }))
+      setStateApp((stateApp) => ({ ...stateApp, prevAOIVisible: currentLayers[index].layerSettings.visiable }));
     } else {
       filter = null;
       setStateNav((stateNav) => ({ ...stateNav, aoiName: null }));
@@ -66,21 +68,14 @@ const FilterAOI = () => {
     return (
       <Autocomplete
         defaultValue={aoiName}
+        value={aoiName}
         onChange={(event, newValue) => {
           handleAOIChange(newValue);
         }}
         multiple
         ChipProps={{ color: "secondary" }}
         options={aoiNameList}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="outlined"
-            label="Area of Interest"
-            placeholder=""
-            fullWidth
-          />
-        )}
+        renderInput={(params) => <TextField {...params} variant="outlined" label="Area of Interest" placeholder="" fullWidth />}
         disableListWrap
         id="virtualize-aoi"
       />

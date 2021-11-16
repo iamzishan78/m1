@@ -15,12 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const interestList = [
-  "OVERRIDE ROYALTY",
-  "PRODUCTION PAYMENT",
-  "ROYALTY INTEREST",
-  "WORKING INTEREST",  
-];
+const interestList = ["OVERRIDE ROYALTY", "PRODUCTION PAYMENT", "ROYALTY INTEREST", "WORKING INTEREST"];
 
 const ownerTypesList = [
   "CORPORATIONS",
@@ -29,21 +24,13 @@ const ownerTypesList = [
   "INDIVIDUALS",
   "NON PROFITS",
   "RELIGIOUS INSTITUTIONS",
-  "TRUSTS",  
+  "TRUSTS",
   "UNKNOWN",
 ];
 
 export default function FilterFormOwner() {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [interestName, setInterestName] = useState(
-    stateNav.interestName ? stateNav.interestName : []
-  );
-  const [ownerTypeName, setOwnerTypeName] = useState(
-    stateNav.ownerTypeName ? stateNav.ownerTypeName : []
-  );
-  const [interests, setInterests] = useState(interestList);
-  const [ownerTypes, setOwnerTypes] = useState(ownerTypesList);
 
   // there is an opportunity to break these out into seperate components
   // instead of including it on a form.
@@ -135,7 +122,6 @@ export default function FilterFormOwner() {
   };
 
   const handleChangeInterest = (event) => {
-    setInterestName(event);
     setFilterInterest(event);
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -144,7 +130,6 @@ export default function FilterFormOwner() {
   };
 
   const handleChangeOwnerType = (event) => {
-    setOwnerTypeName(event);
     setFilterOwnerType(event);
     setStateNav((stateNav) => ({
       ...stateNav,
@@ -153,31 +138,21 @@ export default function FilterFormOwner() {
   };
 
   return (
-    <Grid
-      container
-      item
-      spacing={2}
-      style={{ padding: "8px", width: "100%", margin: "0" }}
-    >
+    <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
       <Grid item sm={12}>
         <Autocomplete
           ChipProps={{ color: "secondary" }}
           className={classes.formControl}
-          defaultValue={interestName}
+          defaultValue={stateNav.interestName}
+          value={stateNav.interestName}
           onChange={(event, newValue) => {
             handleChangeInterest(newValue);
           }}
           multiple
-          options={interests.map((option) => option)}
+          options={interestList.map((option) => option)}
           renderInput={(params) => (
             <form autoComplete="off">
-              <TextField
-                {...params}
-                variant="outlined"
-                label="Interest Types"
-                placeholder=""
-                fullWidth={true}
-              />
+              <TextField {...params} variant="outlined" label="Interest Types" placeholder="" fullWidth={true} />
             </form>
           )}
           disableListWrap
@@ -187,21 +162,16 @@ export default function FilterFormOwner() {
         <Autocomplete
           ChipProps={{ color: "secondary" }}
           className={classes.formControl}
-          defaultValue={ownerTypeName}
+          defaultValue={stateNav.ownerTypeName}
+          value={stateNav.ownerTypeName}
           onChange={(event, newValue) => {
             handleChangeOwnerType(newValue);
           }}
           multiple
-          options={ownerTypes.map((option) => option)}
+          options={ownerTypesList.map((option) => option)}
           renderInput={(params) => (
             <form autoComplete="off">
-              <TextField
-                {...params}
-                variant="outlined"
-                label="Owner Types"
-                placeholder=""
-                fullWidth={true}
-              />
+              <TextField {...params} variant="outlined" label="Owner Types" placeholder="" fullWidth={true} />
             </form>
           )}
           disableListWrap

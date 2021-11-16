@@ -1,20 +1,9 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState, useContext, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
 import ProdMinMax from "./ProdMinMax";
 import Grid from "@material-ui/core/Grid";
-
-const useStyles = makeStyles((theme) => ({
-  loader: {
-    marginLeft: "40%",
-    marginTop: "25%",
-  },
-  displayNone: {
-    display: "none",
-  },
-}));
 
 const listOptions = [
   {
@@ -164,11 +153,8 @@ const listOptions = [
 ];
 
 export default function FilterFormProduction() {
-  const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [prodOptions, setProdOptions] = useState(
-    stateNav.prodOptions ? stateNav.prodOptions : null
-  );
+  const [prodOptions, setProdOptions] = useState(stateNav.prodOptions ? stateNav.prodOptions : null);
   const [list, setList] = useState([]);
   const [optionsCopy, setOptionsCopy] = useState(null);
 
@@ -191,9 +177,7 @@ export default function FilterFormProduction() {
     if (stateNav.prodOptions && optionsCopy) {
       const check = optionsCopy.map((val) => val);
 
-      const removeFilters = check.filter(
-        (name) => !stateNav.prodOptions.includes(name.name)
-      );
+      const removeFilters = check.filter((name) => !stateNav.prodOptions.includes(name.name));
 
       removeFilters.forEach((element) => {
         setStateNav((stateNav) => ({
@@ -209,7 +193,6 @@ export default function FilterFormProduction() {
       let compare = [];
       let optionUpdate;
       let elementUpdate;
-      // let matchName = prodOptions.map((option) => option);
       let matchName = [...prodOptions];
       matchName.forEach((element) => {
         compare.push(element);
@@ -225,14 +208,10 @@ export default function FilterFormProduction() {
         });
       });
       if (optionUpdate && elementUpdate) {
-        const updateState = optionsCopy.map((item) =>
-          compare.includes(item.name) ? { ...item, display: true } : item
-        );
+        const updateState = optionsCopy.map((item) => (compare.includes(item.name) ? { ...item, display: true } : item));
         setList(updateState);
       } else {
-        const updateState = optionsCopy.map((item) =>
-          compare.includes(!item.name) ? { ...item, display: false } : item
-        );
+        const updateState = optionsCopy.map((item) => (compare.includes(!item.name) ? { ...item, display: false } : item));
         setList(updateState);
       }
     }
@@ -242,42 +221,24 @@ export default function FilterFormProduction() {
     .filter((item) => item.display === true)
     .map((item) => (
       <Grid item sm={12}>
-        <ProdMinMax
-          key={item.name}
-          id={item.id}
-          name={item.name}
-          filter={item.filterName}
-        />
+        <ProdMinMax key={item.name} id={item.id} name={item.name} filter={item.filterName} />
       </Grid>
     ));
 
   return (
-    <Grid
-      container
-      item
-      spacing={2}
-      style={{ padding: "8px", width: "100%", margin: "0" }}
-    >
+    <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
       <Grid item sm={12}>
         <Autocomplete
-          ChipProps={{ color: "secondary" }}
           multiple
+          ChipProps={{ color: "secondary" }}
           options={listOptions.map((option) => option.name)}
           disableListWrap
+          value={stateNav.prodOptions}
           defaultValue={stateNav.prodOptions}
           onChange={(event, value) => handleSelectedValueToDisplay(value)}
-          renderInput={(params) => (
-            <TextField
-              // className={classes.autoComplete}
-              {...params}
-              variant="outlined"
-              label="Production Filters"
-              fullWidth={true}
-            />
-          )}
+          renderInput={(params) => <TextField {...params} variant="outlined" label="Production Filters" fullWidth={true} />}
         />
       </Grid>
-
       {renderFMW}
     </Grid>
   );

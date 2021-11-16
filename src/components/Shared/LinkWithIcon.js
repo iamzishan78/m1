@@ -35,8 +35,9 @@ export default function LinkWithIcon(props) {
     icons: {
       color: "#ffffff",
       marginLeft: "auto",
+      backgroundColor: "#f2f2f2",
       "&:hover": {
-        backgroundColor: props.targetLabel === "deal" ? "#dadbde88 !important" : "#031d40",
+        backgroundColor: props.targetLabel === "deal" ? "#dadbde88 !important" : "#eeeeee",
       },
     },
     iconSelected: {
@@ -64,8 +65,8 @@ export default function LinkWithIcon(props) {
       },
     },
     ownerIdGrid: {
-      paddingLeft: "5px !important"
-    }
+      paddingLeft: "5px !important",
+    },
   }));
 
   const classes = useStyles();
@@ -188,7 +189,7 @@ export default function LinkWithIcon(props) {
           onClose={() => setGlobalOwnerDialog((state) => ({ ...state, state: false }))}
           deleteFunc={handleRemoveGlobalOwner}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => { }}
+          setM1nSelectedRowsIndexes={() => {}}
         >
           Are you sure you want to remove this Global Owner?
         </DeleteConfirmationDialogContent>

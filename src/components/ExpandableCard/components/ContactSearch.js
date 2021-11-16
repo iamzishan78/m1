@@ -2,24 +2,34 @@ import { useLazyQuery } from "@apollo/client";
 import LinkWithIcon from "components/Shared/LinkWithIcon";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
 
 import { AppContext } from "../../../AppContext";
 import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { setStateIfDeepEqual } from "../../Shared/functions";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 
+const useStyles = makeStyles((theme) => ({
+  search: {
+    width: "70%",
+    marginLeft: "425px !important",
+    maxWidth: "400px",
+    "& svg": {
+      fill: "grey",
+    },
+  },
+}));
+
 const ContactSearch = (props) => {
+  const classes = useStyles();
   let history = useHistory();
-  const contactId = history.location.pathname.split('/')[3]
-  const [
-    getPaginatedContacts,
-    { data: allContacts, fetchMore: fetchMorePaginatedContacts },
-  ] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+  const contactId = history.location.pathname.split("/")[3];
+  const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
 
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [, setStateApp] = useContext(AppContext);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
@@ -32,7 +42,7 @@ const ContactSearch = (props) => {
 
   useEffect(() => {
     if (nameAutValue && nameAutValue?._id) {
-      history.push(`/contact/details/${nameAutValue._id}`)
+      history.push(`/contact/details/${nameAutValue._id}`);
       setStateApp((stateApp) => ({
         ...stateApp,
         selectedContact: nameAutValue._id,
@@ -58,19 +68,16 @@ const ContactSearch = (props) => {
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([
-        ...allContacts?.paginatedContacts?.edges?.map((el) => el.node),
-      ]);
+      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
       setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
     }
     setIsNextPageLoading(false);
   }, [allContacts]);
 
   return (
-    <div style={{ display: 'flex', width: '100%' }}>
-      <div style={{ width: "70%", marginLeft: "20px", maxWidth: "400px" }}>
+    <div style={{ display: "flex", width: "100%" }}>
+      <div className={classes.search}>
         <AutocompEntityNamesVirtualizeList
-          darkCard={true}
           mongoEntitiesArray={mongoEntitiesArray}
           setMongoEntitiesArray={setMongoEntitiesArray}
           nameAutValue={nameAutValue}
@@ -86,15 +93,8 @@ const ContactSearch = (props) => {
       </div>
 
       <div style={{ flexGrow: 1 }}></div>
-      {
-        props.showLinkIcon && <LinkWithIcon
-          objectId={contactId.toLowerCase()}
-          iconZiseSmall={false}
-        />
-      }
-
+      {props.showLinkIcon && <LinkWithIcon objectId={contactId.toLowerCase()} iconZiseSmall={false} />}
     </div>
-
   );
 };
 export default ContactSearch;
